@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,49 +37,46 @@ import se.inera.intyg.webcert.web.web.controller.authtestability.UserResource;
 
 public class UserOriginResourceTest extends AuthoritiesConfigurationTestSetup {
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    private UserResource userResource;
+  @InjectMocks private UserResource userResource;
 
-    @Captor
-    private ArgumentCaptor<String> roleArrCaptor;
+  @Captor private ArgumentCaptor<String> roleArrCaptor;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
+  @Before
+  public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+  }
 
-    @Test
-    public void testGetUserOrigin() throws Exception {
-        String origin = UserOriginType.NORMAL.name();
+  @Test
+  public void testGetUserOrigin() throws Exception {
+    String origin = UserOriginType.NORMAL.name();
 
-        //Given
-        WebCertUser user = Mockito.mock(WebCertUser.class);
+    // Given
+    WebCertUser user = Mockito.mock(WebCertUser.class);
 
-        Mockito.when(user.getOrigin()).thenReturn(origin);
-        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+    Mockito.when(user.getOrigin()).thenReturn(origin);
+    Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
-        //When
-        final String originResponse = (String) userResource.getOrigin().getEntity();
+    // When
+    final String originResponse = (String) userResource.getOrigin().getEntity();
 
-        //Then
-        assertEquals(origin, originResponse);
-    }
+    // Then
+    assertEquals(origin, originResponse);
+  }
 
-    @Test
-    public void testSetUserRole() throws Exception {
-        //Given
-        final WebCertUser user = Mockito.mock(WebCertUser.class);
-        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+  @Test
+  public void testSetUserRole() throws Exception {
+    // Given
+    final WebCertUser user = Mockito.mock(WebCertUser.class);
+    Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
-        //When
-        String newOrigin = UserOriginType.NORMAL.name();
-        userResource.setOrigin(newOrigin);
+    // When
+    String newOrigin = UserOriginType.NORMAL.name();
+    userResource.setOrigin(newOrigin);
 
-        //Then
-        Mockito.verify(webCertUserService, times(1)).updateOrigin(roleArrCaptor.capture());
-        assertEquals(newOrigin, roleArrCaptor.getValue());
-    }
+    // Then
+    Mockito.verify(webCertUserService, times(1)).updateOrigin(roleArrCaptor.capture());
+    assertEquals(newOrigin, roleArrCaptor.getValue());
+  }
 }

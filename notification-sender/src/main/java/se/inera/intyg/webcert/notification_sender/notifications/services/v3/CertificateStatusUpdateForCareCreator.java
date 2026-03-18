@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -56,62 +56,78 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 @Component
 public class CertificateStatusUpdateForCareCreator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareCreator.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(CertificateStatusUpdateForCareCreator.class);
 
-    @Autowired
-    private NotificationPatientEnricher notificationPatientEnricher;
+  @Autowired private NotificationPatientEnricher notificationPatientEnricher;
 
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
+  @Autowired private IntygModuleRegistry moduleRegistry;
 
-    private static final String XML_LOCAL_PART = "CertificateStatusUpdateForCare";
+  private static final String XML_LOCAL_PART = "CertificateStatusUpdateForCare";
 
-    public CertificateStatusUpdateForCareType create(NotificationMessage notificationMessage, String certificateTypeVersion)
-        throws ModuleNotFoundException, IOException, ModuleException {
-        final var moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), certificateTypeVersion);
-        final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
-        final var intyg = moduleApi.getIntygFromUtlatande(utlatande);
-        notificationPatientEnricher.enrichWithPatient(intyg);
-        return NotificationTypeConverter.convert(notificationMessage, intyg);
-    }
+  public CertificateStatusUpdateForCareType create(
+      NotificationMessage notificationMessage, String certificateTypeVersion)
+      throws ModuleNotFoundException, IOException, ModuleException {
+    final var moduleApi =
+        moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), certificateTypeVersion);
+    final var utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
+    final var intyg = moduleApi.getIntygFromUtlatande(utlatande);
+    notificationPatientEnricher.enrichWithPatient(intyg);
+    return NotificationTypeConverter.convert(notificationMessage, intyg);
+  }
 
-    public CertificateStatusUpdateForCareType create(Handelse event, Vardgivare careProvider,
-        Vardenhet careUnit, PersonInformation personInfo) throws ModuleNotFoundException {
+  public CertificateStatusUpdateForCareType create(
+      Handelse event, Vardgivare careProvider, Vardenhet careUnit, PersonInformation personInfo)
+      throws ModuleNotFoundException {
 
-        String moduleId = moduleRegistry.getModuleIdFromExternalId(event.getCertificateType());
-        ModuleEntryPoint moduleEntryPoint = moduleRegistry.getModuleEntryPoint(moduleId);
+    String moduleId = moduleRegistry.getModuleIdFromExternalId(event.getCertificateType());
+    ModuleEntryPoint moduleEntryPoint = moduleRegistry.getModuleEntryPoint(moduleId);
 
-        Intyg certificate = new Intyg();
-        certificate.setIntygsId(NotificationRedeliveryUtil.getIIType(new IntygId(), event.getIntygsId(), event.getEnhetsId()));
-        certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(moduleEntryPoint));
-        certificate.setVersion(event.getCertificateVersion());
-        certificate.setPatient(NotificationRedeliveryUtil.getPatient(event.getPersonnummer()));
-        certificate.setSkapadAv(NotificationRedeliveryUtil.getHosPersonal(careProvider, careUnit, personInfo));
+    Intyg certificate = new Intyg();
+    certificate.setIntygsId(
+        NotificationRedeliveryUtil.getIIType(
+            new IntygId(), event.getIntygsId(), event.getEnhetsId()));
+    certificate.setTyp(NotificationRedeliveryUtil.getCertificateType(moduleEntryPoint));
+    certificate.setVersion(event.getCertificateVersion());
+    certificate.setPatient(NotificationRedeliveryUtil.getPatient(event.getPersonnummer()));
+    certificate.setSkapadAv(
+        NotificationRedeliveryUtil.getHosPersonal(careProvider, careUnit, personInfo));
 
-        notificationPatientEnricher.enrichWithPatient(certificate);
-        NotificationTypeConverter.complementIntyg(certificate);
+    notificationPatientEnricher.enrichWithPatient(certificate);
+    NotificationTypeConverter.complementIntyg(certificate);
 
-        final var statusUpdate = new CertificateStatusUpdateForCareType();
-        statusUpdate.setIntyg(certificate);
-        statusUpdate.setHandelse(NotificationRedeliveryUtil.getEventV3(event.getCode(), event.getTimestamp(), event.getAmne(),
-            event.getSistaDatumForSvar()));
-        statusUpdate.setSkickadeFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
-        statusUpdate.setMottagnaFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
-        statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
+    final var statusUpdate = new CertificateStatusUpdateForCareType();
+    statusUpdate.setIntyg(certificate);
+    statusUpdate.setHandelse(
+        NotificationRedeliveryUtil.getEventV3(
+            event.getCode(), event.getTimestamp(), event.getAmne(), event.getSistaDatumForSvar()));
+    statusUpdate.setSkickadeFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
+    statusUpdate.setMottagnaFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
+    statusUpdate.setHanteratAv(
+        NotificationRedeliveryUtil.getIIType(new HsaId(), event.getHanteratAv(), HSA_ID_OID));
 
-        return statusUpdate;
-    }
+    return statusUpdate;
+  }
 
-    public String marshal(CertificateStatusUpdateForCareType statusUpdate) throws JAXBException {
-        final QName qName = new QName(XML_LOCAL_PART);
-        final JAXBElement<CertificateStatusUpdateForCareType> jaxbElement =
-            new JAXBElement<>(qName, CertificateStatusUpdateForCareType.class, JAXBElement.GlobalScope.class, statusUpdate);
+  public String marshal(CertificateStatusUpdateForCareType statusUpdate) throws JAXBException {
+    final QName qName = new QName(XML_LOCAL_PART);
+    final JAXBElement<CertificateStatusUpdateForCareType> jaxbElement =
+        new JAXBElement<>(
+            qName,
+            CertificateStatusUpdateForCareType.class,
+            JAXBElement.GlobalScope.class,
+            statusUpdate);
 
-        StringStreamResult stringStreamResult = new StringStreamResult();
-        JAXBContext jaxbContext = JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class,
-            PartialDateType.class, XPathType.class, PQType.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.marshal(jaxbElement, stringStreamResult);
-        return stringStreamResult.getAsString();
-    }
+    StringStreamResult stringStreamResult = new StringStreamResult();
+    JAXBContext jaxbContext =
+        JAXBContext.newInstance(
+            CertificateStatusUpdateForCareType.class,
+            DatePeriodType.class,
+            PartialDateType.class,
+            XPathType.class,
+            PQType.class);
+    Marshaller marshaller = jaxbContext.createMarshaller();
+    marshaller.marshal(jaxbElement, stringStreamResult);
+    return stringStreamResult.getAsString();
+  }
 }

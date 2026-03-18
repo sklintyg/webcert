@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,58 +35,64 @@ import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.Service
 @RequiredArgsConstructor
 public class ServiceNowStubRestApiService {
 
-    private final ServiceNowStubState stubState;
+  private final ServiceNowStubState stubState;
 
-    public Response createSubscriptionResponse(String basicAuth, OrganizationRequest request) {
-        if (basicAuth == null) {
-            return Response.status(Status.BAD_REQUEST).entity("Authorization header required by ServiceNow stub.").build();
-        } else if (stubState.getHttpErrorCode() != 0) {
-            return responseWithErrorStatusCode(stubState.getHttpErrorCode());
-        } else {
-            return getSubscriptions(request.getCustomers());
-        }
+  public Response createSubscriptionResponse(String basicAuth, OrganizationRequest request) {
+    if (basicAuth == null) {
+      return Response.status(Status.BAD_REQUEST)
+          .entity("Authorization header required by ServiceNow stub.")
+          .build();
+    } else if (stubState.getHttpErrorCode() != 0) {
+      return responseWithErrorStatusCode(stubState.getHttpErrorCode());
+    } else {
+      return getSubscriptions(request.getCustomers());
+    }
+  }
+
+  private Response getSubscriptions(List<String> organizationNumbers) {
+    final var activeSubscriptions = stubState.getActiveSubscriptions();
+    final var organizations = new ArrayList<Organization>();
+
+    for (var organizationNumber : organizationNumbers) {
+      final var subscribedServiceCodes =
+          getSubscribedServiceCodes(activeSubscriptions, organizationNumber);
+      organizations.add(
+          Organization.builder()
+              .organizationNumber(organizationNumber)
+              .serviceCodes(subscribedServiceCodes)
+              .build());
     }
 
-    private Response getSubscriptions(List<String> organizationNumbers) {
-        final var activeSubscriptions = stubState.getActiveSubscriptions();
-        final var organizations = new ArrayList<Organization>();
+    final var organizationResponse = OrganizationResponse.builder().result(organizations).build();
 
-        for (var organizationNumber : organizationNumbers) {
-            final var subscribedServiceCodes = getSubscribedServiceCodes(activeSubscriptions, organizationNumber);
-            organizations.add(Organization.builder()
-                .organizationNumber(organizationNumber)
-                .serviceCodes(subscribedServiceCodes)
-                .build()
-            );
-        }
+    return Response.ok(organizationResponse).build();
+  }
 
-        final var organizationResponse = OrganizationResponse.builder()
-            .result(organizations).build();
-
-        return Response.ok(organizationResponse).build();
+  private List<String> getSubscribedServiceCodes(
+      Map<String, List<String>> activeSubscriptions, String orgNumber) {
+    if (!activeSubscriptions.isEmpty() && activeSubscriptions.containsKey(orgNumber)) {
+      return activeSubscriptions.get(orgNumber);
     }
 
-    private List<String> getSubscribedServiceCodes(Map<String, List<String>> activeSubscriptions, String orgNumber) {
-        if (!activeSubscriptions.isEmpty() && activeSubscriptions.containsKey(orgNumber)) {
-            return activeSubscriptions.get(orgNumber);
-        }
-
-        if (stubState.isNotSubscribed(orgNumber)) {
-            return Collections.emptyList();
-        }
-
-        if (activeSubscriptions.isEmpty() && stubState.getSubscriptionReturnValue()) {
-            return stubState.getServiceCodeList();
-        }
-        return Collections.emptyList();
+    if (stubState.isNotSubscribed(orgNumber)) {
+      return Collections.emptyList();
     }
 
-    private Response responseWithErrorStatusCode(int statusCode) {
-        try {
-            return Response.status(Status.fromStatusCode(statusCode))
-                .entity("Http error " + statusCode + " response from ServiceNow stub.").build();
-        } catch (IllegalArgumentException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Http error 500 response from ServiceNow stub.").build();
-        }
+    if (activeSubscriptions.isEmpty() && stubState.getSubscriptionReturnValue()) {
+      return stubState.getServiceCodeList();
     }
+    return Collections.emptyList();
+  }
+
+  private Response responseWithErrorStatusCode(int statusCode) {
+    try {
+      return Response.status(Status.fromStatusCode(statusCode))
+          .entity("Http error " + statusCode + " response from ServiceNow stub.")
+          .build();
+    } catch (IllegalArgumentException e) {
+      return Response.status(Status.INTERNAL_SERVER_ERROR)
+          .entity("Http error 500 response from ServiceNow stub.")
+          .build();
+    }
+  }
 }

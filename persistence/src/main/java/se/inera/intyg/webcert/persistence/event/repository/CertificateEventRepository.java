@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,14 +26,15 @@ import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 
 public interface CertificateEventRepository extends JpaRepository<CertificateEvent, Long> {
 
-    List<CertificateEvent> findByCertificateId(String certificateId);
+  List<CertificateEvent> findByCertificateId(String certificateId);
 
-    @Query("select ce from CertificateEvent ce where ce.certificateId in :certificateIds")
-    List<CertificateEvent> getCertificateEventsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+  @Query("select ce from CertificateEvent ce where ce.certificateId in :certificateIds")
+  List<CertificateEvent> getCertificateEventsByCertificateIds(
+      @Param("certificateIds") List<String> certificateIds);
 
-    default int eraseCertificateEventsByCertificateIds(List<String> certificateIds) {
-        final var eventsProcessed = getCertificateEventsByCertificateIds(certificateIds);
-        deleteAll(eventsProcessed);
-        return eventsProcessed.size();
-    }
+  default int eraseCertificateEventsByCertificateIds(List<String> certificateIds) {
+    final var eventsProcessed = getCertificateEventsByCertificateIds(certificateIds);
+    deleteAll(eventsProcessed);
+    return eventsProcessed.size();
+  }
 }

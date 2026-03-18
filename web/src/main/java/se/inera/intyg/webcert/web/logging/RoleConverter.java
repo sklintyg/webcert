@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,28 +27,27 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class RoleConverter extends ClassicConverter {
 
-    private static final String NO_ROLE = "NO ROLE";
+  private static final String NO_ROLE = "NO ROLE";
 
-    @Override
-    public String convert(ILoggingEvent event) {
+  @Override
+  public String convert(ILoggingEvent event) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null) {
-            return NO_ROLE;
-        }
-
-        Object principal = auth.getPrincipal();
-
-        if (principal instanceof WebCertUser) {
-            WebCertUser user = (WebCertUser) auth.getPrincipal();
-            Set<String> keys = user.getRoles().keySet();
-            if (keys.size() == 1) {
-                return keys.toArray(new String[0])[0];
-            }
-        }
-
-        return NO_ROLE;
+    if (auth == null) {
+      return NO_ROLE;
     }
 
+    Object principal = auth.getPrincipal();
+
+    if (principal instanceof WebCertUser) {
+      WebCertUser user = (WebCertUser) auth.getPrincipal();
+      Set<String> keys = user.getRoles().keySet();
+      if (keys.size() == 1) {
+        return keys.toArray(new String[0])[0];
+      }
+    }
+
+    return NO_ROLE;
+  }
 }

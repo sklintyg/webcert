@@ -27,22 +27,17 @@ import lombok.Value;
 @Builder
 public class CertificateAnalyticsMessage implements Serializable {
 
-    /**
-     * Unique identifier for the message.
-     */
-    String messageId = UUID.randomUUID().toString();
-    /**
-     * Type of the message, used for routing and processing.
-     */
-    String type = "certificate.analytics.event";
-    /**
-     * Version of the message schema.
-     */
-    String schemaVersion = "v1";
+  /** Unique identifier for the message. */
+  String messageId = UUID.randomUUID().toString();
 
-    AnalyticsCertificate certificate;
-    AnalyticsEvent event;
-    AnalyticsRecipient recipient;
-    AnalyticsMessage message;
+  /** Type of the message, used for routing and processing. */
+  String type = "certificate.analytics.event";
 
+  /** Version of the message schema. */
+  String schemaVersion = "v1";
+
+  AnalyticsCertificate certificate;
+  AnalyticsEvent event;
+  AnalyticsRecipient recipient;
+  AnalyticsMessage message;
 }

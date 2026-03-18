@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,21 +26,23 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPoller;
 
 /**
  * Created by eriklupander on 2015-08-25.
- * <p>
- * Uses applicationContext in singleton bean to produce instances of the prototype-scoped GrpCollectPoller.
+ *
+ * <p>Uses applicationContext in singleton bean to produce instances of the prototype-scoped
+ * GrpCollectPoller.
  */
 @Component
-public class GrpCollectPollerFactoryImpl implements GrpCollectPollerFactory, ApplicationContextAware {
+public class GrpCollectPollerFactoryImpl
+    implements GrpCollectPollerFactory, ApplicationContextAware {
 
-    private ApplicationContext applicationContext;
+  private ApplicationContext applicationContext;
 
-    @Override
-    public GrpCollectPoller getInstance() {
-        return applicationContext.getBean("grpCollectPoller", GrpCollectPoller.class);
-    }
+  @Override
+  public GrpCollectPoller getInstance() {
+    return applicationContext.getBean("grpCollectPoller", GrpCollectPoller.class);
+  }
 
-    @Override
-    public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
+  @Override
+  public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+  }
 }

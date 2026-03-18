@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -55,174 +55,177 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 
-/**
- * Controller that logs messages from JavaScript to the normal log.
- */
+/** Controller that logs messages from JavaScript to the normal log. */
 @Path("/jslog")
 @Api(value = "jslog", produces = MediaType.APPLICATION_JSON)
 public class JsLogApiController extends AbstractApiController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);
 
-    @Autowired
-    private MonitoringLogService monitoringService;
+  @Autowired private MonitoringLogService monitoringService;
 
-    @Autowired
-    private UserAgentParser userAgentParser;
+  @Autowired private UserAgentParser userAgentParser;
 
-    @POST
-    @Path("/debug")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "js-log-debug", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response debug(String message) {
-        LOG.debug(message);
-        return ok().build();
+  @POST
+  @Path("/debug")
+  @PrometheusTimeMethod
+  @PerformanceLogging(eventAction = "js-log-debug", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response debug(String message) {
+    LOG.debug(message);
+    return ok().build();
+  }
+
+  @POST
+  @Path("/monitoring")
+  @Consumes(APPLICATION_JSON)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "js-log-monitoring",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response monitoring(
+      MonitoringRequest request, @HeaderParam(HttpHeaders.USER_AGENT) String userAgent) {
+    if (request == null || !request.isValid()) {
+      return status(BAD_REQUEST).build();
     }
 
-    @POST
-    @Path("/monitoring")
-    @Consumes(APPLICATION_JSON)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "js-log-monitoring", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response monitoring(MonitoringRequest request, @HeaderParam(HttpHeaders.USER_AGENT) String userAgent) {
-        if (request == null || !request.isValid()) {
-            return status(BAD_REQUEST).build();
-        }
+    switch (request.getEvent()) {
+      case BROWSER_INFO:
+        final UserAgentInfo userAgentInfo = userAgentParser.parse(userAgent);
+        monitoringService.logBrowserInfo(
+            userAgentInfo.getBrowserName(),
+            userAgentInfo.getBrowserVersion(),
+            userAgentInfo.getOsFamily(),
+            userAgentInfo.getOsVersion(),
+            request.getInfo().get(WIDTH),
+            request.getInfo().get(HEIGHT),
+            request.getInfo().get(NET_ID_VERSION));
+        break;
+      case DIAGNOSKODVERK_CHANGED:
+        monitoringService.logDiagnoskodverkChanged(
+            request.getInfo().get(INTYG_ID), request.getInfo().get(INTYG_TYPE));
+        break;
+      case SIGNING_FAILED:
+        monitoringService.logUtkastSignFailed(
+            request.getInfo().get(ERROR_MESSAGE), request.getInfo().get(INTYG_ID));
+        break;
+      case IDP_CONNECTIVITY_CHECK:
+        monitoringService.logIdpConnectivityCheck(
+            request.getInfo().get(IP), request.getInfo().get(CONNECTIVITY));
+        break;
+      default:
+        return status(BAD_REQUEST).build();
+    }
+    return ok().build();
+  }
 
-        switch (request.getEvent()) {
-            case BROWSER_INFO:
-                final UserAgentInfo userAgentInfo = userAgentParser.parse(userAgent);
-                monitoringService
-                    .logBrowserInfo(userAgentInfo.getBrowserName(),
-                        userAgentInfo.getBrowserVersion(),
-                        userAgentInfo.getOsFamily(),
-                        userAgentInfo.getOsVersion(),
-                        request.getInfo().get(WIDTH),
-                        request.getInfo().get(HEIGHT),
-                        request.getInfo().get(NET_ID_VERSION));
-                break;
-            case DIAGNOSKODVERK_CHANGED:
-                monitoringService.logDiagnoskodverkChanged(request.getInfo().get(INTYG_ID), request.getInfo().get(INTYG_TYPE));
-                break;
-            case SIGNING_FAILED:
-                monitoringService.logUtkastSignFailed(request.getInfo().get(ERROR_MESSAGE), request.getInfo().get(INTYG_ID));
-                break;
-            case IDP_CONNECTIVITY_CHECK:
-                monitoringService.logIdpConnectivityCheck(request.getInfo().get(IP), request.getInfo().get(CONNECTIVITY));
-                break;
-            default:
-                return status(BAD_REQUEST).build();
-        }
-        return ok().build();
+  @POST
+  @Path("/srs")
+  @Consumes(APPLICATION_JSON)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "js-log-srs-monitoring",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response srsMonitoring(MonitoringRequest request) {
+    if (request == null || !request.isValid()) {
+      return status(BAD_REQUEST).build();
+    }
+    switch (request.getEvent()) {
+      case SRS_LOADED:
+        monitoringService.logSrsLoaded(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID),
+            request.getInfo().get(MAIN_DIAGNOSIS_CODE));
+        break;
+      case SRS_PANEL_ACTIVATED:
+        monitoringService.logSrsPanelActivated(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_CONSENT_ANSWERED:
+        monitoringService.logSrsConsentAnswered(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_QUESTION_ANSWERED:
+        monitoringService.logSrsQuestionAnswered(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_CALCULATE_CLICKED:
+        monitoringService.logSrsCalculateClicked(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_HIDE_QUESTIONS_CLICKED:
+        monitoringService.logSrsHideQuestionsClicked(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_SHOW_QUESTIONS_CLICKED:
+        monitoringService.logSrsShowQuestionsClicked(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_MEASURES_SHOW_MORE_CLICKED:
+        monitoringService.logSrsMeasuresShowMoreClicked(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_MEASURES_EXPAND_ONE_CLICKED:
+        monitoringService.logSrsMeasuresExpandOneClicked(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_MEASURES_LINK_CLICKED:
+        monitoringService.logSrsMeasuresLinkClicked(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_STATISTICS_ACTIVATED:
+        monitoringService.logSrsStatisticsActivated(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_STATISTICS_LINK_CLICKED:
+        monitoringService.logSrsStatisticsLinkClicked(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      case SRS_MEASURES_DISPLAYED:
+        monitoringService.logSrsMeasuresDisplayed(
+            request.getInfo().get(USER_CLIENT_CONTEXT),
+            request.getInfo().get(INTYG_ID),
+            request.getInfo().get(CAREGIVER_ID),
+            request.getInfo().get(CARE_UNIT_ID));
+        break;
+      default:
+        return status(BAD_REQUEST).build();
     }
 
-    @POST
-    @Path("/srs")
-    @Consumes(APPLICATION_JSON)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "js-log-srs-monitoring", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response srsMonitoring(MonitoringRequest request) {
-        if (request == null || !request.isValid()) {
-            return status(BAD_REQUEST).build();
-        }
-        switch (request.getEvent()) {
-            case SRS_LOADED:
-                monitoringService.logSrsLoaded(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID),
-                    request.getInfo().get(MAIN_DIAGNOSIS_CODE));
-                break;
-            case SRS_PANEL_ACTIVATED:
-                monitoringService.logSrsPanelActivated(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_CONSENT_ANSWERED:
-                monitoringService.logSrsConsentAnswered(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_QUESTION_ANSWERED:
-                monitoringService.logSrsQuestionAnswered(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_CALCULATE_CLICKED:
-                monitoringService.logSrsCalculateClicked(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_HIDE_QUESTIONS_CLICKED:
-                monitoringService.logSrsHideQuestionsClicked(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_SHOW_QUESTIONS_CLICKED:
-                monitoringService.logSrsShowQuestionsClicked(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_MEASURES_SHOW_MORE_CLICKED:
-                monitoringService.logSrsMeasuresShowMoreClicked(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_MEASURES_EXPAND_ONE_CLICKED:
-                monitoringService.logSrsMeasuresExpandOneClicked(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_MEASURES_LINK_CLICKED:
-                monitoringService.logSrsMeasuresLinkClicked(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_STATISTICS_ACTIVATED:
-                monitoringService.logSrsStatisticsActivated(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_STATISTICS_LINK_CLICKED:
-                monitoringService.logSrsStatisticsLinkClicked(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            case SRS_MEASURES_DISPLAYED:
-                monitoringService.logSrsMeasuresDisplayed(
-                    request.getInfo().get(USER_CLIENT_CONTEXT),
-                    request.getInfo().get(INTYG_ID),
-                    request.getInfo().get(CAREGIVER_ID),
-                    request.getInfo().get(CARE_UNIT_ID));
-                break;
-            default:
-                return status(BAD_REQUEST).build();
-        }
-
-        return ok().build();
-    }
-
+    return ok().build();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -52,157 +52,165 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.SimpleArende;
 @Path("/arendetest")
 public class ArendeResource {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
 
-    private TransactionTemplate transactionTemplate;
+  private TransactionTemplate transactionTemplate;
 
-    @Autowired
-    public void setTxManager(PlatformTransactionManager transactionManager) {
-        this.transactionTemplate = new TransactionTemplate(transactionManager);
-    }
+  @Autowired
+  public void setTxManager(PlatformTransactionManager transactionManager) {
+    this.transactionTemplate = new TransactionTemplate(transactionManager);
+  }
 
-    @Autowired
-    private ArendeRepository arendeRepository;
+  @Autowired private ArendeRepository arendeRepository;
 
-    @Autowired
-    private ArendeDraftRepository arendeDraftRepository;
+  @Autowired private ArendeDraftRepository arendeDraftRepository;
 
-    @GET
-    @Path("/intyg/{intygsId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getStalldaFragor(@PathParam("intygsId") String intygsId) {
-        List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
-        return Response.ok(byIntygsId.stream()
+  @GET
+  @Path("/intyg/{intygsId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getStalldaFragor(@PathParam("intygsId") String intygsId) {
+    List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
+    return Response.ok(
+            byIntygsId.stream()
                 .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
                 .map(a -> a.getMeddelandeId())
                 .collect(Collectors.toList()))
-            .build();
-    }
+        .build();
+  }
 
-    /**
-     * Returnerar ärenden på givet intygsId i status PENDING_INTERNAL_ACTION.
-     *
-     * Används av ärendeverktyget för att ge förslag på möjliga ärenden att skicka in en påminnelse för.
-     */
-    @GET
-    @Path("/intyg/{intygsId}/internal")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getVantarPaSvarFranOss(@PathParam("intygsId") String intygsId) {
-        List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
-        return Response.ok(byIntygsId.stream()
+  /**
+   * Returnerar ärenden på givet intygsId i status PENDING_INTERNAL_ACTION.
+   *
+   * <p>Används av ärendeverktyget för att ge förslag på möjliga ärenden att skicka in en påminnelse
+   * för.
+   */
+  @GET
+  @Path("/intyg/{intygsId}/internal")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getVantarPaSvarFranOss(@PathParam("intygsId") String intygsId) {
+    List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
+    return Response.ok(
+            byIntygsId.stream()
                 .filter(a -> a.getStatus() == Status.PENDING_INTERNAL_ACTION)
                 .map(a -> new SimpleArende(a.getMeddelandeId(), a.getRubrik()))
                 .collect(Collectors.toList()))
-            .build();
-    }
+        .build();
+  }
 
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Arende getArende(@PathParam("id") Long id) {
-        return arendeRepository.findById(id).orElse(null);
-    }
+  @GET
+  @Path("/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Arende getArende(@PathParam("id") Long id) {
+    return arendeRepository.findById(id).orElse(null);
+  }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response insertQuestion(Arende arende) {
-        arende.setTimestamp(LocalDateTime.now());
-        arendeRepository.save(arende);
-        return Response.ok(arende).build();
-    }
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response insertQuestion(Arende arende) {
+    arende.setTimestamp(LocalDateTime.now());
+    arendeRepository.save(arende);
+    return Response.ok(arende).build();
+  }
 
-    @DELETE
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuestion(@PathParam("id") String meddelandeId) {
-        Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
-        arendeRepository.delete(arende);
-        return Response.ok().build();
-    }
+  @DELETE
+  @Path("/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteQuestion(@PathParam("id") String meddelandeId) {
+    Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
+    arendeRepository.delete(arende);
+    return Response.ok().build();
+  }
 
-    @DELETE
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAllQuestions() {
-        return transactionTemplate.execute(new TransactionCallback<Response>() {
-            @Override
-            public Response doInTransaction(TransactionStatus status) {
-                @SuppressWarnings("unchecked")
-                List<Arende> arenden = entityManager.createQuery("SELECT f FROM Arende f").getResultList();
-                for (Arende arende : arenden) {
-                    entityManager.remove(arende);
-                }
-
-                ArendeAffectedResponse affected = new ArendeAffectedResponse(arenden.size());
-
-                return Response.ok(affected).build();
+  @DELETE
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteAllQuestions() {
+    return transactionTemplate.execute(
+        new TransactionCallback<Response>() {
+          @Override
+          public Response doInTransaction(TransactionStatus status) {
+            @SuppressWarnings("unchecked")
+            List<Arende> arenden =
+                entityManager.createQuery("SELECT f FROM Arende f").getResultList();
+            for (Arende arende : arenden) {
+              entityManager.remove(arende);
             }
-        });
-    }
 
-    @DELETE
-    @Path("/enhet/{enhetsId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAllQuestionsOnUnit(@PathParam("enhetsId") String enhetsId) {
-        return transactionTemplate.execute(new TransactionCallback<Response>() {
-            @Override
-            public Response doInTransaction(TransactionStatus status) {
-                @SuppressWarnings("unchecked")
-                List<Arende> arenden = entityManager.createQuery("SELECT f FROM Arende f WHERE f.enhetId = :enhetId")
+            ArendeAffectedResponse affected = new ArendeAffectedResponse(arenden.size());
+
+            return Response.ok(affected).build();
+          }
+        });
+  }
+
+  @DELETE
+  @Path("/enhet/{enhetsId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteAllQuestionsOnUnit(@PathParam("enhetsId") String enhetsId) {
+    return transactionTemplate.execute(
+        new TransactionCallback<Response>() {
+          @Override
+          public Response doInTransaction(TransactionStatus status) {
+            @SuppressWarnings("unchecked")
+            List<Arende> arenden =
+                entityManager
+                    .createQuery("SELECT f FROM Arende f WHERE f.enhetId = :enhetId")
                     .setParameter("enhetId", enhetsId)
                     .getResultList();
-                for (Arende arende : arenden) {
-                    entityManager.remove(arende);
-                }
-
-                ArendeAffectedResponse affected = new ArendeAffectedResponse(arenden.size());
-                return Response.ok(affected).build();
+            for (Arende arende : arenden) {
+              entityManager.remove(arende);
             }
+
+            ArendeAffectedResponse affected = new ArendeAffectedResponse(arenden.size());
+            return Response.ok(affected).build();
+          }
         });
-    }
+  }
 
-    @GET
-    @Path("/arendeCount")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Long getArendeCountForCertificateIds(List<String> certificateIds) {
-        final var arenden = (List<Arende>) arendeRepository.findAll();
-        return arenden.stream().filter(arende -> certificateIds.contains(arende.getIntygsId())).count();
-    }
+  @GET
+  @Path("/arendeCount")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Long getArendeCountForCertificateIds(List<String> certificateIds) {
+    final var arenden = (List<Arende>) arendeRepository.findAll();
+    return arenden.stream().filter(arende -> certificateIds.contains(arende.getIntygsId())).count();
+  }
 
-    @DELETE
-    @Path("/arende")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteArendenForCertificateIds(List<String> certificateIds) {
-        final var arenden = (List<Arende>) arendeRepository.findAll();
-        final var arendenForDeletion = arenden.stream()
+  @DELETE
+  @Path("/arende")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteArendenForCertificateIds(List<String> certificateIds) {
+    final var arenden = (List<Arende>) arendeRepository.findAll();
+    final var arendenForDeletion =
+        arenden.stream()
             .filter(arende -> certificateIds.contains(arende.getIntygsId()))
             .collect(Collectors.toList());
-        arendeRepository.deleteAll(arendenForDeletion);
+    arendeRepository.deleteAll(arendenForDeletion);
 
-        return Response.ok().build();
-    }
+    return Response.ok().build();
+  }
 
-    @GET
-    @Path("/arendeDraftCount")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Long getArendeDraftCountForCertificateIds(List<String> certificateIds) {
-        final var arendeDrafts = (List<ArendeDraft>) arendeDraftRepository.findAll();
-        return arendeDrafts.stream().filter(arendeDraft -> certificateIds.contains(arendeDraft.getIntygId())).count();
-    }
+  @GET
+  @Path("/arendeDraftCount")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Long getArendeDraftCountForCertificateIds(List<String> certificateIds) {
+    final var arendeDrafts = (List<ArendeDraft>) arendeDraftRepository.findAll();
+    return arendeDrafts.stream()
+        .filter(arendeDraft -> certificateIds.contains(arendeDraft.getIntygId()))
+        .count();
+  }
 
-    @DELETE
-    @Path("/arendeDraft")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteArendeDraftsForCertificateIds(List<String> certificateIds) {
-        final var arendeDrafts = (List<ArendeDraft>) arendeDraftRepository.findAll();
-        final var arendeList = arendeDrafts.stream()
+  @DELETE
+  @Path("/arendeDraft")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteArendeDraftsForCertificateIds(List<String> certificateIds) {
+    final var arendeDrafts = (List<ArendeDraft>) arendeDraftRepository.findAll();
+    final var arendeList =
+        arendeDrafts.stream()
             .filter(arendeDraft -> certificateIds.contains(arendeDraft.getIntygId()))
             .collect(Collectors.toList());
-        arendeDraftRepository.deleteAll(arendeList);
+    arendeDraftRepository.deleteAll(arendeList);
 
-        return Response.ok().build();
-    }
-
+    return Response.ok().build();
+  }
 }

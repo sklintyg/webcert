@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,17 +27,30 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
 public interface QuestionConverter {
 
-    Question convert(ArendeDraft arendeDraft);
+  Question convert(ArendeDraft arendeDraft);
 
-    Question convert(Arende arende);
+  Question convert(Arende arende);
 
-    Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate);
+  Question convert(
+      Arende arende, Complement[] complements, CertificateRelation answeredByCertificate);
 
-    Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate, List<Arende> reminders);
+  Question convert(
+      Arende arende,
+      Complement[] complements,
+      CertificateRelation answeredByCertificate,
+      List<Arende> reminders);
 
-    Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate, Arende answer,
-        List<Arende> reminders);
+  Question convert(
+      Arende arende,
+      Complement[] complements,
+      CertificateRelation answeredByCertificate,
+      Arende answer,
+      List<Arende> reminders);
 
-    Question convert(Arende arende, Complement[] complements, CertificateRelation answeredByCertificate, ArendeDraft answerDraft,
-        List<Arende> reminders);
+  Question convert(
+      Arende arende,
+      Complement[] complements,
+      CertificateRelation answeredByCertificate,
+      ArendeDraft answerDraft,
+      List<Arende> reminders);
 }

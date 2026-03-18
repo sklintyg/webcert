@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,43 +25,43 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
  */
 public class DiagnosParameter {
 
-    private String codeFragment;
-    private String codeSystem;
+  private String codeFragment;
+  private String codeSystem;
 
-    private String descriptionSearchString;
+  private String descriptionSearchString;
 
-    // This will by default return all matches
-    private int nbrOfResults = -1;
+  // This will by default return all matches
+  private int nbrOfResults = -1;
 
-    public String getCodeFragment() {
-        return codeFragment;
-    }
+  public String getCodeFragment() {
+    return codeFragment;
+  }
 
-    public void setCodeFragment(String codeFragment) {
-        this.codeFragment = codeFragment;
-    }
+  public void setCodeFragment(String codeFragment) {
+    this.codeFragment = codeFragment;
+  }
 
-    public String getCodeSystem() {
-        return codeSystem;
-    }
+  public String getCodeSystem() {
+    return codeSystem;
+  }
 
-    public void setCodeSystem(String codeSystem) {
-        this.codeSystem = codeSystem;
-    }
+  public void setCodeSystem(String codeSystem) {
+    this.codeSystem = codeSystem;
+  }
 
-    public String getDescriptionSearchString() {
-        return descriptionSearchString;
-    }
+  public String getDescriptionSearchString() {
+    return descriptionSearchString;
+  }
 
-    public void setDescriptionSearchString(String descriptionSearchString) {
-        this.descriptionSearchString = descriptionSearchString;
-    }
+  public void setDescriptionSearchString(String descriptionSearchString) {
+    this.descriptionSearchString = descriptionSearchString;
+  }
 
-    public int getNbrOfResults() {
-        return nbrOfResults;
-    }
+  public int getNbrOfResults() {
+    return nbrOfResults;
+  }
 
-    public void setNbrOfResults(int nbrOfResults) {
-        this.nbrOfResults = nbrOfResults;
-    }
+  public void setNbrOfResults(int nbrOfResults) {
+    this.nbrOfResults = nbrOfResults;
+  }
 }

@@ -1,5 +1,22 @@
+/*
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.facade.user;
-
 
 import java.util.Collections;
 import java.util.List;
@@ -20,55 +37,54 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class CalculateQuestionsForUnitService {
 
-    private final AuthoritiesHelper authoritiesHelper;
-    private final ArendeService arendeService;
-    private final CertificateServiceStatisticService certificateServiceStatisticService;
+  private final AuthoritiesHelper authoritiesHelper;
+  private final ArendeService arendeService;
+  private final CertificateServiceStatisticService certificateServiceStatisticService;
 
-    public UserStatisticsDTO calculate(WebCertUser user, List<SelectableVardenhet> units) {
-        final var unitIds = units.stream()
-            .map(SelectableVardenhet::getId)
-            .toList();
+  public UserStatisticsDTO calculate(WebCertUser user, List<SelectableVardenhet> units) {
+    final var unitIds = units.stream().map(SelectableVardenhet::getId).toList();
 
-        final var statistics = new UserStatisticsDTO();
-        final var certificateTypes = getCertificateTypesAllowedForUser(user);
-        final var questionsMap = arendeService.getNbrOfUnhandledArendenForCareUnits(unitIds, certificateTypes);
+    final var statistics = new UserStatisticsDTO();
+    final var certificateTypes = getCertificateTypesAllowedForUser(user);
+    final var questionsMap =
+        arendeService.getNbrOfUnhandledArendenForCareUnits(unitIds, certificateTypes);
 
-        for (SelectableVardenhet unit : units) {
-            final var subUnitIds = getSubUnits(unit);
-            final var unitId = unit.getId();
+    for (SelectableVardenhet unit : units) {
+      final var subUnitIds = getSubUnits(unit);
+      final var unitId = unit.getId();
 
-            final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionsMap);
-            final var questionsOnUnit = getFromMap(unitId, questionsMap);
-            statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(0L, questionsOnUnit, 0L, questionsOnSubUnits));
-        }
-
-        certificateServiceStatisticService.add(statistics, unitIds, user, false);
-        return statistics;
+      final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionsMap);
+      final var questionsOnUnit = getFromMap(unitId, questionsMap);
+      statistics.addUnitStatistics(
+          unitId, new UnitStatisticsDTO(0L, questionsOnUnit, 0L, questionsOnSubUnits));
     }
 
-    private List<String> getSubUnits(SelectableVardenhet unit) {
-        if (unit instanceof Vardenhet careUnit) {
-            return careUnit.getMottagningar().stream()
-                .map(Mottagning::getId)
-                .toList();
-        }
+    certificateServiceStatisticService.add(statistics, unitIds, user, false);
+    return statistics;
+  }
 
-        return Collections.emptyList();
+  private List<String> getSubUnits(SelectableVardenhet unit) {
+    if (unit instanceof Vardenhet careUnit) {
+      return careUnit.getMottagningar().stream().map(Mottagning::getId).toList();
     }
 
-    private long sumStatisticsForUnits(Iterable<String> unitIds, Map<String, Long> statistics) {
-        long sum = 0;
-        for (String unitId : unitIds) {
-            sum += getFromMap(unitId, statistics);
-        }
-        return sum;
-    }
+    return Collections.emptyList();
+  }
 
-    private long getFromMap(String id, Map<String, Long> statistics) {
-        return statistics.getOrDefault(id, 0L);
+  private long sumStatisticsForUnits(Iterable<String> unitIds, Map<String, Long> statistics) {
+    long sum = 0;
+    for (String unitId : unitIds) {
+      sum += getFromMap(unitId, statistics);
     }
+    return sum;
+  }
 
-    private Set<String> getCertificateTypesAllowedForUser(WebCertUser user) {
-        return authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-    }
+  private long getFromMap(String id, Map<String, Long> statistics) {
+    return statistics.getOrDefault(id, 0L);
+  }
+
+  private Set<String> getCertificateTypesAllowedForUser(WebCertUser user) {
+    return authoritiesHelper.getIntygstyperForPrivilege(
+        user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+  }
 }

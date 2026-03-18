@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,24 +35,23 @@ import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFa
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromTemplateAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String NEW_CERTIFICATE_ID_FROM_WC = "newCertificateIdFromWC";
-    private static final String NEW_CERTIFICATE_ID_FROM_CS = "newCertificateIdFromCS";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String NEW_CERTIFICATE_ID_FROM_WC = "newCertificateIdFromWC";
+  private static final String NEW_CERTIFICATE_ID_FROM_CS = "newCertificateIdFromCS";
 
-    CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC;
-    CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS;
-    CreateCertificateFromTemplateFacadeService aggregator;
+  CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC;
+  CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS;
+  CreateCertificateFromTemplateFacadeService aggregator;
 
-    @BeforeEach
-    void setUp() {
-        createCertificateFromTemplateFromWC = mock(CreateCertificateFromTemplateFacadeService.class);
-        createCertificateFromTemplateFromCS = mock(CreateCertificateFromTemplateFacadeService.class);
+  @BeforeEach
+  void setUp() {
+    createCertificateFromTemplateFromWC = mock(CreateCertificateFromTemplateFacadeService.class);
+    createCertificateFromTemplateFromCS = mock(CreateCertificateFromTemplateFacadeService.class);
 
-        aggregator = new CreateCertificateFromTemplateAggregator(
-            createCertificateFromTemplateFromWC,
-            createCertificateFromTemplateFromCS
-        );
-    }
+    aggregator =
+        new CreateCertificateFromTemplateAggregator(
+            createCertificateFromTemplateFromWC, createCertificateFromTemplateFromCS);
+  }
 
   @Test
   void shouldReturnCertificateIdFromCSIfCSReturnsResponse() {
@@ -62,36 +60,41 @@ class CreateCertificateFromTemplateAggregatorTest {
 
     final var result = aggregator.createCertificateFromTemplate(CERTIFICATE_ID);
 
-    verify(createCertificateFromTemplateFromCS, times(1)).createCertificateFromTemplate(CERTIFICATE_ID);
+    verify(createCertificateFromTemplateFromCS, times(1))
+        .createCertificateFromTemplate(CERTIFICATE_ID);
     verifyNoInteractions(createCertificateFromTemplateFromWC);
     assertEquals(NEW_CERTIFICATE_ID_FROM_CS, result);
   }
 
-    @Test
-    void shouldReturnCertificateIdFromWCIfCSReturnsNull() {
-        when(createCertificateFromTemplateFromCS.createCertificateFromTemplate(CERTIFICATE_ID))
-            .thenReturn(null);
-        when(createCertificateFromTemplateFromWC.createCertificateFromTemplate(CERTIFICATE_ID))
-            .thenReturn(NEW_CERTIFICATE_ID_FROM_WC);
+  @Test
+  void shouldReturnCertificateIdFromWCIfCSReturnsNull() {
+    when(createCertificateFromTemplateFromCS.createCertificateFromTemplate(CERTIFICATE_ID))
+        .thenReturn(null);
+    when(createCertificateFromTemplateFromWC.createCertificateFromTemplate(CERTIFICATE_ID))
+        .thenReturn(NEW_CERTIFICATE_ID_FROM_WC);
 
-        final var result = aggregator.createCertificateFromTemplate(CERTIFICATE_ID);
+    final var result = aggregator.createCertificateFromTemplate(CERTIFICATE_ID);
 
-        verify(createCertificateFromTemplateFromCS, times(1)).createCertificateFromTemplate(CERTIFICATE_ID);
-        verify(createCertificateFromTemplateFromWC, times(1)).createCertificateFromTemplate(CERTIFICATE_ID);
-        assertEquals(NEW_CERTIFICATE_ID_FROM_WC, result);
-    }
+    verify(createCertificateFromTemplateFromCS, times(1))
+        .createCertificateFromTemplate(CERTIFICATE_ID);
+    verify(createCertificateFromTemplateFromWC, times(1))
+        .createCertificateFromTemplate(CERTIFICATE_ID);
+    assertEquals(NEW_CERTIFICATE_ID_FROM_WC, result);
+  }
 
-    @Test
-    void shouldReturnNullAndBothCSAndWCReturnNull() {
-        when(createCertificateFromTemplateFromCS.createCertificateFromTemplate(CERTIFICATE_ID))
-            .thenReturn(null);
-        when(createCertificateFromTemplateFromWC.createCertificateFromTemplate(CERTIFICATE_ID))
-            .thenReturn(null);
+  @Test
+  void shouldReturnNullAndBothCSAndWCReturnNull() {
+    when(createCertificateFromTemplateFromCS.createCertificateFromTemplate(CERTIFICATE_ID))
+        .thenReturn(null);
+    when(createCertificateFromTemplateFromWC.createCertificateFromTemplate(CERTIFICATE_ID))
+        .thenReturn(null);
 
-        final var result = aggregator.createCertificateFromTemplate(CERTIFICATE_ID);
+    final var result = aggregator.createCertificateFromTemplate(CERTIFICATE_ID);
 
-        verify(createCertificateFromTemplateFromCS, times(1)).createCertificateFromTemplate(CERTIFICATE_ID);
-        verify(createCertificateFromTemplateFromWC, times(1)).createCertificateFromTemplate(CERTIFICATE_ID);
-      assertNull(result);
-    }
+    verify(createCertificateFromTemplateFromCS, times(1))
+        .createCertificateFromTemplate(CERTIFICATE_ID);
+    verify(createCertificateFromTemplateFromWC, times(1))
+        .createCertificateFromTemplate(CERTIFICATE_ID);
+    assertNull(result);
+  }
 }

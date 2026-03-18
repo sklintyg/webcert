@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.ANSWER;
@@ -50,86 +49,90 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @RequiredArgsConstructor
 public class ListCertificateQuestionsFromCS {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final WebCertUserService webCertUserService;
-    private final QuestionStatusFilter questionStatusFilter;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final WebCertUserService webCertUserService;
+  private final QuestionStatusFilter questionStatusFilter;
 
-    public QueryFragaSvarResponse list(QueryFragaSvarParameter queryFragaSvarParameter) {
-        final var listFromCS = csIntegrationService.listQuestionsForUnit(
-            csIntegrationRequestFactory.getUnitQuestionsRequestDTO(convertFilter(queryFragaSvarParameter)));
+  public QueryFragaSvarResponse list(QueryFragaSvarParameter queryFragaSvarParameter) {
+    final var listFromCS =
+        csIntegrationService.listQuestionsForUnit(
+            csIntegrationRequestFactory.getUnitQuestionsRequestDTO(
+                convertFilter(queryFragaSvarParameter)));
 
-        final var filteredList = listFromCS.stream()
-            .filter(question -> questionStatusFilter.validate(question, convertStatus(queryFragaSvarParameter)))
+    final var filteredList =
+        listFromCS.stream()
+            .filter(
+                question ->
+                    questionStatusFilter.validate(question, convertStatus(queryFragaSvarParameter)))
             .collect(Collectors.toList());
 
-        return QueryFragaSvarResponse.builder()
-            .results(
-                filteredList
-            )
-            .totalCount(filteredList.size())
-            .build();
-    }
+    return QueryFragaSvarResponse.builder()
+        .results(filteredList)
+        .totalCount(filteredList.size())
+        .build();
+  }
 
-    private MessageQueryCriteriaDTO convertFilter(QueryFragaSvarParameter queryFragaSvarParameter) {
-        final var userUnits = webCertUserService.getUser().getIdsOfSelectedVardenhet();
-        return MessageQueryCriteriaDTO.builder()
-            .issuedByStaffId(
-                queryFragaSvarParameter.getHsaId() != null && !queryFragaSvarParameter.getHsaId().isEmpty()
-                    ? queryFragaSvarParameter.getHsaId()
-                    : null
-            )
-            .forwarded(queryFragaSvarParameter.getVidarebefordrad())
-            .sentDateFrom(queryFragaSvarParameter.getChangedFrom())
-            .sentDateTo(queryFragaSvarParameter.getChangedTo())
-            .issuedOnUnitIds(queryFragaSvarParameter.getEnhetId() != null
-                && !queryFragaSvarParameter.getEnhetId().isEmpty()
+  private MessageQueryCriteriaDTO convertFilter(QueryFragaSvarParameter queryFragaSvarParameter) {
+    final var userUnits = webCertUserService.getUser().getIdsOfSelectedVardenhet();
+    return MessageQueryCriteriaDTO.builder()
+        .issuedByStaffId(
+            queryFragaSvarParameter.getHsaId() != null
+                    && !queryFragaSvarParameter.getHsaId().isEmpty()
+                ? queryFragaSvarParameter.getHsaId()
+                : null)
+        .forwarded(queryFragaSvarParameter.getVidarebefordrad())
+        .sentDateFrom(queryFragaSvarParameter.getChangedFrom())
+        .sentDateTo(queryFragaSvarParameter.getChangedTo())
+        .issuedOnUnitIds(
+            queryFragaSvarParameter.getEnhetId() != null
+                    && !queryFragaSvarParameter.getEnhetId().isEmpty()
                 ? List.of(queryFragaSvarParameter.getEnhetId())
-                : userUnits
-            )
-            .patientId(convertPersonId(queryFragaSvarParameter.getPatientPersonId()))
-            .senderType(convertSenderType(queryFragaSvarParameter))
-            .build();
-    }
+                : userUnits)
+        .patientId(convertPersonId(queryFragaSvarParameter.getPatientPersonId()))
+        .senderType(convertSenderType(queryFragaSvarParameter))
+        .build();
+  }
 
-    private QuestionSenderType convertSenderType(QueryFragaSvarParameter queryFragaSvarParameter) {
-        if (Boolean.FALSE.equals(queryFragaSvarParameter.getQuestionFromFK()) && Boolean.FALSE.equals(
-            queryFragaSvarParameter.getQuestionFromWC())) {
-            return QuestionSenderType.SHOW_ALL;
-        }
-        return Boolean.TRUE.equals(queryFragaSvarParameter.getQuestionFromWC()) ? QuestionSenderType.WC : QuestionSenderType.FK;
+  private QuestionSenderType convertSenderType(QueryFragaSvarParameter queryFragaSvarParameter) {
+    if (Boolean.FALSE.equals(queryFragaSvarParameter.getQuestionFromFK())
+        && Boolean.FALSE.equals(queryFragaSvarParameter.getQuestionFromWC())) {
+      return QuestionSenderType.SHOW_ALL;
     }
+    return Boolean.TRUE.equals(queryFragaSvarParameter.getQuestionFromWC())
+        ? QuestionSenderType.WC
+        : QuestionSenderType.FK;
+  }
 
-    private QuestionStatusType convertStatus(QueryFragaSvarParameter queryFragaSvarParameter) {
-        if (queryFragaSvarParameter.getVantarPa() == null) {
-            return SHOW_ALL;
-        }
-        return switch (queryFragaSvarParameter.getVantarPa()) {
-            case "HANTERAD" -> HANDLED;
-            case "ALLA_OHANTERADE" -> NOT_HANDLED;
-            case "KOMPLETTERING_FRAN_VARDEN" -> COMPLEMENT;
-            case "SVAR_FRAN_VARDEN" -> ANSWER;
-            case "MARKERA_SOM_HANTERAD" -> READ_ANSWER;
-            case "SVAR_FRAN_FK" -> WAIT;
-            default -> SHOW_ALL;
-        };
+  private QuestionStatusType convertStatus(QueryFragaSvarParameter queryFragaSvarParameter) {
+    if (queryFragaSvarParameter.getVantarPa() == null) {
+      return SHOW_ALL;
     }
+    return switch (queryFragaSvarParameter.getVantarPa()) {
+      case "HANTERAD" -> HANDLED;
+      case "ALLA_OHANTERADE" -> NOT_HANDLED;
+      case "KOMPLETTERING_FRAN_VARDEN" -> COMPLEMENT;
+      case "SVAR_FRAN_VARDEN" -> ANSWER;
+      case "MARKERA_SOM_HANTERAD" -> READ_ANSWER;
+      case "SVAR_FRAN_FK" -> WAIT;
+      default -> SHOW_ALL;
+    };
+  }
 
-    private PersonIdDTO convertPersonId(String patientId) {
-        if (patientId == null || patientId.isEmpty()) {
-            return null;
-        }
-        final var personIdType =
-            isCoordinationNumber(Personnummer.createPersonnummer(patientId).orElseThrow()) ? PersonIdType.COORDINATION_NUMBER
-                : PersonIdType.PERSONAL_IDENTITY_NUMBER;
-        return patientId.isBlank() ? null
-            : PersonIdDTO.builder()
-                .id(patientId)
-                .type(personIdType)
-                .build();
+  private PersonIdDTO convertPersonId(String patientId) {
+    if (patientId == null || patientId.isEmpty()) {
+      return null;
     }
+    final var personIdType =
+        isCoordinationNumber(Personnummer.createPersonnummer(patientId).orElseThrow())
+            ? PersonIdType.COORDINATION_NUMBER
+            : PersonIdType.PERSONAL_IDENTITY_NUMBER;
+    return patientId.isBlank()
+        ? null
+        : PersonIdDTO.builder().id(patientId).type(personIdType).build();
+  }
 
-    private boolean isCoordinationNumber(Personnummer personId) {
-        return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
-    }
+  private boolean isCoordinationNumber(Personnummer personId) {
+    return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
+  }
 }

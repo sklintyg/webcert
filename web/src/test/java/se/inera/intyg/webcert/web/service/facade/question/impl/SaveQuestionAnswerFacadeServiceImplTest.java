@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,52 +37,44 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeServi
 @ExtendWith(MockitoExtension.class)
 class SaveQuestionAnswerFacadeServiceImplTest {
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @Mock
-    private ArendeDraftService arendeDraftService;
+  @Mock private ArendeDraftService arendeDraftService;
 
-    @Mock
-    private GetQuestionFacadeService getQuestionFacadeService;
+  @Mock private GetQuestionFacadeService getQuestionFacadeService;
 
-    @InjectMocks
-    private SaveQuestionAnswerFacadeServiceImpl saveQuestionAnswerFacadeService;
+  @InjectMocks private SaveQuestionAnswerFacadeServiceImpl saveQuestionAnswerFacadeService;
 
-    private String certificateId;
-    private String questionId;
-    private String message;
+  private String certificateId;
+  private String questionId;
+  private String message;
 
-    @BeforeEach
-    void setUp() {
-        certificateId = "certificateId";
-        questionId = "questionId";
-        message = "Det här är ett svar";
+  @BeforeEach
+  void setUp() {
+    certificateId = "certificateId";
+    questionId = "questionId";
+    message = "Det här är ett svar";
 
-        final var arende = new Arende();
-        arende.setMeddelandeId(questionId);
-        arende.setIntygsId(certificateId);
+    final var arende = new Arende();
+    arende.setMeddelandeId(questionId);
+    arende.setIntygsId(certificateId);
 
-        doReturn(arende)
-            .when(arendeService)
-            .getArende(questionId);
+    doReturn(arende).when(arendeService).getArende(questionId);
 
-        doReturn(Question.builder().build())
-            .when(getQuestionFacadeService)
-            .get(questionId);
-    }
+    doReturn(Question.builder().build()).when(getQuestionFacadeService).get(questionId);
+  }
 
-    @Test
-    void shallReturnSavedAnswerForQuestion() {
-        final var actualQuestion = saveQuestionAnswerFacadeService.save(questionId, message);
+  @Test
+  void shallReturnSavedAnswerForQuestion() {
+    final var actualQuestion = saveQuestionAnswerFacadeService.save(questionId, message);
 
-        assertNotNull(actualQuestion, "Should return the question that we answered");
-    }
+    assertNotNull(actualQuestion, "Should return the question that we answered");
+  }
 
-    @Test
-    void shallSaveAnswerForQuestion() {
-        final var actualQuestion = saveQuestionAnswerFacadeService.save(questionId, message);
+  @Test
+  void shallSaveAnswerForQuestion() {
+    final var actualQuestion = saveQuestionAnswerFacadeService.save(questionId, message);
 
-        verify(arendeDraftService).saveDraft(certificateId, questionId, message, null);
-    }
+    verify(arendeDraftService).saveDraft(certificateId, questionId, message, null);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,18 +28,19 @@ import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
 @Component
 public class DefaultTypeAheadProvider implements TypeAheadProvider {
 
-    private final PostnummerService postnummerService;
+  private final PostnummerService postnummerService;
 
-    @Autowired
-    public DefaultTypeAheadProvider(PostnummerService postnummerService) {
-        this.postnummerService = postnummerService;
-    }
+  @Autowired
+  public DefaultTypeAheadProvider(PostnummerService postnummerService) {
+    this.postnummerService = postnummerService;
+  }
 
-    @Override
-    public List<String> getValues(TypeAheadEnum typeAheadEnum) {
-        if (typeAheadEnum == null) {
-            throw new IllegalArgumentException("TypeAheadEnum was null! Must specify what TypeAhead to get values for!");
-        }
-        return postnummerService.getKommunList();
+  @Override
+  public List<String> getValues(TypeAheadEnum typeAheadEnum) {
+    if (typeAheadEnum == null) {
+      throw new IllegalArgumentException(
+          "TypeAheadEnum was null! Must specify what TypeAhead to get values for!");
     }
+    return postnummerService.getKommunList();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -68,197 +68,200 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 @ExtendWith(MockitoExtension.class)
 class GetCertificateFacadeServiceImplTest {
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @Mock
-    private UtkastToCertificateConverter utkastToCertificateConverter;
+  @Mock private UtkastToCertificateConverter utkastToCertificateConverter;
 
-    @Mock
-    private IntygToCertificateConverter intygToCertificateConverter;
+  @Mock private IntygToCertificateConverter intygToCertificateConverter;
 
-    @Mock
-    private DraftAccessServiceHelper draftAccessServiceHelper;
+  @Mock private DraftAccessServiceHelper draftAccessServiceHelper;
 
-    @Mock
-    private ITIntegrationService itIntegrationService;
+  @Mock private ITIntegrationService itIntegrationService;
 
-    @Mock
-    private CertificateTextVersionFacadeService certificateTextVersionFacadeService;
+  @Mock private CertificateTextVersionFacadeService certificateTextVersionFacadeService;
 
-    @InjectMocks
-    private GetCertificateFacadeServiceImpl getCertificateService;
+  @InjectMocks private GetCertificateFacadeServiceImpl getCertificateService;
 
-    @Nested
-    class CertificateInWebcert {
+  @Nested
+  class CertificateInWebcert {
 
-        private final Utkast draft = createDraft();
-        private ArgumentCaptor<Utkast> utkastArgumentCaptor;
+    private final Utkast draft = createDraft();
+    private ArgumentCaptor<Utkast> utkastArgumentCaptor;
 
-        @BeforeEach
-        void setupMocks() {
-            doReturn(draft)
-                .when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
+    @BeforeEach
+    void setupMocks() {
+      doReturn(draft).when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
 
-            utkastArgumentCaptor = ArgumentCaptor.forClass(Utkast.class);
+      utkastArgumentCaptor = ArgumentCaptor.forClass(Utkast.class);
 
-            doReturn(createCertificate())
-                .when(utkastToCertificateConverter).convert(utkastArgumentCaptor.capture());
+      doReturn(createCertificate())
+          .when(utkastToCertificateConverter)
+          .convert(utkastArgumentCaptor.capture());
 
-            doReturn(draft).when(certificateTextVersionFacadeService).upgradeToLatestMinorTextVersion(draft);
-        }
+      doReturn(draft)
+          .when(certificateTextVersionFacadeService)
+          .upgradeToLatestMinorTextVersion(draft);
+    }
 
-        @Test
-        void shallReturnCertificate() {
-            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-            assertNotNull(certificate, "Certificate should not be null!");
-        }
+    @Test
+    void shallReturnCertificate() {
+      final var certificate =
+          getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+      assertNotNull(certificate, "Certificate should not be null!");
+    }
 
-        @Test
-        void shallCheckReadAccess() {
-            final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-            verify(draftAccessServiceHelper).validateAllowToReadUtkast(draft);
-            assertNotNull(certificate, "Certificate should not be null!");
-        }
-
-        @Nested
-        class SentFromMinaIntyg {
-
-            private ItIntygInfo itIntygInfo;
-
-            @BeforeEach
-            void setUp() {
-                draft.setStatus(UtkastStatus.SIGNED);
-                draft.setSkickadTillMottagareDatum(null);
-                draft.setSkickadTillMottagare(null);
-
-                itIntygInfo = new ItIntygInfo();
-
-                doReturn(itIntygInfo)
-                    .when(itIntegrationService)
-                    .getCertificateInfo(draft.getIntygsId());
-            }
-
-            @Test
-            void shallGetSentDateTimeFromITIfSentFromMinaIntyg() {
-                final var expectedSentDateTime = LocalDateTime.now();
-                itIntygInfo.setSentToRecipient(expectedSentDateTime);
-
-                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-
-                assertNotNull(certificate);
-                assertEquals(expectedSentDateTime, utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum());
-            }
-
-            @Test
-            void shallGetRecieverFromITIfSentFromMinaIntyg() {
-                final var expectedReceiver = "FKASSA";
-                itIntygInfo.setSentToRecipient(LocalDateTime.now());
-                final var intygInfoEvent = new IntygInfoEvent(Source.INTYGSTJANSTEN, LocalDateTime.now(), IntygInfoEventType.IS006);
-                intygInfoEvent.addData("intygsmottagare", expectedReceiver);
-                itIntygInfo.setEvents(List.of(intygInfoEvent));
-
-                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-
-                assertNotNull(certificate);
-                assertEquals(expectedReceiver, utkastArgumentCaptor.getValue().getSkickadTillMottagare());
-            }
-
-            @Test
-            void shallLeaveSentDateTimeAsNullIfNotSentFromMinaIntyg() {
-                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-
-                assertNotNull(certificate);
-                assertNull(utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum(), "Sent datetime should be null if not sent");
-            }
-
-            @Test
-            void shallLeaveSentToReceiverAsNullIfNotSentFromMinaIntyg() {
-                final var certificate = getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-
-                assertNotNull(certificate);
-                assertNull(utkastArgumentCaptor.getValue().getSkickadTillMottagare(), "Receiver should be null if not sent!");
-            }
-        }
-
-        @Test
-        void shallNotGetCertificateStatusFromITIfSent() {
-            draft.setStatus(UtkastStatus.SIGNED);
-            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-            verify(itIntegrationService, never())
-                .getCertificateInfo(draft.getIntygsId());
-        }
-
-        @Test
-        void shallNotGetCertificateStatusFromITIfDraftIncomplete() {
-            draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-            draft.setSkickadTillMottagareDatum(null);
-            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-            verify(itIntegrationService, never())
-                .getCertificateInfo(draft.getIntygsId());
-        }
-
-        @Test
-        void shallNotGetCertificateStatusFromITIfDraftComplete() {
-            draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
-            draft.setSkickadTillMottagareDatum(null);
-            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-            verify(itIntegrationService, never())
-                .getCertificateInfo(draft.getIntygsId());
-        }
-
-        @Test
-        void shallNotGetCertificateStatusFromITIfDraftLocked() {
-            draft.setStatus(UtkastStatus.DRAFT_LOCKED);
-            draft.setSkickadTillMottagareDatum(null);
-            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-            verify(itIntegrationService, never())
-                .getCertificateInfo(draft.getIntygsId());
-        }
-
-        @Nested
-        class ValidatePdlLogging {
-
-            @Test
-            void shallPdlLogIfRequired() {
-                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(draft.getIntygsId(), true, true);
-                verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
-                assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
-            }
-
-            @Test
-            void shallNotPdlLogIfRequired() {
-                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(draft.getIntygsId(), false, true);
-                verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
-                assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
-            }
-        }
-
-        private Utkast createDraft() {
-            final var draft = new Utkast();
-            draft.setIntygsId("certificateId");
-            draft.setIntygsTyp("certificateType");
-            draft.setIntygTypeVersion("certificateTypeVersion");
-            draft.setModel("draftJson");
-            draft.setStatus(UtkastStatus.SIGNED);
-            draft.setSkickadTillMottagareDatum(LocalDateTime.now());
-            draft.setSkapad(LocalDateTime.now());
-            draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
-            draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
-            return draft;
-        }
+    @Test
+    void shallCheckReadAccess() {
+      final var certificate =
+          getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+      verify(draftAccessServiceHelper).validateAllowToReadUtkast(draft);
+      assertNotNull(certificate, "Certificate should not be null!");
     }
 
     @Nested
-    class CertificateMissingInWebcert {
+    class SentFromMinaIntyg {
 
-        private static final String CERTIFICATE_ID = "certificateId";
-        private final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
+      private ItIntygInfo itIntygInfo;
+
+      @BeforeEach
+      void setUp() {
+        draft.setStatus(UtkastStatus.SIGNED);
+        draft.setSkickadTillMottagareDatum(null);
+        draft.setSkickadTillMottagare(null);
+
+        itIntygInfo = new ItIntygInfo();
+
+        doReturn(itIntygInfo).when(itIntegrationService).getCertificateInfo(draft.getIntygsId());
+      }
+
+      @Test
+      void shallGetSentDateTimeFromITIfSentFromMinaIntyg() {
+        final var expectedSentDateTime = LocalDateTime.now();
+        itIntygInfo.setSentToRecipient(expectedSentDateTime);
+
+        final var certificate =
+            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+
+        assertNotNull(certificate);
+        assertEquals(
+            expectedSentDateTime, utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum());
+      }
+
+      @Test
+      void shallGetRecieverFromITIfSentFromMinaIntyg() {
+        final var expectedReceiver = "FKASSA";
+        itIntygInfo.setSentToRecipient(LocalDateTime.now());
+        final var intygInfoEvent =
+            new IntygInfoEvent(
+                Source.INTYGSTJANSTEN, LocalDateTime.now(), IntygInfoEventType.IS006);
+        intygInfoEvent.addData("intygsmottagare", expectedReceiver);
+        itIntygInfo.setEvents(List.of(intygInfoEvent));
+
+        final var certificate =
+            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+
+        assertNotNull(certificate);
+        assertEquals(expectedReceiver, utkastArgumentCaptor.getValue().getSkickadTillMottagare());
+      }
+
+      @Test
+      void shallLeaveSentDateTimeAsNullIfNotSentFromMinaIntyg() {
+        final var certificate =
+            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+
+        assertNotNull(certificate);
+        assertNull(
+            utkastArgumentCaptor.getValue().getSkickadTillMottagareDatum(),
+            "Sent datetime should be null if not sent");
+      }
+
+      @Test
+      void shallLeaveSentToReceiverAsNullIfNotSentFromMinaIntyg() {
+        final var certificate =
+            getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+
+        assertNotNull(certificate);
+        assertNull(
+            utkastArgumentCaptor.getValue().getSkickadTillMottagare(),
+            "Receiver should be null if not sent!");
+      }
+    }
+
+    @Test
+    void shallNotGetCertificateStatusFromITIfSent() {
+      draft.setStatus(UtkastStatus.SIGNED);
+      getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+      verify(itIntegrationService, never()).getCertificateInfo(draft.getIntygsId());
+    }
+
+    @Test
+    void shallNotGetCertificateStatusFromITIfDraftIncomplete() {
+      draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+      draft.setSkickadTillMottagareDatum(null);
+      getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+      verify(itIntegrationService, never()).getCertificateInfo(draft.getIntygsId());
+    }
+
+    @Test
+    void shallNotGetCertificateStatusFromITIfDraftComplete() {
+      draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
+      draft.setSkickadTillMottagareDatum(null);
+      getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+      verify(itIntegrationService, never()).getCertificateInfo(draft.getIntygsId());
+    }
+
+    @Test
+    void shallNotGetCertificateStatusFromITIfDraftLocked() {
+      draft.setStatus(UtkastStatus.DRAFT_LOCKED);
+      draft.setSkickadTillMottagareDatum(null);
+      getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+      verify(itIntegrationService, never()).getCertificateInfo(draft.getIntygsId());
+    }
+
+    @Nested
+    class ValidatePdlLogging {
+
+      @Test
+      void shallPdlLogIfRequired() {
+        final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+        getCertificateService.getCertificate(draft.getIntygsId(), true, true);
+        verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
+        assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
+      }
+
+      @Test
+      void shallNotPdlLogIfRequired() {
+        final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+        getCertificateService.getCertificate(draft.getIntygsId(), false, true);
+        verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
+        assertFalse(
+            actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+      }
+    }
+
+    private Utkast createDraft() {
+      final var draft = new Utkast();
+      draft.setIntygsId("certificateId");
+      draft.setIntygsTyp("certificateType");
+      draft.setIntygTypeVersion("certificateTypeVersion");
+      draft.setModel("draftJson");
+      draft.setStatus(UtkastStatus.SIGNED);
+      draft.setSkickadTillMottagareDatum(LocalDateTime.now());
+      draft.setSkapad(LocalDateTime.now());
+      draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
+      draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
+      return draft;
+    }
+  }
+
+  @Nested
+  class CertificateMissingInWebcert {
+
+    private static final String CERTIFICATE_ID = "certificateId";
+    private final IntygContentHolder intygContentHolder =
+        IntygContentHolder.builder()
             .revoked(false)
             .deceased(false)
             .sekretessmarkering(false)
@@ -269,85 +272,94 @@ class GetCertificateFacadeServiceImplTest {
             .latestMajorTextVersion(true)
             .build();
 
-        @BeforeEach
-        void setupMocks() {
-            doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Missing in Webcert"))
-                .when(utkastService).getDraft(eq(CERTIFICATE_ID), anyBoolean());
+    @BeforeEach
+    void setupMocks() {
+      doThrow(
+              new WebCertServiceException(
+                  WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Missing in Webcert"))
+          .when(utkastService)
+          .getDraft(eq(CERTIFICATE_ID), anyBoolean());
 
-            doReturn(intygContentHolder)
-                .when(intygService).fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean(), anyBoolean());
+      doReturn(intygContentHolder)
+          .when(intygService)
+          .fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean(), anyBoolean());
 
-            doReturn(createCertificate())
-                .when(intygToCertificateConverter).convert(intygContentHolder);
-        }
-
-        @Test
-        void shallReturnCertificate() {
-            final var certificate = getCertificateService.getCertificate(CERTIFICATE_ID, false, true);
-            assertNotNull(certificate, "Certificate should not be null!");
-        }
-
-        @Nested
-        class ValidatePdlLogging {
-
-            @Test
-            void shallPdlLogIfRequired() {
-                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(CERTIFICATE_ID, true, true);
-                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
-                assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
-            }
-
-            @Test
-            void shallNotPdlLogIfRequired() {
-                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(CERTIFICATE_ID, false, true);
-                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
-                assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
-            }
-        }
-
-        @Nested
-        class ValidateAccess {
-
-            @Test
-            void shallValidateAccessIfRequired() {
-                final var actualValidateAccess = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(CERTIFICATE_ID, true, true);
-                verify(intygService).fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccess.capture());
-                assertTrue(actualValidateAccess.getValue(), "Expect true because validate access is required");
-            }
-
-            @Test
-            void shallNotValidateAccessWhenNotRequired() {
-                final var actualValidateAccess = ArgumentCaptor.forClass(Boolean.class);
-                getCertificateService.getCertificate(CERTIFICATE_ID, true, false);
-                verify(intygService).fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccess.capture());
-                assertFalse(actualValidateAccess.getValue(), "Expect false because no access validation is required");
-            }
-        }
+      doReturn(createCertificate()).when(intygToCertificateConverter).convert(intygContentHolder);
     }
 
-    private Certificate createCertificate() {
-        return CertificateBuilder.create()
-            .metadata(
-                CertificateMetadata.builder()
-                    .id("certificateId")
-                    .type("certificateType")
-                    .typeVersion("certificateTypeVersion")
-                    .unit(
-                        Unit.builder()
-                            .unitId("unitId")
-                            .unitName("unitName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
-                            .build()
-                    )
-                    .build()
-            )
-            .build();
+    @Test
+    void shallReturnCertificate() {
+      final var certificate = getCertificateService.getCertificate(CERTIFICATE_ID, false, true);
+      assertNotNull(certificate, "Certificate should not be null!");
     }
+
+    @Nested
+    class ValidatePdlLogging {
+
+      @Test
+      void shallPdlLogIfRequired() {
+        final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+        getCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+        verify(intygService)
+            .fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
+        assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
+      }
+
+      @Test
+      void shallNotPdlLogIfRequired() {
+        final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+        getCertificateService.getCertificate(CERTIFICATE_ID, false, true);
+        verify(intygService)
+            .fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
+        assertFalse(
+            actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+      }
+    }
+
+    @Nested
+    class ValidateAccess {
+
+      @Test
+      void shallValidateAccessIfRequired() {
+        final var actualValidateAccess = ArgumentCaptor.forClass(Boolean.class);
+        getCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+        verify(intygService)
+            .fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccess.capture());
+        assertTrue(
+            actualValidateAccess.getValue(), "Expect true because validate access is required");
+      }
+
+      @Test
+      void shallNotValidateAccessWhenNotRequired() {
+        final var actualValidateAccess = ArgumentCaptor.forClass(Boolean.class);
+        getCertificateService.getCertificate(CERTIFICATE_ID, true, false);
+        verify(intygService)
+            .fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccess.capture());
+        assertFalse(
+            actualValidateAccess.getValue(),
+            "Expect false because no access validation is required");
+      }
+    }
+  }
+
+  private Certificate createCertificate() {
+    return CertificateBuilder.create()
+        .metadata(
+            CertificateMetadata.builder()
+                .id("certificateId")
+                .type("certificateType")
+                .typeVersion("certificateTypeVersion")
+                .unit(
+                    Unit.builder()
+                        .unitId("unitId")
+                        .unitName("unitName")
+                        .address("address")
+                        .zipCode("zipCode")
+                        .city("city")
+                        .email("email")
+                        .phoneNumber("phoneNumber")
+                        .build())
+                .build())
+        .build();
+  }
 }

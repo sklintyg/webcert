@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,28 +26,27 @@ import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository
 @Service
 public class ReferensServiceImpl implements ReferensService {
 
-    @Autowired
-    ReferensRepository repo;
+  @Autowired ReferensRepository repo;
 
-    @Override
-    public void saveReferens(String intygsId, String referens) {
-        Referens ref = new Referens();
-        ref.setIntygsId(intygsId);
-        ref.setReferens(referens);
+  @Override
+  public void saveReferens(String intygsId, String referens) {
+    Referens ref = new Referens();
+    ref.setIntygsId(intygsId);
+    ref.setReferens(referens);
 
-        if (repo.findByIntygId(intygsId) == null) {
-            repo.save(ref);
-        }
+    if (repo.findByIntygId(intygsId) == null) {
+      repo.save(ref);
     }
+  }
 
-    @Override
-    public String getReferensForIntygsId(String intygsId) {
-        Referens referens = repo.findByIntygId(intygsId);
-        return referens != null ? referens.getReferens() : null;
-    }
+  @Override
+  public String getReferensForIntygsId(String intygsId) {
+    Referens referens = repo.findByIntygId(intygsId);
+    return referens != null ? referens.getReferens() : null;
+  }
 
-    @Override
-    public boolean referensExists(String intygsId) {
-        return repo.findByIntygId(intygsId) != null;
-    }
+  @Override
+  public boolean referensExists(String intygsId) {
+    return repo.findByIntygId(intygsId) != null;
+  }
 }

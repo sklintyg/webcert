@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.auth;
 
 import static org.mockito.Mockito.times;
@@ -35,32 +34,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class CustomXFrameOptionsHeaderWriterTest {
 
-    @Mock
-    private HttpServletRequest request;
-    @Mock
-    private HttpServletResponse response;
+  @Mock private HttpServletRequest request;
+  @Mock private HttpServletResponse response;
 
-    @InjectMocks
-    private CustomXFrameOptionsHeaderWriter customXFrameOptionsHeaderWriter;
+  @InjectMocks private CustomXFrameOptionsHeaderWriter customXFrameOptionsHeaderWriter;
 
-    private static final int ONE = 1;
-    private static final String DENY = "DENY";
-    private static final String XFRAME_OPTIONS_HEADER = "X-Frame-Options";
-    private static final String REQUEST_URI = "https://test.test/test";
-    private static final String REQUEST_URI_PDF_ENDPOINT = "https://test.test/pdf";
+  private static final int ONE = 1;
+  private static final String DENY = "DENY";
+  private static final String XFRAME_OPTIONS_HEADER = "X-Frame-Options";
+  private static final String REQUEST_URI = "https://test.test/test";
+  private static final String REQUEST_URI_PDF_ENDPOINT = "https://test.test/pdf";
 
-    @Test
-    void shouldAddHeaderForNonPdfEndpoint() {
-        when(request.getRequestURI()).thenReturn(REQUEST_URI);
-        customXFrameOptionsHeaderWriter.writeHeaders(request, response);
-        verify(response, times(ONE)).addHeader(XFRAME_OPTIONS_HEADER, DENY);
-    }
+  @Test
+  void shouldAddHeaderForNonPdfEndpoint() {
+    when(request.getRequestURI()).thenReturn(REQUEST_URI);
+    customXFrameOptionsHeaderWriter.writeHeaders(request, response);
+    verify(response, times(ONE)).addHeader(XFRAME_OPTIONS_HEADER, DENY);
+  }
 
-    @Test
-    void shouldSkipHeaderWhenRequestForPdfEndpoint() {
-        when(request.getRequestURI()).thenReturn(REQUEST_URI_PDF_ENDPOINT);
-        customXFrameOptionsHeaderWriter.writeHeaders(request, response);
-        verifyNoInteractions(response);
-    }
-
+  @Test
+  void shouldSkipHeaderWhenRequestForPdfEndpoint() {
+    when(request.getRequestURI()).thenReturn(REQUEST_URI_PDF_ENDPOINT);
+    customXFrameOptionsHeaderWriter.writeHeaders(request, response);
+    verifyNoInteractions(response);
+  }
 }

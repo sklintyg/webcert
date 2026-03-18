@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,103 +43,108 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 @Service
 public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ListQuestionsFacadeServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ListQuestionsFacadeServiceImpl.class);
 
-    private final QuestionFilterConverter questionFilterConverter;
-    private final CertificateListItemConverter certificateListItemConverter;
-    private final ArendeService arendeService;
-    private final WebCertUserService webCertUserService;
-    private final CertificateAccessServiceHelper certificateAccessServiceHelper;
-    private final PaginationAndLoggingService paginationAndLoggingService;
-    private final ListCertificateQuestionsFromCS listCertificateQuestionsFromCS;
+  private final QuestionFilterConverter questionFilterConverter;
+  private final CertificateListItemConverter certificateListItemConverter;
+  private final ArendeService arendeService;
+  private final WebCertUserService webCertUserService;
+  private final CertificateAccessServiceHelper certificateAccessServiceHelper;
+  private final PaginationAndLoggingService paginationAndLoggingService;
+  private final ListCertificateQuestionsFromCS listCertificateQuestionsFromCS;
 
-    @Autowired
-    public ListQuestionsFacadeServiceImpl(QuestionFilterConverter questionFilterConverter,
-        CertificateListItemConverter certificateListItemConverter,
-        ArendeService arendeService,
-        WebCertUserService webCertUserService,
-        CertificateAccessServiceHelper certificateAccessServiceHelper,
-        PaginationAndLoggingService paginationAndLoggingService,
-        ListCertificateQuestionsFromCS listCertificateQuestionsFromCS) {
-        this.questionFilterConverter = questionFilterConverter;
-        this.certificateListItemConverter = certificateListItemConverter;
-        this.arendeService = arendeService;
-        this.webCertUserService = webCertUserService;
-        this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-        this.paginationAndLoggingService = paginationAndLoggingService;
-        this.listCertificateQuestionsFromCS = listCertificateQuestionsFromCS;
-    }
+  @Autowired
+  public ListQuestionsFacadeServiceImpl(
+      QuestionFilterConverter questionFilterConverter,
+      CertificateListItemConverter certificateListItemConverter,
+      ArendeService arendeService,
+      WebCertUserService webCertUserService,
+      CertificateAccessServiceHelper certificateAccessServiceHelper,
+      PaginationAndLoggingService paginationAndLoggingService,
+      ListCertificateQuestionsFromCS listCertificateQuestionsFromCS) {
+    this.questionFilterConverter = questionFilterConverter;
+    this.certificateListItemConverter = certificateListItemConverter;
+    this.arendeService = arendeService;
+    this.webCertUserService = webCertUserService;
+    this.certificateAccessServiceHelper = certificateAccessServiceHelper;
+    this.paginationAndLoggingService = paginationAndLoggingService;
+    this.listCertificateQuestionsFromCS = listCertificateQuestionsFromCS;
+  }
 
-    @Override
-    public ListInfo get(ListFilter filter) {
-        LOG.debug("Fetching certificates with questions");
+  @Override
+  public ListInfo get(ListFilter filter) {
+    LOG.debug("Fetching certificates with questions");
 
-        final var convertedFilter = questionFilterConverter.convert(filter);
+    final var convertedFilter = questionFilterConverter.convert(filter);
 
-        final var listResponseFromWC = arendeService.filterArende(convertedFilter, true);
-        final var listResponseFromCS = listCertificateQuestionsFromCS.list(convertedFilter);
+    final var listResponseFromWC = arendeService.filterArende(convertedFilter, true);
+    final var listResponseFromCS = listCertificateQuestionsFromCS.list(convertedFilter);
 
-        final var aggregatedList = Stream.concat(
-                listResponseFromWC.getResults().stream(),
-                listResponseFromCS.getResults().stream())
+    final var aggregatedList =
+        Stream.concat(
+                listResponseFromWC.getResults().stream(), listResponseFromCS.getResults().stream())
             .toList();
 
-        final var user = webCertUserService.getUser();
-        final var paginatedList = paginationAndLoggingService.get(convertedFilter, aggregatedList, user);
+    final var user = webCertUserService.getUser();
+    final var paginatedList =
+        paginationAndLoggingService.get(convertedFilter, aggregatedList, user);
 
-        final var unit = getUnit(user);
-        final var wcItemIds = listResponseFromWC.getResults().stream()
+    final var unit = getUnit(user);
+    final var wcItemIds =
+        listResponseFromWC.getResults().stream()
             .map(ArendeListItem::getMeddelandeId)
             .collect(Collectors.toSet());
 
-        final var decoratedList = paginatedList.stream()
-            .map(item -> {
-                // Only decorate items from WC, not from CS
-                if (wcItemIds.contains(item.getMeddelandeId())) {
+    final var decoratedList =
+        paginatedList.stream()
+            .map(
+                item -> {
+                  // Only decorate items from WC, not from CS
+                  if (wcItemIds.contains(item.getMeddelandeId())) {
                     return decorateWithResourceLinks(item, unit);
-                }
-                return item;
-            })
+                  }
+                  return item;
+                })
             .toList();
 
-        final var convertedList = decoratedList
-            .stream()
-            .map(certificateListItemConverter::convert)
-            .toList();
+    final var convertedList =
+        decoratedList.stream().map(certificateListItemConverter::convert).toList();
 
-        return new ListInfo(listResponseFromWC.getTotalCount() + listResponseFromCS.getTotalCount(), convertedList);
-    }
+    return new ListInfo(
+        listResponseFromWC.getTotalCount() + listResponseFromCS.getTotalCount(), convertedList);
+  }
 
-    private Vardenhet getUnit(WebCertUser user) {
-        final var unit = user.getValdVardenhet();
-        final var careProvider = user.getValdVardgivare();
+  private Vardenhet getUnit(WebCertUser user) {
+    final var unit = user.getValdVardenhet();
+    final var careProvider = user.getValdVardgivare();
 
-        final var convertedCareProvider = new Vardgivare();
-        convertedCareProvider.setVardgivarid(careProvider.getId());
+    final var convertedCareProvider = new Vardgivare();
+    convertedCareProvider.setVardgivarid(careProvider.getId());
 
-        final var convertedUnit = new Vardenhet();
-        convertedUnit.setEnhetsid(unit.getId());
-        convertedUnit.setVardgivare(convertedCareProvider);
+    final var convertedUnit = new Vardenhet();
+    convertedUnit.setEnhetsid(unit.getId());
+    convertedUnit.setVardgivare(convertedCareProvider);
 
-        return convertedUnit;
-    }
+    return convertedUnit;
+  }
 
-    private ArendeListItem decorateWithResourceLinks(ArendeListItem item, Vardenhet unit) {
-        final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
+  private ArendeListItem decorateWithResourceLinks(ArendeListItem item, Vardenhet unit) {
+    final AccessEvaluationParameters accessEvaluationParameters =
+        AccessEvaluationParameters.create(
             item.getIntygTyp(),
             null,
             unit,
             Personnummer.createPersonnummer(item.getPatientId()).orElseThrow(),
             item.isTestIntyg());
 
-        if (certificateAccessServiceHelper.isAllowToForwardQuestions(accessEvaluationParameters)) {
-            item.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
-        }
-
-        if (certificateAccessServiceHelper.isAllowToReadQuestions(accessEvaluationParameters)) {
-            item.addLink(new ActionLink(ActionLinkType.LASA_FRAGA));
-        }
-
-        return item;
+    if (certificateAccessServiceHelper.isAllowToForwardQuestions(accessEvaluationParameters)) {
+      item.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
     }
+
+    if (certificateAccessServiceHelper.isAllowToReadQuestions(accessEvaluationParameters)) {
+      item.addLink(new ActionLink(ActionLinkType.LASA_FRAGA));
+    }
+
+    return item;
+  }
 }

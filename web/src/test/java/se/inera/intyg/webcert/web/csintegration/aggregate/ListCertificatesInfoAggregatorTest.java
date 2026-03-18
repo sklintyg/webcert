@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,25 +35,23 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 @ExtendWith(MockitoExtension.class)
 class ListCertificatesInfoAggregatorTest {
 
-    @Mock
-    private CSIntegrationService csIntegrationService;
-    @Mock
-    private CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    private ListCertificatesInfoAggregator listCertificatesInfoAggregator;
+  @Mock private CSIntegrationService csIntegrationService;
+  @Mock private CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks private ListCertificatesInfoAggregator listCertificatesInfoAggregator;
 
-    private static final GetUnitCertificatesInfoRequestDTO UNIT_REQUEST = GetUnitCertificatesInfoRequestDTO.builder().build();
-    private static final List<StaffListInfo> STAFF_LIST_INFOS = List.of(StaffListInfo.builder().build());
+  private static final GetUnitCertificatesInfoRequestDTO UNIT_REQUEST =
+      GetUnitCertificatesInfoRequestDTO.builder().build();
+  private static final List<StaffListInfo> STAFF_LIST_INFOS =
+      List.of(StaffListInfo.builder().build());
 
-    @Test
-    void shouldReturnListFromAPI() {
-        when(csIntegrationRequestFactory.getUnitCertificatesInfoRequest())
-            .thenReturn(UNIT_REQUEST);
-        when(csIntegrationService.listCertificatesInfoForUnit(UNIT_REQUEST))
-            .thenReturn(STAFF_LIST_INFOS);
+  @Test
+  void shouldReturnListFromAPI() {
+    when(csIntegrationRequestFactory.getUnitCertificatesInfoRequest()).thenReturn(UNIT_REQUEST);
+    when(csIntegrationService.listCertificatesInfoForUnit(UNIT_REQUEST))
+        .thenReturn(STAFF_LIST_INFOS);
 
-        final var response = listCertificatesInfoAggregator.listCertificatesInfoForUnit();
+    final var response = listCertificatesInfoAggregator.listCertificatesInfoForUnit();
 
-        assertEquals(STAFF_LIST_INFOS, response);
-    }
+    assertEquals(STAFF_LIST_INFOS, response);
+  }
 }

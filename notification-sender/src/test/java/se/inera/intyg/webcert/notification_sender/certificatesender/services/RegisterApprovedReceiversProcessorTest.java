@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,111 +50,116 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 @RunWith(MockitoJUnitRunner.class)
 public class RegisterApprovedReceiversProcessorTest {
 
-    private static final String INTYG_ID = "intyg-1";
-    private static final String INTYG_TYP = "lijsp";
+  private static final String INTYG_ID = "intyg-1";
+  private static final String INTYG_TYP = "lijsp";
 
-    private static final String LOGICAL_ADDRESS = "logisk-adress";
+  private static final String LOGICAL_ADDRESS = "logisk-adress";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Mock
-    private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
-    @Spy
-    private MdcHelper mdcHelper;
+  @Mock private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
+  @Spy private MdcHelper mdcHelper;
 
-    @InjectMocks
-    private RegisterApprovedReceiversProcessor testee;
+  @InjectMocks private RegisterApprovedReceiversProcessor testee;
 
-    @Test
-    public void testRegisterOk() throws TemporaryException, JsonProcessingException {
-        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
-            .thenReturn(buildResponse(ResultCodeType.OK));
+  @Test
+  public void testRegisterOk() throws TemporaryException, JsonProcessingException {
+    when(registerApprovedReceiversClient.registerApprovedReceivers(
+            anyString(), any(RegisterApprovedReceiversType.class)))
+        .thenReturn(buildResponse(ResultCodeType.OK));
 
-        testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
-        verify(registerApprovedReceiversClient, times(1)).registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
+    testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
+    verify(registerApprovedReceiversClient, times(1))
+        .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
+  }
+
+  @Test(expected = TemporaryException.class)
+  public void testRegisterThrowsTemporaryExceptionOnWebServiceException()
+      throws TemporaryException, JsonProcessingException {
+    when(registerApprovedReceiversClient.registerApprovedReceivers(
+            anyString(), any(RegisterApprovedReceiversType.class)))
+        .thenThrow(new WebServiceException(""));
+    try {
+      testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
+    } finally {
+      verify(registerApprovedReceiversClient, times(1))
+          .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
     }
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void testRegisterThrowsTemporaryExceptionOnWebServiceException()
-        throws TemporaryException, JsonProcessingException {
-        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
-            .thenThrow(new WebServiceException(""));
-        try {
-            testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
-        } finally {
-            verify(registerApprovedReceiversClient, times(1))
-                .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
-        }
+  @Test(expected = TemporaryException.class)
+  public void testRegisterThrowsTemporaryExceptionOnError()
+      throws TemporaryException, JsonProcessingException {
+    when(registerApprovedReceiversClient.registerApprovedReceivers(
+            anyString(), any(RegisterApprovedReceiversType.class)))
+        .thenReturn(buildResponse(ResultCodeType.ERROR));
+    try {
+      testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
+    } finally {
+      verify(registerApprovedReceiversClient, times(1))
+          .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
     }
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void testRegisterThrowsTemporaryExceptionOnError() throws TemporaryException, JsonProcessingException {
-        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
-            .thenReturn(buildResponse(ResultCodeType.ERROR));
-        try {
-            testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
-        } finally {
-            verify(registerApprovedReceiversClient, times(1))
-                .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
-        }
+  @Test(expected = TemporaryException.class)
+  public void testUnparsableBodyThrowsTemporaryException() throws TemporaryException {
+    try {
+      testee.process("this-is-not-json", INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
+    } finally {
+      verifyNoInteractions(registerApprovedReceiversClient);
     }
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void testUnparsableBodyThrowsTemporaryException() throws TemporaryException {
-        try {
-            testee.process("this-is-not-json", INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
-        } finally {
-            verifyNoInteractions(registerApprovedReceiversClient);
-        }
+  @Test(expected = TemporaryException.class)
+  public void testRegisterThrowsTemporaryExceptionOnMissingIntygsId()
+      throws TemporaryException, JsonProcessingException {
+    try {
+      testee.process(buildRequestBody("FKASSA", "FBA"), null, INTYG_TYP, LOGICAL_ADDRESS);
+    } finally {
+      verifyNoInteractions(registerApprovedReceiversClient);
     }
+  }
 
-
-    @Test(expected = TemporaryException.class)
-    public void testRegisterThrowsTemporaryExceptionOnMissingIntygsId()
-        throws TemporaryException, JsonProcessingException {
-        try {
-            testee.process(buildRequestBody("FKASSA", "FBA"), null, INTYG_TYP, LOGICAL_ADDRESS);
-        } finally {
-            verifyNoInteractions(registerApprovedReceiversClient);
-        }
+  @Test(expected = TemporaryException.class)
+  public void testRegisterThrowsTemporaryExceptionOnMissingIntygsTyp()
+      throws TemporaryException, JsonProcessingException {
+    try {
+      testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, null, LOGICAL_ADDRESS);
+    } finally {
+      verifyNoInteractions(registerApprovedReceiversClient);
     }
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void testRegisterThrowsTemporaryExceptionOnMissingIntygsTyp()
-        throws TemporaryException, JsonProcessingException {
-        try {
-            testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, null, LOGICAL_ADDRESS);
-        } finally {
-            verifyNoInteractions(registerApprovedReceiversClient);
-        }
+  @Test(expected = TemporaryException.class)
+  public void testRegisterThrowsTemporaryExceptionOnBlankIntygsTyp()
+      throws TemporaryException, JsonProcessingException {
+    try {
+      testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, "", LOGICAL_ADDRESS);
+    } finally {
+      verifyNoInteractions(registerApprovedReceiversClient);
     }
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void testRegisterThrowsTemporaryExceptionOnBlankIntygsTyp()
-        throws TemporaryException, JsonProcessingException {
-        try {
-            testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, "", LOGICAL_ADDRESS);
-        } finally {
-            verifyNoInteractions(registerApprovedReceiversClient);
-        }
-    }
+  private RegisterApprovedReceiversResponseType buildResponse(ResultCodeType resultCodeType) {
+    RegisterApprovedReceiversResponseType resp = new RegisterApprovedReceiversResponseType();
 
-    private RegisterApprovedReceiversResponseType buildResponse(ResultCodeType resultCodeType) {
-        RegisterApprovedReceiversResponseType resp = new RegisterApprovedReceiversResponseType();
+    ResultType resultType = new ResultType();
+    resultType.setResultCode(resultCodeType);
+    resp.setResult(resultType);
+    return resp;
+  }
 
-        ResultType resultType = new ResultType();
-        resultType.setResultCode(resultCodeType);
-        resp.setResult(resultType);
-        return resp;
-    }
-
-    private String buildRequestBody(String... mottagare) throws JsonProcessingException {
-        List<ReceiverApprovalStatus> approved = Stream.of(mottagare).map(receiverId -> {
-            ReceiverApprovalStatus ras = new ReceiverApprovalStatus();
-            ras.setReceiverId(receiverId);
-            ras.setApprovalStatus(ApprovalStatusType.YES);
-            return ras;
-        }).collect(Collectors.toList());
-        return objectMapper.writeValueAsString(approved);
-    }
+  private String buildRequestBody(String... mottagare) throws JsonProcessingException {
+    List<ReceiverApprovalStatus> approved =
+        Stream.of(mottagare)
+            .map(
+                receiverId -> {
+                  ReceiverApprovalStatus ras = new ReceiverApprovalStatus();
+                  ras.setReceiverId(receiverId);
+                  ras.setApprovalStatus(ApprovalStatusType.YES);
+                  return ras;
+                })
+            .collect(Collectors.toList());
+    return objectMapper.writeValueAsString(approved);
+  }
 }

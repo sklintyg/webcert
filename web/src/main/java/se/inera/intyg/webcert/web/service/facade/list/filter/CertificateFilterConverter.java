@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,5 +23,5 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 public interface CertificateFilterConverter {
 
-    QueryIntygParameter convert(ListFilter filter, String hsaId, String[] units);
+  QueryIntygParameter convert(ListFilter filter, String hsaId, String[] units);
 }

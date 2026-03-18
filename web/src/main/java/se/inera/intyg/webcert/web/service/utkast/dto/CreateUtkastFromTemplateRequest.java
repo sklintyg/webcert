@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,9 +23,12 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 
 public class CreateUtkastFromTemplateRequest extends AbstractCreateCopyRequest {
 
-    public CreateUtkastFromTemplateRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson,
-        String originalIntygsTyp) {
-        super(orginalIntygsId, intygsTyp, patient, hosPerson, originalIntygsTyp);
-    }
-
+  public CreateUtkastFromTemplateRequest(
+      String orginalIntygsId,
+      String intygsTyp,
+      Patient patient,
+      HoSPersonal hosPerson,
+      String originalIntygsTyp) {
+    super(orginalIntygsId, intygsTyp, patient, hosPerson, originalIntygsTyp);
+  }
 }

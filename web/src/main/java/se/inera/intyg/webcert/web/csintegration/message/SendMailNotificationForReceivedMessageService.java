@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import lombok.RequiredArgsConstructor;
@@ -33,30 +32,28 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMe
 @RequiredArgsConstructor
 public class SendMailNotificationForReceivedMessageService {
 
-    private final MailNotificationService mailNotificationService;
+  private final MailNotificationService mailNotificationService;
 
-    public void send(SendMessageToCareType sendMessageToCare, Certificate certificate) {
-        final var questionType = ArendeAmne.valueOf(sendMessageToCare.getAmne().getCode());
-        final var isAnswer = sendMessageToCare.getSvarPa() != null;
-        if (questionType.equals(ArendeAmne.PAMINN) || !isAnswer) {
-            mailNotificationService.sendMailForIncomingQuestion(
-                buildMailNotification(sendMessageToCare, certificate)
-            );
-        } else {
-            mailNotificationService.sendMailForIncomingAnswer(
-                buildMailNotification(sendMessageToCare, certificate)
-            );
-        }
+  public void send(SendMessageToCareType sendMessageToCare, Certificate certificate) {
+    final var questionType = ArendeAmne.valueOf(sendMessageToCare.getAmne().getCode());
+    final var isAnswer = sendMessageToCare.getSvarPa() != null;
+    if (questionType.equals(ArendeAmne.PAMINN) || !isAnswer) {
+      mailNotificationService.sendMailForIncomingQuestion(
+          buildMailNotification(sendMessageToCare, certificate));
+    } else {
+      mailNotificationService.sendMailForIncomingAnswer(
+          buildMailNotification(sendMessageToCare, certificate));
     }
+  }
 
-    private static MailNotification buildMailNotification(SendMessageToCareType sendMessageToCare, Certificate certificate) {
-        return new MailNotification(
-            sendMessageToCare.getMeddelandeId(),
-            certificate.getMetadata().getId(),
-            certificate.getMetadata().getType(),
-            certificate.getMetadata().getUnit().getUnitId(),
-            certificate.getMetadata().getUnit().getUnitName(),
-            certificate.getMetadata().getIssuedBy().getPersonId()
-        );
-    }
+  private static MailNotification buildMailNotification(
+      SendMessageToCareType sendMessageToCare, Certificate certificate) {
+    return new MailNotification(
+        sendMessageToCare.getMeddelandeId(),
+        certificate.getMetadata().getId(),
+        certificate.getMetadata().getType(),
+        certificate.getMetadata().getUnit().getUnitId(),
+        certificate.getMetadata().getUnit().getUnitName(),
+        certificate.getMetadata().getIssuedBy().getPersonId());
+  }
 }

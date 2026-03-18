@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,19 +23,19 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
 public interface ArendeDraftService {
 
-    boolean saveDraft(String intygId, String questionId, String text, String amne);
+  boolean saveDraft(String intygId, String questionId, String text, String amne);
 
-    boolean delete(String intygId, String questionId);
+  boolean delete(String intygId, String questionId);
 
-    List<ArendeDraft> listAnswerDrafts(String intygId);
+  List<ArendeDraft> listAnswerDrafts(String intygId);
 
-    ArendeDraft getQuestionDraft(String intygId);
+  ArendeDraft getQuestionDraft(String intygId);
 
-    ArendeDraft getAnswerDraft(String certificateId, String questionId);
+  ArendeDraft getAnswerDraft(String certificateId, String questionId);
 
-    ArendeDraft getQuestionDraftById(long id);
+  ArendeDraft getQuestionDraftById(long id);
 
-    ArendeDraft create(String certificateId, String subject, String message, String questionId);
+  ArendeDraft create(String certificateId, String subject, String message, String questionId);
 
-    ArendeDraft save(ArendeDraft arendeDraft);
+  ArendeDraft save(ArendeDraft arendeDraft);
 }

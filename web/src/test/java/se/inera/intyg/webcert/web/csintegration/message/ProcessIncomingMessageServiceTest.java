@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,182 +59,169 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-
 @ExtendWith(MockitoExtension.class)
 class ProcessIncomingMessageServiceTest {
 
-    private static final LocalDate SISTA_DATUM_FOR_SVAR = LocalDate.now();
-    private static final IncomingMessageRequestDTO INCOMING_MESSAGE_REQUEST_DTO = IncomingMessageRequestDTO.builder()
-        .lastDateToAnswer(SISTA_DATUM_FOR_SVAR)
-        .build();
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String UNIT_ID = "unitId";
-    private static final String CARE_PROVIDER_ID = "careProviderId";
-    private static final LocalDateTime ISSUING_DATE = LocalDateTime.now();
-    private static final String MESSAGE_ID = "messageId";
+  private static final LocalDate SISTA_DATUM_FOR_SVAR = LocalDate.now();
+  private static final IncomingMessageRequestDTO INCOMING_MESSAGE_REQUEST_DTO =
+      IncomingMessageRequestDTO.builder().lastDateToAnswer(SISTA_DATUM_FOR_SVAR).build();
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String UNIT_ID = "unitId";
+  private static final String CARE_PROVIDER_ID = "careProviderId";
+  private static final LocalDateTime ISSUING_DATE = LocalDateTime.now();
+  private static final String MESSAGE_ID = "messageId";
 
-    private SendMessageToCareType sendMessageToCareType;
-    private Certificate certificate;
-    @Mock
-    IntegreradeEnheterRegistry integreradeEnheterRegistry;
-    @Mock
-    IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
-    @Mock
-    SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    MonitoringLogService monitoringLogService;
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @InjectMocks
-    ProcessIncomingMessageService processIncomingMessageService;
+  private SendMessageToCareType sendMessageToCareType;
+  private Certificate certificate;
+  @Mock IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Mock IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
+  @Mock SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock MonitoringLogService monitoringLogService;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @InjectMocks ProcessIncomingMessageService processIncomingMessageService;
 
-    @BeforeEach
-    void setUp() {
-        certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .id(CERTIFICATE_ID)
-                .type(CERTIFICATE_TYPE)
-                .unit(
-                    Unit.builder()
-                        .unitId(UNIT_ID)
-                        .build()
-                )
-                .careProvider(
-                    Unit.builder()
-                        .unitId(CARE_PROVIDER_ID)
-                        .build()
-                )
-                .signed(ISSUING_DATE)
-                .build()
-        );
+  @BeforeEach
+  void setUp() {
+    certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .id(CERTIFICATE_ID)
+            .type(CERTIFICATE_TYPE)
+            .unit(Unit.builder().unitId(UNIT_ID).build())
+            .careProvider(Unit.builder().unitId(CARE_PROVIDER_ID).build())
+            .signed(ISSUING_DATE)
+            .build());
 
-        doReturn(INCOMING_MESSAGE_REQUEST_DTO).when(csIntegrationRequestFactory)
-            .getIncomingMessageRequest(any(SendMessageToCareType.class));
-        doReturn(certificate).when(csIntegrationService).getInternalCertificate(CERTIFICATE_ID);
+    doReturn(INCOMING_MESSAGE_REQUEST_DTO)
+        .when(csIntegrationRequestFactory)
+        .getIncomingMessageRequest(any(SendMessageToCareType.class));
+    doReturn(certificate).when(csIntegrationService).getInternalCertificate(CERTIFICATE_ID);
 
-        sendMessageToCareType = new SendMessageToCareType();
-        sendMessageToCareType.setAmne(new Amneskod());
-        sendMessageToCareType.getAmne().setCode("KOMPLT");
-        final var intygId = new IntygId();
-        intygId.setExtension(CERTIFICATE_ID);
-        sendMessageToCareType.setIntygsId(intygId);
-        sendMessageToCareType.setMeddelandeId(MESSAGE_ID);
-        sendMessageToCareType.setSistaDatumForSvar(SISTA_DATUM_FOR_SVAR);
-    }
+    sendMessageToCareType = new SendMessageToCareType();
+    sendMessageToCareType.setAmne(new Amneskod());
+    sendMessageToCareType.getAmne().setCode("KOMPLT");
+    final var intygId = new IntygId();
+    intygId.setExtension(CERTIFICATE_ID);
+    sendMessageToCareType.setIntygsId(intygId);
+    sendMessageToCareType.setMeddelandeId(MESSAGE_ID);
+    sendMessageToCareType.setSistaDatumForSvar(SISTA_DATUM_FOR_SVAR);
+  }
 
-    @Test
-    void shallPostMessageToCertificateService() {
-        processIncomingMessageService.process(sendMessageToCareType);
-        verify(csIntegrationService, times(1)).postMessage(INCOMING_MESSAGE_REQUEST_DTO);
-    }
+  @Test
+  void shallPostMessageToCertificateService() {
+    processIncomingMessageService.process(sendMessageToCareType);
+    verify(csIntegrationService, times(1)).postMessage(INCOMING_MESSAGE_REQUEST_DTO);
+  }
 
-    @Test
-    void shallMonitorLogArendeRecieved() {
-        processIncomingMessageService.process(sendMessageToCareType);
-        verify(monitoringLogService).logArendeReceived(
+  @Test
+  void shallMonitorLogArendeRecieved() {
+    processIncomingMessageService.process(sendMessageToCareType);
+    verify(monitoringLogService)
+        .logArendeReceived(
             CERTIFICATE_ID,
             CERTIFICATE_TYPE,
             UNIT_ID,
             ArendeAmne.KOMPLT,
             Collections.emptyList(),
             false,
-            MESSAGE_ID
-        );
-    }
+            MESSAGE_ID);
+  }
 
-    @Test
-    void shallMonitorLogArendeRecievedAsAnswer() {
-        sendMessageToCareType.setSvarPa(new MeddelandeReferens());
-        processIncomingMessageService.process(sendMessageToCareType);
-        verify(monitoringLogService).logArendeReceived(
+  @Test
+  void shallMonitorLogArendeRecievedAsAnswer() {
+    sendMessageToCareType.setSvarPa(new MeddelandeReferens());
+    processIncomingMessageService.process(sendMessageToCareType);
+    verify(monitoringLogService)
+        .logArendeReceived(
             CERTIFICATE_ID,
             CERTIFICATE_TYPE,
             UNIT_ID,
             ArendeAmne.KOMPLT,
             Collections.emptyList(),
             true,
-            MESSAGE_ID
-        );
-    }
+            MESSAGE_ID);
+  }
 
-    @Test
-    void shallPublishEventForQuestionIfUnitShouldNotRecieveMailNotificationAndIsIntegrated() {
-        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
-        processIncomingMessageService.process(sendMessageToCareType);
-        verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYFRFM, ArendeAmne.KOMPLT,
-            SISTA_DATUM_FOR_SVAR);
-    }
+  @Test
+  void shallPublishEventForQuestionIfUnitShouldNotRecieveMailNotificationAndIsIntegrated() {
+    doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+    processIncomingMessageService.process(sendMessageToCareType);
+    verify(publishCertificateStatusUpdateService)
+        .publish(certificate, HandelsekodEnum.NYFRFM, ArendeAmne.KOMPLT, SISTA_DATUM_FOR_SVAR);
+  }
 
-    @Test
-    void shallPublishEventForAnswerIfUnitShouldNotRecieveMailNotificationAndIsIntegrated() {
-        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
-        sendMessageToCareType.setSvarPa(new MeddelandeReferens());
-        processIncomingMessageService.process(sendMessageToCareType);
-        verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYSVFM, ArendeAmne.KOMPLT,
-            SISTA_DATUM_FOR_SVAR);
-    }
+  @Test
+  void shallPublishEventForAnswerIfUnitShouldNotRecieveMailNotificationAndIsIntegrated() {
+    doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+    sendMessageToCareType.setSvarPa(new MeddelandeReferens());
+    processIncomingMessageService.process(sendMessageToCareType);
+    verify(publishCertificateStatusUpdateService)
+        .publish(certificate, HandelsekodEnum.NYSVFM, ArendeAmne.KOMPLT, SISTA_DATUM_FOR_SVAR);
+  }
 
-    @Test
-    void shallNotPublishEventIfUnitShouldRecieveMailNotificationAndIsIntegrated() {
-        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
-        doReturn(true).when(integratedUnitNotificationEvaluator).mailNotification(CARE_PROVIDER_ID, UNIT_ID,
-            CERTIFICATE_ID, ISSUING_DATE);
-        sendMessageToCareType.setSvarPa(new MeddelandeReferens());
-        processIncomingMessageService.process(sendMessageToCareType);
-        verifyNoInteractions(publishCertificateStatusUpdateService);
-    }
+  @Test
+  void shallNotPublishEventIfUnitShouldRecieveMailNotificationAndIsIntegrated() {
+    doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+    doReturn(true)
+        .when(integratedUnitNotificationEvaluator)
+        .mailNotification(CARE_PROVIDER_ID, UNIT_ID, CERTIFICATE_ID, ISSUING_DATE);
+    sendMessageToCareType.setSvarPa(new MeddelandeReferens());
+    processIncomingMessageService.process(sendMessageToCareType);
+    verifyNoInteractions(publishCertificateStatusUpdateService);
+  }
 
-    @Test
-    void shallSendMailNotificationIfUnitIsNotIntegrated() {
-        doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
-        processIncomingMessageService.process(sendMessageToCareType);
-        verify(sendMailNotificationForReceivedMessageService).send(sendMessageToCareType, certificate);
-    }
+  @Test
+  void shallSendMailNotificationIfUnitIsNotIntegrated() {
+    doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+    processIncomingMessageService.process(sendMessageToCareType);
+    verify(sendMailNotificationForReceivedMessageService).send(sendMessageToCareType, certificate);
+  }
 
-    @Test
-    void shallSendMailNotificationIfUnitIsIntegratedButShouldRecieveMailNotification() {
-        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
-        doReturn(true).when(integratedUnitNotificationEvaluator).mailNotification(CARE_PROVIDER_ID, UNIT_ID, CERTIFICATE_ID, ISSUING_DATE);
-        processIncomingMessageService.process(sendMessageToCareType);
-        verify(sendMailNotificationForReceivedMessageService).send(sendMessageToCareType, certificate);
-    }
+  @Test
+  void shallSendMailNotificationIfUnitIsIntegratedButShouldRecieveMailNotification() {
+    doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+    doReturn(true)
+        .when(integratedUnitNotificationEvaluator)
+        .mailNotification(CARE_PROVIDER_ID, UNIT_ID, CERTIFICATE_ID, ISSUING_DATE);
+    processIncomingMessageService.process(sendMessageToCareType);
+    verify(sendMailNotificationForReceivedMessageService).send(sendMessageToCareType, certificate);
+  }
 
-    @Test
-    void shallNotSendMailNotificationIfUnitIsIntegratedAndShouldNotRecieveMailNotification() {
-        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
-        doReturn(false).when(integratedUnitNotificationEvaluator).mailNotification(CARE_PROVIDER_ID, UNIT_ID, CERTIFICATE_ID, ISSUING_DATE);
-        processIncomingMessageService.process(sendMessageToCareType);
-        verifyNoInteractions(sendMailNotificationForReceivedMessageService);
-    }
+  @Test
+  void shallNotSendMailNotificationIfUnitIsIntegratedAndShouldNotRecieveMailNotification() {
+    doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+    doReturn(false)
+        .when(integratedUnitNotificationEvaluator)
+        .mailNotification(CARE_PROVIDER_ID, UNIT_ID, CERTIFICATE_ID, ISSUING_DATE);
+    processIncomingMessageService.process(sendMessageToCareType);
+    verifyNoInteractions(sendMailNotificationForReceivedMessageService);
+  }
 
-    @Test
-    void shallReturnSendMessageToCareResponseTypeWithResultCodeOk() {
-        final var expectedResult = new SendMessageToCareResponseType();
-        final var result = new ResultType();
-        result.setResultCode(ResultCodeType.OK);
-        expectedResult.setResult(result);
+  @Test
+  void shallReturnSendMessageToCareResponseTypeWithResultCodeOk() {
+    final var expectedResult = new SendMessageToCareResponseType();
+    final var result = new ResultType();
+    result.setResultCode(ResultCodeType.OK);
+    expectedResult.setResult(result);
 
-        final var actualResult = processIncomingMessageService.process(sendMessageToCareType);
-        assertEquals(ResultCodeType.OK, actualResult.getResult().getResultCode());
-    }
+    final var actualResult = processIncomingMessageService.process(sendMessageToCareType);
+    assertEquals(ResultCodeType.OK, actualResult.getResult().getResultCode());
+  }
 
-    @Test
-    void shallPublishAnalyticsMessage() {
-        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.receivedMessage(certificate, INCOMING_MESSAGE_REQUEST_DTO)).thenReturn(analyticsMessage);
+  @Test
+  void shallPublishAnalyticsMessage() {
+    final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+    when(certificateAnalyticsMessageFactory.receivedMessage(
+            certificate, INCOMING_MESSAGE_REQUEST_DTO))
+        .thenReturn(analyticsMessage);
 
-        processIncomingMessageService.process(sendMessageToCareType);
+    processIncomingMessageService.process(sendMessageToCareType);
 
-        verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
-    }
+    verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
+  }
 }

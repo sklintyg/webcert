@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,64 +43,72 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 @Path("/user")
 public class UserController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final UserService userService;
+  private final UserService userService;
 
-    private final GetUserResourceLinks getUserResourceLinks;
+  private final GetUserResourceLinks getUserResourceLinks;
 
-    private final WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-    private final UserStatisticsService userStatisticsService;
-    private final ChangeUnitService changeUnitService;
+  private final UserStatisticsService userStatisticsService;
+  private final ChangeUnitService changeUnitService;
 
-    @Autowired
-    public UserController(UserService userService, GetUserResourceLinks getUserResourceLinks,
-        UserStatisticsService userStatisticsService, WebCertUserService webCertUserService, ChangeUnitService changeUnitService) {
-        this.userService = userService;
-        this.getUserResourceLinks = getUserResourceLinks;
-        this.webCertUserService = webCertUserService;
-        this.userStatisticsService = userStatisticsService;
-        this.changeUnitService = changeUnitService;
+  @Autowired
+  public UserController(
+      UserService userService,
+      GetUserResourceLinks getUserResourceLinks,
+      UserStatisticsService userStatisticsService,
+      WebCertUserService webCertUserService,
+      ChangeUnitService changeUnitService) {
+    this.userService = userService;
+    this.getUserResourceLinks = getUserResourceLinks;
+    this.webCertUserService = webCertUserService;
+    this.userStatisticsService = userStatisticsService;
+    this.changeUnitService = changeUnitService;
+  }
+
+  @GET
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getUser() {
+    LOG.debug("Getting logged in user");
+    final var loggedInUser = userService.getLoggedInUser();
+    final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
+    return Response.ok(UserResponseDTO.create(loggedInUser, resourceLinks)).build();
+  }
+
+  @Path("/statistics")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-get-user-tabs",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getUserTabs() {
+    LOG.debug("Getting user statistics");
+    final var result = userStatisticsService.getUserStatistics();
+    return Response.ok(result).build();
+  }
+
+  @POST
+  @Path("/unit/{unitHsaId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-change-unit",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public Response changeUnit(@PathParam("unitHsaId") @NotNull String unitHsaId) {
+    LOG.debug("Changing care unit to {}", unitHsaId);
+    try {
+      final var updatedUser = changeUnitService.change(unitHsaId);
+      final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
+      return Response.ok(UserResponseDTO.create(updatedUser, resourceLinks)).build();
+    } catch (ChangeUnitException e) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
     }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getUser() {
-        LOG.debug("Getting logged in user");
-        final var loggedInUser = userService.getLoggedInUser();
-        final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
-        return Response.ok(UserResponseDTO.create(loggedInUser, resourceLinks)).build();
-    }
-
-    @Path("/statistics")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-get-user-tabs", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getUserTabs() {
-        LOG.debug("Getting user statistics");
-        final var result = userStatisticsService.getUserStatistics();
-        return Response.ok(result).build();
-    }
-
-    @POST
-    @Path("/unit/{unitHsaId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-change-unit", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response changeUnit(@PathParam("unitHsaId") @NotNull String unitHsaId) {
-        LOG.debug("Changing care unit to {}", unitHsaId);
-        try {
-            final var updatedUser = changeUnitService.change(unitHsaId);
-            final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
-            return Response.ok(UserResponseDTO.create(updatedUser, resourceLinks)).build();
-        } catch (ChangeUnitException e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-    }
+  }
 }

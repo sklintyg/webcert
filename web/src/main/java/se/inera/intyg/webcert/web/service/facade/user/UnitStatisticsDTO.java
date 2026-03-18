@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,70 +20,70 @@ package se.inera.intyg.webcert.web.service.facade.user;
 
 public class UnitStatisticsDTO {
 
-    private long draftsOnUnit;
-    private long questionsOnUnit;
-    private long draftsOnSubUnits;
-    private long questionsOnSubUnits;
+  private long draftsOnUnit;
+  private long questionsOnUnit;
+  private long draftsOnSubUnits;
+  private long questionsOnSubUnits;
 
-    public UnitStatisticsDTO() {
-    }
+  public UnitStatisticsDTO() {}
 
-    public UnitStatisticsDTO(long draftsOnUnit, long questionsOnUnit) {
-        this.draftsOnUnit = draftsOnUnit;
-        this.questionsOnUnit = questionsOnUnit;
-    }
+  public UnitStatisticsDTO(long draftsOnUnit, long questionsOnUnit) {
+    this.draftsOnUnit = draftsOnUnit;
+    this.questionsOnUnit = questionsOnUnit;
+  }
 
-    public UnitStatisticsDTO(long draftsOnUnit, long questionsOnUnit, long draftsOnSubUnits, long questionsOnSubUnits) {
-        this.draftsOnUnit = draftsOnUnit;
-        this.questionsOnUnit = questionsOnUnit;
-        this.draftsOnSubUnits = draftsOnSubUnits;
-        this.questionsOnSubUnits = questionsOnSubUnits;
-    }
+  public UnitStatisticsDTO(
+      long draftsOnUnit, long questionsOnUnit, long draftsOnSubUnits, long questionsOnSubUnits) {
+    this.draftsOnUnit = draftsOnUnit;
+    this.questionsOnUnit = questionsOnUnit;
+    this.draftsOnSubUnits = draftsOnSubUnits;
+    this.questionsOnSubUnits = questionsOnSubUnits;
+  }
 
-    public long getDraftsOnUnit() {
-        return draftsOnUnit;
-    }
+  public long getDraftsOnUnit() {
+    return draftsOnUnit;
+  }
 
-    public void setDraftsOnUnit(long draftsOnUnit) {
-        this.draftsOnUnit = draftsOnUnit;
-    }
+  public void setDraftsOnUnit(long draftsOnUnit) {
+    this.draftsOnUnit = draftsOnUnit;
+  }
 
-    public long getQuestionsOnUnit() {
-        return questionsOnUnit;
-    }
+  public long getQuestionsOnUnit() {
+    return questionsOnUnit;
+  }
 
-    public void setQuestionsOnUnit(long questionsOnUnit) {
-        this.questionsOnUnit = questionsOnUnit;
-    }
+  public void setQuestionsOnUnit(long questionsOnUnit) {
+    this.questionsOnUnit = questionsOnUnit;
+  }
 
-    public long getDraftsOnSubUnits() {
-        return draftsOnSubUnits;
-    }
+  public long getDraftsOnSubUnits() {
+    return draftsOnSubUnits;
+  }
 
-    public void setDraftsOnSubUnits(long draftsOnSubUnits) {
-        this.draftsOnSubUnits = draftsOnSubUnits;
-    }
+  public void setDraftsOnSubUnits(long draftsOnSubUnits) {
+    this.draftsOnSubUnits = draftsOnSubUnits;
+  }
 
-    public long getQuestionsOnSubUnits() {
-        return questionsOnSubUnits;
-    }
+  public long getQuestionsOnSubUnits() {
+    return questionsOnSubUnits;
+  }
 
-    public void setQuestionsOnSubUnits(long questionsOnSubUnits) {
-        this.questionsOnSubUnits = questionsOnSubUnits;
-    }
+  public void setQuestionsOnSubUnits(long questionsOnSubUnits) {
+    this.questionsOnSubUnits = questionsOnSubUnits;
+  }
 
-    public void merge(UnitStatisticsDTO unitStatisticsDTO) {
-        this.draftsOnUnit += unitStatisticsDTO.draftsOnUnit;
-        this.questionsOnUnit += unitStatisticsDTO.questionsOnUnit;
-        this.draftsOnSubUnits += unitStatisticsDTO.draftsOnSubUnits;
-        this.questionsOnSubUnits += unitStatisticsDTO.questionsOnSubUnits;
-    }
+  public void merge(UnitStatisticsDTO unitStatisticsDTO) {
+    this.draftsOnUnit += unitStatisticsDTO.draftsOnUnit;
+    this.questionsOnUnit += unitStatisticsDTO.questionsOnUnit;
+    this.draftsOnSubUnits += unitStatisticsDTO.draftsOnSubUnits;
+    this.questionsOnSubUnits += unitStatisticsDTO.questionsOnSubUnits;
+  }
 
-    public void addDraftsOnSubUnits(long draftsOnSubUnits) {
-        this.draftsOnSubUnits += draftsOnSubUnits;
-    }
+  public void addDraftsOnSubUnits(long draftsOnSubUnits) {
+    this.draftsOnSubUnits += draftsOnSubUnits;
+  }
 
-    public void addQuestionsOnSubUnits(long questionsOnSubUnits) {
-        this.questionsOnSubUnits += questionsOnSubUnits;
-    }
+  public void addQuestionsOnSubUnits(long questionsOnSubUnits) {
+    this.questionsOnSubUnits += questionsOnSubUnits;
+  }
 }

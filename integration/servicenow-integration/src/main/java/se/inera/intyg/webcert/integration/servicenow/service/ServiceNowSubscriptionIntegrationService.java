@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,26 +33,31 @@ import se.inera.intyg.webcert.logging.PerformanceLogging;
 @RequiredArgsConstructor
 public class ServiceNowSubscriptionIntegrationService implements SubscriptionIntegrationService {
 
-    private final SubscriptionRestClient subscriptionRestClient;
-    private final GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
-    private final CheckSubscriptionService checkSubscriptionService;
+  private final SubscriptionRestClient subscriptionRestClient;
+  private final GetCareProvidersMissingSubscriptionService
+      getCareProvidersMissingSubscriptionService;
+  private final CheckSubscriptionService checkSubscriptionService;
 
-    @Override
-    @PerformanceLogging(eventAction = "get-missing-subscriptions-v2", eventType = MdcLogConstants.EVENT_TYPE_INFO)
-    public List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
-        final var organizationResponse = subscriptionRestClient.getSubscriptionServiceResponse(
-            organizationNumberHsaIdMap.keySet()
-        );
-        return getCareProvidersMissingSubscriptionService.get(organizationResponse.getResult(), organizationNumberHsaIdMap, authMethod);
-    }
+  @Override
+  @PerformanceLogging(
+      eventAction = "get-missing-subscriptions-v2",
+      eventType = MdcLogConstants.EVENT_TYPE_INFO)
+  public List<String> getMissingSubscriptions(
+      Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
+    final var organizationResponse =
+        subscriptionRestClient.getSubscriptionServiceResponse(organizationNumberHsaIdMap.keySet());
+    return getCareProvidersMissingSubscriptionService.get(
+        organizationResponse.getResult(), organizationNumberHsaIdMap, authMethod);
+  }
 
-    @Override
-    @PerformanceLogging(eventAction = "is-missing-subscriptions-eleg-user-v2", eventType = MdcLogConstants.EVENT_TYPE_INFO)
-    public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
-        final var organizationResponse = subscriptionRestClient.getSubscriptionServiceResponse(
-            Set.of(organizationNumber)
-        );
-        final var serviceCodes = organizationResponse.getResult().getFirst().getServiceCodes();
-        return checkSubscriptionService.isMissing(serviceCodes, AuthenticationMethodEnum.ELEG);
-    }
+  @Override
+  @PerformanceLogging(
+      eventAction = "is-missing-subscriptions-eleg-user-v2",
+      eventType = MdcLogConstants.EVENT_TYPE_INFO)
+  public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
+    final var organizationResponse =
+        subscriptionRestClient.getSubscriptionServiceResponse(Set.of(organizationNumber));
+    final var serviceCodes = organizationResponse.getResult().getFirst().getServiceCodes();
+    return checkSubscriptionService.isMissing(serviceCodes, AuthenticationMethodEnum.ELEG);
+  }
 }

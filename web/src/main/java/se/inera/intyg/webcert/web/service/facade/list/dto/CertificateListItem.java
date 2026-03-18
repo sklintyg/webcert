@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,41 +27,41 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 @EqualsAndHashCode
 public class CertificateListItem {
 
-    private final Map<String, Object> values;
+  private final Map<String, Object> values;
 
-    public CertificateListItem() {
-        values = new TreeMap<>();
-    }
+  public CertificateListItem() {
+    values = new TreeMap<>();
+  }
 
-    public void addValue(ListColumnType type, Object value) {
-        values.put(type.toString(), value);
-    }
+  public void addValue(ListColumnType type, Object value) {
+    values.put(type.toString(), value);
+  }
 
-    public Object getValue(String key) {
-        return values.get(key);
-    }
+  public Object getValue(String key) {
+    return values.get(key);
+  }
 
-    public Object getValue(ListColumnType type) {
-        return values.get(type.toString());
-    }
+  public Object getValue(ListColumnType type) {
+    return values.get(type.toString());
+  }
 
-    public Map<String, Object> getValues() {
-        return values;
-    }
+  public Map<String, Object> getValues() {
+    return values;
+  }
 
-    public String valueAsString(ListColumnType type) {
-        return getValue(type).toString();
-    }
+  public String valueAsString(ListColumnType type) {
+    return getValue(type).toString();
+  }
 
-    public String valueAsPatientId() {
-        return ((PatientListInfo) getValue(ListColumnType.PATIENT_ID)).getId();
-    }
+  public String valueAsPatientId() {
+    return ((PatientListInfo) getValue(ListColumnType.PATIENT_ID)).getId();
+  }
 
-    public Boolean valueAsBoolean(ListColumnType type) {
-        return (Boolean) getValue(type);
-    }
+  public Boolean valueAsBoolean(ListColumnType type) {
+    return (Boolean) getValue(type);
+  }
 
-    public LocalDateTime valueAsDate(ListColumnType type) {
-        return (LocalDateTime) getValue(type);
-    }
+  public LocalDateTime valueAsDate(ListColumnType type) {
+    return (LocalDateTime) getValue(type);
+  }
 }

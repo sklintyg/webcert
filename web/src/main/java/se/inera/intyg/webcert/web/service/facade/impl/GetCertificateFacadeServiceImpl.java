@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,87 +43,99 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Primary
 public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateFacadeServiceImpl.class);
-    private static final String INTYGSMOTTAGARE = "intygsmottagare";
+  private static final Logger LOG = LoggerFactory.getLogger(GetCertificateFacadeServiceImpl.class);
+  private static final String INTYGSMOTTAGARE = "intygsmottagare";
 
-    private final UtkastService utkastService;
+  private final UtkastService utkastService;
 
-    private final IntygService intygService;
+  private final IntygService intygService;
 
-    private final UtkastToCertificateConverter utkastToCertificateConverter;
+  private final UtkastToCertificateConverter utkastToCertificateConverter;
 
-    private final IntygToCertificateConverter intygToCertificateConverter;
+  private final IntygToCertificateConverter intygToCertificateConverter;
 
-    private final DraftAccessServiceHelper draftAccessServiceHelper;
+  private final DraftAccessServiceHelper draftAccessServiceHelper;
 
-    private final ITIntegrationService itIntegrationService;
+  private final ITIntegrationService itIntegrationService;
 
-    private final CertificateTextVersionFacadeService certificateTextVersionFacadeService;
+  private final CertificateTextVersionFacadeService certificateTextVersionFacadeService;
 
-    @Autowired
-    public GetCertificateFacadeServiceImpl(UtkastService utkastService,
-        IntygService intygService,
-        UtkastToCertificateConverter utkastToCertificateConverter,
-        IntygToCertificateConverter intygToCertificateConverter,
-        DraftAccessServiceHelper draftAccessServiceHelper, ITIntegrationService itIntegrationService,
-        CertificateTextVersionFacadeService certificateTextVersionFacadeService) {
-        this.utkastService = utkastService;
-        this.intygService = intygService;
-        this.utkastToCertificateConverter = utkastToCertificateConverter;
-        this.intygToCertificateConverter = intygToCertificateConverter;
-        this.draftAccessServiceHelper = draftAccessServiceHelper;
-        this.itIntegrationService = itIntegrationService;
-        this.certificateTextVersionFacadeService = certificateTextVersionFacadeService;
+  @Autowired
+  public GetCertificateFacadeServiceImpl(
+      UtkastService utkastService,
+      IntygService intygService,
+      UtkastToCertificateConverter utkastToCertificateConverter,
+      IntygToCertificateConverter intygToCertificateConverter,
+      DraftAccessServiceHelper draftAccessServiceHelper,
+      ITIntegrationService itIntegrationService,
+      CertificateTextVersionFacadeService certificateTextVersionFacadeService) {
+    this.utkastService = utkastService;
+    this.intygService = intygService;
+    this.utkastToCertificateConverter = utkastToCertificateConverter;
+    this.intygToCertificateConverter = intygToCertificateConverter;
+    this.draftAccessServiceHelper = draftAccessServiceHelper;
+    this.itIntegrationService = itIntegrationService;
+    this.certificateTextVersionFacadeService = certificateTextVersionFacadeService;
+  }
+
+  @Override
+  public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
+    final var utkast = getCertificateFromWebcert(certificateId, pdlLog, validateAccess);
+    if (utkast == null) {
+      LOG.debug(
+          "Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}'",
+          certificateId,
+          pdlLog);
+      final var intygContentHolder =
+          intygService.fetchIntygData(certificateId, null, pdlLog, validateAccess);
+
+      LOG.debug("Converting IntygContentHolder to Certificate");
+      return intygToCertificateConverter.convert(intygContentHolder);
     }
 
-    @Override
-    public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
-        final var utkast = getCertificateFromWebcert(certificateId, pdlLog, validateAccess);
-        if (utkast == null) {
-            LOG.debug("Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}'", certificateId, pdlLog);
-            final var intygContentHolder = intygService.fetchIntygData(certificateId, null, pdlLog, validateAccess);
-
-            LOG.debug("Converting IntygContentHolder to Certificate");
-            return intygToCertificateConverter.convert(intygContentHolder);
-        }
-
-        if (isSignedButNotSent(utkast)) {
-            LOG.debug("Retrieve certificate info for '{}' from Intygstjansten", certificateId);
-            final var certificateInfo = itIntegrationService.getCertificateInfo(certificateId);
-            utkast.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
-            utkast.setSkickadTillMottagare(getRecipient(certificateInfo));
-        }
-
-        LOG.debug("Converting Utkast to Certificate");
-        return utkastToCertificateConverter.convert(utkast);
+    if (isSignedButNotSent(utkast)) {
+      LOG.debug("Retrieve certificate info for '{}' from Intygstjansten", certificateId);
+      final var certificateInfo = itIntegrationService.getCertificateInfo(certificateId);
+      utkast.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
+      utkast.setSkickadTillMottagare(getRecipient(certificateInfo));
     }
 
-    private boolean isSignedButNotSent(Utkast utkast) {
-        return utkast.getStatus() == UtkastStatus.SIGNED && utkast.getSkickadTillMottagareDatum() == null;
-    }
+    LOG.debug("Converting Utkast to Certificate");
+    return utkastToCertificateConverter.convert(utkast);
+  }
 
-    private String getRecipient(ItIntygInfo certificateInfo) {
-        return (String) certificateInfo.getEvents().stream()
+  private boolean isSignedButNotSent(Utkast utkast) {
+    return utkast.getStatus() == UtkastStatus.SIGNED
+        && utkast.getSkickadTillMottagareDatum() == null;
+  }
+
+  private String getRecipient(ItIntygInfo certificateInfo) {
+    return (String)
+        certificateInfo.getEvents().stream()
             .filter(intygInfoEvent -> intygInfoEvent.getType() == IntygInfoEventType.IS006)
             .findFirst()
             .map(intygInfoEvent -> intygInfoEvent.getData().get(INTYGSMOTTAGARE))
             .orElse(null);
-    }
+  }
 
-    private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog, boolean validateAccess) {
-        try {
-            LOG.debug("Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
-            final var utkast = utkastService.getDraft(certificateId, pdlLog);
-            if (validateAccess) {
-                draftAccessServiceHelper.validateAllowToReadUtkast(utkast);
-            }
-            return certificateTextVersionFacadeService.upgradeToLatestMinorTextVersion(utkast);
-        } catch (WebCertServiceException ex) {
-            if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
-                LOG.debug("Utkast with id '{}' doesn't exist in Webcert", certificateId);
-                return null;
-            }
-            throw ex;
-        }
+  private Utkast getCertificateFromWebcert(
+      String certificateId, boolean pdlLog, boolean validateAccess) {
+    try {
+      LOG.debug(
+          "Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'",
+          certificateId,
+          pdlLog);
+      final var utkast = utkastService.getDraft(certificateId, pdlLog);
+      if (validateAccess) {
+        draftAccessServiceHelper.validateAllowToReadUtkast(utkast);
+      }
+      return certificateTextVersionFacadeService.upgradeToLatestMinorTextVersion(utkast);
+    } catch (WebCertServiceException ex) {
+      if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
+        LOG.debug("Utkast with id '{}' doesn't exist in Webcert", certificateId);
+        return null;
+      }
+      throw ex;
     }
+  }
 }

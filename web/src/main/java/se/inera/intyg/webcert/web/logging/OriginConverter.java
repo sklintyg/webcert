@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,25 +26,24 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class OriginConverter extends ClassicConverter {
 
-    private static final String NO_ORIGIN = "NO ORIGIN";
+  private static final String NO_ORIGIN = "NO ORIGIN";
 
-    @Override
-    public String convert(ILoggingEvent event) {
+  @Override
+  public String convert(ILoggingEvent event) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null) {
-            return NO_ORIGIN;
-        }
-
-        Object principal = auth.getPrincipal();
-
-        if (principal instanceof WebCertUser) {
-            WebCertUser user = (WebCertUser) auth.getPrincipal();
-            return user.getOrigin();
-        }
-
-        return NO_ORIGIN;
+    if (auth == null) {
+      return NO_ORIGIN;
     }
 
+    Object principal = auth.getPrincipal();
+
+    if (principal instanceof WebCertUser) {
+      WebCertUser user = (WebCertUser) auth.getPrincipal();
+      return user.getOrigin();
+    }
+
+    return NO_ORIGIN;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,62 +32,61 @@ import java.util.Locale;
 @Table(name = "FMB")
 public class Fmb {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  private Long id;
 
-    @Column(name = "ICD10")
-    private String icd10;
+  @Column(name = "ICD10")
+  private String icd10;
 
-    @Column(name = "TYP")
-    @Enumerated(EnumType.STRING)
-    private FmbType typ;
+  @Column(name = "TYP")
+  @Enumerated(EnumType.STRING)
+  private FmbType typ;
 
-    @Column(name = "URSPRUNG")
-    @Enumerated(EnumType.STRING)
-    private FmbCallType ursprung;
+  @Column(name = "URSPRUNG")
+  @Enumerated(EnumType.STRING)
+  private FmbCallType ursprung;
 
-    @Column(name = "TEXT")
-    private String text;
+  @Column(name = "TEXT")
+  private String text;
 
-    @Column(name = "SENAST_UPPDATERAD")
-    private String lastUpdate;
+  @Column(name = "SENAST_UPPDATERAD")
+  private String lastUpdate;
 
-    Fmb() {
-        // default constructor for hibernate
-    }
+  Fmb() {
+    // default constructor for hibernate
+  }
 
-    public Fmb(String icd10, FmbType type, FmbCallType callType, String text, String lastUpdate) {
-        this.icd10 = icd10 != null ? icd10.toUpperCase(Locale.ENGLISH) : null;
-        this.typ = type;
-        this.ursprung = callType;
-        this.text = text;
-        this.lastUpdate = lastUpdate != null ? lastUpdate : "unknown";
-    }
+  public Fmb(String icd10, FmbType type, FmbCallType callType, String text, String lastUpdate) {
+    this.icd10 = icd10 != null ? icd10.toUpperCase(Locale.ENGLISH) : null;
+    this.typ = type;
+    this.ursprung = callType;
+    this.text = text;
+    this.lastUpdate = lastUpdate != null ? lastUpdate : "unknown";
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public String getIcd10() {
-        return icd10;
-    }
+  public String getIcd10() {
+    return icd10;
+  }
 
-    public FmbType getTyp() {
-        return typ;
-    }
+  public FmbType getTyp() {
+    return typ;
+  }
 
-    public FmbCallType getUrsprung() {
-        return ursprung;
-    }
+  public FmbCallType getUrsprung() {
+    return ursprung;
+  }
 
-    public String getText() {
-        return text;
-    }
+  public String getText() {
+    return text;
+  }
 
-    public String getLastUpdate() {
-        return lastUpdate;
-    }
-
+  public String getLastUpdate() {
+    return lastUpdate;
+  }
 }

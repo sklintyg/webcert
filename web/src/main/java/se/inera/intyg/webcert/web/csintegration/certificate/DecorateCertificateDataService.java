@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -15,43 +33,38 @@ import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateFacadeServic
 @RequiredArgsConstructor
 public class DecorateCertificateDataService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final GetCertificateFacadeServiceImpl getCertificateFacadeService;
-    private final IntygModuleRegistry intygModuleRegistry;
+  private final CSIntegrationService csIntegrationService;
+  private final GetCertificateFacadeServiceImpl getCertificateFacadeService;
+  private final IntygModuleRegistry intygModuleRegistry;
 
-    public void decorateFromParent(Certificate certificate) {
-        final var parentCertificateId = certificate.getMetadata()
-            .getRelations()
-            .getParent()
-            .getCertificateId();
+  public void decorateFromParent(Certificate certificate) {
+    final var parentCertificateId =
+        certificate.getMetadata().getRelations().getParent().getCertificateId();
 
-        if (Boolean.TRUE.equals(csIntegrationService.certificateExists(parentCertificateId))) {
-            return;
-        }
-
-        final var parentCertificate = getCertificateFacadeService.getCertificate(
-            parentCertificateId,
-            false,
-            false
-        );
-
-        final var metadata = parentCertificate.getMetadata();
-        final var data = parentCertificate.getData();
-        
-        final var moduleApi = getModuleApi(metadata.getType(), metadata.getTypeVersion());
-        moduleApi.decorate(certificate, data);
+    if (Boolean.TRUE.equals(csIntegrationService.certificateExists(parentCertificateId))) {
+      return;
     }
 
-    private ModuleApi getModuleApi(String certificateType, String certificateVersion) {
-        try {
-            return intygModuleRegistry.getModuleApi(certificateType, certificateVersion);
-        } catch (ModuleNotFoundException ex) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                String.format("Could not find ModuleAPI for certificate type '%s' and version %s", certificateType, certificateVersion),
-                ex
-            );
-        }
-    }
+    final var parentCertificate =
+        getCertificateFacadeService.getCertificate(parentCertificateId, false, false);
 
+    final var metadata = parentCertificate.getMetadata();
+    final var data = parentCertificate.getData();
+
+    final var moduleApi = getModuleApi(metadata.getType(), metadata.getTypeVersion());
+    moduleApi.decorate(certificate, data);
+  }
+
+  private ModuleApi getModuleApi(String certificateType, String certificateVersion) {
+    try {
+      return intygModuleRegistry.getModuleApi(certificateType, certificateVersion);
+    } catch (ModuleNotFoundException ex) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+          String.format(
+              "Could not find ModuleAPI for certificate type '%s' and version %s",
+              certificateType, certificateVersion),
+          ex);
+    }
+  }
 }

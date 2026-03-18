@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -65,394 +65,427 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeConverterTest {
 
-    private static final String FRAGESTALLARKOD_FORSAKRINGSKASSA = "FK";
-    private static final String PARTKOD_FKASSA = "FKASSA";
+  private static final String FRAGESTALLARKOD_FORSAKRINGSKASSA = "FK";
+  private static final String PARTKOD_FKASSA = "FKASSA";
 
-    @Mock
-    EmployeeNameService employeeNameService;
+  @Mock EmployeeNameService employeeNameService;
 
-    @Test
-    public void testConvertArende() {
-        final ArendeAmne amneskod = ArendeAmne.AVSTMN;
-        final String intygId = "intygId";
-        final String kontaktInfo = "kontaktInfo";
-        final String skickatAv = PARTKOD_FKASSA;
-        final String frageId = "frageId";
-        final Integer instans = 1;
-        final String kompletteringsText = "kompletteringsText";
-        final String meddelande = "meddelande";
-        final String meddelandeId = "meddelandeId";
-        final String paminnelseMeddelandeId = "paminnelseMeddelandeId";
-        final String personId = "personId";
-        final String referensId = "referensId";
-        final String rubrik = "rubrik";
-        final LocalDate sistaDatum = LocalDate.now();
-        final LocalDateTime skickatTidpunkt = LocalDateTime.now();
-        final String svarPa = "svarPa";
-        final String svarReferensId = "svarReferensId";
-        SendMessageToCareType input = createSendMessageToCare(amneskod.name(), intygId, kontaktInfo, skickatAv, frageId, instans,
+  @Test
+  public void testConvertArende() {
+    final ArendeAmne amneskod = ArendeAmne.AVSTMN;
+    final String intygId = "intygId";
+    final String kontaktInfo = "kontaktInfo";
+    final String skickatAv = PARTKOD_FKASSA;
+    final String frageId = "frageId";
+    final Integer instans = 1;
+    final String kompletteringsText = "kompletteringsText";
+    final String meddelande = "meddelande";
+    final String meddelandeId = "meddelandeId";
+    final String paminnelseMeddelandeId = "paminnelseMeddelandeId";
+    final String personId = "personId";
+    final String referensId = "referensId";
+    final String rubrik = "rubrik";
+    final LocalDate sistaDatum = LocalDate.now();
+    final LocalDateTime skickatTidpunkt = LocalDateTime.now();
+    final String svarPa = "svarPa";
+    final String svarReferensId = "svarReferensId";
+    SendMessageToCareType input =
+        createSendMessageToCare(
+            amneskod.name(),
+            intygId,
+            kontaktInfo,
+            skickatAv,
+            frageId,
+            instans,
             kompletteringsText,
-            meddelande, meddelandeId, paminnelseMeddelandeId, personId, referensId, rubrik, sistaDatum, skickatTidpunkt, svarPa,
+            meddelande,
+            meddelandeId,
+            paminnelseMeddelandeId,
+            personId,
+            referensId,
+            rubrik,
+            sistaDatum,
+            skickatTidpunkt,
+            svarPa,
             svarReferensId);
-        Arende res = ArendeConverter.convert(input);
-        assertEquals(amneskod, res.getAmne());
-        assertEquals(intygId, res.getIntygsId());
-        assertEquals(kontaktInfo, res.getKontaktInfo().get(0));
-        assertEquals(FRAGESTALLARKOD_FORSAKRINGSKASSA, res.getSkickatAv());
-        assertEquals(frageId, res.getKomplettering().get(0).getFrageId());
-        assertEquals(instans, res.getKomplettering().get(0).getInstans());
-        assertEquals(kompletteringsText, res.getKomplettering().get(0).getText());
-        assertEquals(meddelande, res.getMeddelande());
-        assertEquals(meddelandeId, res.getMeddelandeId());
-        assertEquals(paminnelseMeddelandeId, res.getPaminnelseMeddelandeId());
-        assertEquals(personId, res.getPatientPersonId());
-        assertEquals(referensId, res.getReferensId());
-        assertEquals(rubrik, res.getRubrik());
-        assertEquals(sistaDatum, res.getSistaDatumForSvar());
-        assertEquals(skickatTidpunkt, res.getSkickatTidpunkt());
-        assertEquals(svarPa, res.getSvarPaId());
-        assertEquals(svarReferensId, res.getSvarPaReferens());
-    }
+    Arende res = ArendeConverter.convert(input);
+    assertEquals(amneskod, res.getAmne());
+    assertEquals(intygId, res.getIntygsId());
+    assertEquals(kontaktInfo, res.getKontaktInfo().get(0));
+    assertEquals(FRAGESTALLARKOD_FORSAKRINGSKASSA, res.getSkickatAv());
+    assertEquals(frageId, res.getKomplettering().get(0).getFrageId());
+    assertEquals(instans, res.getKomplettering().get(0).getInstans());
+    assertEquals(kompletteringsText, res.getKomplettering().get(0).getText());
+    assertEquals(meddelande, res.getMeddelande());
+    assertEquals(meddelandeId, res.getMeddelandeId());
+    assertEquals(paminnelseMeddelandeId, res.getPaminnelseMeddelandeId());
+    assertEquals(personId, res.getPatientPersonId());
+    assertEquals(referensId, res.getReferensId());
+    assertEquals(rubrik, res.getRubrik());
+    assertEquals(sistaDatum, res.getSistaDatumForSvar());
+    assertEquals(skickatTidpunkt, res.getSkickatTidpunkt());
+    assertEquals(svarPa, res.getSvarPaId());
+    assertEquals(svarReferensId, res.getSvarPaReferens());
+  }
 
-    @Test
-    public void testDecorateArendeFromUtkast() throws WebCertServiceException {
-        final String intygTyp = "intygTyp";
-        final String signeratAv = "signeratAv";
-        final String enhetId = "enhetId";
-        final String enhetName = "enhetName";
-        final String vardgivareName = "vardgivareName";
-        final LocalDateTime now = LocalDateTime.now();
-        final String givenName = "Test";
-        final String surname = "Testorsson Svensson";
+  @Test
+  public void testDecorateArendeFromUtkast() throws WebCertServiceException {
+    final String intygTyp = "intygTyp";
+    final String signeratAv = "signeratAv";
+    final String enhetId = "enhetId";
+    final String enhetName = "enhetName";
+    final String vardgivareName = "vardgivareName";
+    final LocalDateTime now = LocalDateTime.now();
+    final String givenName = "Test";
+    final String surname = "Testorsson Svensson";
 
-        Utkast utkast = new Utkast();
-        utkast.setIntygsTyp(intygTyp);
-        utkast.setEnhetsId(enhetId);
-        utkast.setEnhetsNamn(enhetName);
-        utkast.setVardgivarNamn(vardgivareName);
-        utkast.setSignatur(mock(Signatur.class));
-        when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(employeeNameService.getEmployeeHsaName(signeratAv)).thenReturn(createName(givenName, surname));
+    Utkast utkast = new Utkast();
+    utkast.setIntygsTyp(intygTyp);
+    utkast.setEnhetsId(enhetId);
+    utkast.setEnhetsNamn(enhetName);
+    utkast.setVardgivarNamn(vardgivareName);
+    utkast.setSignatur(mock(Signatur.class));
+    when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
+    when(employeeNameService.getEmployeeHsaName(signeratAv))
+        .thenReturn(createName(givenName, surname));
 
-        Arende res = new Arende();
-        ArendeConverter.decorateArendeFromUtkast(res, utkast, now, employeeNameService);
+    Arende res = new Arende();
+    ArendeConverter.decorateArendeFromUtkast(res, utkast, now, employeeNameService);
 
-        assertNotNull(res);
-        assertEquals(now, res.getTimestamp());
-        assertEquals(now, res.getSenasteHandelse());
-        assertEquals(Boolean.FALSE, res.getVidarebefordrad());
-        assertEquals(Status.PENDING_INTERNAL_ACTION, res.getStatus());
-        assertEquals(intygTyp, res.getIntygTyp());
-        assertEquals(signeratAv, res.getSigneratAv());
-        assertEquals(enhetId, res.getEnhetId());
-        assertEquals(enhetName, res.getEnhetName());
-        assertEquals(vardgivareName, res.getVardgivareName());
-        assertEquals("Test Testorsson Svensson", res.getSigneratAvName());
-    }
+    assertNotNull(res);
+    assertEquals(now, res.getTimestamp());
+    assertEquals(now, res.getSenasteHandelse());
+    assertEquals(Boolean.FALSE, res.getVidarebefordrad());
+    assertEquals(Status.PENDING_INTERNAL_ACTION, res.getStatus());
+    assertEquals(intygTyp, res.getIntygTyp());
+    assertEquals(signeratAv, res.getSigneratAv());
+    assertEquals(enhetId, res.getEnhetId());
+    assertEquals(enhetName, res.getEnhetName());
+    assertEquals(vardgivareName, res.getVardgivareName());
+    assertEquals("Test Testorsson Svensson", res.getSigneratAvName());
+  }
 
-    @Test
-    public void testDecorateMessageFromCertificatet() throws WebCertServiceException {
-        final String certificateType = "certificateType";
-        final String signedBy = "signedBy";
-        final String unitId = "unitId";
-        final String unitName = "unitName";
-        final String careProviderName = "careProviderName";
-        final LocalDateTime now = LocalDateTime.now();
-        final String fullName = "Test Testorsson Svensson";
+  @Test
+  public void testDecorateMessageFromCertificatet() throws WebCertServiceException {
+    final String certificateType = "certificateType";
+    final String signedBy = "signedBy";
+    final String unitId = "unitId";
+    final String unitName = "unitName";
+    final String careProviderName = "careProviderName";
+    final LocalDateTime now = LocalDateTime.now();
+    final String fullName = "Test Testorsson Svensson";
 
-        final var certificate = mock(Utlatande.class);
-        doReturn(certificateType).when(certificate).getTyp();
-        final var basicData = mock(GrundData.class);
-        doReturn(basicData).when(certificate).getGrundData();
-        final var createdBy = mock(HoSPersonal.class);
-        doReturn(createdBy).when(basicData).getSkapadAv();
-        doReturn(signedBy).when(createdBy).getPersonId();
-        doReturn(fullName).when(createdBy).getFullstandigtNamn();
-        final var unit = mock(Vardenhet.class);
-        doReturn(unit).when(createdBy).getVardenhet();
-        doReturn(unitId).when(unit).getEnhetsid();
-        doReturn(unitName).when(unit).getEnhetsnamn();
-        final var careProvider = mock(Vardgivare.class);
-        doReturn(careProvider).when(unit).getVardgivare();
-        doReturn(careProviderName).when(careProvider).getVardgivarnamn();
+    final var certificate = mock(Utlatande.class);
+    doReturn(certificateType).when(certificate).getTyp();
+    final var basicData = mock(GrundData.class);
+    doReturn(basicData).when(certificate).getGrundData();
+    final var createdBy = mock(HoSPersonal.class);
+    doReturn(createdBy).when(basicData).getSkapadAv();
+    doReturn(signedBy).when(createdBy).getPersonId();
+    doReturn(fullName).when(createdBy).getFullstandigtNamn();
+    final var unit = mock(Vardenhet.class);
+    doReturn(unit).when(createdBy).getVardenhet();
+    doReturn(unitId).when(unit).getEnhetsid();
+    doReturn(unitName).when(unit).getEnhetsnamn();
+    final var careProvider = mock(Vardgivare.class);
+    doReturn(careProvider).when(unit).getVardgivare();
+    doReturn(careProviderName).when(careProvider).getVardgivarnamn();
 
-        Arende actualMessage = new Arende();
-        ArendeConverter.decorateMessageFromCertificate(actualMessage, certificate, now);
+    Arende actualMessage = new Arende();
+    ArendeConverter.decorateMessageFromCertificate(actualMessage, certificate, now);
 
-        assertNotNull(actualMessage);
-        assertEquals(now, actualMessage.getTimestamp());
-        assertEquals(now, actualMessage.getSenasteHandelse());
-        assertEquals(Boolean.FALSE, actualMessage.getVidarebefordrad());
-        assertEquals(Status.PENDING_INTERNAL_ACTION, actualMessage.getStatus());
-        assertEquals(certificateType, actualMessage.getIntygTyp());
-        assertEquals(signedBy, actualMessage.getSigneratAv());
-        assertEquals(unitId, actualMessage.getEnhetId());
-        assertEquals(unitName, actualMessage.getEnhetName());
-        assertEquals(careProviderName, actualMessage.getVardgivareName());
-        assertEquals(fullName, actualMessage.getSigneratAvName());
-    }
+    assertNotNull(actualMessage);
+    assertEquals(now, actualMessage.getTimestamp());
+    assertEquals(now, actualMessage.getSenasteHandelse());
+    assertEquals(Boolean.FALSE, actualMessage.getVidarebefordrad());
+    assertEquals(Status.PENDING_INTERNAL_ACTION, actualMessage.getStatus());
+    assertEquals(certificateType, actualMessage.getIntygTyp());
+    assertEquals(signedBy, actualMessage.getSigneratAv());
+    assertEquals(unitId, actualMessage.getEnhetId());
+    assertEquals(unitName, actualMessage.getEnhetName());
+    assertEquals(careProviderName, actualMessage.getVardgivareName());
+    assertEquals(fullName, actualMessage.getSigneratAvName());
+  }
 
-    @Test
-    public void testCreateArendeQuestionFromUtkast() {
-        final ArendeAmne amne = ArendeAmne.OVRIGT;
-        final String enhetsId = "enhetsId";
-        final String intygsId = "intygsId";
-        final String intygsTyp = "luse";
-        final String meddelande = "meddelande";
-        final String patientPersonId = "191212121212";
-        final String rubrik = "rubrik";
-        final String signeratAv = "hsa123";
-        final String givenName = "givenname";
-        final String surname = "surname";
-        final String vardaktorName = "vardaktor namn";
-        final String enhetName = "enhet namn";
-        final String vardgivareName = "vardgivare namn";
-        final LocalDateTime now = LocalDateTime.now();
-        Utkast utkast = new Utkast();
-        utkast.setEnhetsId(enhetsId);
-        utkast.setEnhetsNamn(enhetName);
-        utkast.setVardgivarNamn(vardgivareName);
-        utkast.setIntygsId(intygsId);
-        utkast.setIntygsTyp(intygsTyp);
-        utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
-        utkast.setSignatur(mock(Signatur.class));
-        when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(employeeNameService.getEmployeeHsaName(signeratAv)).thenReturn(createName(givenName, surname));
+  @Test
+  public void testCreateArendeQuestionFromUtkast() {
+    final ArendeAmne amne = ArendeAmne.OVRIGT;
+    final String enhetsId = "enhetsId";
+    final String intygsId = "intygsId";
+    final String intygsTyp = "luse";
+    final String meddelande = "meddelande";
+    final String patientPersonId = "191212121212";
+    final String rubrik = "rubrik";
+    final String signeratAv = "hsa123";
+    final String givenName = "givenname";
+    final String surname = "surname";
+    final String vardaktorName = "vardaktor namn";
+    final String enhetName = "enhet namn";
+    final String vardgivareName = "vardgivare namn";
+    final LocalDateTime now = LocalDateTime.now();
+    Utkast utkast = new Utkast();
+    utkast.setEnhetsId(enhetsId);
+    utkast.setEnhetsNamn(enhetName);
+    utkast.setVardgivarNamn(vardgivareName);
+    utkast.setIntygsId(intygsId);
+    utkast.setIntygsTyp(intygsTyp);
+    utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
+    utkast.setSignatur(mock(Signatur.class));
+    when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
+    when(employeeNameService.getEmployeeHsaName(signeratAv))
+        .thenReturn(createName(givenName, surname));
 
-        Arende res = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, now, vardaktorName, employeeNameService);
+    Arende res =
+        ArendeConverter.createArendeFromUtkast(
+            amne, rubrik, meddelande, utkast, now, vardaktorName, employeeNameService);
 
-        assertNotNull(res);
-        assertEquals(amne, res.getAmne());
-        assertEquals(enhetsId, res.getEnhetId());
-        assertEquals(enhetName, res.getEnhetName());
-        assertEquals(vardgivareName, res.getVardgivareName());
-        assertEquals(intygsId, res.getIntygsId());
-        assertEquals(intygsTyp, res.getIntygTyp());
-        assertEquals(meddelande, res.getMeddelande());
-        assertNotNull(res.getMeddelandeId());
-        assertNull(res.getPaminnelseMeddelandeId());
-        assertEquals(patientPersonId, res.getPatientPersonId());
-        assertNull(res.getReferensId());
-        assertEquals(rubrik, res.getRubrik());
-        assertEquals(now, res.getSenasteHandelse());
-        assertEquals(now, res.getSkickatTidpunkt());
-        assertEquals(now, res.getTimestamp());
-        assertEquals(signeratAv, res.getSigneratAv());
-        assertEquals(givenName + " " + surname, res.getSigneratAvName());
-        assertNull(res.getSistaDatumForSvar());
-        assertEquals(FrageStallare.WEBCERT.getKod(), res.getSkickatAv());
-        assertEquals(Status.PENDING_EXTERNAL_ACTION, res.getStatus());
-        assertNull(res.getSvarPaId());
-        assertNull(res.getSvarPaReferens());
-        assertEquals(Boolean.FALSE, res.getVidarebefordrad());
-        assertEquals(vardaktorName, res.getVardaktorName());
-    }
+    assertNotNull(res);
+    assertEquals(amne, res.getAmne());
+    assertEquals(enhetsId, res.getEnhetId());
+    assertEquals(enhetName, res.getEnhetName());
+    assertEquals(vardgivareName, res.getVardgivareName());
+    assertEquals(intygsId, res.getIntygsId());
+    assertEquals(intygsTyp, res.getIntygTyp());
+    assertEquals(meddelande, res.getMeddelande());
+    assertNotNull(res.getMeddelandeId());
+    assertNull(res.getPaminnelseMeddelandeId());
+    assertEquals(patientPersonId, res.getPatientPersonId());
+    assertNull(res.getReferensId());
+    assertEquals(rubrik, res.getRubrik());
+    assertEquals(now, res.getSenasteHandelse());
+    assertEquals(now, res.getSkickatTidpunkt());
+    assertEquals(now, res.getTimestamp());
+    assertEquals(signeratAv, res.getSigneratAv());
+    assertEquals(givenName + " " + surname, res.getSigneratAvName());
+    assertNull(res.getSistaDatumForSvar());
+    assertEquals(FrageStallare.WEBCERT.getKod(), res.getSkickatAv());
+    assertEquals(Status.PENDING_EXTERNAL_ACTION, res.getStatus());
+    assertNull(res.getSvarPaId());
+    assertNull(res.getSvarPaReferens());
+    assertEquals(Boolean.FALSE, res.getVidarebefordrad());
+    assertEquals(vardaktorName, res.getVardaktorName());
+  }
 
-    @Test
-    public void testCreateMessageFromCertificate() {
-        final var subject = ArendeAmne.OVRIGT;
-        final var unitId = "unitId";
-        final var certificateId = "certificateId";
-        final var certificateType = "certificateType";
-        final var messageText = "messageText";
-        final var patientPersonId = "191212121212";
-        final var header = "header";
-        final var signedBy = "signedBy";
-        final var givenName = "Test";
-        final var surname = "Testorsson Svensson";
-        final var careGiverName = "Test Testorsson Svensson";
-        final var unitName = "unitName";
-        final var careProviderName = "careProviderName";
-        final var now = LocalDateTime.now();
+  @Test
+  public void testCreateMessageFromCertificate() {
+    final var subject = ArendeAmne.OVRIGT;
+    final var unitId = "unitId";
+    final var certificateId = "certificateId";
+    final var certificateType = "certificateType";
+    final var messageText = "messageText";
+    final var patientPersonId = "191212121212";
+    final var header = "header";
+    final var signedBy = "signedBy";
+    final var givenName = "Test";
+    final var surname = "Testorsson Svensson";
+    final var careGiverName = "Test Testorsson Svensson";
+    final var unitName = "unitName";
+    final var careProviderName = "careProviderName";
+    final var now = LocalDateTime.now();
 
-        Utkast utkast = new Utkast();
-        utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
+    Utkast utkast = new Utkast();
+    utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
 
-        final var certificate = mock(Utlatande.class);
-        doReturn(certificateType).when(certificate).getTyp();
-        doReturn(certificateId).when(certificate).getId();
-        final var basicData = mock(GrundData.class);
-        doReturn(basicData).when(certificate).getGrundData();
-        final var patient = mock(Patient.class);
-        doReturn(patient).when(basicData).getPatient();
-        doReturn(Personnummer.createPersonnummer(patientPersonId).get()).when(patient).getPersonId();
-        final var createdBy = mock(HoSPersonal.class);
-        doReturn(createdBy).when(basicData).getSkapadAv();
-        doReturn(signedBy).when(createdBy).getPersonId();
-        final var unit = mock(Vardenhet.class);
-        doReturn(unit).when(createdBy).getVardenhet();
-        doReturn(unitId).when(unit).getEnhetsid();
-        doReturn(unitName).when(unit).getEnhetsnamn();
-        final var careProvider = mock(Vardgivare.class);
-        doReturn(careProvider).when(unit).getVardgivare();
-        doReturn(careProviderName).when(careProvider).getVardgivarnamn();
+    final var certificate = mock(Utlatande.class);
+    doReturn(certificateType).when(certificate).getTyp();
+    doReturn(certificateId).when(certificate).getId();
+    final var basicData = mock(GrundData.class);
+    doReturn(basicData).when(certificate).getGrundData();
+    final var patient = mock(Patient.class);
+    doReturn(patient).when(basicData).getPatient();
+    doReturn(Personnummer.createPersonnummer(patientPersonId).get()).when(patient).getPersonId();
+    final var createdBy = mock(HoSPersonal.class);
+    doReturn(createdBy).when(basicData).getSkapadAv();
+    doReturn(signedBy).when(createdBy).getPersonId();
+    final var unit = mock(Vardenhet.class);
+    doReturn(unit).when(createdBy).getVardenhet();
+    doReturn(unitId).when(unit).getEnhetsid();
+    doReturn(unitName).when(unit).getEnhetsnamn();
+    final var careProvider = mock(Vardgivare.class);
+    doReturn(careProvider).when(unit).getVardgivare();
+    doReturn(careProviderName).when(careProvider).getVardgivarnamn();
 
-        when(employeeNameService.getEmployeeHsaName(signedBy)).thenReturn(createName(givenName, surname));
+    when(employeeNameService.getEmployeeHsaName(signedBy))
+        .thenReturn(createName(givenName, surname));
 
-        Arende res = ArendeConverter.createMessageFromCertificate(subject, header, messageText, certificate, now, careGiverName,
-            employeeNameService);
+    Arende res =
+        ArendeConverter.createMessageFromCertificate(
+            subject, header, messageText, certificate, now, careGiverName, employeeNameService);
 
-        assertNotNull(res);
-        assertEquals(subject, res.getAmne());
-        assertEquals(unitId, res.getEnhetId());
-        assertEquals(unitName, res.getEnhetName());
-        assertEquals(careProviderName, res.getVardgivareName());
-        assertEquals(certificateId, res.getIntygsId());
-        assertEquals(certificateType, res.getIntygTyp());
-        assertEquals(messageText, res.getMeddelande());
-        assertNotNull(res.getMeddelandeId());
-        assertNull(res.getPaminnelseMeddelandeId());
-        assertEquals(patientPersonId, res.getPatientPersonId());
-        assertNull(res.getReferensId());
-        assertEquals(header, res.getRubrik());
-        assertEquals(now, res.getSenasteHandelse());
-        assertEquals(now, res.getSkickatTidpunkt());
-        assertEquals(now, res.getTimestamp());
-        assertEquals(signedBy, res.getSigneratAv());
-        assertEquals(givenName + " " + surname, res.getSigneratAvName());
-        assertNull(res.getSistaDatumForSvar());
-        assertEquals(FrageStallare.WEBCERT.getKod(), res.getSkickatAv());
-        assertEquals(Status.PENDING_EXTERNAL_ACTION, res.getStatus());
-        assertNull(res.getSvarPaId());
-        assertNull(res.getSvarPaReferens());
-        assertEquals(Boolean.FALSE, res.getVidarebefordrad());
-        assertEquals(careGiverName, res.getVardaktorName());
-    }
+    assertNotNull(res);
+    assertEquals(subject, res.getAmne());
+    assertEquals(unitId, res.getEnhetId());
+    assertEquals(unitName, res.getEnhetName());
+    assertEquals(careProviderName, res.getVardgivareName());
+    assertEquals(certificateId, res.getIntygsId());
+    assertEquals(certificateType, res.getIntygTyp());
+    assertEquals(messageText, res.getMeddelande());
+    assertNotNull(res.getMeddelandeId());
+    assertNull(res.getPaminnelseMeddelandeId());
+    assertEquals(patientPersonId, res.getPatientPersonId());
+    assertNull(res.getReferensId());
+    assertEquals(header, res.getRubrik());
+    assertEquals(now, res.getSenasteHandelse());
+    assertEquals(now, res.getSkickatTidpunkt());
+    assertEquals(now, res.getTimestamp());
+    assertEquals(signedBy, res.getSigneratAv());
+    assertEquals(givenName + " " + surname, res.getSigneratAvName());
+    assertNull(res.getSistaDatumForSvar());
+    assertEquals(FrageStallare.WEBCERT.getKod(), res.getSkickatAv());
+    assertEquals(Status.PENDING_EXTERNAL_ACTION, res.getStatus());
+    assertNull(res.getSvarPaId());
+    assertNull(res.getSvarPaReferens());
+    assertEquals(Boolean.FALSE, res.getVidarebefordrad());
+    assertEquals(careGiverName, res.getVardaktorName());
+  }
 
-    @Test
-    public void testCreateArendeAnswerFromQuestion() {
-        final String nyttMeddelande = "nytt meddelande";
-        final String meddelandeId = "meddelandeId";
-        final ArendeAmne amne = ArendeAmne.KONTKT;
-        final String enhetsId = "enhetsId";
-        final String intygsId = "intygsId";
-        final String intygsTyp = "luse";
-        final String meddelande = "meddelande";
-        final String patientPersonId = "191212121212";
-        final String rubrik = "rubrik";
-        final String signeratAv = "hsa123";
-        final String signeratAvName = "givenname surname";
-        final String referensId = "referensId";
-        final String vardaktorName = "vardaktor namn";
-        final String enhetName = "enhet namn";
-        final String vardgivareName = "vardgivare namn";
-        final LocalDateTime now = LocalDateTime.now();
-        Arende arende = new Arende();
-        arende.setMeddelandeId(meddelandeId);
-        arende.setEnhetId(enhetsId);
-        arende.setEnhetName(enhetName);
-        arende.setVardgivareName(vardgivareName);
-        arende.setIntygsId(intygsId);
-        arende.setIntygTyp(intygsTyp);
-        arende.setPatientPersonId(patientPersonId);
-        arende.setSigneratAv(signeratAv);
-        arende.setSigneratAvName(signeratAvName);
-        arende.setRubrik(rubrik);
-        arende.setMeddelande(meddelande);
-        arende.setAmne(amne);
-        arende.setReferensId(referensId);
-        arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+  @Test
+  public void testCreateArendeAnswerFromQuestion() {
+    final String nyttMeddelande = "nytt meddelande";
+    final String meddelandeId = "meddelandeId";
+    final ArendeAmne amne = ArendeAmne.KONTKT;
+    final String enhetsId = "enhetsId";
+    final String intygsId = "intygsId";
+    final String intygsTyp = "luse";
+    final String meddelande = "meddelande";
+    final String patientPersonId = "191212121212";
+    final String rubrik = "rubrik";
+    final String signeratAv = "hsa123";
+    final String signeratAvName = "givenname surname";
+    final String referensId = "referensId";
+    final String vardaktorName = "vardaktor namn";
+    final String enhetName = "enhet namn";
+    final String vardgivareName = "vardgivare namn";
+    final LocalDateTime now = LocalDateTime.now();
+    Arende arende = new Arende();
+    arende.setMeddelandeId(meddelandeId);
+    arende.setEnhetId(enhetsId);
+    arende.setEnhetName(enhetName);
+    arende.setVardgivareName(vardgivareName);
+    arende.setIntygsId(intygsId);
+    arende.setIntygTyp(intygsTyp);
+    arende.setPatientPersonId(patientPersonId);
+    arende.setSigneratAv(signeratAv);
+    arende.setSigneratAvName(signeratAvName);
+    arende.setRubrik(rubrik);
+    arende.setMeddelande(meddelande);
+    arende.setAmne(amne);
+    arende.setReferensId(referensId);
+    arende.setStatus(Status.PENDING_INTERNAL_ACTION);
 
-        Arende res = ArendeConverter.createAnswerFromArende(nyttMeddelande, arende, now, vardaktorName);
+    Arende res = ArendeConverter.createAnswerFromArende(nyttMeddelande, arende, now, vardaktorName);
 
-        assertNotNull(res);
-        assertEquals(amne, res.getAmne());
-        assertEquals(enhetsId, res.getEnhetId());
-        assertEquals(enhetName, res.getEnhetName());
-        assertEquals(vardgivareName, res.getVardgivareName());
-        assertEquals(intygsId, res.getIntygsId());
-        assertEquals(intygsTyp, res.getIntygTyp());
-        assertEquals(nyttMeddelande, res.getMeddelande());
-        assertNotNull(res.getMeddelandeId());
-        assertNull(res.getPaminnelseMeddelandeId());
-        assertEquals(patientPersonId, res.getPatientPersonId());
-        assertNull(res.getReferensId());
-        assertEquals(rubrik, res.getRubrik());
-        assertEquals(now, res.getSenasteHandelse());
-        assertEquals(now, res.getSkickatTidpunkt());
-        assertEquals(now, res.getTimestamp());
-        assertEquals(signeratAv, res.getSigneratAv());
-        assertEquals(signeratAvName, res.getSigneratAvName());
-        assertNull(res.getSistaDatumForSvar());
-        assertEquals(FrageStallare.WEBCERT.getKod(), res.getSkickatAv());
-        assertEquals(Status.CLOSED, res.getStatus());
-        assertEquals(meddelandeId, res.getSvarPaId());
-        assertEquals(referensId, res.getSvarPaReferens());
-        assertEquals(Boolean.FALSE, res.getVidarebefordrad());
-        assertNotEquals(meddelandeId, res.getMeddelandeId());
-        assertEquals(vardaktorName, res.getVardaktorName());
-    }
+    assertNotNull(res);
+    assertEquals(amne, res.getAmne());
+    assertEquals(enhetsId, res.getEnhetId());
+    assertEquals(enhetName, res.getEnhetName());
+    assertEquals(vardgivareName, res.getVardgivareName());
+    assertEquals(intygsId, res.getIntygsId());
+    assertEquals(intygsTyp, res.getIntygTyp());
+    assertEquals(nyttMeddelande, res.getMeddelande());
+    assertNotNull(res.getMeddelandeId());
+    assertNull(res.getPaminnelseMeddelandeId());
+    assertEquals(patientPersonId, res.getPatientPersonId());
+    assertNull(res.getReferensId());
+    assertEquals(rubrik, res.getRubrik());
+    assertEquals(now, res.getSenasteHandelse());
+    assertEquals(now, res.getSkickatTidpunkt());
+    assertEquals(now, res.getTimestamp());
+    assertEquals(signeratAv, res.getSigneratAv());
+    assertEquals(signeratAvName, res.getSigneratAvName());
+    assertNull(res.getSistaDatumForSvar());
+    assertEquals(FrageStallare.WEBCERT.getKod(), res.getSkickatAv());
+    assertEquals(Status.CLOSED, res.getStatus());
+    assertEquals(meddelandeId, res.getSvarPaId());
+    assertEquals(referensId, res.getSvarPaReferens());
+    assertEquals(Boolean.FALSE, res.getVidarebefordrad());
+    assertNotEquals(meddelandeId, res.getMeddelandeId());
+    assertEquals(vardaktorName, res.getVardaktorName());
+  }
 
-    @Test
-    public void getNamesByHsaIds() {
-        String id1 = "not_found";
-        String id2 = "foundId";
-        final var givenName = "Test";
-        final var surname = "Testorsson Svensson";
+  @Test
+  public void getNamesByHsaIds() {
+    String id1 = "not_found";
+    String id2 = "foundId";
+    final var givenName = "Test";
+    final var surname = "Testorsson Svensson";
 
-        List<String> hsaIds = Arrays.asList(id1, id2);
+    List<String> hsaIds = Arrays.asList(id1, id2);
 
-        when(employeeNameService.getEmployeeHsaName(id1)).thenThrow(WebServiceException.class);
+    when(employeeNameService.getEmployeeHsaName(id1)).thenThrow(WebServiceException.class);
 
-        when(employeeNameService.getEmployeeHsaName(id2)).thenReturn(createName(givenName, surname));
+    when(employeeNameService.getEmployeeHsaName(id2)).thenReturn(createName(givenName, surname));
 
-        Map<String, String> map = ArendeConverter.getNamesByHsaIds(hsaIds, employeeNameService);
+    Map<String, String> map = ArendeConverter.getNamesByHsaIds(hsaIds, employeeNameService);
 
-        assertNotNull(map);
-        assertEquals(1, map.size());
-        assertTrue(map.containsKey(id2));
-        assertFalse(map.containsKey(id1));
-    }
+    assertNotNull(map);
+    assertEquals(1, map.size());
+    assertTrue(map.containsKey(id2));
+    assertFalse(map.containsKey(id1));
+  }
 
-    private SendMessageToCareType createSendMessageToCare(String amneskod, String intygId, String kontaktInfo, String skickatAv,
-        String frageId,
-        Integer instans, String kompletteringsText, String meddelande, String meddelandeId, String paminnelseMeddelandeId,
-        String personId,
-        String referensId, String rubrik, LocalDate sistaDatum, LocalDateTime skickatTidpunkt, String svarPa, String svarReferensId) {
-        SendMessageToCareType res = new SendMessageToCareType();
+  private SendMessageToCareType createSendMessageToCare(
+      String amneskod,
+      String intygId,
+      String kontaktInfo,
+      String skickatAv,
+      String frageId,
+      Integer instans,
+      String kompletteringsText,
+      String meddelande,
+      String meddelandeId,
+      String paminnelseMeddelandeId,
+      String personId,
+      String referensId,
+      String rubrik,
+      LocalDate sistaDatum,
+      LocalDateTime skickatTidpunkt,
+      String svarPa,
+      String svarReferensId) {
+    SendMessageToCareType res = new SendMessageToCareType();
 
-        Amneskod amne = new Amneskod();
-        amne.setCode(amneskod);
-        res.setAmne(amne);
+    Amneskod amne = new Amneskod();
+    amne.setCode(amneskod);
+    res.setAmne(amne);
 
-        SkickatAv sa = new SkickatAv();
-        sa.getKontaktInfo().add(kontaktInfo);
-        Part part = new Part();
-        part.setCode(skickatAv);
-        sa.setPart(part);
-        res.setSkickatAv(sa);
+    SkickatAv sa = new SkickatAv();
+    sa.getKontaktInfo().add(kontaktInfo);
+    Part part = new Part();
+    part.setCode(skickatAv);
+    sa.setPart(part);
+    res.setSkickatAv(sa);
 
-        Komplettering komplettering = new Komplettering();
-        komplettering.setFrageId(frageId);
-        komplettering.setInstans(instans);
-        komplettering.setText(kompletteringsText);
-        res.getKomplettering().add(komplettering);
+    Komplettering komplettering = new Komplettering();
+    komplettering.setFrageId(frageId);
+    komplettering.setInstans(instans);
+    komplettering.setText(kompletteringsText);
+    res.getKomplettering().add(komplettering);
 
-        PersonId pid = new PersonId();
-        pid.setExtension(personId);
-        res.setPatientPersonId(pid);
+    PersonId pid = new PersonId();
+    pid.setExtension(personId);
+    res.setPatientPersonId(pid);
 
-        MeddelandeReferens mr = new MeddelandeReferens();
-        mr.setMeddelandeId(svarPa);
-        mr.setReferensId(svarReferensId);
-        res.setSvarPa(mr);
+    MeddelandeReferens mr = new MeddelandeReferens();
+    mr.setMeddelandeId(svarPa);
+    mr.setReferensId(svarReferensId);
+    res.setSvarPa(mr);
 
-        IntygId ii = new IntygId();
-        ii.setExtension(intygId);
-        res.setIntygsId(ii);
+    IntygId ii = new IntygId();
+    ii.setExtension(intygId);
+    res.setIntygsId(ii);
 
-        res.setMeddelande(meddelande);
-        res.setMeddelandeId(meddelandeId);
-        res.setPaminnelseMeddelandeId(paminnelseMeddelandeId);
-        res.setReferensId(referensId);
-        res.setRubrik(rubrik);
-        res.setSistaDatumForSvar(sistaDatum);
-        res.setSkickatTidpunkt(skickatTidpunkt);
+    res.setMeddelande(meddelande);
+    res.setMeddelandeId(meddelandeId);
+    res.setPaminnelseMeddelandeId(paminnelseMeddelandeId);
+    res.setReferensId(referensId);
+    res.setRubrik(rubrik);
+    res.setSistaDatumForSvar(sistaDatum);
+    res.setSkickatTidpunkt(skickatTidpunkt);
 
-        return res;
-    }
+    return res;
+  }
 
-    private String createName(String givenName, String middleAndSurname) {
-        return "%s %s".formatted(givenName, middleAndSurname);
-    }
+  private String createName(String givenName, String middleAndSurname) {
+    return "%s %s".formatted(givenName, middleAndSurname);
+  }
 }

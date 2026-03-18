@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,59 +46,62 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
  * @author andreaskaltenbach
  */
 @SchemaValidation
-public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQuestionResponderInterface {
+public class ReceiveQuestionResponderImpl
+    implements ReceiveMedicalCertificateQuestionResponderInterface {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveQuestionResponderImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveQuestionResponderImpl.class);
 
-    @Autowired
-    private FragaSvarConverter converter;
+  @Autowired private FragaSvarConverter converter;
 
-    @Autowired
-    private FragaSvarService fragaSvarService;
+  @Autowired private FragaSvarService fragaSvarService;
 
-    @Autowired
-    private NotificationService notificationService;
+  @Autowired private NotificationService notificationService;
 
-    @Autowired
-    private CertificateEventService certificateEventService;
+  @Autowired private CertificateEventService certificateEventService;
 
-    @Override
-    @PerformanceLogging(eventAction = "receive-medical-certificate-question", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public ReceiveMedicalCertificateQuestionResponseType receiveMedicalCertificateQuestion(
-        AttributedURIType logicalAddress, ReceiveMedicalCertificateQuestionType request) {
+  @Override
+  @PerformanceLogging(
+      eventAction = "receive-medical-certificate-question",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public ReceiveMedicalCertificateQuestionResponseType receiveMedicalCertificateQuestion(
+      AttributedURIType logicalAddress, ReceiveMedicalCertificateQuestionType request) {
 
-        ReceiveMedicalCertificateQuestionResponseType response = new ReceiveMedicalCertificateQuestionResponseType();
+    ReceiveMedicalCertificateQuestionResponseType response =
+        new ReceiveMedicalCertificateQuestionResponseType();
 
-        // Validate incoming request
-        List<String> validationMessages = QuestionAnswerValidator.validate(request);
-        if (!validationMessages.isEmpty()) {
-            response.setResult(ResultOfCallUtil.failResult(Joiner.on(",").join(validationMessages)));
-            return response;
-        }
-
-        // Transform to a FragaSvar object
-        FragaSvar fragaSvar = converter.convert(request.getQuestion());
-
-        // Notify stakeholders
-        sendNotification(processQuestion(fragaSvar));
-
-        certificateEventService.createCertificateEvent(
-            fragaSvar.getIntygsReferens().getIntygsId(), "FK", EventCode.NYFRFM,
-            String.format("received medical certificate question: %s}", fragaSvar.getFrageText()));
-
-        // Set result and send response back to caller
-        response.setResult(ResultOfCallUtil.okResult());
-        return response;
+    // Validate incoming request
+    List<String> validationMessages = QuestionAnswerValidator.validate(request);
+    if (!validationMessages.isEmpty()) {
+      response.setResult(ResultOfCallUtil.failResult(Joiner.on(",").join(validationMessages)));
+      return response;
     }
 
-    private FragaSvar processQuestion(FragaSvar fragaSvar) {
-        return fragaSvarService.processIncomingQuestion(fragaSvar);
-    }
+    // Transform to a FragaSvar object
+    FragaSvar fragaSvar = converter.convert(request.getQuestion());
 
-    private void sendNotification(FragaSvar fragaSvar) {
-        notificationService.sendNotificationForQuestionReceived(fragaSvar);
-        LOGGER.debug("Notification sent: a question with id '{}' (related to certificate with id '{}') was received from FK.",
-            fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
-    }
+    // Notify stakeholders
+    sendNotification(processQuestion(fragaSvar));
 
+    certificateEventService.createCertificateEvent(
+        fragaSvar.getIntygsReferens().getIntygsId(),
+        "FK",
+        EventCode.NYFRFM,
+        String.format("received medical certificate question: %s}", fragaSvar.getFrageText()));
+
+    // Set result and send response back to caller
+    response.setResult(ResultOfCallUtil.okResult());
+    return response;
+  }
+
+  private FragaSvar processQuestion(FragaSvar fragaSvar) {
+    return fragaSvarService.processIncomingQuestion(fragaSvar);
+  }
+
+  private void sendNotification(FragaSvar fragaSvar) {
+    notificationService.sendNotificationForQuestionReceived(fragaSvar);
+    LOGGER.debug(
+        "Notification sent: a question with id '{}' (related to certificate with id '{}') was received from FK.",
+        fragaSvar.getInternReferens(),
+        fragaSvar.getIntygsReferens().getIntygsId());
+  }
 }

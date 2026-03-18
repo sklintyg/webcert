@@ -31,33 +31,31 @@ import org.springframework.jms.support.converter.MappingJackson2MessageConverter
 import org.springframework.jms.support.converter.MessageType;
 
 @Configuration
-@ComponentScan(basePackages = {
-    "se.inera.intyg.webcert.integration.analytics"
-})
+@ComponentScan(basePackages = {"se.inera.intyg.webcert.integration.analytics"})
 public class CertificateAnalyticsServiceIntegrationConfig {
 
-    @Value("${certificate.analytics.message.queueName}")
-    private String queueName;
+  @Value("${certificate.analytics.message.queueName}")
+  private String queueName;
 
-    @Bean
-    public MappingJackson2MessageConverter messageConverter(ObjectMapper mapper) {
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+  @Bean
+  public MappingJackson2MessageConverter messageConverter(ObjectMapper mapper) {
+    mapper.registerModule(new JavaTimeModule());
+    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        final var converter = new MappingJackson2MessageConverter();
-        converter.setTargetType(MessageType.TEXT);
-        converter.setTypeIdPropertyName("_type");
-        converter.setObjectMapper(mapper);
-        return converter;
-    }
+    final var converter = new MappingJackson2MessageConverter();
+    converter.setTargetType(MessageType.TEXT);
+    converter.setTypeIdPropertyName("_type");
+    converter.setObjectMapper(mapper);
+    return converter;
+  }
 
-    @Bean
-    public JmsTemplate jmsTemplateForCertificateAnalyticsMessages(ConnectionFactory connectionFactory,
-        MappingJackson2MessageConverter converter) {
-        final var jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setDefaultDestinationName(queueName);
-        jmsTemplate.setMessageConverter(converter);
-        jmsTemplate.setSessionTransacted(true);
-        return jmsTemplate;
-    }
+  @Bean
+  public JmsTemplate jmsTemplateForCertificateAnalyticsMessages(
+      ConnectionFactory connectionFactory, MappingJackson2MessageConverter converter) {
+    final var jmsTemplate = new JmsTemplate(connectionFactory);
+    jmsTemplate.setDefaultDestinationName(queueName);
+    jmsTemplate.setMessageConverter(converter);
+    jmsTemplate.setSessionTransacted(true);
+    return jmsTemplate;
+  }
 }

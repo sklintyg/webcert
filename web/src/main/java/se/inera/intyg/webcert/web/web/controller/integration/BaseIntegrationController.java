@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,51 +28,50 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 /**
  * Base class for deep-integration and uthopp controllers.
  *
- * Created by eriklupander on 2015-10-08.
+ * <p>Created by eriklupander on 2015-10-08.
  */
 public abstract class BaseIntegrationController {
 
-    protected WebCertUserService webCertUserService;
+  protected WebCertUserService webCertUserService;
 
-    protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+  protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    // api
+  // api
 
-    @Autowired
-    public void setWebCertUserService(WebCertUserService webCertUserService) {
-        this.webCertUserService = webCertUserService;
+  @Autowired
+  public void setWebCertUserService(WebCertUserService webCertUserService) {
+    this.webCertUserService = webCertUserService;
+  }
+
+  // protected scope
+
+  /** Method should return the granted roles that allows. */
+  protected abstract String[] getGrantedRoles();
+
+  protected abstract UserOriginType getGrantedRequestOrigin();
+
+  protected WebCertUserService getWebCertUserService() {
+    return webCertUserService;
+  }
+
+  protected void validateParameters(Map<String, String> parameters) {
+    parameters.forEach(this::validateParameter);
+  }
+
+  protected void validateParameter(String paramName, String paramValue) {
+    if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Path/query parameter '%s' was either whitespace, empty (\"\") or null", paramName));
     }
+  }
 
-    // protected scope
-
-    /**
-     * Method should return the granted roles that allows.
-     */
-    protected abstract String[] getGrantedRoles();
-
-    protected abstract UserOriginType getGrantedRequestOrigin();
-
-    protected WebCertUserService getWebCertUserService() {
-        return webCertUserService;
-    }
-
-    protected void validateParameters(Map<String, String> parameters) {
-        parameters.forEach(this::validateParameter);
-    }
-
-    protected void validateParameter(String paramName, String paramValue) {
-        if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
-            throw new IllegalArgumentException(
-                String.format("Path/query parameter '%s' was either whitespace, empty (\"\") or null", paramName));
-        }
-    }
-
-    protected void validateAuthorities() {
-        // Do Auth validation, given the subclass role/origin constraints
-        authoritiesValidator.given(webCertUserService.getUser())
-            .roles(getGrantedRoles())
-            .origins(getGrantedRequestOrigin())
-            .orThrow();
-    }
-
+  protected void validateAuthorities() {
+    // Do Auth validation, given the subclass role/origin constraints
+    authoritiesValidator
+        .given(webCertUserService.getUser())
+        .roles(getGrantedRoles())
+        .origins(getGrantedRequestOrigin())
+        .orThrow();
+  }
 }

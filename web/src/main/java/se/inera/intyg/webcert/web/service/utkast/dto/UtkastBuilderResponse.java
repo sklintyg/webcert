@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,53 +22,53 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public class UtkastBuilderResponse {
 
-    private Utkast utkast;
+  private Utkast utkast;
 
-    private String orginalEnhetsId;
+  private String orginalEnhetsId;
 
-    private String orginalEnhetsNamn;
+  private String orginalEnhetsNamn;
 
-    private String orginalVardgivarId;
+  private String orginalVardgivarId;
 
-    private String orginalVardgivarNamn;
+  private String orginalVardgivarNamn;
 
-    public Utkast getUtkast() {
-        return utkast;
-    }
+  public Utkast getUtkast() {
+    return utkast;
+  }
 
-    public void setUtkast(Utkast utkast) {
-        this.utkast = utkast;
-    }
+  public void setUtkast(Utkast utkast) {
+    this.utkast = utkast;
+  }
 
-    public String getOrginalEnhetsId() {
-        return orginalEnhetsId;
-    }
+  public String getOrginalEnhetsId() {
+    return orginalEnhetsId;
+  }
 
-    public void setOrginalEnhetsId(String orginalEnhetsId) {
-        this.orginalEnhetsId = orginalEnhetsId;
-    }
+  public void setOrginalEnhetsId(String orginalEnhetsId) {
+    this.orginalEnhetsId = orginalEnhetsId;
+  }
 
-    public String getOrginalEnhetsNamn() {
-        return orginalEnhetsNamn;
-    }
+  public String getOrginalEnhetsNamn() {
+    return orginalEnhetsNamn;
+  }
 
-    public void setOrginalEnhetsNamn(String orginalEnhetsNamn) {
-        this.orginalEnhetsNamn = orginalEnhetsNamn;
-    }
+  public void setOrginalEnhetsNamn(String orginalEnhetsNamn) {
+    this.orginalEnhetsNamn = orginalEnhetsNamn;
+  }
 
-    public String getOrginalVardgivarId() {
-        return orginalVardgivarId;
-    }
+  public String getOrginalVardgivarId() {
+    return orginalVardgivarId;
+  }
 
-    public void setOrginalVardgivarId(String orginalVardgivarId) {
-        this.orginalVardgivarId = orginalVardgivarId;
-    }
+  public void setOrginalVardgivarId(String orginalVardgivarId) {
+    this.orginalVardgivarId = orginalVardgivarId;
+  }
 
-    public String getOrginalVardgivarNamn() {
-        return orginalVardgivarNamn;
-    }
+  public String getOrginalVardgivarNamn() {
+    return orginalVardgivarNamn;
+  }
 
-    public void setOrginalVardgivarNamn(String orginalVardgivarNamn) {
-        this.orginalVardgivarNamn = orginalVardgivarNamn;
-    }
+  public void setOrginalVardgivarNamn(String orginalVardgivarNamn) {
+    this.orginalVardgivarNamn = orginalVardgivarNamn;
+  }
 }

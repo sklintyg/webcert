@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,19 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.config;
 
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
-
 import java.util.List;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 
 public interface GetStaffInfoFacadeService {
 
-    List<StaffListInfo> get();
+  List<StaffListInfo> get();
 
-    List<StaffListInfo> get(String unitId);
+  List<StaffListInfo> get(String unitId);
 
-    String getLoggedInStaffHsaId();
+  String getLoggedInStaffHsaId();
 
-    boolean isLoggedInUserDoctor();
+  boolean isLoggedInUserDoctor();
 
-    List<String> getIdsOfSelectedUnit();
+  List<String> getIdsOfSelectedUnit();
 }

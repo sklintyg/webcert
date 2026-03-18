@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,15 +24,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
-public interface FragaSvarRepository extends JpaRepository<FragaSvar, Long>, FragaSvarRepositoryCustom {
+public interface FragaSvarRepository
+    extends JpaRepository<FragaSvar, Long>, FragaSvarRepositoryCustom {
 
-    @Query("select fs from FragaSvar fs where fs.intygsReferens.intygsId in :certificateIds")
-    List<FragaSvar> getFragaSvarByIntygsId(@Param("certificateIds") List<String> certificateIds);
+  @Query("select fs from FragaSvar fs where fs.intygsReferens.intygsId in :certificateIds")
+  List<FragaSvar> getFragaSvarByIntygsId(@Param("certificateIds") List<String> certificateIds);
 
-    default int eraseFragaSvarByCertificateIds(List<String> certificateIds) {
-        final var fragaSvarList = getFragaSvarByIntygsId(certificateIds);
-        deleteAll(fragaSvarList);
-        return fragaSvarList.size();
-    }
-
+  default int eraseFragaSvarByCertificateIds(List<String> certificateIds) {
+    final var fragaSvarList = getFragaSvarByIntygsId(certificateIds);
+    deleteAll(fragaSvarList);
+    return fragaSvarList.size();
+  }
 }

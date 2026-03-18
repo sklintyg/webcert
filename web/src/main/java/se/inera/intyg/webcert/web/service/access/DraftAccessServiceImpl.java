@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,233 +49,255 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Service
 public class DraftAccessServiceImpl implements DraftAccessService {
 
-    private final WebCertUserService webCertUserService;
-    private final PatientDetailsResolver patientDetailsResolver;
-    private final UtkastService utkastService;
-    private final IntygTextsService intygTextsService;
+  private final WebCertUserService webCertUserService;
+  private final PatientDetailsResolver patientDetailsResolver;
+  private final UtkastService utkastService;
+  private final IntygTextsService intygTextsService;
 
-    @Autowired
-    public DraftAccessServiceImpl(final WebCertUserService webCertUserService,
-        final PatientDetailsResolver patientDetailsResolver,
-        final UtkastService utkastService, IntygTextsService intygTextsService) {
-        this.webCertUserService = webCertUserService;
-        this.patientDetailsResolver = patientDetailsResolver;
-        this.utkastService = utkastService;
-        this.intygTextsService = intygTextsService;
-    }
+  @Autowired
+  public DraftAccessServiceImpl(
+      final WebCertUserService webCertUserService,
+      final PatientDetailsResolver patientDetailsResolver,
+      final UtkastService utkastService,
+      IntygTextsService intygTextsService) {
+    this.webCertUserService = webCertUserService;
+    this.patientDetailsResolver = patientDetailsResolver;
+    this.utkastService = utkastService;
+    this.intygTextsService = intygTextsService;
+  }
 
-    @Override
-    public AccessResult allowToCreateDraft(AccessEvaluationParameters accessEvaluationParameters) {
-        final Vardenhet vardenhet = getVardenhet();
+  @Override
+  public AccessResult allowToCreateDraft(AccessEvaluationParameters accessEvaluationParameters) {
+    final Vardenhet vardenhet = getVardenhet();
 
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .blockFeatureIf(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
-                getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .careUnit(vardenhet)
-            .patient(accessEvaluationParameters.getPatient())
-            .checkPatientDeceased(false)
-            .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
-            .checkInactiveCareUnit(false)
-            .checkRenew(false)
-            .checkPatientSecrecy()
-            .checkUnique()
-            .checkSubscription()
-            .checkInactiveCertificateType()
-            .evaluate();
-    }
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .blockFeatureIf(
+            AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL,
+            getUser().getOrigin().equalsIgnoreCase(UserOriginType.NORMAL.name()))
+        .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+        .careUnit(vardenhet)
+        .patient(accessEvaluationParameters.getPatient())
+        .checkPatientDeceased(false)
+        .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
+        .checkInactiveCareUnit(false)
+        .checkRenew(false)
+        .checkPatientSecrecy()
+        .checkUnique()
+        .checkSubscription()
+        .checkInactiveCertificateType()
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToReadDraft(AccessEvaluationParameters accessEvaluationParameters) {
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-            .careUnit(accessEvaluationParameters.getUnit())
-            .patient(accessEvaluationParameters.getPatient())
-            .checkPatientSecrecy()
-            .checkUnit(true, true)
-            .evaluate();
-    }
+  @Override
+  public AccessResult allowToReadDraft(AccessEvaluationParameters accessEvaluationParameters) {
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
+        .careUnit(accessEvaluationParameters.getUnit())
+        .patient(accessEvaluationParameters.getPatient())
+        .checkPatientSecrecy()
+        .checkUnit(true, true)
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToEditDraft(AccessEvaluationParameters accessEvaluationParameters) {
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
-            .careUnit(accessEvaluationParameters.getUnit())
-            .patient(accessEvaluationParameters.getPatient())
-            .checkPatientDeceased(true)
-            .checkInactiveCareUnit(true)
-            .checkRenew(true)
-            .checkPatientSecrecy()
-            .checkUnit(false, false)
-            .checkSubscription()
-            .checkInactiveCertificateType()
-            .evaluate();
-    }
+  @Override
+  public AccessResult allowToEditDraft(AccessEvaluationParameters accessEvaluationParameters) {
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+        .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+        .careUnit(accessEvaluationParameters.getUnit())
+        .patient(accessEvaluationParameters.getPatient())
+        .checkPatientDeceased(true)
+        .checkInactiveCareUnit(true)
+        .checkRenew(true)
+        .checkPatientSecrecy()
+        .checkUnit(false, false)
+        .checkSubscription()
+        .checkInactiveCertificateType()
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToDeleteDraft(AccessEvaluationParameters accessEvaluationParameters) {
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .careUnit(accessEvaluationParameters.getUnit())
-            .patient(accessEvaluationParameters.getPatient())
-            .checkPatientTestIndicator(true)
-            .checkPatientDeceased(true)
-            .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
-            .checkInactiveCareUnit(true)
-            .checkRenew(true)
-            .excludeCertificateTypesForRenew(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
-            .checkPatientSecrecy()
-            .checkUnit(false, false)
-            .excludeCertificateTypesForUnit(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
-            .evaluate();
-    }
+  @Override
+  public AccessResult allowToDeleteDraft(AccessEvaluationParameters accessEvaluationParameters) {
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+        .careUnit(accessEvaluationParameters.getUnit())
+        .patient(accessEvaluationParameters.getPatient())
+        .checkPatientTestIndicator(true)
+        .checkPatientDeceased(true)
+        .excludeCertificateTypesForDeceased(
+            DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+        .checkInactiveCareUnit(true)
+        .checkRenew(true)
+        .excludeCertificateTypesForRenew(
+            DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+        .checkPatientSecrecy()
+        .checkUnit(false, false)
+        .excludeCertificateTypesForUnit(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToSignDraft(String certificateType, String certificateTypeVersion, Vardenhet careUnit, Personnummer patient,
-        String certificateId) {
-        return getAccessServiceEvaluation().given(getUser(), certificateType)
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
-            .checkLatestCertificateTypeVersion(certificateTypeVersion)
-            .careUnit(careUnit)
-            .patient(patient)
-            .certificateId(certificateId)
-            .checkPatientDeceased(true)
-            .checkInactiveCareUnit(true)
-            .checkRenew(true)
-            .checkPatientSecrecy()
-            .checkUnique(true)
-            .checkUnit(false, false)
-            .checkSubscription()
-            .checkInactiveCertificateType()
-            .evaluate();
-    }
+  @Override
+  public AccessResult allowToSignDraft(
+      String certificateType,
+      String certificateTypeVersion,
+      Vardenhet careUnit,
+      Personnummer patient,
+      String certificateId) {
+    return getAccessServiceEvaluation()
+        .given(getUser(), certificateType)
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
+        .checkLatestCertificateTypeVersion(certificateTypeVersion)
+        .careUnit(careUnit)
+        .patient(patient)
+        .certificateId(certificateId)
+        .checkPatientDeceased(true)
+        .checkInactiveCareUnit(true)
+        .checkRenew(true)
+        .checkPatientSecrecy()
+        .checkUnique(true)
+        .checkUnit(false, false)
+        .checkSubscription()
+        .checkInactiveCertificateType()
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToSignWithConfirmation(AccessEvaluationParameters accessEvaluationParameters) {
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
-            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
-            .careUnit(accessEvaluationParameters.getUnit())
-            .patient(accessEvaluationParameters.getPatient())
-            .checkPatientDeceased(true)
-            .checkInactiveCareUnit(true)
-            .checkRenew(true)
-            .checkPatientSecrecy()
-            .checkUnit(false, false)
-            .checkSubscription()
-            .checkInactiveCertificateType()
-            .evaluate();
-    }
+  @Override
+  public AccessResult allowToSignWithConfirmation(
+      AccessEvaluationParameters accessEvaluationParameters) {
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
+        .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+        .careUnit(accessEvaluationParameters.getUnit())
+        .patient(accessEvaluationParameters.getPatient())
+        .checkPatientDeceased(true)
+        .checkInactiveCareUnit(true)
+        .checkRenew(true)
+        .checkPatientSecrecy()
+        .checkUnit(false, false)
+        .checkSubscription()
+        .checkInactiveCertificateType()
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToPrintDraft(AccessEvaluationParameters accessEvaluationParameters) {
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
-            .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-            .careUnit(accessEvaluationParameters.getUnit())
-            .patient(accessEvaluationParameters.getPatient())
-            .checkPatientDeceased(false)
-            .excludeCertificateTypesForDeceased(
-                DoiModuleEntryPoint.MODULE_ID,
-                LisjpEntryPoint.MODULE_ID,
-                Fk7263EntryPoint.MODULE_ID,
-                LuaefsEntryPoint.MODULE_ID,
-                LuaenaEntryPoint.MODULE_ID,
-                LuseEntryPoint.MODULE_ID,
-                Af00213EntryPoint.MODULE_ID,
-                AF00251EntryPoint.MODULE_ID,
-                Ag114EntryPoint.MODULE_ID,
-                Ag7804EntryPoint.MODULE_ID,
-                TsBasEntryPoint.MODULE_ID,
-                TsDiabetesEntryPoint.MODULE_ID,
-                Tstrk1009EntryPoint.MODULE_ID,
-                TsTrk1062EntryPoint.MODULE_ID,
-                DbModuleEntryPoint.MODULE_ID)
-            .checkPatientSecrecy()
-            .checkUnit(false, true)
-            .evaluate();
-    }
+  @Override
+  public AccessResult allowToPrintDraft(AccessEvaluationParameters accessEvaluationParameters) {
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
+        .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
+        .careUnit(accessEvaluationParameters.getUnit())
+        .patient(accessEvaluationParameters.getPatient())
+        .checkPatientDeceased(false)
+        .excludeCertificateTypesForDeceased(
+            DoiModuleEntryPoint.MODULE_ID,
+            LisjpEntryPoint.MODULE_ID,
+            Fk7263EntryPoint.MODULE_ID,
+            LuaefsEntryPoint.MODULE_ID,
+            LuaenaEntryPoint.MODULE_ID,
+            LuseEntryPoint.MODULE_ID,
+            Af00213EntryPoint.MODULE_ID,
+            AF00251EntryPoint.MODULE_ID,
+            Ag114EntryPoint.MODULE_ID,
+            Ag7804EntryPoint.MODULE_ID,
+            TsBasEntryPoint.MODULE_ID,
+            TsDiabetesEntryPoint.MODULE_ID,
+            Tstrk1009EntryPoint.MODULE_ID,
+            TsTrk1062EntryPoint.MODULE_ID,
+            DbModuleEntryPoint.MODULE_ID)
+        .checkPatientSecrecy()
+        .checkUnit(false, true)
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToForwardDraft(AccessEvaluationParameters accessEvaluationParameters) {
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
-            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
-            .careUnit(accessEvaluationParameters.getUnit())
-            .patient(accessEvaluationParameters.getPatient())
-            .checkPatientDeceased(true)
-            .checkInactiveCareUnit(true)
-            .checkRenew(true)
-            .checkPatientSecrecy()
-            .checkUnit(false, false)
-            .checkSubscription()
-            .checkInactiveCertificateType()
-            .evaluate();
-    }
+  @Override
+  public AccessResult allowToForwardDraft(AccessEvaluationParameters accessEvaluationParameters) {
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
+        .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+        .careUnit(accessEvaluationParameters.getUnit())
+        .patient(accessEvaluationParameters.getPatient())
+        .checkPatientDeceased(true)
+        .checkInactiveCareUnit(true)
+        .checkRenew(true)
+        .checkPatientSecrecy()
+        .checkUnit(false, false)
+        .checkSubscription()
+        .checkInactiveCertificateType()
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToReadyForSign(AccessEvaluationParameters accessEvaluationParameters) {
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST)
-            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
-            .careUnit(accessEvaluationParameters.getUnit())
-            .patient(accessEvaluationParameters.getPatient())
-            .checkPatientDeceased(true)
-            .checkInactiveCareUnit(true)
-            .checkRenew(true)
-            .checkPatientSecrecy()
-            .checkUnit(false, false)
-            .checkSubscription()
-            .checkInactiveCertificateType()
-            .evaluate();
-    }
+  @Override
+  public AccessResult allowToReadyForSign(AccessEvaluationParameters accessEvaluationParameters) {
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST)
+        .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+        .careUnit(accessEvaluationParameters.getUnit())
+        .patient(accessEvaluationParameters.getPatient())
+        .checkPatientDeceased(true)
+        .checkInactiveCareUnit(true)
+        .checkRenew(true)
+        .checkPatientSecrecy()
+        .checkUnit(false, false)
+        .checkSubscription()
+        .checkInactiveCertificateType()
+        .evaluate();
+  }
 
-    @Override
-    public AccessResult allowToCopyFromCandidate(AccessEvaluationParameters accessEvaluationParameters) {
-        final Vardenhet vardenhet = getVardenhet();
+  @Override
+  public AccessResult allowToCopyFromCandidate(
+      AccessEvaluationParameters accessEvaluationParameters) {
+    final Vardenhet vardenhet = getVardenhet();
 
-        return getAccessServiceEvaluation().given(getUser(), accessEvaluationParameters.getCertificateType())
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .privilege(AuthoritiesConstants.PRIVILEGE_COPY_FROM_CANDIDATE)
-            .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
-            .patient(accessEvaluationParameters.getPatient())
-            .careUnit(vardenhet)
-            .checkInactiveCareUnit(true)
-            .checkPatientDeceased(true)
-            .checkPatientSecrecy()
-            .checkUnit(false, false)
-            .checkSubscription()
-            .checkInactiveCertificateType()
-            .evaluate();
-    }
+    return getAccessServiceEvaluation()
+        .given(getUser(), accessEvaluationParameters.getCertificateType())
+        .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+        .privilege(AuthoritiesConstants.PRIVILEGE_COPY_FROM_CANDIDATE)
+        .checkLatestCertificateTypeVersion(accessEvaluationParameters.getCertificateTypeVersion())
+        .patient(accessEvaluationParameters.getPatient())
+        .careUnit(vardenhet)
+        .checkInactiveCareUnit(true)
+        .checkPatientDeceased(true)
+        .checkPatientSecrecy()
+        .checkUnit(false, false)
+        .checkSubscription()
+        .checkInactiveCertificateType()
+        .evaluate();
+  }
 
-    private AccessServiceEvaluation getAccessServiceEvaluation() {
-        return AccessServiceEvaluation.create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
-    }
+  private AccessServiceEvaluation getAccessServiceEvaluation() {
+    return AccessServiceEvaluation.create(
+        webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
+  }
 
-    private WebCertUser getUser() {
-        return webCertUserService.getUser();
-    }
+  private WebCertUser getUser() {
+    return webCertUserService.getUser();
+  }
 
-    private Vardenhet getVardenhet() {
-        final WebCertUser user = getUser();
+  private Vardenhet getVardenhet() {
+    final WebCertUser user = getUser();
 
-        final Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid(user.getValdVardgivare().getId());
+    final Vardgivare vardgivare = new Vardgivare();
+    vardgivare.setVardgivarid(user.getValdVardgivare().getId());
 
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setVardgivare(vardgivare);
-        vardenhet.setEnhetsid(user.getValdVardenhet().getId());
-        return vardenhet;
-    }
+    final Vardenhet vardenhet = new Vardenhet();
+    vardenhet.setVardgivare(vardgivare);
+    vardenhet.setEnhetsid(user.getValdVardenhet().getId());
+    return vardenhet;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,66 +36,76 @@ import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
 @Service("createCertificateFromTemplateFromWC")
-public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCertificateFromTemplateFacadeService {
+public class CreateCertificateFromTemplateFacadeServiceImpl
+    implements CreateCertificateFromTemplateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateCertificateFromTemplateFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(CreateCertificateFromTemplateFacadeServiceImpl.class);
 
-    private final CopyUtkastServiceHelper copyUtkastServiceHelper;
-    private final CopyUtkastService copyUtkastService;
-    private final IntygTextsService intygTextsService;
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final CopyUtkastServiceHelper copyUtkastServiceHelper;
+  private final CopyUtkastService copyUtkastService;
+  private final IntygTextsService intygTextsService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public CreateCertificateFromTemplateFacadeServiceImpl(CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService, IntygTextsService intygTextsService, GetCertificateFacadeService getCertificateFacadeService) {
-        this.copyUtkastServiceHelper = copyUtkastServiceHelper;
-        this.copyUtkastService = copyUtkastService;
-        this.intygTextsService = intygTextsService;
-        this.getCertificateFacadeService = getCertificateFacadeService;
+  @Autowired
+  public CreateCertificateFromTemplateFacadeServiceImpl(
+      CopyUtkastServiceHelper copyUtkastServiceHelper,
+      CopyUtkastService copyUtkastService,
+      IntygTextsService intygTextsService,
+      GetCertificateFacadeService getCertificateFacadeService) {
+    this.copyUtkastServiceHelper = copyUtkastServiceHelper;
+    this.copyUtkastService = copyUtkastService;
+    this.intygTextsService = intygTextsService;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
+
+  @Override
+  public String createCertificateFromTemplate(String certificateId) {
+    LOG.debug("Get certificate '{}' that will be used as template", certificateId);
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+    final var certificateType = certificate.getMetadata().getType();
+    final var newCertificateType = getNewCertificateType(certificateType);
+    final var copyRequest = new CopyIntygRequest();
+    copyRequest.setPatientPersonnummer(getPersonId(certificate.getMetadata().getPatient()));
+
+    LOG.debug(
+        "Preparing to create a renewal from template for '{}' with new type '{}' from old type '{}'",
+        certificateId,
+        newCertificateType,
+        certificateType);
+    final var request =
+        copyUtkastServiceHelper.createUtkastFromDifferentIntygTypeRequest(
+            certificateId, newCertificateType, certificateType, copyRequest);
+
+    request.setTypVersion(intygTextsService.getLatestVersion(newCertificateType));
+
+    LOG.debug(
+        "Create renewal from template for '{}' with new type '{}' from old type '{}'",
+        certificateId,
+        newCertificateType,
+        certificateType);
+    final var templateCopy = copyUtkastService.createUtkastFromSignedTemplate(request);
+
+    LOG.debug("Return renewal from template draft '{}' ", templateCopy.getNewDraftIntygId());
+    return templateCopy.getNewDraftIntygId();
+  }
+
+  private String getNewCertificateType(String templateType) {
+    return switch (templateType) {
+      case LisjpEntryPoint.MODULE_ID -> Ag7804EntryPoint.MODULE_ID;
+      case DbModuleEntryPoint.MODULE_ID -> DoiModuleEntryPoint.MODULE_ID;
+      default ->
+          throw new IllegalArgumentException(
+              String.format(
+                  "Cannot create draft from template because certificate type '%s' is not supported",
+                  templateType));
+    };
+  }
+
+  private Personnummer getPersonId(Patient patient) {
+    if (patient.isReserveId()) {
+      return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
     }
-
-    @Override
-    public String createCertificateFromTemplate(String certificateId) {
-        LOG.debug("Get certificate '{}' that will be used as template", certificateId);
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
-        final var certificateType = certificate.getMetadata().getType();
-        final var newCertificateType = getNewCertificateType(certificateType);
-        final var copyRequest = new CopyIntygRequest();
-        copyRequest.setPatientPersonnummer(
-            getPersonId(certificate.getMetadata().getPatient())
-        );
-
-        LOG.debug("Preparing to create a renewal from template for '{}' with new type '{}' from old type '{}'", certificateId,
-            newCertificateType, certificateType);
-        final var request = copyUtkastServiceHelper
-            .createUtkastFromDifferentIntygTypeRequest(certificateId, newCertificateType, certificateType, copyRequest);
-
-        request.setTypVersion(intygTextsService.getLatestVersion(newCertificateType));
-
-        LOG.debug("Create renewal from template for '{}' with new type '{}' from old type '{}'", certificateId, newCertificateType,
-            certificateType);
-        final var templateCopy = copyUtkastService.createUtkastFromSignedTemplate(request);
-
-        LOG.debug("Return renewal from template draft '{}' ", templateCopy.getNewDraftIntygId());
-        return templateCopy.getNewDraftIntygId();
-    }
-
-    private String getNewCertificateType(String templateType) {
-      return switch (templateType) {
-        case LisjpEntryPoint.MODULE_ID -> Ag7804EntryPoint.MODULE_ID;
-        case DbModuleEntryPoint.MODULE_ID -> DoiModuleEntryPoint.MODULE_ID;
-        default -> throw new IllegalArgumentException(
-            String.format(
-                "Cannot create draft from template because certificate type '%s' is not supported",
-                templateType)
-        );
-      };
-    }
-
-    private Personnummer getPersonId(Patient patient) {
-        if (patient.isReserveId()) {
-            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
-        }
-        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
-    }
+    return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
+  }
 }

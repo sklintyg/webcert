@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,57 +19,39 @@
 package se.inera.intyg.webcert.web.auth.eleg;
 
 /**
- * Defines enumerations for a number of known  (and undocumented)
+ * Defines enumerations for a number of known (and undocumented)
  *
- * <saml2:Attribute Name="LoginMethod">
+ * <p><saml2:Attribute Name="LoginMethod">
  *
- * from the CGI funktionstjänster SAML IdP documentation.
+ * <p>from the CGI funktionstjänster SAML IdP documentation.
  *
- * Created by eriklupander on 2015-09-23.
+ * <p>Created by eriklupander on 2015-09-23.
  */
 public enum ElegLoginMethod {
-    /**
-     * Legacy NetID production.
-     */
-    CCP1,
+  /** Legacy NetID production. */
+  CCP1,
 
-    /**
-     * Legacy NetID test.
-     */
-    CCP2,
+  /** Legacy NetID test. */
+  CCP2,
 
-    /**
-     * NetID.
-     */
-    CCP8,
+  /** NetID. */
+  CCP8,
 
-    /**
-     * BankID.
-     */
-    CCP10,
+  /** BankID. */
+  CCP10,
 
-    /**
-     * Mobilt BankID.
-     */
-    CCP11,
+  /** Mobilt BankID. */
+  CCP11,
 
-    /**
-     * BankID  (Telia, future).
-     */
-    CCP12,
+  /** BankID (Telia, future). */
+  CCP12,
 
-    /**
-     * Mobilt BankID (Telia, future).
-     */
-    CCP13,
+  /** Mobilt BankID (Telia, future). */
+  CCP13,
 
-    /**
-     * Mobilt BankID (statisk QR-kod).
-     */
-    CCP19,
+  /** Mobilt BankID (statisk QR-kod). */
+  CCP19,
 
-    /**
-     * Mobilt BankID (rörlig QR-kod).
-     */
-    CCP28
+  /** Mobilt BankID (rörlig QR-kod). */
+  CCP28
 }

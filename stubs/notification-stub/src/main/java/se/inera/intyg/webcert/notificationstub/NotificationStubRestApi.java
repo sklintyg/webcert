@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,57 +40,59 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 // CHECKSTYLE:OFF LineLength
 public class NotificationStubRestApi {
 
-    @Autowired
-    private NotificationStoreV3 notificationStoreV3;
+  @Autowired private NotificationStoreV3 notificationStoreV3;
 
-    @Autowired
-    private NotificationStubStateBean stubStateBean;
+  @Autowired private NotificationStubStateBean stubStateBean;
 
-    @GET
-    @Path("/notifieringar/v3")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Collection<CertificateStatusUpdateForCareType> notifieringarV3() {
-        return notificationStoreV3.getNotifications();
+  @GET
+  @Path("/notifieringar/v3")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Collection<CertificateStatusUpdateForCareType> notifieringarV3() {
+    return notificationStoreV3.getNotifications();
+  }
+
+  @GET
+  @Path("/notifieringar/v3/stats")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response notifieringarV3Stats() {
+    Collection<CertificateStatusUpdateForCareType> notifs = notificationStoreV3.getNotifications();
+    Map<String, List<NotificationStubEntry>> stringListMap =
+        new StatTransformerUtil().toStat(notifs);
+    StringBuilder buf = new StringBuilder();
+    for (Map.Entry<String, List<NotificationStubEntry>> entry : stringListMap.entrySet()) {
+      buf.append("---- ").append(entry.getKey()).append(" ----\n");
+      entry.getValue().stream()
+          .sorted(Comparator.comparing(NotificationStubEntry::getHandelseTid))
+          .forEach(
+              ie ->
+                  buf.append(ie.getHandelseTid().format(DateTimeFormatter.ofPattern("HH:mm:ss")))
+                      .append("\t")
+                      .append(ie.getHandelseKod())
+                      .append("\n"));
+      buf.append("-----------------------------------------------\n\n");
     }
+    return Response.ok(buf.toString()).build();
+  }
 
-    @GET
-    @Path("/notifieringar/v3/stats")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response notifieringarV3Stats() {
-        Collection<CertificateStatusUpdateForCareType> notifs = notificationStoreV3
-            .getNotifications();
-        Map<String, List<NotificationStubEntry>> stringListMap = new StatTransformerUtil().toStat(notifs);
-        StringBuilder buf = new StringBuilder();
-        for (Map.Entry<String, List<NotificationStubEntry>> entry : stringListMap.entrySet()) {
-            buf.append("---- ").append(entry.getKey()).append(" ----\n");
-            entry.getValue().stream()
-                .sorted(Comparator.comparing(NotificationStubEntry::getHandelseTid))
-                .forEach(ie -> buf.append(ie.getHandelseTid().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).append("\t")
-                    .append(ie.getHandelseKod()).append("\n"));
-            buf.append("-----------------------------------------------\n\n");
-        }
-        return Response.ok(buf.toString()).build();
-    }
+  @POST
+  @Path("/clear")
+  public void clear() {
+    notificationStoreV3.clear();
+  }
 
-    @POST
-    @Path("/clear")
-    public void clear() {
-        notificationStoreV3.clear();
-    }
+  @GET
+  @Path("/notifieringar/v3/emulateError")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getErrorCode() {
+    String errorCode = stubStateBean.getErrorCode();
+    return Response.ok("Stub is set to emulateError with code " + errorCode).build();
+  }
 
-    @GET
-    @Path("/notifieringar/v3/emulateError")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getErrorCode() {
-        String errorCode = stubStateBean.getErrorCode();
-        return Response.ok("Stub is set to emulateError with code " + errorCode).build();
-    }
-
-    @GET
-    @Path("/notifieringar/v3/emulateError/{errorCode}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response setErrorCode(@PathParam("errorCode") String errorCode) {
-        stubStateBean.setErrorCode(errorCode);
-        return Response.ok("Stub set to emulateError with code " + errorCode).build();
-    }
+  @GET
+  @Path("/notifieringar/v3/emulateError/{errorCode}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response setErrorCode(@PathParam("errorCode") String errorCode) {
+    stubStateBean.setErrorCode(errorCode);
+    return Response.ok("Stub set to emulateError with code " + errorCode).build();
+  }
 }

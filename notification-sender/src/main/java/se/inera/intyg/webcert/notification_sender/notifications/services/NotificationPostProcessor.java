@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,38 +39,42 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.postpro
 @Component
 public class NotificationPostProcessor {
 
-    @Autowired
-    private MdcHelper mdcHelper;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private NotificationPostProcessingService notificationPostProcessingService;
+  @Autowired private MdcHelper mdcHelper;
+  @Autowired private ObjectMapper objectMapper;
+  @Autowired private NotificationPostProcessingService notificationPostProcessingService;
 
-    public void process(Message message) {
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, message.getHeader(INTYGS_ID).toString());
-            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, message.getHeader(HANDELSE).toString());
-            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, message.getHeader(LOGISK_ADRESS).toString());
-            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, message.getHeader(CORRELATION_ID).toString());
+  public void process(Message message) {
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, message.getHeader(INTYGS_ID).toString());
+      MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, message.getHeader(HANDELSE).toString());
+      MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, message.getHeader(LOGISK_ADRESS).toString());
+      MDC.put(
+          MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID,
+          message.getHeader(CORRELATION_ID).toString());
 
-            final var resultMessage = getNotificationResultMessage(message);
-            notificationPostProcessingService.processNotificationResult(resultMessage);
-        } catch (JsonProcessingException e) {
-            log.error(getLogErrorMessage(message), e);
-        } finally {
-            MDC.clear();
-        }
+      final var resultMessage = getNotificationResultMessage(message);
+      notificationPostProcessingService.processNotificationResult(resultMessage);
+    } catch (JsonProcessingException e) {
+      log.error(getLogErrorMessage(message), e);
+    } finally {
+      MDC.clear();
     }
+  }
 
-    private NotificationResultMessage getNotificationResultMessage(Message message) throws JsonProcessingException {
-        return objectMapper.readValue(message.getBody(String.class), NotificationResultMessage.class);
-    }
+  private NotificationResultMessage getNotificationResultMessage(Message message)
+      throws JsonProcessingException {
+    return objectMapper.readValue(message.getBody(String.class), NotificationResultMessage.class);
+  }
 
-    private String getLogErrorMessage(Message message) {
-        return String.format("Failure to process NotificationWSResultMessage [certificateId: %s, correlationId: %s, "
-                + "logicalAddress: %s, event: %s]", message.getHeader(INTYGS_ID), message.getHeader(CORRELATION_ID),
-            message.getHeader(LOGISK_ADRESS), message.getHeader(HANDELSE));
-    }
+  private String getLogErrorMessage(Message message) {
+    return String.format(
+        "Failure to process NotificationWSResultMessage [certificateId: %s, correlationId: %s, "
+            + "logicalAddress: %s, event: %s]",
+        message.getHeader(INTYGS_ID),
+        message.getHeader(CORRELATION_ID),
+        message.getHeader(LOGISK_ADRESS),
+        message.getHeader(HANDELSE));
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,16 +33,14 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQuer
 @Builder
 public class CertificatesQueryCriteriaDTO {
 
-    LocalDateTime from;
-    LocalDateTime to;
-    List<CertificateStatus> statuses;
-    String issuedByStaffId;
-    PersonIdDTO personId;
-    Boolean forwarded;
-    Boolean validForSign;
+  LocalDateTime from;
+  LocalDateTime to;
+  List<CertificateStatus> statuses;
+  String issuedByStaffId;
+  PersonIdDTO personId;
+  Boolean forwarded;
+  Boolean validForSign;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificatesQueryCriteriaDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class CertificatesQueryCriteriaDTOBuilder {}
 }

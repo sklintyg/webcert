@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -57,245 +57,333 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 @RunWith(MockitoJUnitRunner.class)
 public class ResourceLinkHelperImplTest {
 
-    @Mock
-    private DraftAccessServiceHelper draftAccessServiceHelper;
+  @Mock private DraftAccessServiceHelper draftAccessServiceHelper;
 
-    @Mock
-    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
+  @Mock private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
-    @Mock
-    private CertificateAccessServiceHelper certificateAccessServiceHelper;
+  @Mock private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
-    @InjectMocks
-    private ResourceLinkHelperImpl resourceLinkHelper;
+  @InjectMocks private ResourceLinkHelperImpl resourceLinkHelper;
 
-    @Test
-    public void validActionsForIntygModuleWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
+  @Test
+  public void validActionsForIntygModuleWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
-        doReturn(true).when(draftAccessServiceHelper).isAllowedToCreateUtkast(intygsTyp, personnummer);
+    doReturn(true).when(draftAccessServiceHelper).isAllowedToCreateUtkast(intygsTyp, personnummer);
 
-        final ActionLink expectedActionLink = new ActionLink();
-        expectedActionLink.setType(ActionLinkType.SKAPA_UTKAST);
+    final ActionLink expectedActionLink = new ActionLink();
+    expectedActionLink.setType(ActionLinkType.SKAPA_UTKAST);
 
-        final IntygModuleDTO intygModuleDTO = createIntygModuleDTO(intygsTyp);
-        resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTO, personnummer);
+    final IntygModuleDTO intygModuleDTO = createIntygModuleDTO(intygsTyp);
+    resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTO, personnummer);
 
-        final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
+    final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
 
-        assertNotNull(actualLinks);
-        assertEquals("Should be one link", 1, actualLinks.size());
-        assertEquals("ActionLink type should be same", expectedActionLink.getType(), actualLinks.getFirst().getType());
+    assertNotNull(actualLinks);
+    assertEquals("Should be one link", 1, actualLinks.size());
+    assertEquals(
+        "ActionLink type should be same",
+        expectedActionLink.getType(),
+        actualLinks.getFirst().getType());
+  }
+
+  @Test
+  public void noValidActionsForIntygModuleWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
+
+    doReturn(false).when(draftAccessServiceHelper).isAllowedToCreateUtkast(intygsTyp, personnummer);
+
+    final IntygModuleDTO intygModuleDTO = createIntygModuleDTO(intygsTyp);
+    resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTO, personnummer);
+
+    final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
+
+    assertNotNull(actualLinks);
+    assertEquals("Should be no links", 0, actualLinks.size());
+  }
+
+  private IntygModuleDTO createIntygModuleDTO(String intygsTyp) {
+    return new IntygModuleDTO(new IntygModule(intygsTyp, "", "", "", "", "", "", "", "", ""));
+  }
+
+  @Test
+  public void validActionsForLockedDraftHolderWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final String intygsTypVersion = "intygstypVersion";
+    final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final Vardenhet vardenhet = mock(Vardenhet.class);
+
+    doReturn(true)
+        .when(lockedDraftAccessServiceHelper)
+        .isAllowToInvalidate(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(lockedDraftAccessServiceHelper)
+        .isAllowToCopy(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(lockedDraftAccessServiceHelper)
+        .isAllowToPrint(any(AccessEvaluationParameters.class));
+
+    final List<ActionLink> expectedLinks = new ArrayList<>();
+    expectedLinks.add(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
+    expectedLinks.add(new ActionLink(ActionLinkType.KOPIERA_UTKAST));
+    expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
+
+    final DraftHolder draftHolder = new DraftHolder();
+    draftHolder.setStatus(UtkastStatus.DRAFT_LOCKED);
+
+    resourceLinkHelper.decorateUtkastWithValidActionLinks(
+        draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
+
+    final List<ActionLink> actualLinks = draftHolder.getLinks();
+
+    assertLinks(expectedLinks, actualLinks);
+  }
+
+  @Test
+  public void noValidActionsForLockedDraftHolderWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final String intygsTypVersion = "intygstypVersion";
+    final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final Vardenhet vardenhet = mock(Vardenhet.class);
+
+    doReturn(false)
+        .when(lockedDraftAccessServiceHelper)
+        .isAllowToInvalidate(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(lockedDraftAccessServiceHelper)
+        .isAllowToCopy(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(lockedDraftAccessServiceHelper)
+        .isAllowToPrint(any(AccessEvaluationParameters.class));
+
+    final List<ActionLink> expectedLinks = new ArrayList<>();
+
+    final DraftHolder draftHolder = new DraftHolder();
+    draftHolder.setStatus(UtkastStatus.DRAFT_LOCKED);
+
+    resourceLinkHelper.decorateUtkastWithValidActionLinks(
+        draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
+
+    final List<ActionLink> actualLinks = draftHolder.getLinks();
+
+    assertLinks(expectedLinks, actualLinks);
+  }
+
+  private void assertLinks(List<ActionLink> expectedLinks, List<ActionLink> actualLinks) {
+    assertNotNull(actualLinks);
+    assertEquals(expectedLinks.size(), actualLinks.size());
+    for (int i = 0; i < expectedLinks.size(); i++) {
+      assertEquals(expectedLinks.get(i), actualLinks.get(i));
     }
+  }
 
-    @Test
-    public void noValidActionsForIntygModuleWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
+  @Test
+  public void validActionsForDraftHolderWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final String intygsTypVersion = "intygsTypVersion";
+    final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(false).when(draftAccessServiceHelper)
-            .isAllowedToCreateUtkast(intygsTyp, personnummer);
+    doReturn(true)
+        .when(draftAccessServiceHelper)
+        .isAllowToEditUtkast(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(draftAccessServiceHelper)
+        .isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(draftAccessServiceHelper)
+        .isAllowToPrintUtkast(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToReadQuestions(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSend(any(AccessEvaluationParameters.class));
 
-        final IntygModuleDTO intygModuleDTO = createIntygModuleDTO(intygsTyp);
-        resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTO, personnummer);
+    final List<ActionLink> expectedLinks = new ArrayList<>();
+    expectedLinks.add(new ActionLink(ActionLinkType.REDIGERA_UTKAST));
+    expectedLinks.add(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
+    expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
+    expectedLinks.add(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
+    expectedLinks.add(new ActionLink(ActionLinkType.SKICKA_INTYG));
+    expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
+    expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
+    expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
+    expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
+    expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
+    expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
+    expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
+    expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_FRAGA_SOM_HANTERAD));
 
-        final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
+    final DraftHolder draftHolder = new DraftHolder();
 
-        assertNotNull(actualLinks);
-        assertEquals("Should be no links", 0, actualLinks.size());
-    }
+    resourceLinkHelper.decorateUtkastWithValidActionLinks(
+        draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
-    private IntygModuleDTO createIntygModuleDTO(String intygsTyp) {
-        return new IntygModuleDTO(new IntygModule(intygsTyp, "", "", "", "", "", "", "", "", ""));
-    }
+    final List<ActionLink> actualLinks = draftHolder.getLinks();
 
-    @Test
-    public void validActionsForLockedDraftHolderWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final String intygsTypVersion = "intygstypVersion";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
+    assertLinks(expectedLinks, actualLinks);
+  }
 
-        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
-        doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
+  @Test
+  public void noValidActionsForDraftHolderWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final String intygsTypVersion = "intygsTypVersion";
+    final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        final List<ActionLink> expectedLinks = new ArrayList<>();
-        expectedLinks.add(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
-        expectedLinks.add(new ActionLink(ActionLinkType.KOPIERA_UTKAST));
-        expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
+    doReturn(false)
+        .when(draftAccessServiceHelper)
+        .isAllowToEditUtkast(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(draftAccessServiceHelper)
+        .isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(draftAccessServiceHelper)
+        .isAllowToPrintUtkast(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSend(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToReadQuestions(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
 
-        final DraftHolder draftHolder = new DraftHolder();
-        draftHolder.setStatus(UtkastStatus.DRAFT_LOCKED);
+    final List<ActionLink> expectedLinks = new ArrayList<>();
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
+    final DraftHolder draftHolder = new DraftHolder();
 
-        final List<ActionLink> actualLinks = draftHolder.getLinks();
+    resourceLinkHelper.decorateUtkastWithValidActionLinks(
+        draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
 
-        assertLinks(expectedLinks, actualLinks);
-    }
+    final List<ActionLink> actualLinks = draftHolder.getLinks();
 
-    @Test
-    public void noValidActionsForLockedDraftHolderWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final String intygsTypVersion = "intygstypVersion";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
+    assertLinks(expectedLinks, actualLinks);
+  }
 
-        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToCopy(any(AccessEvaluationParameters.class));
-        doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class));
+  @Test
+  public void validActionsForIntygContentHolderWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        final List<ActionLink> expectedLinks = new ArrayList<>();
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToRenew(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToInvalidate(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToReplace(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSend(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
 
-        final DraftHolder draftHolder = new DraftHolder();
-        draftHolder.setStatus(UtkastStatus.DRAFT_LOCKED);
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToReadQuestions(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
 
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
+    final List<ActionLink> expectedLinks = new ArrayList<>();
+    expectedLinks.add(new ActionLink(ActionLinkType.FORNYA_INTYG));
+    expectedLinks.add(new ActionLink(ActionLinkType.MAKULERA_INTYG));
+    expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_INTYG));
+    expectedLinks.add(new ActionLink(ActionLinkType.ERSATT_INTYG));
+    expectedLinks.add(new ActionLink(ActionLinkType.SKICKA_INTYG));
+    expectedLinks.add(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
+    expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_UTKAST_FRAN_INTYG));
+    expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
+    expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
+    expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
+    expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
+    expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
+    expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
+    expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
+    expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_FRAGA_SOM_HANTERAD));
 
-        final List<ActionLink> actualLinks = draftHolder.getLinks();
+    final Utlatande utlatande = mock(Utlatande.class);
+    doReturn(intygsTyp).when(utlatande).getTyp();
+    final GrundData grundData = mock(GrundData.class);
+    doReturn(grundData).when(utlatande).getGrundData();
+    final HoSPersonal skapadAv = mock(HoSPersonal.class);
+    doReturn(skapadAv).when(grundData).getSkapadAv();
+    doReturn(vardenhet).when(skapadAv).getVardenhet();
+    final Patient patientMock = mock(Patient.class);
+    doReturn(patientMock).when(grundData).getPatient();
+    doReturn(patient).when(patientMock).getPersonId();
 
-        assertLinks(expectedLinks, actualLinks);
-    }
-
-    private void assertLinks(List<ActionLink> expectedLinks, List<ActionLink> actualLinks) {
-        assertNotNull(actualLinks);
-        assertEquals(expectedLinks.size(), actualLinks.size());
-        for (int i = 0; i < expectedLinks.size(); i++) {
-            assertEquals(expectedLinks.get(i), actualLinks.get(i));
-        }
-    }
-
-    @Test
-    public void validActionsForDraftHolderWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final String intygsTypVersion = "intygsTypVersion";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
-
-        doReturn(true).when(draftAccessServiceHelper).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
-        doReturn(true).when(draftAccessServiceHelper).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
-        doReturn(true).when(draftAccessServiceHelper).isAllowToPrintUtkast(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper)
-            .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
-
-        final List<ActionLink> expectedLinks = new ArrayList<>();
-        expectedLinks.add(new ActionLink(ActionLinkType.REDIGERA_UTKAST));
-        expectedLinks.add(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
-        expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
-        expectedLinks.add(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
-        expectedLinks.add(new ActionLink(ActionLinkType.SKICKA_INTYG));
-        expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
-        expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
-        expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
-        expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
-        expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
-        expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
-        expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
-        expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_FRAGA_SOM_HANTERAD));
-
-        final DraftHolder draftHolder = new DraftHolder();
-
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
-
-        final List<ActionLink> actualLinks = draftHolder.getLinks();
-
-        assertLinks(expectedLinks, actualLinks);
-    }
-
-    @Test
-    public void noValidActionsForDraftHolderWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final String intygsTypVersion = "intygsTypVersion";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
-
-        doReturn(false).when(draftAccessServiceHelper).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
-        doReturn(false).when(draftAccessServiceHelper).isAllowToDeleteUtkast(any(AccessEvaluationParameters.class));
-        doReturn(false).when(draftAccessServiceHelper).isAllowToPrintUtkast(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper)
-            .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
-
-        final List<ActionLink> expectedLinks = new ArrayList<>();
-
-        final DraftHolder draftHolder = new DraftHolder();
-
-        resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp, intygsTypVersion, vardenhet, patient);
-
-        final List<ActionLink> actualLinks = draftHolder.getLinks();
-
-        assertLinks(expectedLinks, actualLinks);
-    }
-
-    @Test
-    public void validActionsForIntygContentHolderWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
-
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
-
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper)
-            .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
-
-        final List<ActionLink> expectedLinks = new ArrayList<>();
-        expectedLinks.add(new ActionLink(ActionLinkType.FORNYA_INTYG));
-        expectedLinks.add(new ActionLink(ActionLinkType.MAKULERA_INTYG));
-        expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_INTYG));
-        expectedLinks.add(new ActionLink(ActionLinkType.ERSATT_INTYG));
-        expectedLinks.add(new ActionLink(ActionLinkType.SKICKA_INTYG));
-        expectedLinks.add(new ActionLink(ActionLinkType.GODKANNA_MOTTAGARE));
-        expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_UTKAST_FRAN_INTYG));
-        expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
-        expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
-        expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
-        expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
-        expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
-        expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
-        expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
-        expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_FRAGA_SOM_HANTERAD));
-
-        final Utlatande utlatande = mock(Utlatande.class);
-        doReturn(intygsTyp).when(utlatande).getTyp();
-        final GrundData grundData = mock(GrundData.class);
-        doReturn(grundData).when(utlatande).getGrundData();
-        final HoSPersonal skapadAv = mock(HoSPersonal.class);
-        doReturn(skapadAv).when(grundData).getSkapadAv();
-        doReturn(vardenhet).when(skapadAv).getVardenhet();
-        final Patient patientMock = mock(Patient.class);
-        doReturn(patientMock).when(grundData).getPatient();
-        doReturn(patient).when(patientMock).getPersonId();
-
-        final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
+    final IntygContentHolder intygContentHolder =
+        IntygContentHolder.builder()
             .revoked(false)
             .deceased(false)
             .sekretessmarkering(false)
@@ -307,50 +395,78 @@ public class ResourceLinkHelperImplTest {
             .latestMajorTextVersion(true)
             .build();
 
-        resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
+    resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
 
-        final List<ActionLink> actualLinks = intygContentHolder.getLinks();
+    final List<ActionLink> actualLinks = intygContentHolder.getLinks();
 
-        assertLinks(expectedLinks, actualLinks);
-    }
+    assertLinks(expectedLinks, actualLinks);
+  }
 
-    @Test
-    public void noValidActionsForIntygContentHolderWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
+  @Test
+  public void noValidActionsForIntygContentHolderWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToReplace(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToSend(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToRenew(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToInvalidate(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToReplace(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSend(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
 
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper)
-            .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToReadQuestions(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToApproveReceivers(any(AccessEvaluationParameters.class));
 
-        final List<ActionLink> expectedLinks = new ArrayList<>();
+    final List<ActionLink> expectedLinks = new ArrayList<>();
 
-        final Utlatande utlatande = mock(Utlatande.class);
-        doReturn(intygsTyp).when(utlatande).getTyp();
-        final GrundData grundData = mock(GrundData.class);
-        doReturn(grundData).when(utlatande).getGrundData();
-        final HoSPersonal skapadAv = mock(HoSPersonal.class);
-        doReturn(skapadAv).when(grundData).getSkapadAv();
-        doReturn(vardenhet).when(skapadAv).getVardenhet();
-        final Patient patientMock = mock(Patient.class);
-        doReturn(patientMock).when(grundData).getPatient();
-        doReturn(patient).when(patientMock).getPersonId();
+    final Utlatande utlatande = mock(Utlatande.class);
+    doReturn(intygsTyp).when(utlatande).getTyp();
+    final GrundData grundData = mock(GrundData.class);
+    doReturn(grundData).when(utlatande).getGrundData();
+    final HoSPersonal skapadAv = mock(HoSPersonal.class);
+    doReturn(skapadAv).when(grundData).getSkapadAv();
+    doReturn(vardenhet).when(skapadAv).getVardenhet();
+    final Patient patientMock = mock(Patient.class);
+    doReturn(patientMock).when(grundData).getPatient();
+    doReturn(patient).when(patientMock).getPersonId();
 
-        final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
+    final IntygContentHolder intygContentHolder =
+        IntygContentHolder.builder()
             .revoked(false)
             .deceased(false)
             .sekretessmarkering(false)
@@ -362,83 +478,93 @@ public class ResourceLinkHelperImplTest {
             .latestMajorTextVersion(true)
             .build();
 
-        resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
+    resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
 
-        final List<ActionLink> actualLinks = intygContentHolder.getLinks();
+    final List<ActionLink> actualLinks = intygContentHolder.getLinks();
 
-        assertLinks(expectedLinks, actualLinks);
-    }
+    assertLinks(expectedLinks, actualLinks);
+  }
 
-    @Test
-    public void validActionsForListIntygEntryWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
+  @Test
+  public void validActionsForListIntygEntryWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToRead(any(AccessEvaluationParameters.class));
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToRead(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToRenew(any(AccessEvaluationParameters.class));
 
-        final List<ActionLink> expectedLinks = new ArrayList<>();
-        expectedLinks.add(new ActionLink(ActionLinkType.LASA_INTYG));
-        expectedLinks.add(new ActionLink(ActionLinkType.FORNYA_INTYG));
+    final List<ActionLink> expectedLinks = new ArrayList<>();
+    expectedLinks.add(new ActionLink(ActionLinkType.LASA_INTYG));
+    expectedLinks.add(new ActionLink(ActionLinkType.FORNYA_INTYG));
 
-        final ListIntygEntry listIntygEntry = new ListIntygEntry();
-        listIntygEntry.setVardenhetId("vardenhetsid");
-        listIntygEntry.setVardenhetId("vardgivareid");
-        listIntygEntry.setIntygType(intygsTyp);
+    final ListIntygEntry listIntygEntry = new ListIntygEntry();
+    listIntygEntry.setVardenhetId("vardenhetsid");
+    listIntygEntry.setVardenhetId("vardgivareid");
+    listIntygEntry.setIntygType(intygsTyp);
 
-        final List<ListIntygEntry> listIntygEntryList = List.of(listIntygEntry);
+    final List<ListIntygEntry> listIntygEntryList = List.of(listIntygEntry);
 
-        resourceLinkHelper.decorateIntygWithValidActionLinks(listIntygEntryList, patient);
+    resourceLinkHelper.decorateIntygWithValidActionLinks(listIntygEntryList, patient);
 
-        final List<ActionLink> actualLinks = listIntygEntry.getLinks();
+    final List<ActionLink> actualLinks = listIntygEntry.getLinks();
 
-        assertLinks(expectedLinks, actualLinks);
-    }
+    assertLinks(expectedLinks, actualLinks);
+  }
 
-    @Test
-    public void noValidActionsForListIntygEntryWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
+  @Test
+  public void noValidActionsForListIntygEntryWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToRead(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToRead(any(AccessEvaluationParameters.class));
+    doReturn(false)
+        .when(certificateAccessServiceHelper)
+        .isAllowToRenew(any(AccessEvaluationParameters.class));
 
-        final List<ActionLink> expectedLinks = new ArrayList<>();
+    final List<ActionLink> expectedLinks = new ArrayList<>();
 
-        final ListIntygEntry listIntygEntry = new ListIntygEntry();
-        listIntygEntry.setVardenhetId("vardenhetsid");
-        listIntygEntry.setVardenhetId("vardgivareid");
-        listIntygEntry.setIntygType(intygsTyp);
+    final ListIntygEntry listIntygEntry = new ListIntygEntry();
+    listIntygEntry.setVardenhetId("vardenhetsid");
+    listIntygEntry.setVardenhetId("vardgivareid");
+    listIntygEntry.setIntygType(intygsTyp);
 
-        final List<ListIntygEntry> listIntygEntryList = List.of(listIntygEntry);
+    final List<ListIntygEntry> listIntygEntryList = List.of(listIntygEntry);
 
-        resourceLinkHelper.decorateIntygWithValidActionLinks(listIntygEntryList, patient);
+    resourceLinkHelper.decorateIntygWithValidActionLinks(listIntygEntryList, patient);
 
-        final List<ActionLink> actualLinks = listIntygEntry.getLinks();
+    final List<ActionLink> actualLinks = listIntygEntry.getLinks();
 
-        assertLinks(expectedLinks, actualLinks);
-    }
+    assertLinks(expectedLinks, actualLinks);
+  }
 
-    @Test
-    public void validActionsForArendeListItemWithAccessAllowed() {
-        final String intygsTyp = "intygstyp";
-        final Vardenhet vardenhet = mock(Vardenhet.class);
+  @Test
+  public void validActionsForArendeListItemWithAccessAllowed() {
+    final String intygsTyp = "intygstyp";
+    final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+    doReturn(true)
+        .when(certificateAccessServiceHelper)
+        .isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
 
-        final List<ActionLink> expectedLinks = new ArrayList<>();
-        expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
+    final List<ActionLink> expectedLinks = new ArrayList<>();
+    expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
 
-        final ArendeListItem arendeListItem = new ArendeListItem();
-        arendeListItem.setIntygTyp(intygsTyp);
-        arendeListItem.setPatientId("191212121212");
+    final ArendeListItem arendeListItem = new ArendeListItem();
+    arendeListItem.setIntygTyp(intygsTyp);
+    arendeListItem.setPatientId("191212121212");
 
-        final List<ArendeListItem> arendeListItemList = List.of(arendeListItem);
+    final List<ArendeListItem> arendeListItemList = List.of(arendeListItem);
 
-        resourceLinkHelper.decorateArendeWithValidActionLinks(arendeListItemList, vardenhet);
+    resourceLinkHelper.decorateArendeWithValidActionLinks(arendeListItemList, vardenhet);
 
-        final List<ActionLink> actualLinks = arendeListItem.getLinks();
+    final List<ActionLink> actualLinks = arendeListItem.getLinks();
 
-        assertLinks(expectedLinks, actualLinks);
-    }
+    assertLinks(expectedLinks, actualLinks);
+  }
 }

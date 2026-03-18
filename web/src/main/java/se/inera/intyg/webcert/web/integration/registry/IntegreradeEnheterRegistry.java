@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,19 +27,21 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhet
 
 public interface IntegreradeEnheterRegistry {
 
-    void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion2);
+  void putIntegreradEnhet(
+      IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion2);
 
-    boolean isEnhetIntegrerad(String enhetHsaId, String intygType);
+  boolean isEnhetIntegrerad(String enhetHsaId, String intygType);
 
-    IntegreradEnhet getIntegreradEnhet(String enhetsId);
+  IntegreradEnhet getIntegreradEnhet(String enhetsId);
 
-    List<IntegreradEnhet> getAllIntegreradEnhet();
+  List<IntegreradEnhet> getAllIntegreradEnhet();
 
-    void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType);
+  void addIfSameVardgivareButDifferentUnits(
+      String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType);
 
-    void deleteIntegreradEnhet(String hsaId);
+  void deleteIntegreradEnhet(String hsaId);
 
-    Optional<SchemaVersion> getSchemaVersion(String enhetHsaId, String intygType);
+  Optional<SchemaVersion> getSchemaVersion(String enhetHsaId, String intygType);
 
-    List<IntegreradEnhetEntryWithSchemaVersion> getIntegreradeVardenheter();
+  List<IntegreradEnhetEntryWithSchemaVersion> getIntegreradeVardenheter();
 }

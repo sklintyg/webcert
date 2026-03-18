@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,10 +20,8 @@ package se.inera.intyg.webcert.web.service.maillink;
 
 import java.net.URI;
 
-/**
- * Created by pebe on 2015-10-05.
- */
+/** Created by pebe on 2015-10-05. */
 public interface MailLinkService {
 
-    URI intygRedirect(String typ, String intygTypeVersion, String intygId);
+  URI intygRedirect(String typ, String intygTypeVersion, String intygId);
 }

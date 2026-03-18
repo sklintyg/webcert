@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,121 +41,162 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 public final class IntygVerificationHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private IntygVerificationHelper() {
+  private IntygVerificationHelper() {}
 
+  private static void intygAlreadySentError(String intygsId, String operation) {
+    final String message =
+        MessageFormat.format(
+            "Certificate {0} is sent, cannot {1} an already sent certificate", intygsId, operation);
+    LOG.debug(message);
+    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+  }
+
+  public static void verifyIsNotSent(
+      final Utkast intyg, final IntygServiceImpl.IntygOperation operation) {
+    if (intyg.getSkickadTillMottagare() != null
+        && intyg.getSkickadTillMottagare().trim().length() > 0) {
+      intygAlreadySentError(intyg.getIntygsId(), operation.getValue());
     }
+  }
 
-    private static void intygAlreadySentError(String intygsId, String operation) {
-        final String message = MessageFormat.format("Certificate {0} is sent, cannot {1} an already sent certificate",
-            intygsId, operation);
-        LOG.debug(message);
-        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-    }
-
-    public static void verifyIsNotSent(final Utkast intyg, final IntygServiceImpl.IntygOperation operation) {
-        if (intyg.getSkickadTillMottagare() != null && intyg.getSkickadTillMottagare().trim().length() > 0) {
-            intygAlreadySentError(intyg.getIntygsId(), operation.getValue());
-        }
-    }
-
-    public static void verifyIsNotSent(final CertificateResponse certificate, final IntygServiceImpl.IntygOperation operation) {
-        final List<Status> states = (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
+  public static void verifyIsNotSent(
+      final CertificateResponse certificate, final IntygServiceImpl.IntygOperation operation) {
+    final List<Status> states =
+        (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
             ? Collections.emptyList()
             : certificate.getMetaData().getStatus());
-        if (states.stream().anyMatch(state -> CertificateState.SENT.equals(state.getType()) && state.getTimestamp() != null)) {
-            intygAlreadySentError(certificate.getUtlatande().getId(), operation.getValue());
-        }
+    if (states.stream()
+        .anyMatch(
+            state ->
+                CertificateState.SENT.equals(state.getType()) && state.getTimestamp() != null)) {
+      intygAlreadySentError(certificate.getUtlatande().getId(), operation.getValue());
     }
+  }
 
-    public static void verifyIsSigned(final IntygContentHolder intyg, final IntygServiceImpl.IntygOperation operation) {
+  public static void verifyIsSigned(
+      final IntygContentHolder intyg, final IntygServiceImpl.IntygOperation operation) {
 
-        final List<Status> states = (isNull(intyg) || isEmpty(intyg.getStatuses()))
+    final List<Status> states =
+        (isNull(intyg) || isEmpty(intyg.getStatuses()))
             ? Lists.newArrayList()
             : intyg.getStatuses();
 
-        if (states.stream().noneMatch(status -> CertificateState.RECEIVED.equals(status.getType()) && status.getTimestamp() != null)) {
-            final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                intyg.getUtlatande().getId(), operation.getValue());
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
+    if (states.stream()
+        .noneMatch(
+            status ->
+                CertificateState.RECEIVED.equals(status.getType())
+                    && status.getTimestamp() != null)) {
+      final String message =
+          MessageFormat.format(
+              "Certificate {0} is not signed, cannot {1} an unsigned certificate",
+              intyg.getUtlatande().getId(), operation.getValue());
+      LOG.debug(message);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
     }
+  }
 
-    public static void verifyIsSigned(final Utkast intyg, final IntygServiceImpl.IntygOperation operation) {
+  public static void verifyIsSigned(
+      final Utkast intyg, final IntygServiceImpl.IntygOperation operation) {
 
-        if (intyg.getSignatur() == null
-            || intyg.getSignatur().getSigneringsDatum() == null
-            || !Objects.equals(intyg.getStatus(), UtkastStatus.SIGNED)) {
-            final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                intyg.getIntygsId(), operation.getValue());
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
+    if (intyg.getSignatur() == null
+        || intyg.getSignatur().getSigneringsDatum() == null
+        || !Objects.equals(intyg.getStatus(), UtkastStatus.SIGNED)) {
+      final String message =
+          MessageFormat.format(
+              "Certificate {0} is not signed, cannot {1} an unsigned certificate",
+              intyg.getIntygsId(), operation.getValue());
+      LOG.debug(message);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
     }
+  }
 
-    public static void verifyIsSigned(final CertificateResponse certificate, final IntygServiceImpl.IntygOperation operation) {
+  public static void verifyIsSigned(
+      final CertificateResponse certificate, final IntygServiceImpl.IntygOperation operation) {
 
-        if (certificate.getUtlatande().getSignature() == null) {
+    if (certificate.getUtlatande().getSignature() == null) {
 
-            final List<Status> states = (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
-                ? Collections.emptyList()
-                : certificate.getMetaData().getStatus());
+      final List<Status> states =
+          (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
+              ? Collections.emptyList()
+              : certificate.getMetaData().getStatus());
 
-            if (states.stream().noneMatch(state -> CertificateState.RECEIVED.equals(state.getType()) && state.getTimestamp() != null)) {
+      if (states.stream()
+          .noneMatch(
+              state ->
+                  CertificateState.RECEIVED.equals(state.getType())
+                      && state.getTimestamp() != null)) {
 
-                final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                    certificate.getUtlatande().getId(), operation.getValue());
-
-                LOG.debug(message);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-            }
-        }
-    }
-
-    public static void verifyIsNotRevoked(final IntygContentHolder intyg, final IntygServiceImpl.IntygOperation operation) {
-        if (intyg.isRevoked()) {
-
-            final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
-                intyg.getUtlatande().getId(), operation.getValue());
-
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
-    }
-
-    public static void verifyIsNotRevoked(final Utkast intyg, final IntygServiceImpl.IntygOperation operation) {
-        if (intyg.getAterkalladDatum() != null) {
-
-            final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
-                intyg.getIntygsId(), operation.getValue());
-
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
-    }
-
-    public static void verifyIsNotRevoked(final CertificateResponse certificate, final IntygServiceImpl.IntygOperation operation) {
-        if (certificate.isRevoked()) {
-
-            final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
+        final String message =
+            MessageFormat.format(
+                "Certificate {0} is not signed, cannot {1} an unsigned certificate",
                 certificate.getUtlatande().getId(), operation.getValue());
 
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
+        LOG.debug(message);
+        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+      }
+    }
+  }
 
-        final List<Status> states = (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
+  public static void verifyIsNotRevoked(
+      final IntygContentHolder intyg, final IntygServiceImpl.IntygOperation operation) {
+    if (intyg.isRevoked()) {
+
+      final String message =
+          MessageFormat.format(
+              "certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
+              intyg.getUtlatande().getId(), operation.getValue());
+
+      LOG.debug(message);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+    }
+  }
+
+  public static void verifyIsNotRevoked(
+      final Utkast intyg, final IntygServiceImpl.IntygOperation operation) {
+    if (intyg.getAterkalladDatum() != null) {
+
+      final String message =
+          MessageFormat.format(
+              "certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
+              intyg.getIntygsId(), operation.getValue());
+
+      LOG.debug(message);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+    }
+  }
+
+  public static void verifyIsNotRevoked(
+      final CertificateResponse certificate, final IntygServiceImpl.IntygOperation operation) {
+    if (certificate.isRevoked()) {
+
+      final String message =
+          MessageFormat.format(
+              "certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
+              certificate.getUtlatande().getId(), operation.getValue());
+
+      LOG.debug(message);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+    }
+
+    final List<Status> states =
+        (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
             ? Collections.emptyList()
             : certificate.getMetaData().getStatus());
 
-        if (states.stream().anyMatch(state -> CertificateState.CANCELLED.equals(state.getType()) && state.getTimestamp() != null)) {
-            final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
-                certificate.getUtlatande().getId(), operation.getValue());
+    if (states.stream()
+        .anyMatch(
+            state ->
+                CertificateState.CANCELLED.equals(state.getType())
+                    && state.getTimestamp() != null)) {
+      final String message =
+          MessageFormat.format(
+              "certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
+              certificate.getUtlatande().getId(), operation.getValue());
 
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
+      LOG.debug(message);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
     }
+  }
 }

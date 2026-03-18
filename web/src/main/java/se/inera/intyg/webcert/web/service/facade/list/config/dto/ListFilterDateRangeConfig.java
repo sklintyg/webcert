@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,51 +20,58 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public class ListFilterDateRangeConfig extends ListFilterConfig {
 
-    private ListFilterDateConfig to;
-    private ListFilterDateConfig from;
-    private boolean forbidFutureDates;
+  private ListFilterDateConfig to;
+  private ListFilterDateConfig from;
+  private boolean forbidFutureDates;
 
-    public ListFilterDateRangeConfig(String id, String title, ListFilterDateConfig to,
-        ListFilterDateConfig from, boolean forbidFutureDates) {
-        super(ListFilterType.DATE_RANGE, id, title);
-        this.to = to;
-        this.from = from;
-        this.forbidFutureDates = forbidFutureDates;
-    }
+  public ListFilterDateRangeConfig(
+      String id,
+      String title,
+      ListFilterDateConfig to,
+      ListFilterDateConfig from,
+      boolean forbidFutureDates) {
+    super(ListFilterType.DATE_RANGE, id, title);
+    this.to = to;
+    this.from = from;
+    this.forbidFutureDates = forbidFutureDates;
+  }
 
-    public ListFilterDateRangeConfig(String id, String title, ListFilterDateConfig to,
-        ListFilterDateConfig from, boolean forbidFutureDates, String description) {
-        super(ListFilterType.DATE_RANGE, id, title, false, description);
-        this.to = to;
-        this.from = from;
-        this.forbidFutureDates = forbidFutureDates;
-    }
+  public ListFilterDateRangeConfig(
+      String id,
+      String title,
+      ListFilterDateConfig to,
+      ListFilterDateConfig from,
+      boolean forbidFutureDates,
+      String description) {
+    super(ListFilterType.DATE_RANGE, id, title, false, description);
+    this.to = to;
+    this.from = from;
+    this.forbidFutureDates = forbidFutureDates;
+  }
 
-    public ListFilterDateRangeConfig() {
+  public ListFilterDateRangeConfig() {}
 
-    }
+  public ListFilterDateConfig getTo() {
+    return to;
+  }
 
-    public ListFilterDateConfig getTo() {
-        return to;
-    }
+  public void setTo(ListFilterDateConfig to) {
+    this.to = to;
+  }
 
-    public void setTo(ListFilterDateConfig to) {
-        this.to = to;
-    }
+  public ListFilterDateConfig getFrom() {
+    return from;
+  }
 
-    public ListFilterDateConfig getFrom() {
-        return from;
-    }
+  public void setFrom(ListFilterDateConfig from) {
+    this.from = from;
+  }
 
-    public void setFrom(ListFilterDateConfig from) {
-        this.from = from;
-    }
+  public boolean isForbidFutureDates() {
+    return forbidFutureDates;
+  }
 
-    public boolean isForbidFutureDates() {
-        return forbidFutureDates;
-    }
-
-    public void setForbidFutureDates(boolean forbidFutureDates) {
-        this.forbidFutureDates = forbidFutureDates;
-    }
+  public void setForbidFutureDates(boolean forbidFutureDates) {
+    this.forbidFutureDates = forbidFutureDates;
+  }
 }

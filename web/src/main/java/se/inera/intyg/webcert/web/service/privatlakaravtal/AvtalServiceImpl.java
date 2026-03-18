@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,46 +27,42 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepos
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 @Service("AvtalService")
 public class AvtalServiceImpl implements AvtalService {
 
-    @Autowired
-    private AvtalRepository avtalRepository;
+  @Autowired private AvtalRepository avtalRepository;
 
-    @Autowired
-    private GodkantAvtalRepository godkantAvtalRepository;
+  @Autowired private GodkantAvtalRepository godkantAvtalRepository;
 
-    @Autowired
-    private MonitoringLogService monitoringLogService;
+  @Autowired private MonitoringLogService monitoringLogService;
 
-    @Override
-    public boolean userHasApprovedLatestAvtal(String userId) {
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        return godkantAvtalRepository.userHasApprovedAvtal(userId, latestAvtalVersion);
+  @Override
+  public boolean userHasApprovedLatestAvtal(String userId) {
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    return godkantAvtalRepository.userHasApprovedAvtal(userId, latestAvtalVersion);
+  }
+
+  @Override
+  public Optional<Avtal> getLatestAvtal() {
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    return avtalRepository.findById(latestAvtalVersion);
+  }
+
+  @Override
+  public void approveLatestAvtal(String userId, String personId) {
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    if (latestAvtalVersion == null || latestAvtalVersion == -1) {
+      throw new IllegalStateException(
+          "Cannot approve private practitioner avtal, no avtal exists in the database.");
     }
+    godkantAvtalRepository.approveAvtal(userId, latestAvtalVersion);
+    monitoringLogService.logPrivatePractitionerTermsApproved(
+        userId, Personnummer.createPersonnummer(personId).orElse(null), latestAvtalVersion);
+  }
 
-    @Override
-    public Optional<Avtal> getLatestAvtal() {
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        return avtalRepository.findById(latestAvtalVersion);
-    }
-
-    @Override
-    public void approveLatestAvtal(String userId, String personId) {
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        if (latestAvtalVersion == null || latestAvtalVersion == -1) {
-            throw new IllegalStateException("Cannot approve private practitioner avtal, no avtal exists in the database.");
-        }
-        godkantAvtalRepository.approveAvtal(userId, latestAvtalVersion);
-        monitoringLogService.logPrivatePractitionerTermsApproved(userId,
-            Personnummer.createPersonnummer(personId).orElse(null), latestAvtalVersion);
-    }
-
-    @Override
-    public void removeApproval(String userId) {
-        godkantAvtalRepository.removeAllUserApprovments(userId);
-    }
+  @Override
+  public void removeApproval(String userId) {
+    godkantAvtalRepository.removeAllUserApprovments(userId);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -35,15 +34,15 @@ import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotifi
 @Value
 public class IntegratedUnitNotificationConfig {
 
-    @JsonProperty("careProviders")
-    List<String> careProviders;
-    @JsonProperty("issuedOnUnit")
-    List<String> issuedOnUnit;
-    @JsonProperty("datetime")
-    LocalDateTime datetime;
+  @JsonProperty("careProviders")
+  List<String> careProviders;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class IntegratedUnitNotificationConfigBuilder {
+  @JsonProperty("issuedOnUnit")
+  List<String> issuedOnUnit;
 
-    }
+  @JsonProperty("datetime")
+  LocalDateTime datetime;
+
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class IntegratedUnitNotificationConfigBuilder {}
 }

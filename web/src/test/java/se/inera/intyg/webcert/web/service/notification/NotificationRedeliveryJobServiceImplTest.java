@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -56,161 +56,181 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 @ExtendWith(MockitoExtension.class)
 class NotificationRedeliveryJobServiceImplTest {
 
-    @Mock
-    private NotificationRedeliveryAggregator notificationRedeliveryAggregator;
+  @Mock private NotificationRedeliveryAggregator notificationRedeliveryAggregator;
 
-    @Mock
-    private NotificationRedeliveryService notificationRedeliveryService;
+  @Mock private NotificationRedeliveryService notificationRedeliveryService;
 
-    @Mock
-    private HandelseRepository eventRepository;
+  @Mock private HandelseRepository eventRepository;
 
-    @Mock
-    private Appender<ILoggingEvent> appender;
+  @Mock private Appender<ILoggingEvent> appender;
 
-    @InjectMocks
-    private NotificationRedeliveryJobServiceImpl notificationRedeliveryJobService;
+  @InjectMocks private NotificationRedeliveryJobServiceImpl notificationRedeliveryJobService;
 
-    @Test
-    void shallResendANotificationThatIsUpForRedelivery() throws Exception {
-        final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var notificationRedeliveryList = Collections.singletonList(expectedNotificationRedelivery);
+  @Test
+  void shallResendANotificationThatIsUpForRedelivery() throws Exception {
+    final var expectedNotificationRedelivery = createNotificationRedelivery();
+    final var notificationRedeliveryList =
+        Collections.singletonList(expectedNotificationRedelivery);
 
-        final var captureNotificationRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
-        final var handelseArgumentCaptor = ArgumentCaptor.forClass(Handelse.class);
-        final var eventsToReturn = createEventsToReturn(1);
+    final var captureNotificationRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
+    final var handelseArgumentCaptor = ArgumentCaptor.forClass(Handelse.class);
+    final var eventsToReturn = createEventsToReturn(1);
 
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
+    doReturn(notificationRedeliveryList)
+        .when(notificationRedeliveryService)
+        .getNotificationsForRedelivery(any(int.class));
+    doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
 
-        notificationRedeliveryJobService.resendScheduledNotifications(100);
+    notificationRedeliveryJobService.resendScheduledNotifications(100);
 
-        verify(notificationRedeliveryAggregator).resend(
-            captureNotificationRedelivery.capture(),
-            handelseArgumentCaptor.capture()
-        );
+    verify(notificationRedeliveryAggregator)
+        .resend(captureNotificationRedelivery.capture(), handelseArgumentCaptor.capture());
 
-        assertEquals(expectedNotificationRedelivery, captureNotificationRedelivery.getValue());
-        assertEquals(eventsToReturn.getFirst(), handelseArgumentCaptor.getValue());
+    assertEquals(expectedNotificationRedelivery, captureNotificationRedelivery.getValue());
+    assertEquals(eventsToReturn.getFirst(), handelseArgumentCaptor.getValue());
+  }
+
+  @Test
+  void shallResendNoneIfNoNotificationsAreUpForRedelivery() {
+    doReturn(Collections.emptyList())
+        .when(notificationRedeliveryService)
+        .getNotificationsForRedelivery(any(int.class));
+
+    notificationRedeliveryJobService.resendScheduledNotifications(100);
+
+    verify(notificationRedeliveryService, never()).resend(any(), any(), any());
+  }
+
+  @Test
+  void shallResendNotificationsThatAreUpForRedeliveryEvenWhenSomeFail() throws Exception {
+    final var numberOfMessages = 10;
+    final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
+    for (int i = 0; i < numberOfMessages; i++) {
+      notificationRedeliveryList.add(createNotificationRedelivery());
     }
 
-    @Test
-    void shallResendNoneIfNoNotificationsAreUpForRedelivery() {
-        doReturn(Collections.emptyList()).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
+    final var failingNotificationRedelivery = createNotificationRedelivery();
+    notificationRedeliveryList.add(3, failingNotificationRedelivery);
+    notificationRedeliveryList.add(7, failingNotificationRedelivery);
 
-        notificationRedeliveryJobService.resendScheduledNotifications(100);
+    final var eventsToReturn = createEventsToReturn(1);
 
-        verify(notificationRedeliveryService, never()).resend(any(), any(), any());
+    doReturn(notificationRedeliveryList)
+        .when(notificationRedeliveryService)
+        .getNotificationsForRedelivery(any(int.class));
+    doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
+    doReturn(true)
+        .when(notificationRedeliveryAggregator)
+        .resend(any(NotificationRedelivery.class), eq(eventsToReturn.getFirst()));
+    doThrow(new RuntimeException("Failed!"))
+        .when(notificationRedeliveryAggregator)
+        .resend(failingNotificationRedelivery, eventsToReturn.getFirst());
+
+    notificationRedeliveryJobService.resendScheduledNotifications(100);
+
+    verify(notificationRedeliveryAggregator, VerificationModeFactory.times(numberOfMessages + 2))
+        .resend(any(), any());
+  }
+
+  @Test
+  void shallLogSuccessAndFailures() throws Exception {
+    final var numberOfSuccess = 10;
+    final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
+    for (int i = 0; i < numberOfSuccess; i++) {
+      notificationRedeliveryList.add(createNotificationRedelivery());
     }
 
-    @Test
-    void shallResendNotificationsThatAreUpForRedeliveryEvenWhenSomeFail() throws Exception {
-        final var numberOfMessages = 10;
-        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
-        for (int i = 0; i < numberOfMessages; i++) {
-            notificationRedeliveryList.add(createNotificationRedelivery());
-        }
+    final var numberOfFailures = 2;
+    final var failingNotificationRedelivery = createNotificationRedelivery();
+    notificationRedeliveryList.add(3, failingNotificationRedelivery);
+    notificationRedeliveryList.add(7, failingNotificationRedelivery);
 
-        final var failingNotificationRedelivery = createNotificationRedelivery();
-        notificationRedeliveryList.add(3, failingNotificationRedelivery);
-        notificationRedeliveryList.add(7, failingNotificationRedelivery);
+    final var root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    root.addAppender(appender);
 
-        final var eventsToReturn = createEventsToReturn(1);
+    final var captureLogMessage = ArgumentCaptor.forClass(ILoggingEvent.class);
+    final var eventsToReturn = createEventsToReturn(1);
 
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn(true).when(notificationRedeliveryAggregator).resend(
-            any(NotificationRedelivery.class), eq(eventsToReturn.getFirst())
-        );
-        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryAggregator)
-            .resend(failingNotificationRedelivery, eventsToReturn.getFirst());
+    doReturn(notificationRedeliveryList)
+        .when(notificationRedeliveryService)
+        .getNotificationsForRedelivery(any(int.class));
+    doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
+    doReturn(true)
+        .when(notificationRedeliveryAggregator)
+        .resend(any(NotificationRedelivery.class), eq(eventsToReturn.getFirst()));
+    doThrow(new RuntimeException("Failed!"))
+        .when(notificationRedeliveryAggregator)
+        .resend(failingNotificationRedelivery, eventsToReturn.getFirst());
 
-        notificationRedeliveryJobService.resendScheduledNotifications(100);
+    notificationRedeliveryJobService.resendScheduledNotifications(100);
 
-        verify(notificationRedeliveryAggregator, VerificationModeFactory.times(numberOfMessages + 2))
-            .resend(any(), any());
+    verify(appender, times(3)).doAppend(captureLogMessage.capture());
+    assertTrue(
+        captureLogMessage
+            .getValue()
+            .getFormattedMessage()
+            .contains(String.valueOf(numberOfSuccess + numberOfFailures)));
+    assertTrue(
+        captureLogMessage
+            .getValue()
+            .getFormattedMessage()
+            .contains(String.valueOf(numberOfFailures)));
+    assertEquals("DEBUG", captureLogMessage.getValue().getLevel().levelStr);
+  }
+
+  @Test
+  void shallLimitMessagesToBatchSize() {
+    final var expectedBatch = 345;
+
+    final var captureInt = ArgumentCaptor.forClass(int.class);
+
+    notificationRedeliveryJobService.resendScheduledNotifications(expectedBatch);
+
+    verify(notificationRedeliveryService).getNotificationsForRedelivery(captureInt.capture());
+
+    assertEquals(expectedBatch, captureInt.getValue().intValue());
+  }
+
+  @Test
+  void shouldHandleErrorsWhenExceptionIsReceived()
+      throws ModuleNotFoundException,
+          TemporaryException,
+          ModuleException,
+          IOException,
+          JAXBException {
+    final var redelivery = createNotificationRedelivery();
+    final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
+    notificationRedeliveryList.add(redelivery);
+
+    doReturn(notificationRedeliveryList)
+        .when(notificationRedeliveryService)
+        .getNotificationsForRedelivery(any(Integer.class));
+    doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
+    doThrow(WebCertServiceException.class)
+        .when(notificationRedeliveryAggregator)
+        .resend(eq(redelivery), any(Handelse.class));
+
+    notificationRedeliveryJobService.resendScheduledNotifications(any(Integer.class));
+
+    verify(notificationRedeliveryService)
+        .handleErrors(eq(redelivery), any(Handelse.class), any(WebCertServiceException.class));
+  }
+
+  private NotificationRedelivery createNotificationRedelivery() {
+    final var notificationRedelivery = new NotificationRedelivery();
+    notificationRedelivery.setCorrelationId("CORRELATION_ID");
+    notificationRedelivery.setEventId(1000L);
+    notificationRedelivery.setMessage("MESSAGE".getBytes());
+    return notificationRedelivery;
+  }
+
+  private List<Handelse> createEventsToReturn(int noOfEvents) {
+    final var eventList = new ArrayList<Handelse>(noOfEvents);
+    for (int i = 0; i < noOfEvents; i++) {
+      final var event = new Handelse();
+      event.setId((i + 1) * 1000L);
+      eventList.add(event);
     }
-
-    @Test
-    void shallLogSuccessAndFailures() throws Exception {
-        final var numberOfSuccess = 10;
-        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
-        for (int i = 0; i < numberOfSuccess; i++) {
-            notificationRedeliveryList.add(createNotificationRedelivery());
-        }
-
-        final var numberOfFailures = 2;
-        final var failingNotificationRedelivery = createNotificationRedelivery();
-        notificationRedeliveryList.add(3, failingNotificationRedelivery);
-        notificationRedeliveryList.add(7, failingNotificationRedelivery);
-
-        final var root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.addAppender(appender);
-
-        final var captureLogMessage = ArgumentCaptor.forClass(ILoggingEvent.class);
-        final var eventsToReturn = createEventsToReturn(1);
-
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn(true).when(notificationRedeliveryAggregator).resend(
-            any(NotificationRedelivery.class), eq(eventsToReturn.getFirst())
-        );
-        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryAggregator)
-            .resend(failingNotificationRedelivery, eventsToReturn.getFirst());
-
-        notificationRedeliveryJobService.resendScheduledNotifications(100);
-
-        verify(appender, times(3)).doAppend(captureLogMessage.capture());
-        assertTrue(captureLogMessage.getValue().getFormattedMessage().contains(String.valueOf(numberOfSuccess + numberOfFailures)));
-        assertTrue(captureLogMessage.getValue().getFormattedMessage().contains(String.valueOf(numberOfFailures)));
-        assertEquals("DEBUG", captureLogMessage.getValue().getLevel().levelStr);
-    }
-
-    @Test
-    void shallLimitMessagesToBatchSize() {
-        final var expectedBatch = 345;
-
-        final var captureInt = ArgumentCaptor.forClass(int.class);
-
-        notificationRedeliveryJobService.resendScheduledNotifications(expectedBatch);
-
-        verify(notificationRedeliveryService).getNotificationsForRedelivery(captureInt.capture());
-
-        assertEquals(expectedBatch, captureInt.getValue().intValue());
-    }
-
-    @Test
-    void shouldHandleErrorsWhenExceptionIsReceived()
-        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException, JAXBException {
-        final var redelivery = createNotificationRedelivery();
-        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
-        notificationRedeliveryList.add(redelivery);
-
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(Integer.class));
-        doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doThrow(WebCertServiceException.class).when(notificationRedeliveryAggregator)
-            .resend(eq(redelivery), any(Handelse.class));
-
-        notificationRedeliveryJobService.resendScheduledNotifications(any(Integer.class));
-
-        verify(notificationRedeliveryService).handleErrors(eq(redelivery), any(Handelse.class), any(WebCertServiceException.class));
-    }
-
-    private NotificationRedelivery createNotificationRedelivery() {
-        final var notificationRedelivery = new NotificationRedelivery();
-        notificationRedelivery.setCorrelationId("CORRELATION_ID");
-        notificationRedelivery.setEventId(1000L);
-        notificationRedelivery.setMessage("MESSAGE".getBytes());
-        return notificationRedelivery;
-    }
-
-    private List<Handelse> createEventsToReturn(int noOfEvents) {
-        final var eventList = new ArrayList<Handelse>(noOfEvents);
-        for (int i = 0; i < noOfEvents; i++) {
-            final var event = new Handelse();
-            event.setId((i + 1) * 1000L);
-            eventList.add(event);
-        }
-        return eventList;
-    }
+    return eventList;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,19 +20,19 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class ValidateSickLeavePeriodResponseDTO {
 
-    private String message;
+  private String message;
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public static ValidateSickLeavePeriodResponseDTO create(String message) {
-        final ValidateSickLeavePeriodResponseDTO response = new ValidateSickLeavePeriodResponseDTO();
-        response.setMessage(message);
-        return response;
-    }
+  public static ValidateSickLeavePeriodResponseDTO create(String message) {
+    final ValidateSickLeavePeriodResponseDTO response = new ValidateSickLeavePeriodResponseDTO();
+    response.setMessage(message);
+    return response;
+  }
 }

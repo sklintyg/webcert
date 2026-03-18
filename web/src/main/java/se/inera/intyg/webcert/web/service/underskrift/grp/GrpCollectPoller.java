@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,11 +23,11 @@ import org.springframework.security.core.context.SecurityContext;
 
 public interface GrpCollectPoller extends Runnable {
 
-    void setRefId(String refId);
+  void setRefId(String refId);
 
-    void setTransactionId(String transactionId);
+  void setTransactionId(String transactionId);
 
-    void setMdcContextMap(Map<String, String> mdcContextMap);
+  void setMdcContextMap(Map<String, String> mdcContextMap);
 
-    void setSecurityContext(SecurityContext securityContext);
+  void setSecurityContext(SecurityContext securityContext);
 }

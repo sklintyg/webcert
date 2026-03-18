@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,180 +60,174 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @ExtendWith(MockitoExtension.class)
 class GetRequiredFieldsForGetCertificatePdfServiceTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
-    private static final String DRAFT_JSON = "draftJson";
-    private static final String INTERNAL_JSON_MODEL = "internalJsonModel";
-    private static final String EXPECTED_TYPE_VERSION_FK7263 = "1.0";
-    private static final String EXPECTED_TYPE_FK_7263 = "fk7263";
-    private static final List<Status> EXPECTED_STATUSES = List.of(new Status(CertificateState.RECEIVED, "target", LocalDateTime.now()));
-    @Mock
-    private UtkastService utkastService;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
+  private static final String DRAFT_JSON = "draftJson";
+  private static final String INTERNAL_JSON_MODEL = "internalJsonModel";
+  private static final String EXPECTED_TYPE_VERSION_FK7263 = "1.0";
+  private static final String EXPECTED_TYPE_FK_7263 = "fk7263";
+  private static final List<Status> EXPECTED_STATUSES =
+      List.of(new Status(CertificateState.RECEIVED, "target", LocalDateTime.now()));
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @Mock
-    private ITIntegrationService itIntegrationService;
+  @Mock private ITIntegrationService itIntegrationService;
 
-    @InjectMocks
-    private GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
+  @InjectMocks
+  private GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
 
-    @Nested
-    class UtkastInWebcert {
+  @Nested
+  class UtkastInWebcert {
 
-        private final Utkast draft = createDraft();
+    private final Utkast draft = createDraft();
 
-        @BeforeEach
-        void setupMocks() {
-            doReturn(draft)
-                .when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
-        }
+    @BeforeEach
+    void setupMocks() {
+      doReturn(draft).when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
+    }
 
-        @Test
-        void shallReturnTypeVersionFromUtkast() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-            assertEquals(draft.getIntygTypeVersion(), result.getCertificateTypeVersion());
-        }
+    @Test
+    void shallReturnTypeVersionFromUtkast() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+      assertEquals(draft.getIntygTypeVersion(), result.getCertificateTypeVersion());
+    }
 
-        @Test
-        void shallReturnTypeFromUtkast() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-            assertEquals(draft.getIntygsTyp(), result.getCertificateType());
-        }
+    @Test
+    void shallReturnTypeFromUtkast() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+      assertEquals(draft.getIntygsTyp(), result.getCertificateType());
+    }
 
-        @Test
-        void shallReturnInternalJsonModelFromUtkast() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-            assertEquals(draft.getModel(), result.getInternalJsonModel());
-        }
+    @Test
+    void shallReturnInternalJsonModelFromUtkast() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+      assertEquals(draft.getModel(), result.getInternalJsonModel());
+    }
 
-        @Test
-        void shallReturnStatusesFromUtkast() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-            assertEquals(CertificateState.SENT, result.getStatuses().get(0).getType());
-        }
-
-        @Nested
-        class SentFromMinaIntyg {
-
-            private ItIntygInfo itIntygInfo;
-
-            @BeforeEach
-            void setUp() {
-                draft.setStatus(UtkastStatus.SIGNED);
-                draft.setSkickadTillMottagareDatum(null);
-                draft.setSkickadTillMottagare(null);
-
-                itIntygInfo = new ItIntygInfo();
-
-                doReturn(itIntygInfo)
-                    .when(itIntegrationService)
-                    .getCertificateInfo(draft.getIntygsId());
-            }
-
-            @Test
-            void shallGetSentDateTimeFromITIfSentFromMinaIntyg() {
-                final var expectedSentDateTime = LocalDateTime.now();
-                itIntygInfo.setSentToRecipient(expectedSentDateTime);
-
-                final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-                assertEquals(expectedSentDateTime, result.getStatuses().get(0).getTimestamp());
-            }
-
-            @Test
-            void shallGetRecieverFromITIfSentFromMinaIntyg() {
-                final var expectedReceiver = "FKASSA";
-                itIntygInfo.setSentToRecipient(LocalDateTime.now());
-                final var intygInfoEvent = new IntygInfoEvent(Source.INTYGSTJANSTEN, LocalDateTime.now(), IntygInfoEventType.IS006);
-                intygInfoEvent.addData("intygsmottagare", expectedReceiver);
-                itIntygInfo.setEvents(List.of(intygInfoEvent));
-
-                final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-                assertEquals(expectedReceiver, result.getStatuses().get(0).getTarget());
-            }
-
-            @Test
-            void shallLeaveSentDateTimeAsNullIfNotSentFromMinaIntyg() {
-
-                final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-                assertTrue(result.getStatuses().isEmpty(), "Sent datetime should be null if not sent");
-            }
-
-            @Test
-            void shallLeaveSentToReceiverAsNullIfNotSentFromMinaIntyg() {
-                final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-                assertTrue(result.getStatuses().isEmpty(), "Sent datetime should be null if not sent");
-            }
-        }
-
-        @Test
-        void shallNotGetUtkastStatusFromITIfSent() {
-            draft.setStatus(UtkastStatus.SIGNED);
-            getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-            verify(itIntegrationService, never())
-                .getCertificateInfo(draft.getIntygsId());
-        }
-
-        @Test
-        void shallNotGetUtkastStatusFromITIfDraftIncomplete() {
-            draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-            draft.setSkickadTillMottagareDatum(null);
-            getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-            verify(itIntegrationService, never())
-                .getCertificateInfo(draft.getIntygsId());
-        }
-
-        @Test
-        void shallNotGetUtkastStatusFromITIfDraftComplete() {
-            draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
-            draft.setSkickadTillMottagareDatum(null);
-            getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-            verify(itIntegrationService, never())
-                .getCertificateInfo(draft.getIntygsId());
-        }
-
-        @Test
-        void shallNotGetUtkastStatusFromITIfDraftLocked() {
-            draft.setStatus(UtkastStatus.DRAFT_LOCKED);
-            draft.setSkickadTillMottagareDatum(null);
-            getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-            verify(itIntegrationService, never())
-                .getCertificateInfo(draft.getIntygsId());
-        }
-
-        @Nested
-        class ValidatePdlLogging {
-
-            @Test
-            void shallNotPdlLog() {
-                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
-                verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
-                assertFalse(actualPdlLogValue.getValue());
-            }
-        }
-
-        private Utkast createDraft() {
-            final var draft = new Utkast();
-            draft.setIntygsId(CERTIFICATE_ID);
-            draft.setIntygsTyp(CERTIFICATE_TYPE);
-            draft.setIntygTypeVersion(CERTIFICATE_TYPE_VERSION);
-            draft.setModel(DRAFT_JSON);
-            draft.setStatus(UtkastStatus.SIGNED);
-            draft.setSkickadTillMottagareDatum(LocalDateTime.now());
-            draft.setSkapad(LocalDateTime.now());
-            draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
-            draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
-            return draft;
-        }
+    @Test
+    void shallReturnStatusesFromUtkast() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+      assertEquals(CertificateState.SENT, result.getStatuses().get(0).getType());
     }
 
     @Nested
-    class UtkastMissingInWebcert {
+    class SentFromMinaIntyg {
 
-        private final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
+      private ItIntygInfo itIntygInfo;
+
+      @BeforeEach
+      void setUp() {
+        draft.setStatus(UtkastStatus.SIGNED);
+        draft.setSkickadTillMottagareDatum(null);
+        draft.setSkickadTillMottagare(null);
+
+        itIntygInfo = new ItIntygInfo();
+
+        doReturn(itIntygInfo).when(itIntegrationService).getCertificateInfo(draft.getIntygsId());
+      }
+
+      @Test
+      void shallGetSentDateTimeFromITIfSentFromMinaIntyg() {
+        final var expectedSentDateTime = LocalDateTime.now();
+        itIntygInfo.setSentToRecipient(expectedSentDateTime);
+
+        final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+        assertEquals(expectedSentDateTime, result.getStatuses().get(0).getTimestamp());
+      }
+
+      @Test
+      void shallGetRecieverFromITIfSentFromMinaIntyg() {
+        final var expectedReceiver = "FKASSA";
+        itIntygInfo.setSentToRecipient(LocalDateTime.now());
+        final var intygInfoEvent =
+            new IntygInfoEvent(
+                Source.INTYGSTJANSTEN, LocalDateTime.now(), IntygInfoEventType.IS006);
+        intygInfoEvent.addData("intygsmottagare", expectedReceiver);
+        itIntygInfo.setEvents(List.of(intygInfoEvent));
+
+        final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+        assertEquals(expectedReceiver, result.getStatuses().get(0).getTarget());
+      }
+
+      @Test
+      void shallLeaveSentDateTimeAsNullIfNotSentFromMinaIntyg() {
+
+        final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+        assertTrue(result.getStatuses().isEmpty(), "Sent datetime should be null if not sent");
+      }
+
+      @Test
+      void shallLeaveSentToReceiverAsNullIfNotSentFromMinaIntyg() {
+        final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+        assertTrue(result.getStatuses().isEmpty(), "Sent datetime should be null if not sent");
+      }
+    }
+
+    @Test
+    void shallNotGetUtkastStatusFromITIfSent() {
+      draft.setStatus(UtkastStatus.SIGNED);
+      getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+      verify(itIntegrationService, never()).getCertificateInfo(draft.getIntygsId());
+    }
+
+    @Test
+    void shallNotGetUtkastStatusFromITIfDraftIncomplete() {
+      draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+      draft.setSkickadTillMottagareDatum(null);
+      getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+      verify(itIntegrationService, never()).getCertificateInfo(draft.getIntygsId());
+    }
+
+    @Test
+    void shallNotGetUtkastStatusFromITIfDraftComplete() {
+      draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
+      draft.setSkickadTillMottagareDatum(null);
+      getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+      verify(itIntegrationService, never()).getCertificateInfo(draft.getIntygsId());
+    }
+
+    @Test
+    void shallNotGetUtkastStatusFromITIfDraftLocked() {
+      draft.setStatus(UtkastStatus.DRAFT_LOCKED);
+      draft.setSkickadTillMottagareDatum(null);
+      getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+      verify(itIntegrationService, never()).getCertificateInfo(draft.getIntygsId());
+    }
+
+    @Nested
+    class ValidatePdlLogging {
+
+      @Test
+      void shallNotPdlLog() {
+        final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+        getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+        verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
+        assertFalse(actualPdlLogValue.getValue());
+      }
+    }
+
+    private Utkast createDraft() {
+      final var draft = new Utkast();
+      draft.setIntygsId(CERTIFICATE_ID);
+      draft.setIntygsTyp(CERTIFICATE_TYPE);
+      draft.setIntygTypeVersion(CERTIFICATE_TYPE_VERSION);
+      draft.setModel(DRAFT_JSON);
+      draft.setStatus(UtkastStatus.SIGNED);
+      draft.setSkickadTillMottagareDatum(LocalDateTime.now());
+      draft.setSkapad(LocalDateTime.now());
+      draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
+      draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
+      return draft;
+    }
+  }
+
+  @Nested
+  class UtkastMissingInWebcert {
+
+    private final IntygContentHolder intygContentHolder =
+        IntygContentHolder.builder()
             .revoked(false)
             .deceased(false)
             .utlatande(new Fk7263Utlatande())
@@ -246,67 +239,74 @@ class GetRequiredFieldsForGetCertificatePdfServiceTest {
             .statuses(EXPECTED_STATUSES)
             .build();
 
-        @BeforeEach
-        void setupMocks() {
-            doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Missing in Webcert"))
-                .when(utkastService).getDraft(eq(CERTIFICATE_ID), anyBoolean());
+    @BeforeEach
+    void setupMocks() {
+      doThrow(
+              new WebCertServiceException(
+                  WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Missing in Webcert"))
+          .when(utkastService)
+          .getDraft(eq(CERTIFICATE_ID), anyBoolean());
 
-            doReturn(intygContentHolder)
-                .when(intygService).fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean(), anyBoolean());
-        }
-
-        @Test
-        void shallReturnTypeVersionFromUtkast() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
-            assertEquals(EXPECTED_TYPE_VERSION_FK7263, result.getCertificateTypeVersion());
-        }
-
-        @Test
-        void shallReturnTypeFromUtkast() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
-            assertEquals(EXPECTED_TYPE_FK_7263, result.getCertificateType());
-        }
-
-        @Test
-        void shallReturnInternalJsonModelFromUtkast() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
-            assertEquals(INTERNAL_JSON_MODEL, result.getInternalJsonModel());
-        }
-
-        @Test
-        void shallReturnStatusesFromUtkast() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
-            assertEquals(CertificateState.RECEIVED, result.getStatuses().get(0).getType());
-        }
-
-        @Test
-        void shallSetUtkastStatusToSigned() {
-            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
-            assertEquals(UtkastStatus.SIGNED, result.getStatus());
-        }
-
-        @Nested
-        class ValidatePdlLogging {
-
-            @Test
-            void shallNotPdlLog() {
-                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
-                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
-                assertFalse(actualPdlLogValue.getValue());
-            }
-        }
-
-        @Nested
-        class ValidateAccessLogging {
-
-            @Test
-            void shallNotValidateAccess() {
-                final var actualValidateAccessLogging = ArgumentCaptor.forClass(Boolean.class);
-                getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
-                verify(intygService).fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccessLogging.capture());
-                assertFalse(actualValidateAccessLogging.getValue());
-            }
-        }
+      doReturn(intygContentHolder)
+          .when(intygService)
+          .fetchIntygData(eq(CERTIFICATE_ID), eq(null), anyBoolean(), anyBoolean());
     }
+
+    @Test
+    void shallReturnTypeVersionFromUtkast() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+      assertEquals(EXPECTED_TYPE_VERSION_FK7263, result.getCertificateTypeVersion());
+    }
+
+    @Test
+    void shallReturnTypeFromUtkast() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+      assertEquals(EXPECTED_TYPE_FK_7263, result.getCertificateType());
+    }
+
+    @Test
+    void shallReturnInternalJsonModelFromUtkast() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+      assertEquals(INTERNAL_JSON_MODEL, result.getInternalJsonModel());
+    }
+
+    @Test
+    void shallReturnStatusesFromUtkast() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+      assertEquals(CertificateState.RECEIVED, result.getStatuses().get(0).getType());
+    }
+
+    @Test
+    void shallSetUtkastStatusToSigned() {
+      final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+      assertEquals(UtkastStatus.SIGNED, result.getStatus());
+    }
+
+    @Nested
+    class ValidatePdlLogging {
+
+      @Test
+      void shallNotPdlLog() {
+        final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
+        getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+        verify(intygService)
+            .fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
+        assertFalse(actualPdlLogValue.getValue());
+      }
+    }
+
+    @Nested
+    class ValidateAccessLogging {
+
+      @Test
+      void shallNotValidateAccess() {
+        final var actualValidateAccessLogging = ArgumentCaptor.forClass(Boolean.class);
+        getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+        verify(intygService)
+            .fetchIntygData(
+                anyString(), eq(null), anyBoolean(), actualValidateAccessLogging.capture());
+        assertFalse(actualValidateAccessLogging.getValue());
+      }
+    }
+  }
 }

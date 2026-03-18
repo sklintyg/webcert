@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,60 +29,60 @@ import jakarta.persistence.Table;
 @Table(name = "ARENDE_UTKAST")
 public class ArendeDraft {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  private Long id;
 
-    @Column(name = "QUESTION_ID")
-    private String questionId;
+  @Column(name = "QUESTION_ID")
+  private String questionId;
 
-    @Column(name = "INTYGS_ID")
-    private String intygId;
+  @Column(name = "INTYGS_ID")
+  private String intygId;
 
-    @Column(name = "TEXT")
-    private String text;
+  @Column(name = "TEXT")
+  private String text;
 
-    @Column(name = "AMNE")
-    private String amne;
+  @Column(name = "AMNE")
+  private String amne;
 
-    public String getQuestionId() {
-        return questionId;
-    }
+  public String getQuestionId() {
+    return questionId;
+  }
 
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
-    }
+  public void setQuestionId(String questionId) {
+    this.questionId = questionId;
+  }
 
-    public String getIntygId() {
-        return intygId;
-    }
+  public String getIntygId() {
+    return intygId;
+  }
 
-    public void setIntygId(String intygId) {
-        this.intygId = intygId;
-    }
+  public void setIntygId(String intygId) {
+    this.intygId = intygId;
+  }
 
-    public String getText() {
-        return text;
-    }
+  public String getText() {
+    return text;
+  }
 
-    public void setText(String text) {
-        this.text = text;
-    }
+  public void setText(String text) {
+    this.text = text;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getAmne() {
-        return amne;
-    }
+  public String getAmne() {
+    return amne;
+  }
 
-    public void setAmne(String amne) {
-        this.amne = amne;
-    }
+  public void setAmne(String amne) {
+    this.amne = amne;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.modal.typeinfo;
 
 import java.util.Optional;
@@ -25,36 +24,43 @@ import se.inera.intyg.webcert.web.service.facade.impl.PreviousCertificateInfo;
 
 public class DbTypeInfoModalProvider implements CertificateTypeInfoModalProvider {
 
-    @Override
-    public Optional<CertificateTypeInfoModal> create(PreviousCertificateInfo previousCertificateInfo) {
-        if (previousCertificateInfo.isSameCareProvider() && previousCertificateInfo.isSameUnit()) {
-            return Optional.empty();
-        }
+  @Override
+  public Optional<CertificateTypeInfoModal> create(
+      PreviousCertificateInfo previousCertificateInfo) {
+    if (previousCertificateInfo.isSameCareProvider() && previousCertificateInfo.isSameUnit()) {
+      return Optional.empty();
+    }
 
-        return Optional.of(CertificateTypeInfoModal.builder()
-            .title(getTitle(previousCertificateInfo.isDraft(),
-                previousCertificateInfo.isSameCareProvider()))
+    return Optional.of(
+        CertificateTypeInfoModal.builder()
+            .title(
+                getTitle(
+                    previousCertificateInfo.isDraft(),
+                    previousCertificateInfo.isSameCareProvider()))
             .description(buildDescription(previousCertificateInfo))
             .link("Visa vårdenhetens namn och HSA-id")
             .build());
+  }
+
+  private String getTitle(boolean isDraft, boolean sameCareProvider) {
+    if (sameCareProvider) {
+      return isDraft
+          ? "Utkast på dödsbevis på annan vårdenhet"
+          : "Signerat dödsbevis på annan vårdenhet";
     }
 
-    private String getTitle(boolean isDraft, boolean sameCareProvider) {
-        if (sameCareProvider) {
-            return isDraft ? "Utkast på dödsbevis på annan vårdenhet" : "Signerat dödsbevis på annan vårdenhet";
-        }
+    return isDraft
+        ? "Utkast på dödsbevis hos annan vårdgivare"
+        : "Signerat dödsbevis hos annan vårdgivare";
+  }
 
-        return isDraft ? "Utkast på dödsbevis hos annan vårdgivare" : "Signerat dödsbevis hos annan vårdgivare";
-    }
-    
-    private String buildDescription(PreviousCertificateInfo previousCertificateInfo) {
-        return String.format(
-            "<p><strong>Vårdgivare</strong><br/>%s</p>"
-                + "<p><strong>Vårdenhet</strong><br/>%s</p>"
-                + "<p><strong>Vårdenhetens HSA-id</strong><br/>%s</p>",
-            previousCertificateInfo.getCareProviderName(),
-            previousCertificateInfo.getCareUnitName(),
-            previousCertificateInfo.getCareUnitHsaId()
-        );
-    }
+  private String buildDescription(PreviousCertificateInfo previousCertificateInfo) {
+    return String.format(
+        "<p><strong>Vårdgivare</strong><br/>%s</p>"
+            + "<p><strong>Vårdenhet</strong><br/>%s</p>"
+            + "<p><strong>Vårdenhetens HSA-id</strong><br/>%s</p>",
+        previousCertificateInfo.getCareProviderName(),
+        previousCertificateInfo.getCareUnitName(),
+        previousCertificateInfo.getCareUnitHsaId());
+  }
 }

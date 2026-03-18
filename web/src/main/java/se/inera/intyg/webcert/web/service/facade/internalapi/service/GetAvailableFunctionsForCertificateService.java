@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import java.util.List;
@@ -29,16 +28,16 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @Service
 public class GetAvailableFunctionsForCertificateService {
 
-    private final List<AvailableFunctions> availableFunctions;
+  private final List<AvailableFunctions> availableFunctions;
 
-    public GetAvailableFunctionsForCertificateService(List<AvailableFunctions> availableFunctions) {
-        this.availableFunctions = availableFunctions;
-    }
+  public GetAvailableFunctionsForCertificateService(List<AvailableFunctions> availableFunctions) {
+    this.availableFunctions = availableFunctions;
+  }
 
-    public List<AvailableFunctionDTO> get(Certificate certificate) {
-        return availableFunctions.stream()
-            .map(function -> function.get(certificate))
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
-    }
+  public List<AvailableFunctionDTO> get(Certificate certificate) {
+    return availableFunctions.stream()
+        .map(function -> function.get(certificate))
+        .flatMap(List::stream)
+        .collect(Collectors.toList());
+  }
 }

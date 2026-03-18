@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,46 +33,53 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Service("forwardCertificateFromWC")
 public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ForwardCertificateFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(ForwardCertificateFacadeServiceImpl.class);
 
-    private final UtkastService utkastService;
+  private final UtkastService utkastService;
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    private final UtkastToCertificateConverter utkastToCertificateConverter;
+  private final UtkastToCertificateConverter utkastToCertificateConverter;
 
-    private final ArendeService arendeService;
+  private final ArendeService arendeService;
 
-    @Autowired
-    public ForwardCertificateFacadeServiceImpl(UtkastService utkastService,
-        GetCertificateFacadeService getCertificateFacadeService,
-        UtkastToCertificateConverter utkastToCertificateConverter,
-        ArendeService arendeService) {
-        this.utkastService = utkastService;
-        this.getCertificateFacadeService = getCertificateFacadeService;
-        this.utkastToCertificateConverter = utkastToCertificateConverter;
-        this.arendeService = arendeService;
+  @Autowired
+  public ForwardCertificateFacadeServiceImpl(
+      UtkastService utkastService,
+      GetCertificateFacadeService getCertificateFacadeService,
+      UtkastToCertificateConverter utkastToCertificateConverter,
+      ArendeService arendeService) {
+    this.utkastService = utkastService;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+    this.utkastToCertificateConverter = utkastToCertificateConverter;
+    this.arendeService = arendeService;
+  }
+
+  @Override
+  public Certificate forwardCertificate(String certificateId, boolean forwarded) {
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+
+    if (certificate.getMetadata().getStatus() != CertificateStatus.SIGNED) {
+      return forwardDraft(certificateId, certificate, forwarded);
+    } else {
+      arendeService.setForwarded(certificateId);
+      return certificate;
     }
+  }
 
-    @Override
-    public Certificate forwardCertificate(String certificateId, boolean forwarded) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+  private Certificate forwardDraft(
+      String certificateId, Certificate certificate, boolean forwarded) {
+    LOG.debug(
+        "Set certificate '{}' with version '{}' as forwarded '{}'",
+        certificateId,
+        certificate.getMetadata().getVersion(),
+        forwarded);
+    final var draft =
+        utkastService.setNotifiedOnDraft(
+            certificateId, certificate.getMetadata().getVersion(), forwarded);
 
-        if (certificate.getMetadata().getStatus() != CertificateStatus.SIGNED) {
-            return forwardDraft(certificateId, certificate, forwarded);
-        } else {
-            arendeService.setForwarded(certificateId);
-            return certificate;
-        }
-    }
-
-    private Certificate forwardDraft(String certificateId, Certificate certificate, boolean forwarded) {
-        LOG.debug("Set certificate '{}' with version '{}' as forwarded '{}'", certificateId,
-            certificate.getMetadata().getVersion(), forwarded);
-        final var draft = utkastService.setNotifiedOnDraft(certificateId,
-            certificate.getMetadata().getVersion(), forwarded);
-
-        LOG.debug("Get the forwarded certificate '{}'", certificateId);
-        return utkastToCertificateConverter.convert(draft);
-    }
+    LOG.debug("Get the forwarded certificate '{}'", certificateId);
+    return utkastToCertificateConverter.convert(draft);
+  }
 }

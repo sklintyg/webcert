@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
@@ -34,38 +33,39 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 @RequiredArgsConstructor
 public class HandleMessageNotificationForParentService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    public void notify(CertificateRelations relations) {
-        if (parentCertificateRelationIsNotComplement(relations)) {
-            return;
-        }
+  public void notify(CertificateRelations relations) {
+    if (parentCertificateRelationIsNotComplement(relations)) {
+      return;
+    }
 
-        final var certificateId = relations.getParent().getCertificateId();
+    final var certificateId = relations.getParent().getCertificateId();
 
-        final var questions = csIntegrationService.getQuestions(
-            certificateId
-        );
+    final var questions = csIntegrationService.getQuestions(certificateId);
 
-        final var parentCertificate = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
+    final var parentCertificate =
+        csIntegrationService.getCertificate(
+            certificateId, csIntegrationRequestFactory.getCertificateRequest());
 
-        questions.forEach(question -> {
-            if (isQuestionComplement(question)) {
-                publishCertificateStatusUpdateService.publish(parentCertificate, HandelsekodEnum.NYFRFM);
-            }
+    questions.forEach(
+        question -> {
+          if (isQuestionComplement(question)) {
+            publishCertificateStatusUpdateService.publish(
+                parentCertificate, HandelsekodEnum.NYFRFM);
+          }
         });
-    }
+  }
 
-    private static boolean parentCertificateRelationIsNotComplement(CertificateRelations relations) {
-        return relations == null || relations.getParent() == null || !relations.getParent().getType().equals(COMPLEMENTED);
-    }
+  private static boolean parentCertificateRelationIsNotComplement(CertificateRelations relations) {
+    return relations == null
+        || relations.getParent() == null
+        || !relations.getParent().getType().equals(COMPLEMENTED);
+  }
 
-    private boolean isQuestionComplement(Question question) {
-        return QuestionType.COMPLEMENT.equals(question.getType());
-    }
+  private boolean isQuestionComplement(Question question) {
+    return QuestionType.COMPLEMENT.equals(question.getType());
+  }
 }

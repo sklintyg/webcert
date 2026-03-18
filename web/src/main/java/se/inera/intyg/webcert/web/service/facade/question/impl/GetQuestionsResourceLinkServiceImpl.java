@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,134 +42,145 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @Service
 public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResourceLinkService {
 
-    private final GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService;
-    private final CertificateAccessServiceHelper certificateAccessServiceHelper;
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService;
+  private final CertificateAccessServiceHelper certificateAccessServiceHelper;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public GetQuestionsResourceLinkServiceImpl(GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService,
-        CertificateAccessServiceHelper certificateAccessServiceHelper, GetCertificateFacadeService getCertificateFacadeService) {
-        this.getQuestionsAvailableFunctionsService = getQuestionsAvailableFunctionsService;
-        this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-        this.getCertificateFacadeService = getCertificateFacadeService;
+  @Autowired
+  public GetQuestionsResourceLinkServiceImpl(
+      GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService,
+      CertificateAccessServiceHelper certificateAccessServiceHelper,
+      GetCertificateFacadeService getCertificateFacadeService) {
+    this.getQuestionsAvailableFunctionsService = getQuestionsAvailableFunctionsService;
+    this.certificateAccessServiceHelper = certificateAccessServiceHelper;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
+
+  @Override
+  public List<ResourceLinkDTO> get(Question question) {
+    if (useLinksProvidedInQuestion(question)) {
+      return question.getLinks().stream()
+          .map(this::convertLinksProvidedInQuestion)
+          .collect(Collectors.toList());
     }
 
-    @Override
-    public List<ResourceLinkDTO> get(Question question) {
-        if (useLinksProvidedInQuestion(question)) {
-            return question.getLinks().stream()
-                .map(this::convertLinksProvidedInQuestion)
-                .collect(Collectors.toList());
-        }
+    final var certificate =
+        getCertificateFacadeService.getCertificate(question.getCertificateId(), false, false);
+    return get(certificate, question);
+  }
 
-        final var certificate = getCertificateFacadeService.getCertificate(question.getCertificateId(), false, false);
-        return get(certificate, question);
+  private static boolean useLinksProvidedInQuestion(Question question) {
+    return question.getLinks() != null;
+  }
+
+  private List<ResourceLinkDTO> get(Certificate certificate, Question question) {
+    if (question.getSent() == null) {
+      return Collections.emptyList();
     }
 
-    private static boolean useLinksProvidedInQuestion(Question question) {
-        return question.getLinks() != null;
-    }
-
-    private List<ResourceLinkDTO> get(Certificate certificate, Question question) {
-        if (question.getSent() == null) {
-            return Collections.emptyList();
-        }
-
-        final var accessEvaluationParameters = createAccessEvaluationParameters(certificate);
-        final var availableFunctions = getQuestionsAvailableFunctionsService.get(question);
-        final var functions = getAccessFunctions();
-        return availableFunctions.stream()
-            .filter(availableFunction -> {
-                final var accessFunction = functions.get(availableFunction.getType());
-                if (accessFunction == null) {
-                    return true;
-                }
-                return accessFunction.hasAccess(accessEvaluationParameters);
+    final var accessEvaluationParameters = createAccessEvaluationParameters(certificate);
+    final var availableFunctions = getQuestionsAvailableFunctionsService.get(question);
+    final var functions = getAccessFunctions();
+    return availableFunctions.stream()
+        .filter(
+            availableFunction -> {
+              final var accessFunction = functions.get(availableFunction.getType());
+              if (accessFunction == null) {
+                return true;
+              }
+              return accessFunction.hasAccess(accessEvaluationParameters);
             })
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Map<Question, List<ResourceLinkDTO>> get(List<Question> questions) {
+    final var questionResourceLinkDTOHashMap = new HashMap<Question, List<ResourceLinkDTO>>();
+
+    if (questions.isEmpty()) {
+      return questionResourceLinkDTOHashMap;
     }
 
-    @Override
-    public Map<Question, List<ResourceLinkDTO>> get(List<Question> questions) {
-        final var questionResourceLinkDTOHashMap = new HashMap<Question, List<ResourceLinkDTO>>();
-
-        if (questions.isEmpty()) {
-            return questionResourceLinkDTOHashMap;
-        }
-
-        if (useLinksProvidedInQuestions(questions)) {
-            return questions.stream()
-                .collect(Collectors.toMap(
-                    question -> question,
-                    question -> question.getLinks().stream()
-                        .map(this::convertLinksProvidedInQuestion)
-                        .collect(Collectors.toList())
-                ));
-        }
-
-        final var certificate = getCertificateFacadeService.getCertificate(questions.get(0).getCertificateId(), false, false);
-
-        for (Question question : questions) {
-            final var resourceLinkDTOS = get(certificate, question);
-            questionResourceLinkDTOHashMap.put(question, resourceLinkDTOS);
-        }
-        return questionResourceLinkDTOHashMap;
+    if (useLinksProvidedInQuestions(questions)) {
+      return questions.stream()
+          .collect(
+              Collectors.toMap(
+                  question -> question,
+                  question ->
+                      question.getLinks().stream()
+                          .map(this::convertLinksProvidedInQuestion)
+                          .collect(Collectors.toList())));
     }
 
-    private static boolean useLinksProvidedInQuestions(List<Question> questions) {
-        return questions.stream().anyMatch(GetQuestionsResourceLinkServiceImpl::useLinksProvidedInQuestion);
+    final var certificate =
+        getCertificateFacadeService.getCertificate(
+            questions.get(0).getCertificateId(), false, false);
+
+    for (Question question : questions) {
+      final var resourceLinkDTOS = get(certificate, question);
+      questionResourceLinkDTOHashMap.put(question, resourceLinkDTOS);
     }
+    return questionResourceLinkDTOHashMap;
+  }
 
-    private ResourceLinkDTO convertLinksProvidedInQuestion(ResourceLink link) {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.valueOf(link.getType().name()),
-            link.getTitle(),
-            link.getName(),
-            link.getDescription(),
-            link.getBody(),
-            link.isEnabled()
-        );
-    }
+  private static boolean useLinksProvidedInQuestions(List<Question> questions) {
+    return questions.stream()
+        .anyMatch(GetQuestionsResourceLinkServiceImpl::useLinksProvidedInQuestion);
+  }
 
-    private AccessEvaluationParameters createAccessEvaluationParameters(Certificate certificate) {
-        final var metadata = certificate.getMetadata();
-        return AccessEvaluationParameters.create(
-            metadata.getType(),
-            null,
-            UtkastUtil.getCareUnit(metadata.getCareProvider().getUnitId(), metadata.getUnit().getUnitId()),
-            Personnummer.createPersonnummer(metadata.getPatient().getPersonId().getId()).orElseThrow(),
-            false
-        );
-    }
+  private ResourceLinkDTO convertLinksProvidedInQuestion(ResourceLink link) {
+    return ResourceLinkDTO.create(
+        ResourceLinkTypeDTO.valueOf(link.getType().name()),
+        link.getTitle(),
+        link.getName(),
+        link.getDescription(),
+        link.getBody(),
+        link.isEnabled());
+  }
 
-    private Map<ResourceLinkTypeDTO, GetQuestionsResourceLinkServiceImpl.AccessCheck> getAccessFunctions() {
-        final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
+  private AccessEvaluationParameters createAccessEvaluationParameters(Certificate certificate) {
+    final var metadata = certificate.getMetadata();
+    return AccessEvaluationParameters.create(
+        metadata.getType(),
+        null,
+        UtkastUtil.getCareUnit(
+            metadata.getCareProvider().getUnitId(), metadata.getUnit().getUnitId()),
+        Personnummer.createPersonnummer(metadata.getPatient().getPersonId().getId()).orElseThrow(),
+        false);
+  }
 
-        functions.put(ResourceLinkTypeDTO.ANSWER_QUESTION,
-            certificateAccessServiceHelper::isAllowToAnswerAdminQuestion
-        );
+  private Map<ResourceLinkTypeDTO, GetQuestionsResourceLinkServiceImpl.AccessCheck>
+      getAccessFunctions() {
+    final var functions = new EnumMap<ResourceLinkTypeDTO, AccessCheck>(ResourceLinkTypeDTO.class);
 
-        functions.put(ResourceLinkTypeDTO.HANDLE_QUESTION,
-            certificateAccessServiceHelper::isAllowToSetQuestionAsHandled
-        );
+    functions.put(
+        ResourceLinkTypeDTO.ANSWER_QUESTION,
+        certificateAccessServiceHelper::isAllowToAnswerAdminQuestion);
 
-        functions.put(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE,
-            accessEvaluationParameters -> certificateAccessServiceHelper
-                .isAllowToAnswerComplementQuestion(accessEvaluationParameters, true)
-        );
+    functions.put(
+        ResourceLinkTypeDTO.HANDLE_QUESTION,
+        certificateAccessServiceHelper::isAllowToSetQuestionAsHandled);
 
-        functions.put(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE,
-            accessEvaluationParameters -> certificateAccessServiceHelper
-                .isAllowToAnswerComplementQuestion(accessEvaluationParameters, true)
-        );
+    functions.put(
+        ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE,
+        accessEvaluationParameters ->
+            certificateAccessServiceHelper.isAllowToAnswerComplementQuestion(
+                accessEvaluationParameters, true));
 
-        functions.put(ResourceLinkTypeDTO.FORWARD_QUESTION,
-            certificateAccessServiceHelper::isAllowToForwardQuestions);
-        return functions;
-    }
+    functions.put(
+        ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE,
+        accessEvaluationParameters ->
+            certificateAccessServiceHelper.isAllowToAnswerComplementQuestion(
+                accessEvaluationParameters, true));
 
-    private interface AccessCheck {
+    functions.put(
+        ResourceLinkTypeDTO.FORWARD_QUESTION,
+        certificateAccessServiceHelper::isAllowToForwardQuestions);
+    return functions;
+  }
 
-        boolean hasAccess(AccessEvaluationParameters accessEvaluationParameters);
-    }
+  private interface AccessCheck {
+
+    boolean hasAccess(AccessEvaluationParameters accessEvaluationParameters);
+  }
 }

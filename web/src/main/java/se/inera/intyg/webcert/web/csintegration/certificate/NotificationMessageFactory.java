@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDate;
@@ -39,16 +38,20 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 @RequiredArgsConstructor
 public class NotificationMessageFactory {
 
-    private final CSIntegrationService csIntegrationService;
-    private final QuestionCounter questionCounter;
+  private final CSIntegrationService csIntegrationService;
+  private final QuestionCounter questionCounter;
 
-    public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation,
-        HandelsekodEnum eventType, String handledByHsaId, ArendeAmne questionType, LocalDate lastDateToAnswer) {
-        final var questions = csIntegrationService.getQuestions(
-            certificate.getMetadata().getId()
-        );
-        final var now = LocalDateTime.now();
-        final var notificationMessage = new NotificationMessage(
+  public NotificationMessage create(
+      Certificate certificate,
+      String encodedXmlRepresentation,
+      HandelsekodEnum eventType,
+      String handledByHsaId,
+      ArendeAmne questionType,
+      LocalDate lastDateToAnswer) {
+    final var questions = csIntegrationService.getQuestions(certificate.getMetadata().getId());
+    final var now = LocalDateTime.now();
+    final var notificationMessage =
+        new NotificationMessage(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getType(),
             now,
@@ -59,39 +62,38 @@ public class NotificationMessageFactory {
             questionCounter.calculateArendeCount(
                 questions.stream()
                     .filter(
-                        question -> !FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
-                    .collect(Collectors.toList())
-            ),
+                        question ->
+                            !FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
+                    .collect(Collectors.toList())),
             questionCounter.calculateArendeCount(
                 questions.stream()
                     .filter(
-                        question -> FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
-                    .collect(Collectors.toList())
-            ),
+                        question ->
+                            FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
+                    .collect(Collectors.toList())),
             SchemaVersion.VERSION_3,
             certificate.getMetadata().getExternalReference(),
             getSubjectCode(questionType),
-            lastDateToAnswer
-        );
+            lastDateToAnswer);
 
-        notificationMessage.setStatusUpdateXml(
-            CertificateStatusUpdateFactory.create(
-                encodedXmlRepresentation,
-                eventType,
-                now,
-                handledByHsaId,
-                certificate.getMetadata().getExternalReference(),
-                notificationMessage.getSkickadeFragor(),
-                notificationMessage.getMottagnaFragor(),
-                notificationMessage.getSistaSvarsDatum(),
-                questionType
-            )
-        );
+    notificationMessage.setStatusUpdateXml(
+        CertificateStatusUpdateFactory.create(
+            encodedXmlRepresentation,
+            eventType,
+            now,
+            handledByHsaId,
+            certificate.getMetadata().getExternalReference(),
+            notificationMessage.getSkickadeFragor(),
+            notificationMessage.getMottagnaFragor(),
+            notificationMessage.getSistaSvarsDatum(),
+            questionType));
 
-        return notificationMessage;
-    }
+    return notificationMessage;
+  }
 
-    private static Amneskod getSubjectCode(ArendeAmne subject) {
-        return subject != null ? AmneskodCreator.create(subject.name(), subject.getDescription()) : null;
-    }
+  private static Amneskod getSubjectCode(ArendeAmne subject) {
+    return subject != null
+        ? AmneskodCreator.create(subject.name(), subject.getDescription())
+        : null;
+  }
 }

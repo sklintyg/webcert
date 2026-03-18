@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,117 +44,114 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoM
 @ExtendWith(MockitoExtension.class)
 class CertificateTypeControllerTest {
 
-    @Mock
-    private CertificateTypeInfoAggregator certificateTypeInfoAggregator;
+  @Mock private CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
-    @Mock
-    private GetCertificateTypeInfoModalFacadeService getCertificateTypeInfoModalFacadeService;
+  @Mock private GetCertificateTypeInfoModalFacadeService getCertificateTypeInfoModalFacadeService;
 
-    @InjectMocks
-    private CertificateTypeController controller;
+  @InjectMocks private CertificateTypeController controller;
 
-    @Nested
-    class CertificateTypeControllerTests {
+  @Nested
+  class CertificateTypeControllerTests {
 
-        @Test
-        void shouldReturnCertificateTypes() {
-            final var type = new CertificateTypeInfoDTO();
-            final var types = List.of(
-                type
-            );
+    @Test
+    void shouldReturnCertificateTypes() {
+      final var type = new CertificateTypeInfoDTO();
+      final var types = List.of(type);
 
-            doReturn(types)
-                .when(certificateTypeInfoAggregator)
-                .get(any(Personnummer.class));
+      doReturn(types).when(certificateTypeInfoAggregator).get(any(Personnummer.class));
 
-            final var response = (List<CertificateTypeInfoDTO>) controller.getCertificateTypes("19121212-1212").getEntity();
-            assertTrue(response.contains(type));
-        }
-
-        @Test
-        void shouldReturnBadRequestOnException() {
-            final var response = controller.getCertificateTypes("19121212");
-            assertEquals(400, response.getStatus());
-        }
-
-        @Test
-        void shouldReturnOkStatusForValidCertificateTypes() {
-            final var types = List.of(new CertificateTypeInfoDTO());
-
-            doReturn(types)
-                .when(certificateTypeInfoAggregator)
-                .get(any(Personnummer.class));
-
-            final var response = controller.getCertificateTypes("19121212-1212");
-            assertEquals(200, response.getStatus());
-        }
+      final var response =
+          (List<CertificateTypeInfoDTO>)
+              controller.getCertificateTypes("19121212-1212").getEntity();
+      assertTrue(response.contains(type));
     }
-    
-    @Nested
-    class GetCertificateTypeInfoModalTests {
 
-        @Test
-        void shouldReturnCertificateTypeInfoModal() {
-            final var modal = CertificateTypeInfoModalDTO.builder()
-                .title("Test Title")
-                .description("Test Description")
-                .build();
-            final var certificateType = "lisjp";
-            final var patientId = "19121212-1212";
-
-            doReturn(modal)
-                .when(getCertificateTypeInfoModalFacadeService)
-                .get(eq(certificateType), any(Personnummer.class));
-
-            final var response = controller.getCertificateTypeInfoModal(certificateType, patientId);
-            final var result = (CertificateTypeInfoModalDTO) response.getEntity();
-
-            assertEquals(200, response.getStatus());
-            assertNotNull(result);
-            assertEquals(modal, result);
-        }
-
-        @Test
-        void shouldReturnNoContentWhenModalIsNull() {
-            final var certificateType = "lisjp";
-            final var patientId = "19121212-1212";
-
-            doReturn(null)
-                .when(getCertificateTypeInfoModalFacadeService)
-                .get(eq(certificateType), any(Personnummer.class));
-
-            final var response = controller.getCertificateTypeInfoModal(certificateType, patientId);
-
-            assertEquals(204, response.getStatus());
-            assertNull(response.getEntity());
-        }
-
-        @Test
-        void shouldReturnBadRequestOnInvalidPersonnummer() {
-            final var certificateType = "lisjp";
-            final var invalidPatientId = "invalid";
-
-            final var response = controller.getCertificateTypeInfoModal(certificateType, invalidPatientId);
-
-            assertEquals(400, response.getStatus());
-        }
-
-        @Test
-        void shouldCallServiceWithCorrectParameters() {
-            final var modal = CertificateTypeInfoModalDTO.builder()
-                .title("Test Title")
-                .description("Test Description")
-                .build();
-            final var certificateType = "ag7804";
-            final var patientId = "19121212-1212";
-
-            doReturn(modal)
-                .when(getCertificateTypeInfoModalFacadeService)
-                .get(anyString(), any(Personnummer.class));
-
-            controller.getCertificateTypeInfoModal(certificateType, patientId);
-
-            verify(getCertificateTypeInfoModalFacadeService).get(eq(certificateType), any(Personnummer.class));
-        }
+    @Test
+    void shouldReturnBadRequestOnException() {
+      final var response = controller.getCertificateTypes("19121212");
+      assertEquals(400, response.getStatus());
     }
+
+    @Test
+    void shouldReturnOkStatusForValidCertificateTypes() {
+      final var types = List.of(new CertificateTypeInfoDTO());
+
+      doReturn(types).when(certificateTypeInfoAggregator).get(any(Personnummer.class));
+
+      final var response = controller.getCertificateTypes("19121212-1212");
+      assertEquals(200, response.getStatus());
+    }
+  }
+
+  @Nested
+  class GetCertificateTypeInfoModalTests {
+
+    @Test
+    void shouldReturnCertificateTypeInfoModal() {
+      final var modal =
+          CertificateTypeInfoModalDTO.builder()
+              .title("Test Title")
+              .description("Test Description")
+              .build();
+      final var certificateType = "lisjp";
+      final var patientId = "19121212-1212";
+
+      doReturn(modal)
+          .when(getCertificateTypeInfoModalFacadeService)
+          .get(eq(certificateType), any(Personnummer.class));
+
+      final var response = controller.getCertificateTypeInfoModal(certificateType, patientId);
+      final var result = (CertificateTypeInfoModalDTO) response.getEntity();
+
+      assertEquals(200, response.getStatus());
+      assertNotNull(result);
+      assertEquals(modal, result);
+    }
+
+    @Test
+    void shouldReturnNoContentWhenModalIsNull() {
+      final var certificateType = "lisjp";
+      final var patientId = "19121212-1212";
+
+      doReturn(null)
+          .when(getCertificateTypeInfoModalFacadeService)
+          .get(eq(certificateType), any(Personnummer.class));
+
+      final var response = controller.getCertificateTypeInfoModal(certificateType, patientId);
+
+      assertEquals(204, response.getStatus());
+      assertNull(response.getEntity());
+    }
+
+    @Test
+    void shouldReturnBadRequestOnInvalidPersonnummer() {
+      final var certificateType = "lisjp";
+      final var invalidPatientId = "invalid";
+
+      final var response =
+          controller.getCertificateTypeInfoModal(certificateType, invalidPatientId);
+
+      assertEquals(400, response.getStatus());
+    }
+
+    @Test
+    void shouldCallServiceWithCorrectParameters() {
+      final var modal =
+          CertificateTypeInfoModalDTO.builder()
+              .title("Test Title")
+              .description("Test Description")
+              .build();
+      final var certificateType = "ag7804";
+      final var patientId = "19121212-1212";
+
+      doReturn(modal)
+          .when(getCertificateTypeInfoModalFacadeService)
+          .get(anyString(), any(Personnummer.class));
+
+      controller.getCertificateTypeInfoModal(certificateType, patientId);
+
+      verify(getCertificateTypeInfoModalFacadeService)
+          .get(eq(certificateType), any(Personnummer.class));
+    }
+  }
 }

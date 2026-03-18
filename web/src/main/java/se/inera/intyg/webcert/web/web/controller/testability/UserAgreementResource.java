@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,48 +39,45 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvt
 @Path("/anvandare")
 public class UserAgreementResource {
 
-    @Autowired
-    private AvtalRepository avtalRepository;
+  @Autowired private AvtalRepository avtalRepository;
 
-    @Autowired
-    private GodkantAvtalRepository godkantAvtalRepository;
+  @Autowired private GodkantAvtalRepository godkantAvtalRepository;
 
-    @Autowired
-    private AnvandarPreferenceRepository anvandarPreferenceRepository;
+  @Autowired private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
-    @PUT
-    @Path("/godkannavtal/{hsaId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response godkannAvtal(@PathParam("hsaId") String hsaId) {
-        int avtalVersion = avtalRepository.getLatestAvtalVersion();
-        godkantAvtalRepository.approveAvtal(hsaId, avtalVersion);
-        return Response.ok().build();
+  @PUT
+  @Path("/godkannavtal/{hsaId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response godkannAvtal(@PathParam("hsaId") String hsaId) {
+    int avtalVersion = avtalRepository.getLatestAvtalVersion();
+    godkantAvtalRepository.approveAvtal(hsaId, avtalVersion);
+    return Response.ok().build();
+  }
+
+  @PUT
+  @Path("/avgodkannavtal/{hsaId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response avgodkannAvtal(@PathParam("hsaId") String hsaId) {
+    godkantAvtalRepository.removeAllUserApprovments(hsaId);
+    return Response.ok().build();
+  }
+
+  @GET
+  @Path("/approvedTerms/{hsaId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public boolean getTermsApproval(@PathParam("hsaId") String hsaId) {
+    return godkantAvtalRepository.userHasApprovedAvtal(
+        hsaId, avtalRepository.getLatestAvtalVersion());
+  }
+
+  @DELETE
+  @Path("/preferences/{hsaId}/{key}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deletePreference(@PathParam("hsaId") String hsaId, @PathParam("key") String key) {
+    AnvandarPreference ap = anvandarPreferenceRepository.findByHsaIdAndKey(hsaId, key);
+    if (ap != null) {
+      anvandarPreferenceRepository.delete(ap);
     }
-
-    @PUT
-    @Path("/avgodkannavtal/{hsaId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response avgodkannAvtal(@PathParam("hsaId") String hsaId) {
-        godkantAvtalRepository.removeAllUserApprovments(hsaId);
-        return Response.ok().build();
-    }
-
-    @GET
-    @Path("/approvedTerms/{hsaId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public boolean getTermsApproval(@PathParam("hsaId") String hsaId) {
-        return godkantAvtalRepository.userHasApprovedAvtal(hsaId, avtalRepository.getLatestAvtalVersion());
-    }
-
-    @DELETE
-    @Path("/preferences/{hsaId}/{key}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deletePreference(@PathParam("hsaId") String hsaId, @PathParam("key") String key) {
-        AnvandarPreference ap = anvandarPreferenceRepository.findByHsaIdAndKey(hsaId, key);
-        if (ap != null) {
-            anvandarPreferenceRepository.delete(ap);
-        }
-        return Response.ok().build();
-    }
-
+    return Response.ok().build();
+  }
 }

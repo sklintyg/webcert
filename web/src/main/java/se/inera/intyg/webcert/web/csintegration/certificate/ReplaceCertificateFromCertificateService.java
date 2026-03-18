@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -37,48 +36,46 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @RequiredArgsConstructor
 public class ReplaceCertificateFromCertificateService implements ReplaceCertificateFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final MonitoringLogService monitoringLogService;
-    private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final WebCertUserService webCertUserService;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PDLLogService pdlLogService;
+  private final MonitoringLogService monitoringLogService;
+  private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final WebCertUserService webCertUserService;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Override
-    public String replaceCertificate(String certificateId) {
-        log.debug("Attempting to replace certificate '{}' from Certificate Service", certificateId);
+  @Override
+  public String replaceCertificate(String certificateId) {
+    log.debug("Attempting to replace certificate '{}' from Certificate Service", certificateId);
 
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
+    }
 
-        final var certificateToReplace = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
+    final var certificateToReplace =
+        csIntegrationService.getCertificate(
+            certificateId, csIntegrationRequestFactory.getCertificateRequest());
 
-        final var replacingCertificate = csIntegrationService.replaceCertificate(
+    final var replacingCertificate =
+        csIntegrationService.replaceCertificate(
             certificateId,
             csIntegrationRequestFactory.replaceCertificateRequest(
                 certificateToReplace.getMetadata().getPatient(),
-                webCertUserService.getUser().getParameters()
-            )
-        );
+                webCertUserService.getUser().getParameters()));
 
-        integratedUnitRegistryHelper.addUnitForCopy(certificateToReplace, replacingCertificate);
+    integratedUnitRegistryHelper.addUnitForCopy(certificateToReplace, replacingCertificate);
 
-        log.debug("Replaced certificate '{}' from Certificate Service", certificateId);
-        monitoringLogService.logIntygCopiedReplacement(replacingCertificate.getMetadata().getId(), certificateId);
-        pdlLogService.logCreated(replacingCertificate);
-        publishCertificateStatusUpdateService.publish(replacingCertificate, HandelsekodEnum.SKAPAT);
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.certificateReplace(replacingCertificate)
-        );
+    log.debug("Replaced certificate '{}' from Certificate Service", certificateId);
+    monitoringLogService.logIntygCopiedReplacement(
+        replacingCertificate.getMetadata().getId(), certificateId);
+    pdlLogService.logCreated(replacingCertificate);
+    publishCertificateStatusUpdateService.publish(replacingCertificate, HandelsekodEnum.SKAPAT);
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.certificateReplace(replacingCertificate));
 
-        return replacingCertificate.getMetadata().getId();
-    }
+    return replacingCertificate.getMetadata().getId();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,33 +28,33 @@ import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeSe
 @Service("handleQuestionFromWC")
 public class HandleQuestionFacadeServiceImpl implements HandleQuestionFacadeService {
 
-    private final ArendeService arendeService;
-    private final GetQuestionFacadeService getQuestionFacadeService;
+  private final ArendeService arendeService;
+  private final GetQuestionFacadeService getQuestionFacadeService;
 
-    @Autowired
-    public HandleQuestionFacadeServiceImpl(ArendeService arendeService,
-        GetQuestionFacadeService getQuestionFacadeService) {
-        this.arendeService = arendeService;
-        this.getQuestionFacadeService = getQuestionFacadeService;
+  @Autowired
+  public HandleQuestionFacadeServiceImpl(
+      ArendeService arendeService, GetQuestionFacadeService getQuestionFacadeService) {
+    this.arendeService = arendeService;
+    this.getQuestionFacadeService = getQuestionFacadeService;
+  }
+
+  @Override
+  public Question handle(String questionId, boolean isHandled) {
+    if (isHandled) {
+      return closeQuestion(questionId);
     }
 
-    @Override
-    public Question handle(String questionId, boolean isHandled) {
-        if (isHandled) {
-            return closeQuestion(questionId);
-        }
+    return openQuestion(questionId);
+  }
 
-        return openQuestion(questionId);
-    }
+  private Question closeQuestion(String questionId) {
+    final var arende = arendeService.getArende(questionId);
+    arendeService.closeArendeAsHandled(arende.getMeddelandeId(), arende.getIntygTyp());
+    return getQuestionFacadeService.get(questionId);
+  }
 
-    private Question closeQuestion(String questionId) {
-        final var arende = arendeService.getArende(questionId);
-        arendeService.closeArendeAsHandled(arende.getMeddelandeId(), arende.getIntygTyp());
-        return getQuestionFacadeService.get(questionId);
-    }
-
-    private Question openQuestion(String questionId) {
-        arendeService.openArendeAsUnhandled(questionId);
-        return getQuestionFacadeService.get(questionId);
-    }
+  private Question openQuestion(String questionId) {
+    arendeService.openArendeAsUnhandled(questionId);
+    return getQuestionFacadeService.get(questionId);
+  }
 }

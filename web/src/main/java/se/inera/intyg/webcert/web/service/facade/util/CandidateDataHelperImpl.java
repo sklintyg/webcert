@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,41 +35,50 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 @Component
 public class CandidateDataHelperImpl implements CandidateDataHelper {
 
-    private final UtkastCandidateServiceImpl utkastCandidateService;
-    private final IntygModuleRegistry moduleRegistry;
-    private final PatientDetailsResolver patientDetailsResolver;
+  private final UtkastCandidateServiceImpl utkastCandidateService;
+  private final IntygModuleRegistry moduleRegistry;
+  private final PatientDetailsResolver patientDetailsResolver;
 
-    @Autowired
-    public CandidateDataHelperImpl(UtkastCandidateServiceImpl utkastCandidateService,
-        IntygModuleRegistry moduleRegistry, PatientDetailsResolver patientDetailsResolver) {
-        this.utkastCandidateService = utkastCandidateService;
-        this.moduleRegistry = moduleRegistry;
-        this.patientDetailsResolver = patientDetailsResolver;
+  @Autowired
+  public CandidateDataHelperImpl(
+      UtkastCandidateServiceImpl utkastCandidateService,
+      IntygModuleRegistry moduleRegistry,
+      PatientDetailsResolver patientDetailsResolver) {
+    this.utkastCandidateService = utkastCandidateService;
+    this.moduleRegistry = moduleRegistry;
+    this.patientDetailsResolver = patientDetailsResolver;
+  }
+
+  @Override
+  public Optional<UtkastCandidateMetaData> getCandidateMetadata(
+      String certificateType, String certificateTypeVersion, Personnummer patientPersonId) {
+    try {
+      final ModuleApi moduleApi =
+          moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
+
+      Optional<UtkastCandidateMetaData> metaData =
+          utkastCandidateService.getCandidateMetaData(
+              moduleApi,
+              certificateType,
+              certificateTypeVersion,
+              getPatientDataFromPU(certificateType, certificateTypeVersion, patientPersonId),
+              false);
+      return metaData;
+    } catch (ModuleNotFoundException e) {
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
     }
+  }
 
-    @Override
-    public Optional<UtkastCandidateMetaData> getCandidateMetadata(String certificateType, String certificateTypeVersion,
-        Personnummer patientPersonId) {
-        try {
-            final ModuleApi moduleApi = moduleRegistry
-                .getModuleApi(certificateType, certificateTypeVersion);
-
-            Optional<UtkastCandidateMetaData> metaData = utkastCandidateService
-                .getCandidateMetaData(moduleApi, certificateType, certificateTypeVersion,
-                    getPatientDataFromPU(certificateType, certificateTypeVersion, patientPersonId), false);
-            return metaData;
-        } catch (ModuleNotFoundException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
-        }
+  private Patient getPatientDataFromPU(
+      String certificateType, String certificateTypeVersion, Personnummer patientPersonId) {
+    Patient resolvedPatientData =
+        patientDetailsResolver.resolvePatient(
+            patientPersonId, certificateType, certificateTypeVersion);
+    if (resolvedPatientData == null) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.PU_PROBLEM,
+          "Could not resolve Patient in PU-service when opening draft.");
     }
-
-
-    private Patient getPatientDataFromPU(String certificateType, String certificateTypeVersion, Personnummer patientPersonId) {
-        Patient resolvedPatientData = patientDetailsResolver.resolvePatient(patientPersonId, certificateType, certificateTypeVersion);
-        if (resolvedPatientData == null) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.PU_PROBLEM, "Could not resolve Patient in PU-service when opening draft.");
-        }
-        return resolvedPatientData;
-    }
+    return resolvedPatientData;
+  }
 }

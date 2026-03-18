@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,47 +30,47 @@ import org.springframework.stereotype.Component;
 @Component
 public class MailStore {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MailStore.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MailStore.class);
 
-    private static final long MAX_TIMEOUT = 5000;
-    private static final long POLL_INTERVAL = 10L;
-    private static final int MAX_POLLS = 100;
-    private List<OutgoingMail> mails = new CopyOnWriteArrayList<>();
-    private boolean doWait;
+  private static final long MAX_TIMEOUT = 5000;
+  private static final long POLL_INTERVAL = 10L;
+  private static final int MAX_POLLS = 100;
+  private List<OutgoingMail> mails = new CopyOnWriteArrayList<>();
+  private boolean doWait;
 
-    public List<OutgoingMail> getMails() {
-        return mails;
-    }
+  public List<OutgoingMail> getMails() {
+    return mails;
+  }
 
-    public void waitForMails(int count) {
-        int loops = MAX_POLLS;
-        while (mails.size() < count) {
-            try {
-                Thread.sleep(POLL_INTERVAL);
-            } catch (InterruptedException e) {
-                if (--loops == 0) {
-                    break;
-                }
-            }
+  public void waitForMails(int count) {
+    int loops = MAX_POLLS;
+    while (mails.size() < count) {
+      try {
+        Thread.sleep(POLL_INTERVAL);
+      } catch (InterruptedException e) {
+        if (--loops == 0) {
+          break;
         }
+      }
     }
+  }
 
-    void waitToContinue() {
-        synchronized (this) {
-            if (doWait) {
-                try {
-                    this.wait(MAX_TIMEOUT);
-                } catch (InterruptedException e) {
-                    LOG.info("Interrupt encountered. Continuing.");
-                }
-            }
+  void waitToContinue() {
+    synchronized (this) {
+      if (doWait) {
+        try {
+          this.wait(MAX_TIMEOUT);
+        } catch (InterruptedException e) {
+          LOG.info("Interrupt encountered. Continuing.");
         }
+      }
     }
+  }
 
-    public void setWait(boolean doWait) {
-        synchronized (this) {
-            this.doWait = doWait;
-            this.notifyAll();
-        }
+  public void setWait(boolean doWait) {
+    synchronized (this) {
+      this.doWait = doWait;
+      this.notifyAll();
     }
+  }
 }

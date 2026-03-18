@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,32 +34,29 @@ import se.inera.intyg.webcert.web.service.certificate.GetIssuingUnitIdFromWebcer
 @ExtendWith(MockitoExtension.class)
 class GetIssuingUnitIdAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String UNIT_ID = "unitId";
-    @Mock
-    GetIssuingUnitIdFromWebcert getUnitIdFromWC;
-    @Mock
-    GetIssuingUnitIdFromCertificateService getUnitIdFromCS;
-    @InjectMocks
-    GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String UNIT_ID = "unitId";
+  @Mock GetIssuingUnitIdFromWebcert getUnitIdFromWC;
+  @Mock GetIssuingUnitIdFromCertificateService getUnitIdFromCS;
+  @InjectMocks GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
 
-    @Test
-    void shallReturnResponseFromWCIfResponseFromCSIsNull() {
-        doReturn(UNIT_ID).when(getUnitIdFromWC).get(CERTIFICATE_ID);
-        doReturn(null).when(getUnitIdFromCS).get(CERTIFICATE_ID);
-        final var actualUnitId = getIssuingUnitIdAggregator.get(CERTIFICATE_ID);
+  @Test
+  void shallReturnResponseFromWCIfResponseFromCSIsNull() {
+    doReturn(UNIT_ID).when(getUnitIdFromWC).get(CERTIFICATE_ID);
+    doReturn(null).when(getUnitIdFromCS).get(CERTIFICATE_ID);
+    final var actualUnitId = getIssuingUnitIdAggregator.get(CERTIFICATE_ID);
 
-        verify(getUnitIdFromCS, times(1)).get(CERTIFICATE_ID);
-        verify(getUnitIdFromWC, times(1)).get(CERTIFICATE_ID);
-        assertEquals(UNIT_ID, actualUnitId);
-    }
+    verify(getUnitIdFromCS, times(1)).get(CERTIFICATE_ID);
+    verify(getUnitIdFromWC, times(1)).get(CERTIFICATE_ID);
+    assertEquals(UNIT_ID, actualUnitId);
+  }
 
-    @Test
-    void shallReturnResponseFromCS() {
-        doReturn(UNIT_ID).when(getUnitIdFromCS).get(CERTIFICATE_ID);
-        final var actualUnitId = getIssuingUnitIdAggregator.get(CERTIFICATE_ID);
+  @Test
+  void shallReturnResponseFromCS() {
+    doReturn(UNIT_ID).when(getUnitIdFromCS).get(CERTIFICATE_ID);
+    final var actualUnitId = getIssuingUnitIdAggregator.get(CERTIFICATE_ID);
 
-        verify(getUnitIdFromCS, times(1)).get(CERTIFICATE_ID);
-        assertEquals(UNIT_ID, actualUnitId);
-    }
+    verify(getUnitIdFromCS, times(1)).get(CERTIFICATE_ID);
+    assertEquals(UNIT_ID, actualUnitId);
+  }
 }

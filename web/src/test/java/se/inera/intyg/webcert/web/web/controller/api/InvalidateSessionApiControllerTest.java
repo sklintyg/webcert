@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,90 +38,91 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 @ExtendWith(MockitoExtension.class)
 public class InvalidateSessionApiControllerTest {
 
-    private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
-    private static final String USER_HSA_ID = "TSTNMT2321000156-1079";
-    private final InvalidateSessionService invalidateSessionService = mock(InvalidateSessionService.class);
-    private InvalidateRequest invalidateRequest;
-    @InjectMocks
-    private InvalidateSessionApiController controller;
+  private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
+  private static final String USER_HSA_ID = "TSTNMT2321000156-1079";
+  private final InvalidateSessionService invalidateSessionService =
+      mock(InvalidateSessionService.class);
+  private InvalidateRequest invalidateRequest;
+  @InjectMocks private InvalidateSessionApiController controller;
+
+  @Test
+  public void assertThatControllerRunsWhenGivenCorrectValues() {
+    invalidateRequest = getInvalidateRequest();
+    Response response = controller.invalidateSession(invalidateRequest);
+    verify(invalidateSessionService).invalidateSessionIfActive(any());
+    assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+  }
+
+  @Test
+  public void assertThatControllerRunsWhenGivenWrongValues() {
+    invalidateRequest = getInvalidateRequest();
+    invalidateRequest.setLaunchId(null);
+
+    Response response = controller.invalidateSession(invalidateRequest);
+    verify(invalidateSessionService, never()).invalidateSessionIfActive(any());
+
+    assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+  }
+
+  @Test
+  public void shouldStillReturnNoContentAfterThrowingException() {
+    invalidateRequest = getInvalidateRequest();
+    Response response = controller.invalidateSession(invalidateRequest);
+
+    doThrow(new NullPointerException())
+        .when(invalidateSessionService)
+        .invalidateSessionIfActive(invalidateRequest);
+
+    assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+  }
+
+  @Nested
+  class InvalidateRequestValidation {
 
     @Test
-    public void assertThatControllerRunsWhenGivenCorrectValues() {
-        invalidateRequest = getInvalidateRequest();
-        Response response = controller.invalidateSession(invalidateRequest);
-        verify(invalidateSessionService).invalidateSessionIfActive(any());
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    public void validateRequestIfCorrectFormat() {
+      invalidateRequest = getInvalidateRequest();
+      Response response = controller.invalidateSession(invalidateRequest);
+
+      assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void assertThatControllerRunsWhenGivenWrongValues() {
-        invalidateRequest = getInvalidateRequest();
-        invalidateRequest.setLaunchId(null);
+    public void invalidateRequestWithWrongValuesShouldReturnBadRequest() {
+      invalidateRequest = getInvalidateRequest();
+      invalidateRequest.setUserHsaId(null);
+      Response response = controller.invalidateSession(invalidateRequest);
 
-        Response response = controller.invalidateSession(invalidateRequest);
-        verify(invalidateSessionService, never()).invalidateSessionIfActive(any());
-
-        assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+      assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void shouldStillReturnNoContentAfterThrowingException() {
-        invalidateRequest = getInvalidateRequest();
-        Response response = controller.invalidateSession(invalidateRequest);
+    public void invalidateRequestWithLaunchIdSetToNull() {
+      invalidateRequest = getInvalidateRequest();
+      invalidateRequest.setLaunchId(null);
+      invalidateRequest.setUserHsaId(USER_HSA_ID);
 
-        doThrow(new NullPointerException()).when(invalidateSessionService).invalidateSessionIfActive(invalidateRequest);
+      Response response = controller.invalidateSession(invalidateRequest);
 
-        assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+      assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
+    @Test
+    public void invalidateRequestWithHsaIdSetToNull() {
+      invalidateRequest = getInvalidateRequest();
+      invalidateRequest.setLaunchId(LAUNCH_ID);
+      invalidateRequest.setUserHsaId(null);
 
-    @Nested
-    class InvalidateRequestValidation {
+      Response response = controller.invalidateSession(invalidateRequest);
 
-        @Test
-        public void validateRequestIfCorrectFormat() {
-            invalidateRequest = getInvalidateRequest();
-            Response response = controller.invalidateSession(invalidateRequest);
-
-            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        }
-
-        @Test
-        public void invalidateRequestWithWrongValuesShouldReturnBadRequest() {
-            invalidateRequest = getInvalidateRequest();
-            invalidateRequest.setUserHsaId(null);
-            Response response = controller.invalidateSession(invalidateRequest);
-
-            assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        }
-
-        @Test
-        public void invalidateRequestWithLaunchIdSetToNull() {
-            invalidateRequest = getInvalidateRequest();
-            invalidateRequest.setLaunchId(null);
-            invalidateRequest.setUserHsaId(USER_HSA_ID);
-
-            Response response = controller.invalidateSession(invalidateRequest);
-
-            assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        }
-
-        @Test
-        public void invalidateRequestWithHsaIdSetToNull() {
-            invalidateRequest = getInvalidateRequest();
-            invalidateRequest.setLaunchId(LAUNCH_ID);
-            invalidateRequest.setUserHsaId(null);
-
-            Response response = controller.invalidateSession(invalidateRequest);
-
-            assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        }
+      assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
+  }
 
-    private InvalidateRequest getInvalidateRequest() {
-        InvalidateRequest dto = new InvalidateRequest();
-        dto.setLaunchId(LAUNCH_ID);
-        dto.setUserHsaId(USER_HSA_ID);
-        return dto;
-    }
+  private InvalidateRequest getInvalidateRequest() {
+    InvalidateRequest dto = new InvalidateRequest();
+    dto.setLaunchId(LAUNCH_ID);
+    dto.setUserHsaId(USER_HSA_ID);
+    return dto;
+  }
 }

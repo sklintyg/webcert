@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,53 +38,45 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @ExtendWith(MockitoExtension.class)
 class ReadyForSignFacadeServiceImplTest {
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
 
-    @InjectMocks
-    private ReadyForSignFacadeServiceImpl readyForSignFacadeService;
+  @InjectMocks private ReadyForSignFacadeServiceImpl readyForSignFacadeService;
 
-    private final static String CERTIFICATE_ID = "XXXXX-YYYYY-ZZZZZ";
-    private final static String CERTIFICATE_TYPE = "certificateType";
-    private Certificate certificate;
+  private static final String CERTIFICATE_ID = "XXXXX-YYYYY-ZZZZZ";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private Certificate certificate;
 
-    @BeforeEach
-    void setup() {
-        certificate = CertificateBuilder.create()
-            .metadata(
-                CertificateMetadata.builder()
-                    .id(CERTIFICATE_ID)
-                    .build()
-            )
+  @BeforeEach
+  void setup() {
+    certificate =
+        CertificateBuilder.create()
+            .metadata(CertificateMetadata.builder().id(CERTIFICATE_ID).build())
             .build();
 
-        doReturn(CERTIFICATE_TYPE)
-            .when(utkastService)
-            .getCertificateType(CERTIFICATE_ID);
+    doReturn(CERTIFICATE_TYPE).when(utkastService).getCertificateType(CERTIFICATE_ID);
 
-        doReturn(certificate)
-            .when(getCertificateFacadeService)
-            .getCertificate(CERTIFICATE_ID, false, true);
-    }
+    doReturn(certificate)
+        .when(getCertificateFacadeService)
+        .getCertificate(CERTIFICATE_ID, false, true);
+  }
 
-    @Test
-    void shallReadyForSign() {
-        readyForSignFacadeService.readyForSign(CERTIFICATE_ID);
+  @Test
+  void shallReadyForSign() {
+    readyForSignFacadeService.readyForSign(CERTIFICATE_ID);
 
-        verify(utkastService).setKlarForSigneraAndSendStatusMessage(CERTIFICATE_ID, CERTIFICATE_TYPE);
-    }
+    verify(utkastService).setKlarForSigneraAndSendStatusMessage(CERTIFICATE_ID, CERTIFICATE_TYPE);
+  }
 
-    @Test
-    void shallReturnCertificateWithReadyForSignDateTime() {
-        final var expectedReadyForSign = LocalDateTime.now();
+  @Test
+  void shallReturnCertificateWithReadyForSignDateTime() {
+    final var expectedReadyForSign = LocalDateTime.now();
 
-        certificate.getMetadata().setReadyForSign(expectedReadyForSign);
+    certificate.getMetadata().setReadyForSign(expectedReadyForSign);
 
-        final var actualCertificate = readyForSignFacadeService.readyForSign(CERTIFICATE_ID);
+    final var actualCertificate = readyForSignFacadeService.readyForSign(CERTIFICATE_ID);
 
-        assertEquals(expectedReadyForSign, actualCertificate.getMetadata().getReadyForSign());
-    }
+    assertEquals(expectedReadyForSign, actualCertificate.getMetadata().getReadyForSign());
+  }
 }

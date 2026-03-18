@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,34 +29,31 @@ import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "typfall"
-})
+@JsonPropertyOrder({"typfall"})
 public class Relationships {
 
-    @JsonProperty("typfall")
-    private List<Object> typfall = null;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("typfall")
+  private List<Object> typfall = null;
 
-    @JsonProperty("typfall")
-    public List<Object> getTypfall() {
-        return typfall;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("typfall")
-    public void setTypfall(List<Object> typfall) {
-        this.typfall = typfall;
-    }
+  @JsonProperty("typfall")
+  public List<Object> getTypfall() {
+    return typfall;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("typfall")
+  public void setTypfall(List<Object> typfall) {
+    this.typfall = typfall;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
 
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,10 +29,11 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 @RequiredArgsConstructor
 public class ListCertificatesInfoAggregator {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    public List<StaffListInfo> listCertificatesInfoForUnit() {
-        return csIntegrationService.listCertificatesInfoForUnit(csIntegrationRequestFactory.getUnitCertificatesInfoRequest());
-    }
+  public List<StaffListInfo> listCertificatesInfoForUnit() {
+    return csIntegrationService.listCertificatesInfoForUnit(
+        csIntegrationRequestFactory.getUnitCertificatesInfoRequest());
+  }
 }

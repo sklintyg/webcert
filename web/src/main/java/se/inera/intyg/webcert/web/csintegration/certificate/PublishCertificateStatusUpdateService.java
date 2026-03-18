@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDate;
@@ -39,86 +38,100 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @RequiredArgsConstructor
 public class PublishCertificateStatusUpdateService {
 
-    private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
-    private final CSIntegrationService csIntegrationService;
-    private final NotificationMessageFactory notificationMessageFactory;
-    private final NotificationRedeliveryService notificationRedeliveryService;
-    private final NotificationService notificationService;
-    private final WebCertUserService webCertUserService;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final CSIntegrationService csIntegrationService;
+  private final NotificationMessageFactory notificationMessageFactory;
+  private final NotificationRedeliveryService notificationRedeliveryService;
+  private final NotificationService notificationService;
+  private final WebCertUserService webCertUserService;
 
-    public void publish(Certificate certificate, HandelsekodEnum eventType, String xml) {
-        publish(certificate, eventType, Optional.empty(), Optional.of(xml), null, null);
+  public void publish(Certificate certificate, HandelsekodEnum eventType, String xml) {
+    publish(certificate, eventType, Optional.empty(), Optional.of(xml), null, null);
+  }
+
+  public void publish(Certificate certificate, HandelsekodEnum eventType) {
+    publish(certificate, eventType, Optional.empty(), Optional.empty(), null, null);
+  }
+
+  public void publish(
+      Certificate certificate,
+      HandelsekodEnum eventType,
+      ArendeAmne questionType,
+      LocalDate lastDateToAnswer) {
+    publish(
+        certificate, eventType, Optional.empty(), Optional.empty(), questionType, lastDateToAnswer);
+  }
+
+  public void publish(
+      Certificate certificate,
+      HandelsekodEnum eventType,
+      Optional<IntygUser> intygUser,
+      Optional<String> xml,
+      ArendeAmne questionType,
+      LocalDate lastDateToAnswer) {
+    if (unitIsNotIntegrated(certificate)) {
+      return;
     }
 
-    public void publish(Certificate certificate, HandelsekodEnum eventType) {
-        publish(certificate, eventType, Optional.empty(), Optional.empty(), null, null);
-    }
+    final var certificateXml =
+        xml.orElseGet(
+            () ->
+                csIntegrationService.getInternalCertificateXml(certificate.getMetadata().getId()));
 
-    public void publish(Certificate certificate, HandelsekodEnum eventType, ArendeAmne questionType, LocalDate lastDateToAnswer) {
-        publish(certificate, eventType, Optional.empty(), Optional.empty(), questionType, lastDateToAnswer);
-    }
+    final var handledByUserHsaId =
+        intygUser
+            .map(IntygUser::getHsaId)
+            .orElseGet(
+                () ->
+                    webCertUserService.hasAuthenticationContext()
+                        ? webCertUserService.getUser().getHsaId()
+                        : null);
 
-    public void publish(Certificate certificate, HandelsekodEnum eventType, Optional<IntygUser> intygUser, Optional<String> xml,
-        ArendeAmne questionType, LocalDate lastDateToAnswer) {
-        if (unitIsNotIntegrated(certificate)) {
-            return;
-        }
-
-        final var certificateXml = xml.orElseGet(
-            () -> csIntegrationService.getInternalCertificateXml(certificate.getMetadata().getId())
-        );
-
-        final var handledByUserHsaId = intygUser.map(IntygUser::getHsaId).orElseGet(
-            () -> webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser()
-                .getHsaId() : null);
-
-        final var notificationMessage = notificationMessageFactory.create(
+    final var notificationMessage =
+        notificationMessageFactory.create(
             certificate,
             certificateXml,
             eventType,
             handledByUserHsaId,
             questionType,
-            lastDateToAnswer
-        );
+            lastDateToAnswer);
 
-        notificationService.send(
-            notificationMessage,
-            certificate.getMetadata().getUnit().getUnitId(),
-            certificate.getMetadata().getTypeVersion()
-        );
+    notificationService.send(
+        notificationMessage,
+        certificate.getMetadata().getUnit().getUnitId(),
+        certificate.getMetadata().getTypeVersion());
+  }
+
+  public void resend(
+      Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
+    resendEvent(certificate, event, notificationRedelivery);
+  }
+
+  private void resendEvent(
+      Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
+    if (unitIsNotIntegrated(certificate)) {
+      return;
     }
 
-    public void resend(Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
-        resendEvent(certificate, event, notificationRedelivery);
-    }
+    final var certificateXml =
+        csIntegrationService.getInternalCertificateXml(certificate.getMetadata().getId());
 
-    private void resendEvent(Certificate certificate, Handelse event,
-        NotificationRedelivery notificationRedelivery) {
-        if (unitIsNotIntegrated(certificate)) {
-            return;
-        }
-
-        final var certificateXml = csIntegrationService.getInternalCertificateXml(
-            certificate.getMetadata().getId());
-
-        final var notificationMessage = notificationMessageFactory.create(
+    final var notificationMessage =
+        notificationMessageFactory.create(
             certificate,
             certificateXml,
             event.getCode(),
             event.getHanteratAv(),
             event.getAmne(),
-            event.getSistaDatumForSvar()
-        );
+            event.getSistaDatumForSvar());
 
-        notificationRedeliveryService.resend(
-            notificationRedelivery,
-            event,
-            notificationMessage.getStatusUpdateXml()
-        );
-    }
+    notificationRedeliveryService.resend(
+        notificationRedelivery, event, notificationMessage.getStatusUpdateXml());
+  }
 
-    private boolean unitIsNotIntegrated(Certificate certificate) {
-        return integreradeEnheterRegistry.getIntegreradEnhet(
-            certificate.getMetadata().getUnit().getUnitId()) == null;
-    }
+  private boolean unitIsNotIntegrated(Certificate certificate) {
+    return integreradeEnheterRegistry.getIntegreradEnhet(
+            certificate.getMetadata().getUnit().getUnitId())
+        == null;
+  }
 }

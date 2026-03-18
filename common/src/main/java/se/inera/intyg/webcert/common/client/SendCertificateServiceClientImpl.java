@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,45 +30,51 @@ import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.
 /**
  * Exposes the SendCertificateToRecipient SOAP service.
  *
- * Created by eriklupander on 2015-06-03.
+ * <p>Created by eriklupander on 2015-06-03.
  */
 @Component
 public class SendCertificateServiceClientImpl implements SendCertificateServiceClient {
 
-    @Autowired
-    private SendCertificateToRecipientResponderInterface sendService;
+  @Autowired private SendCertificateToRecipientResponderInterface sendService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Override
-    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient,
-        String logicalAddress) {
+  @Override
+  public SendCertificateToRecipientResponseType sendCertificate(
+      String intygsId,
+      String personId,
+      String skickatAvJson,
+      String recipient,
+      String logicalAddress) {
 
-        validateArgument(intygsId, "Cannot send certificate, argument 'intygsId' is null or empty.");
-        validateArgument(personId, "Cannot send certificate, argument 'personId' is null or empty.");
-        validateArgument(skickatAvJson, "Cannot send certificate, argument 'skickatAvJson' is null or empty.");
-        validateArgument(recipient, "Cannot send certificate, argument 'recipient' is null or empty.");
-        validateArgument(logicalAddress, "Cannot send certificate, argument 'logicalAddress' is null or empty.");
+    validateArgument(intygsId, "Cannot send certificate, argument 'intygsId' is null or empty.");
+    validateArgument(personId, "Cannot send certificate, argument 'personId' is null or empty.");
+    validateArgument(
+        skickatAvJson, "Cannot send certificate, argument 'skickatAvJson' is null or empty.");
+    validateArgument(recipient, "Cannot send certificate, argument 'recipient' is null or empty.");
+    validateArgument(
+        logicalAddress, "Cannot send certificate, argument 'logicalAddress' is null or empty.");
 
-        HoSPersonal skickatAv = parseJson(skickatAvJson);
+    HoSPersonal skickatAv = parseJson(skickatAvJson);
 
-        SendCertificateToRecipientType request = SendCertificateToRecipientTypeConverter.convert(intygsId, personId, skickatAv, recipient);
+    SendCertificateToRecipientType request =
+        SendCertificateToRecipientTypeConverter.convert(intygsId, personId, skickatAv, recipient);
 
-        return sendService.sendCertificateToRecipient(logicalAddress, request);
+    return sendService.sendCertificateToRecipient(logicalAddress, request);
+  }
+
+  private void validateArgument(String arg, String msg) {
+    if (arg == null || arg.trim().length() == 0) {
+      throw new IllegalArgumentException(msg);
     }
+  }
 
-    private void validateArgument(String arg, String msg) {
-        if (arg == null || arg.trim().length() == 0) {
-            throw new IllegalArgumentException(msg);
-        }
+  private HoSPersonal parseJson(String skickatAvJson) {
+    try {
+      return objectMapper.readValue(skickatAvJson, HoSPersonal.class);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(
+          "Cannot send certificate, argument 'skickatAvJson' is invalid: " + e.getMessage());
     }
-
-    private HoSPersonal parseJson(String skickatAvJson) {
-        try {
-            return objectMapper.readValue(skickatAvJson, HoSPersonal.class);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot send certificate, argument 'skickatAvJson' is invalid: " + e.getMessage());
-        }
-    }
+  }
 }

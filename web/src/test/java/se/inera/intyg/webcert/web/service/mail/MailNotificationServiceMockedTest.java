@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,69 +49,63 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceMockedTest {
 
-    @Mock
-    EmployeeNameService employeeNameService;
-    
-    @Mock
-    private JavaMailSender mailSender;
+  @Mock EmployeeNameService employeeNameService;
 
-    @Mock
-    private HsaOrganizationsService hsaOrganizationsService;
+  @Mock private JavaMailSender mailSender;
 
-    @Mock
-    private MonitoringLogService monitoringService;
+  @Mock private HsaOrganizationsService hsaOrganizationsService;
 
-    @Mock
-    private UtkastRepository utkastRepository;
+  @Mock private MonitoringLogService monitoringService;
 
-    @InjectMocks
-    private MailNotificationServiceImpl mailNotificationService;
+  @Mock private UtkastRepository utkastRepository;
 
-    @Before
-    public void setUp() {
-        ReflectionTestUtils.setField(mailNotificationService, "fromAddress", "no-reply@webcert.intygstjanster.se");
+  @InjectMocks private MailNotificationServiceImpl mailNotificationService;
+
+  @Before
+  public void setUp() {
+    ReflectionTestUtils.setField(
+        mailNotificationService, "fromAddress", "no-reply@webcert.intygstjanster.se");
+  }
+
+  @Test
+  public void sendMailForIncomingQuestionWithTimeoutThrowsNoException() throws Exception {
+    doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
+    mockOrganizationUnitServiceGetUnit();
+    when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
+    mailNotificationService.sendMailForIncomingQuestion(mailNotification("enhetsid"));
+  }
+
+  @Test
+  public void sendMailForIncomingAnswerWithTimeoutThrowsNoException() throws Exception {
+    doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
+    mockOrganizationUnitServiceGetUnit();
+    when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
+    mailNotificationService.sendMailForIncomingAnswer(mailNotification("enhetsid"));
+  }
+
+  private void mockOrganizationUnitServiceGetUnit() throws HsaServiceCallException {
+    Vardenhet enhet = new Vardenhet("enhetsid", null, null, null);
+    enhet.setEpost("test@test.invalid");
+    when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(enhet);
+  }
+
+  @Test
+  public void testNoHSAResponse() throws HsaServiceCallException {
+    try {
+      SOAPFault soapFault = SOAPFactory.newInstance().createFault();
+      soapFault.setFaultString("Connection reset");
+      when(hsaOrganizationsService.getVardenhet(anyString()))
+          .thenThrow(new SOAPFaultException(soapFault));
+    } catch (SOAPException e) {
+      e.printStackTrace();
     }
+    mailNotificationService.sendMailForIncomingAnswer(mailNotification("enhetsid"));
+  }
 
-    @Test
-    public void sendMailForIncomingQuestionWithTimeoutThrowsNoException() throws Exception {
-        doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
-        mockOrganizationUnitServiceGetUnit();
-        when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
-        mailNotificationService.sendMailForIncomingQuestion(mailNotification("enhetsid"));
-    }
+  @Test
+  public void setAdminMailAddress() throws Exception {}
 
-    @Test
-    public void sendMailForIncomingAnswerWithTimeoutThrowsNoException() throws Exception {
-        doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
-        mockOrganizationUnitServiceGetUnit();
-        when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
-        mailNotificationService.sendMailForIncomingAnswer(mailNotification("enhetsid"));
-    }
-
-    private void mockOrganizationUnitServiceGetUnit() throws HsaServiceCallException {
-        Vardenhet enhet = new Vardenhet("enhetsid", null, null, null);
-        enhet.setEpost("test@test.invalid");
-        when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(enhet);
-    }
-
-    @Test
-    public void testNoHSAResponse() throws HsaServiceCallException {
-        try {
-            SOAPFault soapFault = SOAPFactory.newInstance().createFault();
-            soapFault.setFaultString("Connection reset");
-            when(hsaOrganizationsService.getVardenhet(anyString())).thenThrow(new SOAPFaultException(soapFault));
-        } catch (SOAPException e) {
-            e.printStackTrace();
-        }
-        mailNotificationService.sendMailForIncomingAnswer(mailNotification("enhetsid"));
-    }
-
-    @Test
-    public void setAdminMailAddress() throws Exception {
-    }
-
-    private MailNotification mailNotification(String enhetsId) {
-        return new MailNotification(null, "1L", Fk7263EntryPoint.MODULE_ID, enhetsId, null, null);
-    }
-
+  private MailNotification mailNotification(String enhetsId) {
+    return new MailNotification(null, "1L", Fk7263EntryPoint.MODULE_ID, enhetsId, null, null);
+  }
 }

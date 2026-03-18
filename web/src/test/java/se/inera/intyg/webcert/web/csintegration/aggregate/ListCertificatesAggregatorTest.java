@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,67 +39,67 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @ExtendWith(MockitoExtension.class)
 class ListCertificatesAggregatorTest {
 
-    private static final List<ListIntygEntry> LIST_INTYG_ENTRIES_FROM_CS = List.of(new ListIntygEntry());
-    private static final String PATIENT_ID = "PATIENT_ID";
-    private static final ListFilter LIST_FILTER = new ListFilter();
-    private static final QueryIntygParameter QUERY_INTYG_PARAMETER = new QueryIntygParameter();
-    private static final GetPatientCertificatesRequestDTO REQUEST = GetPatientCertificatesRequestDTO.builder().build();
-    private static final GetUnitCertificatesRequestDTO UNIT_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private static final List<ListIntygEntry> LIST_INTYG_ENTRIES_FROM_CS =
+      List.of(new ListIntygEntry());
+  private static final String PATIENT_ID = "PATIENT_ID";
+  private static final ListFilter LIST_FILTER = new ListFilter();
+  private static final QueryIntygParameter QUERY_INTYG_PARAMETER = new QueryIntygParameter();
+  private static final GetPatientCertificatesRequestDTO REQUEST =
+      GetPatientCertificatesRequestDTO.builder().build();
+  private static final GetUnitCertificatesRequestDTO UNIT_REQUEST =
+      GetUnitCertificatesRequestDTO.builder().build();
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationService csIntegrationService;
 
-    @InjectMocks
-    ListCertificatesAggregator listCertificatesAggregator;
+  @InjectMocks ListCertificatesAggregator listCertificatesAggregator;
 
-    @Nested
-    class PatientCertificatesList {
+  @Nested
+  class PatientCertificatesList {
 
+    @Test
+    void shouldReturnListFromAPI() {
+      when(csIntegrationRequestFactory.getPatientCertificatesRequest(PATIENT_ID))
+          .thenReturn(REQUEST);
+      when(csIntegrationService.listCertificatesForPatient(REQUEST))
+          .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 
-        @Test
-        void shouldReturnListFromAPI() {
-            when(csIntegrationRequestFactory.getPatientCertificatesRequest(PATIENT_ID))
-                .thenReturn(REQUEST);
-            when(csIntegrationService.listCertificatesForPatient(REQUEST))
-                .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
+      final var response = listCertificatesAggregator.listCertificatesForPatient(PATIENT_ID);
 
-            final var response = listCertificatesAggregator.listCertificatesForPatient(PATIENT_ID);
-
-            assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
-        }
+      assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
     }
+  }
 
-    @Nested
-    class UnitCertificatesList {
+  @Nested
+  class UnitCertificatesList {
 
-        @Test
-        void shouldReturnListFromAPI() {
-            when(csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER))
-                .thenReturn(UNIT_REQUEST);
-            when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
-                .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
+    @Test
+    void shouldReturnListFromAPI() {
+      when(csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER))
+          .thenReturn(UNIT_REQUEST);
+      when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
+          .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 
-            final var response = listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER);
+      final var response = listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER);
 
-            assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
-        }
+      assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
     }
+  }
 
-    @Nested
-    class DoctorCertificateList {
+  @Nested
+  class DoctorCertificateList {
 
-        @Test
-        void shouldReturnListFromAPI() {
-            when(csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER))
-                .thenReturn(UNIT_REQUEST);
-            when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
-                .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
+    @Test
+    void shouldReturnListFromAPI() {
+      when(csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER))
+          .thenReturn(UNIT_REQUEST);
+      when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
+          .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 
-            final var response = listCertificatesAggregator.listCertificatesForDoctor(QUERY_INTYG_PARAMETER);
+      final var response =
+          listCertificatesAggregator.listCertificatesForDoctor(QUERY_INTYG_PARAMETER);
 
-            assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
-        }
+      assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
     }
+  }
 }

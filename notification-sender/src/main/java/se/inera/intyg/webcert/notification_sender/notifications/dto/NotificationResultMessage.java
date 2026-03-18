@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,60 +22,62 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
-
 public class NotificationResultMessage {
 
-    private String correlationId;
-    private Handelse event;
-    private LocalDateTime notificationSentTime;
-    private NotificationResultType resultType;
-    private byte[] statusUpdateXml;
+  private String correlationId;
+  private Handelse event;
+  private LocalDateTime notificationSentTime;
+  private NotificationResultType resultType;
+  private byte[] statusUpdateXml;
 
+  public String getCorrelationId() {
+    return correlationId;
+  }
 
-    public String getCorrelationId() {
-        return correlationId;
-    }
+  public void setCorrelationId(String correlationId) {
+    this.correlationId = correlationId;
+  }
 
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
-    }
+  public Handelse getEvent() {
+    return event;
+  }
 
-    public Handelse getEvent() {
-        return event;
-    }
+  public void setEvent(Handelse event) {
+    this.event = event;
+  }
 
-    public void setEvent(Handelse event) {
-        this.event = event;
-    }
+  public LocalDateTime getNotificationSentTime() {
+    return notificationSentTime;
+  }
 
-    public LocalDateTime getNotificationSentTime() {
-        return notificationSentTime;
-    }
+  public void setNotificationSentTime(LocalDateTime notificationSentTime) {
+    this.notificationSentTime = notificationSentTime;
+  }
 
-    public void setNotificationSentTime(LocalDateTime notificationSentTime) {
-        this.notificationSentTime = notificationSentTime;
-    }
+  public NotificationResultType getResultType() {
+    return resultType;
+  }
 
-    public NotificationResultType getResultType() {
-        return resultType;
-    }
+  public void setResultType(NotificationResultType resultType) {
+    this.resultType = resultType;
+  }
 
-    public void setResultType(NotificationResultType resultType) {
-        this.resultType = resultType;
-    }
+  public byte[] getStatusUpdateXml() {
+    return statusUpdateXml;
+  }
 
-    public byte[] getStatusUpdateXml() {
-        return statusUpdateXml;
-    }
+  public void setStatusUpdateXml(byte[] statusUpdateXml) {
+    this.statusUpdateXml = statusUpdateXml;
+  }
 
-    public void setStatusUpdateXml(byte[] statusUpdateXml) {
-        this.statusUpdateXml = statusUpdateXml;
-    }
-
-    @JsonIgnore
-    @Override
-    public String toString() {
-        return String.format("[logicalAddress: %s, certificateId: %s, correlationId: %s, eventCode: %s]", this.event.getEnhetsId(),
-            this.event.getIntygsId(), this.correlationId, this.event.getCode() != null ? this.event.getCode().name() : null);
-    }
+  @JsonIgnore
+  @Override
+  public String toString() {
+    return String.format(
+        "[logicalAddress: %s, certificateId: %s, correlationId: %s, eventCode: %s]",
+        this.event.getEnhetsId(),
+        this.event.getIntygsId(),
+        this.correlationId,
+        this.event.getCode() != null ? this.event.getCode().name() : null);
+  }
 }

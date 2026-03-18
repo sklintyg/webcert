@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,197 +44,222 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @Component
 public class UtkastToCertificateConverterImpl implements UtkastToCertificateConverter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UtkastToCertificateConverterImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UtkastToCertificateConverterImpl.class);
 
-    private final IntygModuleRegistry moduleRegistry;
+  private final IntygModuleRegistry moduleRegistry;
 
-    private final IntygTextsService intygTextsService;
+  private final IntygTextsService intygTextsService;
 
-    private final PatientConverter patientConverter;
+  private final PatientConverter patientConverter;
 
-    private final CertificateRelationsConverter certificateRelationsConverter;
+  private final CertificateRelationsConverter certificateRelationsConverter;
 
-    private final WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-    private final HsatkOrganizationService hsatkOrganizationService;
+  private final HsatkOrganizationService hsatkOrganizationService;
 
-    private final TypeAheadProvider typeAheadProvider;
+  private final TypeAheadProvider typeAheadProvider;
 
-    private final CertificateRecipientConverter certificateRecipientConverter;
+  private final CertificateRecipientConverter certificateRecipientConverter;
 
-    private final DraftAccessServiceHelper draftAccessServiceHelper;
+  private final DraftAccessServiceHelper draftAccessServiceHelper;
 
-    private final FeaturesHelper featuresHelper;
+  private final FeaturesHelper featuresHelper;
 
-    @Autowired
-    public UtkastToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
-        IntygTextsService intygTextsService,
-        PatientConverter patientConverter,
-        CertificateRelationsConverter certificateRelationsConverter,
-        WebCertUserService webCertUserService,
-        HsatkOrganizationService hsatkOrganizationService,
-        TypeAheadProvider typeAheadProvider,
-        CertificateRecipientConverter certificateRecipientConverter,
-        DraftAccessServiceHelper draftAccessServiceHelper,
-        FeaturesHelper featuresHelper) {
-        this.moduleRegistry = moduleRegistry;
-        this.intygTextsService = intygTextsService;
-        this.patientConverter = patientConverter;
-        this.certificateRelationsConverter = certificateRelationsConverter;
-        this.webCertUserService = webCertUserService;
-        this.hsatkOrganizationService = hsatkOrganizationService;
-        this.typeAheadProvider = typeAheadProvider;
-        this.certificateRecipientConverter = certificateRecipientConverter;
-        this.draftAccessServiceHelper = draftAccessServiceHelper;
-        this.featuresHelper = featuresHelper;
-    }
+  @Autowired
+  public UtkastToCertificateConverterImpl(
+      IntygModuleRegistry moduleRegistry,
+      IntygTextsService intygTextsService,
+      PatientConverter patientConverter,
+      CertificateRelationsConverter certificateRelationsConverter,
+      WebCertUserService webCertUserService,
+      HsatkOrganizationService hsatkOrganizationService,
+      TypeAheadProvider typeAheadProvider,
+      CertificateRecipientConverter certificateRecipientConverter,
+      DraftAccessServiceHelper draftAccessServiceHelper,
+      FeaturesHelper featuresHelper) {
+    this.moduleRegistry = moduleRegistry;
+    this.intygTextsService = intygTextsService;
+    this.patientConverter = patientConverter;
+    this.certificateRelationsConverter = certificateRelationsConverter;
+    this.webCertUserService = webCertUserService;
+    this.hsatkOrganizationService = hsatkOrganizationService;
+    this.typeAheadProvider = typeAheadProvider;
+    this.certificateRecipientConverter = certificateRecipientConverter;
+    this.draftAccessServiceHelper = draftAccessServiceHelper;
+    this.featuresHelper = featuresHelper;
+  }
 
-    @Override
-    public Certificate convert(Utkast certificate) {
-        LOG.debug("Converting Utkast to Certificate");
-        return convertToCertificate(certificate);
-    }
+  @Override
+  public Certificate convert(Utkast certificate) {
+    LOG.debug("Converting Utkast to Certificate");
+    return convertToCertificate(certificate);
+  }
 
-    private Certificate convertToCertificate(Utkast certificate) {
-        final var certificateToReturn = getCertificateToReturn(
+  private Certificate convertToCertificate(Utkast certificate) {
+    final var certificateToReturn =
+        getCertificateToReturn(
             certificate.getIntygsTyp(),
             certificate.getIntygTypeVersion(),
             certificate.getModel(),
-            certificate.getSkapad()
-        );
+            certificate.getSkapad());
 
-        certificateToReturn.getMetadata().setCreated(certificate.getSenastSparadDatum());
-        certificateToReturn.getMetadata().setVersion(certificate.getVersion());
-        certificateToReturn.getMetadata().setForwarded(certificate.getVidarebefordrad());
-        certificateToReturn.getMetadata().setReadyForSign(certificate.getKlartForSigneringDatum());
-        certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
-        certificateToReturn.getMetadata().setSent(certificate.getSkickadTillMottagareDatum() != null);
+    certificateToReturn.getMetadata().setCreated(certificate.getSenastSparadDatum());
+    certificateToReturn.getMetadata().setVersion(certificate.getVersion());
+    certificateToReturn.getMetadata().setForwarded(certificate.getVidarebefordrad());
+    certificateToReturn.getMetadata().setReadyForSign(certificate.getKlartForSigneringDatum());
+    certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
+    certificateToReturn.getMetadata().setSent(certificate.getSkickadTillMottagareDatum() != null);
 
-        certificateToReturn.getMetadata().setRecipient(
+    certificateToReturn
+        .getMetadata()
+        .setRecipient(
             certificateRecipientConverter.get(
                 certificate.getIntygsTyp(),
                 certificate.getIntygsId(),
-                certificate.getSkickadTillMottagareDatum())
-        );
+                certificate.getSkickadTillMottagareDatum()));
 
-        certificateToReturn.getMetadata().setSentTo(
+    certificateToReturn
+        .getMetadata()
+        .setSentTo(
             certificateToReturn.getMetadata().getRecipient() != null
                 ? certificateToReturn.getMetadata().getRecipient().getName()
                 : null);
 
-        certificateToReturn.getMetadata().setCareProvider(
-            getCareProvider(certificate)
-        );
+    certificateToReturn.getMetadata().setCareProvider(getCareProvider(certificate));
 
-        certificateToReturn.getMetadata().setCareUnit(
-            getCareUnit(certificate)
-        );
+    certificateToReturn.getMetadata().setCareUnit(getCareUnit(certificate));
 
-        certificateToReturn.getMetadata().setStatus(
-            getStatus(isRevoked(certificate), certificate.getStatus())
-        );
+    certificateToReturn
+        .getMetadata()
+        .setStatus(getStatus(isRevoked(certificate), certificate.getStatus()));
 
-        certificateToReturn.getMetadata().setPatient(
+    certificateToReturn
+        .getMetadata()
+        .setPatient(
             patientConverter.convert(
                 certificateToReturn.getMetadata().getPatient(),
                 certificate.getPatientPersonnummer(),
                 certificate.getIntygsTyp(),
-                certificate.getIntygTypeVersion()
-            )
-        );
+                certificate.getIntygTypeVersion()));
 
-        certificateToReturn.getMetadata().setRelations(
-            certificateRelationsConverter.convert(certificateToReturn.getMetadata().getId())
-        );
+    certificateToReturn
+        .getMetadata()
+        .setRelations(
+            certificateRelationsConverter.convert(certificateToReturn.getMetadata().getId()));
 
-        certificateToReturn.getMetadata().setLatestMajorVersion(
-            intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
-                certificateToReturn.getMetadata().getTypeVersion())
-        );
+    certificateToReturn
+        .getMetadata()
+        .setLatestMajorVersion(
+            intygTextsService.isLatestMajorVersion(
+                certificateToReturn.getMetadata().getType(),
+                certificateToReturn.getMetadata().getTypeVersion()));
 
-        certificateToReturn.getMetadata().setInactiveCertificateType(
-            featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, certificate.getIntygsTyp())
-        );
+    certificateToReturn
+        .getMetadata()
+        .setInactiveCertificateType(
+            featuresHelper.isFeatureActive(
+                AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE,
+                certificate.getIntygsTyp()));
 
-        certificateToReturn.getMetadata().setAvailableForCitizen(
+    certificateToReturn
+        .getMetadata()
+        .setAvailableForCitizen(
             !(certificate.getIntygsTyp().equals(DbModuleEntryPoint.MODULE_ID)
-                || certificate.getIntygsTyp().equals(DoiModuleEntryPoint.MODULE_ID))
-        );
+                || certificate.getIntygsTyp().equals(DoiModuleEntryPoint.MODULE_ID)));
 
-        certificateToReturn.getMetadata().setResponsibleHospName(
-            getResponsibleHospName()
-        );
+    certificateToReturn.getMetadata().setResponsibleHospName(getResponsibleHospName());
 
-        if (webCertUserService.hasAuthenticationContext()) {
-            final var origin = webCertUserService.getUser().getOrigin();
-            final var isAllowedToEdit = draftAccessServiceHelper.isAllowToEditUtkast(certificate);
-            final var confirmationModalProvider = ConfirmationModalProviderResolver.getConfirmation(certificate.getIntygsTyp(),
-                certificateToReturn.getMetadata().getStatus(), webCertUserService.getUser(), false, isAllowedToEdit);
-            certificateToReturn.getMetadata().setConfirmationModal(
-                confirmationModalProvider != null ? confirmationModalProvider.create(
-                    certificateToReturn.getMetadata().getPatient().getFullName(),
-                    certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
-                    origin
-                ) : null
-            );
+    if (webCertUserService.hasAuthenticationContext()) {
+      final var origin = webCertUserService.getUser().getOrigin();
+      final var isAllowedToEdit = draftAccessServiceHelper.isAllowToEditUtkast(certificate);
+      final var confirmationModalProvider =
+          ConfirmationModalProviderResolver.getConfirmation(
+              certificate.getIntygsTyp(),
+              certificateToReturn.getMetadata().getStatus(),
+              webCertUserService.getUser(),
+              false,
+              isAllowedToEdit);
+      certificateToReturn
+          .getMetadata()
+          .setConfirmationModal(
+              confirmationModalProvider != null
+                  ? confirmationModalProvider.create(
+                      certificateToReturn.getMetadata().getPatient().getFullName(),
+                      certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
+                      origin)
+                  : null);
 
-            final var signConfirmationModelProvider = ConfirmationModalProviderResolver.getSignConfirmation(certificate.getIntygsTyp());
-            certificateToReturn.getMetadata().setSignConfirmationModal(
-                signConfirmationModelProvider != null ? signConfirmationModelProvider.create(
-                    certificateToReturn.getMetadata().getPatient().getFullName(),
-                    certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
-                    origin
-                ) : null
-            );
-        }
-
-        return certificateToReturn;
+      final var signConfirmationModelProvider =
+          ConfirmationModalProviderResolver.getSignConfirmation(certificate.getIntygsTyp());
+      certificateToReturn
+          .getMetadata()
+          .setSignConfirmationModal(
+              signConfirmationModelProvider != null
+                  ? signConfirmationModelProvider.create(
+                      certificateToReturn.getMetadata().getPatient().getFullName(),
+                      certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
+                      origin)
+                  : null);
     }
 
-    private Unit getCareProvider(Utkast certificate) {
-        return Unit.builder()
-            .unitId(certificate.getVardgivarId())
-            .unitName(certificate.getVardgivarNamn())
-            .build();
+    return certificateToReturn;
+  }
+
+  private Unit getCareProvider(Utkast certificate) {
+    return Unit.builder()
+        .unitId(certificate.getVardgivarId())
+        .unitName(certificate.getVardgivarNamn())
+        .build();
+  }
+
+  private Unit getCareUnit(Utkast certificate) {
+    try {
+      final var careUnitId =
+          hsatkOrganizationService
+              .getHealthCareUnit(certificate.getEnhetsId())
+              .getHealthCareUnitHsaId();
+      final var careUnit =
+          careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
+
+      return Unit.builder()
+          .unitId(careUnitId != null ? careUnitId : certificate.getEnhetsId())
+          .unitName(careUnit != null ? careUnit.getUnitName() : certificate.getEnhetsNamn())
+          .build();
+    } catch (Exception e) {
+      LOG.warn("Could not get unit from hsa", e);
+
+      return Unit.builder()
+          .unitId(certificate.getEnhetsId())
+          .unitName(certificate.getEnhetsNamn())
+          .build();
+    }
+  }
+
+  private Certificate getCertificateToReturn(
+      String certificateType,
+      String certificateTypeVersion,
+      String jsonModel,
+      LocalDateTime created) {
+    try {
+      LOG.debug(
+          "Retrieving ModuleAPI for type '{}' version '{}'",
+          certificateType,
+          certificateTypeVersion);
+      final var moduleApi = moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
+      LOG.debug("Retrieving Certificate from Json");
+      return moduleApi.getCertificateFromJson(jsonModel, typeAheadProvider, created);
+    } catch (Exception ex) {
+      throw new IllegalStateException(ex);
+    }
+  }
+
+  private String getResponsibleHospName() {
+    if (!webCertUserService.hasAuthenticationContext()) {
+      return null;
     }
 
-    private Unit getCareUnit(Utkast certificate) {
-        try {
-            final var careUnitId = hsatkOrganizationService.getHealthCareUnit(certificate.getEnhetsId()).getHealthCareUnitHsaId();
-            final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
-
-            return Unit.builder()
-                .unitId(careUnitId != null ? careUnitId : certificate.getEnhetsId())
-                .unitName(careUnit != null ? careUnit.getUnitName() : certificate.getEnhetsNamn())
-                .build();
-        } catch (Exception e) {
-            LOG.warn("Could not get unit from hsa", e);
-
-            return Unit.builder()
-                .unitId(certificate.getEnhetsId())
-                .unitName(certificate.getEnhetsNamn())
-                .build();
-        }
-    }
-
-    private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel,
-        LocalDateTime created) {
-        try {
-            LOG.debug("Retrieving ModuleAPI for type '{}' version '{}'", certificateType, certificateTypeVersion);
-            final var moduleApi = moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
-            LOG.debug("Retrieving Certificate from Json");
-            return moduleApi.getCertificateFromJson(jsonModel, typeAheadProvider, created);
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
-    private String getResponsibleHospName() {
-        if (!webCertUserService.hasAuthenticationContext()) {
-            return null;
-        }
-
-        final var integrationParameters = webCertUserService.getUser().getParameters();
-        return integrationParameters != null ? integrationParameters.getResponsibleHospName() : null;
-    }
+    final var integrationParameters = webCertUserService.getUser().getParameters();
+    return integrationParameters != null ? integrationParameters.getResponsibleHospName() : null;
+  }
 }

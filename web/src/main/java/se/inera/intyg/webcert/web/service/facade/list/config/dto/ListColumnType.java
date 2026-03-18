@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,38 +19,39 @@
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public enum ListColumnType {
-    PATIENT_ID("Patient", "Patientens personnummer."),
-    SAVED_BY("Sparat av", "Person som senast sparade utkastet."),
-    SAVED_SIGNED_BY("Sparat/signerat av",
-        "Person som senast sparade utkastet/intyget alternativt person som signerade intyget."),
-    SAVED("Senast sparat", "Datum och klockslag då utkastet senast sparades."),
-    CERTIFICATE_ID("", ""),
-    OPEN_CERTIFICATE("", ""),
-    RENEW_CERTIFICATE("", ""),
-    FORWARD_CERTIFICATE("", ""),
-    CERTIFICATE_TYPE_NAME("Typ av intyg", "Intygstyp"),
-    STATUS("Status", "Visar intygets status."),
-    FORWARDED("Vidarebefordrad", ""),
-    SIGNED("Signerad", "Datum och klockslag då intyget signerades."),
-    LINKS("", ""),
-    QUESTION_ACTION("Åtgärd", "Åtgärd som krävs för att frågan/ärendet ska anses hanterad."),
-    SENDER("Avsändare", "Vem som initierade frågan."),
-    SENT_RECEIVED("Skickat/mottaget", "Datum och klockslag för senaste händelse."),
-    SIGNED_BY("Signerat av", "Läkare som signerat intyget.");
+  PATIENT_ID("Patient", "Patientens personnummer."),
+  SAVED_BY("Sparat av", "Person som senast sparade utkastet."),
+  SAVED_SIGNED_BY(
+      "Sparat/signerat av",
+      "Person som senast sparade utkastet/intyget alternativt person som signerade intyget."),
+  SAVED("Senast sparat", "Datum och klockslag då utkastet senast sparades."),
+  CERTIFICATE_ID("", ""),
+  OPEN_CERTIFICATE("", ""),
+  RENEW_CERTIFICATE("", ""),
+  FORWARD_CERTIFICATE("", ""),
+  CERTIFICATE_TYPE_NAME("Typ av intyg", "Intygstyp"),
+  STATUS("Status", "Visar intygets status."),
+  FORWARDED("Vidarebefordrad", ""),
+  SIGNED("Signerad", "Datum och klockslag då intyget signerades."),
+  LINKS("", ""),
+  QUESTION_ACTION("Åtgärd", "Åtgärd som krävs för att frågan/ärendet ska anses hanterad."),
+  SENDER("Avsändare", "Vem som initierade frågan."),
+  SENT_RECEIVED("Skickat/mottaget", "Datum och klockslag för senaste händelse."),
+  SIGNED_BY("Signerat av", "Läkare som signerat intyget.");
 
-    private final String name;
-    private final String description;
+  private final String name;
+  private final String description;
 
-    ListColumnType(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+  ListColumnType(String name, String description) {
+    this.name = name;
+    this.description = description;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 }

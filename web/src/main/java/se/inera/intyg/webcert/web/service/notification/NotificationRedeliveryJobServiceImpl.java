@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,89 +37,89 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 @Service
 public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliveryJobService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(
-        NotificationRedeliveryJobServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(NotificationRedeliveryJobServiceImpl.class);
 
-    @Autowired
-    private NotificationRedeliveryAggregator notificationRedeliveryAggregator;
+  @Autowired private NotificationRedeliveryAggregator notificationRedeliveryAggregator;
 
-    @Autowired
-    private NotificationRedeliveryService notificationRedeliveryService;
+  @Autowired private NotificationRedeliveryService notificationRedeliveryService;
 
-    @Autowired
-    private HandelseRepository eventRepository;
+  @Autowired private HandelseRepository eventRepository;
 
-    @Override
-    @PerformanceLogging(eventAction = "job-resend-scheduled-notifications", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
-        eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
-    public void resendScheduledNotifications(int batchSize) {
-        final var startTimeInMilliseconds = System.currentTimeMillis();
-        final var notificationsToResend = notificationRedeliveryService.getNotificationsForRedelivery(
-            batchSize
-        );
-        final var successfullySent = resend(notificationsToResend);
-        final var endTimeInMilliseconds = System.currentTimeMillis();
+  @Override
+  @PerformanceLogging(
+      eventAction = "job-resend-scheduled-notifications",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
+      eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
+  public void resendScheduledNotifications(int batchSize) {
+    final var startTimeInMilliseconds = System.currentTimeMillis();
+    final var notificationsToResend =
+        notificationRedeliveryService.getNotificationsForRedelivery(batchSize);
+    final var successfullySent = resend(notificationsToResend);
+    final var endTimeInMilliseconds = System.currentTimeMillis();
 
-        LOG.debug("Processed {} notification for redelivery in {} seconds. Number of failures: {}.",
-            total(notificationsToResend),
-            durationInSeconds(startTimeInMilliseconds, endTimeInMilliseconds),
-            noOfFailed(notificationsToResend, successfullySent));
+    LOG.debug(
+        "Processed {} notification for redelivery in {} seconds. Number of failures: {}.",
+        total(notificationsToResend),
+        durationInSeconds(startTimeInMilliseconds, endTimeInMilliseconds),
+        noOfFailed(notificationsToResend, successfullySent));
+  }
+
+  private int resend(List<NotificationRedelivery> notificationRedeliveryList) {
+    var successfullySent = 0;
+
+    final var eventMap = getEventMap(notificationRedeliveryList);
+
+    for (NotificationRedelivery notificationRedelivery : notificationRedeliveryList) {
+      final var event = eventMap.get(notificationRedelivery.getEventId());
+      final var success = resend(notificationRedelivery, event);
+      if (success) {
+        successfullySent++;
+      }
     }
 
-    private int resend(List<NotificationRedelivery> notificationRedeliveryList) {
-        var successfullySent = 0;
+    return successfullySent;
+  }
 
-        final var eventMap = getEventMap(notificationRedeliveryList);
-
-        for (NotificationRedelivery notificationRedelivery : notificationRedeliveryList) {
-            final var event = eventMap.get(notificationRedelivery.getEventId());
-            final var success = resend(notificationRedelivery, event);
-            if (success) {
-                successfullySent++;
-            }
-        }
-
-        return successfullySent;
-    }
-
-    private Map<Long, Handelse> getEventMap(List<NotificationRedelivery> notificationRedeliveryList) {
-        final var eventIds = notificationRedeliveryList.stream()
+  private Map<Long, Handelse> getEventMap(List<NotificationRedelivery> notificationRedeliveryList) {
+    final var eventIds =
+        notificationRedeliveryList.stream()
             .map(NotificationRedelivery::getEventId)
             .collect(Collectors.toList());
 
-        final var events = eventRepository.findAllById(eventIds);
+    final var events = eventRepository.findAllById(eventIds);
 
-        final var eventMap = new HashMap<Long, Handelse>(events.size());
-        events.stream().forEach(event -> eventMap.put(event.getId(), event));
+    final var eventMap = new HashMap<Long, Handelse>(events.size());
+    events.stream().forEach(event -> eventMap.put(event.getId(), event));
 
-        return eventMap;
+    return eventMap;
+  }
+
+  private boolean resend(NotificationRedelivery notificationRedelivery, Handelse event) {
+    try {
+      return notificationRedeliveryAggregator.resend(notificationRedelivery, event);
+    } catch (Exception e) {
+      LOG.error(getLogInfoString(notificationRedelivery) + "An exception occurred.", e);
+      notificationRedeliveryService.handleErrors(notificationRedelivery, event, e);
+      return false;
     }
+  }
 
-    private boolean resend(NotificationRedelivery notificationRedelivery, Handelse event) {
-        try {
-            return notificationRedeliveryAggregator.resend(notificationRedelivery, event);
-        } catch (Exception e) {
-            LOG.error(getLogInfoString(notificationRedelivery) + "An exception occurred.", e);
-            notificationRedeliveryService.handleErrors(notificationRedelivery, event, e);
-            return false;
-        }
-    }
+  private String getLogInfoString(NotificationRedelivery redelivery) {
+    return String.format(
+        "Failure resending message [notificationId: %s, correlationId: %s]. ",
+        redelivery.getEventId(), redelivery.getCorrelationId());
+  }
 
-    private String getLogInfoString(NotificationRedelivery redelivery) {
-        return String.format("Failure resending message [notificationId: %s, correlationId: %s]. ",
-            redelivery.getEventId(),
-            redelivery.getCorrelationId());
-    }
+  private int noOfFailed(List<NotificationRedelivery> notificationsToResend, int successfullySent) {
+    return total(notificationsToResend) - successfullySent;
+  }
 
-    private int noOfFailed(List<NotificationRedelivery> notificationsToResend, int successfullySent) {
-        return total(notificationsToResend) - successfullySent;
-    }
+  private int total(List<NotificationRedelivery> notificationsToResend) {
+    return notificationsToResend.size();
+  }
 
-    private int total(List<NotificationRedelivery> notificationsToResend) {
-        return notificationsToResend.size();
-    }
-
-    private long durationInSeconds(long startTimeInMilliseconds, long endTimeInMilliseconds) {
-        return TimeUnit.MILLISECONDS.toSeconds(endTimeInMilliseconds - startTimeInMilliseconds);
-    }
+  private long durationInSeconds(long startTimeInMilliseconds, long endTimeInMilliseconds) {
+    return TimeUnit.MILLISECONDS.toSeconds(endTimeInMilliseconds - startTimeInMilliseconds);
+  }
 }

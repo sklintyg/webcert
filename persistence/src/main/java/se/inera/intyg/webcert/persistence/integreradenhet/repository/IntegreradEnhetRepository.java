@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,13 +26,13 @@ import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 
 public interface IntegreradEnhetRepository extends CrudRepository<IntegreradEnhet, String> {
 
-    @Query("select ie from IntegreradEnhet ie where ie.vardgivarId = :careProviderId")
-    List<IntegreradEnhet> getIntegratedUnitsByCareProviderId(@Param("careProviderId") String careProviderId);
+  @Query("select ie from IntegreradEnhet ie where ie.vardgivarId = :careProviderId")
+  List<IntegreradEnhet> getIntegratedUnitsByCareProviderId(
+      @Param("careProviderId") String careProviderId);
 
-    default int eraseIntegratedUnitsByCareProviderId(String careProviderId) {
-        final var integratedUnits = getIntegratedUnitsByCareProviderId(careProviderId);
-        deleteAll(integratedUnits);
-        return integratedUnits.size();
-    }
-
+  default int eraseIntegratedUnitsByCareProviderId(String careProviderId) {
+    final var integratedUnits = getIntegratedUnitsByCareProviderId(careProviderId);
+    deleteAll(integratedUnits);
+    return integratedUnits.size();
+  }
 }

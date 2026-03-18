@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,10 +31,10 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 /**
- * Stores {@link SignaturBiljett} instances in Redis, using {@link RedisTicketTrackerImpl#SIGNATURE_CACHE} + ticketId
- * as key.
+ * Stores {@link SignaturBiljett} instances in Redis, using {@link
+ * RedisTicketTrackerImpl#SIGNATURE_CACHE} + ticketId as key.
  *
- * Uses the RedisTemplate directly to allow fine-grained control over entry expiry.
+ * <p>Uses the RedisTemplate directly to allow fine-grained control over entry expiry.
  *
  * @author eriklupander
  */
@@ -42,62 +42,68 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 @DependsOn("rediscache")
 public class RedisTicketTrackerImpl implements RedisTicketTracker {
 
-    private static final String SIGNATURE_CACHE = "webcert.signature.ticket";
-    private static final long TICKET_EXPIRY_MINUTES = 15L;
+  private static final String SIGNATURE_CACHE = "webcert.signature.ticket";
+  private static final long TICKET_EXPIRY_MINUTES = 15L;
 
-    @Autowired
-    @Qualifier("rediscache")
-    private RedisTemplate<Object, Object> redisTemplate;
+  @Autowired
+  @Qualifier("rediscache") private RedisTemplate<Object, Object> redisTemplate;
 
-    // inject the template as ValueOperations
-    @Resource(name = "rediscache")
-    private ValueOperations<String, SignaturBiljett> valueOps;
+  // inject the template as ValueOperations
+  @Resource(name = "rediscache")
+  private ValueOperations<String, SignaturBiljett> valueOps;
 
-    @Override
-    public void trackBiljett(SignaturBiljett signaturBiljett) {
-        valueOps.set(buildKey(signaturBiljett.getTicketId()), signaturBiljett, TICKET_EXPIRY_MINUTES,
-            TimeUnit.MINUTES);
+  @Override
+  public void trackBiljett(SignaturBiljett signaturBiljett) {
+    valueOps.set(
+        buildKey(signaturBiljett.getTicketId()),
+        signaturBiljett,
+        TICKET_EXPIRY_MINUTES,
+        TimeUnit.MINUTES);
+  }
+
+  @Override
+  public SignaturBiljett findBiljett(String ticketId) {
+    return valueOps.get(buildKey(ticketId));
+  }
+
+  @Override
+  public SignaturBiljett updateStatus(String ticketId, SignaturStatus status) {
+    SignaturBiljett sb = valueOps.get(buildKey(ticketId));
+    sb.setStatus(status);
+    valueOps.set(buildKey(ticketId), sb);
+    return sb;
+  }
+
+  @Override
+  public void updateAutoStartToken(String ticketId, @NonNull String autoStartToken) {
+    SignaturBiljett sb = valueOps.get(buildKey(ticketId));
+
+    if (sb == null) {
+      throw new IllegalStateException(
+          String.format(
+              "Signature ticket id '%s' not found when updating autostarttoken.", ticketId));
     }
 
-    @Override
-    public SignaturBiljett findBiljett(String ticketId) {
-        return valueOps.get(buildKey(ticketId));
+    sb.setAutoStartToken(autoStartToken);
+    valueOps.set(buildKey(ticketId), sb);
+  }
+
+  @Override
+  public void updateQrCodeProperties(String ticketId, String qrStartToken, String qrStartSecret) {
+    SignaturBiljett sb = valueOps.get(buildKey(ticketId));
+
+    if (sb == null) {
+      throw new IllegalStateException(
+          String.format(
+              "Signature ticket id '%s' not found when updating qr properties.", ticketId));
     }
 
-    @Override
-    public SignaturBiljett updateStatus(String ticketId, SignaturStatus status) {
-        SignaturBiljett sb = valueOps.get(buildKey(ticketId));
-        sb.setStatus(status);
-        valueOps.set(buildKey(ticketId), sb);
-        return sb;
-    }
+    sb.setQrStartToken(qrStartToken);
+    sb.setQrStartSecret(qrStartSecret);
+    valueOps.set(buildKey(ticketId), sb);
+  }
 
-    @Override
-    public void updateAutoStartToken(String ticketId, @NonNull String autoStartToken) {
-        SignaturBiljett sb = valueOps.get(buildKey(ticketId));
-
-        if (sb == null) {
-            throw new IllegalStateException(String.format("Signature ticket id '%s' not found when updating autostarttoken.", ticketId));
-        }
-
-        sb.setAutoStartToken(autoStartToken);
-        valueOps.set(buildKey(ticketId), sb);
-    }
-
-    @Override
-    public void updateQrCodeProperties(String ticketId, String qrStartToken, String qrStartSecret) {
-        SignaturBiljett sb = valueOps.get(buildKey(ticketId));
-
-        if (sb == null) {
-            throw new IllegalStateException(String.format("Signature ticket id '%s' not found when updating qr properties.", ticketId));
-        }
-
-        sb.setQrStartToken(qrStartToken);
-        sb.setQrStartSecret(qrStartSecret);
-        valueOps.set(buildKey(ticketId), sb);
-    }
-
-    private String buildKey(String ticketId) {
-        return SIGNATURE_CACHE + ticketId;
-    }
+  private String buildKey(String ticketId) {
+    return SIGNATURE_CACHE + ticketId;
+  }
 }

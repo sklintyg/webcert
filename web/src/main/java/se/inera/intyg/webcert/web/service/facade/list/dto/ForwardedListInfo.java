@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,47 +20,48 @@ package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 public class ForwardedListInfo {
 
-    private boolean forwarded;
-    private String unitName;
-    private String careProviderName;
-    private String certificateType;
+  private boolean forwarded;
+  private String unitName;
+  private String careProviderName;
+  private String certificateType;
 
-    public ForwardedListInfo(boolean forwarded, String unitName, String careProviderName, String certificateType) {
-        this.forwarded = forwarded;
-        this.unitName = unitName;
-        this.careProviderName = careProviderName;
-        this.certificateType = certificateType;
-    }
+  public ForwardedListInfo(
+      boolean forwarded, String unitName, String careProviderName, String certificateType) {
+    this.forwarded = forwarded;
+    this.unitName = unitName;
+    this.careProviderName = careProviderName;
+    this.certificateType = certificateType;
+  }
 
-    public boolean isForwarded() {
-        return forwarded;
-    }
+  public boolean isForwarded() {
+    return forwarded;
+  }
 
-    public void setForwarded(boolean forwarded) {
-        this.forwarded = forwarded;
-    }
+  public void setForwarded(boolean forwarded) {
+    this.forwarded = forwarded;
+  }
 
-    public String getUnitName() {
-        return unitName;
-    }
+  public String getUnitName() {
+    return unitName;
+  }
 
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
-    }
+  public void setUnitName(String unitName) {
+    this.unitName = unitName;
+  }
 
-    public String getCareProviderName() {
-        return careProviderName;
-    }
+  public String getCareProviderName() {
+    return careProviderName;
+  }
 
-    public void setCareProviderName(String careProviderName) {
-        this.careProviderName = careProviderName;
-    }
+  public void setCareProviderName(String careProviderName) {
+    this.careProviderName = careProviderName;
+  }
 
-    public String getCertificateType() {
-        return certificateType;
-    }
+  public String getCertificateType() {
+    return certificateType;
+  }
 
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
-    }
+  public void setCertificateType(String certificateType) {
+    this.certificateType = certificateType;
+  }
 }

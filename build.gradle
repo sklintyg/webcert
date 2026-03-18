@@ -51,6 +51,11 @@ subprojects {
     spotless {
         enforceCheck = false
         java {
+            replaceRegex(
+                    'normalize copyright years',
+                    'Copyright \\(C\\) \\d{4}(-\\d{4})?',
+                    "Copyright (C) ${java.time.Year.now().value}"
+            )
             target 'src/*/java/**/*.java'
             licenseHeaderFile(rootProject.file('spotless.license.txt'), 'package ')
             removeUnusedImports()

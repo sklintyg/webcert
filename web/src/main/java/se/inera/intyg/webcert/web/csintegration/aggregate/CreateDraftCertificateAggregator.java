@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,22 +30,24 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 @Service
 public class CreateDraftCertificateAggregator implements CreateDraftCertificate {
 
-    private final CreateDraftCertificate createDraftCertificateFromWC;
-    private final CreateDraftCertificate createDraftCertificateFromCS;
+  private final CreateDraftCertificate createDraftCertificateFromWC;
+  private final CreateDraftCertificate createDraftCertificateFromCS;
 
-    public CreateDraftCertificateAggregator(
-        @Qualifier("createDraftCertificateFromWC") CreateDraftCertificate createDraftCertificateFromWC,
-        @Qualifier("createDraftCertificateFromCS") CreateDraftCertificate createDraftCertificateFromCS) {
-        this.createDraftCertificateFromWC = createDraftCertificateFromWC;
-        this.createDraftCertificateFromCS = createDraftCertificateFromCS;
-    }
+  public CreateDraftCertificateAggregator(
+      @Qualifier("createDraftCertificateFromWC") CreateDraftCertificate createDraftCertificateFromWC,
+      @Qualifier("createDraftCertificateFromCS") CreateDraftCertificate createDraftCertificateFromCS) {
+    this.createDraftCertificateFromWC = createDraftCertificateFromWC;
+    this.createDraftCertificateFromCS = createDraftCertificateFromCS;
+  }
 
-    @Override
-    public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
+  @Override
+  public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
 
-        final var createDraftCertificateResponseType = createDraftCertificateFromCS.create(certificate, user);
+    final var createDraftCertificateResponseType =
+        createDraftCertificateFromCS.create(certificate, user);
 
-        return createDraftCertificateResponseType != null
-            ? createDraftCertificateResponseType : createDraftCertificateFromWC.create(certificate, user);
-    }
+    return createDraftCertificateResponseType != null
+        ? createDraftCertificateResponseType
+        : createDraftCertificateFromWC.create(certificate, user);
+  }
 }

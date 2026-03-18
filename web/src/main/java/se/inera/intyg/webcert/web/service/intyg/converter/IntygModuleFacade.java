@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,18 +30,27 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 public interface IntygModuleFacade {
 
-    IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses,
-        UtkastStatus utkastStatus, boolean isEmployer)
-        throws IntygModuleFacadeException;
+  IntygPdf convertFromInternalToPdfDocument(
+      String intygType,
+      String internalIntygJsonModel,
+      List<Status> statuses,
+      UtkastStatus utkastStatus,
+      boolean isEmployer)
+      throws IntygModuleFacadeException;
 
-    CertificateResponse getCertificate(String certificateId, String intygType, String intygTypeVersion) throws IntygModuleFacadeException;
+  CertificateResponse getCertificate(
+      String certificateId, String intygType, String intygTypeVersion)
+      throws IntygModuleFacadeException;
 
-    void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException;
+  void registerCertificate(String intygType, String internalIntygJsonModel)
+      throws ModuleException, IntygModuleFacadeException;
 
-    String getRevokeCertificateRequest(String intygType, Utlatande utlatande, HoSPersonal skapatAv, String message)
-        throws ModuleException, IntygModuleFacadeException;
+  String getRevokeCertificateRequest(
+      String intygType, Utlatande utlatande, HoSPersonal skapatAv, String message)
+      throws ModuleException, IntygModuleFacadeException;
 
-    Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel);
+  Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel);
 
-    Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel, LocalDateTime created);
+  Utlatande getUtlatandeFromInternalModel(
+      String intygType, String internalModel, LocalDateTime created);
 }

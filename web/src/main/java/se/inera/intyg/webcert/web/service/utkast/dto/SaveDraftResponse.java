@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,24 +22,24 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 
 public class SaveDraftResponse {
 
-    private long version;
+  private long version;
 
-    private UtkastStatus status;
+  private UtkastStatus status;
 
-    public SaveDraftResponse(long version, UtkastStatus status) {
-        this.version = version;
-        this.status = status;
-    }
+  public SaveDraftResponse(long version, UtkastStatus status) {
+    this.version = version;
+    this.status = status;
+  }
 
-    public UtkastStatus getStatus() {
-        return status;
-    }
+  public UtkastStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(UtkastStatus status) {
-        this.status = status;
-    }
+  public void setStatus(UtkastStatus status) {
+    this.status = status;
+  }
 
-    public long getVersion() {
-        return version;
-    }
+  public long getVersion() {
+    return version;
+  }
 }

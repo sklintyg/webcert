@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,13 +22,13 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 
 public class SendQuestionRequestDTO {
 
-    private Question question;
+  private Question question;
 
-    public Question getQuestion() {
-        return question;
-    }
+  public Question getQuestion() {
+    return question;
+  }
 
-    public void setQuestion(Question question) {
-        this.question = question;
-    }
+  public void setQuestion(Question question) {
+    this.question = question;
+  }
 }

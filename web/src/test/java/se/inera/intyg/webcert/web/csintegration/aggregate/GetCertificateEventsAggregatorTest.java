@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.mock;
@@ -31,37 +30,34 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeServi
 
 class GetCertificateEventsAggregatorTest {
 
-    private static final String ID = "ID";
-    private static final CertificateEventDTO[] EVENTS = {new CertificateEventDTO()};
+  private static final String ID = "ID";
+  private static final CertificateEventDTO[] EVENTS = {new CertificateEventDTO()};
 
-    GetCertificateEventsFacadeService getCertificateEventsFromWC;
-    GetCertificateEventsFacadeService getCertificateEventsFromCS;
-    GetCertificateEventsFacadeService aggregator;
+  GetCertificateEventsFacadeService getCertificateEventsFromWC;
+  GetCertificateEventsFacadeService getCertificateEventsFromCS;
+  GetCertificateEventsFacadeService aggregator;
 
-    @BeforeEach
-    void setup() {
-        getCertificateEventsFromWC = mock(GetCertificateEventsFacadeService.class);
-        getCertificateEventsFromCS = mock(GetCertificateEventsFacadeService.class);
+  @BeforeEach
+  void setup() {
+    getCertificateEventsFromWC = mock(GetCertificateEventsFacadeService.class);
+    getCertificateEventsFromCS = mock(GetCertificateEventsFacadeService.class);
 
-        aggregator = new GetCertificateEventsAggregator(
-            getCertificateEventsFromWC,
-            getCertificateEventsFromCS
-        );
-    }
+    aggregator =
+        new GetCertificateEventsAggregator(getCertificateEventsFromWC, getCertificateEventsFromCS);
+  }
 
-    @Test
-    void shouldReturnResponseFromCSIfExists() {
-        when(getCertificateEventsFromCS.getCertificateEvents(ID))
-            .thenReturn(EVENTS);
-        aggregator.getCertificateEvents(ID);
+  @Test
+  void shouldReturnResponseFromCSIfExists() {
+    when(getCertificateEventsFromCS.getCertificateEvents(ID)).thenReturn(EVENTS);
+    aggregator.getCertificateEvents(ID);
 
-        Mockito.verify(getCertificateEventsFromWC, times(0)).getCertificateEvents(ID);
-    }
+    Mockito.verify(getCertificateEventsFromWC, times(0)).getCertificateEvents(ID);
+  }
 
-    @Test
-    void shouldForwardFromWCIfCertificateDoesNotExistInCS() {
-        aggregator.getCertificateEvents(ID);
+  @Test
+  void shouldForwardFromWCIfCertificateDoesNotExistInCS() {
+    aggregator.getCertificateEvents(ID);
 
-        Mockito.verify(getCertificateEventsFromWC, times(1)).getCertificateEvents(ID);
-    }
+    Mockito.verify(getCertificateEventsFromWC, times(1)).getCertificateEvents(ID);
+  }
 }

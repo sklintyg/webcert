@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,24 +34,21 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 @Builder
 public class IntygContentHolder {
 
-    @JsonRawValue
-    String contents;
-    @JsonIgnore
-    Utlatande utlatande;
-    List<Status> statuses;
-    boolean revoked;
-    Relations relations;
-    LocalDateTime created;
-    boolean deceased;
-    boolean sekretessmarkering;
-    boolean patientNameChangedInPU;
-    boolean patientAddressChangedInPU;
-    boolean testIntyg;
-    boolean latestMajorTextVersion;
-    List<ActionLink> links = new ArrayList<>();
+  @JsonRawValue String contents;
+  @JsonIgnore Utlatande utlatande;
+  List<Status> statuses;
+  boolean revoked;
+  Relations relations;
+  LocalDateTime created;
+  boolean deceased;
+  boolean sekretessmarkering;
+  boolean patientNameChangedInPU;
+  boolean patientAddressChangedInPU;
+  boolean testIntyg;
+  boolean latestMajorTextVersion;
+  List<ActionLink> links = new ArrayList<>();
 
-    public void addLink(ActionLink link) {
-        links.add(link);
-    }
-
+  public void addLink(ActionLink link) {
+    links.add(link);
+  }
 }

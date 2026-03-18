@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,90 +39,100 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Component
-public class CertificateSignConfirmationFunctionImpl implements CertificateSignConfirmationFunction {
+public class CertificateSignConfirmationFunctionImpl
+    implements CertificateSignConfirmationFunction {
 
-    private final UtkastService utkastService;
-    private final List<String> allowedTypes = List.of(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
+  private final UtkastService utkastService;
+  private final List<String> allowedTypes =
+      List.of(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
 
-    @Autowired
-    public CertificateSignConfirmationFunctionImpl(UtkastService utkastService) {
-        this.utkastService = utkastService;
+  @Autowired
+  public CertificateSignConfirmationFunctionImpl(UtkastService utkastService) {
+    this.utkastService = utkastService;
+  }
+
+  @Override
+  public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
+    if (!allowedTypes.contains(certificate.getMetadata().getType())) {
+      return Optional.empty();
     }
-
-    @Override
-    public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
-        if (!allowedTypes.contains(certificate.getMetadata().getType())) {
-            return Optional.empty();
-        }
-        final var certificateType = certificate.getMetadata().getType();
-        final var personnummer = getPersonnummer(certificate);
-        final var existingIntyg = getExistingIntyg(certificate, webCertUser, personnummer);
-        final var previousIntygMap = existingIntygWithStatus(existingIntyg, INTYG_INDICATOR);
-        final var previousUtkastMap = existingIntygWithStatus(existingIntyg, UTKAST_INDICATOR);
-        final var previousReplacedMap = existingIntygWithStatus(existingIntyg, ERSATT_INDICATOR);
-        if (previousIntygMap.containsKey(certificateType) && !previousReplacedMap.containsKey(certificateType)) {
-            if (certificateTypeIsDb(certificateType)) {
-                return Optional.of(ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
-                    "Signerat dödsbevis finns",
-                    "Signera och skicka",
-                    "Intyget skickas direkt till Skatteverket.",
-                    "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
-                        + " Det är därför inte möjligt att signera detta dödsbevis.",
-                    true));
-            } else {
-                return Optional.of(ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
-                    "Signerat dödsorsaksintyg finns",
-                    "Signera och skicka",
-                    "Intyget skickas direkt till Socialstyrelsen.",
-                    "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
-                        + "Senast skapade dödsorsaksintyg är det som gäller. "
-                        + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",
-                    true));
-            }
-        }
-        if (previousUtkastMap.containsKey(certificateType)) {
-            if (certificateTypeIsDb(certificateType)) {
-                return Optional.of(ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
-                    "Utkast på dödsbevis finns",
-                    "Signera och skicka",
-                    "Intyget skickas direkt till Skatteverket.",
-                    "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
-                        + " Senast skapade dödsbevis är det som gäller. Om du fortsätter och lämnar in "
-                        + "dödsbeviset så blir det därför detta dödsbevis som gäller.",
-                    true));
-            } else {
-                return Optional.of(ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
-                    "Utkast på dödsorsaksintyg finns",
-                    "Signera och skicka",
-                    "Intyget skickas direkt till Socialstyrelsen.",
-                    "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
-                        + "Senast skapade dödsorsaksintyg är det som gäller. "
-                        + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",
-                    true));
-            }
-        }
-        return Optional.empty();
+    final var certificateType = certificate.getMetadata().getType();
+    final var personnummer = getPersonnummer(certificate);
+    final var existingIntyg = getExistingIntyg(certificate, webCertUser, personnummer);
+    final var previousIntygMap = existingIntygWithStatus(existingIntyg, INTYG_INDICATOR);
+    final var previousUtkastMap = existingIntygWithStatus(existingIntyg, UTKAST_INDICATOR);
+    final var previousReplacedMap = existingIntygWithStatus(existingIntyg, ERSATT_INDICATOR);
+    if (previousIntygMap.containsKey(certificateType)
+        && !previousReplacedMap.containsKey(certificateType)) {
+      if (certificateTypeIsDb(certificateType)) {
+        return Optional.of(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Signerat dödsbevis finns",
+                "Signera och skicka",
+                "Intyget skickas direkt till Skatteverket.",
+                "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
+                    + " Det är därför inte möjligt att signera detta dödsbevis.",
+                true));
+      } else {
+        return Optional.of(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Signerat dödsorsaksintyg finns",
+                "Signera och skicka",
+                "Intyget skickas direkt till Socialstyrelsen.",
+                "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                    + "Senast skapade dödsorsaksintyg är det som gäller. "
+                    + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",
+                true));
+      }
     }
-
-    private boolean certificateTypeIsDb(final String certificateType) {
-        return DbModuleEntryPoint.MODULE_ID.equals(certificateType);
+    if (previousUtkastMap.containsKey(certificateType)) {
+      if (certificateTypeIsDb(certificateType)) {
+        return Optional.of(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Utkast på dödsbevis finns",
+                "Signera och skicka",
+                "Intyget skickas direkt till Skatteverket.",
+                "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
+                    + " Senast skapade dödsbevis är det som gäller. Om du fortsätter och lämnar in "
+                    + "dödsbeviset så blir det därför detta dödsbevis som gäller.",
+                true));
+      } else {
+        return Optional.of(
+            ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
+                "Utkast på dödsorsaksintyg finns",
+                "Signera och skicka",
+                "Intyget skickas direkt till Socialstyrelsen.",
+                "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                    + "Senast skapade dödsorsaksintyg är det som gäller. "
+                    + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.",
+                true));
+      }
     }
+    return Optional.empty();
+  }
 
-    private static Personnummer getPersonnummer(Certificate certificate) {
-        return Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get();
-    }
+  private boolean certificateTypeIsDb(final String certificateType) {
+    return DbModuleEntryPoint.MODULE_ID.equals(certificateType);
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> getExistingIntyg(Certificate certificate, WebCertUser webCertUser,
-        Personnummer personnummer) {
-        return utkastService.checkIfPersonHasExistingIntyg(personnummer, webCertUser, certificate.getMetadata().getId());
-    }
+  private static Personnummer getPersonnummer(Certificate certificate) {
+    return Personnummer.createPersonnummer(
+            certificate.getMetadata().getPatient().getPersonId().getId())
+        .get();
+  }
 
-    private static Map<String, PreviousIntyg> existingIntygWithStatus(Map<String, Map<String, PreviousIntyg>> existingIntyg,
-        String intygType) {
-        return existingIntyg.getOrDefault(intygType, Collections.emptyMap());
-    }
+  private Map<String, Map<String, PreviousIntyg>> getExistingIntyg(
+      Certificate certificate, WebCertUser webCertUser, Personnummer personnummer) {
+    return utkastService.checkIfPersonHasExistingIntyg(
+        personnummer, webCertUser, certificate.getMetadata().getId());
+  }
+
+  private static Map<String, PreviousIntyg> existingIntygWithStatus(
+      Map<String, Map<String, PreviousIntyg>> existingIntyg, String intygType) {
+    return existingIntyg.getOrDefault(intygType, Collections.emptyMap());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.user;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
@@ -30,11 +29,9 @@ import se.inera.intyg.webcert.web.csintegration.user.PaTitleDTO.PaTitleDTOBuilde
 @Builder
 public class PaTitleDTO {
 
-    String code;
-    String description;
+  String code;
+  String description;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class PaTitleDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class PaTitleDTOBuilder {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,38 +25,38 @@ import java.util.List;
 
 public class ResultValidator {
 
-    private final List<String> errors = new ArrayList<>();
+  private final List<String> errors = new ArrayList<>();
 
-    public static ResultValidator newInstance() {
-        return new ResultValidator();
-    }
+  public static ResultValidator newInstance() {
+    return new ResultValidator();
+  }
 
-    public void addError(String msg) {
-        errors.add(msg);
-    }
+  public void addError(String msg) {
+    errors.add(msg);
+  }
 
-    public void addError(String msgTemplate, String... args) {
-        String msg = MessageFormat.format(msgTemplate, (Object[]) args);
-        addError(msg);
-    }
+  public void addError(String msgTemplate, String... args) {
+    String msg = MessageFormat.format(msgTemplate, (Object[]) args);
+    addError(msg);
+  }
 
-    public void addErrors(List<String> msgs) {
-        errors.addAll(msgs);
-    }
+  public void addErrors(List<String> msgs) {
+    errors.addAll(msgs);
+  }
 
-    public List<String> getErrorMessages() {
-        return errors;
-    }
+  public List<String> getErrorMessages() {
+    return errors;
+  }
 
-    public String getErrorMessagesAsString() {
-        return Joiner.on(", ").join(errors);
-    }
+  public String getErrorMessagesAsString() {
+    return Joiner.on(", ").join(errors);
+  }
 
-    public boolean hasErrors() {
-        return !errors.isEmpty();
-    }
+  public boolean hasErrors() {
+    return !errors.isEmpty();
+  }
 
-    public void reset() {
-        errors.clear();
-    }
+  public void reset() {
+    errors.clear();
+  }
 }

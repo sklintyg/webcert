@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,21 +30,17 @@ import lombok.Setter;
 @Getter
 public class SubscriptionInfo implements Serializable {
 
-    @JsonProperty
-    private SubscriptionAction subscriptionAction;
+  @JsonProperty private SubscriptionAction subscriptionAction;
 
-    @JsonProperty
-    private List<String> careProvidersForSubscriptionModal;
+  @JsonProperty private List<String> careProvidersForSubscriptionModal;
 
-    @JsonProperty
-    private List<String> careProvidersMissingSubscription;
+  @JsonProperty private List<String> careProvidersMissingSubscription;
 
-    private static final long serialVersionUID = -1586500199315227249L;
+  private static final long serialVersionUID = -1586500199315227249L;
 
-    public SubscriptionInfo() {
-        this.subscriptionAction = SubscriptionAction.NONE;
-        this.careProvidersForSubscriptionModal = new ArrayList<>();
-        this.careProvidersMissingSubscription = Collections.emptyList();
-    }
-
+  public SubscriptionInfo() {
+    this.subscriptionAction = SubscriptionAction.NONE;
+    this.careProvidersForSubscriptionModal = new ArrayList<>();
+    this.careProvidersMissingSubscription = Collections.emptyList();
+  }
 }

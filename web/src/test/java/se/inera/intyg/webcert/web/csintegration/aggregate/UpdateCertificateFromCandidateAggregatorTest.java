@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.mock;
@@ -33,35 +32,34 @@ import se.inera.intyg.webcert.web.service.facade.UpdateCertificateFromCandidateF
 @ExtendWith(MockitoExtension.class)
 class UpdateCertificateFromCandidateAggregatorTest {
 
-    private static final String ID = "ID";
+  private static final String ID = "ID";
 
-    UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromWC;
-    UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromCS;
-    UpdateCertificateFromCandidateAggregator aggregator;
+  UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromWC;
+  UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromCS;
+  UpdateCertificateFromCandidateAggregator aggregator;
 
-    @BeforeEach
-    void setup() {
-        updateCertificateFromCandidateFromWC = mock(UpdateCertificateFromCandidateFacadeService.class);
-        updateCertificateFromCandidateFromCS = mock(UpdateCertificateFromCandidateFacadeService.class);
+  @BeforeEach
+  void setup() {
+    updateCertificateFromCandidateFromWC = mock(UpdateCertificateFromCandidateFacadeService.class);
+    updateCertificateFromCandidateFromCS = mock(UpdateCertificateFromCandidateFacadeService.class);
 
-        aggregator = new UpdateCertificateFromCandidateAggregator(
-            updateCertificateFromCandidateFromWC,
-            updateCertificateFromCandidateFromCS
-        );
-    }
+    aggregator =
+        new UpdateCertificateFromCandidateAggregator(
+            updateCertificateFromCandidateFromWC, updateCertificateFromCandidateFromCS);
+  }
 
-    @Test
-    void shouldSendFromCSIfCertificateExistsInCS() {
-        when(updateCertificateFromCandidateFromCS.update(ID)).thenReturn(ID);
-        aggregator.update(ID);
+  @Test
+  void shouldSendFromCSIfCertificateExistsInCS() {
+    when(updateCertificateFromCandidateFromCS.update(ID)).thenReturn(ID);
+    aggregator.update(ID);
 
-        Mockito.verify(updateCertificateFromCandidateFromWC, times(0)).update(ID);
-    }
+    Mockito.verify(updateCertificateFromCandidateFromWC, times(0)).update(ID);
+  }
 
-    @Test
-    void shouldSendFromWCIfCertificateDoesNotExistInCS() {
-        aggregator.update(ID);
+  @Test
+  void shouldSendFromWCIfCertificateDoesNotExistInCS() {
+    aggregator.update(ID);
 
-        Mockito.verify(updateCertificateFromCandidateFromWC, times(1)).update(ID);
-    }
+    Mockito.verify(updateCertificateFromCandidateFromWC, times(1)).update(ID);
+  }
 }

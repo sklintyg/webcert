@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,156 +50,175 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 @ExtendWith(MockitoExtension.class)
 class GetRelatedCertificateFacadeServiceImplTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String PATIENT_ID = "19121212-1212";
-    private static final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer(PATIENT_ID).get();
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String PATIENT_ID = "19121212-1212";
+  private static final Personnummer PERSON_NUMMER =
+      Personnummer.createPersonnummer(PATIENT_ID).get();
 
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    private GetRelatedCertificateFacadeServiceImpl getRelatedCertificateFacadeService;
+  @InjectMocks private GetRelatedCertificateFacadeServiceImpl getRelatedCertificateFacadeService;
 
-    @Nested
-    class NoRelatedCertificate {
+  @Nested
+  class NoRelatedCertificate {
 
-        @BeforeEach
-        void setUp() {
-            final var certificate = CertificateBuilder.create()
-                .metadata(
-                    CertificateMetadata.builder()
-                        .id(CERTIFICATE_ID)
-                        .type(LisjpEntryPoint.MODULE_ID)
-                        .patient(
-                            Patient.builder()
-                                .personId(
-                                    PersonId.builder()
-                                        .id(PATIENT_ID)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .build();
-            doReturn(certificate).when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, true);
-        }
-
-        @Test
-        void shallNotReturnRelatedCertificateIdWhenNotRelevantForACertificateType() {
-            final String expectedRelatedCertificateId = null;
-
-            final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
-            assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
-        }
+    @BeforeEach
+    void setUp() {
+      final var certificate =
+          CertificateBuilder.create()
+              .metadata(
+                  CertificateMetadata.builder()
+                      .id(CERTIFICATE_ID)
+                      .type(LisjpEntryPoint.MODULE_ID)
+                      .patient(
+                          Patient.builder()
+                              .personId(PersonId.builder().id(PATIENT_ID).build())
+                              .build())
+                      .build())
+              .build();
+      doReturn(certificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(CERTIFICATE_ID, false, true);
     }
 
-    @Nested
-    class DoiRelatedToDb {
+    @Test
+    void shallNotReturnRelatedCertificateIdWhenNotRelevantForACertificateType() {
+      final String expectedRelatedCertificateId = null;
 
-        private WebCertUser webCertUser;
-
-        @BeforeEach
-        void setUp() {
-            final var certificate = CertificateBuilder.create()
-                .metadata(
-                    CertificateMetadata.builder()
-                        .id(CERTIFICATE_ID)
-                        .type(DbModuleEntryPoint.MODULE_ID)
-                        .patient(
-                            Patient.builder()
-                                .personId(
-                                    PersonId.builder()
-                                        .id(PATIENT_ID)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .build();
-            doReturn(certificate).when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, true);
-
-            webCertUser = mock(WebCertUser.class);
-            doReturn(webCertUser).when(webCertUserService).getUser();
-        }
-
-        @Test
-        void shallReturnRelatedCertificateIdIfShowDoiIsSetToTrueOnExistingDoiDraft() {
-            final var expectedRelatedCertificateId = "relatedCertificateId";
-
-            final var dbWithinCareProvider = Map.of(
-                UTKAST_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, true, "ENHET", expectedRelatedCertificateId, LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService).checkIfPersonHasExistingIntyg(PERSON_NUMMER, webCertUser, CERTIFICATE_ID);
-
-            final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
-            assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
-        }
-
-        @Test
-        void shallNotReturnRelatedCertificateIdIfShowDoiIsSetToFalseOnExistingDoiDraft() {
-            final String expectedRelatedCertificateId = null;
-
-            final var dbWithinCareProvider = Map.of(
-                UTKAST_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(false, false, false, "ENHET", "idOnDifferentCareProvider", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService).checkIfPersonHasExistingIntyg(PERSON_NUMMER, webCertUser, CERTIFICATE_ID);
-
-            final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
-            assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
-        }
-
-        @Test
-        void shallReturnRelatedCertificateIdIfShowDoiIsSetToTrueOnExistingDoiCertificate() {
-            final var expectedRelatedCertificateId = "relatedCertificateId";
-
-            final var dbWithinCareProvider = Map.of(
-                INTYG_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, true, "ENHET", expectedRelatedCertificateId, LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService).checkIfPersonHasExistingIntyg(PERSON_NUMMER, webCertUser, CERTIFICATE_ID);
-
-            final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
-            assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
-        }
-
-        @Test
-        void shallNotReturnRelatedCertificateIdIfShowDoiIsSetToFalseOnExistingDoiCertificate() {
-            final String expectedRelatedCertificateId = null;
-
-            final var dbWithinCareProvider = Map.of(
-                UTKAST_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(false, false, false, "ENHET", "idOnDifferentCareProvider", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService).checkIfPersonHasExistingIntyg(PERSON_NUMMER, webCertUser, CERTIFICATE_ID);
-
-            final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
-            assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
-        }
+      final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
+      assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
     }
+  }
+
+  @Nested
+  class DoiRelatedToDb {
+
+    private WebCertUser webCertUser;
+
+    @BeforeEach
+    void setUp() {
+      final var certificate =
+          CertificateBuilder.create()
+              .metadata(
+                  CertificateMetadata.builder()
+                      .id(CERTIFICATE_ID)
+                      .type(DbModuleEntryPoint.MODULE_ID)
+                      .patient(
+                          Patient.builder()
+                              .personId(PersonId.builder().id(PATIENT_ID).build())
+                              .build())
+                      .build())
+              .build();
+      doReturn(certificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(CERTIFICATE_ID, false, true);
+
+      webCertUser = mock(WebCertUser.class);
+      doReturn(webCertUser).when(webCertUserService).getUser();
+    }
+
+    @Test
+    void shallReturnRelatedCertificateIdIfShowDoiIsSetToTrueOnExistingDoiDraft() {
+      final var expectedRelatedCertificateId = "relatedCertificateId";
+
+      final var dbWithinCareProvider =
+          Map.of(
+              UTKAST_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true,
+                      false,
+                      true,
+                      "ENHET",
+                      expectedRelatedCertificateId,
+                      LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_NUMMER, webCertUser, CERTIFICATE_ID);
+
+      final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
+      assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
+    }
+
+    @Test
+    void shallNotReturnRelatedCertificateIdIfShowDoiIsSetToFalseOnExistingDoiDraft() {
+      final String expectedRelatedCertificateId = null;
+
+      final var dbWithinCareProvider =
+          Map.of(
+              UTKAST_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      false,
+                      false,
+                      false,
+                      "ENHET",
+                      "idOnDifferentCareProvider",
+                      LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_NUMMER, webCertUser, CERTIFICATE_ID);
+
+      final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
+      assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
+    }
+
+    @Test
+    void shallReturnRelatedCertificateIdIfShowDoiIsSetToTrueOnExistingDoiCertificate() {
+      final var expectedRelatedCertificateId = "relatedCertificateId";
+
+      final var dbWithinCareProvider =
+          Map.of(
+              INTYG_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true,
+                      false,
+                      true,
+                      "ENHET",
+                      expectedRelatedCertificateId,
+                      LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_NUMMER, webCertUser, CERTIFICATE_ID);
+
+      final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
+      assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
+    }
+
+    @Test
+    void shallNotReturnRelatedCertificateIdIfShowDoiIsSetToFalseOnExistingDoiCertificate() {
+      final String expectedRelatedCertificateId = null;
+
+      final var dbWithinCareProvider =
+          Map.of(
+              UTKAST_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      false,
+                      false,
+                      false,
+                      "ENHET",
+                      "idOnDifferentCareProvider",
+                      LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_NUMMER, webCertUser, CERTIFICATE_ID);
+
+      final var actualRelatedCertificateId = getRelatedCertificateFacadeService.get(CERTIFICATE_ID);
+      assertEquals(expectedRelatedCertificateId, actualRelatedCertificateId);
+    }
+  }
 }

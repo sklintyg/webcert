@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,79 +28,90 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 
 @ExtendWith(MockitoExtension.class)
-class ElegAuthenticationMethodResolverTest  {
+class ElegAuthenticationMethodResolverTest {
 
-    private static final String MOBILT_BANK_ID_LOGIN_METHOD = "ccp11";
-    private static final String MOBILT_BANK_ID_STATIC_QR_CODE = "ccp19";
-    private static final String MOBILT_BANK_ID_NON_STATIC_QR_CODE = "ccp28";
-    private static final String BANK_ID_LOGIN_METHOD = "ccp10";
-    private static final String NET_ID_LOGIN_METHOD = "ccp8";
-    private static final String INDETERMINATE_LOGIN_METHOD = "";
-    private static final String UNKNOWN_LOGIN_METHOD = "ccp7";
-    private static final String AUTO_START = "bankid.auto-start-token";
-    private static final String QR_START = "bankid.qr-start-token";
+  private static final String MOBILT_BANK_ID_LOGIN_METHOD = "ccp11";
+  private static final String MOBILT_BANK_ID_STATIC_QR_CODE = "ccp19";
+  private static final String MOBILT_BANK_ID_NON_STATIC_QR_CODE = "ccp28";
+  private static final String BANK_ID_LOGIN_METHOD = "ccp10";
+  private static final String NET_ID_LOGIN_METHOD = "ccp8";
+  private static final String INDETERMINATE_LOGIN_METHOD = "";
+  private static final String UNKNOWN_LOGIN_METHOD = "ccp7";
+  private static final String AUTO_START = "bankid.auto-start-token";
+  private static final String QR_START = "bankid.qr-start-token";
 
-    @InjectMocks
-    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
+  @InjectMocks private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
+  @Test
+  void testBankIdStartToken() {
+    AuthenticationMethod authMetod =
+        elegAuthenticationMethodResolver.resolveAuthenticationMethod(AUTO_START);
+    assertEquals(AuthenticationMethod.BANK_ID, authMetod);
+  }
 
-    @Test
-    void testBankIdStartToken() {
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(AUTO_START);
-        assertEquals(AuthenticationMethod.BANK_ID, authMetod);
-    }
+  @Test
+  void testQrStartToken() {
+    AuthenticationMethod authMetod =
+        elegAuthenticationMethodResolver.resolveAuthenticationMethod(QR_START);
+    assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+  }
 
-    @Test
-    void testQrStartToken() {
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(QR_START);
-        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
-    }
+  @Test
+  void testBankID() {
+    AuthenticationMethod authMetod =
+        elegAuthenticationMethodResolver.resolveAuthenticationMethod(BANK_ID_LOGIN_METHOD);
+    assertEquals(AuthenticationMethod.BANK_ID, authMetod);
+  }
 
-   @Test
-    void testBankID() {
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(BANK_ID_LOGIN_METHOD);
-        assertEquals(AuthenticationMethod.BANK_ID, authMetod);
-    }
+  @Test
+  void testMobiltBankIDCCP11() {
+    AuthenticationMethod authMetod =
+        elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_LOGIN_METHOD);
+    assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+  }
 
-    @Test
-    void testMobiltBankIDCCP11() {
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_LOGIN_METHOD);
-        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
-    }
+  @Test
+  void testMobiltBankIDCCP19() {
+    AuthenticationMethod authMetod =
+        elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_STATIC_QR_CODE);
+    assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+  }
 
-    @Test
-    void testMobiltBankIDCCP19() {
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_STATIC_QR_CODE);
-        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
-    }
+  @Test
+  void testMobiltBankIDCCP28() {
+    AuthenticationMethod authMetod =
+        elegAuthenticationMethodResolver.resolveAuthenticationMethod(
+            MOBILT_BANK_ID_NON_STATIC_QR_CODE);
+    assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+  }
 
-    @Test
-    void testMobiltBankIDCCP28() {
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_NON_STATIC_QR_CODE);
-        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
-    }
+  @Test
+  void testNetID() {
+    AuthenticationMethod authMetod =
+        elegAuthenticationMethodResolver.resolveAuthenticationMethod(NET_ID_LOGIN_METHOD);
+    assertEquals(AuthenticationMethod.NET_ID, authMetod);
+  }
 
-    @Test
-    void testNetID() {
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(NET_ID_LOGIN_METHOD);
-        assertEquals(AuthenticationMethod.NET_ID, authMetod);
-    }
+  @Test
+  void testNoIssuerThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> elegAuthenticationMethodResolver.resolveAuthenticationMethod(null));
+  }
 
-    @Test
-    void testNoIssuerThrowsException() {
-        assertThrows(IllegalArgumentException.class, () ->
-            elegAuthenticationMethodResolver.resolveAuthenticationMethod(null));
-    }
+  @Test
+  void testIndeterminateIssuerThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(
+                INDETERMINATE_LOGIN_METHOD));
+  }
 
-    @Test
-    void testIndeterminateIssuerThrowsException() {
-        assertThrows(IllegalArgumentException.class, () ->
-            elegAuthenticationMethodResolver.resolveAuthenticationMethod(INDETERMINATE_LOGIN_METHOD));
-    }
-
-    @Test
-    void testUnknwonIssuerThrowsException() {
-        assertThrows(IllegalArgumentException.class, () ->
-            elegAuthenticationMethodResolver.resolveAuthenticationMethod(UNKNOWN_LOGIN_METHOD));
-    }
+  @Test
+  void testUnknwonIssuerThrowsException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> elegAuthenticationMethodResolver.resolveAuthenticationMethod(UNKNOWN_LOGIN_METHOD));
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import java.util.Comparator;
@@ -31,34 +30,36 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 @Service("certificateTypeInfoAggregator")
 public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeService {
 
-    private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
-    private final GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
+  private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
+  private final GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
 
-    public CertificateTypeInfoAggregator(
-        @Qualifier("getCertificateTypeInfoFromWebcert")
-        GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert,
-        @Qualifier("getCertificateTypeInfoFromCertificateService")
-        GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService) {
-        this.getCertificateTypeInfoFromWebcert = getCertificateTypeInfoFromWebcert;
-        this.getCertificateTypeInfoFromCertificateService = getCertificateTypeInfoFromCertificateService;
-    }
+  public CertificateTypeInfoAggregator(
+      @Qualifier("getCertificateTypeInfoFromWebcert") GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert,
+      @Qualifier("getCertificateTypeInfoFromCertificateService") GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService) {
+    this.getCertificateTypeInfoFromWebcert = getCertificateTypeInfoFromWebcert;
+    this.getCertificateTypeInfoFromCertificateService =
+        getCertificateTypeInfoFromCertificateService;
+  }
 
-    @Override
-    public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
-        final var typesFromWebcert = getCertificateTypeInfoFromWebcert.get(patientId);
-        final var typesFromCertificateService = getCertificateTypeInfoFromCertificateService.get(patientId);
-        final var filteredTypesFromWebcert = typesFromWebcert.stream()
-            .filter(wcType -> typesFromCertificateService.stream()
-                .noneMatch(csType -> wcType.getCertificateServiceTypeId().equalsIgnoreCase(csType.getId()))
-            )
+  @Override
+  public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
+    final var typesFromWebcert = getCertificateTypeInfoFromWebcert.get(patientId);
+    final var typesFromCertificateService =
+        getCertificateTypeInfoFromCertificateService.get(patientId);
+    final var filteredTypesFromWebcert =
+        typesFromWebcert.stream()
+            .filter(
+                wcType ->
+                    typesFromCertificateService.stream()
+                        .noneMatch(
+                            csType ->
+                                wcType
+                                    .getCertificateServiceTypeId()
+                                    .equalsIgnoreCase(csType.getId())))
             .toList();
 
-        return Stream
-            .concat(
-                typesFromCertificateService.stream(),
-                filteredTypesFromWebcert.stream()
-            )
-            .sorted(Comparator.comparing(CertificateTypeInfoDTO::getLabel))
-            .toList();
-    }
+    return Stream.concat(typesFromCertificateService.stream(), filteredTypesFromWebcert.stream())
+        .sorted(Comparator.comparing(CertificateTypeInfoDTO::getLabel))
+        .toList();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,104 +50,105 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 @ExtendWith(MockitoExtension.class)
 class GrpSignatureServiceTest extends AuthoritiesConfigurationJunit5TestSetup {
 
-    @Mock
-    RedisTicketTracker redisTicketTracker;
-    @Mock
-    GrpRestService grpRestService;
-    @Mock
-    ThreadPoolTaskExecutor taskExecutor;
-    @Mock
-    GrpCollectPollerFactory grpCollectPollerFactory;
-    @Mock
-    SignCertificateService signCertificateService;
-    @Mock
-    GrpRestCollectPollerImpl grpCollectPoller;
+  @Mock RedisTicketTracker redisTicketTracker;
+  @Mock GrpRestService grpRestService;
+  @Mock ThreadPoolTaskExecutor taskExecutor;
+  @Mock GrpCollectPollerFactory grpCollectPollerFactory;
+  @Mock SignCertificateService signCertificateService;
+  @Mock GrpRestCollectPollerImpl grpCollectPoller;
 
-    @InjectMocks
-    GrpSignatureServiceImpl grpSignaturService;
+  @InjectMocks GrpSignatureServiceImpl grpSignaturService;
 
-    private static final String INTYG_ID = "intyg-1";
-    private static final long VERSION = 1L;
-    private static final String PERSON_ID = "19121212-1212";
-    private static final String TRANSACTION_ID = "transactionId";
-    private static final String REF_ID = "refId";
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String AUTO_START_TOKEN = "autoStartToken";
-    private static final String QR_START_TOKEN = "qrStartToken";
-    private static final String QR_START_SECRET = "qrStartSecret";
+  private static final String INTYG_ID = "intyg-1";
+  private static final long VERSION = 1L;
+  private static final String PERSON_ID = "19121212-1212";
+  private static final String TRANSACTION_ID = "transactionId";
+  private static final String REF_ID = "refId";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String AUTO_START_TOKEN = "autoStartToken";
+  private static final String QR_START_TOKEN = "qrStartToken";
+  private static final String QR_START_SECRET = "qrStartSecret";
 
-    @BeforeEach
-    void init() {
-        ReflectionTestUtils.setField(grpSignaturService, "redisTicketTracker", redisTicketTracker);
-    }
+  @BeforeEach
+  void init() {
+    ReflectionTestUtils.setField(grpSignaturService, "redisTicketTracker", redisTicketTracker);
+  }
 
-    @Test
-    void shouldHandleSuccessfulGrpSignatureInitialization() {
-        final var ticket = buildSignaturBiljett();
-        when(grpCollectPollerFactory.getInstance()).thenReturn(grpCollectPoller);
-        when(grpRestService.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
+  @Test
+  void shouldHandleSuccessfulGrpSignatureInitialization() {
+    final var ticket = buildSignaturBiljett();
+    when(grpCollectPollerFactory.getInstance()).thenReturn(grpCollectPoller);
+    when(grpRestService.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
 
-        grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket);
-        verify(redisTicketTracker).updateAutoStartToken(TRANSACTION_ID, AUTO_START_TOKEN);
-        verify(redisTicketTracker).updateQrCodeProperties(TRANSACTION_ID, QR_START_TOKEN, QR_START_SECRET);
-        verify(taskExecutor, times(1)).execute(grpCollectPoller);
-    }
+    grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket);
+    verify(redisTicketTracker).updateAutoStartToken(TRANSACTION_ID, AUTO_START_TOKEN);
+    verify(redisTicketTracker)
+        .updateQrCodeProperties(TRANSACTION_ID, QR_START_TOKEN, QR_START_SECRET);
+    verify(taskExecutor, times(1)).execute(grpCollectPoller);
+  }
 
-    @Test
-    void shouldThrowIllegalStateIfTicketIdAndOrderResponseTxIdDoNotMatch() {
-        final var ticket = buildSignaturBiljett();
-        ticket.setTicketId("wrongTicketId");
-        when(grpRestService.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
+  @Test
+  void shouldThrowIllegalStateIfTicketIdAndOrderResponseTxIdDoNotMatch() {
+    final var ticket = buildSignaturBiljett();
+    ticket.setTicketId("wrongTicketId");
+    when(grpRestService.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
 
-        assertThrows(IllegalStateException.class, () -> grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket));
-    }
+    assertThrows(
+        IllegalStateException.class,
+        () -> grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket));
+  }
 
-    @Test
-    void shouldThrowWebcertServiceExceptionIfGrpSignInitFaiure() {
-        final var ticket = buildSignaturBiljett();
-        when(grpRestService.init(PERSON_ID, ticket)).thenThrow(WebCertServiceException.class);
+  @Test
+  void shouldThrowWebcertServiceExceptionIfGrpSignInitFaiure() {
+    final var ticket = buildSignaturBiljett();
+    when(grpRestService.init(PERSON_ID, ticket)).thenThrow(WebCertServiceException.class);
 
-        assertThrows(WebCertServiceException.class, () -> grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket));
-    }
+    assertThrows(
+        WebCertServiceException.class,
+        () -> grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket));
+  }
 
-    @Test
-    void shallFinalizeSignatureForCS() {
-        final var certificate = new Certificate();
-        final var signaturBiljett = new SignaturBiljett();
-        signaturBiljett.setIntygsId(CERTIFICATE_ID);
-        signaturBiljett.setVersion(VERSION);
-        final var expectedResult = FinalizedCertificateSignature.builder()
+  @Test
+  void shallFinalizeSignatureForCS() {
+    final var certificate = new Certificate();
+    final var signaturBiljett = new SignaturBiljett();
+    signaturBiljett.setIntygsId(CERTIFICATE_ID);
+    signaturBiljett.setVersion(VERSION);
+    final var expectedResult =
+        FinalizedCertificateSignature.builder()
             .certificate(certificate)
             .signaturBiljett(signaturBiljett)
             .build();
 
-        doReturn(certificate).when(signCertificateService).signWithoutSignature(CERTIFICATE_ID, VERSION);
-        final var actualResult = grpSignaturService.finalizeSignatureForCS(signaturBiljett, null, null);
+    doReturn(certificate)
+        .when(signCertificateService)
+        .signWithoutSignature(CERTIFICATE_ID, VERSION);
+    final var actualResult = grpSignaturService.finalizeSignatureForCS(signaturBiljett, null, null);
 
-        verify(redisTicketTracker).updateStatus(signaturBiljett.getTicketId(), signaturBiljett.getStatus());
-        assertEquals(expectedResult, actualResult);
-        assertEquals(SignaturStatus.SIGNERAD, signaturBiljett.getStatus());
-    }
+    verify(redisTicketTracker)
+        .updateStatus(signaturBiljett.getTicketId(), signaturBiljett.getStatus());
+    assertEquals(expectedResult, actualResult);
+    assertEquals(SignaturStatus.SIGNERAD, signaturBiljett.getStatus());
+  }
 
-    private GrpOrderResponse grpOrderResponse() {
-        return GrpOrderResponse.builder()
-            .refId(REF_ID)
-            .transactionId(TRANSACTION_ID)
-            .autoStartToken(AUTO_START_TOKEN)
-            .qrStartToken(QR_START_TOKEN)
-            .qrStartSecret(QR_START_SECRET)
-            .build();
-    }
+  private GrpOrderResponse grpOrderResponse() {
+    return GrpOrderResponse.builder()
+        .refId(REF_ID)
+        .transactionId(TRANSACTION_ID)
+        .autoStartToken(AUTO_START_TOKEN)
+        .qrStartToken(QR_START_TOKEN)
+        .qrStartSecret(QR_START_SECRET)
+        .build();
+  }
 
-    private SignaturBiljett buildSignaturBiljett() {
-        return SignaturBiljett.SignaturBiljettBuilder
-            .aSignaturBiljett(TRANSACTION_ID, SignaturTyp.PKCS7, SignMethod.GRP)
-            .withHash("hash")
-            .withSkapad(LocalDateTime.now())
-            .withStatus(SignaturStatus.OKAND)
-            .withVersion(VERSION)
-            .withIntygsId(INTYG_ID)
-            .build();
-    }
-
+  private SignaturBiljett buildSignaturBiljett() {
+    return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(
+            TRANSACTION_ID, SignaturTyp.PKCS7, SignMethod.GRP)
+        .withHash("hash")
+        .withSkapad(LocalDateTime.now())
+        .withStatus(SignaturStatus.OKAND)
+        .withVersion(VERSION)
+        .withIntygsId(INTYG_ID)
+        .build();
+  }
 }

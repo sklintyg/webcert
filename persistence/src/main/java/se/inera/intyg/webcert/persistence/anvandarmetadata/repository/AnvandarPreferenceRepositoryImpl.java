@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,53 +28,61 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 @Transactional(readOnly = true)
 public class AnvandarPreferenceRepositoryImpl implements AnvandarPreferenceRepositoryCustom {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
 
-    @Override
-    public Map<String, String> getAnvandarPreference(String hsaId) {
-        List<AnvandarPreference> anvandarMetadataList = entityManager
-            .createQuery("SELECT am FROM AnvandarPreference am WHERE am.hsaId = :hsaId", AnvandarPreference.class)
+  @Override
+  public Map<String, String> getAnvandarPreference(String hsaId) {
+    List<AnvandarPreference> anvandarMetadataList =
+        entityManager
+            .createQuery(
+                "SELECT am FROM AnvandarPreference am WHERE am.hsaId = :hsaId",
+                AnvandarPreference.class)
             .setParameter("hsaId", hsaId)
             .getResultList();
 
-        Map<String, String> map = new HashMap<>();
-        for (AnvandarPreference am : anvandarMetadataList) {
-            map.put(am.getKey(), am.getValue());
-        }
-        return map;
+    Map<String, String> map = new HashMap<>();
+    for (AnvandarPreference am : anvandarMetadataList) {
+      map.put(am.getKey(), am.getValue());
     }
+    return map;
+  }
 
-    @Override
-    public boolean exists(String hsaId, String key) {
-        Number number = entityManager
-            .createQuery("SELECT COUNT(am) FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key", Number.class)
+  @Override
+  public boolean exists(String hsaId, String key) {
+    Number number =
+        entityManager
+            .createQuery(
+                "SELECT COUNT(am) FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key",
+                Number.class)
             .setParameter("hsaId", hsaId)
             .setParameter("key", key)
             .getSingleResult();
 
-        return number.longValue() > 0L;
-    }
+    return number.longValue() > 0L;
+  }
 
-    @Override
-    public AnvandarPreference findByHsaIdAndKey(String hsaId, String key) {
-        try {
-            return entityManager
-                .createQuery("SELECT am FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key", AnvandarPreference.class)
-                .setParameter("hsaId", hsaId)
-                .setParameter("key", key)
-                .getSingleResult();
-        } catch (NoResultException nre) {
-            return null;
-        } catch (NonUniqueResultException nure) {
-            throw new IllegalStateException(
-                "Query for AnvandarPreference returned multiple records, should never occur. hsaId: " + hsaId + ", key: " + key);
-        }
+  @Override
+  public AnvandarPreference findByHsaIdAndKey(String hsaId, String key) {
+    try {
+      return entityManager
+          .createQuery(
+              "SELECT am FROM AnvandarPreference am WHERE am.hsaId = :hsaId AND am.key = :key",
+              AnvandarPreference.class)
+          .setParameter("hsaId", hsaId)
+          .setParameter("key", key)
+          .getSingleResult();
+    } catch (NoResultException nre) {
+      return null;
+    } catch (NonUniqueResultException nure) {
+      throw new IllegalStateException(
+          "Query for AnvandarPreference returned multiple records, should never occur. hsaId: "
+              + hsaId
+              + ", key: "
+              + key);
     }
+  }
 }

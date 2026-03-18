@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,122 +25,121 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 
 public class UtkastFilter {
 
-    private String unitHsaId;
+  private String unitHsaId;
 
-    private String savedByHsaId;
+  private String savedByHsaId;
 
-    private Boolean notified;
+  private Boolean notified;
 
-    private LocalDateTime savedFrom;
+  private LocalDateTime savedFrom;
 
-    private LocalDateTime savedTo;
+  private LocalDateTime savedTo;
 
-    private List<UtkastStatus> statusList = new ArrayList<>();
+  private List<UtkastStatus> statusList = new ArrayList<>();
 
-    private Integer startFrom;
+  private Integer startFrom;
 
-    private Integer pageSize;
+  private Integer pageSize;
 
-    private String orderBy;
+  private String orderBy;
 
-    private Boolean orderAscending;
+  private Boolean orderAscending;
 
-    private String patientId;
+  private String patientId;
 
-    public UtkastFilter(String unitHsaId) {
-        this.unitHsaId = unitHsaId;
-    }
+  public UtkastFilter(String unitHsaId) {
+    this.unitHsaId = unitHsaId;
+  }
 
-    public boolean hasPageSizeAndStartFrom() {
-        return pageSize != null && startFrom != null;
-    }
+  public boolean hasPageSizeAndStartFrom() {
+    return pageSize != null && startFrom != null;
+  }
 
-    public String getUnitHsaId() {
-        return unitHsaId;
-    }
+  public String getUnitHsaId() {
+    return unitHsaId;
+  }
 
-    public void setUnitHsaId(String unitHsaId) {
-        this.unitHsaId = unitHsaId;
-    }
+  public void setUnitHsaId(String unitHsaId) {
+    this.unitHsaId = unitHsaId;
+  }
 
-    public String getPatientId() {
-        return patientId;
-    }
+  public String getPatientId() {
+    return patientId;
+  }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
+  public void setPatientId(String patientId) {
+    this.patientId = patientId;
+  }
 
-    public String getSavedByHsaId() {
-        return savedByHsaId;
-    }
+  public String getSavedByHsaId() {
+    return savedByHsaId;
+  }
 
-    public void setSavedByHsaId(String savedByHsaId) {
-        this.savedByHsaId = savedByHsaId;
-    }
+  public void setSavedByHsaId(String savedByHsaId) {
+    this.savedByHsaId = savedByHsaId;
+  }
 
-    public Boolean getNotified() {
-        return notified;
-    }
+  public Boolean getNotified() {
+    return notified;
+  }
 
-    public void setNotified(Boolean notified) {
-        this.notified = notified;
-    }
+  public void setNotified(Boolean notified) {
+    this.notified = notified;
+  }
 
-    public LocalDateTime getSavedFrom() {
-        return savedFrom;
-    }
+  public LocalDateTime getSavedFrom() {
+    return savedFrom;
+  }
 
-    public void setSavedFrom(LocalDateTime savedFrom) {
-        this.savedFrom = savedFrom;
-    }
+  public void setSavedFrom(LocalDateTime savedFrom) {
+    this.savedFrom = savedFrom;
+  }
 
-    public LocalDateTime getSavedTo() {
-        return savedTo;
-    }
+  public LocalDateTime getSavedTo() {
+    return savedTo;
+  }
 
-    public void setSavedTo(LocalDateTime savedTo) {
-        this.savedTo = savedTo;
-    }
+  public void setSavedTo(LocalDateTime savedTo) {
+    this.savedTo = savedTo;
+  }
 
-    public List<UtkastStatus> getStatusList() {
-        return statusList;
-    }
+  public List<UtkastStatus> getStatusList() {
+    return statusList;
+  }
 
-    public void setStatusList(List<UtkastStatus> statusList) {
-        this.statusList = statusList;
-    }
+  public void setStatusList(List<UtkastStatus> statusList) {
+    this.statusList = statusList;
+  }
 
-    public Integer getStartFrom() {
-        return startFrom;
-    }
+  public Integer getStartFrom() {
+    return startFrom;
+  }
 
-    public void setStartFrom(Integer startFrom) {
-        this.startFrom = startFrom;
-    }
+  public void setStartFrom(Integer startFrom) {
+    this.startFrom = startFrom;
+  }
 
-    public Integer getPageSize() {
-        return pageSize;
-    }
+  public Integer getPageSize() {
+    return pageSize;
+  }
 
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
+  }
 
-    public String getOrderBy() {
-        return orderBy;
-    }
+  public String getOrderBy() {
+    return orderBy;
+  }
 
-    public void setOrderBy(String orderBy) {
-        this.orderBy = orderBy;
-    }
+  public void setOrderBy(String orderBy) {
+    this.orderBy = orderBy;
+  }
 
-    public Boolean getOrderAscending() {
-        return orderAscending;
-    }
+  public Boolean getOrderAscending() {
+    return orderAscending;
+  }
 
-    public void setOrderAscending(Boolean orderAscending) {
-        this.orderAscending = orderAscending;
-    }
-
+  public void setOrderAscending(Boolean orderAscending) {
+    this.orderAscending = orderAscending;
+  }
 }

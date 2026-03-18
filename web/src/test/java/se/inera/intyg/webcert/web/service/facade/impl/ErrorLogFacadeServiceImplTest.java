@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,51 +31,52 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 @ExtendWith(MockitoExtension.class)
 public class ErrorLogFacadeServiceImplTest {
 
-    @Mock
-    private MonitoringLogService monitoringLogService;
+  @Mock private MonitoringLogService monitoringLogService;
 
-    @InjectMocks
-    private ErrorLogFacadeServiceImpl errorLogFacadeService;
+  @InjectMocks private ErrorLogFacadeServiceImpl errorLogFacadeService;
 
-    private final static String ERROR_ID = "errorId";
-    private final static String CERTIFICATE_ID = "certId";
-    private final static String ERROR_MESSAGE = "message";
-    private final static String STACK_TRACE = "stack trace";
-    private final static String ERROR_CODE = "error code";
-    private final static String NO_CERTIFICATE_ID = "NO_CERTIFICATE_ID";
-    private final static String NO_STACK_TRACE = "NO_STACK_TRACE";
+  private static final String ERROR_ID = "errorId";
+  private static final String CERTIFICATE_ID = "certId";
+  private static final String ERROR_MESSAGE = "message";
+  private static final String STACK_TRACE = "stack trace";
+  private static final String ERROR_CODE = "error code";
+  private static final String NO_CERTIFICATE_ID = "NO_CERTIFICATE_ID";
+  private static final String NO_STACK_TRACE = "NO_STACK_TRACE";
 
-    @Test
-    void shallLogError() {
-        var request = createRequest(true, true);
+  @Test
+  void shallLogError() {
+    var request = createRequest(true, true);
 
-        errorLogFacadeService.log(request);
-        verify(monitoringLogService).logClientError(ERROR_ID, CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, STACK_TRACE);
-    }
+    errorLogFacadeService.log(request);
+    verify(monitoringLogService)
+        .logClientError(ERROR_ID, CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, STACK_TRACE);
+  }
 
-    @Test
-    void shallLogErrorWithoutCertificateId() {
-        var request = createRequest(false, true);
+  @Test
+  void shallLogErrorWithoutCertificateId() {
+    var request = createRequest(false, true);
 
-        errorLogFacadeService.log(request);
-        verify(monitoringLogService).logClientError(ERROR_ID, NO_CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, STACK_TRACE);
-    }
+    errorLogFacadeService.log(request);
+    verify(monitoringLogService)
+        .logClientError(ERROR_ID, NO_CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, STACK_TRACE);
+  }
 
-    @Test
-    void shallLogErrorWithoutStackTrace() {
-        var request = createRequest(true, false);
+  @Test
+  void shallLogErrorWithoutStackTrace() {
+    var request = createRequest(true, false);
 
-        errorLogFacadeService.log(request);
-        verify(monitoringLogService).logClientError(ERROR_ID, CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, NO_STACK_TRACE);
-    }
+    errorLogFacadeService.log(request);
+    verify(monitoringLogService)
+        .logClientError(ERROR_ID, CERTIFICATE_ID, ERROR_CODE, ERROR_MESSAGE, NO_STACK_TRACE);
+  }
 
-    private ErrorLogRequestDTO createRequest(boolean includeId, boolean includeStackTrace) {
-        ErrorLogRequestDTO request = new ErrorLogRequestDTO();
-        request.setErrorId(ERROR_ID);
-        request.setCertificateId(includeId ? CERTIFICATE_ID : NO_CERTIFICATE_ID);
-        request.setErrorCode(ERROR_CODE);
-        request.setStackTrace(includeStackTrace ? STACK_TRACE : NO_STACK_TRACE);
-        request.setMessage(ERROR_MESSAGE);
-        return request;
-    }
+  private ErrorLogRequestDTO createRequest(boolean includeId, boolean includeStackTrace) {
+    ErrorLogRequestDTO request = new ErrorLogRequestDTO();
+    request.setErrorId(ERROR_ID);
+    request.setCertificateId(includeId ? CERTIFICATE_ID : NO_CERTIFICATE_ID);
+    request.setErrorCode(ERROR_CODE);
+    request.setStackTrace(includeStackTrace ? STACK_TRACE : NO_STACK_TRACE);
+    request.setMessage(ERROR_MESSAGE);
+    return request;
+  }
 }

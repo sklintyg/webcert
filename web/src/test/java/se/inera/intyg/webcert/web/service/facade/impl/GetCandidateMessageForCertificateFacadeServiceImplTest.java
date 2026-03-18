@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,112 +44,110 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData.Bui
 @ExtendWith(MockitoExtension.class)
 class GetCandidateMessageForCertificateFacadeServiceImplTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String PATIENT_ID = "191212121212";
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
-    @Mock
-    private CandidateDataHelper candidateDataHelper;
-    @InjectMocks
-    private GetCandidateMessageForCertificateFacadeServiceImpl getCandidateUnitFromCertificateFacadeService;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String PATIENT_ID = "191212121212";
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock private CandidateDataHelper candidateDataHelper;
 
-    @Test
-    void shallReturnCorrectMessageForDodsbevis() {
-        final var expectedMessage = "<p>Det finns ett signerat dödsbevis för detta personnummer på "
+  @InjectMocks
+  private GetCandidateMessageForCertificateFacadeServiceImpl
+      getCandidateUnitFromCertificateFacadeService;
+
+  @Test
+  void shallReturnCorrectMessageForDodsbevis() {
+    final var expectedMessage =
+        "<p>Det finns ett signerat dödsbevis för detta personnummer på "
             + "<span class='iu-fw-bold'>"
             + createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, "sopra steria").getEnhetName()
             + "</span>. Det är tyvärr inte möjligt att kopiera de svar som givits i det intyget till detta intygsutkast. ";
-        final var dbCertificate = getDbCertificate();
-        doReturn(dbCertificate)
-            .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, true);
+    final var dbCertificate = getDbCertificate();
+    doReturn(dbCertificate)
+        .when(getCertificateFacadeService)
+        .getCertificate(CERTIFICATE_ID, false, true);
 
-        doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, "sopra steria")))
-            .when(candidateDataHelper)
-            .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+    doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, "sopra steria")))
+        .when(candidateDataHelper)
+        .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
-        final var actualString = getCandidateUnitFromCertificateFacadeService.get(CERTIFICATE_ID);
+    final var actualString = getCandidateUnitFromCertificateFacadeService.get(CERTIFICATE_ID);
 
-        assertEquals(expectedMessage, actualString.getMessage());
-    }
+    assertEquals(expectedMessage, actualString.getMessage());
+  }
 
-    @Test
-    void shallReturnCorrectTitleForDodsbevis() {
-        final var expectedTitle = "Information om vårdenhet";
-        final var dbCertificate = getDbCertificate();
-        doReturn(dbCertificate)
-            .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, true);
+  @Test
+  void shallReturnCorrectTitleForDodsbevis() {
+    final var expectedTitle = "Information om vårdenhet";
+    final var dbCertificate = getDbCertificate();
+    doReturn(dbCertificate)
+        .when(getCertificateFacadeService)
+        .getCertificate(CERTIFICATE_ID, false, true);
 
-        doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, "enhet")))
-            .when(candidateDataHelper)
-            .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+    doReturn(Optional.of(createCandidateMetaData(DbModuleEntryPoint.MODULE_ID, "enhet")))
+        .when(candidateDataHelper)
+        .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
-        final var actualString = getCandidateUnitFromCertificateFacadeService.get(CERTIFICATE_ID);
+    final var actualString = getCandidateUnitFromCertificateFacadeService.get(CERTIFICATE_ID);
 
-        assertEquals(expectedTitle, actualString.getTitle());
-    }
+    assertEquals(expectedTitle, actualString.getTitle());
+  }
 
-    @Test
-    void shallReturnCorrectMessageIfNoCandidateFound() {
-        final var expectedMessage = "Saknar meddelande";
-        final var dbCertificate = getDbCertificate();
+  @Test
+  void shallReturnCorrectMessageIfNoCandidateFound() {
+    final var expectedMessage = "Saknar meddelande";
+    final var dbCertificate = getDbCertificate();
 
-        doReturn(dbCertificate)
-            .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, true);
+    doReturn(dbCertificate)
+        .when(getCertificateFacadeService)
+        .getCertificate(CERTIFICATE_ID, false, true);
 
-        doReturn(Optional.empty())
-            .when(candidateDataHelper)
-            .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+    doReturn(Optional.empty())
+        .when(candidateDataHelper)
+        .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
-        final var actualString = getCandidateUnitFromCertificateFacadeService.get(CERTIFICATE_ID);
+    final var actualString = getCandidateUnitFromCertificateFacadeService.get(CERTIFICATE_ID);
 
-        assertEquals(expectedMessage, actualString.getMessage());
-    }
+    assertEquals(expectedMessage, actualString.getMessage());
+  }
 
-    @Test
-    void shallReturnCorrectTitleIfNoCandidateFound() {
-        final var expectedTitle = "Saknar titel";
+  @Test
+  void shallReturnCorrectTitleIfNoCandidateFound() {
+    final var expectedTitle = "Saknar titel";
 
-        final var dbCertificate = getDbCertificate();
+    final var dbCertificate = getDbCertificate();
 
-        doReturn(dbCertificate)
-            .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, true);
+    doReturn(dbCertificate)
+        .when(getCertificateFacadeService)
+        .getCertificate(CERTIFICATE_ID, false, true);
 
-        doReturn(Optional.empty())
-            .when(candidateDataHelper)
-            .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
+    doReturn(Optional.empty())
+        .when(candidateDataHelper)
+        .getCandidateMetadata(anyString(), anyString(), any(Personnummer.class));
 
-        final var actualString = getCandidateUnitFromCertificateFacadeService.get(CERTIFICATE_ID);
+    final var actualString = getCandidateUnitFromCertificateFacadeService.get(CERTIFICATE_ID);
 
-        assertEquals(expectedTitle, actualString.getTitle());
-    }
+    assertEquals(expectedTitle, actualString.getTitle());
+  }
 
-    private UtkastCandidateMetaData createCandidateMetaData(String intygType, String enhet) {
-        return new Builder()
-            .with(builder -> {
-                builder.intygType = intygType;
-                builder.enhetName = enhet;
+  private UtkastCandidateMetaData createCandidateMetaData(String intygType, String enhet) {
+    return new Builder()
+        .with(
+            builder -> {
+              builder.intygType = intygType;
+              builder.enhetName = enhet;
             })
-            .create();
-    }
+        .create();
+  }
 
-    private Certificate getDbCertificate() {
-        return CertificateBuilder.create()
-            .metadata(
-                CertificateMetadata.builder()
-                    .id(CERTIFICATE_ID)
-                    .type(DbModuleEntryPoint.MODULE_ID)
-                    .typeVersion("test")
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id(PATIENT_ID)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            )
-            .build();
-    }
+  private Certificate getDbCertificate() {
+    return CertificateBuilder.create()
+        .metadata(
+            CertificateMetadata.builder()
+                .id(CERTIFICATE_ID)
+                .type(DbModuleEntryPoint.MODULE_ID)
+                .typeVersion("test")
+                .patient(
+                    Patient.builder().personId(PersonId.builder().id(PATIENT_ID).build()).build())
+                .build())
+        .build();
+  }
 }

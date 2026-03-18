@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,14 +20,17 @@ package se.inera.intyg.webcert.common.client;
 
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 
-/**
- * Created by eriklupander on 2015-06-03.
- */
+/** Created by eriklupander on 2015-06-03. */
 public interface SendCertificateServiceClient {
 
-    /**
-     * Instructs IT to send the intyg identified by the specified intygsId and personId to the specified recipient.
-     */
-    SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient,
-        String logicalAddress);
+  /**
+   * Instructs IT to send the intyg identified by the specified intygsId and personId to the
+   * specified recipient.
+   */
+  SendCertificateToRecipientResponseType sendCertificate(
+      String intygsId,
+      String personId,
+      String skickatAvJson,
+      String recipient,
+      String logicalAddress);
 }

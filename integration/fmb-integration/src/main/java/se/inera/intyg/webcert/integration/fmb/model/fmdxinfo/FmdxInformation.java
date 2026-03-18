@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,65 +34,62 @@ import se.inera.intyg.webcert.integration.fmb.model.Links;
 import se.inera.intyg.webcert.integration.fmb.model.Meta;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "meta",
-    "links",
-    "data"
-})
+@JsonPropertyOrder({"meta", "links", "data"})
 public class FmdxInformation implements FmInfo {
 
-    @JsonProperty("meta")
-    private Meta meta;
-    @JsonProperty("links")
-    private Links links;
-    @JsonProperty("data")
-    private List<FmdxData> data = null;
-    @JsonIgnore
-    private final Map<String, Object> additionalProperties = new HashMap<>();
+  @JsonProperty("meta")
+  private Meta meta;
 
-    @JsonProperty("meta")
-    public Meta getMeta() {
-        return meta;
-    }
+  @JsonProperty("links")
+  private Links links;
 
-    @Override
-    public Optional<Meta> getOptionalMeta() {
-        return Optional.ofNullable(meta);
-    }
+  @JsonProperty("data")
+  private List<FmdxData> data = null;
 
-    @JsonProperty("meta")
-    public void setMeta(Meta meta) {
-        this.meta = meta;
-    }
+  @JsonIgnore private final Map<String, Object> additionalProperties = new HashMap<>();
 
-    @JsonProperty("links")
-    public Links getLinks() {
-        return links;
-    }
+  @JsonProperty("meta")
+  public Meta getMeta() {
+    return meta;
+  }
 
-    @JsonProperty("links")
-    public void setLinks(Links links) {
-        this.links = links;
-    }
+  @Override
+  public Optional<Meta> getOptionalMeta() {
+    return Optional.ofNullable(meta);
+  }
 
-    @JsonProperty("data")
-    public List<FmdxData> getData() {
-        return data != null ? data : Lists.newArrayList();
-    }
+  @JsonProperty("meta")
+  public void setMeta(Meta meta) {
+    this.meta = meta;
+  }
 
-    @JsonProperty("data")
-    public void setData(List<FmdxData> data) {
-        this.data = data;
-    }
+  @JsonProperty("links")
+  public Links getLinks() {
+    return links;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("links")
+  public void setLinks(Links links) {
+    this.links = links;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("data")
+  public List<FmdxData> getData() {
+    return data != null ? data : Lists.newArrayList();
+  }
 
+  @JsonProperty("data")
+  public void setData(List<FmdxData> data) {
+    this.data = data;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

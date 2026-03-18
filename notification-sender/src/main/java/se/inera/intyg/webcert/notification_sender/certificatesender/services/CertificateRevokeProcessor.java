@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,41 +34,55 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 public class CertificateRevokeProcessor {
 
-    @Autowired
-    private IntygModuleRegistry registry;
-    @Autowired
-    private MdcHelper mdcHelper;
+  @Autowired private IntygModuleRegistry registry;
+  @Autowired private MdcHelper mdcHelper;
 
-    public void process(@Body String xmlBody,
-        @Header(Constants.INTYGS_ID) String intygsId,
-        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
-        @Header(Constants.INTYGS_TYP) String intygsTyp,
-        @Header(Constants.INTYGS_TYP_VERSION) String intygsTypVersion)
-        throws TemporaryException {
+  public void process(
+      @Body String xmlBody,
+      @Header(Constants.INTYGS_ID) String intygsId,
+      @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
+      @Header(Constants.INTYGS_TYP) String intygsTyp,
+      @Header(Constants.INTYGS_TYP_VERSION) String intygsTypVersion)
+      throws TemporaryException {
 
-        final var errorTemplate = "Message of type %s does not have a %s header.";
-        checkArgument(!Strings.isNullOrEmpty(intygsId), errorTemplate, Constants.REVOKE_MESSAGE, Constants.INTYGS_ID);
-        checkArgument(!Strings.isNullOrEmpty(logicalAddress), errorTemplate, Constants.REVOKE_MESSAGE, Constants.LOGICAL_ADDRESS);
-        checkArgument(!Strings.isNullOrEmpty(intygsTyp), errorTemplate, Constants.REVOKE_MESSAGE, Constants.INTYGS_TYP);
-        checkArgument(!Strings.isNullOrEmpty(intygsTypVersion), errorTemplate, Constants.REVOKE_MESSAGE, Constants.INTYGS_TYP_VERSION);
+    final var errorTemplate = "Message of type %s does not have a %s header.";
+    checkArgument(
+        !Strings.isNullOrEmpty(intygsId),
+        errorTemplate,
+        Constants.REVOKE_MESSAGE,
+        Constants.INTYGS_ID);
+    checkArgument(
+        !Strings.isNullOrEmpty(logicalAddress),
+        errorTemplate,
+        Constants.REVOKE_MESSAGE,
+        Constants.LOGICAL_ADDRESS);
+    checkArgument(
+        !Strings.isNullOrEmpty(intygsTyp),
+        errorTemplate,
+        Constants.REVOKE_MESSAGE,
+        Constants.INTYGS_TYP);
+    checkArgument(
+        !Strings.isNullOrEmpty(intygsTypVersion),
+        errorTemplate,
+        Constants.REVOKE_MESSAGE,
+        Constants.INTYGS_TYP_VERSION);
 
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
-            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
+      MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
 
-            ModuleApi moduleApi = registry.getModuleApi(intygsTyp, intygsTypVersion);
-            moduleApi.revokeCertificate(xmlBody, logicalAddress);
-        } catch (Exception e) {
-            throw new TemporaryException(
-                "Failed to revoke certificate with id '%s' of type '%s' at logical address '%s'"
-                    .formatted(intygsId, intygsTyp, logicalAddress),
-                e
-            );
-        } finally {
-            MDC.clear();
-        }
+      ModuleApi moduleApi = registry.getModuleApi(intygsTyp, intygsTypVersion);
+      moduleApi.revokeCertificate(xmlBody, logicalAddress);
+    } catch (Exception e) {
+      throw new TemporaryException(
+          "Failed to revoke certificate with id '%s' of type '%s' at logical address '%s'"
+              .formatted(intygsId, intygsTyp, logicalAddress),
+          e);
+    } finally {
+      MDC.clear();
     }
+  }
 }

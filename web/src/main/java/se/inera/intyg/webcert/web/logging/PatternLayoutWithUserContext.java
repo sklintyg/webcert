@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,18 +21,19 @@ package se.inera.intyg.webcert.web.logging;
 import ch.qos.logback.classic.PatternLayout;
 
 /**
- * Logback {@link PatternLayout} PatternLayout implementation that exposes
- * user and session information.
+ * Logback {@link PatternLayout} PatternLayout implementation that exposes user and session
+ * information.
  *
  * @author nikpet
  */
 public class PatternLayoutWithUserContext extends PatternLayout {
 
-    static {
-        PatternLayout.defaultConverterMap.put("user", UserConverter.class.getName());
-        PatternLayout.defaultConverterMap.put("session", SessionConverter.class.getName());
-        PatternLayout.defaultConverterMap.put("selectedCareUnit", UserSelectedCareUnitConverter.class.getName());
-        PatternLayout.defaultConverterMap.put("origin", OriginConverter.class.getName());
-        PatternLayout.defaultConverterMap.put("role", RoleConverter.class.getName());
-    }
+  static {
+    PatternLayout.defaultConverterMap.put("user", UserConverter.class.getName());
+    PatternLayout.defaultConverterMap.put("session", SessionConverter.class.getName());
+    PatternLayout.defaultConverterMap.put(
+        "selectedCareUnit", UserSelectedCareUnitConverter.class.getName());
+    PatternLayout.defaultConverterMap.put("origin", OriginConverter.class.getName());
+    PatternLayout.defaultConverterMap.put("role", RoleConverter.class.getName());
+  }
 }

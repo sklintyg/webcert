@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,168 +37,166 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 
 @Entity
 @Table(name = "HANDELSE")
-@SecondaryTable(name = "HANDELSE_METADATA", pkJoinColumns = @PrimaryKeyJoinColumn(name = "HANDELSE_ID"))
+@SecondaryTable(
+    name = "HANDELSE_METADATA",
+    pkJoinColumns = @PrimaryKeyJoinColumn(name = "HANDELSE_ID"))
 public class Handelse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  private Long id;
 
-    @Column(name = "TIMESTAMP")
-    private LocalDateTime timestamp;
+  @Column(name = "TIMESTAMP")
+  private LocalDateTime timestamp;
 
-    @Column(name = "KOD")
-    @Enumerated(EnumType.STRING)
-    private HandelsekodEnum code;
+  @Column(name = "KOD")
+  @Enumerated(EnumType.STRING)
+  private HandelsekodEnum code;
 
-    @Column(name = "INTYGS_ID")
-    private String intygsId;
+  @Column(name = "INTYGS_ID")
+  private String intygsId;
 
-    @Column(name = "ENHETS_ID")
-    private String enhetsId;
+  @Column(name = "ENHETS_ID")
+  private String enhetsId;
 
-    @Column(name = "VARDGIVAR_ID")
-    private String vardgivarId;
+  @Column(name = "VARDGIVAR_ID")
+  private String vardgivarId;
 
-    @Column(name = "PATIENT_PERSON_ID")
-    private String personnummer;
+  @Column(name = "PATIENT_PERSON_ID")
+  private String personnummer;
 
-    @Column(name = "SISTA_DATUM_FOR_SVAR")
-    private LocalDate sistaDatumForSvar;
+  @Column(name = "SISTA_DATUM_FOR_SVAR")
+  private LocalDate sistaDatumForSvar;
 
-    @Column(name = "AMNE")
-    @Enumerated(EnumType.STRING)
-    private ArendeAmne amne;
+  @Column(name = "AMNE")
+  @Enumerated(EnumType.STRING)
+  private ArendeAmne amne;
 
-    @Column(name = "HANTERAT_AV")
-    private String hanteratAv;
+  @Column(name = "HANTERAT_AV")
+  private String hanteratAv;
 
-    @Embedded
-    private HandelseMetaData handelseMetaData = new HandelseMetaData();
+  @Embedded private HandelseMetaData handelseMetaData = new HandelseMetaData();
 
+  public Handelse() {}
 
-    public Handelse() {
-    }
+  public Long getId() {
+    return id;
+  }
 
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public LocalDateTime getTimestamp() {
+    return timestamp;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setTimestamp(LocalDateTime timestamp) {
+    this.timestamp = timestamp;
+  }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
+  public HandelsekodEnum getCode() {
+    return code;
+  }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
+  public void setCode(HandelsekodEnum code) {
+    this.code = code;
+  }
 
-    public HandelsekodEnum getCode() {
-        return code;
-    }
+  public String getIntygsId() {
+    return intygsId;
+  }
 
-    public void setCode(HandelsekodEnum code) {
-        this.code = code;
-    }
+  public void setIntygsId(String intygsId) {
+    this.intygsId = intygsId;
+  }
 
-    public String getIntygsId() {
-        return intygsId;
-    }
+  public String getEnhetsId() {
+    return enhetsId;
+  }
 
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
-    }
+  public void setEnhetsId(String enhetsId) {
+    this.enhetsId = enhetsId;
+  }
 
-    public String getEnhetsId() {
-        return enhetsId;
-    }
+  public String getVardgivarId() {
+    return vardgivarId;
+  }
 
-    public void setEnhetsId(String enhetsId) {
-        this.enhetsId = enhetsId;
-    }
+  public void setVardgivarId(String vardgivarId) {
+    this.vardgivarId = vardgivarId;
+  }
 
-    public String getVardgivarId() {
-        return vardgivarId;
-    }
+  public String getPersonnummer() {
+    return personnummer;
+  }
 
-    public void setVardgivarId(String vardgivarId) {
-        this.vardgivarId = vardgivarId;
-    }
+  public void setPersonnummer(String patientPersonId) {
+    this.personnummer = patientPersonId;
+  }
 
-    public String getPersonnummer() {
-        return personnummer;
-    }
+  public LocalDate getSistaDatumForSvar() {
+    return sistaDatumForSvar;
+  }
 
-    public void setPersonnummer(String patientPersonId) {
-        this.personnummer = patientPersonId;
-    }
+  public void setSistaDatumForSvar(LocalDate sistaDatumForSvar) {
+    this.sistaDatumForSvar = sistaDatumForSvar;
+  }
 
-    public LocalDate getSistaDatumForSvar() {
-        return sistaDatumForSvar;
-    }
+  public ArendeAmne getAmne() {
+    return amne;
+  }
 
-    public void setSistaDatumForSvar(LocalDate sistaDatumForSvar) {
-        this.sistaDatumForSvar = sistaDatumForSvar;
-    }
+  public void setAmne(ArendeAmne amne) {
+    this.amne = amne;
+  }
 
-    public ArendeAmne getAmne() {
-        return amne;
-    }
+  public String getHanteratAv() {
+    return hanteratAv;
+  }
 
-    public void setAmne(ArendeAmne amne) {
-        this.amne = amne;
-    }
+  public void setHanteratAv(String hanteratAv) {
+    this.hanteratAv = hanteratAv;
+  }
 
-    public String getHanteratAv() {
-        return hanteratAv;
-    }
+  public HandelseMetaData getHandelseMetaData() {
+    return handelseMetaData;
+  }
 
-    public void setHanteratAv(String hanteratAv) {
-        this.hanteratAv = hanteratAv;
-    }
+  public void setHandelseMetaData(HandelseMetaData handelseMetaData) {
+    this.handelseMetaData = handelseMetaData;
+  }
 
-    public HandelseMetaData getHandelseMetaData() {
-        return handelseMetaData;
-    }
+  public NotificationDeliveryStatusEnum getDeliveryStatus() {
+    return handelseMetaData.getDeliveryStatus();
+  }
 
-    public void setHandelseMetaData(HandelseMetaData handelseMetaData) {
-        this.handelseMetaData = handelseMetaData;
-    }
+  public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
+    this.handelseMetaData.setDeliveryStatus(deliveryStatus);
+  }
 
-    public NotificationDeliveryStatusEnum getDeliveryStatus() {
-        return handelseMetaData.getDeliveryStatus();
-    }
+  public String getCertificateType() {
+    return this.handelseMetaData.getCertificateType();
+  }
 
-    public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
-        this.handelseMetaData.setDeliveryStatus(deliveryStatus);
-    }
+  public void setCertificateType(String certificateType) {
+    this.handelseMetaData.setCertificateType(certificateType);
+  }
 
-    public String getCertificateType() {
-        return this.handelseMetaData.getCertificateType();
-    }
+  public String getCertificateVersion() {
+    return this.handelseMetaData.getCertificateVersion();
+  }
 
-    public void setCertificateType(String certificateType) {
-        this.handelseMetaData.setCertificateType(certificateType);
-    }
+  public void setCertificateVersion(String certificateVersion) {
+    this.handelseMetaData.setCertificateVersion(certificateVersion);
+  }
 
-    public String getCertificateVersion() {
-        return this.handelseMetaData.getCertificateVersion();
-    }
+  public String getCertificateIssuer() {
+    return this.handelseMetaData.getCertificateIssuer();
+  }
 
-    public void setCertificateVersion(String certificateVersion) {
-        this.handelseMetaData.setCertificateVersion(certificateVersion);
-    }
-
-    public String getCertificateIssuer() {
-        return this.handelseMetaData.getCertificateIssuer();
-    }
-
-    public void setCertificateIssuer(String certificateIssuer) {
-        this.handelseMetaData.setCertificateIssuer(certificateIssuer);
-    }
+  public void setCertificateIssuer(String certificateIssuer) {
+    this.handelseMetaData.setCertificateIssuer(certificateIssuer);
+  }
 }

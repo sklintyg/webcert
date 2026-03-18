@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,131 +56,121 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class SendAnswerFromCertificateServiceTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String PERSON_ID = "191212121212";
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String UNIT_ID = "unitId";
-    private static final SendAnswerRequestDTO SEND_ANSWER_REQUEST_DTO = SendAnswerRequestDTO.builder().build();
-    private static final GetCertificateFromMessageRequestDTO GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO =
-        GetCertificateFromMessageRequestDTO.builder()
-            .build();
-    private static final Answer ANSWER = Answer.builder().build();
-    private static final Question SENT_QUESTION = Question.builder()
-        .type(QuestionType.CONTACT)
-        .answer(ANSWER)
-        .build();
-    private static final String QUESTION_ID = "questionId";
-    private static final String MESSAGE = "message";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String PERSON_ID = "191212121212";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String UNIT_ID = "unitId";
+  private static final SendAnswerRequestDTO SEND_ANSWER_REQUEST_DTO =
+      SendAnswerRequestDTO.builder().build();
+  private static final GetCertificateFromMessageRequestDTO
+      GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO =
+          GetCertificateFromMessageRequestDTO.builder().build();
+  private static final Answer ANSWER = Answer.builder().build();
+  private static final Question SENT_QUESTION =
+      Question.builder().type(QuestionType.CONTACT).answer(ANSWER).build();
+  private static final String QUESTION_ID = "questionId";
+  private static final String MESSAGE = "message";
 
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @Mock
-    MonitoringLogService monitoringLogService;
-    @Mock
-    PDLLogService pdlLogService;
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @InjectMocks
-    SendAnswerFromCertificateService sendAnswerFromCertificateService;
-    private Certificate certificate;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock MonitoringLogService monitoringLogService;
+  @Mock PDLLogService pdlLogService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @InjectMocks SendAnswerFromCertificateService sendAnswerFromCertificateService;
+  private Certificate certificate;
+
+  @BeforeEach
+  void setUp() {
+    certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .id(CERTIFICATE_ID)
+            .type(CERTIFICATE_TYPE)
+            .unit(Unit.builder().unitId(UNIT_ID).build())
+            .patient(Patient.builder().personId(PersonId.builder().id(PERSON_ID).build()).build())
+            .build());
+  }
+
+  @Test
+  void shallReturnNullIfMessageDontExistInCertificateService() {
+    doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
+    assertNull(sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE));
+  }
+
+  @Test
+  void shallReturnSentMessage() {
+    final var expectedQuestion = SENT_QUESTION;
+
+    doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
+    doReturn(GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO)
+        .when(csIntegrationRequestFactory)
+        .getCertificateFromMessageRequestDTO();
+    doReturn(certificate)
+        .when(csIntegrationService)
+        .getCertificate(GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO, QUESTION_ID);
+    doReturn(SEND_ANSWER_REQUEST_DTO)
+        .when(csIntegrationRequestFactory)
+        .sendAnswerRequest(PERSON_ID, MESSAGE);
+    doReturn(expectedQuestion)
+        .when(csIntegrationService)
+        .sendAnswer(SEND_ANSWER_REQUEST_DTO, QUESTION_ID);
+
+    final var actualQuestion = sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
+
+    assertEquals(expectedQuestion, actualQuestion);
+  }
+
+  @Nested
+  class LoggingTests {
 
     @BeforeEach
     void setUp() {
-        certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .id(CERTIFICATE_ID)
-                .type(CERTIFICATE_TYPE)
-                .unit(
-                    Unit.builder()
-                        .unitId(UNIT_ID)
-                        .build()
-                )
-                .patient(
-                    Patient.builder()
-                        .personId(
-                            PersonId.builder()
-                                .id(PERSON_ID)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
-        );
+      doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
+      doReturn(GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO)
+          .when(csIntegrationRequestFactory)
+          .getCertificateFromMessageRequestDTO();
+      doReturn(certificate)
+          .when(csIntegrationService)
+          .getCertificate(GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO, QUESTION_ID);
+      doReturn(SEND_ANSWER_REQUEST_DTO)
+          .when(csIntegrationRequestFactory)
+          .sendAnswerRequest(PERSON_ID, MESSAGE);
+      doReturn(SENT_QUESTION)
+          .when(csIntegrationService)
+          .sendAnswer(SEND_ANSWER_REQUEST_DTO, QUESTION_ID);
     }
 
     @Test
-    void shallReturnNullIfMessageDontExistInCertificateService() {
-        doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
-        assertNull(sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE));
+    void shallPdlLogCreateMessage() {
+      sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
+      verify(pdlLogService).logCreateMessage(PERSON_ID, CERTIFICATE_ID);
     }
 
     @Test
-    void shallReturnSentMessage() {
-        final var expectedQuestion = SENT_QUESTION;
-
-        doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
-        doReturn(GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
-        doReturn(certificate).when(csIntegrationService).getCertificate(GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO, QUESTION_ID);
-        doReturn(SEND_ANSWER_REQUEST_DTO).when(csIntegrationRequestFactory).sendAnswerRequest(PERSON_ID, MESSAGE);
-        doReturn(expectedQuestion).when(csIntegrationService).sendAnswer(SEND_ANSWER_REQUEST_DTO, QUESTION_ID);
-
-        final var actualQuestion = sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
-
-        assertEquals(expectedQuestion, actualQuestion);
+    void shallPublishStatusUpdate() {
+      sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
+      verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.HANFRFM);
     }
 
-    @Nested
-    class LoggingTests {
+    @Test
+    void shallPublishAnalyticsMessage() {
+      final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+      when(certificateAnalyticsMessageFactory.sentMessage(certificate, SENT_QUESTION))
+          .thenReturn(analyticsMessage);
 
-        @BeforeEach
-        void setUp() {
-            doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
-            doReturn(GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
-            doReturn(certificate).when(csIntegrationService).getCertificate(GET_CERTIFICATE_FROM_MESSAGE_REQUEST_DTO, QUESTION_ID);
-            doReturn(SEND_ANSWER_REQUEST_DTO).when(csIntegrationRequestFactory).sendAnswerRequest(PERSON_ID, MESSAGE);
-            doReturn(SENT_QUESTION).when(csIntegrationService).sendAnswer(SEND_ANSWER_REQUEST_DTO, QUESTION_ID);
-        }
+      sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
 
-        @Test
-        void shallPdlLogCreateMessage() {
-            sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
-            verify(pdlLogService).logCreateMessage(PERSON_ID, CERTIFICATE_ID);
-        }
-
-        @Test
-        void shallPublishStatusUpdate() {
-            sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
-            verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.HANFRFM);
-        }
-
-        @Test
-        void shallPublishAnalyticsMessage() {
-            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-            when(certificateAnalyticsMessageFactory.sentMessage(certificate, SENT_QUESTION)).thenReturn(analyticsMessage);
-
-            sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
-
-            verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
-        }
-
-        @Test
-        void shallMonitorLog() {
-            sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
-            verify(monitoringLogService).logArendeCreated(
-                CERTIFICATE_ID,
-                CERTIFICATE_TYPE,
-                UNIT_ID,
-                ArendeAmne.KONTKT,
-                false,
-                QUESTION_ID
-            );
-        }
+      verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
     }
+
+    @Test
+    void shallMonitorLog() {
+      sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
+      verify(monitoringLogService)
+          .logArendeCreated(
+              CERTIFICATE_ID, CERTIFICATE_TYPE, UNIT_ID, ArendeAmne.KONTKT, false, QUESTION_ID);
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,106 +20,105 @@ package se.inera.intyg.webcert.web.integration.registry.dto;
 
 public class IntegreradEnhetEntry implements Comparable<IntegreradEnhetEntry> {
 
-    private String enhetsId;
+  private String enhetsId;
 
-    private String enhetsNamn;
+  private String enhetsNamn;
 
-    private String vardgivareId;
+  private String vardgivareId;
 
-    private String vardgivareNamn;
+  private String vardgivareNamn;
 
-    // For serialization purposes.
-    public IntegreradEnhetEntry() {
+  // For serialization purposes.
+  public IntegreradEnhetEntry() {}
+
+  public IntegreradEnhetEntry(String enhetsId, String vardgivareId) {
+    super();
+    this.enhetsId = enhetsId;
+    this.vardgivareId = vardgivareId;
+  }
+
+  public IntegreradEnhetEntry(
+      String enhetsId, String enhetsNamn, String vardgivareId, String vardgivareNamn) {
+    super();
+    this.enhetsId = enhetsId;
+    this.enhetsNamn = enhetsNamn;
+    this.vardgivareId = vardgivareId;
+    this.vardgivareNamn = vardgivareNamn;
+  }
+
+  public String getEnhetsId() {
+    return enhetsId;
+  }
+
+  public void setEnhetsId(String enhetsId) {
+    this.enhetsId = enhetsId;
+  }
+
+  public String getEnhetsNamn() {
+    return enhetsNamn;
+  }
+
+  public void setEnhetsNamn(String enhetsNamn) {
+    this.enhetsNamn = enhetsNamn;
+  }
+
+  public String getVardgivareId() {
+    return vardgivareId;
+  }
+
+  public void setVardgivareId(String vardgivareId) {
+    this.vardgivareId = vardgivareId;
+  }
+
+  public String getVardgivareNamn() {
+    return vardgivareNamn;
+  }
+
+  public void setVardgivareNamn(String vardgivareNamn) {
+    this.vardgivareNamn = vardgivareNamn;
+  }
+
+  @Override
+  public int compareTo(IntegreradEnhetEntry other) {
+    int vgComp = getVardgivareId().compareTo(other.getVardgivareId());
+    return (vgComp == 0) ? getEnhetsId().compareTo(other.getEnhetsId()) : vgComp;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((enhetsId == null) ? 0 : enhetsId.hashCode());
+    result = prime * result + ((vardgivareId == null) ? 0 : vardgivareId.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    public IntegreradEnhetEntry(String enhetsId, String vardgivareId) {
-        super();
-        this.enhetsId = enhetsId;
-        this.vardgivareId = vardgivareId;
+    if (obj == null) {
+      return false;
     }
-
-    public IntegreradEnhetEntry(String enhetsId, String enhetsNamn, String vardgivareId, String vardgivareNamn) {
-        super();
-        this.enhetsId = enhetsId;
-        this.enhetsNamn = enhetsNamn;
-        this.vardgivareId = vardgivareId;
-        this.vardgivareNamn = vardgivareNamn;
+    if (!(obj instanceof IntegreradEnhetEntry)) {
+      return false;
     }
-
-    public String getEnhetsId() {
-        return enhetsId;
+    IntegreradEnhetEntry other = (IntegreradEnhetEntry) obj;
+    if (enhetsId == null) {
+      if (other.enhetsId != null) {
+        return false;
+      }
+    } else if (!enhetsId.equals(other.enhetsId)) {
+      return false;
     }
-
-    public void setEnhetsId(String enhetsId) {
-        this.enhetsId = enhetsId;
+    if (vardgivareId == null) {
+      if (other.vardgivareId != null) {
+        return false;
+      }
+    } else if (!vardgivareId.equals(other.vardgivareId)) {
+      return false;
     }
-
-    public String getEnhetsNamn() {
-        return enhetsNamn;
-    }
-
-    public void setEnhetsNamn(String enhetsNamn) {
-        this.enhetsNamn = enhetsNamn;
-    }
-
-    public String getVardgivareId() {
-        return vardgivareId;
-    }
-
-    public void setVardgivareId(String vardgivareId) {
-        this.vardgivareId = vardgivareId;
-    }
-
-    public String getVardgivareNamn() {
-        return vardgivareNamn;
-    }
-
-    public void setVardgivareNamn(String vardgivareNamn) {
-        this.vardgivareNamn = vardgivareNamn;
-    }
-
-    @Override
-    public int compareTo(IntegreradEnhetEntry other) {
-        int vgComp = getVardgivareId().compareTo(other.getVardgivareId());
-        return (vgComp == 0) ? getEnhetsId().compareTo(other.getEnhetsId()) : vgComp;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((enhetsId == null) ? 0 : enhetsId.hashCode());
-        result = prime * result + ((vardgivareId == null) ? 0 : vardgivareId.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof IntegreradEnhetEntry)) {
-            return false;
-        }
-        IntegreradEnhetEntry other = (IntegreradEnhetEntry) obj;
-        if (enhetsId == null) {
-            if (other.enhetsId != null) {
-                return false;
-            }
-        } else if (!enhetsId.equals(other.enhetsId)) {
-            return false;
-        }
-        if (vardgivareId == null) {
-            if (other.vardgivareId != null) {
-                return false;
-            }
-        } else if (!vardgivareId.equals(other.vardgivareId)) {
-            return false;
-        }
-        return true;
-    }
-
+    return true;
+  }
 }

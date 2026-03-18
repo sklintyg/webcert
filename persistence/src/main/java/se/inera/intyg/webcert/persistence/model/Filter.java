@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,140 +25,138 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by pehr on 10/21/13.
- */
+/** Created by pehr on 10/21/13. */
 public class Filter {
 
-    private List<String> enhetsIds = new ArrayList<>();
+  private List<String> enhetsIds = new ArrayList<>();
 
-    private boolean questionFromFK;
-    private boolean questionFromWC;
+  private boolean questionFromFK;
+  private boolean questionFromWC;
 
-    private String hsaId;
+  private String hsaId;
 
-    private Boolean vidarebefordrad;
+  private Boolean vidarebefordrad;
 
-    private LocalDateTime changedFrom;
-    private LocalDateTime changedTo;
+  private LocalDateTime changedFrom;
+  private LocalDateTime changedTo;
 
-    private VantarPa vantarPa = VantarPa.ALLA_OHANTERADE;
+  private VantarPa vantarPa = VantarPa.ALLA_OHANTERADE;
 
-    private LocalDate replyLatest;
+  private LocalDate replyLatest;
 
-    private Integer startFrom;
+  private Integer startFrom;
 
-    private Integer pageSize;
+  private Integer pageSize;
 
-    private Set<String> intygsTyper = new HashSet<>();
+  private Set<String> intygsTyper = new HashSet<>();
 
-    private String patientPersonId;
+  private String patientPersonId;
 
-    public boolean hasPageSizeAndStartFrom() {
-        return pageSize != null && startFrom != null;
-    }
+  public boolean hasPageSizeAndStartFrom() {
+    return pageSize != null && startFrom != null;
+  }
 
-    public List<String> getEnhetsIds() {
-        return enhetsIds;
-    }
+  public List<String> getEnhetsIds() {
+    return enhetsIds;
+  }
 
-    public void setEnhetsIds(List<String> enhetsIds) {
-        this.enhetsIds = enhetsIds;
-    }
+  public void setEnhetsIds(List<String> enhetsIds) {
+    this.enhetsIds = enhetsIds;
+  }
 
-    public boolean isQuestionFromFK() {
-        return questionFromFK;
-    }
+  public boolean isQuestionFromFK() {
+    return questionFromFK;
+  }
 
-    public void setQuestionFromFK(boolean questionFromFK) {
-        this.questionFromFK = questionFromFK;
-    }
+  public void setQuestionFromFK(boolean questionFromFK) {
+    this.questionFromFK = questionFromFK;
+  }
 
-    public boolean isQuestionFromWC() {
-        return questionFromWC;
-    }
+  public boolean isQuestionFromWC() {
+    return questionFromWC;
+  }
 
-    public void setQuestionFromWC(boolean questionFromWC) {
-        this.questionFromWC = questionFromWC;
-    }
+  public void setQuestionFromWC(boolean questionFromWC) {
+    this.questionFromWC = questionFromWC;
+  }
 
-    public String getHsaId() {
-        return hsaId;
-    }
+  public String getHsaId() {
+    return hsaId;
+  }
 
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
+  public void setHsaId(String hsaId) {
+    this.hsaId = hsaId;
+  }
 
-    public Boolean getVidarebefordrad() {
-        return vidarebefordrad;
-    }
+  public Boolean getVidarebefordrad() {
+    return vidarebefordrad;
+  }
 
-    public void setVidarebefordrad(Boolean vidarebefordrad) {
-        this.vidarebefordrad = vidarebefordrad;
-    }
+  public void setVidarebefordrad(Boolean vidarebefordrad) {
+    this.vidarebefordrad = vidarebefordrad;
+  }
 
-    public LocalDateTime getChangedFrom() {
-        return changedFrom;
-    }
+  public LocalDateTime getChangedFrom() {
+    return changedFrom;
+  }
 
-    public void setChangedFrom(LocalDateTime changedFrom) {
-        this.changedFrom = changedFrom;
-    }
+  public void setChangedFrom(LocalDateTime changedFrom) {
+    this.changedFrom = changedFrom;
+  }
 
-    public LocalDateTime getChangedTo() {
-        return changedTo;
-    }
+  public LocalDateTime getChangedTo() {
+    return changedTo;
+  }
 
-    public void setChangedTo(LocalDateTime changedTo) {
-        this.changedTo = changedTo;
-    }
+  public void setChangedTo(LocalDateTime changedTo) {
+    this.changedTo = changedTo;
+  }
 
-    public LocalDate getReplyLatest() {
-        return replyLatest;
-    }
+  public LocalDate getReplyLatest() {
+    return replyLatest;
+  }
 
-    public void setReplyLatest(LocalDate replyLatest) {
-        this.replyLatest = replyLatest;
-    }
+  public void setReplyLatest(LocalDate replyLatest) {
+    this.replyLatest = replyLatest;
+  }
 
-    public VantarPa getVantarPa() {
-        return vantarPa;
-    }
+  public VantarPa getVantarPa() {
+    return vantarPa;
+  }
 
-    public void setVantarPa(VantarPa vantarPa) {
-        this.vantarPa = vantarPa;
-    }
+  public void setVantarPa(VantarPa vantarPa) {
+    this.vantarPa = vantarPa;
+  }
 
-    public Integer getStartFrom() {
-        return startFrom;
-    }
+  public Integer getStartFrom() {
+    return startFrom;
+  }
 
-    public void setStartFrom(Integer startFrom) {
-        this.startFrom = startFrom;
-    }
+  public void setStartFrom(Integer startFrom) {
+    this.startFrom = startFrom;
+  }
 
-    public Integer getPageSize() {
-        return pageSize;
-    }
+  public Integer getPageSize() {
+    return pageSize;
+  }
 
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
+  }
 
-    public Set<String> getIntygsTyper() {
-        return intygsTyper;
-    }
+  public Set<String> getIntygsTyper() {
+    return intygsTyper;
+  }
 
-    public void setIntygsTyper(Set<String> intygsTyper) {
-        this.intygsTyper = intygsTyper;
-    }
+  public void setIntygsTyper(Set<String> intygsTyper) {
+    this.intygsTyper = intygsTyper;
+  }
 
-    public String getPatientPersonId() {
-        return patientPersonId;
-    }
+  public String getPatientPersonId() {
+    return patientPersonId;
+  }
 
-    public void setPatientPersonId(String patientPersonId) {
-        this.patientPersonId = patientPersonId;
-    }
+  public void setPatientPersonId(String patientPersonId) {
+    this.patientPersonId = patientPersonId;
+  }
 }

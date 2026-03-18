@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -54,256 +54,266 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class MailNotificationServiceImplTest {
 
-    private static final String SIGNED_BY_HSA_ID = "SIGNED_BY_HSA_ID";
-    private static final String EXPECTED_NAME = "ExpectedName";
-    private static final String UNIT_ID = "unitId";
-    @InjectMocks
-    private MailNotificationServiceImpl mailNotificationService;
+  private static final String SIGNED_BY_HSA_ID = "SIGNED_BY_HSA_ID";
+  private static final String EXPECTED_NAME = "ExpectedName";
+  private static final String UNIT_ID = "unitId";
+  @InjectMocks private MailNotificationServiceImpl mailNotificationService;
 
-    @Mock
-    private JavaMailSender mailSender;
+  @Mock private JavaMailSender mailSender;
 
-    @Mock
-    private HsaOrganizationsService hsaOrganizationUnitService;
+  @Mock private HsaOrganizationsService hsaOrganizationUnitService;
 
-    @Mock
-    private MonitoringLogService monitoringService;
+  @Mock private MonitoringLogService monitoringService;
 
-    @Mock
-    private PrivatePractitionerService privatePractitionerService;
+  @Mock private PrivatePractitionerService privatePractitionerService;
 
-    @Mock
-    private UtkastRepository utkastRepository;
+  @Mock private UtkastRepository utkastRepository;
 
-    @Mock
-    private EmployeeNameService employeeNameService;
+  @Mock private EmployeeNameService employeeNameService;
 
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(mailNotificationService, "adminMailAddress", "AdminMail");
-        ReflectionTestUtils.setField(mailNotificationService, "fromAddress", "FromAddress");
-        ReflectionTestUtils.setField(mailNotificationService, "webCertHostUrl", "WebCertHostUrl");
-    }
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(mailNotificationService, "adminMailAddress", "AdminMail");
+    ReflectionTestUtils.setField(mailNotificationService, "fromAddress", "FromAddress");
+    ReflectionTestUtils.setField(mailNotificationService, "webCertHostUrl", "WebCertHostUrl");
+  }
 
-    @Captor
-    private ArgumentCaptor<MimeMessage> mimeCaptor;
+  @Captor private ArgumentCaptor<MimeMessage> mimeCaptor;
 
-    @Test
-    void testSendMailForIncomingQuestionHsaIsCalledIfNotPrivatePractitioner() throws MessagingException {
-        // Given
-        MailNotification mailNotification = mailNotification("intygsId",
+  @Test
+  void testSendMailForIncomingQuestionHsaIsCalledIfNotPrivatePractitioner()
+      throws MessagingException {
+    // Given
+    MailNotification mailNotification =
+        mailNotification(
+            "intygsId",
             "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
-        Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
-        vardenhet.setEpost("epost@mockadress.net");
-        doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
+    Vardenhet vardenhet =
+        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
+    vardenhet.setEpost("epost@mockadress.net");
+    doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
 
-        MimeMessage mimeMessage = new MimeMessage(mock(MimeMessage.class));
-        doReturn(mimeMessage).when(mailSender).createMimeMessage();
+    MimeMessage mimeMessage = new MimeMessage(mock(MimeMessage.class));
+    doReturn(mimeMessage).when(mailSender).createMimeMessage();
 
-        // When
-        try {
-            mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
-
-        // Then
-        verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
+    // When
+    try {
+      mailNotificationService.sendMailForIncomingQuestion(mailNotification);
+    } catch (IllegalArgumentException e) {
+      // Expected
     }
 
-    @Test
-    void testSendMailForIncomingAnswerHsaIsCalledIfNotPrivatePractitioner() throws MessagingException {
-        // Given
-        MailNotification mailNotification = mailNotification("intygsId",
+    // Then
+    verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
+  }
+
+  @Test
+  void testSendMailForIncomingAnswerHsaIsCalledIfNotPrivatePractitioner()
+      throws MessagingException {
+    // Given
+    MailNotification mailNotification =
+        mailNotification(
+            "intygsId",
             "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
-        Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
-        vardenhet.setEpost("epost@mockadress.net");
-        doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
+    Vardenhet vardenhet =
+        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
+    vardenhet.setEpost("epost@mockadress.net");
+    doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
 
-        MimeMessage message = new MimeMessage(mock(MimeMessage.class));
-        doReturn(message).when(mailSender).createMimeMessage();
+    MimeMessage message = new MimeMessage(mock(MimeMessage.class));
+    doReturn(message).when(mailSender).createMimeMessage();
 
-        // When
-        try {
-            mailNotificationService.sendMailForIncomingAnswer(mailNotification);
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
-
-        // Then
-        verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
+    // When
+    try {
+      mailNotificationService.sendMailForIncomingAnswer(mailNotification);
+    } catch (IllegalArgumentException e) {
+      // Expected
     }
 
-    @Test
-    void testIntygsUrlUthopp() {
-        final String intygsId = "intygsId";
-        // Given
-        MailNotification mailNotification = mailNotification(intygsId, null);
+    // Then
+    verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
+  }
 
-        when(utkastRepository.findById(intygsId)).thenReturn(Optional.empty());
+  @Test
+  void testIntygsUrlUthopp() {
+    final String intygsId = "intygsId";
+    // Given
+    MailNotification mailNotification = mailNotification(intygsId, null);
 
-        // When
-        final String url = mailNotificationService.intygsUrl(mailNotification);
+    when(utkastRepository.findById(intygsId)).thenReturn(Optional.empty());
 
-        // Then
-        assertEquals("WebCertHostUrl/webcert/web/user/certificate/intygsId/questions", url);
-        verify(utkastRepository).findById(intygsId);
-    }
+    // When
+    final String url = mailNotificationService.intygsUrl(mailNotification);
 
-    @Test
-    void testIntygsUrlLandsting() {
-        final String intygsId = "intygsId";
-        // Given
-        MailNotification mailNotification = mailNotification(intygsId, null);
+    // Then
+    assertEquals("WebCertHostUrl/webcert/web/user/certificate/intygsId/questions", url);
+    verify(utkastRepository).findById(intygsId);
+  }
 
-        Utkast utkast = new Utkast();
-        when(utkastRepository.findById(intygsId)).thenReturn(Optional.of(utkast));
+  @Test
+  void testIntygsUrlLandsting() {
+    final String intygsId = "intygsId";
+    // Given
+    MailNotification mailNotification = mailNotification(intygsId, null);
 
-        // When
-        final String url = mailNotificationService.intygsUrl(mailNotification);
+    Utkast utkast = new Utkast();
+    when(utkastRepository.findById(intygsId)).thenReturn(Optional.of(utkast));
 
-        // Then
-        assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions", url);
-        verify(utkastRepository).findById(intygsId);
-    }
+    // When
+    final String url = mailNotificationService.intygsUrl(mailNotification);
 
-    @Test
-    void testIntygsUrlPp() {
-        final String intygsId = "intygsId";
-        // Given
-        MailNotification mailNotification = mailNotification(intygsId,
+    // Then
+    assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions", url);
+    verify(utkastRepository).findById(intygsId);
+  }
+
+  @Test
+  void testIntygsUrlPp() {
+    final String intygsId = "intygsId";
+    // Given
+    MailNotification mailNotification =
+        mailNotification(
+            intygsId,
             MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText");
 
-        // When
-        final String url = mailNotificationService.intygsUrl(mailNotification);
+    // When
+    final String url = mailNotificationService.intygsUrl(mailNotification);
 
-        // Then
-        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet="
-            + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
-        verifyNoInteractions(utkastRepository);
-    }
+    // Then
+    assertEquals(
+        "WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet="
+            + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX
+            + "AndSomeOtherText",
+        url);
+    verifyNoInteractions(utkastRepository);
+  }
 
-    @Test
-    void testIntygsUrlUthoppNotFk7263() {
-        final String intygsId = "intygsId";
-        // Given
-        MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
+  @Test
+  void testIntygsUrlUthoppNotFk7263() {
+    final String intygsId = "intygsId";
+    // Given
+    MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
 
-        when(utkastRepository.findById(intygsId)).thenReturn(Optional.empty());
+    when(utkastRepository.findById(intygsId)).thenReturn(Optional.empty());
 
-        // When
-        final String url = mailNotificationService.intygsUrl(mailNotification);
+    // When
+    final String url = mailNotificationService.intygsUrl(mailNotification);
 
-        // Then
-        assertEquals("WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions", url);
-        verify(utkastRepository).findById(intygsId);
-    }
+    // Then
+    assertEquals("WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions", url);
+    verify(utkastRepository).findById(intygsId);
+  }
 
-    @Test
-    void testIntygsUrlLandstingNotFk7263() {
-        final String intygsId = "intygsId";
-        // Given
-        MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
+  @Test
+  void testIntygsUrlLandstingNotFk7263() {
+    final String intygsId = "intygsId";
+    // Given
+    MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
 
-        Utkast utkast = new Utkast();
-        when(utkastRepository.findById(intygsId)).thenReturn(Optional.of(utkast));
+    Utkast utkast = new Utkast();
+    when(utkastRepository.findById(intygsId)).thenReturn(Optional.of(utkast));
 
-        // When
-        final String url = mailNotificationService.intygsUrl(mailNotification);
+    // When
+    final String url = mailNotificationService.intygsUrl(mailNotification);
 
-        // Then
-        assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions", url);
-        verify(utkastRepository).findById(intygsId);
-    }
+    // Then
+    assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions", url);
+    verify(utkastRepository).findById(intygsId);
+  }
 
-    @Test
-    void testIntygsUrlPpNotFk7263() {
-        final String intygsId = "intygsId";
-        // Given
-        MailNotification mailNotification = mailNotification(intygsId,
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", LuseEntryPoint.MODULE_ID);
+  @Test
+  void testIntygsUrlPpNotFk7263() {
+    final String intygsId = "intygsId";
+    // Given
+    MailNotification mailNotification =
+        mailNotification(
+            intygsId,
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText",
+            LuseEntryPoint.MODULE_ID);
 
-        // When
-        final String url = mailNotificationService.intygsUrl(mailNotification);
+    // When
+    final String url = mailNotificationService.intygsUrl(mailNotification);
 
-        // Then
-        assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/luse/intygsId/questions?enhet="
-            + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
-        verifyNoInteractions(utkastRepository);
-    }
+    // Then
+    assertEquals(
+        "WebCertHostUrl/webcert/web/user/pp-certificate/luse/intygsId/questions?enhet="
+            + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX
+            + "AndSomeOtherText",
+        url);
+    verifyNoInteractions(utkastRepository);
+  }
 
-    private MailNotification mailNotification(String intygsId, String enhetsId) {
-        return mailNotification(intygsId, enhetsId, Fk7263EntryPoint.MODULE_ID);
-    }
+  private MailNotification mailNotification(String intygsId, String enhetsId) {
+    return mailNotification(intygsId, enhetsId, Fk7263EntryPoint.MODULE_ID);
+  }
 
-    private MailNotification mailNotification(String intygsId, String enhetsId, String intygsTyp) {
-        return new MailNotification(null, intygsId, intygsTyp, enhetsId, null, SIGNED_BY_HSA_ID);
-    }
+  private MailNotification mailNotification(String intygsId, String enhetsId, String intygsTyp) {
+    return new MailNotification(null, intygsId, intygsTyp, enhetsId, null, SIGNED_BY_HSA_ID);
+  }
 
-    @Test
-    void bodyShallContainEmployeeNameAndUnitNameForIncomingQuestions()
-        throws MessagingException, IOException {
-        final var expectedContent = "<p>Försäkringskassan har ställt en fråga på ett intyg utfärdat av <b>ExpectedName</b> på "
+  @Test
+  void bodyShallContainEmployeeNameAndUnitNameForIncomingQuestions()
+      throws MessagingException, IOException {
+    final var expectedContent =
+        "<p>Försäkringskassan har ställt en fråga på ett intyg utfärdat av <b>ExpectedName</b> på "
             + "<b>ExpectedUnit</b>.<br><a href=\"WebCertHostUrl/webcert/web/user/certificate/intygsId/questions?enhet=unitId\">"
             + "Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
 
-        final var mailNotification = mailNotification(
-            "intygsId",
-            UNIT_ID
-        );
+    final var mailNotification = mailNotification("intygsId", UNIT_ID);
 
-        Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
-        vardenhet.setEpost("epost@mockadress.net");
-        doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
+    Vardenhet vardenhet =
+        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
+    vardenhet.setEpost("epost@mockadress.net");
+    doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
 
-        MimeMessage message = new MimeMessage(mock(MimeMessage.class));
-        doReturn(message).when(mailSender).createMimeMessage();
+    MimeMessage message = new MimeMessage(mock(MimeMessage.class));
+    doReturn(message).when(mailSender).createMimeMessage();
 
-        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+    doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
 
-        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
+    mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
-        verify(mailSender, times(1)).send(mimeCaptor.capture());
-        assertEquals(expectedContent, mimeCaptor.getValue().getContent());
-    }
+    verify(mailSender, times(1)).send(mimeCaptor.capture());
+    assertEquals(expectedContent, mimeCaptor.getValue().getContent());
+  }
 
-    @Test
-    void bodyShallContainEmployeeNameAndUnitNameForIncomingAnswer()
-        throws MessagingException, IOException {
-        final var expectedContent = "<p>Det har kommit ett svar från Försäkringskassan på en fråga som <b>ExpectedName</b> på "
+  @Test
+  void bodyShallContainEmployeeNameAndUnitNameForIncomingAnswer()
+      throws MessagingException, IOException {
+    final var expectedContent =
+        "<p>Det har kommit ett svar från Försäkringskassan på en fråga som <b>ExpectedName</b> på "
             + "<b>ExpectedUnit</b> har ställt. har ställt."
             + "<br><a href=\"WebCertHostUrl/webcert/web/user/certificate/intygsId/questions?enhet=unitId\">"
             + "Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
 
-        final var mailNotification = mailNotification(
-            "intygsId",
-            UNIT_ID
-        );
+    final var mailNotification = mailNotification("intygsId", UNIT_ID);
 
-        MimeMessage message = new MimeMessage(mock(MimeMessage.class));
-        doReturn(message).when(mailSender).createMimeMessage();
+    MimeMessage message = new MimeMessage(mock(MimeMessage.class));
+    doReturn(message).when(mailSender).createMimeMessage();
 
-        Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
-        vardenhet.setEpost("epost@mockadress.net");
-        doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
+    Vardenhet vardenhet =
+        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
+    vardenhet.setEpost("epost@mockadress.net");
+    doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
 
-        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+    doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
 
-        mailNotificationService.sendMailForIncomingAnswer(mailNotification);
+    mailNotificationService.sendMailForIncomingAnswer(mailNotification);
 
-        verify(mailSender, times(1)).send(mimeCaptor.capture());
-        assertEquals(expectedContent, mimeCaptor.getValue().getContent());
-    }
+    verify(mailSender, times(1)).send(mimeCaptor.capture());
+    assertEquals(expectedContent, mimeCaptor.getValue().getContent());
+  }
 
-    @Test
-    void shouldUsePrivatePractitionerServiceToGetRecipient() {
-        final var mailNotification = mailNotification("intygsId",
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+  @Test
+  void shouldUsePrivatePractitionerServiceToGetRecipient() {
+    final var mailNotification =
+        mailNotification(
+            "intygsId", MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
-        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
+    mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
-        verify(privatePractitionerService).getPrivatePractitioner(SIGNED_BY_HSA_ID);
-    }
+    verify(privatePractitionerService).getPrivatePractitioner(SIGNED_BY_HSA_ID);
+  }
 }

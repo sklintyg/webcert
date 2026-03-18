@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-
 import static org.junit.Assert.assertEquals;
 
 import java.time.temporal.ChronoUnit;
@@ -27,57 +26,64 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 
 public class NotificationRedeliveryStrategySingleTest {
 
-    private static final NotificationRedeliveryStrategyEnum strategyName = NotificationRedeliveryStrategyEnum.SINGLE;
+  private static final NotificationRedeliveryStrategyEnum strategyName =
+      NotificationRedeliveryStrategyEnum.SINGLE;
 
-    @Test
-    public void shouldReturnCorrectStrategyIdentifyingEnum() {
-        final NotificationRedeliveryStrategySingle standardStrategy = new NotificationRedeliveryStrategySingle();
-        final var strategyNameEnum = standardStrategy.getName();
+  @Test
+  public void shouldReturnCorrectStrategyIdentifyingEnum() {
+    final NotificationRedeliveryStrategySingle standardStrategy =
+        new NotificationRedeliveryStrategySingle();
+    final var strategyNameEnum = standardStrategy.getName();
 
-        assertEquals(strategyName, strategyNameEnum);
-    }
+    assertEquals(strategyName, strategyNameEnum);
+  }
 
-    @Test
-    public void shouldReturnCorrectValueMaxDeliveries() {
-        final NotificationRedeliveryStrategySingle standardStrategy = new NotificationRedeliveryStrategySingle();
-        final var maxDeliveries = standardStrategy.getMaxDeliveries();
+  @Test
+  public void shouldReturnCorrectValueMaxDeliveries() {
+    final NotificationRedeliveryStrategySingle standardStrategy =
+        new NotificationRedeliveryStrategySingle();
+    final var maxDeliveries = standardStrategy.getMaxDeliveries();
 
-        assertEquals(1, maxDeliveries);
-    }
+    assertEquals(1, maxDeliveries);
+  }
 
-    @Test
-    public void shouldReturnCorrectTimeValuesForAttemptedDeliveriesLowerThanScheduleSize() {
-        final NotificationRedeliveryStrategySingle standardStrategy = new NotificationRedeliveryStrategySingle();
-        final var timeValue1 = standardStrategy.getNextTimeValue(1);
+  @Test
+  public void shouldReturnCorrectTimeValuesForAttemptedDeliveriesLowerThanScheduleSize() {
+    final NotificationRedeliveryStrategySingle standardStrategy =
+        new NotificationRedeliveryStrategySingle();
+    final var timeValue1 = standardStrategy.getNextTimeValue(1);
 
-        assertEquals(10, timeValue1);
-    }
+    assertEquals(10, timeValue1);
+  }
 
-    @Test
-    public void shouldReturnCorrectTimeUnitForAttemptedDeliveriesLowerThanScheduleSize() {
-        final NotificationRedeliveryStrategySingle standardStrategy = new NotificationRedeliveryStrategySingle();
-        final var timeUnit1 = standardStrategy.getNextTimeUnit(1);
+  @Test
+  public void shouldReturnCorrectTimeUnitForAttemptedDeliveriesLowerThanScheduleSize() {
+    final NotificationRedeliveryStrategySingle standardStrategy =
+        new NotificationRedeliveryStrategySingle();
+    final var timeUnit1 = standardStrategy.getNextTimeUnit(1);
 
-        assertEquals(ChronoUnit.SECONDS, timeUnit1);
-    }
+    assertEquals(ChronoUnit.SECONDS, timeUnit1);
+  }
 
-    @Test
-    public void shouldReturnLastTimeValueForAttemptedDeliveriesHigherThanScheduleSize() {
-        final NotificationRedeliveryStrategySingle standardStrategy = new NotificationRedeliveryStrategySingle();
-        final var timeValue2 = standardStrategy.getNextTimeValue(2);
-        final var timeValue100 = standardStrategy.getNextTimeValue(100);
+  @Test
+  public void shouldReturnLastTimeValueForAttemptedDeliveriesHigherThanScheduleSize() {
+    final NotificationRedeliveryStrategySingle standardStrategy =
+        new NotificationRedeliveryStrategySingle();
+    final var timeValue2 = standardStrategy.getNextTimeValue(2);
+    final var timeValue100 = standardStrategy.getNextTimeValue(100);
 
-        assertEquals(10, timeValue2);
-        assertEquals(10, timeValue100);
-    }
+    assertEquals(10, timeValue2);
+    assertEquals(10, timeValue100);
+  }
 
-    @Test
-    public void shouldReturnCorrectTimeUnitForAttemptedDeliveriesHigherThanScheduleSize() {
-        final NotificationRedeliveryStrategySingle standardStrategy = new NotificationRedeliveryStrategySingle();
-        final var timeUnit5 = standardStrategy.getNextTimeUnit(5);
-        final var timeUnit100 = standardStrategy.getNextTimeUnit(100);
+  @Test
+  public void shouldReturnCorrectTimeUnitForAttemptedDeliveriesHigherThanScheduleSize() {
+    final NotificationRedeliveryStrategySingle standardStrategy =
+        new NotificationRedeliveryStrategySingle();
+    final var timeUnit5 = standardStrategy.getNextTimeUnit(5);
+    final var timeUnit100 = standardStrategy.getNextTimeUnit(100);
 
-        assertEquals(ChronoUnit.SECONDS, timeUnit5);
-        assertEquals(ChronoUnit.SECONDS, timeUnit100);
-    }
+    assertEquals(ChronoUnit.SECONDS, timeUnit5);
+    assertEquals(ChronoUnit.SECONDS, timeUnit100);
+  }
 }

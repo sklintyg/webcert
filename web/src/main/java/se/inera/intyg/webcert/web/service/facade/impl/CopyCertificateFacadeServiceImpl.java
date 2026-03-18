@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,44 +33,47 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 @Service
 public class CopyCertificateFacadeServiceImpl implements CopyCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CopyCertificateFacadeServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CopyCertificateFacadeServiceImpl.class);
 
-    private final CopyUtkastServiceHelper copyUtkastServiceHelper;
+  private final CopyUtkastServiceHelper copyUtkastServiceHelper;
 
-    private final CopyUtkastService copyUtkastService;
+  private final CopyUtkastService copyUtkastService;
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public CopyCertificateFacadeServiceImpl(CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService, GetCertificateFacadeService getCertificateFacadeService) {
-        this.copyUtkastServiceHelper = copyUtkastServiceHelper;
-        this.copyUtkastService = copyUtkastService;
-        this.getCertificateFacadeService = getCertificateFacadeService;
+  @Autowired
+  public CopyCertificateFacadeServiceImpl(
+      CopyUtkastServiceHelper copyUtkastServiceHelper,
+      CopyUtkastService copyUtkastService,
+      GetCertificateFacadeService getCertificateFacadeService) {
+    this.copyUtkastServiceHelper = copyUtkastServiceHelper;
+    this.copyUtkastService = copyUtkastService;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
+
+  @Override
+  public String copyCertificate(String certificateId) {
+    LOG.debug("Get certificate '{}' that will be renewed", certificateId);
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+    final var certificateType = certificate.getMetadata().getType();
+    final var copyIntygRequest = new CopyIntygRequest();
+    copyIntygRequest.setPatientPersonnummer(getPersonId(certificate.getMetadata().getPatient()));
+
+    LOG.debug(
+        "Preparing to create a draft copy for '{}' with type '{}'", certificateId, certificateType);
+    final var serviceRequest =
+        copyUtkastServiceHelper.createUtkastFromUtkast(
+            certificateId, certificateType, copyIntygRequest);
+    final var serviceResponse = copyUtkastService.createUtkastCopy(serviceRequest);
+
+    LOG.debug("Created draft copy '{}'", serviceResponse.getNewDraftIntygId());
+    return serviceResponse.getNewDraftIntygId();
+  }
+
+  private Personnummer getPersonId(Patient patient) {
+    if (patient.isReserveId()) {
+      return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
     }
-
-    @Override
-    public String copyCertificate(String certificateId) {
-        LOG.debug("Get certificate '{}' that will be renewed", certificateId);
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
-        final var certificateType = certificate.getMetadata().getType();
-        final var copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(
-            getPersonId(certificate.getMetadata().getPatient())
-        );
-
-        LOG.debug("Preparing to create a draft copy for '{}' with type '{}'", certificateId, certificateType);
-        final var serviceRequest = copyUtkastServiceHelper.createUtkastFromUtkast(certificateId, certificateType, copyIntygRequest);
-        final var serviceResponse = copyUtkastService.createUtkastCopy(serviceRequest);
-
-        LOG.debug("Created draft copy '{}'", serviceResponse.getNewDraftIntygId());
-        return serviceResponse.getNewDraftIntygId();
-    }
-
-    private Personnummer getPersonId(Patient patient) {
-        if (patient.isReserveId()) {
-            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
-        }
-        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
-    }
+    return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
+  }
 }

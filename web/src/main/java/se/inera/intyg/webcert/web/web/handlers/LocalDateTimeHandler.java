@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,35 +25,32 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Handler to handle JAX-RS parameters represented by Joda-Time types.
- */
+/** Handler to handle JAX-RS parameters represented by Joda-Time types. */
 public class LocalDateTimeHandler implements jakarta.ws.rs.ext.ParamConverterProvider {
 
+  @Override
+  public <T> ParamConverter<T> getConverter(Class<T> aClass, Type type, Annotation[] annotations) {
+    if (type.equals(LocalDateTime.class)) {
+      return (ParamConverter<T>) new LocalDateTimeParamConverter();
+    } else {
+      return null;
+    }
+  }
+
+  private static class LocalDateTimeParamConverter implements ParamConverter<LocalDateTime> {
+
     @Override
-    public <T> ParamConverter<T> getConverter(Class<T> aClass, Type type, Annotation[] annotations) {
-        if (type.equals(LocalDateTime.class)) {
-            return (ParamConverter<T>) new LocalDateTimeParamConverter();
-        } else {
-            return null;
-        }
+    public LocalDateTime fromString(String value) {
+      if (value.contains("T")) {
+        return LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
+      } else {
+        return LocalDate.parse(value, DateTimeFormatter.ISO_DATE).atStartOfDay();
+      }
     }
 
-    private static class LocalDateTimeParamConverter implements ParamConverter<LocalDateTime> {
-
-        @Override
-        public LocalDateTime fromString(String value) {
-            if (value.contains("T")) {
-                return LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
-            } else {
-                return LocalDate.parse(value, DateTimeFormatter.ISO_DATE).atStartOfDay();
-            }
-        }
-
-        @Override
-        public String toString(LocalDateTime value) {
-            return value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-        }
-
+    @Override
+    public String toString(LocalDateTime value) {
+      return value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
     }
+  }
 }

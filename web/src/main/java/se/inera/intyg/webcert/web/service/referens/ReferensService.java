@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,20 +20,16 @@ package se.inera.intyg.webcert.web.service.referens;
 
 public interface ReferensService {
 
-    /**
-     * Persist a Referens with intygsId and referens.
-     */
-    void saveReferens(String intygsId, String referens);
+  /** Persist a Referens with intygsId and referens. */
+  void saveReferens(String intygsId, String referens);
 
-    /**
-     * Attempt to get the referens String corresponding to an intygsId.
-     *
-     * @return the referens string or null if not found in repository.
-     */
-    String getReferensForIntygsId(String intygsId);
+  /**
+   * Attempt to get the referens String corresponding to an intygsId.
+   *
+   * @return the referens string or null if not found in repository.
+   */
+  String getReferensForIntygsId(String intygsId);
 
-    /**
-     * Check if a Referens exists in database.
-     */
-    boolean referensExists(String intygsId);
+  /** Check if a Referens exists in database. */
+  boolean referensExists(String intygsId);
 }

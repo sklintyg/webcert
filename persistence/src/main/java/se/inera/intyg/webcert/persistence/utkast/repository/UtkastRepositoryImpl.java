@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,77 +38,98 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 @Transactional(readOnly = true)
 public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
 
-    @Override
-    public List<Utkast> filterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper) {
+  @Override
+  public List<Utkast> filterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper) {
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Utkast> cq = cb.createQuery(Utkast.class);
-        Root<Utkast> root = cq.from(Utkast.class);
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Utkast> cq = cb.createQuery(Utkast.class);
+    Root<Utkast> root = cq.from(Utkast.class);
 
-        cq.where(createPredicate(filter, cb, root, authorizedIntygstyper));
-        cq.orderBy(cb.desc(root.get("senastSparadDatum")));
+    cq.where(createPredicate(filter, cb, root, authorizedIntygstyper));
+    cq.orderBy(cb.desc(root.get("senastSparadDatum")));
 
-        TypedQuery<Utkast> query = entityManager.createQuery(cq);
+    TypedQuery<Utkast> query = entityManager.createQuery(cq);
 
-        if (filter.hasPageSizeAndStartFrom()) {
-            query.setMaxResults(filter.getPageSize());
-            query.setFirstResult(filter.getStartFrom());
-        }
-
-        return query.getResultList();
+    if (filter.hasPageSizeAndStartFrom()) {
+      query.setMaxResults(filter.getPageSize());
+      query.setFirstResult(filter.getStartFrom());
     }
 
-    @Override
-    public int countFilterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper) {
+    return query.getResultList();
+  }
 
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Utkast> root = cq.from(Utkast.class);
-        cq.select(cb.count(root));
+  @Override
+  public int countFilterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper) {
 
-        cq.where(createPredicate(filter, cb, root, authorizedIntygstyper));
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+    Root<Utkast> root = cq.from(Utkast.class);
+    cq.select(cb.count(root));
 
-        Query query = entityManager.createQuery(cq);
+    cq.where(createPredicate(filter, cb, root, authorizedIntygstyper));
 
-        return ((Long) query.getSingleResult()).intValue();
+    Query query = entityManager.createQuery(cq);
+
+    return ((Long) query.getSingleResult()).intValue();
+  }
+
+  private Predicate createPredicate(
+      UtkastFilter filter,
+      CriteriaBuilder builder,
+      Root<Utkast> root,
+      Set<String> authorizedIntygstyper) {
+
+    Predicate pred = builder.conjunction();
+    pred = builder.and(pred, builder.equal(root.get("enhetsId"), filter.getUnitHsaId()));
+
+    pred = builder.and(pred, builder.isNull(root.get("aterkalladDatum")));
+
+    if (!Strings.isNullOrEmpty(filter.getSavedByHsaId())) {
+      pred =
+          builder.and(
+              pred,
+              builder.equal(root.get("senastSparadAv").get("hsaId"), filter.getSavedByHsaId()));
     }
 
-    private Predicate createPredicate(UtkastFilter filter, CriteriaBuilder builder, Root<Utkast> root, Set<String> authorizedIntygstyper) {
-
-        Predicate pred = builder.conjunction();
-        pred = builder.and(pred, builder.equal(root.get("enhetsId"), filter.getUnitHsaId()));
-
-        pred = builder.and(pred, builder.isNull(root.get("aterkalladDatum")));
-
-        if (!Strings.isNullOrEmpty(filter.getSavedByHsaId())) {
-            pred = builder.and(pred, builder.equal(root.get("senastSparadAv").get("hsaId"), filter.getSavedByHsaId()));
-        }
-
-        if (!filter.getStatusList().isEmpty()) {
-            pred = builder.and(pred, root.<UtkastStatus>get("status").in(filter.getStatusList()));
-        }
-
-        if (filter.getNotified() != null) {
-            pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getNotified()));
-        }
-
-        if (filter.getPatientId() != null && !filter.getPatientId().equals("")) {
-            pred = builder.and(pred, builder.equal(root.<String>get("patientPersonnummer"), filter.getPatientId()));
-        }
-
-        if (filter.getSavedFrom() != null) {
-            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDateTime>get("senastSparadDatum"), filter.getSavedFrom()));
-        }
-
-        if (filter.getSavedTo() != null) {
-            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDateTime>get("senastSparadDatum"), filter.getSavedTo()));
-        }
-
-        pred = builder.and(pred, root.<String>get("intygsTyp").in(authorizedIntygstyper != null ? authorizedIntygstyper : new HashSet<>()));
-        return pred;
+    if (!filter.getStatusList().isEmpty()) {
+      pred = builder.and(pred, root.<UtkastStatus>get("status").in(filter.getStatusList()));
     }
 
+    if (filter.getNotified() != null) {
+      pred =
+          builder.and(
+              pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getNotified()));
+    }
+
+    if (filter.getPatientId() != null && !filter.getPatientId().equals("")) {
+      pred =
+          builder.and(
+              pred, builder.equal(root.<String>get("patientPersonnummer"), filter.getPatientId()));
+    }
+
+    if (filter.getSavedFrom() != null) {
+      pred =
+          builder.and(
+              pred,
+              builder.greaterThanOrEqualTo(
+                  root.<LocalDateTime>get("senastSparadDatum"), filter.getSavedFrom()));
+    }
+
+    if (filter.getSavedTo() != null) {
+      pred =
+          builder.and(
+              pred,
+              builder.lessThanOrEqualTo(
+                  root.<LocalDateTime>get("senastSparadDatum"), filter.getSavedTo()));
+    }
+
+    pred =
+        builder.and(
+            pred,
+            root.<String>get("intygsTyp")
+                .in(authorizedIntygstyper != null ? authorizedIntygstyper : new HashSet<>()));
+    return pred;
+  }
 }

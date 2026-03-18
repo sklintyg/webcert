@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,78 +39,92 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.UpdateListConfigRequ
 @Path("/list/config")
 public class ListConfigController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ListConfigController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ListConfigController.class);
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService;
-    private final ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService;
-    private final ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService;
-    private final ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService;
+  private final ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService;
+  private final ListSignedCertificatesConfigFacadeServiceImpl
+      listSignedCertificatesConfigFacadeService;
+  private final ListPreviousCertificatesConfigFacadeServiceImpl
+      listPreviousCertificatesConfigFacadeService;
+  private final ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService;
 
-    @Autowired
-    public ListConfigController(ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService,
-        ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService,
-        ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService,
-        ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService) {
-        this.draftListConfigFacadeService = draftListConfigFacadeService;
-        this.listSignedCertificatesConfigFacadeService = listSignedCertificatesConfigFacadeService;
-        this.listPreviousCertificatesConfigFacadeService = listPreviousCertificatesConfigFacadeService;
-        this.listQuestionsConfigFacadeService = listQuestionsConfigFacadeService;
-    }
+  @Autowired
+  public ListConfigController(
+      ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService,
+      ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService,
+      ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService,
+      ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService) {
+    this.draftListConfigFacadeService = draftListConfigFacadeService;
+    this.listSignedCertificatesConfigFacadeService = listSignedCertificatesConfigFacadeService;
+    this.listPreviousCertificatesConfigFacadeService = listPreviousCertificatesConfigFacadeService;
+    this.listQuestionsConfigFacadeService = listQuestionsConfigFacadeService;
+  }
 
-    @Path("/draft")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-config-get-list-or-drafts-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getListOfDraftsConfig() {
-        LOG.debug("Getting config for list of drafts");
-        final var config = draftListConfigFacadeService.get();
-        return Response.ok(config).build();
-    }
+  @Path("/draft")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-config-get-list-or-drafts-config",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getListOfDraftsConfig() {
+    LOG.debug("Getting config for list of drafts");
+    final var config = draftListConfigFacadeService.get();
+    return Response.ok(config).build();
+  }
 
-    @Path("/certificate")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-config-get-list-of-signed-certificates-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getListOfSignedCertificatesConfig() {
-        LOG.debug("Getting config for list of signed certificates");
-        final var config = listSignedCertificatesConfigFacadeService.get();
-        return Response.ok(config).build();
-    }
+  @Path("/certificate")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-config-get-list-of-signed-certificates-config",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getListOfSignedCertificatesConfig() {
+    LOG.debug("Getting config for list of signed certificates");
+    final var config = listSignedCertificatesConfigFacadeService.get();
+    return Response.ok(config).build();
+  }
 
-    @Path("/previous")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-config-get-list-of-previous-certificates-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getListOfPreviousCertificatesConfig() {
-        LOG.debug("Getting config for list of previous certificates");
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        return Response.ok(config).build();
-    }
+  @Path("/previous")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-config-get-list-of-previous-certificates-config",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getListOfPreviousCertificatesConfig() {
+    LOG.debug("Getting config for list of previous certificates");
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    return Response.ok(config).build();
+  }
 
-    @Path("/question")
-    @POST
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-config-get-list-of-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getListOfQuestions(String unitId) {
-        LOG.debug("Getting config for list of unhandled questions");
-        final var config = listQuestionsConfigFacadeService.get(unitId);
-        return Response.ok(config).build();
-    }
+  @Path("/question")
+  @POST
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-config-get-list-of-questions",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getListOfQuestions(String unitId) {
+    LOG.debug("Getting config for list of unhandled questions");
+    final var config = listQuestionsConfigFacadeService.get(unitId);
+    return Response.ok(config).build();
+  }
 
-    @Path("/question/update")
-    @POST
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-config-update-list-of-questions-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response updateListOfQuestionsConfig(UpdateListConfigRequestDTO request) {
-        LOG.debug("Getting updated config for list of unhandled questions");
-        final var updatedConfig = listQuestionsConfigFacadeService.update(request.getConfig(), request.getUnitId());
-        return Response.ok(updatedConfig).build();
-    }
+  @Path("/question/update")
+  @POST
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-config-update-list-of-questions-config",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response updateListOfQuestionsConfig(UpdateListConfigRequestDTO request) {
+    LOG.debug("Getting updated config for list of unhandled questions");
+    final var updatedConfig =
+        listQuestionsConfigFacadeService.update(request.getConfig(), request.getUnitId());
+    return Response.ok(updatedConfig).build();
+  }
 }

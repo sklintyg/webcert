@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,46 +33,52 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 @Service("renewCertificateFromWebcert")
 public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RenewCertificateFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(RenewCertificateFacadeServiceImpl.class);
 
-    private final CopyUtkastServiceHelper copyUtkastServiceHelper;
-    private final CopyUtkastService copyUtkastService;
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final CopyUtkastServiceHelper copyUtkastServiceHelper;
+  private final CopyUtkastService copyUtkastService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public RenewCertificateFacadeServiceImpl(CopyUtkastServiceHelper copyUtkastServiceHelper,
-        CopyUtkastService copyUtkastService,
-        GetCertificateFacadeService getCertificateFacadeService) {
-        this.copyUtkastServiceHelper = copyUtkastServiceHelper;
-        this.copyUtkastService = copyUtkastService;
-        this.getCertificateFacadeService = getCertificateFacadeService;
+  @Autowired
+  public RenewCertificateFacadeServiceImpl(
+      CopyUtkastServiceHelper copyUtkastServiceHelper,
+      CopyUtkastService copyUtkastService,
+      GetCertificateFacadeService getCertificateFacadeService) {
+    this.copyUtkastServiceHelper = copyUtkastServiceHelper;
+    this.copyUtkastService = copyUtkastService;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
+
+  @Override
+  public String renewCertificate(String certificateId) {
+    LOG.debug("Get certificate '{}' that will be renewed", certificateId);
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+    final var certificateType = certificate.getMetadata().getType();
+
+    final var copyRequest = new CopyIntygRequest();
+    copyRequest.setPatientPersonnummer(getPersonId(certificate.getMetadata().getPatient()));
+
+    LOG.debug(
+        "Preparing to create a renewal for '{}' with type '{}'", certificateId, certificateType);
+    final var renewalRequest =
+        copyUtkastServiceHelper.createRenewalCopyRequest(
+            certificateId, certificateType, copyRequest);
+
+    LOG.debug(
+        "Create a renewal for '{}' with type '{}'",
+        renewalRequest.getOriginalIntygId(),
+        renewalRequest.getTyp());
+    final var renewalCopy = copyUtkastService.createRenewalCopy(renewalRequest);
+
+    LOG.debug("Return renewal draft '{}' ", renewalCopy.getNewDraftIntygId());
+    return renewalCopy.getNewDraftIntygId();
+  }
+
+  private Personnummer getPersonId(Patient patient) {
+    if (patient.isReserveId()) {
+      return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
     }
-
-    @Override
-    public String renewCertificate(String certificateId) {
-        LOG.debug("Get certificate '{}' that will be renewed", certificateId);
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
-        final var certificateType = certificate.getMetadata().getType();
-
-        final var copyRequest = new CopyIntygRequest();
-        copyRequest.setPatientPersonnummer(
-            getPersonId(certificate.getMetadata().getPatient())
-        );
-
-        LOG.debug("Preparing to create a renewal for '{}' with type '{}'", certificateId, certificateType);
-        final var renewalRequest = copyUtkastServiceHelper.createRenewalCopyRequest(certificateId, certificateType, copyRequest);
-
-        LOG.debug("Create a renewal for '{}' with type '{}'", renewalRequest.getOriginalIntygId(), renewalRequest.getTyp());
-        final var renewalCopy = copyUtkastService.createRenewalCopy(renewalRequest);
-
-        LOG.debug("Return renewal draft '{}' ", renewalCopy.getNewDraftIntygId());
-        return renewalCopy.getNewDraftIntygId();
-    }
-
-    private Personnummer getPersonId(Patient patient) {
-        if (patient.isReserveId()) {
-            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
-        }
-        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
-    }
+    return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
+  }
 }

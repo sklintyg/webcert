@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -82,170 +82,225 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 @RequiredArgsConstructor
 public class FmbServiceImpl implements FmbService {
 
-    private static final String JOB_NAME = "FmbServiceUpdate.run";
+  private static final String JOB_NAME = "FmbServiceUpdate.run";
 
-    private final MdcHelper mdcHelper;
-    private final FmbConsumer fmbConsumer;
-    private final DiagnosInformationRepository repository;
+  private final MdcHelper mdcHelper;
+  private final FmbConsumer fmbConsumer;
+  private final DiagnosInformationRepository repository;
 
-    @Override
-    @Scheduled(cron = "${fmb.dataupdate.cron}")
-    @SchedulerLock(name = JOB_NAME)
-    @PerformanceLogging(eventAction = "job-update-fmb-data", eventType = MdcLogConstants.EVENT_TYPE_INFO)
-    public void updateData() {
-        try {
-            MDC.put(TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(SPAN_ID_KEY, mdcHelper.spanId());
+  @Override
+  @Scheduled(cron = "${fmb.dataupdate.cron}")
+  @SchedulerLock(name = JOB_NAME)
+  @PerformanceLogging(
+      eventAction = "job-update-fmb-data",
+      eventType = MdcLogConstants.EVENT_TYPE_INFO)
+  public void updateData() {
+    try {
+      MDC.put(TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(SPAN_ID_KEY, mdcHelper.spanId());
 
-            log.info("FMB data update started");
-            performUpdate();
-            log.info("FMB data update done");
-        } catch (Exception e) {
-            log.error("Failed to update FMB", e);
-        } finally {
-            MDC.clear();
-        }
+      log.info("FMB data update started");
+      performUpdate();
+      log.info("FMB data update done");
+    } catch (Exception e) {
+      log.error("Failed to update FMB", e);
+    } finally {
+      MDC.clear();
     }
+  }
 
-    private void performUpdate() {
-        final Try<Void> result = Try.run(() -> {
-            final FmdxInformation diagnosinformation = fmbConsumer.getForsakringsmedicinskDiagnosinformation();
-            final Typfall typfall = fmbConsumer.getTypfall();
-            final List<DiagnosInformation> diagnosInformationList = convertResponseToDiagnosInformation(diagnosinformation, typfall);
+  private void performUpdate() {
+    final Try<Void> result =
+        Try.run(
+            () -> {
+              final FmdxInformation diagnosinformation =
+                  fmbConsumer.getForsakringsmedicinskDiagnosinformation();
+              final Typfall typfall = fmbConsumer.getTypfall();
+              final List<DiagnosInformation> diagnosInformationList =
+                  convertResponseToDiagnosInformation(diagnosinformation, typfall);
 
-            if (!isEmpty(diagnosInformationList)) {
+              if (!isEmpty(diagnosInformationList)) {
                 repository.deleteAll();
                 repository.saveAll(diagnosInformationList);
-            }
-        });
+              }
+            });
 
-        if (result.isFailure()) {
-            log.warn("Failed to fetch FMB information");
-            result.getCause().printStackTrace();
-        }
+    if (result.isFailure()) {
+      log.warn("Failed to fetch FMB information");
+      result.getCause().printStackTrace();
     }
+  }
 
-    private List<DiagnosInformation> convertResponseToDiagnosInformation(final FmdxInformation diagnosinformation, final Typfall typfall) {
-        validateResponse(diagnosinformation, typfall);
+  private List<DiagnosInformation> convertResponseToDiagnosInformation(
+      final FmdxInformation diagnosinformation, final Typfall typfall) {
+    validateResponse(diagnosinformation, typfall);
 
-        final Optional<LocalDateTime> senasteAndring = diagnosinformation.getOptionalMeta()
+    final Optional<LocalDateTime> senasteAndring =
+        diagnosinformation
+            .getOptionalMeta()
             .map(Meta::getBuildtimestamp)
-            .map(timeStampString -> OffsetDateTime.parse(timeStampString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")))
+            .map(
+                timeStampString ->
+                    OffsetDateTime.parse(
+                        timeStampString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")))
             .map(OffsetDateTime::toLocalDateTime);
 
-        return diagnosinformation.getData().stream()
-            .map(FmdxData::getAttributes)
-            .map(attributes -> {
-                List<Beskrivning> beskrivningList = Lists.newArrayList();
-                attributes.getOptionalAktivitetsbegransning().ifPresent(begransning ->
-                    beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.AKTIVITETSBEGRANSNING)));
-                attributes.getOptionalFunktionsnedsattning().ifPresent(begransning ->
-                    beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.FUNKTIONSNEDSATTNING)));
+    return diagnosinformation.getData().stream()
+        .map(FmdxData::getAttributes)
+        .map(
+            attributes -> {
+              List<Beskrivning> beskrivningList = Lists.newArrayList();
+              attributes
+                  .getOptionalAktivitetsbegransning()
+                  .ifPresent(
+                      begransning ->
+                          beskrivningList.add(
+                              convertToBeskrivning(
+                                  begransning, BeskrivningTyp.AKTIVITETSBEGRANSNING)));
+              attributes
+                  .getOptionalFunktionsnedsattning()
+                  .ifPresent(
+                      begransning ->
+                          beskrivningList.add(
+                              convertToBeskrivning(
+                                  begransning, BeskrivningTyp.FUNKTIONSNEDSATTNING)));
 
-                final List<Icd10Kod> icd10KodList = convertToIcd10KodList(attributes, typfall);
+              final List<Icd10Kod> icd10KodList = convertToIcd10KodList(attributes, typfall);
 
-                return aDiagnosInformation()
-                    .diagnosRubrik(attributes.getOptionalDiagnosrubrik().orElse(null))
-                    .forsakringsmedicinskInformation(attributes.getOptionalForsakringsmedicinskinformation()
-                        .map(Markup::getMarkup)
-                        .orElse(null))
-                    .symptomPrognosBehandling(attributes.getOptionalSymtomprognosbehandling()
-                        .map(Markup::getMarkup)
-                        .orElse(null))
-                    .informationOmRehabilitering(attributes.getOptionalInformationomrehabilitering()
-                        .map(Markup::getMarkup)
-                        .orElse(null))
-                    .beskrivningList(beskrivningList)
-                    .icd10KodList(icd10KodList)
-                    .referensList(convertToReferensList(attributes))
-                    .senastUppdaterad(senasteAndring.orElse(null))
-                    .build();
-            }).toList();
+              return aDiagnosInformation()
+                  .diagnosRubrik(attributes.getOptionalDiagnosrubrik().orElse(null))
+                  .forsakringsmedicinskInformation(
+                      attributes
+                          .getOptionalForsakringsmedicinskinformation()
+                          .map(Markup::getMarkup)
+                          .orElse(null))
+                  .symptomPrognosBehandling(
+                      attributes
+                          .getOptionalSymtomprognosbehandling()
+                          .map(Markup::getMarkup)
+                          .orElse(null))
+                  .informationOmRehabilitering(
+                      attributes
+                          .getOptionalInformationomrehabilitering()
+                          .map(Markup::getMarkup)
+                          .orElse(null))
+                  .beskrivningList(beskrivningList)
+                  .icd10KodList(icd10KodList)
+                  .referensList(convertToReferensList(attributes))
+                  .senastUppdaterad(senasteAndring.orElse(null))
+                  .build();
+            })
+        .toList();
+  }
+
+  private void validateResponse(final FmdxInformation diagnosinformation, final Typfall typfall) {
+    Preconditions.checkArgument(nonNull(diagnosinformation));
+    Preconditions.checkArgument(nonNull(diagnosinformation.getData()));
+    Preconditions.checkArgument(nonNull(typfall));
+  }
+
+  private Beskrivning convertToBeskrivning(
+      final FmxBeskrivning beskrivning, final BeskrivningTyp beskrivningTyp) {
+    final List<IcfKod> icfKodList = Lists.newArrayList();
+    icfKodList.addAll(convertToIcfKodList(beskrivning.getCentralkod(), IcfKodTyp.CENTRAL));
+    icfKodList.addAll(
+        convertToIcfKodList(beskrivning.getKompletterandekod(), IcfKodTyp.KOMPLETTERANDE));
+
+    return aBeskrivning()
+        .beskrivningTyp(beskrivningTyp)
+        .beskrivningText(beskrivning.getBeskrivning() != null ? beskrivning.getBeskrivning() : "")
+        .icfKodList(icfKodList)
+        .build();
+  }
+
+  private List<IcfKod> convertToIcfKodList(final List<Kod> kodList, IcfKodTyp kodTyp) {
+    return kodList.stream()
+        .map(
+            kod ->
+                anIcfKod()
+                    .icfKodTyp(kodTyp)
+                    .kod(
+                        kod.getOptionalKod().isPresent()
+                            ? kod.getOptionalKod()
+                                .get()
+                                .replace(".", "")
+                                .toUpperCase(Locale.ENGLISH)
+                            : null)
+                    .build())
+        .toList();
+  }
+
+  private List<TypFall> convertToTypFallList(final Typfall typfall, final Kod kod) {
+    return typfall.getData().stream()
+        .map(TypfallData::getAttributes)
+        .filter(filterTypfall(kod))
+        .map(
+            attributes ->
+                aTypFall()
+                    .typfallsMening(attributes.getTypfallsmening())
+                    .maximalSjukrivningstidDagar(
+                        convertToAntalDagar(attributes.getRekommenderadsjukskrivning()))
+                    .maximalSjukrivningstidSourceValue(
+                        attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningstid())
+                    .maximalSjukrivningstidSourceUnit(
+                        attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningsenhet())
+                    .build())
+        .toList();
+  }
+
+  private Integer convertToAntalDagar(final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
+    if (!isValidRekommenderadSjukskrivning(rekommenderadsjukskrivning)) {
+      return null;
     }
 
-    private void validateResponse(final FmdxInformation diagnosinformation, final Typfall typfall) {
-        Preconditions.checkArgument(nonNull(diagnosinformation));
-        Preconditions.checkArgument(nonNull(diagnosinformation.getData()));
-        Preconditions.checkArgument(nonNull(typfall));
-    }
+    final int antal = Integer.parseInt(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
+    final TidEnhet enhet =
+        TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).orElseThrow();
+    return antal * enhet.getInDays();
+  }
 
-    private Beskrivning convertToBeskrivning(final FmxBeskrivning beskrivning, final BeskrivningTyp beskrivningTyp) {
-        final List<IcfKod> icfKodList = Lists.newArrayList();
-        icfKodList.addAll(convertToIcfKodList(beskrivning.getCentralkod(), IcfKodTyp.CENTRAL));
-        icfKodList.addAll(convertToIcfKodList(beskrivning.getKompletterandekod(), IcfKodTyp.KOMPLETTERANDE));
+  private boolean isValidRekommenderadSjukskrivning(
+      final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
+    return nonNull(rekommenderadsjukskrivning)
+        && nonNull(rekommenderadsjukskrivning.getMaximalsjukskrivningstid())
+        && nonNull(Ints.tryParse(rekommenderadsjukskrivning.getMaximalsjukskrivningstid()))
+        && nonNull(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet())
+        && TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).isPresent();
+  }
 
-        return aBeskrivning()
-            .beskrivningTyp(beskrivningTyp)
-            .beskrivningText(beskrivning.getBeskrivning() != null ? beskrivning.getBeskrivning() : "")
-            .icfKodList(icfKodList)
-            .build();
-    }
+  private Predicate<se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes> filterTypfall(
+      final Kod kod) {
+    return typFall ->
+        typFall
+            .getOptionalFmbtillstand()
+            .map(Fmbtillstand::getDiagnoskod)
+            .orElse(Collections.emptyList())
+            .contains(kod);
+  }
 
-    private List<IcfKod> convertToIcfKodList(final List<Kod> kodList, IcfKodTyp kodTyp) {
-        return kodList.stream()
-            .map(kod -> anIcfKod()
-                .icfKodTyp(kodTyp)
-                .kod(kod.getOptionalKod().isPresent()
-                    ? kod.getOptionalKod().get().replace(".", "").toUpperCase(Locale.ENGLISH)
-                    : null)
-                .build())
-            .toList();
-    }
+  private List<Icd10Kod> convertToIcd10KodList(
+      final Attributes attributes, final Typfall typfallList) {
 
-    private List<TypFall> convertToTypFallList(final Typfall typfall, final Kod kod) {
-        return typfall.getData().stream()
-            .map(TypfallData::getAttributes)
-            .filter(filterTypfall(kod))
-            .map(attributes -> aTypFall()
-                .typfallsMening(attributes.getTypfallsmening())
-                .maximalSjukrivningstidDagar(convertToAntalDagar(attributes.getRekommenderadsjukskrivning()))
-                .maximalSjukrivningstidSourceValue(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningstid())
-                .maximalSjukrivningstidSourceUnit(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningsenhet())
-                .build())
-            .toList();
-    }
+    return attributes.getDiagnoskod().stream()
+        .map(
+            kod ->
+                anIcd10Kod()
+                    .kod(
+                        kod.getOptionalKod().isPresent()
+                            ? kod.getOptionalKod()
+                                .get()
+                                .replace(".", "")
+                                .toUpperCase(Locale.ENGLISH)
+                            : null)
+                    .beskrivning(kod.getBeskrivning())
+                    .typFallList(convertToTypFallList(typfallList, kod))
+                    .build())
+        .toList();
+  }
 
-    private Integer convertToAntalDagar(final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
-        if (!isValidRekommenderadSjukskrivning(rekommenderadsjukskrivning)) {
-            return null;
-        }
-
-        final int antal = Integer.parseInt(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
-        final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).orElseThrow();
-        return antal * enhet.getInDays();
-    }
-
-    private boolean isValidRekommenderadSjukskrivning(final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
-        return nonNull(rekommenderadsjukskrivning)
-            && nonNull(rekommenderadsjukskrivning.getMaximalsjukskrivningstid())
-            && nonNull(Ints.tryParse(rekommenderadsjukskrivning.getMaximalsjukskrivningstid()))
-            && nonNull(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet())
-            && TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).isPresent();
-    }
-
-    private Predicate<se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes> filterTypfall(final Kod kod) {
-        return typFall -> typFall.getOptionalFmbtillstand().map(Fmbtillstand::getDiagnoskod).orElse(Collections.emptyList()).contains(kod);
-    }
-
-    private List<Icd10Kod> convertToIcd10KodList(final Attributes attributes, final Typfall typfallList) {
-
-        return attributes.getDiagnoskod().stream()
-            .map(kod -> anIcd10Kod()
-                .kod(kod.getOptionalKod().isPresent()
-                    ? kod.getOptionalKod().get().replace(".", "").toUpperCase(Locale.ENGLISH)
-                    : null)
-                .beskrivning(kod.getBeskrivning())
-                .typFallList(convertToTypFallList(typfallList, kod))
-                .build())
-            .toList();
-    }
-
-    private List<Referens> convertToReferensList(final Attributes attributes) {
-        return attributes.getReferens().stream()
-            .map(referens -> aReferens()
-                .text(referens.getText())
-                .uri(referens.getUri())
-                .build())
-            .toList();
-    }
+  private List<Referens> convertToReferensList(final Attributes attributes) {
+    return attributes.getReferens().stream()
+        .map(referens -> aReferens().text(referens.getText()).uri(referens.getUri()).build())
+        .toList();
+  }
 }

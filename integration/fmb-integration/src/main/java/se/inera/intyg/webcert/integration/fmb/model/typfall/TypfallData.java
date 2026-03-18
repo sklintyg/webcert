@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,86 +29,83 @@ import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.Links;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "attributes",
-    "id",
-    "links",
-    "relationships",
-    "type"
-})
+@JsonPropertyOrder({"attributes", "id", "links", "relationships", "type"})
 public class TypfallData {
 
-    @JsonProperty("attributes")
-    private Attributes attributes;
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("links")
-    private Links links;
-    @JsonProperty("relationships")
-    private Relationships relationships;
-    @JsonProperty("type")
-    private String type;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("attributes")
+  private Attributes attributes;
 
-    @JsonProperty("attributes")
-    public Attributes getAttributes() {
-        return attributes;
-    }
+  @JsonProperty("id")
+  private String id;
 
-    @JsonProperty("attributes")
-    public void setAttributes(Attributes attributes) {
-        this.attributes = attributes;
-    }
+  @JsonProperty("links")
+  private Links links;
 
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
+  @JsonProperty("relationships")
+  private Relationships relationships;
 
-    @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
-    }
+  @JsonProperty("type")
+  private String type;
 
-    @JsonProperty("links")
-    public Links getLinks() {
-        return links;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("links")
-    public void setLinks(Links links) {
-        this.links = links;
-    }
+  @JsonProperty("attributes")
+  public Attributes getAttributes() {
+    return attributes;
+  }
 
-    @JsonProperty("relationships")
-    public Relationships getRelationships() {
-        return relationships;
-    }
+  @JsonProperty("attributes")
+  public void setAttributes(Attributes attributes) {
+    this.attributes = attributes;
+  }
 
-    @JsonProperty("relationships")
-    public void setRelationships(Relationships relationships) {
-        this.relationships = relationships;
-    }
+  @JsonProperty("id")
+  public String getId() {
+    return id;
+  }
 
-    @JsonProperty("type")
-    public String getType() {
-        return type;
-    }
+  @JsonProperty("id")
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @JsonProperty("type")
-    public void setType(String type) {
-        this.type = type;
-    }
+  @JsonProperty("links")
+  public Links getLinks() {
+    return links;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("links")
+  public void setLinks(Links links) {
+    this.links = links;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("relationships")
+  public Relationships getRelationships() {
+    return relationships;
+  }
 
+  @JsonProperty("relationships")
+  public void setRelationships(Relationships relationships) {
+    this.relationships = relationships;
+  }
+
+  @JsonProperty("type")
+  public String getType() {
+    return type;
+  }
+
+  @JsonProperty("type")
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

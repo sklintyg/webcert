@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,48 +38,46 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO.Question
 @Builder
 public class QuestionDTO {
 
-    String id;
-    QuestionType type;
-    String subject;
-    String message;
-    String author;
-    LocalDateTime sent;
-    Complement[] complements;
-    boolean isHandled;
-    boolean isForwarded;
-    Answer answer;
-    CertificateRelation answeredByCertificate;
-    Reminder[] reminders;
-    LocalDateTime lastUpdate;
-    List<ResourceLinkDTO> links;
-    LocalDate lastDateToReply;
-    String[] contactInfo;
-    String certificateId;
+  String id;
+  QuestionType type;
+  String subject;
+  String message;
+  String author;
+  LocalDateTime sent;
+  Complement[] complements;
+  boolean isHandled;
+  boolean isForwarded;
+  Answer answer;
+  CertificateRelation answeredByCertificate;
+  Reminder[] reminders;
+  LocalDateTime lastUpdate;
+  List<ResourceLinkDTO> links;
+  LocalDate lastDateToReply;
+  String[] contactInfo;
+  String certificateId;
 
-    public static QuestionDTO create(Question question, List<ResourceLinkDTO> links) {
-        return QuestionDTO.builder()
-            .id(question.getId())
-            .type(question.getType())
-            .subject(question.getSubject())
-            .message(question.getMessage())
-            .author(question.getAuthor())
-            .sent(question.getSent())
-            .complements(question.getComplements())
-            .isHandled(question.isHandled())
-            .isForwarded(question.isForwarded())
-            .answer(question.getAnswer())
-            .answeredByCertificate(question.getAnsweredByCertificate())
-            .reminders(question.getReminders())
-            .lastUpdate(question.getLastUpdate())
-            .links(links)
-            .lastDateToReply(question.getLastDateToReply())
-            .contactInfo(question.getContactInfo())
-            .certificateId(question.getCertificateId())
-            .build();
-    }
+  public static QuestionDTO create(Question question, List<ResourceLinkDTO> links) {
+    return QuestionDTO.builder()
+        .id(question.getId())
+        .type(question.getType())
+        .subject(question.getSubject())
+        .message(question.getMessage())
+        .author(question.getAuthor())
+        .sent(question.getSent())
+        .complements(question.getComplements())
+        .isHandled(question.isHandled())
+        .isForwarded(question.isForwarded())
+        .answer(question.getAnswer())
+        .answeredByCertificate(question.getAnsweredByCertificate())
+        .reminders(question.getReminders())
+        .lastUpdate(question.getLastUpdate())
+        .links(links)
+        .lastDateToReply(question.getLastDateToReply())
+        .contactInfo(question.getContactInfo())
+        .certificateId(question.getCertificateId())
+        .build();
+  }
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class QuestionDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class QuestionDTOBuilder {}
 }

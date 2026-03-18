@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.patient;
 
 import java.nio.charset.StandardCharsets;
@@ -37,42 +36,51 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 @Component
 @RequiredArgsConstructor
 public class GetCertificatesWithQAFromCertificateService {
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final ListItemNotificationDecorator listItemNotificationDecorator;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final ListItemNotificationDecorator listItemNotificationDecorator;
 
-    public List<ListItem> get(List<Handelse> notifications) {
-        if (notifications.isEmpty()) {
-            return Collections.emptyList();
-        }
+  public List<ListItem> get(List<Handelse> notifications) {
+    if (notifications.isEmpty()) {
+      return Collections.emptyList();
+    }
 
-        final var encodedXml = csIntegrationService.getCertificatesWithQA(
+    final var encodedXml =
+        csIntegrationService.getCertificatesWithQA(
             csIntegrationRequestFactory.getCertificatesWithQARequestDTO(
                 notifications.stream()
                     .map(Handelse::getIntygsId)
                     .distinct()
-                    .collect(Collectors.toList())
-            )
-        );
+                    .collect(Collectors.toList())));
 
-        final var decodedXml = new String(Base64.getDecoder().decode(encodedXml.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
-        final var certificatesForCareWithQAResponseType = (ListCertificatesForCareWithQAResponseType) XmlMarshallerHelper.unmarshal(
-            decodedXml).getValue();
+    final var decodedXml =
+        new String(
+            Base64.getDecoder().decode(encodedXml.getBytes(StandardCharsets.UTF_8)),
+            StandardCharsets.UTF_8);
+    final var certificatesForCareWithQAResponseType =
+        (ListCertificatesForCareWithQAResponseType)
+            XmlMarshallerHelper.unmarshal(decodedXml).getValue();
 
-        final var listItems = certificatesForCareWithQAResponseType.getList().getItem();
+    final var listItems = certificatesForCareWithQAResponseType.getList().getItem();
 
-        listItemNotificationDecorator.decorate(
-            listItems,
-            notifications.stream()
-                .filter(removeNotificationsNotRelatedToCertificatesFromCertificateService(listItems))
-                .collect(Collectors.toList())
-        );
+    listItemNotificationDecorator.decorate(
+        listItems,
+        notifications.stream()
+            .filter(removeNotificationsNotRelatedToCertificatesFromCertificateService(listItems))
+            .collect(Collectors.toList()));
 
-        return listItems;
-    }
+    return listItems;
+  }
 
-    private static Predicate<Handelse> removeNotificationsNotRelatedToCertificatesFromCertificateService(List<ListItem> listItems) {
-        return notification -> listItems.stream()
-            .anyMatch(item -> item.getIntyg().getIntygsId().getExtension().equals(notification.getIntygsId()));
-    }
+  private static Predicate<Handelse>
+      removeNotificationsNotRelatedToCertificatesFromCertificateService(List<ListItem> listItems) {
+    return notification ->
+        listItems.stream()
+            .anyMatch(
+                item ->
+                    item.getIntyg()
+                        .getIntygsId()
+                        .getExtension()
+                        .equals(notification.getIntygsId()));
+  }
 }

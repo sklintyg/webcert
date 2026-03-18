@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -32,32 +31,30 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractit
 @JsonDeserialize(builder = PrivatePractitionerBuilder.class)
 public class PrivatePractitioner {
 
-    String hsaId;
-    String personId;
-    String name;
+  String hsaId;
+  String personId;
+  String name;
 
-    String position;
-    String careUnitName;
-    String careProviderName;
-    String typeOfCare;
-    String healthcareServiceType;
-    String workplaceCode;
+  String position;
+  String careUnitName;
+  String careProviderName;
+  String typeOfCare;
+  String healthcareServiceType;
+  String workplaceCode;
 
-    String phoneNumber;
-    String email;
-    String address;
-    String zipCode;
-    String city;
-    String municipality;
-    String county;
+  String phoneNumber;
+  String email;
+  String address;
+  String zipCode;
+  String city;
+  String municipality;
+  String county;
 
-    LocalDateTime registrationDate;
-    String personalPrescriptionCode;
-    List<Code> specialties;
-    List<Code> licensedHealthcareProfessions;
+  LocalDateTime registrationDate;
+  String personalPrescriptionCode;
+  List<Code> specialties;
+  List<Code> licensedHealthcareProfessions;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class PrivatePractitionerBuilder {}
 }

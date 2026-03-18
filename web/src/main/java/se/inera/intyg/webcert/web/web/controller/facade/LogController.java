@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,24 +37,23 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 @Path("/log")
 public class LogController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LogController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(LogController.class);
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Autowired
-    private ErrorLogFacadeService errorLogFacadeService;
+  @Autowired private ErrorLogFacadeService errorLogFacadeService;
 
-    @POST
-    @Path("/error")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "log-log-error", eventType = MdcLogConstants.EVENT_TYPE_ERROR)
-    public Response logError(@RequestBody @NotNull ErrorLogRequestDTO errorLogRequest) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Logging error with id: '{}'", errorLogRequest.getErrorId());
-        }
-
-        errorLogFacadeService.log(errorLogRequest);
-        return Response.ok().build();
+  @POST
+  @Path("/error")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(eventAction = "log-log-error", eventType = MdcLogConstants.EVENT_TYPE_ERROR)
+  public Response logError(@RequestBody @NotNull ErrorLogRequestDTO errorLogRequest) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Logging error with id: '{}'", errorLogRequest.getErrorId());
     }
+
+    errorLogFacadeService.log(errorLogRequest);
+    return Response.ok().build();
+  }
 }

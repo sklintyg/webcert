@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,66 +44,73 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.util.Support
 @Path("/certificate")
 public class CertificateTestabilityController extends AbstractApiController {
 
-    private final CreateCertificateTestabilityUtil createCertificateTestabilityUtil;
-    private final CreateQuestionTestabilityUtil createQuestionTestabilityUtil;
-    private final SupportedCertificateTypesUtil supportedCertificateTypesUtil;
-    private final SupportedPatientsUtil supportedPatientsUtil;
+  private final CreateCertificateTestabilityUtil createCertificateTestabilityUtil;
+  private final CreateQuestionTestabilityUtil createQuestionTestabilityUtil;
+  private final SupportedCertificateTypesUtil supportedCertificateTypesUtil;
+  private final SupportedPatientsUtil supportedPatientsUtil;
 
-    @Autowired
-    public CertificateTestabilityController(CreateCertificateTestabilityUtil createCertificateTestabilityUtil,
-        CreateQuestionTestabilityUtil createQuestionTestabilityUtil,
-        SupportedCertificateTypesUtil supportedCertificateTypesUtil,
-        SupportedPatientsUtil supportedPatientsUtil) {
-        this.createCertificateTestabilityUtil = createCertificateTestabilityUtil;
-        this.createQuestionTestabilityUtil = createQuestionTestabilityUtil;
-        this.supportedCertificateTypesUtil = supportedCertificateTypesUtil;
-        this.supportedPatientsUtil = supportedPatientsUtil;
-    }
+  @Autowired
+  public CertificateTestabilityController(
+      CreateCertificateTestabilityUtil createCertificateTestabilityUtil,
+      CreateQuestionTestabilityUtil createQuestionTestabilityUtil,
+      SupportedCertificateTypesUtil supportedCertificateTypesUtil,
+      SupportedPatientsUtil supportedPatientsUtil) {
+    this.createCertificateTestabilityUtil = createCertificateTestabilityUtil;
+    this.createQuestionTestabilityUtil = createQuestionTestabilityUtil;
+    this.supportedCertificateTypesUtil = supportedCertificateTypesUtil;
+    this.supportedPatientsUtil = supportedPatientsUtil;
+  }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/")
-    public Response createCertificate(@RequestBody @NotNull CreateCertificateRequestDTO createCertificateRequest) {
-        final var certificateId = createCertificateTestabilityUtil.createNewCertificate(createCertificateRequest);
-        return Response.ok(new CreateCertificateResponseDTO(certificateId)).build();
-    }
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/")
+  public Response createCertificate(
+      @RequestBody @NotNull CreateCertificateRequestDTO createCertificateRequest) {
+    final var certificateId =
+        createCertificateTestabilityUtil.createNewCertificate(createCertificateRequest);
+    return Response.ok(new CreateCertificateResponseDTO(certificateId)).build();
+  }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{certificateId}/question")
-    public Response createQuestion(@PathParam("certificateId") @NotNull String certificateId,
-        @RequestBody @NotNull CreateQuestionRequestDTO createQuestionRequest) {
-        final var questionId = createQuestionTestabilityUtil.createNewQuestion(certificateId, createQuestionRequest);
-        return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
-    }
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{certificateId}/question")
+  public Response createQuestion(
+      @PathParam("certificateId") @NotNull String certificateId,
+      @RequestBody @NotNull CreateQuestionRequestDTO createQuestionRequest) {
+    final var questionId =
+        createQuestionTestabilityUtil.createNewQuestion(certificateId, createQuestionRequest);
+    return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
+  }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{certificateId}/questionDraft")
-    public Response createQuestionDraft(@PathParam("certificateId") @NotNull String certificateId,
-        @RequestBody @NotNull CreateQuestionRequestDTO createQuestionRequest) {
-        final var questionId = createQuestionTestabilityUtil.createNewQuestionDraft(certificateId, createQuestionRequest);
-        return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
-    }
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/{certificateId}/questionDraft")
+  public Response createQuestionDraft(
+      @PathParam("certificateId") @NotNull String certificateId,
+      @RequestBody @NotNull CreateQuestionRequestDTO createQuestionRequest) {
+    final var questionId =
+        createQuestionTestabilityUtil.createNewQuestionDraft(certificateId, createQuestionRequest);
+    return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
+  }
 
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/types")
-    public Response getSupportedCerificateTypes() {
-        final var certificateTypes = supportedCertificateTypesUtil.get();
-        return Response.ok(new CertificateTypesResponseDTO(certificateTypes)).build();
-    }
+  @GET
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/types")
+  public Response getSupportedCerificateTypes() {
+    final var certificateTypes = supportedCertificateTypesUtil.get();
+    return Response.ok(new CertificateTypesResponseDTO(certificateTypes)).build();
+  }
 
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/patients")
-    public Response getSuppportedPatients() {
-        final var patients = supportedPatientsUtil.get();
-        return Response.ok(new CertificatePatientsResponseDTO(patients)).build();
-    }
+  @GET
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/patients")
+  public Response getSuppportedPatients() {
+    final var patients = supportedPatientsUtil.get();
+    return Response.ok(new CertificatePatientsResponseDTO(patients)).build();
+  }
 }

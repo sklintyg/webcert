@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,13 +23,14 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 
 public interface NotificationRedeliveryStrategy {
 
-    String STRATEGY_TEMPLATE_FORMAT_REGEX = "^[1-9][0-9]?#([1-9][0-9]?:[smhd],)*([1-9][0-9]?:[smhd])$";
+  String STRATEGY_TEMPLATE_FORMAT_REGEX =
+      "^[1-9][0-9]?#([1-9][0-9]?:[smhd],)*([1-9][0-9]?:[smhd])$";
 
-    NotificationRedeliveryStrategyEnum getName();
+  NotificationRedeliveryStrategyEnum getName();
 
-    int getMaxDeliveries();
+  int getMaxDeliveries();
 
-    int getNextTimeValue(int attemptedDeliveries);
+  int getNextTimeValue(int attemptedDeliveries);
 
-    ChronoUnit getNextTimeUnit(int attemptedDeliveries);
+  ChronoUnit getNextTimeUnit(int attemptedDeliveries);
 }

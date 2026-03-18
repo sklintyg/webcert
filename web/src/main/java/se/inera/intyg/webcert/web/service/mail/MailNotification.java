@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,44 +20,49 @@ package se.inera.intyg.webcert.web.service.mail;
 
 public class MailNotification {
 
-    private String qaId;
-    private String certificateId;
-    private String certificateType;
-    private String careUnitId;
-    private String careUnitName;
-    private String signedByHsaId;
+  private String qaId;
+  private String certificateId;
+  private String certificateType;
+  private String careUnitId;
+  private String careUnitName;
+  private String signedByHsaId;
 
-    public MailNotification(String qaId, String certificateId, String certificateType, String careUnitId, String careUnitName,
-        String signedByHsaId) {
-        this.qaId = qaId;
-        this.certificateId = certificateId;
-        this.certificateType = certificateType;
-        this.careUnitId = careUnitId;
-        this.careUnitName = careUnitName;
-        this.signedByHsaId = signedByHsaId;
-    }
+  public MailNotification(
+      String qaId,
+      String certificateId,
+      String certificateType,
+      String careUnitId,
+      String careUnitName,
+      String signedByHsaId) {
+    this.qaId = qaId;
+    this.certificateId = certificateId;
+    this.certificateType = certificateType;
+    this.careUnitId = careUnitId;
+    this.careUnitName = careUnitName;
+    this.signedByHsaId = signedByHsaId;
+  }
 
-    public String getQaId() {
-        return qaId;
-    }
+  public String getQaId() {
+    return qaId;
+  }
 
-    public String getCertificateId() {
-        return certificateId;
-    }
+  public String getCertificateId() {
+    return certificateId;
+  }
 
-    public String getCertificateType() {
-        return certificateType;
-    }
+  public String getCertificateType() {
+    return certificateType;
+  }
 
-    public String getCareUnitId() {
-        return careUnitId;
-    }
+  public String getCareUnitId() {
+    return careUnitId;
+  }
 
-    public String getCareUnitName() {
-        return careUnitName;
-    }
+  public String getCareUnitName() {
+    return careUnitName;
+  }
 
-    public String getSignedByHsaId() {
-        return signedByHsaId;
-    }
+  public String getSignedByHsaId() {
+    return signedByHsaId;
+  }
 }

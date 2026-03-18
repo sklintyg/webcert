@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,164 +55,157 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromCertificateServiceTest {
 
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @Mock
-    MonitoringLogService monitoringLogService;
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    PDLLogService pdlLogService;
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock MonitoringLogService monitoringLogService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock PDLLogService pdlLogService;
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    CreateCertificateFromCertificateService createCertificateFromCertificateService;
+  @InjectMocks CreateCertificateFromCertificateService createCertificateFromCertificateService;
 
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final String CERTIFICATE_ID = "ID";
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String UNIT_ID = "unitId";
-    private static final String HSA_ID = "hsaId";
-    private static final String PATIENT_ID = "s191212121212";
-    private static final String TYPE = "TYPE";
-    private static final String VERSION = "VERSION";
-    private static final CertificateModelIdDTO CERTIFICATE_MODEL_ID = CertificateModelIdDTO.builder()
-        .type(TYPE)
-        .version(VERSION)
-        .build();
-    private static final CreateCertificateRequestDTO REQUEST = CreateCertificateRequestDTO.builder().build();
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final String CERTIFICATE_ID = "ID";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String UNIT_ID = "unitId";
+  private static final String HSA_ID = "hsaId";
+  private static final String PATIENT_ID = "s191212121212";
+  private static final String TYPE = "TYPE";
+  private static final String VERSION = "VERSION";
+  private static final CertificateModelIdDTO CERTIFICATE_MODEL_ID =
+      CertificateModelIdDTO.builder().type(TYPE).version(VERSION).build();
+  private static final CreateCertificateRequestDTO REQUEST =
+      CreateCertificateRequestDTO.builder().build();
 
-    static {
-        CERTIFICATE.setMetadata(
-            CertificateMetadata.builder()
-                .id(CERTIFICATE_ID)
-                .type(CERTIFICATE_TYPE)
-                .unit(
-                    Unit.builder()
-                        .unitId(UNIT_ID)
-                        .build()
-                )
-                .issuedBy(
-                    Staff.builder()
-                        .personId(HSA_ID)
-                        .build()
-                )
-                .build()
-        );
+  static {
+    CERTIFICATE.setMetadata(
+        CertificateMetadata.builder()
+            .id(CERTIFICATE_ID)
+            .type(CERTIFICATE_TYPE)
+            .unit(Unit.builder().unitId(UNIT_ID).build())
+            .issuedBy(Staff.builder().personId(HSA_ID).build())
+            .build());
+  }
+
+  @Test
+  void shouldThrowExceptionIfCertificateTypeExistsThrows() {
+    doThrow(new IllegalStateException()).when(csIntegrationService).certificateTypeExists(TYPE);
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID));
+  }
+
+  @Test
+  void shouldReturnNullIfCertificateTypeDoesntExist() throws CreateCertificateException {
+    doReturn(Optional.empty()).when(csIntegrationService).certificateTypeExists(TYPE);
+
+    assertNull(createCertificateFromCertificateService.create(TYPE, PATIENT_ID));
+  }
+
+  @Test
+  void shouldNotPerformPDLLogIfTypeWasNotCreatedFromCS() throws CreateCertificateException {
+    doReturn(Optional.empty()).when(csIntegrationService).certificateTypeExists(TYPE);
+    createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+    verifyNoInteractions(pdlLogService);
+  }
+
+  @Nested
+  class CertificateTypeExists {
+
+    @BeforeEach
+    void setUp() {
+      doReturn(Optional.of(CERTIFICATE_MODEL_ID))
+          .when(csIntegrationService)
+          .certificateTypeExists(TYPE);
     }
 
     @Test
-    void shouldThrowExceptionIfCertificateTypeExistsThrows() {
-        doThrow(new IllegalStateException()).when(csIntegrationService).certificateTypeExists(TYPE);
+    void shouldThrowCertificateCreateExceptionIfCreateCertificateThrows() {
+      doReturn(REQUEST)
+          .when(csIntegrationRequestFactory)
+          .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+      doThrow(new IllegalStateException()).when(csIntegrationService).createCertificate(REQUEST);
 
-        assertThrows(IllegalStateException.class,
-            () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
-        );
+      assertThrows(
+          CreateCertificateException.class,
+          () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID));
     }
 
     @Test
-    void shouldReturnNullIfCertificateTypeDoesntExist() throws CreateCertificateException {
-        doReturn(Optional.empty()).when(csIntegrationService).certificateTypeExists(TYPE);
+    void shouldThrowCertificateCreateExceptionIfCreateCertificateRequestThrows() {
+      doThrow(new IllegalStateException())
+          .when(csIntegrationRequestFactory)
+          .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
 
-        assertNull(
-            createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
-        );
+      assertThrows(
+          CreateCertificateException.class,
+          () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID));
     }
 
     @Test
-    void shouldNotPerformPDLLogIfTypeWasNotCreatedFromCS() throws CreateCertificateException {
-        doReturn(Optional.empty()).when(csIntegrationService).certificateTypeExists(TYPE);
-        createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-        verifyNoInteractions(pdlLogService);
+    void shouldPerformPDLForCreateCertificate() throws CreateCertificateException {
+      doReturn(REQUEST)
+          .when(csIntegrationRequestFactory)
+          .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+      doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
+
+      createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+      verify(pdlLogService, times(1)).logCreated(CERTIFICATE);
     }
 
-    @Nested
-    class CertificateTypeExists {
+    @Test
+    void shouldPerformMonitorLogForCreateCertificate() throws CreateCertificateException {
+      doReturn(REQUEST)
+          .when(csIntegrationRequestFactory)
+          .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+      doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
 
-        @BeforeEach
-        void setUp() {
-            doReturn(Optional.of(CERTIFICATE_MODEL_ID)).when(csIntegrationService).certificateTypeExists(TYPE);
-        }
+      createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
 
-        @Test
-        void shouldThrowCertificateCreateExceptionIfCreateCertificateThrows() {
-            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
-            doThrow(new IllegalStateException()).when(csIntegrationService).createCertificate(REQUEST);
-
-            assertThrows(CreateCertificateException.class,
-                () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
-            );
-        }
-
-        @Test
-        void shouldThrowCertificateCreateExceptionIfCreateCertificateRequestThrows() {
-            doThrow(new IllegalStateException()).when(csIntegrationRequestFactory)
-                .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
-
-            assertThrows(CreateCertificateException.class,
-                () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
-            );
-        }
-
-        @Test
-        void shouldPerformPDLForCreateCertificate() throws CreateCertificateException {
-            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
-            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
-
-            createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-
-            verify(pdlLogService, times(1)).logCreated(CERTIFICATE);
-        }
-
-        @Test
-        void shouldPerformMonitorLogForCreateCertificate() throws CreateCertificateException {
-            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
-            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
-
-            createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-
-            verify(monitoringLogService, times(1)).logUtkastCreated(
-                CERTIFICATE_ID, CERTIFICATE_TYPE, UNIT_ID, HSA_ID, 0
-            );
-        }
-
-        @Test
-        void shouldPublishCertificateStatusUpdateService() throws CreateCertificateException {
-            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
-            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
-
-            createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-
-            verify(publishCertificateStatusUpdateService, times(1)).publish(
-                CERTIFICATE, HandelsekodEnum.SKAPAT
-            );
-        }
-
-        @Test
-        void shouldPublishAnalyticsMessageWhenDraftIsCreated() throws CreateCertificateException {
-            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
-            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
-            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-            when(certificateAnalyticsMessageFactory.draftCreated(CERTIFICATE)).thenReturn(analyticsMessage);
-
-            createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-
-            verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
-        }
-
-        @Test
-        void shouldReturnIdOfCertificate() throws CreateCertificateException {
-            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
-            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
-
-            assertEquals(CERTIFICATE_ID,
-                createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
-            );
-        }
+      verify(monitoringLogService, times(1))
+          .logUtkastCreated(CERTIFICATE_ID, CERTIFICATE_TYPE, UNIT_ID, HSA_ID, 0);
     }
+
+    @Test
+    void shouldPublishCertificateStatusUpdateService() throws CreateCertificateException {
+      doReturn(REQUEST)
+          .when(csIntegrationRequestFactory)
+          .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+      doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
+
+      createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+      verify(publishCertificateStatusUpdateService, times(1))
+          .publish(CERTIFICATE, HandelsekodEnum.SKAPAT);
+    }
+
+    @Test
+    void shouldPublishAnalyticsMessageWhenDraftIsCreated() throws CreateCertificateException {
+      doReturn(REQUEST)
+          .when(csIntegrationRequestFactory)
+          .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+      doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
+      final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+      when(certificateAnalyticsMessageFactory.draftCreated(CERTIFICATE))
+          .thenReturn(analyticsMessage);
+
+      createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+      verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
+    }
+
+    @Test
+    void shouldReturnIdOfCertificate() throws CreateCertificateException {
+      doReturn(REQUEST)
+          .when(csIntegrationRequestFactory)
+          .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+      doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
+
+      assertEquals(
+          CERTIFICATE_ID, createCertificateFromCertificateService.create(TYPE, PATIENT_ID));
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,12 +22,10 @@ import java.util.List;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
 
-/**
- * Created by pehr on 10/21/13.
- */
+/** Created by pehr on 10/21/13. */
 public interface FragaSvarFilteredRepositoryCustom {
 
-    List<FragaSvar> filterFragaSvar(Filter filter);
+  List<FragaSvar> filterFragaSvar(Filter filter);
 
-    int filterCountFragaSvar(Filter filter);
+  int filterCountFragaSvar(Filter filter);
 }

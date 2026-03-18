@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,86 +32,85 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 @ExtendWith(MockitoExtension.class)
 class QuestionStatusFilterTest {
 
-    @InjectMocks
-    private QuestionStatusFilter questionStatusFilter;
+  @InjectMocks private QuestionStatusFilter questionStatusFilter;
 
-    @Test
-    void shouldReturnTrueIfShowAll() {
-        final var arendeListItem = new ArendeListItem();
-        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.SHOW_ALL));
-    }
+  @Test
+  void shouldReturnTrueIfShowAll() {
+    final var arendeListItem = new ArendeListItem();
+    assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.SHOW_ALL));
+  }
 
-    @Test
-    void shouldReturnFalseIfStatusClosedAndFilterOnNotHandled() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.CLOSED);
+  @Test
+  void shouldReturnFalseIfStatusClosedAndFilterOnNotHandled() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.CLOSED);
 
-        assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.NOT_HANDLED));
-    }
+    assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.NOT_HANDLED));
+  }
 
-    @Test
-    void shouldReturnTrueIfNotClosedAndFilterOnNotHandled() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
+  @Test
+  void shouldReturnTrueIfNotClosedAndFilterOnNotHandled() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.NOT_HANDLED));
-    }
+    assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.NOT_HANDLED));
+  }
 
-    @Test
-    void shouldReturnFalseIfStatusNotClosedAndFilterOnHandled() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
+  @Test
+  void shouldReturnFalseIfStatusNotClosedAndFilterOnHandled() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.HANDLED));
-    }
+    assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.HANDLED));
+  }
 
-    @Test
-    void shouldReturnTrueIfStatusClosedAndFilterOnHandled() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.CLOSED);
+  @Test
+  void shouldReturnTrueIfStatusClosedAndFilterOnHandled() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.CLOSED);
 
-        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.HANDLED));
-    }
+    assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.HANDLED));
+  }
 
-    @Test
-    void shouldReturnTrueIfPendingInternalActionAndComplementWhenFilteringOnComplement() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
-        arendeListItem.setAmne("KOMPLT");
+  @Test
+  void shouldReturnTrueIfPendingInternalActionAndComplementWhenFilteringOnComplement() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
+    arendeListItem.setAmne("KOMPLT");
 
-        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.COMPLEMENT));
-    }
+    assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.COMPLEMENT));
+  }
 
-    @Test
-    void shouldReturnTrueIfPendingInternalActionAndContactWhenFilteringOnAnswer() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
-        arendeListItem.setAmne("KONTKT");
+  @Test
+  void shouldReturnTrueIfPendingInternalActionAndContactWhenFilteringOnAnswer() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
+    arendeListItem.setAmne("KONTKT");
 
-        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.ANSWER));
-    }
+    assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.ANSWER));
+  }
 
-    @Test
-    void shouldReturnTrueIfAnsweredWhenFilteringOnReadAnswer() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.ANSWERED);
+  @Test
+  void shouldReturnTrueIfAnsweredWhenFilteringOnReadAnswer() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.ANSWERED);
 
-        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.READ_ANSWER));
-    }
+    assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.READ_ANSWER));
+  }
 
-    @Test
-    void shouldReturnFalseIfPendingInternalActionWhenFilteringOnWait() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
+  @Test
+  void shouldReturnFalseIfPendingInternalActionWhenFilteringOnWait() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
 
-        assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.WAIT));
-    }
+    assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.WAIT));
+  }
 
-    @Test
-    void shouldReturnFalseIfPendingExternalActionWhenFilteringOnWait() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
+  @Test
+  void shouldReturnFalseIfPendingExternalActionWhenFilteringOnWait() {
+    final var arendeListItem = new ArendeListItem();
+    arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.WAIT));
-    }
+    assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.WAIT));
+  }
 }

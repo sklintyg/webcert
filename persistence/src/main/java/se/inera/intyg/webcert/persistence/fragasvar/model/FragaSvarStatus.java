@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,44 +22,43 @@ import se.inera.intyg.webcert.persistence.model.Status;
 
 public class FragaSvarStatus {
 
-    private Long fragaSvarId;
+  private Long fragaSvarId;
 
-    private String frageStallare;
+  private String frageStallare;
 
-    private String svarsText;
+  private String svarsText;
 
-    private Status status;
+  private Status status;
 
-    public FragaSvarStatus(Long fragaSvarId, String frageStallare, String svarsText, Status status) {
-        super();
-        this.fragaSvarId = fragaSvarId;
-        this.frageStallare = frageStallare;
-        this.svarsText = svarsText;
-        this.status = status;
-    }
+  public FragaSvarStatus(Long fragaSvarId, String frageStallare, String svarsText, Status status) {
+    super();
+    this.fragaSvarId = fragaSvarId;
+    this.frageStallare = frageStallare;
+    this.svarsText = svarsText;
+    this.status = status;
+  }
 
-    public Long getFragaSvarId() {
-        return fragaSvarId;
-    }
+  public Long getFragaSvarId() {
+    return fragaSvarId;
+  }
 
-    public String getFrageStallare() {
-        return frageStallare;
-    }
+  public String getFrageStallare() {
+    return frageStallare;
+  }
 
-    public String getSvarsText() {
-        return svarsText;
-    }
+  public String getSvarsText() {
+    return svarsText;
+  }
 
-    public Status getStatus() {
-        return status;
-    }
+  public Status getStatus() {
+    return status;
+  }
 
-    public boolean hasAnswerSet() {
-        return svarsText != null;
-    }
+  public boolean hasAnswerSet() {
+    return svarsText != null;
+  }
 
-    public boolean isClosed() {
-        return status.equals(Status.CLOSED);
-    }
-
+  public boolean isClosed() {
+    return status.equals(Status.CLOSED);
+  }
 }

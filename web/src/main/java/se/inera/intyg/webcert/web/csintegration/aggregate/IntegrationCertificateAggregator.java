@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,28 +28,29 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 @Service("integrationCertificateAggregator")
 public class IntegrationCertificateAggregator implements IntegrationService {
 
-    private final IntegrationService integrationServiceForWC;
-    private final IntegrationService integrationServiceForCS;
+  private final IntegrationService integrationServiceForWC;
+  private final IntegrationService integrationServiceForCS;
 
-    public IntegrationCertificateAggregator(
-        @Qualifier("integrationServiceForWC") IntegrationService integrationServiceForWC,
-        @Qualifier("integrationServiceForCS") IntegrationService integrationServiceForCS) {
-        this.integrationServiceForWC = integrationServiceForWC;
-        this.integrationServiceForCS = integrationServiceForCS;
-    }
+  public IntegrationCertificateAggregator(
+      @Qualifier("integrationServiceForWC") IntegrationService integrationServiceForWC,
+      @Qualifier("integrationServiceForCS") IntegrationService integrationServiceForCS) {
+    this.integrationServiceForWC = integrationServiceForWC;
+    this.integrationServiceForCS = integrationServiceForCS;
+  }
 
-    @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user) {
-        return prepareRedirectToIntyg(intygId, user, null);
-    }
+  @Override
+  public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user) {
+    return prepareRedirectToIntyg(intygId, user, null);
+  }
 
-    @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user,
-        Personnummer prepareBeforeAlternateSsn) {
-        final var responseFromCS = integrationServiceForCS.prepareRedirectToIntyg(intygId, user,
-            prepareBeforeAlternateSsn);
+  @Override
+  public PrepareRedirectToIntyg prepareRedirectToIntyg(
+      String intygId, WebCertUser user, Personnummer prepareBeforeAlternateSsn) {
+    final var responseFromCS =
+        integrationServiceForCS.prepareRedirectToIntyg(intygId, user, prepareBeforeAlternateSsn);
 
-        return responseFromCS != null ? responseFromCS
-            : integrationServiceForWC.prepareRedirectToIntyg(intygId, user, prepareBeforeAlternateSsn);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : integrationServiceForWC.prepareRedirectToIntyg(intygId, user, prepareBeforeAlternateSsn);
+  }
 }

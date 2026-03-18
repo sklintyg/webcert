@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,16 +18,13 @@
  */
 package se.inera.intyg.webcert.persistence.model;
 
-/**
- * Created by pehr on 10/22/13.
- * Filter Statuses -"waiting for:"
- */
+/** Created by pehr on 10/22/13. Filter Statuses -"waiting for:" */
 public enum VantarPa {
-    MARKERA_SOM_HANTERAD,
-    KOMPLETTERING_FRAN_VARDEN,
-    SVAR_FRAN_VARDEN,
-    SVAR_FRAN_FK,
-    HANTERAD,
-    ALLA_OHANTERADE,
-    ALLA
+  MARKERA_SOM_HANTERAD,
+  KOMPLETTERING_FRAN_VARDEN,
+  SVAR_FRAN_VARDEN,
+  SVAR_FRAN_FK,
+  HANTERAD,
+  ALLA_OHANTERADE,
+  ALLA
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,80 +45,81 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 @RunWith(MockitoJUnitRunner.class)
 public class GetCertificateAdditionsResponderImplTest {
 
-    private static final List<Long> ARENDE_IDS = Arrays.asList(1234567L, 2345678L, 3456789L);
+  private static final List<Long> ARENDE_IDS = Arrays.asList(1234567L, 2345678L, 3456789L);
 
-    private static final List<String> INTYG_IDS = Arrays.asList("ABC123", "DEF456", "GHI789");
+  private static final List<String> INTYG_IDS = Arrays.asList("ABC123", "DEF456", "GHI789");
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @InjectMocks
-    GetCertificateAdditionsResponderImpl testee;
+  @InjectMocks GetCertificateAdditionsResponderImpl testee;
 
-    @Test
-    public void whenGettingKompletteringarSuccessfully() {
-        when(arendeService.getArendenExternal(INTYG_IDS)).thenReturn(mockKompetteringar());
+  @Test
+  public void whenGettingKompletteringarSuccessfully() {
+    when(arendeService.getArendenExternal(INTYG_IDS)).thenReturn(mockKompetteringar());
 
-        GetCertificateAdditionsResponseType additions = testee.getCertificateAdditions("", buildRequest());
-        assertEquals(3, additions.getAdditions().size());
-        assertEquals(1, additions.getAdditions().get(0).getAddition().size());
-        assertEquals(1, additions.getAdditions().get(1).getAddition().size());
-        assertEquals(1, additions.getAdditions().get(2).getAddition().size());
-    }
+    GetCertificateAdditionsResponseType additions =
+        testee.getCertificateAdditions("", buildRequest());
+    assertEquals(3, additions.getAdditions().size());
+    assertEquals(1, additions.getAdditions().get(0).getAddition().size());
+    assertEquals(1, additions.getAdditions().get(1).getAddition().size());
+    assertEquals(1, additions.getAdditions().get(2).getAddition().size());
+  }
 
-    @Test
-    public void whenThereAreNoKompletteringar() {
-        when(arendeService.getArendenExternal(INTYG_IDS)).thenReturn(new ArrayList<>());
+  @Test
+  public void whenThereAreNoKompletteringar() {
+    when(arendeService.getArendenExternal(INTYG_IDS)).thenReturn(new ArrayList<>());
 
-        GetCertificateAdditionsResponseType additions = testee.getCertificateAdditions("", buildRequest());
-        assertEquals(3, additions.getAdditions().size());
-        assertEquals(0, additions.getAdditions().get(0).getAddition().size());
-        assertEquals(0, additions.getAdditions().get(1).getAddition().size());
-        assertEquals(0, additions.getAdditions().get(2).getAddition().size());
-    }
+    GetCertificateAdditionsResponseType additions =
+        testee.getCertificateAdditions("", buildRequest());
+    assertEquals(3, additions.getAdditions().size());
+    assertEquals(0, additions.getAdditions().get(0).getAddition().size());
+    assertEquals(0, additions.getAdditions().get(1).getAddition().size());
+    assertEquals(0, additions.getAdditions().get(2).getAddition().size());
+  }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void whenInvalidRequest() {
-        testee.getCertificateAdditions("", buildEmptyRequest());
-    }
+  @Test(expected = IllegalArgumentException.class)
+  public void whenInvalidRequest() {
+    testee.getCertificateAdditions("", buildEmptyRequest());
+  }
 
-    private GetCertificateAdditionsType buildEmptyRequest() {
-        GetCertificateAdditionsType request = new GetCertificateAdditionsType();
-        request.getIntygsId().addAll(new ArrayList<>());
-        return request;
-    }
+  private GetCertificateAdditionsType buildEmptyRequest() {
+    GetCertificateAdditionsType request = new GetCertificateAdditionsType();
+    request.getIntygsId().addAll(new ArrayList<>());
+    return request;
+  }
 
-    private GetCertificateAdditionsType buildRequest() {
-        List<IntygId> identities = INTYG_IDS.stream()
-            .map(s -> {
-                IntygId intygId = new IntygId();
-                intygId.setRoot("some-root-value");
-                intygId.setExtension(s);
-                return intygId;
-            })
+  private GetCertificateAdditionsType buildRequest() {
+    List<IntygId> identities =
+        INTYG_IDS.stream()
+            .map(
+                s -> {
+                  IntygId intygId = new IntygId();
+                  intygId.setRoot("some-root-value");
+                  intygId.setExtension(s);
+                  return intygId;
+                })
             .collect(Collectors.toList());
 
-        GetCertificateAdditionsType request = new GetCertificateAdditionsType();
-        request.getIntygsId().addAll(identities);
+    GetCertificateAdditionsType request = new GetCertificateAdditionsType();
+    request.getIntygsId().addAll(identities);
 
-        return request;
+    return request;
+  }
+
+  private List<Arende> mockKompetteringar() {
+    List<Arende> arenden = new ArrayList<>();
+
+    for (int i = 0; i < ARENDE_IDS.size(); i++) {
+      Arende arende = new Arende();
+      arende.setId(ARENDE_IDS.get(i));
+      arende.setStatus(Status.PENDING_INTERNAL_ACTION);
+      arende.setTimestamp(LocalDateTime.now());
+      arende.setIntygsId(INTYG_IDS.get(i));
+      arende.setAmne(ArendeAmne.KOMPLT);
+
+      arenden.add(arende);
     }
 
-    private List<Arende> mockKompetteringar() {
-        List<Arende> arenden = new ArrayList<>();
-
-        for (int i = 0; i < ARENDE_IDS.size(); i++) {
-            Arende arende = new Arende();
-            arende.setId(ARENDE_IDS.get(i));
-            arende.setStatus(Status.PENDING_INTERNAL_ACTION);
-            arende.setTimestamp(LocalDateTime.now());
-            arende.setIntygsId(INTYG_IDS.get(i));
-            arende.setAmne(ArendeAmne.KOMPLT);
-
-            arenden.add(arende);
-        }
-
-        return arenden;
-    }
-
+    return arenden;
+  }
 }

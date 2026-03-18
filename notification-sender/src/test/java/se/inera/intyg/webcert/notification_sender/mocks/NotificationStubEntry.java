@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,21 +21,19 @@ package se.inera.intyg.webcert.notification_sender.mocks;
 import java.time.LocalDateTime;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 
-/**
- * Created by eriklupander on 2016-07-06.
- */
+/** Created by eriklupander on 2016-07-06. */
 public class NotificationStubEntry {
 
-    public String intygsId;
-    public String handelseTyp;
-    public LocalDateTime handelseTid;
-    public HsaId userId;
+  public String intygsId;
+  public String handelseTyp;
+  public LocalDateTime handelseTid;
+  public HsaId userId;
 
-    public NotificationStubEntry(String intygsId, String handelseTyp,
-        LocalDateTime handelseTid, HsaId userId) {
-        this.intygsId = intygsId;
-        this.handelseTyp = handelseTyp;
-        this.handelseTid = handelseTid;
-        this.userId = userId;
-    }
+  public NotificationStubEntry(
+      String intygsId, String handelseTyp, LocalDateTime handelseTid, HsaId userId) {
+    this.intygsId = intygsId;
+    this.handelseTyp = handelseTyp;
+    this.handelseTid = handelseTid;
+    this.userId = userId;
+  }
 }

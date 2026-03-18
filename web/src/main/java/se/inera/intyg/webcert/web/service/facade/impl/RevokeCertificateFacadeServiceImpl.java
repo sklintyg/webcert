@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,38 +32,42 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Service("revokeCertificateFromWC")
 public class RevokeCertificateFacadeServiceImpl implements RevokeCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RevokeCertificateFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(RevokeCertificateFacadeServiceImpl.class);
 
-    private final UtkastService utkastService;
+  private final UtkastService utkastService;
 
-    private final IntygService intygService;
+  private final IntygService intygService;
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public RevokeCertificateFacadeServiceImpl(UtkastService utkastService,
-        IntygService intygService, GetCertificateFacadeService getCertificateFacadeService) {
-        this.utkastService = utkastService;
-        this.intygService = intygService;
-        this.getCertificateFacadeService = getCertificateFacadeService;
+  @Autowired
+  public RevokeCertificateFacadeServiceImpl(
+      UtkastService utkastService,
+      IntygService intygService,
+      GetCertificateFacadeService getCertificateFacadeService) {
+    this.utkastService = utkastService;
+    this.intygService = intygService;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
+
+  @Override
+  public Certificate revokeCertificate(String certificateId, String reason, String message) {
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+
+    if (isCertificateLocked(certificate)) {
+      LOG.debug("Revoke locked draft {} with reason {}", certificateId, reason);
+      utkastService.revokeLockedDraft(
+          certificateId, certificate.getMetadata().getType(), message, reason);
+    } else {
+      LOG.debug("Revoke certificate {} with reason {}", certificateId, reason);
+      intygService.revokeIntyg(certificateId, certificate.getMetadata().getType(), message, reason);
     }
 
-    @Override
-    public Certificate revokeCertificate(String certificateId, String reason, String message) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+    return getCertificateFacadeService.getCertificate(certificateId, false, true);
+  }
 
-        if (isCertificateLocked(certificate)) {
-            LOG.debug("Revoke locked draft {} with reason {}", certificateId, reason);
-            utkastService.revokeLockedDraft(certificateId, certificate.getMetadata().getType(), message, reason);
-        } else {
-            LOG.debug("Revoke certificate {} with reason {}", certificateId, reason);
-            intygService.revokeIntyg(certificateId, certificate.getMetadata().getType(), message, reason);
-        }
-
-        return getCertificateFacadeService.getCertificate(certificateId, false, true);
-    }
-
-    private boolean isCertificateLocked(Certificate certificate) {
-        return certificate.getMetadata().getStatus() == CertificateStatus.LOCKED;
-    }
+  private boolean isCertificateLocked(Certificate certificate) {
+    return certificate.getMetadata().getStatus() == CertificateStatus.LOCKED;
+  }
 }

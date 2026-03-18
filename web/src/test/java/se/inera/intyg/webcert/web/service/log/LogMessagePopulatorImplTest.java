@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,58 +26,60 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 
-/**
- * Created by eriklupander on 2017-04-24.
- */
+/** Created by eriklupander on 2017-04-24. */
 public class LogMessagePopulatorImplTest {
 
-    private static final String ADDITIONAL_INFO = "additional info";
-    private static final String ACTIVITY_ARGS = "activity args";
-    private final LogMessagePopulator testee = new LogMessagePopulatorImpl();
+  private static final String ADDITIONAL_INFO = "additional info";
+  private static final String ACTIVITY_ARGS = "activity args";
+  private final LogMessagePopulator testee = new LogMessagePopulatorImpl();
 
-    @Test
-    public void testActivityArgsAddedFromAdditionalInfoWhenActivityArgsAbsent() {
-        PdlLogMessage logMessage = testee.populateLogMessage(
+  @Test
+  public void testActivityArgsAddedFromAdditionalInfoWhenActivityArgsAbsent() {
+    PdlLogMessage logMessage =
+        testee.populateLogMessage(
             buildPdlLogMessage(""), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
-        assertEquals(ADDITIONAL_INFO, logMessage.getActivityArgs());
-    }
+    assertEquals(ADDITIONAL_INFO, logMessage.getActivityArgs());
+  }
 
-    @Test
-    public void testActivityArgsAppendedFromAdditionalInfoWhenActivityArgsExists() {
-        PdlLogMessage logMessage = testee.populateLogMessage(
+  @Test
+  public void testActivityArgsAppendedFromAdditionalInfoWhenActivityArgsExists() {
+    PdlLogMessage logMessage =
+        testee.populateLogMessage(
             buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
-        assertEquals(ACTIVITY_ARGS + ". " + ADDITIONAL_INFO, logMessage.getActivityArgs());
-    }
+    assertEquals(ACTIVITY_ARGS + ". " + ADDITIONAL_INFO, logMessage.getActivityArgs());
+  }
 
-    @Test
-    public void testActivityArgsUntouchedWhenActivityArgsExistsButNoAdditionalInfo() {
-        PdlLogMessage logMessage = testee.populateLogMessage(
+  @Test
+  public void testActivityArgsUntouchedWhenActivityArgsExistsButNoAdditionalInfo() {
+    PdlLogMessage logMessage =
+        testee.populateLogMessage(
             buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(""), buildLogUser());
-        assertEquals(ACTIVITY_ARGS, logMessage.getActivityArgs());
-    }
+    assertEquals(ACTIVITY_ARGS, logMessage.getActivityArgs());
+  }
 
-    @Test
-    public void testActivityArgsUntouchedWhenActivityArgsIsEqualToAdditionalInfo() {
-        PdlLogMessage logMessage = testee.populateLogMessage(
+  @Test
+  public void testActivityArgsUntouchedWhenActivityArgsIsEqualToAdditionalInfo() {
+    PdlLogMessage logMessage =
+        testee.populateLogMessage(
             buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ACTIVITY_ARGS), buildLogUser());
-        assertEquals(ACTIVITY_ARGS, logMessage.getActivityArgs());
-    }
+    assertEquals(ACTIVITY_ARGS, logMessage.getActivityArgs());
+  }
 
-    private PdlLogMessage buildPdlLogMessage(String activityArgs) {
-        PdlLogMessage pdlLogMessage = new PdlLogMessage();
-        pdlLogMessage.setActivityArgs(activityArgs);
-        return pdlLogMessage;
-    }
+  private PdlLogMessage buildPdlLogMessage(String activityArgs) {
+    PdlLogMessage pdlLogMessage = new PdlLogMessage();
+    pdlLogMessage.setActivityArgs(activityArgs);
+    return pdlLogMessage;
+  }
 
-    private LogRequest buildLogRequest(String additionalInfo) {
-        return LogRequest.builder()
-            .intygId("abc123")
-            .patientId(Personnummer.createPersonnummer("19121212-1212").orElseThrow())
-            .additionalInfo(additionalInfo)
-            .build();
-    }
+  private LogRequest buildLogRequest(String additionalInfo) {
+    return LogRequest.builder()
+        .intygId("abc123")
+        .patientId(Personnummer.createPersonnummer("19121212-1212").orElseThrow())
+        .additionalInfo(additionalInfo)
+        .build();
+  }
 
-    private LogUser buildLogUser() {
-        return new LogUser.Builder("userId", "ve-1", "vg-1").build();
-    }
+  private LogUser buildLogUser() {
+    return new LogUser.Builder("userId", "ve-1", "vg-1").build();
+  }
 }

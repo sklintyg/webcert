@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.typeinfo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,22 +37,21 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 @ExtendWith(MockitoExtension.class)
 class GetCertificateTypeInfoFromCertificateServiceTest {
 
-    private static final CertificateServiceTypeInfoRequestDTO REQUEST = CertificateServiceTypeInfoRequestDTO.builder().build();
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("191212121212").get();
-    private static final List<CertificateTypeInfoDTO> TYPES = List.of(new CertificateTypeInfoDTO());
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    private GetCertificateTypeInfoFromCertificateService getCertificateTypeInfoFromCertificateService;
+  private static final CertificateServiceTypeInfoRequestDTO REQUEST =
+      CertificateServiceTypeInfoRequestDTO.builder().build();
+  private static final Personnummer PATIENT_ID =
+      Personnummer.createPersonnummer("191212121212").get();
+  private static final List<CertificateTypeInfoDTO> TYPES = List.of(new CertificateTypeInfoDTO());
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Test
-    void shouldReturnListOfTypesFromCSInternalApi() {
-        doReturn(REQUEST).when(csIntegrationRequestFactory).getCertificateTypesRequest(PATIENT_ID);
-        doReturn(TYPES).when(csIntegrationService).getTypeInfo(REQUEST);
-        assertEquals(TYPES,
-            getCertificateTypeInfoFromCertificateService.get(PATIENT_ID)
-        );
-    }
+  @InjectMocks
+  private GetCertificateTypeInfoFromCertificateService getCertificateTypeInfoFromCertificateService;
+
+  @Test
+  void shouldReturnListOfTypesFromCSInternalApi() {
+    doReturn(REQUEST).when(csIntegrationRequestFactory).getCertificateTypesRequest(PATIENT_ID);
+    doReturn(TYPES).when(csIntegrationService).getTypeInfo(REQUEST);
+    assertEquals(TYPES, getCertificateTypeInfoFromCertificateService.get(PATIENT_ID));
+  }
 }

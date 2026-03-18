@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,59 +32,61 @@ import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadin
 @Service
 public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConfigFacadeService {
 
-    private static final String TITLE = "Tidigare intyg";
-    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget/utkastet.";
-    private static final String RENEW_BUTTON_TOOLTIP =
-        "Skapar ett nytt intygsutkast för förlängning av sjukskrivning, där en del information från detta intyg följer med.";
-    private static final String DESCRIPTION = "Nedan visas signerade intyg och ej signerade utkast för den patient du valt. Ej signerade utkast raderas efter 3 månader.";
-    private static final String EMPTY_LIST_TEXT = "Det finns inga tidigare intyg för patienten.";
+  private static final String TITLE = "Tidigare intyg";
+  private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget/utkastet.";
+  private static final String RENEW_BUTTON_TOOLTIP =
+      "Skapar ett nytt intygsutkast för förlängning av sjukskrivning, där en del information från detta intyg följer med.";
+  private static final String DESCRIPTION =
+      "Nedan visas signerade intyg och ej signerade utkast för den patient du valt. Ej signerade utkast raderas efter 3 månader.";
+  private static final String EMPTY_LIST_TEXT = "Det finns inga tidigare intyg för patienten.";
 
-    @Override
-    public ListConfig get() {
-        return getConfig();
-    }
+  @Override
+  public ListConfig get() {
+    return getConfig();
+  }
 
-    private ListConfig getConfig() {
-        final var config = new ListConfig();
-        config.setExcludeFilterButtons(true);
-        config.setSecondaryTitle(TITLE);
-        config.setDescription(DESCRIPTION);
-        config.setFilters(getFilters());
-        config.addButtonTooltip(CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
-        config.addButtonTooltip(CertificateListItemValueType.RENEW_BUTTON.toString(), RENEW_BUTTON_TOOLTIP);
-        config.setTableHeadings(getTableHeadings());
-        config.setEmptyListText(EMPTY_LIST_TEXT);
-        return config;
-    }
+  private ListConfig getConfig() {
+    final var config = new ListConfig();
+    config.setExcludeFilterButtons(true);
+    config.setSecondaryTitle(TITLE);
+    config.setDescription(DESCRIPTION);
+    config.setFilters(getFilters());
+    config.addButtonTooltip(
+        CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
+    config.addButtonTooltip(
+        CertificateListItemValueType.RENEW_BUTTON.toString(), RENEW_BUTTON_TOOLTIP);
+    config.setTableHeadings(getTableHeadings());
+    config.setEmptyListText(EMPTY_LIST_TEXT);
+    return config;
+  }
 
-    public TableHeading[] getTableHeadings() {
-        return new TableHeading[]{
-            TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
-            TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
-            TableHeadingFactory.date(ListColumnType.SAVED),
-            TableHeadingFactory.text(ListColumnType.SAVED_SIGNED_BY),
-            TableHeadingFactory.renewButton(ListColumnType.RENEW_CERTIFICATE),
-            TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
-        };
-    }
+  public TableHeading[] getTableHeadings() {
+    return new TableHeading[] {
+      TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
+      TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
+      TableHeadingFactory.date(ListColumnType.SAVED),
+      TableHeadingFactory.text(ListColumnType.SAVED_SIGNED_BY),
+      TableHeadingFactory.renewButton(ListColumnType.RENEW_CERTIFICATE),
+      TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
+    };
+  }
 
-    private List<ListFilterConfig> getFilters() {
-        final var filters = new ArrayList<ListFilterConfig>();
-        filters.add(ListFilterConfigFactory.certificateStatusRadio());
-        filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED));
-        filters.add(ListFilterConfigFactory.ascending());
-        filters.add(ListFilterConfigFactory.pageSize());
-        return filters;
-    }
+  private List<ListFilterConfig> getFilters() {
+    final var filters = new ArrayList<ListFilterConfig>();
+    filters.add(ListFilterConfigFactory.certificateStatusRadio());
+    filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED));
+    filters.add(ListFilterConfigFactory.ascending());
+    filters.add(ListFilterConfigFactory.pageSize());
+    return filters;
+  }
 
-    private String getStatusDescription() {
-        return "Visar utkastets/intygets status:<ul><li>"
-            + "Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li>"
-            + "<li>Utkast, kan signeras = Utkastet är komplett, sparat och kan signeras.</li>"
-            + "<li>Utkast, låst = Utkastet är låst.</li><li>Signerat = Intyget är signerat.</li>"
-            + "<li>Skickat = Intyget är skickat till mottagaren.</li>"
-            + "<li>Makulerat = Intyget är makulerat.</li><li>Ersatt = Intyget är ersatt.</li>"
-            + "<li>Kompletterat = Intyget är kompletterat.</li></ul>";
-
-    }
+  private String getStatusDescription() {
+    return "Visar utkastets/intygets status:<ul><li>"
+        + "Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li>"
+        + "<li>Utkast, kan signeras = Utkastet är komplett, sparat och kan signeras.</li>"
+        + "<li>Utkast, låst = Utkastet är låst.</li><li>Signerat = Intyget är signerat.</li>"
+        + "<li>Skickat = Intyget är skickat till mottagaren.</li>"
+        + "<li>Makulerat = Intyget är makulerat.</li><li>Ersatt = Intyget är ersatt.</li>"
+        + "<li>Kompletterat = Intyget är kompletterat.</li></ul>";
+  }
 }

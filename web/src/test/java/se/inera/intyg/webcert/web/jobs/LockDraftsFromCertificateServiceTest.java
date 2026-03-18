@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.jobs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,46 +39,44 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class LockDraftsFromCertificateServiceTest {
 
-    private static final int LOCKED_AFTER_DAY = 5;
-    private static final String ID = "id";
-    private static final String TYPE = "type";
+  private static final int LOCKED_AFTER_DAY = 5;
+  private static final String ID = "id";
+  private static final String TYPE = "type";
 
-    @Mock
-    MonitoringLogService monitoringService;
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    LockDraftsFromCertificateService lockDraftsFromCertificateService;
-    @Test
-    void shallReturnNumberOfLockedDraftsFromCertificateServiceIsProfileIsActive() {
-        final var expectedResult = List.of(getCertificate(), getCertificate(), getCertificate());
-        final var lockOldDraftsRequestDTO = LockDraftsRequestDTO.builder().build();        doReturn(lockOldDraftsRequestDTO).when(csIntegrationRequestFactory).getLockDraftsRequestDTO(LOCKED_AFTER_DAY);
-        doReturn(expectedResult).when(csIntegrationService).lockDrafts(lockOldDraftsRequestDTO);
+  @Mock MonitoringLogService monitoringService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks LockDraftsFromCertificateService lockDraftsFromCertificateService;
 
-        assertEquals(expectedResult.size(), lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY));
-    }
+  @Test
+  void shallReturnNumberOfLockedDraftsFromCertificateServiceIsProfileIsActive() {
+    final var expectedResult = List.of(getCertificate(), getCertificate(), getCertificate());
+    final var lockOldDraftsRequestDTO = LockDraftsRequestDTO.builder().build();
+    doReturn(lockOldDraftsRequestDTO)
+        .when(csIntegrationRequestFactory)
+        .getLockDraftsRequestDTO(LOCKED_AFTER_DAY);
+    doReturn(expectedResult).when(csIntegrationService).lockDrafts(lockOldDraftsRequestDTO);
 
-    @Test
-    void shallMonitorLogLockedDraftsIdsAndType() {
-        final var certificates = List.of(getCertificate(), getCertificate(), getCertificate());
-        final var lockOldDraftsRequestDTO = LockDraftsRequestDTO.builder().build();        doReturn(lockOldDraftsRequestDTO).when(csIntegrationRequestFactory).getLockDraftsRequestDTO(LOCKED_AFTER_DAY);
-        doReturn(certificates).when(csIntegrationService).lockDrafts(lockOldDraftsRequestDTO);
+    assertEquals(expectedResult.size(), lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY));
+  }
 
-        lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY);
+  @Test
+  void shallMonitorLogLockedDraftsIdsAndType() {
+    final var certificates = List.of(getCertificate(), getCertificate(), getCertificate());
+    final var lockOldDraftsRequestDTO = LockDraftsRequestDTO.builder().build();
+    doReturn(lockOldDraftsRequestDTO)
+        .when(csIntegrationRequestFactory)
+        .getLockDraftsRequestDTO(LOCKED_AFTER_DAY);
+    doReturn(certificates).when(csIntegrationService).lockDrafts(lockOldDraftsRequestDTO);
 
-        verify(monitoringService, times(3)).logUtkastLocked(ID, TYPE);
-    }
+    lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY);
 
-    private static Certificate getCertificate() {
-        final var certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .build()
-        );
-        return certificate;
-    }
+    verify(monitoringService, times(3)).logUtkastLocked(ID, TYPE);
+  }
+
+  private static Certificate getCertificate() {
+    final var certificate = new Certificate();
+    certificate.setMetadata(CertificateMetadata.builder().id(ID).type(TYPE).build());
+    return certificate;
+  }
 }

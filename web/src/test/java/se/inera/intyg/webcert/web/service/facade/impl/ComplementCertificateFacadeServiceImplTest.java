@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,221 +48,212 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 @ExtendWith(MockitoExtension.class)
 class ComplementCertificateFacadeServiceImplTest {
 
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @Mock
-    private CopyUtkastServiceHelper copyUtkastServiceHelper;
+  @Mock private CopyUtkastServiceHelper copyUtkastServiceHelper;
 
-    @Mock
-    private CopyUtkastService copyUtkastService;
+  @Mock private CopyUtkastService copyUtkastService;
 
-    @InjectMocks
-    private ComplementCertificateFacadeServiceImpl complementCertificateFacadeService;
+  @InjectMocks private ComplementCertificateFacadeServiceImpl complementCertificateFacadeService;
 
-    @Nested
-    class ComplementWithNewCertificate {
+  @Nested
+  class ComplementWithNewCertificate {
 
-        private final String ORIGINAL_CERTIFICATE_ID = "ORIGINAL_CERTIFICATE_ID";
-        private final String MESSAGE = "MESSAGE";
-        private final String NEW_CERTIFICATE_ID = "NEW_CERTIFICATE_ID";
-        private final String CERTIFICATE_TYPE = "CERTIFICATE_TYPE";
-        private final String PERSON_ID = "191212121212";
-        private final String LATEST_COMPLEMENT_QUESTION_ID = "LATEST_COMPLEMENT_QUESTION_ID";
-        private ArgumentCaptor<CopyIntygRequest> copyIntygRequestArgumentCaptor;
+    private final String ORIGINAL_CERTIFICATE_ID = "ORIGINAL_CERTIFICATE_ID";
+    private final String MESSAGE = "MESSAGE";
+    private final String NEW_CERTIFICATE_ID = "NEW_CERTIFICATE_ID";
+    private final String CERTIFICATE_TYPE = "CERTIFICATE_TYPE";
+    private final String PERSON_ID = "191212121212";
+    private final String LATEST_COMPLEMENT_QUESTION_ID = "LATEST_COMPLEMENT_QUESTION_ID";
+    private ArgumentCaptor<CopyIntygRequest> copyIntygRequestArgumentCaptor;
 
-        @BeforeEach
-        void setUp() {
-            final var originalCertificate = new Certificate();
-            originalCertificate.setMetadata(
-                CertificateMetadata.builder()
-                    .id(ORIGINAL_CERTIFICATE_ID)
-                    .type(CERTIFICATE_TYPE)
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id(PERSON_ID)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            );
+    @BeforeEach
+    void setUp() {
+      final var originalCertificate = new Certificate();
+      originalCertificate.setMetadata(
+          CertificateMetadata.builder()
+              .id(ORIGINAL_CERTIFICATE_ID)
+              .type(CERTIFICATE_TYPE)
+              .patient(Patient.builder().personId(PersonId.builder().id(PERSON_ID).build()).build())
+              .build());
 
-            doReturn(originalCertificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(ORIGINAL_CERTIFICATE_ID, false, true); // Don't create PDL-LOG when retrieving orginal certificate
+      doReturn(originalCertificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(
+              ORIGINAL_CERTIFICATE_ID,
+              false,
+              true); // Don't create PDL-LOG when retrieving orginal certificate
 
-            doReturn(LATEST_COMPLEMENT_QUESTION_ID)
-                .when(arendeService)
-                .getLatestMeddelandeIdForCurrentCareUnit(ORIGINAL_CERTIFICATE_ID);
+      doReturn(LATEST_COMPLEMENT_QUESTION_ID)
+          .when(arendeService)
+          .getLatestMeddelandeIdForCurrentCareUnit(ORIGINAL_CERTIFICATE_ID);
 
-            copyIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
-            final var createCompletionCopyRequest = new CreateCompletionCopyRequest();
-            doReturn(createCompletionCopyRequest)
-                .when(copyUtkastServiceHelper)
-                .createCompletionCopyRequest(
-                    eq(ORIGINAL_CERTIFICATE_ID),
-                    eq(CERTIFICATE_TYPE),
-                    eq(LATEST_COMPLEMENT_QUESTION_ID),
-                    copyIntygRequestArgumentCaptor.capture()
-                );
+      copyIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
+      final var createCompletionCopyRequest = new CreateCompletionCopyRequest();
+      doReturn(createCompletionCopyRequest)
+          .when(copyUtkastServiceHelper)
+          .createCompletionCopyRequest(
+              eq(ORIGINAL_CERTIFICATE_ID),
+              eq(CERTIFICATE_TYPE),
+              eq(LATEST_COMPLEMENT_QUESTION_ID),
+              copyIntygRequestArgumentCaptor.capture());
 
-            final var createCompletionCopyResponse = new CreateCompletionCopyResponse(
-                CERTIFICATE_TYPE,
-                CERTIFICATE_TYPE,
-                NEW_CERTIFICATE_ID,
-                ORIGINAL_CERTIFICATE_ID
-            );
+      final var createCompletionCopyResponse =
+          new CreateCompletionCopyResponse(
+              CERTIFICATE_TYPE, CERTIFICATE_TYPE, NEW_CERTIFICATE_ID, ORIGINAL_CERTIFICATE_ID);
 
-            doReturn(createCompletionCopyResponse)
-                .when(copyUtkastService)
-                .createCompletion(createCompletionCopyRequest);
+      doReturn(createCompletionCopyResponse)
+          .when(copyUtkastService)
+          .createCompletion(createCompletionCopyRequest);
 
-            final var newCertificate = new Certificate();
-            doReturn(newCertificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(NEW_CERTIFICATE_ID, true, true); // Create PDL-log when retrieving new certificate
-        }
-
-        @Test
-        void shallReturnNewCertificate() {
-
-            final var complement = complementCertificateFacadeService.complement(ORIGINAL_CERTIFICATE_ID, MESSAGE);
-            assertNotNull(complement, "Expect the complement certificate to be returned");
-        }
-
-        @Test
-        void shallComplementWithExpectedPatientId() {
-            final var complement = complementCertificateFacadeService.complement(ORIGINAL_CERTIFICATE_ID, MESSAGE);
-            assertEquals(PERSON_ID, copyIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
-        }
-
-        @Test
-        void shallComplementMessage() {
-            final var complement = complementCertificateFacadeService.complement(ORIGINAL_CERTIFICATE_ID, MESSAGE);
-            assertEquals(MESSAGE, copyIntygRequestArgumentCaptor.getValue().getKommentar());
-        }
+      final var newCertificate = new Certificate();
+      doReturn(newCertificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(
+              NEW_CERTIFICATE_ID, true, true); // Create PDL-log when retrieving new certificate
     }
 
-    @Nested
-    class ComplementWithAnswer {
+    @Test
+    void shallReturnNewCertificate() {
 
-        private final String CERTIFICATE_ID = "CERTIFICATE_ID";
-        private final String MESSAGE = "MESSAGE";
-        private ArgumentCaptor<String> certificateIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        private ArgumentCaptor<String> messageArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-        @BeforeEach
-        void setUp() {
-            final var newCertificate = new Certificate();
-            doReturn(newCertificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false, true); // No PDL-log when reading the same certificate that was complemented
-        }
-
-        @Test
-        void shallReturnNewCertificate() {
-            final var complement = complementCertificateFacadeService.answerComplement(CERTIFICATE_ID, MESSAGE);
-            assertNotNull(complement, "Expect the complement certificate to be returned");
-        }
-
-        @Test
-        void shallAnswerComplementWithCertificateId() {
-            final var complement = complementCertificateFacadeService.answerComplement(CERTIFICATE_ID, MESSAGE);
-            verify(arendeService).answerKomplettering(certificateIdArgumentCaptor.capture(), anyString());
-            assertEquals(CERTIFICATE_ID, certificateIdArgumentCaptor.getValue());
-        }
-
-        @Test
-        void shallAnswerComplementWithMessage() {
-            final var complement = complementCertificateFacadeService.answerComplement(CERTIFICATE_ID, MESSAGE);
-            verify(arendeService).answerKomplettering(anyString(), messageArgumentCaptor.capture());
-            assertEquals(MESSAGE, messageArgumentCaptor.getValue());
-        }
+      final var complement =
+          complementCertificateFacadeService.complement(ORIGINAL_CERTIFICATE_ID, MESSAGE);
+      assertNotNull(complement, "Expect the complement certificate to be returned");
     }
 
-    @Nested
-    class ComplementWithReserveId {
-
-        private final String ORIGINAL_CERTIFICATE_ID = "ORIGINAL_CERTIFICATE_ID";
-        private final String MESSAGE = "MESSAGE";
-        private final String NEW_CERTIFICATE_ID = "NEW_CERTIFICATE_ID";
-        private final String CERTIFICATE_TYPE = "CERTIFICATE_TYPE";
-        private final String PERSON_ID = "191212121212";
-        private final String RESERVE_ID = "19121212-121A";
-        private final String LATEST_COMPLEMENT_QUESTION_ID = "LATEST_COMPLEMENT_QUESTION_ID";
-        private ArgumentCaptor<CopyIntygRequest> copyIntygRequestArgumentCaptor;
-
-        @BeforeEach
-        void setUp() {
-            final var originalCertificate = new Certificate();
-            originalCertificate.setMetadata(
-                CertificateMetadata.builder()
-                    .id(ORIGINAL_CERTIFICATE_ID)
-                    .type(CERTIFICATE_TYPE)
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id(RESERVE_ID)
-                                    .build()
-                            )
-                            .previousPersonId(
-                                PersonId.builder()
-                                    .id(PERSON_ID)
-                                    .build()
-                            )
-                            .reserveId(true)
-                            .build()
-                    )
-                    .build()
-            );
-
-            doReturn(originalCertificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(ORIGINAL_CERTIFICATE_ID, false, true); // Don't create PDL-LOG when retrieving orginal certificate
-
-            doReturn(LATEST_COMPLEMENT_QUESTION_ID)
-                .when(arendeService)
-                .getLatestMeddelandeIdForCurrentCareUnit(ORIGINAL_CERTIFICATE_ID);
-
-            copyIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
-            final var createCompletionCopyRequest = new CreateCompletionCopyRequest();
-            doReturn(createCompletionCopyRequest)
-                .when(copyUtkastServiceHelper)
-                .createCompletionCopyRequest(
-                    eq(ORIGINAL_CERTIFICATE_ID),
-                    eq(CERTIFICATE_TYPE),
-                    eq(LATEST_COMPLEMENT_QUESTION_ID),
-                    copyIntygRequestArgumentCaptor.capture()
-                );
-
-            final var createCompletionCopyResponse = new CreateCompletionCopyResponse(
-                CERTIFICATE_TYPE,
-                CERTIFICATE_TYPE,
-                NEW_CERTIFICATE_ID,
-                ORIGINAL_CERTIFICATE_ID
-            );
-
-            doReturn(createCompletionCopyResponse)
-                .when(copyUtkastService)
-                .createCompletion(createCompletionCopyRequest);
-
-            final var newCertificate = new Certificate();
-            doReturn(newCertificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(NEW_CERTIFICATE_ID, true, true); // Create PDL-log when retrieving new certificate
-        }
-
-        @Test
-        void shallComplementWithExpectedPatientId() {
-            final var complement = complementCertificateFacadeService.complement(ORIGINAL_CERTIFICATE_ID, MESSAGE);
-            assertEquals(PERSON_ID, copyIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
-        }
+    @Test
+    void shallComplementWithExpectedPatientId() {
+      final var complement =
+          complementCertificateFacadeService.complement(ORIGINAL_CERTIFICATE_ID, MESSAGE);
+      assertEquals(
+          PERSON_ID,
+          copyIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
     }
+
+    @Test
+    void shallComplementMessage() {
+      final var complement =
+          complementCertificateFacadeService.complement(ORIGINAL_CERTIFICATE_ID, MESSAGE);
+      assertEquals(MESSAGE, copyIntygRequestArgumentCaptor.getValue().getKommentar());
+    }
+  }
+
+  @Nested
+  class ComplementWithAnswer {
+
+    private final String CERTIFICATE_ID = "CERTIFICATE_ID";
+    private final String MESSAGE = "MESSAGE";
+    private ArgumentCaptor<String> certificateIdArgumentCaptor =
+        ArgumentCaptor.forClass(String.class);
+    private ArgumentCaptor<String> messageArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+    @BeforeEach
+    void setUp() {
+      final var newCertificate = new Certificate();
+      doReturn(newCertificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(
+              CERTIFICATE_ID,
+              false,
+              true); // No PDL-log when reading the same certificate that was complemented
+    }
+
+    @Test
+    void shallReturnNewCertificate() {
+      final var complement =
+          complementCertificateFacadeService.answerComplement(CERTIFICATE_ID, MESSAGE);
+      assertNotNull(complement, "Expect the complement certificate to be returned");
+    }
+
+    @Test
+    void shallAnswerComplementWithCertificateId() {
+      final var complement =
+          complementCertificateFacadeService.answerComplement(CERTIFICATE_ID, MESSAGE);
+      verify(arendeService).answerKomplettering(certificateIdArgumentCaptor.capture(), anyString());
+      assertEquals(CERTIFICATE_ID, certificateIdArgumentCaptor.getValue());
+    }
+
+    @Test
+    void shallAnswerComplementWithMessage() {
+      final var complement =
+          complementCertificateFacadeService.answerComplement(CERTIFICATE_ID, MESSAGE);
+      verify(arendeService).answerKomplettering(anyString(), messageArgumentCaptor.capture());
+      assertEquals(MESSAGE, messageArgumentCaptor.getValue());
+    }
+  }
+
+  @Nested
+  class ComplementWithReserveId {
+
+    private final String ORIGINAL_CERTIFICATE_ID = "ORIGINAL_CERTIFICATE_ID";
+    private final String MESSAGE = "MESSAGE";
+    private final String NEW_CERTIFICATE_ID = "NEW_CERTIFICATE_ID";
+    private final String CERTIFICATE_TYPE = "CERTIFICATE_TYPE";
+    private final String PERSON_ID = "191212121212";
+    private final String RESERVE_ID = "19121212-121A";
+    private final String LATEST_COMPLEMENT_QUESTION_ID = "LATEST_COMPLEMENT_QUESTION_ID";
+    private ArgumentCaptor<CopyIntygRequest> copyIntygRequestArgumentCaptor;
+
+    @BeforeEach
+    void setUp() {
+      final var originalCertificate = new Certificate();
+      originalCertificate.setMetadata(
+          CertificateMetadata.builder()
+              .id(ORIGINAL_CERTIFICATE_ID)
+              .type(CERTIFICATE_TYPE)
+              .patient(
+                  Patient.builder()
+                      .personId(PersonId.builder().id(RESERVE_ID).build())
+                      .previousPersonId(PersonId.builder().id(PERSON_ID).build())
+                      .reserveId(true)
+                      .build())
+              .build());
+
+      doReturn(originalCertificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(
+              ORIGINAL_CERTIFICATE_ID,
+              false,
+              true); // Don't create PDL-LOG when retrieving orginal certificate
+
+      doReturn(LATEST_COMPLEMENT_QUESTION_ID)
+          .when(arendeService)
+          .getLatestMeddelandeIdForCurrentCareUnit(ORIGINAL_CERTIFICATE_ID);
+
+      copyIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
+      final var createCompletionCopyRequest = new CreateCompletionCopyRequest();
+      doReturn(createCompletionCopyRequest)
+          .when(copyUtkastServiceHelper)
+          .createCompletionCopyRequest(
+              eq(ORIGINAL_CERTIFICATE_ID),
+              eq(CERTIFICATE_TYPE),
+              eq(LATEST_COMPLEMENT_QUESTION_ID),
+              copyIntygRequestArgumentCaptor.capture());
+
+      final var createCompletionCopyResponse =
+          new CreateCompletionCopyResponse(
+              CERTIFICATE_TYPE, CERTIFICATE_TYPE, NEW_CERTIFICATE_ID, ORIGINAL_CERTIFICATE_ID);
+
+      doReturn(createCompletionCopyResponse)
+          .when(copyUtkastService)
+          .createCompletion(createCompletionCopyRequest);
+
+      final var newCertificate = new Certificate();
+      doReturn(newCertificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(
+              NEW_CERTIFICATE_ID, true, true); // Create PDL-log when retrieving new certificate
+    }
+
+    @Test
+    void shallComplementWithExpectedPatientId() {
+      final var complement =
+          complementCertificateFacadeService.complement(ORIGINAL_CERTIFICATE_ID, MESSAGE);
+      assertEquals(
+          PERSON_ID,
+          copyIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
+    }
+  }
 }

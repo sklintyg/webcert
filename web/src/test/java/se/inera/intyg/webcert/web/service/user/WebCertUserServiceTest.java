@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -62,280 +62,289 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final String VARDGIVARE_1 = "VG1";
-    private static final String VARDGIVARE_2 = "VG2";
+  private static final String VARDGIVARE_1 = "VG1";
+  private static final String VARDGIVARE_2 = "VG2";
 
-    private static final String VARDENHET_1 = "VG1VE1";
-    private static final String VARDENHET_2 = "VG1VE2";
-    private static final String VARDENHET_3 = "VG2VE1";
-    private static final String VARDENHET_4 = "VG2VE2";
+  private static final String VARDENHET_1 = "VG1VE1";
+  private static final String VARDENHET_2 = "VG1VE2";
+  private static final String VARDENHET_3 = "VG2VE1";
+  private static final String VARDENHET_4 = "VG2VE2";
 
-    private static final String MOTTAGNING_1 = "VG1VE1M1";
-    private static final String MOTTAGNING_2 = "VG1VE1M2";
+  private static final String MOTTAGNING_1 = "VG1VE1M1";
+  private static final String MOTTAGNING_2 = "VG1VE1M2";
 
-    private static final String MOTTAGNING_3 = "VG1VE2M1";
+  private static final String MOTTAGNING_3 = "VG1VE2M1";
 
-    @Mock
-    private AnvandarPreferenceRepository anvandarPreferenceRepository;
-    @Mock
-    private FindByIndexNameSessionRepository<?> sessionRepository;
-    @Mock
-    private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
+  @Mock private AnvandarPreferenceRepository anvandarPreferenceRepository;
+  @Mock private FindByIndexNameSessionRepository<?> sessionRepository;
+  @Mock private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
 
-    @InjectMocks
-    public WebCertUserServiceImpl webcertUserService;
+  @InjectMocks public WebCertUserServiceImpl webcertUserService;
 
-    @Test
-    public void testCheckIfAuthorizedForUnit() {
-        // anv inloggad på VE1 på VG1
-        WebCertUser user = createWebCertUser(false);
+  @Test
+  public void testCheckIfAuthorizedForUnit() {
+    // anv inloggad på VE1 på VG1
+    WebCertUser user = createWebCertUser(false);
 
-        assertTrue("ska kunna titta på ett intyg inom VE1",
-            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
-        assertFalse("ska INTE kunna titta på ett intyg inom VE2",
-            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
-        assertTrue("ska kunna redigera ett intyg inom VE1",
-            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
-        assertFalse("ska INTE kunna redigera ett intyg inom VE2",
-            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
-    }
+    assertTrue(
+        "ska kunna titta på ett intyg inom VE1",
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
+    assertFalse(
+        "ska INTE kunna titta på ett intyg inom VE2",
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
+    assertTrue(
+        "ska kunna redigera ett intyg inom VE1",
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
+    assertFalse(
+        "ska INTE kunna redigera ett intyg inom VE2",
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
+  }
 
-    @Test
-    public void testCheckIfAuthorizedForUnitWhenIntegrated() {
-        // anv i JS-läge inloggad på VE1 på VG1
-        WebCertUser user = createWebCertUser(true);
+  @Test
+  public void testCheckIfAuthorizedForUnitWhenIntegrated() {
+    // anv i JS-läge inloggad på VE1 på VG1
+    WebCertUser user = createWebCertUser(true);
 
-        assertTrue("ska kunna titta på ett intyg inom VE1",
-            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
-        assertTrue("ska kunna titta på ett intyg inom VE2",
-            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
-        assertTrue("ska kunna redigera ett intyg inom VE1",
-            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
-        assertFalse("ska INTE kunna redigera ett intyg inom VE2",
-            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
-    }
+    assertTrue(
+        "ska kunna titta på ett intyg inom VE1",
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
+    assertTrue(
+        "ska kunna titta på ett intyg inom VE2",
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
+    assertTrue(
+        "ska kunna redigera ett intyg inom VE1",
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
+    assertFalse(
+        "ska INTE kunna redigera ett intyg inom VE2",
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
+  }
 
-    @Test
-    public void testStoreExistingUserMetadata() {
-        WebCertUser user = createWebCertUser(false);
-        applyUserToThreadLocalCtx(user);
-        when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1"))
-            .thenReturn(new AnvandarPreference("HSA-id", "key1", "value1"));
+  @Test
+  public void testStoreExistingUserMetadata() {
+    WebCertUser user = createWebCertUser(false);
+    applyUserToThreadLocalCtx(user);
+    when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1"))
+        .thenReturn(new AnvandarPreference("HSA-id", "key1", "value1"));
 
-        webcertUserService.storeUserPreference("key1", "value1");
-        assertEquals("value1", user.getAnvandarPreference().get("key1"));
-        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
-        verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
-    }
+    webcertUserService.storeUserPreference("key1", "value1");
+    assertEquals("value1", user.getAnvandarPreference().get("key1"));
+    verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+    verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
+  }
 
-    @Test
-    public void testStoreNonExistingUserMetadata() {
-        WebCertUser user = createWebCertUser(false);
-        applyUserToThreadLocalCtx(user);
-        when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1")).thenReturn(null);
+  @Test
+  public void testStoreNonExistingUserMetadata() {
+    WebCertUser user = createWebCertUser(false);
+    applyUserToThreadLocalCtx(user);
+    when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1")).thenReturn(null);
 
-        webcertUserService.storeUserPreference("key1", "value1");
-        assertEquals("value1", user.getAnvandarPreference().get("key1"));
-        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
-        verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
-    }
+    webcertUserService.storeUserPreference("key1", "value1");
+    assertEquals("value1", user.getAnvandarPreference().get("key1"));
+    verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+    verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
+  }
 
-    @Test
-    public void testDeleteStoredAnvandarPreference() {
-        AnvandarPreference anvandarPreference = new AnvandarPreference("HSA-id", "key1", "value1");
-        WebCertUser user = createWebCertUser(false);
-        applyUserToThreadLocalCtx(user);
-        when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1")).thenReturn(anvandarPreference);
-        webcertUserService.deleteUserPreference("key1");
-        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
-        verify(anvandarPreferenceRepository, times(1)).delete(anvandarPreference);
-    }
+  @Test
+  public void testDeleteStoredAnvandarPreference() {
+    AnvandarPreference anvandarPreference = new AnvandarPreference("HSA-id", "key1", "value1");
+    WebCertUser user = createWebCertUser(false);
+    applyUserToThreadLocalCtx(user);
+    when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1"))
+        .thenReturn(anvandarPreference);
+    webcertUserService.deleteUserPreference("key1");
+    verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+    verify(anvandarPreferenceRepository, times(1)).delete(anvandarPreference);
+  }
 
-    @Test
-    public void testDeleteUnknownAnvandarPreference() {
-        WebCertUser user = createWebCertUser(false);
-        applyUserToThreadLocalCtx(user);
-        when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1")).thenReturn(null);
-        webcertUserService.deleteUserPreference("key1");
-        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
-        verify(anvandarPreferenceRepository, times(0)).delete(any(AnvandarPreference.class));
-    }
+  @Test
+  public void testDeleteUnknownAnvandarPreference() {
+    WebCertUser user = createWebCertUser(false);
+    applyUserToThreadLocalCtx(user);
+    when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1")).thenReturn(null);
+    webcertUserService.deleteUserPreference("key1");
+    verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+    verify(anvandarPreferenceRepository, times(0)).delete(any(AnvandarPreference.class));
+  }
 
-    @Test
-    public void testDeleteAllAnvandarPreferences() {
-        WebCertUser user = createWebCertUser(false);
-        applyUserToThreadLocalCtx(user);
-        when(anvandarPreferenceRepository.getAnvandarPreference(user.getHsaId())).thenReturn(buildMapOfAllUserPrefs());
-        when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1")).thenReturn(new AnvandarPreference());
-        when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key2")).thenReturn(new AnvandarPreference());
+  @Test
+  public void testDeleteAllAnvandarPreferences() {
+    WebCertUser user = createWebCertUser(false);
+    applyUserToThreadLocalCtx(user);
+    when(anvandarPreferenceRepository.getAnvandarPreference(user.getHsaId()))
+        .thenReturn(buildMapOfAllUserPrefs());
+    when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key1"))
+        .thenReturn(new AnvandarPreference());
+    when(anvandarPreferenceRepository.findByHsaIdAndKey(user.getHsaId(), "key2"))
+        .thenReturn(new AnvandarPreference());
 
-        webcertUserService.deleteUserPreferences();
+    webcertUserService.deleteUserPreferences();
 
-        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
-        verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key2");
-        verify(anvandarPreferenceRepository, times(2)).delete(any(AnvandarPreference.class));
-    }
+    verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
+    verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key2");
+    verify(anvandarPreferenceRepository, times(2)).delete(any(AnvandarPreference.class));
+  }
 
-    @Test
-    public void testGetMiuOk() {
-        WebCertUser user = createWebCertUser(false);
-        assertEquals("Mitt uppdrag", user.getSelectedMedarbetarUppdragNamn());
-    }
+  @Test
+  public void testGetMiuOk() {
+    WebCertUser user = createWebCertUser(false);
+    assertEquals("Mitt uppdrag", user.getSelectedMedarbetarUppdragNamn());
+  }
 
-    @Test
-    public void testGetMiuWhenOnMottagning() {
-        WebCertUser user = createWebCertUser(false);
-        ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning1());
-        user.changeValdVardenhet(MOTTAGNING_1);
-        assertEquals("Mitt mottagningsuppdrag", user.getSelectedMedarbetarUppdragNamn());
-    }
+  @Test
+  public void testGetMiuWhenOnMottagning() {
+    WebCertUser user = createWebCertUser(false);
+    ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning1());
+    user.changeValdVardenhet(MOTTAGNING_1);
+    assertEquals("Mitt mottagningsuppdrag", user.getSelectedMedarbetarUppdragNamn());
+  }
 
-    @Test
-    public void testUserHasAccessToSiblingMottagningAndParentEnhet() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
+  @Test
+  public void testUserHasAccessToSiblingMottagningAndParentEnhet() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(MOTTAGNING_1);
 
-        assertUserHasExpectedAccess();
-    }
+    assertUserHasExpectedAccess();
+  }
 
-    @Test
-    public void testUserHasAccessToChildMottagning() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(VARDENHET_1);
+  @Test
+  public void testUserHasAccessToChildMottagning() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(VARDENHET_1);
 
-        assertUserHasExpectedAccess();
-    }
+    assertUserHasExpectedAccess();
+  }
 
-    @Test
-    public void testUserHasNoReadOnlyAccessToParentVardEnhetWhenNORMAL() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
-        user.setOrigin(UserOriginType.NORMAL.name());
+  @Test
+  public void testUserHasNoReadOnlyAccessToParentVardEnhetWhenNORMAL() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(MOTTAGNING_1);
+    user.setOrigin(UserOriginType.NORMAL.name());
 
-        assertFalse(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
-    }
+    assertFalse(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+  }
 
-    @Test
-    public void testUserHasReadOnlyAccessToParentVardEnhetWhenDJUPINTEGRATION() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+  @Test
+  public void testUserHasReadOnlyAccessToParentVardEnhetWhenDJUPINTEGRATION() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(MOTTAGNING_1);
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
-    }
+    assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+  }
 
-    @Test
-    public void testUserHasReadOnlyAccessToSiblingMottagningWhenDJUPINTEGRATION() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+  @Test
+  public void testUserHasReadOnlyAccessToSiblingMottagningWhenDJUPINTEGRATION() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(MOTTAGNING_1);
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, true));
-    }
+    assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, true));
+  }
 
-    @Test
-    public void testUserHasReadOnlyAccessToCousinMottagningWhenDJUPINTEGRATION() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+  @Test
+  public void testUserHasReadOnlyAccessToCousinMottagningWhenDJUPINTEGRATION() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(MOTTAGNING_1);
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, true));
-    }
+    assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, true));
+  }
 
-    @Test
-    public void testUserHasAccessToParentVardEnhetWhenDJUPINTEGRATION() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+  @Test
+  public void testUserHasAccessToParentVardEnhetWhenDJUPINTEGRATION() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(MOTTAGNING_1);
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, false));
-    }
+    assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, false));
+  }
 
-    @Test
-    public void testUserHasAccessToSiblingMottagningWhenDJUPINTEGRATION() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+  @Test
+  public void testUserHasAccessToSiblingMottagningWhenDJUPINTEGRATION() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(MOTTAGNING_1);
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, false));
-    }
+    assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, false));
+  }
 
-    @Test
-    public void testUserHasNoAccessToCousinMottagningWhenDJUPINTEGRATION() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+  @Test
+  public void testUserHasNoAccessToCousinMottagningWhenDJUPINTEGRATION() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.changeValdVardenhet(MOTTAGNING_1);
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        assertFalse(webcertUserService.isAuthorizedForUnit(MOTTAGNING_3, false));
-    }
+    assertFalse(webcertUserService.isAuthorizedForUnit(MOTTAGNING_3, false));
+  }
 
-    @Test
-    public void testUserHasNoAccessToMottagningMissingVardenhetWhenDJUPINTEGRATION() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.setValdVardenhet(buildMottagning1());
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.getVardgivare().remove(0);
+  @Test
+  public void testUserHasNoAccessToMottagningMissingVardenhetWhenDJUPINTEGRATION() {
+    WebCertUser user = setupUserMottagningAccessTest();
+    user.setValdVardenhet(buildMottagning1());
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+    user.getVardgivare().remove(0);
 
-        assertFalse(webcertUserService.isAuthorizedForUnit(MOTTAGNING_3, false));
-    }
+    assertFalse(webcertUserService.isAuthorizedForUnit(MOTTAGNING_3, false));
+  }
 
-    @Test
-    public void testLogout() {
-        final var sessionId = "sessionId";
-        final var session = mock(HttpSession.class);
-        when(session.getId()).thenReturn(sessionId);
+  @Test
+  public void testLogout() {
+    final var sessionId = "sessionId";
+    final var session = mock(HttpSession.class);
+    when(session.getId()).thenReturn(sessionId);
 
-        webcertUserService.scheduleSessionRemoval(session);
+    webcertUserService.scheduleSessionRemoval(session);
 
-        verify(session).setAttribute(eq(TIME_TO_INVALIDATE_ATTRIBUTE_NAME), anyLong());
-    }
+    verify(session).setAttribute(eq(TIME_TO_INVALIDATE_ATTRIBUTE_NAME), anyLong());
+  }
 
-    @Test
-    public void testLogoutCancel() {
-        final var sessionId = "sessionId";
-        final var session = mock(HttpSession.class);
-        when(session.getId()).thenReturn(sessionId);
+  @Test
+  public void testLogoutCancel() {
+    final var sessionId = "sessionId";
+    final var session = mock(HttpSession.class);
+    when(session.getId()).thenReturn(sessionId);
 
-        webcertUserService.cancelScheduledLogout(session);
+    webcertUserService.cancelScheduledLogout(session);
 
-        verify(session).setAttribute(eq(TIME_TO_INVALIDATE_ATTRIBUTE_NAME), eq(null));
-    }
+    verify(session).setAttribute(eq(TIME_TO_INVALIDATE_ATTRIBUTE_NAME), eq(null));
+  }
 
-    @Test
-    public void testLogoutNow() {
-        String sessionId = "sessionId";
-        HttpSession session = mock(HttpSession.class);
+  @Test
+  public void testLogoutNow() {
+    String sessionId = "sessionId";
+    HttpSession session = mock(HttpSession.class);
 
-        when(session.getId()).thenReturn(sessionId);
+    when(session.getId()).thenReturn(sessionId);
 
-        webcertUserService.removeSessionNow(session);
+    webcertUserService.removeSessionNow(session);
 
-        verify(sessionRepository).deleteById(sessionId);
-        verify(session).invalidate();
-        verify(session).setMaxInactiveInterval(0);
-    }
+    verify(sessionRepository).deleteById(sessionId);
+    verify(session).invalidate();
+    verify(session).setMaxInactiveInterval(0);
+  }
 
-    @Test
-    public void testIsValdVardenhetMottagning() {
-        WebCertUser user = createWebCertUser(false);
-        Mottagning mottagning = new Mottagning(MOTTAGNING_1, "Mottagningen");
-        mottagning.setParentHsaId(VARDENHET_1);
-        ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(mottagning);
+  @Test
+  public void testIsValdVardenhetMottagning() {
+    WebCertUser user = createWebCertUser(false);
+    Mottagning mottagning = new Mottagning(MOTTAGNING_1, "Mottagningen");
+    mottagning.setParentHsaId(VARDENHET_1);
+    ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(mottagning);
 
-        // After setup vald vardenhet is vg1ve1
-        assertFalse(user.isValdVardenhetMottagning());
+    // After setup vald vardenhet is vg1ve1
+    assertFalse(user.isValdVardenhetMottagning());
 
-        // Change to our added mottagnings
-        user.setValdVardenhet(((Vardenhet) user.getValdVardenhet()).getMottagningar().get(0));
-        assertTrue(user.isValdVardenhetMottagning());
+    // Change to our added mottagnings
+    user.setValdVardenhet(((Vardenhet) user.getValdVardenhet()).getMottagningar().get(0));
+    assertTrue(user.isValdVardenhetMottagning());
 
-        user.setValdVardenhet(null);
-        assertFalse(user.isValdVardenhetMottagning());
-    }
+    user.setValdVardenhet(null);
+    assertFalse(user.isValdVardenhetMottagning());
+  }
 
-    @Test
-    public void shallReturnLoggedInWebcertUserWhenUserLoggedIn() {
-        final var expected = LoggedInWebcertUser.builder()
+  @Test
+  public void shallReturnLoggedInWebcertUserWhenUserLoggedIn() {
+    final var expected =
+        LoggedInWebcertUser.builder()
             .staffId("HSA-id")
             .unitId("VG1VE1")
             .careProviderId("VG1")
@@ -343,144 +352,142 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
             .origin(UserOriginType.NORMAL.name())
             .build();
 
-        final var webcertUser = createWebCertUser(false);
-        applyUserToThreadLocalCtx(webcertUser);
+    final var webcertUser = createWebCertUser(false);
+    applyUserToThreadLocalCtx(webcertUser);
 
-        when(loggedInWebcertUserFactory.create(webcertUser)).thenReturn(expected);
+    when(loggedInWebcertUserFactory.create(webcertUser)).thenReturn(expected);
 
-        final var actual = webcertUserService.getLoggedInWebcertUser();
-        assertEquals(expected, actual);
-    }
+    final var actual = webcertUserService.getLoggedInWebcertUser();
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    public void shallReturnEmptyLoggedInWebcertUserWhenNoUserLoggedIn() {
-        final var expected = LoggedInWebcertUser.builder()
-            .build();
+  @Test
+  public void shallReturnEmptyLoggedInWebcertUserWhenNoUserLoggedIn() {
+    final var expected = LoggedInWebcertUser.builder().build();
 
-        applyUserToThreadLocalCtx(null);
+    applyUserToThreadLocalCtx(null);
 
-        final var actual = webcertUserService.getLoggedInWebcertUser();
-        assertEquals(expected, actual);
-    }
+    final var actual = webcertUserService.getLoggedInWebcertUser();
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    public void shallReturnEmptyLoggedInWebcertUserWhenNoAuthenticationContextPresent() {
-        final var expected = LoggedInWebcertUser.builder()
-            .build();
+  @Test
+  public void shallReturnEmptyLoggedInWebcertUserWhenNoAuthenticationContextPresent() {
+    final var expected = LoggedInWebcertUser.builder().build();
 
-        SecurityContextHolder.getContext().setAuthentication(null);
+    SecurityContextHolder.getContext().setAuthentication(null);
 
-        final var actual = webcertUserService.getLoggedInWebcertUser();
-        assertEquals(expected, actual);
-    }
+    final var actual = webcertUserService.getLoggedInWebcertUser();
+    assertEquals(expected, actual);
+  }
 
-    private WebCertUser setupUserMottagningAccessTest() {
-        WebCertUser user = createWebCertUser(true);
-        ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning1());
-        ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning2());
-        applyUserToThreadLocalCtx(user);
-        return user;
-    }
+  private WebCertUser setupUserMottagningAccessTest() {
+    WebCertUser user = createWebCertUser(true);
+    ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning1());
+    ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning2());
+    applyUserToThreadLocalCtx(user);
+    return user;
+  }
 
-    private void assertUserHasExpectedAccess() {
-        assertTrue(webcertUserService.isUserAllowedAccessToUnit(MOTTAGNING_1));
-        assertTrue(webcertUserService.isUserAllowedAccessToUnit(MOTTAGNING_2));
-        assertTrue(webcertUserService.isUserAllowedAccessToUnit(VARDENHET_1));
-        assertFalse(webcertUserService.isUserAllowedAccessToUnit(VARDENHET_2));
-    }
+  private void assertUserHasExpectedAccess() {
+    assertTrue(webcertUserService.isUserAllowedAccessToUnit(MOTTAGNING_1));
+    assertTrue(webcertUserService.isUserAllowedAccessToUnit(MOTTAGNING_2));
+    assertTrue(webcertUserService.isUserAllowedAccessToUnit(VARDENHET_1));
+    assertFalse(webcertUserService.isUserAllowedAccessToUnit(VARDENHET_2));
+  }
 
-    private Mottagning buildMottagning1() {
-        Mottagning mottagning = new Mottagning(MOTTAGNING_1, "Mottagningen");
-        mottagning.setParentHsaId(VARDENHET_1);
-        return mottagning;
-    }
+  private Mottagning buildMottagning1() {
+    Mottagning mottagning = new Mottagning(MOTTAGNING_1, "Mottagningen");
+    mottagning.setParentHsaId(VARDENHET_1);
+    return mottagning;
+  }
 
-    private Mottagning buildMottagning2() {
-        Mottagning mottagning = new Mottagning(MOTTAGNING_2, "Mottagningen 2");
-        mottagning.setParentHsaId(VARDENHET_1);
-        return mottagning;
-    }
+  private Mottagning buildMottagning2() {
+    Mottagning mottagning = new Mottagning(MOTTAGNING_2, "Mottagningen 2");
+    mottagning.setParentHsaId(VARDENHET_1);
+    return mottagning;
+  }
 
-    private Map<String, String> buildMapOfAllUserPrefs() {
-        Map<String, String> prefs = new HashMap<>();
-        prefs.put("key1", "value1");
-        prefs.put("key2", "value2");
-        return prefs;
-    }
+  private Map<String, String> buildMapOfAllUserPrefs() {
+    Map<String, String> prefs = new HashMap<>();
+    prefs.put("key1", "value1");
+    prefs.put("key2", "value2");
+    return prefs;
+  }
 
-    private void applyUserToThreadLocalCtx(final WebCertUser user) {
-        Authentication auth = new AbstractAuthenticationToken(null) {
-            @Override
-            public Object getCredentials() {
-                return null;
-            }
+  private void applyUserToThreadLocalCtx(final WebCertUser user) {
+    Authentication auth =
+        new AbstractAuthenticationToken(null) {
+          @Override
+          public Object getCredentials() {
+            return null;
+          }
 
-            @Override
-            public Object getPrincipal() {
-                return user;
-            }
+          @Override
+          public Object getPrincipal() {
+            return user;
+          }
         };
-        SecurityContextHolder.getContext().setAuthentication(auth);
+    SecurityContextHolder.getContext().setAuthentication(auth);
+  }
+
+  private WebCertUser createWebCertUser(boolean fromJS) {
+
+    WebCertUser user = buildUserPrincipal();
+
+    user.setNamn("A Name");
+    user.setHsaId("HSA-id");
+    user.setForskrivarkod("Forskrivarkod");
+    user.setAuthenticationScheme("AuthScheme");
+    user.setSpecialiseringar(Arrays.asList("Kirurgi", "Ortopedi"));
+    user.setBefattningar(Arrays.asList("Specialistläkare"));
+
+    List<Vardgivare> vardgivare = new ArrayList<>();
+
+    Vardgivare vg1 = new Vardgivare(VARDGIVARE_1, "Vardgivare 1");
+
+    Vardenhet vg1ve1 = new Vardenhet(VARDENHET_1, "Vardenhet 1");
+    vg1.getVardenheter().add(vg1ve1);
+    vg1.getVardenheter().add(new Vardenhet(VARDENHET_2, "Vardenhet 2"));
+
+    Vardgivare vg2 = new Vardgivare(VARDGIVARE_2, "Vardgivare 2");
+
+    vg2.getVardenheter().add(new Vardenhet(VARDENHET_3, "Vardenhet 3"));
+    vg2.getVardenheter().add(new Vardenhet(VARDENHET_4, "Vardenhet 4"));
+
+    vardgivare.add(vg1);
+    vardgivare.add(vg2);
+
+    user.setVardgivare(vardgivare);
+
+    user.setValdVardenhet(vg1ve1);
+    user.setValdVardgivare(vg1);
+
+    user.setMiuNamnPerEnhetsId(buildMiuMap());
+
+    if (fromJS) {
+      user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+    } else {
+      user.setOrigin(UserOriginType.NORMAL.name());
     }
 
-    private WebCertUser createWebCertUser(boolean fromJS) {
+    return user;
+  }
 
-        WebCertUser user = buildUserPrincipal();
+  private Map<String, String> buildMiuMap() {
+    Map<String, String> map = new HashMap<>();
+    map.put(VARDENHET_1, "Mitt uppdrag");
+    map.put(MOTTAGNING_1, "Mitt mottagningsuppdrag");
+    return map;
+  }
 
-        user.setNamn("A Name");
-        user.setHsaId("HSA-id");
-        user.setForskrivarkod("Forskrivarkod");
-        user.setAuthenticationScheme("AuthScheme");
-        user.setSpecialiseringar(Arrays.asList("Kirurgi", "Ortopedi"));
-        user.setBefattningar(Arrays.asList("Specialistläkare"));
+  private WebCertUser buildUserPrincipal() {
+    Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
-        List<Vardgivare> vardgivare = new ArrayList<>();
+    WebCertUser user = new WebCertUser();
+    user.setRoles(AuthoritiesResolverUtil.toMap(role));
+    user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
 
-        Vardgivare vg1 = new Vardgivare(VARDGIVARE_1, "Vardgivare 1");
-
-        Vardenhet vg1ve1 = new Vardenhet(VARDENHET_1, "Vardenhet 1");
-        vg1.getVardenheter().add(vg1ve1);
-        vg1.getVardenheter().add(new Vardenhet(VARDENHET_2, "Vardenhet 2"));
-
-        Vardgivare vg2 = new Vardgivare(VARDGIVARE_2, "Vardgivare 2");
-
-        vg2.getVardenheter().add(new Vardenhet(VARDENHET_3, "Vardenhet 3"));
-        vg2.getVardenheter().add(new Vardenhet(VARDENHET_4, "Vardenhet 4"));
-
-        vardgivare.add(vg1);
-        vardgivare.add(vg2);
-
-        user.setVardgivare(vardgivare);
-
-        user.setValdVardenhet(vg1ve1);
-        user.setValdVardgivare(vg1);
-
-        user.setMiuNamnPerEnhetsId(buildMiuMap());
-
-        if (fromJS) {
-            user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        } else {
-            user.setOrigin(UserOriginType.NORMAL.name());
-        }
-
-        return user;
-    }
-
-    private Map<String, String> buildMiuMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put(VARDENHET_1, "Mitt uppdrag");
-        map.put(MOTTAGNING_1, "Mitt mottagningsuppdrag");
-        return map;
-    }
-
-    private WebCertUser buildUserPrincipal() {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-
-        WebCertUser user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-
-        return user;
-    }
-
+    return user;
+  }
 }

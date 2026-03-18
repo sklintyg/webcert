@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,21 +31,35 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 public interface NotificationMessageFactory {
 
-    /**
-     * Creates a NotificationMessage instance from the supplied {@link Utkast} and supplied parameters.
-     */
-    NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version,
-        String reference, Amneskod amne, LocalDate sistaSvarsDatum);
+  /**
+   * Creates a NotificationMessage instance from the supplied {@link Utkast} and supplied
+   * parameters.
+   */
+  NotificationMessage createNotificationMessage(
+      Utkast utkast,
+      HandelsekodEnum handelse,
+      SchemaVersion version,
+      String reference,
+      Amneskod amne,
+      LocalDate sistaSvarsDatum);
 
-    /**
-     * Creates a NotificationMessage instance where the fields from Utkast has been extracted into separate parameters.
-     */
-    // CHECKSTYLE:OFF ParameterNumber
-    NotificationMessage createNotificationMessage(String intygsId, String intygsTyp, String logiskAdress, String utkastJson,
-        HandelsekodEnum handelse, SchemaVersion version,
-        String reference, Amneskod amne, LocalDate sistaSvarsDatum);
+  /**
+   * Creates a NotificationMessage instance where the fields from Utkast has been extracted into
+   * separate parameters.
+   */
+  // CHECKSTYLE:OFF ParameterNumber
+  NotificationMessage createNotificationMessage(
+      String intygsId,
+      String intygsTyp,
+      String logiskAdress,
+      String utkastJson,
+      HandelsekodEnum handelse,
+      SchemaVersion version,
+      String reference,
+      Amneskod amne,
+      LocalDate sistaSvarsDatum);
 
-    NotificationMessage createNotificationMessage(Handelse event, String draftJson)
-        throws ModuleNotFoundException, IOException, ModuleException;
-    // CHECKSTYLE:ON ParameterNumber
+  NotificationMessage createNotificationMessage(Handelse event, String draftJson)
+      throws ModuleNotFoundException, IOException, ModuleException;
+  // CHECKSTYLE:ON ParameterNumber
 }

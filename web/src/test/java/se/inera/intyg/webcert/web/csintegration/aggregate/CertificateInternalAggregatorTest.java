@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,43 +35,42 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 @ExtendWith(MockitoExtension.class)
 class CertificateInternalAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String PERSON_ID = "personId";
-    @Mock
-    private GetCertificateInteralApi cercertificateInternalServiceFromWC;
-    @Mock
-    private GetCertificateInteralApi certificateInternalServiceFromCS;
-    private GetCertificateInternalAggregator certificateInternalAggregator;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String PERSON_ID = "personId";
+  @Mock private GetCertificateInteralApi cercertificateInternalServiceFromWC;
+  @Mock private GetCertificateInteralApi certificateInternalServiceFromCS;
+  private GetCertificateInternalAggregator certificateInternalAggregator;
 
-    @BeforeEach
-    void setUp() {
-        certificateInternalAggregator = new GetCertificateInternalAggregator(
-            cercertificateInternalServiceFromWC,
-            certificateInternalServiceFromCS
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    certificateInternalAggregator =
+        new GetCertificateInternalAggregator(
+            cercertificateInternalServiceFromWC, certificateInternalServiceFromCS);
+  }
 
-    @Test
-    void shouldReturnResponseFromCSIfResponseNotNull() {
-        final var expectedResult = GetCertificateResponse.create(new Certificate());
-        when(certificateInternalServiceFromCS.get(CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
+  @Test
+  void shouldReturnResponseFromCSIfResponseNotNull() {
+    final var expectedResult = GetCertificateResponse.create(new Certificate());
+    when(certificateInternalServiceFromCS.get(CERTIFICATE_ID, PERSON_ID))
+        .thenReturn(expectedResult);
 
-        final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);
-        verify(certificateInternalServiceFromCS, times(1)).get(CERTIFICATE_ID, PERSON_ID);
+    final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);
+    verify(certificateInternalServiceFromCS, times(1)).get(CERTIFICATE_ID, PERSON_ID);
 
-        assertEquals(expectedResult, response);
-    }
+    assertEquals(expectedResult, response);
+  }
 
-    @Test
-    void shouldReturnCertificateIdFromWCIIfReturnsNull() {
-        final var expectedResult = GetCertificateResponse.create(new Certificate());
-        when(cercertificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
+  @Test
+  void shouldReturnCertificateIdFromWCIIfReturnsNull() {
+    final var expectedResult = GetCertificateResponse.create(new Certificate());
+    when(cercertificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID))
+        .thenReturn(expectedResult);
 
-        final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);
+    final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);
 
-        verify(cercertificateInternalServiceFromWC, times(1)).get(CERTIFICATE_ID, PERSON_ID);
-        verify(certificateInternalServiceFromCS, times(1)).get(CERTIFICATE_ID, PERSON_ID);
+    verify(cercertificateInternalServiceFromWC, times(1)).get(CERTIFICATE_ID, PERSON_ID);
+    verify(certificateInternalServiceFromCS, times(1)).get(CERTIFICATE_ID, PERSON_ID);
 
-        assertEquals(expectedResult, response);
-    }
+    assertEquals(expectedResult, response);
+  }
 }

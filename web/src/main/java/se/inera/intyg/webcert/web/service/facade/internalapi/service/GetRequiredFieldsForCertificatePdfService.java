@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,89 +39,95 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.RequiredFieldsF
 @Service
 public class GetRequiredFieldsForCertificatePdfService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetRequiredFieldsForCertificatePdfService.class);
-    private static final String INTYGSMOTTAGARE = "intygsmottagare";
-    private final UtkastService utkastService;
-    private final IntygService intygService;
-    private final ITIntegrationService itIntegrationService;
-    private static final boolean SHOULD_NOT_PDL_LOG = false;
-    private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
+  private static final Logger LOG =
+      LoggerFactory.getLogger(GetRequiredFieldsForCertificatePdfService.class);
+  private static final String INTYGSMOTTAGARE = "intygsmottagare";
+  private final UtkastService utkastService;
+  private final IntygService intygService;
+  private final ITIntegrationService itIntegrationService;
+  private static final boolean SHOULD_NOT_PDL_LOG = false;
+  private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
 
+  @Autowired
+  public GetRequiredFieldsForCertificatePdfService(
+      UtkastService utkastService,
+      IntygService intygService,
+      ITIntegrationService itIntegrationService) {
+    this.utkastService = utkastService;
+    this.intygService = intygService;
+    this.itIntegrationService = itIntegrationService;
+  }
 
-    @Autowired
-    public GetRequiredFieldsForCertificatePdfService(UtkastService utkastService,
-        IntygService intygService, ITIntegrationService itIntegrationService) {
-        this.utkastService = utkastService;
-        this.intygService = intygService;
-        this.itIntegrationService = itIntegrationService;
+  public RequiredFieldsForCertificatePdf get(String certificateId) {
+    final var draft = getCertificateFromWebcert(certificateId, SHOULD_NOT_PDL_LOG);
+    if (draft == null) {
+      LOG.debug(
+          "Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}' and validateAccess as '{}'",
+          certificateId,
+          SHOULD_NOT_PDL_LOG,
+          SHOULD_NOT_VALIDATE_ACCESS);
+      final var intygContentHolder =
+          intygService.fetchIntygData(
+              certificateId, null, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
+      return createRequiredFieldsFromIntygContentHolder(intygContentHolder);
     }
 
-    public RequiredFieldsForCertificatePdf get(String certificateId) {
-        final var draft = getCertificateFromWebcert(certificateId, SHOULD_NOT_PDL_LOG);
-        if (draft == null) {
-            LOG.debug("Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}' and validateAccess as '{}'", certificateId,
-                SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-            final var intygContentHolder = intygService.fetchIntygData(
-                certificateId,
-                null,
-                SHOULD_NOT_PDL_LOG,
-                SHOULD_NOT_VALIDATE_ACCESS
-            );
-            return createRequiredFieldsFromIntygContentHolder(intygContentHolder);
-        }
-
-        if (isSignedButNotSent(draft)) {
-            LOG.debug("Retrieve certificate info for '{}' from Intygstjansten", certificateId);
-            final var certificateInfo = itIntegrationService.getCertificateInfo(certificateId);
-            draft.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
-            draft.setSkickadTillMottagare(getRecipient(certificateInfo));
-        }
-
-        return createRequiredFieldsFromDraft(draft);
+    if (isSignedButNotSent(draft)) {
+      LOG.debug("Retrieve certificate info for '{}' from Intygstjansten", certificateId);
+      final var certificateInfo = itIntegrationService.getCertificateInfo(certificateId);
+      draft.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
+      draft.setSkickadTillMottagare(getRecipient(certificateInfo));
     }
 
-    private static RequiredFieldsForCertificatePdf createRequiredFieldsFromDraft(Utkast draft) {
-        return RequiredFieldsForCertificatePdf.create(
-            draft.getIntygTypeVersion(),
-            draft.getIntygsTyp(),
-            draft.getModel(),
-            IntygConverterUtil.buildStatusesFromUtkast(draft),
-            draft.getStatus()
-        );
-    }
+    return createRequiredFieldsFromDraft(draft);
+  }
 
-    private static RequiredFieldsForCertificatePdf createRequiredFieldsFromIntygContentHolder(IntygContentHolder intygContentHolder) {
-        return RequiredFieldsForCertificatePdf.create(
-            Objects.requireNonNull(intygContentHolder.getUtlatande()).getTextVersion(),
-            intygContentHolder.getUtlatande().getTyp(),
-            intygContentHolder.getContents(),
-            intygContentHolder.getStatuses(),
-            UtkastStatus.SIGNED
-        );
-    }
+  private static RequiredFieldsForCertificatePdf createRequiredFieldsFromDraft(Utkast draft) {
+    return RequiredFieldsForCertificatePdf.create(
+        draft.getIntygTypeVersion(),
+        draft.getIntygsTyp(),
+        draft.getModel(),
+        IntygConverterUtil.buildStatusesFromUtkast(draft),
+        draft.getStatus());
+  }
 
-    private boolean isSignedButNotSent(Utkast utkast) {
-        return utkast.getStatus() == UtkastStatus.SIGNED && utkast.getSkickadTillMottagareDatum() == null;
-    }
+  private static RequiredFieldsForCertificatePdf createRequiredFieldsFromIntygContentHolder(
+      IntygContentHolder intygContentHolder) {
+    return RequiredFieldsForCertificatePdf.create(
+        Objects.requireNonNull(intygContentHolder.getUtlatande()).getTextVersion(),
+        intygContentHolder.getUtlatande().getTyp(),
+        intygContentHolder.getContents(),
+        intygContentHolder.getStatuses(),
+        UtkastStatus.SIGNED);
+  }
 
-    private String getRecipient(ItIntygInfo certificateInfo) {
-        return (String) certificateInfo.getEvents().stream()
+  private boolean isSignedButNotSent(Utkast utkast) {
+    return utkast.getStatus() == UtkastStatus.SIGNED
+        && utkast.getSkickadTillMottagareDatum() == null;
+  }
+
+  private String getRecipient(ItIntygInfo certificateInfo) {
+    return (String)
+        certificateInfo.getEvents().stream()
             .filter(intygInfoEvent -> intygInfoEvent.getType() == IntygInfoEventType.IS006)
             .findFirst()
             .map(intygInfoEvent -> intygInfoEvent.getData().get(INTYGSMOTTAGARE))
             .orElse(null);
-    }
+  }
 
-    private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {
-        try {
-            LOG.debug("Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
-            return utkastService.getDraft(certificateId, pdlLog);
-        } catch (WebCertServiceException ex) {
-            if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
-                LOG.debug("Utkast with id '{}' doesn't exist in Webcert", certificateId);
-                return null;
-            }
-            throw ex;
-        }
+  private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {
+    try {
+      LOG.debug(
+          "Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'",
+          certificateId,
+          pdlLog);
+      return utkastService.getDraft(certificateId, pdlLog);
+    } catch (WebCertServiceException ex) {
+      if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
+        LOG.debug("Utkast with id '{}' doesn't exist in Webcert", certificateId);
+        return null;
+      }
+      throw ex;
     }
+  }
 }

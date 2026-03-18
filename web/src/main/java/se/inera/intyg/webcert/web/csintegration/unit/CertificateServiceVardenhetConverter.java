@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import org.springframework.stereotype.Component;
@@ -26,31 +25,31 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 @Component
 public class CertificateServiceVardenhetConverter {
 
-    public CertificateServiceUnitDTO convert(AbstractVardenhet unit, boolean isUnitInactive) {
-        return CertificateServiceUnitDTO.builder()
-            .id(unit.getId())
-            .name(unit.getNamn())
-            .address(unit.getPostadress())
-            .zipCode(unit.getPostnummer())
-            .city(unit.getPostort())
-            .phoneNumber(unit.getTelefonnummer())
-            .email(unit.getEpost())
-            .inactive(isUnitInactive)
-            .workplaceCode(unit.getArbetsplatskod())
-            .build();
-    }
+  public CertificateServiceUnitDTO convert(AbstractVardenhet unit, boolean isUnitInactive) {
+    return CertificateServiceUnitDTO.builder()
+        .id(unit.getId())
+        .name(unit.getNamn())
+        .address(unit.getPostadress())
+        .zipCode(unit.getPostnummer())
+        .city(unit.getPostort())
+        .phoneNumber(unit.getTelefonnummer())
+        .email(unit.getEpost())
+        .inactive(isUnitInactive)
+        .workplaceCode(unit.getArbetsplatskod())
+        .build();
+  }
 
-    public CertificateServiceUnitDTO convert(Unit unit) {
-        return CertificateServiceUnitDTO.builder()
-            .id(unit.getUnitId())
-            .name(unit.getUnitName())
-            .address(unit.getAddress())
-            .zipCode(unit.getZipCode())
-            .city(unit.getCity())
-            .phoneNumber(unit.getPhoneNumber())
-            .email(unit.getEmail())
-            .inactive(unit.getIsInactive())
-            .workplaceCode(unit.getWorkplaceCode())
-            .build();
-    }
+  public CertificateServiceUnitDTO convert(Unit unit) {
+    return CertificateServiceUnitDTO.builder()
+        .id(unit.getUnitId())
+        .name(unit.getUnitName())
+        .address(unit.getAddress())
+        .zipCode(unit.getZipCode())
+        .city(unit.getCity())
+        .phoneNumber(unit.getPhoneNumber())
+        .email(unit.getEmail())
+        .inactive(unit.getIsInactive())
+        .workplaceCode(unit.getWorkplaceCode())
+        .build();
+  }
 }

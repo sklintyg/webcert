@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,66 +34,79 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
-/**
- * Created by eriklupander on 2017-08-18.
- */
+/** Created by eriklupander on 2017-08-18. */
 public class NotificationTestHelper {
 
-    private static final String PERSNR = "191212121212";
+  private static final String PERSNR = "191212121212";
 
+  private NotificationTestHelper() {}
 
-    private NotificationTestHelper() {
-    }
+  public static Intyg createIntyg(String intygsTyp) {
+    return createIntyg(intygsTyp, "1.0", "intyg123");
+  }
 
-    public static Intyg createIntyg(String intygsTyp) {
-        return createIntyg(intygsTyp, "1.0", "intyg123");
-    }
+  public static Intyg createIntyg(String intygsTyp, String intygTypeVersion, String intygsId) {
+    Intyg intyg = new Intyg();
+    IntygId intygId = new IntygId();
+    intygId.setExtension(intygsId);
+    intyg.setIntygsId(intygId);
 
-    public static Intyg createIntyg(String intygsTyp, String intygTypeVersion, String intygsId) {
-        Intyg intyg = new Intyg();
-        IntygId intygId = new IntygId();
-        intygId.setExtension(intygsId);
-        intyg.setIntygsId(intygId);
+    TypAvIntyg typAvIntyg = new TypAvIntyg();
+    typAvIntyg.setCode(intygsTyp);
+    intyg.setTyp(typAvIntyg);
+    intyg.setVersion(intygTypeVersion);
 
-        TypAvIntyg typAvIntyg = new TypAvIntyg();
-        typAvIntyg.setCode(intygsTyp);
-        intyg.setTyp(typAvIntyg);
-        intyg.setVersion(intygTypeVersion);
+    intyg.setPatient(buildPatient());
 
-        intyg.setPatient(buildPatient());
+    HosPersonal hosPersonal = new HosPersonal();
+    Enhet enhet = new Enhet();
+    enhet.setVardgivare(new Vardgivare());
+    enhet.setArbetsplatskod(new ArbetsplatsKod());
+    hosPersonal.setEnhet(enhet);
+    intyg.setSkapadAv(hosPersonal);
+    // DatePeriodType and PartialDateType must be allowed
+    intyg
+        .getSvar()
+        .add(
+            InternalConverterUtil.aSvar("")
+                .withDelsvar(
+                    "",
+                    InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
+                .withDelsvar(
+                    "",
+                    InternalConverterUtil.aPartialDate(
+                        PartialDateTypeFormatEnum.YYYY, Year.of(1999)))
+                .build());
+    return intyg;
+  }
 
-        HosPersonal hosPersonal = new HosPersonal();
-        Enhet enhet = new Enhet();
-        enhet.setVardgivare(new Vardgivare());
-        enhet.setArbetsplatskod(new ArbetsplatsKod());
-        hosPersonal.setEnhet(enhet);
-        intyg.setSkapadAv(hosPersonal);
-        // DatePeriodType and PartialDateType must be allowed
-        intyg.getSvar().add(InternalConverterUtil.aSvar("")
-            .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
-            .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999)))
-            .build());
-        return intyg;
-    }
+  public static Person buildPerson(boolean sekretessmarkering) {
+    return new Person(
+        Personnummer.createPersonnummer(PERSNR).get(),
+        sekretessmarkering,
+        false,
+        "Tolvan",
+        "Mellis",
+        "Tolvansson",
+        "Tolvgatan 12",
+        "12121",
+        "Tolvhult",
+        false);
+  }
 
-    public static Person buildPerson(boolean sekretessmarkering) {
-        return new Person(Personnummer.createPersonnummer(PERSNR).get(),
-            sekretessmarkering, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult", false);
-    }
+  public static Patient buildPatient() {
+    PersonId personId = new PersonId();
+    personId.setExtension(PERSNR);
 
-    public static Patient buildPatient() {
-        PersonId personId = new PersonId();
-        personId.setExtension(PERSNR);
+    Patient patient = new Patient();
+    patient.setPersonId(personId);
+    patient.setFornamn("");
+    patient.setMellannamn("");
+    patient.setEfternamn("");
+    patient.setPostadress("");
+    patient.setPostnummer("");
+    patient.setPostort("");
 
-        Patient patient = new Patient();
-        patient.setPersonId(personId);
-        patient.setFornamn("");
-        patient.setMellannamn("");
-        patient.setEfternamn("");
-        patient.setPostadress("");
-        patient.setPostnummer("");
-        patient.setPostort("");
-
-        return patient;
-    }
+    return patient;
+  }
 }

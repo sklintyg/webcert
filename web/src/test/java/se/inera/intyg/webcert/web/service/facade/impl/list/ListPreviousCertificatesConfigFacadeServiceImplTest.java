@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,195 +42,199 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterType;
 @ExtendWith(MockitoExtension.class)
 class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
-    @InjectMocks
-    private ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService;
+  @InjectMocks
+  private ListPreviousCertificatesConfigFacadeServiceImpl
+      listPreviousCertificatesConfigFacadeService;
 
-    @Test
-    public void shouldSetExcludeFilterButtons() {
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertTrue(config.isExcludeFilterButtons());
+  @Test
+  public void shouldSetExcludeFilterButtons() {
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    assertTrue(config.isExcludeFilterButtons());
+  }
+
+  @Test
+  public void shouldSetSecondaryTitle() {
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    assertEquals("Tidigare intyg", config.getSecondaryTitle());
+  }
+
+  @Test
+  public void shouldSetDescription() {
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    assertFalse(config.getDescription().isEmpty());
+  }
+
+  @Test
+  public void shouldSetOpenCertificateTooltip() {
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    assertTrue(config.getButtonTooltips().containsKey("OPEN_BUTTON"));
+  }
+
+  @Test
+  public void shouldSetFilters() {
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    assertEquals(4, config.getFilters().size());
+  }
+
+  @Test
+  public void shouldSetTableHeadings() {
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    assertEquals(6, config.getTableHeadings().length);
+  }
+
+  @Test
+  public void shouldSetRenewCertificateTooltip() {
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    assertTrue(config.getButtonTooltips().containsKey("RENEW_BUTTON"));
+  }
+
+  @Test
+  public void shouldSetEmptyListText() {
+    final var config = listPreviousCertificatesConfigFacadeService.get();
+    assertTrue(config.getEmptyListText().length() > 0);
+  }
+
+  @Nested
+  public class RadioStatusFilter {
+
+    ListFilterRadioConfig filter;
+    ListConfig config;
+
+    @BeforeEach
+    public void setup() {
+      config = listPreviousCertificatesConfigFacadeService.get();
+      filter = (ListFilterRadioConfig) getFilterById(config, "STATUS");
     }
 
     @Test
-    public void shouldSetSecondaryTitle() {
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertEquals("Tidigare intyg", config.getSecondaryTitle());
+    public void shouldCreateFilter() {
+      assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetDescription() {
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertFalse(config.getDescription().isEmpty());
+    public void shouldNotSetTitle() {
+      assertEquals("", filter.getTitle());
     }
 
     @Test
-    public void shouldSetOpenCertificateTooltip() {
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertTrue(config.getButtonTooltips().containsKey("OPEN_BUTTON"));
+    public void shouldSetType() {
+      assertEquals(ListFilterType.RADIO, filter.getType());
     }
 
     @Test
-    public void shouldSetFilters() {
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertEquals(4, config.getFilters().size());
+    public void shouldSetList() {
+      assertEquals(3, filter.getValues().size());
     }
 
     @Test
-    public void shouldSetTableHeadings() {
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertEquals(6, config.getTableHeadings().length);
+    public void shouldSetFirstValueInListAsDefault() {
+      assertTrue(filter.getValues().getFirst().isDefaultValue());
+    }
+  }
+
+  @Nested
+  public class OrderBy {
+
+    ListFilterOrderConfig filter;
+    ListConfig config;
+
+    @BeforeEach
+    public void setup() {
+      config = listPreviousCertificatesConfigFacadeService.get();
+      filter = (ListFilterOrderConfig) getFilterById(config, "ORDER_BY");
     }
 
     @Test
-    public void shouldSetRenewCertificateTooltip() {
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertTrue(config.getButtonTooltips().containsKey("RENEW_BUTTON"));
+    public void shouldCreateFilter() {
+      assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetEmptyListText() {
-        final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertTrue(config.getEmptyListText().length() > 0);
+    public void shouldSetEmptyTitle() {
+      assertEquals("", filter.getTitle());
     }
 
-    @Nested
-    public class RadioStatusFilter {
-
-        ListFilterRadioConfig filter;
-        ListConfig config;
-
-        @BeforeEach
-        public void setup() {
-            config = listPreviousCertificatesConfigFacadeService.get();
-            filter = (ListFilterRadioConfig) getFilterById(config, "STATUS");
-        }
-
-        @Test
-        public void shouldCreateFilter() {
-            assertNotNull(filter);
-        }
-
-        @Test
-        public void shouldNotSetTitle() {
-            assertEquals("", filter.getTitle());
-        }
-
-        @Test
-        public void shouldSetType() {
-            assertEquals(ListFilterType.RADIO, filter.getType());
-        }
-
-        @Test
-        public void shouldSetList() {
-            assertEquals(3, filter.getValues().size());
-        }
-
-        @Test
-        public void shouldSetFirstValueInListAsDefault() {
-            assertTrue(filter.getValues().getFirst().isDefaultValue());
-        }
+    @Test
+    public void shouldSetType() {
+      assertEquals(ListFilterType.ORDER, filter.getType());
     }
 
-    @Nested
-    public class OrderBy {
+    @Test
+    public void shouldSetDefaultOrder() {
+      assertEquals(ListColumnType.SAVED, filter.getDefaultValue());
+    }
+  }
 
-        ListFilterOrderConfig filter;
-        ListConfig config;
+  @Nested
+  public class PageSize {
 
-        @BeforeEach
-        public void setup() {
-            config = listPreviousCertificatesConfigFacadeService.get();
-            filter = (ListFilterOrderConfig) getFilterById(config, "ORDER_BY");
-        }
+    ListFilterPageSizeConfig filter;
+    ListConfig config;
 
-        @Test
-        public void shouldCreateFilter() {
-            assertNotNull(filter);
-        }
-
-        @Test
-        public void shouldSetEmptyTitle() {
-            assertEquals("", filter.getTitle());
-        }
-
-        @Test
-        public void shouldSetType() {
-            assertEquals(ListFilterType.ORDER, filter.getType());
-        }
-
-        @Test
-        public void shouldSetDefaultOrder() {
-            assertEquals(ListColumnType.SAVED, filter.getDefaultValue());
-        }
+    @BeforeEach
+    public void setup() {
+      config = listPreviousCertificatesConfigFacadeService.get();
+      filter = (ListFilterPageSizeConfig) getFilterById(config, "PAGESIZE");
     }
 
-    @Nested
-    public class PageSize {
-
-        ListFilterPageSizeConfig filter;
-        ListConfig config;
-
-        @BeforeEach
-        public void setup() {
-            config = listPreviousCertificatesConfigFacadeService.get();
-            filter = (ListFilterPageSizeConfig) getFilterById(config, "PAGESIZE");
-        }
-
-        @Test
-        public void shouldCreateFilter() {
-            assertNotNull(filter);
-        }
-
-        @Test
-        public void shouldSetTitle() {
-            assertTrue(filter.getTitle().length() > 0);
-        }
-
-        @Test
-        public void shouldSetType() {
-            assertEquals(ListFilterType.PAGESIZE, filter.getType());
-        }
-
-        @Test
-        public void shouldSetList() {
-            assertEquals(4, filter.getPageSizes().length);
-        }
+    @Test
+    public void shouldCreateFilter() {
+      assertNotNull(filter);
     }
 
-    @Nested
-    public class Ascending {
-
-        ListFilterBooleanConfig filter;
-        ListConfig config;
-
-        @BeforeEach
-        public void setup() {
-            config = listPreviousCertificatesConfigFacadeService.get();
-            filter = (ListFilterBooleanConfig) getFilterById(config, "ASCENDING");
-        }
-
-        @Test
-        public void shouldCreateFilter() {
-            assertNotNull(filter);
-        }
-
-        @Test
-        public void shouldSetEmptyTitle() {
-            assertEquals("", filter.getTitle());
-        }
-
-        @Test
-        public void shouldSetType() {
-            assertEquals(ListFilterType.BOOLEAN, filter.getType());
-        }
-
-        @Test
-        public void shouldSetDefaultValue() {
-            assertFalse(filter.getDefaultValue());
-        }
+    @Test
+    public void shouldSetTitle() {
+      assertTrue(filter.getTitle().length() > 0);
     }
 
-    private ListFilterConfig getFilterById(ListConfig config, String id) {
-        return config.getFilters().stream().filter((ListFilterConfig filter) -> filter.getId().equals(id)).findAny().orElse(null);
+    @Test
+    public void shouldSetType() {
+      assertEquals(ListFilterType.PAGESIZE, filter.getType());
     }
+
+    @Test
+    public void shouldSetList() {
+      assertEquals(4, filter.getPageSizes().length);
+    }
+  }
+
+  @Nested
+  public class Ascending {
+
+    ListFilterBooleanConfig filter;
+    ListConfig config;
+
+    @BeforeEach
+    public void setup() {
+      config = listPreviousCertificatesConfigFacadeService.get();
+      filter = (ListFilterBooleanConfig) getFilterById(config, "ASCENDING");
+    }
+
+    @Test
+    public void shouldCreateFilter() {
+      assertNotNull(filter);
+    }
+
+    @Test
+    public void shouldSetEmptyTitle() {
+      assertEquals("", filter.getTitle());
+    }
+
+    @Test
+    public void shouldSetType() {
+      assertEquals(ListFilterType.BOOLEAN, filter.getType());
+    }
+
+    @Test
+    public void shouldSetDefaultValue() {
+      assertFalse(filter.getDefaultValue());
+    }
+  }
+
+  private ListFilterConfig getFilterById(ListConfig config, String id) {
+    return config.getFilters().stream()
+        .filter((ListFilterConfig filter) -> filter.getId().equals(id))
+        .findAny()
+        .orElse(null);
+  }
 }

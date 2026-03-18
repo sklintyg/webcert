@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,34 +22,35 @@ import java.util.List;
 
 public class IcfResponse {
 
-    private IcfDiagnoskodResponse gemensamma;
-    private List<IcfDiagnoskodResponse> unika;
+  private IcfDiagnoskodResponse gemensamma;
+  private List<IcfDiagnoskodResponse> unika;
 
-    public IcfResponse() {
-    }
+  public IcfResponse() {}
 
-    private IcfResponse(final IcfDiagnoskodResponse gemensamma, final List<IcfDiagnoskodResponse> unika) {
-        this.gemensamma = gemensamma;
-        this.unika = unika;
-    }
+  private IcfResponse(
+      final IcfDiagnoskodResponse gemensamma, final List<IcfDiagnoskodResponse> unika) {
+    this.gemensamma = gemensamma;
+    this.unika = unika;
+  }
 
-    public IcfDiagnoskodResponse getGemensamma() {
-        return gemensamma;
-    }
+  public IcfDiagnoskodResponse getGemensamma() {
+    return gemensamma;
+  }
 
-    public void setGemensamma(final IcfDiagnoskodResponse gemensamma) {
-        this.gemensamma = gemensamma;
-    }
+  public void setGemensamma(final IcfDiagnoskodResponse gemensamma) {
+    this.gemensamma = gemensamma;
+  }
 
-    public List<IcfDiagnoskodResponse> getUnika() {
-        return unika;
-    }
+  public List<IcfDiagnoskodResponse> getUnika() {
+    return unika;
+  }
 
-    public void setUnika(final List<IcfDiagnoskodResponse> unika) {
-        this.unika = unika;
-    }
+  public void setUnika(final List<IcfDiagnoskodResponse> unika) {
+    this.unika = unika;
+  }
 
-    public static IcfResponse of(final IcfDiagnoskodResponse gemensamma, final List<IcfDiagnoskodResponse> unika) {
-        return new IcfResponse(gemensamma, unika);
-    }
+  public static IcfResponse of(
+      final IcfDiagnoskodResponse gemensamma, final List<IcfDiagnoskodResponse> unika) {
+    return new IcfResponse(gemensamma, unika);
+  }
 }

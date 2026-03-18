@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,146 +38,173 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 @Service("validateCertificateFromWC")
 public class ValidateCertificateFacadeServiceImpl implements ValidateCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ValidateCertificateFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(ValidateCertificateFacadeServiceImpl.class);
 
-    private final UtkastService utkastService;
-    private final IntygModuleRegistry moduleRegistry;
+  private final UtkastService utkastService;
+  private final IntygModuleRegistry moduleRegistry;
 
-    @Autowired
-    public ValidateCertificateFacadeServiceImpl(UtkastService utkastService, IntygModuleRegistry moduleRegistry) {
-        this.utkastService = utkastService;
-        this.moduleRegistry = moduleRegistry;
-    }
+  @Autowired
+  public ValidateCertificateFacadeServiceImpl(
+      UtkastService utkastService, IntygModuleRegistry moduleRegistry) {
+    this.utkastService = utkastService;
+    this.moduleRegistry = moduleRegistry;
+  }
 
-    @Override
-    public ValidationErrorDTO[] validate(Certificate certificate) {
+  @Override
+  public ValidationErrorDTO[] validate(Certificate certificate) {
 
-        final var moduleApi = getModuleApi(certificate);
+    final var moduleApi = getModuleApi(certificate);
 
-        LOG.debug("Get certificate '{}' to validate", certificate.getMetadata().getId());
-        final var currentCertificate = utkastService.getDraft(certificate.getMetadata().getId(), false);
+    LOG.debug("Get certificate '{}' to validate", certificate.getMetadata().getId());
+    final var currentCertificate = utkastService.getDraft(certificate.getMetadata().getId(), false);
 
-        LOG.debug("Validate certificate '{}'", certificate.getMetadata().getId());
-        final var draftValidation = utkastService.validateDraft(
+    LOG.debug("Validate certificate '{}'", certificate.getMetadata().getId());
+    final var draftValidation =
+        utkastService.validateDraft(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getType(),
-            getJsonFromCertificate(moduleApi, certificate, currentCertificate.getModel(), certificate.getMetadata().getCreated())
-        );
+            getJsonFromCertificate(
+                moduleApi,
+                certificate,
+                currentCertificate.getModel(),
+                certificate.getMetadata().getCreated()));
 
-        LOG.debug("Convert validation result for certificate '{}'", certificate.getMetadata().getId());
-        return convertDraftValidation(moduleApi, certificate, draftValidation);
+    LOG.debug("Convert validation result for certificate '{}'", certificate.getMetadata().getId());
+    return convertDraftValidation(moduleApi, certificate, draftValidation);
+  }
+
+  private ModuleApi getModuleApi(Certificate certificate) {
+    try {
+      return moduleRegistry.getModuleApi(
+          certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion());
+    } catch (Exception ex) {
+      throw new IllegalStateException(ex);
+    }
+  }
+
+  private String getJsonFromCertificate(
+      ModuleApi moduleApi, Certificate certificate, String currentModel, LocalDateTime created) {
+    try {
+      return moduleApi.getJsonFromCertificate(certificate, currentModel, created);
+    } catch (Exception ex) {
+      throw new IllegalStateException(ex);
+    }
+  }
+
+  private ValidationErrorDTO[] convertDraftValidation(
+      ModuleApi moduleApi, Certificate certificate, DraftValidation draftValidation) {
+    return draftValidation.getMessages().stream()
+        .map(validationMessage -> convertValidationError(moduleApi, certificate, validationMessage))
+        .toArray(ValidationErrorDTO[]::new);
+  }
+
+  private ValidationErrorDTO convertValidationError(
+      ModuleApi moduleApi, Certificate certificate, DraftValidationMessage validationMessage) {
+    final var validationError = new ValidationErrorDTO();
+    validationError.setCategory(validationMessage.getCategory());
+    validationError.setField(validationMessage.getField());
+    validationError.setType(validationMessage.getType().name());
+    validationError.setId(validationMessage.getQuestionId());
+    validationError.setText(
+        getValidationText(
+            moduleApi,
+            certificate,
+            validationMessage.getMessage(),
+            validationMessage.getType(),
+            validationMessage.getQuestionId(),
+            validationMessage.getDynamicKey()));
+    return validationError;
+  }
+
+  private String getValidationText(
+      ModuleApi moduleApi,
+      Certificate certificate,
+      String message,
+      ValidationMessageType validationMessageType,
+      String questionId,
+      String dynamicKey) {
+    final var key = resolveKey(certificate, message, validationMessageType, questionId);
+    final var messageProvider = moduleApi.getMessagesProvider();
+    if (dynamicKey == null) {
+      return messageProvider.get(key);
+    }
+    return messageProvider.get(key, dynamicKey);
+  }
+
+  private String resolveKey(
+      Certificate certificate,
+      String message,
+      ValidationMessageType validationMessageType,
+      String questionId) {
+    if (!Strings.isNullOrEmpty(message)) {
+      return message;
     }
 
-    private ModuleApi getModuleApi(Certificate certificate) {
-        try {
-            return moduleRegistry.getModuleApi(certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion());
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+    final var certificateDataElement = certificate.getData().get(questionId);
+    if (certificateDataElement == null) {
+      return message;
+    }
+    final var componentType = certificateDataElement.getConfig().getType();
+    final var oldComponentName = convertToOldName(componentType, certificate, questionId);
+    return "common.validation."
+        + oldComponentName
+        + "."
+        + validationMessageType.name().toLowerCase();
+  }
+
+  private String convertToOldName(
+      CertificateDataConfigType componentType, Certificate certificate, String questionId) {
+    switch (componentType) {
+      case UE_CHECKBOX_MULTIPLE_CODE:
+        if (isQuestion40InFK7804(certificate.getMetadata().getType(), questionId)) {
+          return "ue-checkgroup-disabled";
         }
+        return "ue-checkgroup";
+      case UE_CHECKBOX_BOOLEAN:
+        return "ue-checkbox";
+      case UE_CHECKBOX_MULTIPLE_DATE:
+        return "ue-checkgroup";
+      case UE_DIAGNOSES:
+        return "ue-diagnos";
+      case UE_TEXTAREA:
+        return "ue-textarea";
+      case UE_RADIO_BOOLEAN:
+        return "ue-radio";
+      case UE_RADIO_MULTIPLE_CODE_OPTIONAL_DROPDOWN:
+      case UE_RADIO_MULTIPLE_CODE:
+      case UE_DROPDOWN:
+        return "ue-prognos";
+      case UE_CHECKBOX_DATE_RANGE_LIST:
+        return "ue-sjukskrivningar";
+      case UE_ICF:
+        return "ue-icf";
+      case CATEGORY:
+        return "ue-kategori";
+      case UE_DATE:
+        return "ue-date";
+      case UE_TEXTFIELD:
+        return "ue-textfield";
+      case UE_TYPE_AHEAD:
+        return "ue-typeahead";
+      case UE_CAUSE_OF_DEATH:
+        return "ue-cause-of-death";
+      case UE_CAUSE_OF_DEATH_LIST:
+        return "ue-cause-of-death-list";
+      case UE_MEDICAL_INVESTIGATION:
+        return "ue-medical-investigation";
+      case UE_VISUAL_ACUITY:
+        return "ue-visual-acuity";
+      case UE_INTEGER:
+        return "ue-integer";
+      case UE_DATE_RANGE:
+        return "ue-date-range";
+      default:
+        throw new RuntimeException("No conversion specified for componentType: " + componentType);
     }
+  }
 
-    private String getJsonFromCertificate(ModuleApi moduleApi, Certificate certificate, String currentModel, LocalDateTime created) {
-        try {
-            return moduleApi.getJsonFromCertificate(certificate, currentModel, created);
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
-    private ValidationErrorDTO[] convertDraftValidation(ModuleApi moduleApi, Certificate certificate, DraftValidation draftValidation) {
-        return draftValidation.getMessages().stream()
-            .map(validationMessage -> convertValidationError(moduleApi, certificate, validationMessage))
-            .toArray(ValidationErrorDTO[]::new);
-    }
-
-    private ValidationErrorDTO convertValidationError(ModuleApi moduleApi, Certificate certificate,
-        DraftValidationMessage validationMessage) {
-        final var validationError = new ValidationErrorDTO();
-        validationError.setCategory(validationMessage.getCategory());
-        validationError.setField(validationMessage.getField());
-        validationError.setType(validationMessage.getType().name());
-        validationError.setId(validationMessage.getQuestionId());
-        validationError.setText(getValidationText(moduleApi, certificate, validationMessage.getMessage(), validationMessage.getType(),
-            validationMessage.getQuestionId(), validationMessage.getDynamicKey()));
-        return validationError;
-    }
-
-    private String getValidationText(ModuleApi moduleApi, Certificate certificate, String message,
-        ValidationMessageType validationMessageType, String questionId, String dynamicKey) {
-        final var key = resolveKey(certificate, message, validationMessageType, questionId);
-        final var messageProvider = moduleApi.getMessagesProvider();
-        if (dynamicKey == null) {
-            return messageProvider.get(key);
-        }
-        return messageProvider.get(key, dynamicKey);
-    }
-
-    private String resolveKey(Certificate certificate, String message, ValidationMessageType validationMessageType, String questionId) {
-        if (!Strings.isNullOrEmpty(message)) {
-            return message;
-        }
-
-        final var certificateDataElement = certificate.getData().get(questionId);
-        if (certificateDataElement == null) {
-            return message;
-        }
-        final var componentType = certificateDataElement.getConfig().getType();
-        final var oldComponentName = convertToOldName(componentType, certificate, questionId);
-        return "common.validation." + oldComponentName + "." + validationMessageType.name().toLowerCase();
-    }
-
-    private String convertToOldName(CertificateDataConfigType componentType, Certificate certificate, String questionId) {
-        switch (componentType) {
-            case UE_CHECKBOX_MULTIPLE_CODE:
-                if (isQuestion40InFK7804(certificate.getMetadata().getType(), questionId)) {
-                    return "ue-checkgroup-disabled";
-                }
-                return "ue-checkgroup";
-            case UE_CHECKBOX_BOOLEAN:
-                return "ue-checkbox";
-            case UE_CHECKBOX_MULTIPLE_DATE:
-                return "ue-checkgroup";
-            case UE_DIAGNOSES:
-                return "ue-diagnos";
-            case UE_TEXTAREA:
-                return "ue-textarea";
-            case UE_RADIO_BOOLEAN:
-                return "ue-radio";
-            case UE_RADIO_MULTIPLE_CODE_OPTIONAL_DROPDOWN:
-            case UE_RADIO_MULTIPLE_CODE:
-            case UE_DROPDOWN:
-                return "ue-prognos";
-            case UE_CHECKBOX_DATE_RANGE_LIST:
-                return "ue-sjukskrivningar";
-            case UE_ICF:
-                return "ue-icf";
-            case CATEGORY:
-                return "ue-kategori";
-            case UE_DATE:
-                return "ue-date";
-            case UE_TEXTFIELD:
-                return "ue-textfield";
-            case UE_TYPE_AHEAD:
-                return "ue-typeahead";
-            case UE_CAUSE_OF_DEATH:
-                return "ue-cause-of-death";
-            case UE_CAUSE_OF_DEATH_LIST:
-                return "ue-cause-of-death-list";
-            case UE_MEDICAL_INVESTIGATION:
-                return "ue-medical-investigation";
-            case UE_VISUAL_ACUITY:
-                return "ue-visual-acuity";
-            case UE_INTEGER:
-                return "ue-integer";
-            case UE_DATE_RANGE:
-                return "ue-date-range";
-            default:
-                throw new RuntimeException("No conversion specified for componentType: " + componentType);
-        }
-    }
-
-    private boolean isQuestion40InFK7804(String certificateType, String questionId) {
-        return certificateType.equals("lisjp") && questionId.equals("40");
-    }
-
+  private boolean isQuestion40InFK7804(String certificateType, String questionId) {
+    return certificateType.equals("lisjp") && questionId.equals("40");
+  }
 }

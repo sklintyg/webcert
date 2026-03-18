@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,85 +50,85 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateReceiverServiceImplTest {
 
-    private static final String RECEIVER_ID = "FKASSA";
-    private static final String RECEIVER_NAME = "Försäkringskassan";
+  private static final String RECEIVER_ID = "FKASSA";
+  private static final String RECEIVER_NAME = "Försäkringskassan";
 
-    @Mock
-    private ListApprovedReceiversResponderInterface listApprovedReceiversClient;
+  @Mock private ListApprovedReceiversResponderInterface listApprovedReceiversClient;
 
-    @Mock
-    private ListPossibleReceiversResponderInterface listPossibleReceiversClient;
+  @Mock private ListPossibleReceiversResponderInterface listPossibleReceiversClient;
 
-    @Mock
-    private CertificateSenderService certificateSenderService;
+  @Mock private CertificateSenderService certificateSenderService;
 
-    @InjectMocks
-    private CertificateReceiverServiceImpl testee;
+  @InjectMocks private CertificateReceiverServiceImpl testee;
 
-    @Before
-    public void init() {
-        ReflectionTestUtils.setField(testee, "logicalAddress", "123");
-    }
+  @Before
+  public void init() {
+    ReflectionTestUtils.setField(testee, "logicalAddress", "123");
+  }
 
-    @Test
-    public void testListAllowedAndApprovedReceivers() {
-        when(listPossibleReceiversClient.listPossibleReceivers(anyString(), any(ListPossibleReceiversType.class)))
-            .thenReturn(buildPossibleReceivers());
-        when(listApprovedReceiversClient.listApprovedReceivers(anyString(), any(ListApprovedReceiversType.class)))
-            .thenReturn(buildApprovedReceivers());
-        List<IntygReceiver> resp = testee.listPossibleReceiversWithApprovedInfo("LISJP", "intyg-123");
-        assertEquals(1, resp.size());
+  @Test
+  public void testListAllowedAndApprovedReceivers() {
+    when(listPossibleReceiversClient.listPossibleReceivers(
+            anyString(), any(ListPossibleReceiversType.class)))
+        .thenReturn(buildPossibleReceivers());
+    when(listApprovedReceiversClient.listApprovedReceivers(
+            anyString(), any(ListApprovedReceiversType.class)))
+        .thenReturn(buildApprovedReceivers());
+    List<IntygReceiver> resp = testee.listPossibleReceiversWithApprovedInfo("LISJP", "intyg-123");
+    assertEquals(1, resp.size());
 
-        verify(listPossibleReceiversClient, times(1)).listPossibleReceivers(anyString(), any(ListPossibleReceiversType.class));
-    }
+    verify(listPossibleReceiversClient, times(1))
+        .listPossibleReceivers(anyString(), any(ListPossibleReceiversType.class));
+  }
 
-    private ListApprovedReceiversResponseType buildApprovedReceivers() {
-        ListApprovedReceiversResponseType resp = new ListApprovedReceiversResponseType();
+  private ListApprovedReceiversResponseType buildApprovedReceivers() {
+    ListApprovedReceiversResponseType resp = new ListApprovedReceiversResponseType();
 
-        CertificateReceiverRegistrationType certReceiverType = new CertificateReceiverRegistrationType();
-        certReceiverType.setReceiverId(RECEIVER_ID);
-        certReceiverType.setReceiverName(RECEIVER_NAME);
-        certReceiverType.setReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE);
-        certReceiverType.setTrusted(true);
-        resp.getReceiverList().add(certReceiverType);
-        return resp;
-    }
+    CertificateReceiverRegistrationType certReceiverType =
+        new CertificateReceiverRegistrationType();
+    certReceiverType.setReceiverId(RECEIVER_ID);
+    certReceiverType.setReceiverName(RECEIVER_NAME);
+    certReceiverType.setReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE);
+    certReceiverType.setTrusted(true);
+    resp.getReceiverList().add(certReceiverType);
+    return resp;
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testListAllowedWithApprovedNullIntygsTyp() {
-        testee.listPossibleReceiversWithApprovedInfo(null, "intyg-123");
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testListAllowedWithApprovedNullIntygsTyp() {
+    testee.listPossibleReceiversWithApprovedInfo(null, "intyg-123");
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testListAllowedWithApprovedReceiversBlankIntygsTyp() {
-        testee.listPossibleReceiversWithApprovedInfo("", "intyg-123");
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testListAllowedWithApprovedReceiversBlankIntygsTyp() {
+    testee.listPossibleReceiversWithApprovedInfo("", "intyg-123");
+  }
 
-    @Test
-    public void testRegisterApproved() {
-        testee.registerApprovedReceivers("intyg-123", "lijsp", Arrays.asList("FKASSA", "TRANSP"));
-        verify(certificateSenderService, times(1)).sendRegisterApprovedReceivers(anyString(), anyString(), anyString());
-    }
+  @Test
+  public void testRegisterApproved() {
+    testee.registerApprovedReceivers("intyg-123", "lijsp", Arrays.asList("FKASSA", "TRANSP"));
+    verify(certificateSenderService, times(1))
+        .sendRegisterApprovedReceivers(anyString(), anyString(), anyString());
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testRegisterApprovedNullIntygsId() {
-        testee.registerApprovedReceivers(null, "lijsp", Arrays.asList("FKASSA"));
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testRegisterApprovedNullIntygsId() {
+    testee.registerApprovedReceivers(null, "lijsp", Arrays.asList("FKASSA"));
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testListAllowedReceiversBlankIntygsId() {
-        testee.registerApprovedReceivers("", "lijsp", Arrays.asList("FKASSA"));
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testListAllowedReceiversBlankIntygsId() {
+    testee.registerApprovedReceivers("", "lijsp", Arrays.asList("FKASSA"));
+  }
 
-    private ListPossibleReceiversResponseType buildPossibleReceivers() {
-        ListPossibleReceiversResponseType resp = new ListPossibleReceiversResponseType();
-        CertificateReceiverType certReceiverType = new CertificateReceiverType();
-        certReceiverType.setReceiverId(RECEIVER_ID);
-        certReceiverType.setReceiverName(RECEIVER_NAME);
-        certReceiverType.setReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE);
-        certReceiverType.setTrusted(true);
-        resp.getReceiverList().add(certReceiverType);
-        return resp;
-    }
-
+  private ListPossibleReceiversResponseType buildPossibleReceivers() {
+    ListPossibleReceiversResponseType resp = new ListPossibleReceiversResponseType();
+    CertificateReceiverType certReceiverType = new CertificateReceiverType();
+    certReceiverType.setReceiverId(RECEIVER_ID);
+    certReceiverType.setReceiverName(RECEIVER_NAME);
+    certReceiverType.setReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE);
+    certReceiverType.setTrusted(true);
+    resp.getReceiverList().add(certReceiverType);
+    return resp;
+  }
 }

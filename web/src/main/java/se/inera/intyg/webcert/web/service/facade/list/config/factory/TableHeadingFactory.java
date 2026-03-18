@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,39 +24,51 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
 
 public class TableHeadingFactory {
 
-    public static TableHeading text(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.TEXT, type.getDescription());
-    }
+  public static TableHeading text(ListColumnType type) {
+    return new TableHeading(
+        type, type.getName(), CertificateListItemValueType.TEXT, type.getDescription());
+  }
 
-    public static TableHeading text(ListColumnType type, String description) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.TEXT, description);
-    }
+  public static TableHeading text(ListColumnType type, String description) {
+    return new TableHeading(type, type.getName(), CertificateListItemValueType.TEXT, description);
+  }
 
-    public static TableHeading date(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.DATE, type.getDescription());
-    }
+  public static TableHeading date(ListColumnType type) {
+    return new TableHeading(
+        type, type.getName(), CertificateListItemValueType.DATE, type.getDescription());
+  }
 
-    public static TableHeading date(ListColumnType type, boolean defaultAscending) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.DATE, type.getDescription(), defaultAscending);
-    }
+  public static TableHeading date(ListColumnType type, boolean defaultAscending) {
+    return new TableHeading(
+        type,
+        type.getName(),
+        CertificateListItemValueType.DATE,
+        type.getDescription(),
+        defaultAscending);
+  }
 
-    public static TableHeading patientInfo(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.PATIENT_INFO, type.getDescription());
-    }
+  public static TableHeading patientInfo(ListColumnType type) {
+    return new TableHeading(
+        type, type.getName(), CertificateListItemValueType.PATIENT_INFO, type.getDescription());
+  }
 
-    public static TableHeading forwarded(ListColumnType type, String description) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.FORWARD, description);
-    }
+  public static TableHeading forwarded(ListColumnType type, String description) {
+    return new TableHeading(
+        type, type.getName(), CertificateListItemValueType.FORWARD, description);
+  }
 
-    public static TableHeading openButton(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.OPEN_BUTTON, type.getDescription());
-    }
+  public static TableHeading openButton(ListColumnType type) {
+    return new TableHeading(
+        type, type.getName(), CertificateListItemValueType.OPEN_BUTTON, type.getDescription());
+  }
 
-    public static TableHeading forwardButton(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.FORWARD_BUTTON, type.getDescription());
-    }
+  public static TableHeading forwardButton(ListColumnType type) {
+    return new TableHeading(
+        type, type.getName(), CertificateListItemValueType.FORWARD_BUTTON, type.getDescription());
+  }
 
-    public static TableHeading renewButton(ListColumnType type) {
-        return new TableHeading(type, type.getName(), CertificateListItemValueType.RENEW_BUTTON, type.getDescription());
-    }
+  public static TableHeading renewButton(ListColumnType type) {
+    return new TableHeading(
+        type, type.getName(), CertificateListItemValueType.RENEW_BUTTON, type.getDescription());
+  }
 }

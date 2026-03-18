@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -53,287 +53,335 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKoder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKompletterandeKod;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 
-
 @Service
 public class IcfServiceImpl extends FmbBaseService implements IcfService {
 
-    private static final int THREE_MATCHES = 3;
-    private static final int TWO_MATCHES = 2;
+  private static final int THREE_MATCHES = 3;
+  private static final int TWO_MATCHES = 2;
 
-    private final IcfTextResource textResource;
+  private final IcfTextResource textResource;
 
-    public IcfServiceImpl(
-        final IcfTextResource textResource,
-        final DiagnosInformationRepository repository) {
-        super(repository);
-        this.textResource = textResource;
-        this.repository = repository;
-    }
+  public IcfServiceImpl(
+      final IcfTextResource textResource, final DiagnosInformationRepository repository) {
+    super(repository);
+    this.textResource = textResource;
+    this.repository = repository;
+  }
 
-    @Override
-    @Transactional(readOnly = true)
-    public IcfResponse findIcfInformationByIcd10Koder(final Icd10KoderRequest icd10KoderRequest) {
+  @Override
+  @Transactional(readOnly = true)
+  public IcfResponse findIcfInformationByIcd10Koder(final Icd10KoderRequest icd10KoderRequest) {
 
-        Preconditions.checkArgument(Objects.nonNull(icd10KoderRequest), "Icd10KoderRequest can not be null");
-        Preconditions.checkArgument(Objects.nonNull(icd10KoderRequest.getIcd10Kod1()), "Icd10KoderRequest must have an icfCode1");
+    Preconditions.checkArgument(
+        Objects.nonNull(icd10KoderRequest), "Icd10KoderRequest can not be null");
+    Preconditions.checkArgument(
+        Objects.nonNull(icd10KoderRequest.getIcd10Kod1()),
+        "Icd10KoderRequest must have an icfCode1");
 
-        final List<Tuple2<String, Optional<DiagnosInformation>>> collect = List.ofAll(icd10KoderRequest.getIcd10Codes())
+    final List<Tuple2<String, Optional<DiagnosInformation>>> collect =
+        List.ofAll(icd10KoderRequest.getIcd10Codes())
             .map(this::searchDiagnosInformationByIcd10Kod)
             .distinctBy(response -> response._1);
 
-        return convertToResponse(collect);
-    }
+    return convertToResponse(collect);
+  }
 
-    private IcfResponse convertToResponse(List<Tuple2<String, Optional<DiagnosInformation>>> responsList) {
+  private IcfResponse convertToResponse(
+      List<Tuple2<String, Optional<DiagnosInformation>>> responsList) {
 
-        final IcfDiagnoskodResponse gemensammaKoder = getGemensammaKoder(responsList);
-        final List<IcfDiagnoskodResponse> unikaKoder = getUnikaKoder(responsList, gemensammaKoder);
+    final IcfDiagnoskodResponse gemensammaKoder = getGemensammaKoder(responsList);
+    final List<IcfDiagnoskodResponse> unikaKoder = getUnikaKoder(responsList, gemensammaKoder);
 
-        return IcfResponse.of(
-            gemensammaKoder,
-            unikaKoder.toJavaList());
-    }
+    return IcfResponse.of(gemensammaKoder, unikaKoder.toJavaList());
+  }
 
-    private List<IcfDiagnoskodResponse> getUnikaKoder(
-        final List<Tuple2<String, Optional<DiagnosInformation>>> responsList, final IcfDiagnoskodResponse gemensammaKoder) {
+  private List<IcfDiagnoskodResponse> getUnikaKoder(
+      final List<Tuple2<String, Optional<DiagnosInformation>>> responsList,
+      final IcfDiagnoskodResponse gemensammaKoder) {
 
-        return responsList
-            .filter(tuple -> tuple._2.isPresent())
-            .filter(hasIcfCodes())
-            .map(pair -> IcfDiagnoskodResponse.of(
-                pair._1,
-                pair._2.map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING, gemensammaKoder.getFunktionsNedsattningsKoder()))
-                    .orElse(null),
-                pair._2.map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING, gemensammaKoder.getAktivitetsBegransningsKoder()))
-                    .orElse(null)
-            )).filter(Objects::nonNull);
-    }
+    return responsList
+        .filter(tuple -> tuple._2.isPresent())
+        .filter(hasIcfCodes())
+        .map(
+            pair ->
+                IcfDiagnoskodResponse.of(
+                    pair._1,
+                    pair._2
+                        .map(
+                            getDiagnosKoder(
+                                BeskrivningTyp.FUNKTIONSNEDSATTNING,
+                                gemensammaKoder.getFunktionsNedsattningsKoder()))
+                        .orElse(null),
+                    pair._2
+                        .map(
+                            getDiagnosKoder(
+                                BeskrivningTyp.AKTIVITETSBEGRANSNING,
+                                gemensammaKoder.getAktivitetsBegransningsKoder()))
+                        .orElse(null)))
+        .filter(Objects::nonNull);
+  }
 
-    private IcfDiagnoskodResponse getGemensammaKoder(final List<Tuple2<String, Optional<DiagnosInformation>>> responsList) {
+  private IcfDiagnoskodResponse getGemensammaKoder(
+      final List<Tuple2<String, Optional<DiagnosInformation>>> responsList) {
 
-        List<Tuple2<String, IcfKoder>> funktionsKoder = responsList
+    List<Tuple2<String, IcfKoder>> funktionsKoder =
+        responsList
             .map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING))
             .filter(Objects::nonNull);
 
-        List<Tuple2<String, IcfKoder>> aktivitetsKoder = responsList
+    List<Tuple2<String, IcfKoder>> aktivitetsKoder =
+        responsList
             .map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING))
             .filter(Objects::nonNull);
 
-        final Optional<IcfKoder> gemensammaNedsattning = findGemensammaKoder(funktionsKoder, BeskrivningTyp.FUNKTIONSNEDSATTNING);
-        final Optional<IcfKoder> gemensammaAktivitet = findGemensammaKoder(aktivitetsKoder, BeskrivningTyp.AKTIVITETSBEGRANSNING);
+    final Optional<IcfKoder> gemensammaNedsattning =
+        findGemensammaKoder(funktionsKoder, BeskrivningTyp.FUNKTIONSNEDSATTNING);
+    final Optional<IcfKoder> gemensammaAktivitet =
+        findGemensammaKoder(aktivitetsKoder, BeskrivningTyp.AKTIVITETSBEGRANSNING);
 
-        if ((!gemensammaNedsattning.isPresent() && !gemensammaAktivitet.isPresent())) {
-            return IcfDiagnoskodResponse.empty();
+    if ((!gemensammaNedsattning.isPresent() && !gemensammaAktivitet.isPresent())) {
+      return IcfDiagnoskodResponse.empty();
+    } else {
+      return IcfDiagnoskodResponse.of(
+          gemensammaNedsattning.orElse(null), gemensammaAktivitet.orElse(null));
+    }
+  }
+
+  private Optional<IcfKoder> findGemensammaKoder(
+      final List<Tuple2<String, IcfKoder>> icfKoderList, final BeskrivningTyp typ) {
+
+    final String central = "central";
+    final String kompletterande = "kompletterande";
+
+    HashSet<String> icd10KoderMedGemensammaIcf = HashSet.empty();
+
+    final List<Tuple3<String, IcfKod, String>> koder =
+        icfKoderList.flatMap(
+            diagnos -> {
+              final List<Tuple3<String, IcfKod, String>> tempList =
+                  List.ofAll(emptyIfNull(diagnos))
+                      .filter(IcfCentralKod.class::isInstance)
+                      .map(kod -> Tuple.of(diagnos._1, kod, central));
+
+              return tempList.appendAll(
+                  List.ofAll(emptyIfNull(diagnos))
+                      .filter(IcfKompletterandeKod.class::isInstance)
+                      .map(kod -> Tuple.of(diagnos._1, kod, kompletterande)));
+            });
+
+    List<IcfKod> gemensammaCentralKoder = List.empty();
+    List<IcfKod> gemensammaBlandadeKoder = List.empty();
+    List<IcfKod> gemensammaKompletterandeKoder = List.empty();
+
+    final Map<String, List<Tuple3<String, IcfKod, String>>> byIcfKod =
+        koder.groupBy(kod -> kod._2.getKod());
+
+    for (Tuple2<String, List<Tuple3<String, IcfKod, String>>> icfKod : byIcfKod) {
+      List<IcfKod> tempGemensammaCentralKoder = List.empty();
+      List<IcfKod> tempGemensammaBlandadeKoder = List.empty();
+      List<IcfKod> tempGemensammaKompletterandeKoder = List.empty();
+
+      final List<Tuple3<String, IcfKod, String>> machesPerIcfKategori = icfKod._2;
+
+      if (machesPerIcfKategori.size() == TWO_MATCHES) { // gemensamma för 2 Diagnoser
+
+        final String typ0 = machesPerIcfKategori.get(0)._3;
+        final String typ1 = machesPerIcfKategori.get(1)._3;
+
+        final IcfKod icfKategori = machesPerIcfKategori.get(0)._2;
+        final List<String> icd10Koder = machesPerIcfKategori.map(Tuple3::_1);
+
+        if (typ0.equals(typ1)) {
+
+          if (typ0.equals(central)) {
+            tempGemensammaCentralKoder = tempGemensammaCentralKoder.append(icfKategori);
+          } else {
+            tempGemensammaKompletterandeKoder =
+                tempGemensammaKompletterandeKoder.append(icfKategori);
+          }
+
         } else {
-            return IcfDiagnoskodResponse.of(gemensammaNedsattning.orElse(null), gemensammaAktivitet.orElse(null));
-        }
-    }
-
-    private Optional<IcfKoder> findGemensammaKoder(final List<Tuple2<String, IcfKoder>> icfKoderList, final BeskrivningTyp typ) {
-
-        final String central = "central";
-        final String kompletterande = "kompletterande";
-
-        HashSet<String> icd10KoderMedGemensammaIcf = HashSet.empty();
-
-        final List<Tuple3<String, IcfKod, String>> koder = icfKoderList.flatMap(diagnos -> {
-            final List<Tuple3<String, IcfKod, String>> tempList =
-                List.ofAll(emptyIfNull(diagnos))
-                    .filter(IcfCentralKod.class::isInstance)
-                    .map(kod -> Tuple.of(diagnos._1, kod, central));
-
-            return tempList.appendAll(
-                List.ofAll(emptyIfNull(diagnos))
-                    .filter(IcfKompletterandeKod.class::isInstance)
-                    .map(kod -> Tuple.of(diagnos._1, kod, kompletterande)));
-        });
-
-        List<IcfKod> gemensammaCentralKoder = List.empty();
-        List<IcfKod> gemensammaBlandadeKoder = List.empty();
-        List<IcfKod> gemensammaKompletterandeKoder = List.empty();
-
-        final Map<String, List<Tuple3<String, IcfKod, String>>> byIcfKod = koder.groupBy(kod -> kod._2.getKod());
-
-        for (Tuple2<String, List<Tuple3<String, IcfKod, String>>> icfKod : byIcfKod) {
-            List<IcfKod> tempGemensammaCentralKoder = List.empty();
-            List<IcfKod> tempGemensammaBlandadeKoder = List.empty();
-            List<IcfKod> tempGemensammaKompletterandeKoder = List.empty();
-
-            final List<Tuple3<String, IcfKod, String>> machesPerIcfKategori = icfKod._2;
-
-            if (machesPerIcfKategori.size() == TWO_MATCHES) { //gemensamma för 2 Diagnoser
-
-                final String typ0 = machesPerIcfKategori.get(0)._3;
-                final String typ1 = machesPerIcfKategori.get(1)._3;
-
-                final IcfKod icfKategori = machesPerIcfKategori.get(0)._2;
-                final List<String> icd10Koder = machesPerIcfKategori.map(Tuple3::_1);
-
-                if (typ0.equals(typ1)) {
-
-                    if (typ0.equals(central)) {
-                        tempGemensammaCentralKoder = tempGemensammaCentralKoder.append(icfKategori);
-                    } else {
-                        tempGemensammaKompletterandeKoder = tempGemensammaKompletterandeKoder.append(icfKategori);
-                    }
-
-                } else {
-                    tempGemensammaBlandadeKoder = tempGemensammaBlandadeKoder.append(icfKategori);
-                }
-
-                icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.addAll(icd10Koder);
-
-            } else if (machesPerIcfKategori.size() == THREE_MATCHES) { //gemensamma för alla 3 Diagnoser
-
-                final String typ0 = machesPerIcfKategori.get(0)._3;
-                final String typ1 = machesPerIcfKategori.get(1)._3;
-                final String typ2 = machesPerIcfKategori.get(2)._3;
-
-                final IcfKod icfKategori = machesPerIcfKategori.get(0)._2;
-                final List<String> icd10Koder = machesPerIcfKategori.map(Tuple3::_1);
-
-                if (typ0.equals(typ1) && typ0.equals(typ2)) {
-
-                    if (typ0.equals(central)) {
-                        tempGemensammaCentralKoder = tempGemensammaCentralKoder.append(icfKategori);
-                    } else {
-                        tempGemensammaKompletterandeKoder = tempGemensammaKompletterandeKoder.append(icfKategori);
-                    }
-
-                } else {
-                    tempGemensammaBlandadeKoder = tempGemensammaBlandadeKoder.append(icfKategori);
-                }
-
-                icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.addAll(icd10Koder);
-            }
-
-            // lägg ihop svar i respektive kategori och sortera efter alfabetisk ordning på benämning.
-            gemensammaCentralKoder = gemensammaCentralKoder.appendAll(tempGemensammaCentralKoder);
-            gemensammaCentralKoder = gemensammaCentralKoder.sortBy(IcfKod::getBenamning);
-            gemensammaBlandadeKoder = gemensammaBlandadeKoder.appendAll(tempGemensammaBlandadeKoder);
-            gemensammaBlandadeKoder = gemensammaBlandadeKoder.sortBy(IcfKod::getBenamning);
-            gemensammaKompletterandeKoder = gemensammaKompletterandeKoder.appendAll(tempGemensammaKompletterandeKoder);
-            gemensammaKompletterandeKoder = gemensammaKompletterandeKoder.sortBy(IcfKod::getBenamning);
+          tempGemensammaBlandadeKoder = tempGemensammaBlandadeKoder.append(icfKategori);
         }
 
-        if (gemensammaCentralKoder.isEmpty() && gemensammaBlandadeKoder.isEmpty() && gemensammaKompletterandeKoder.isEmpty()) {
-            return Optional.empty();
-        }
+        icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.addAll(icd10Koder);
 
-        List<IcfKod> all = List.ofAll(gemensammaCentralKoder);
-        all = all.appendAll(gemensammaBlandadeKoder);
-        all = all.appendAll(gemensammaKompletterandeKoder);
+      } else if (machesPerIcfKategori.size() == THREE_MATCHES) { // gemensamma för alla 3 Diagnoser
 
-        if (typ == BeskrivningTyp.FUNKTIONSNEDSATTNING) {
-            return Optional.of(FunktionsNedsattningsKoder.of(icd10KoderMedGemensammaIcf.toJavaList(), all.toJavaList()));
-        } else if (typ == BeskrivningTyp.AKTIVITETSBEGRANSNING) {
-            return Optional.of(AktivitetsBegransningsKoder.of(icd10KoderMedGemensammaIcf.toJavaList(), all.toJavaList()));
+        final String typ0 = machesPerIcfKategori.get(0)._3;
+        final String typ1 = machesPerIcfKategori.get(1)._3;
+        final String typ2 = machesPerIcfKategori.get(2)._3;
+
+        final IcfKod icfKategori = machesPerIcfKategori.get(0)._2;
+        final List<String> icd10Koder = machesPerIcfKategori.map(Tuple3::_1);
+
+        if (typ0.equals(typ1) && typ0.equals(typ2)) {
+
+          if (typ0.equals(central)) {
+            tempGemensammaCentralKoder = tempGemensammaCentralKoder.append(icfKategori);
+          } else {
+            tempGemensammaKompletterandeKoder =
+                tempGemensammaKompletterandeKoder.append(icfKategori);
+          }
+
         } else {
-            throw new IllegalArgumentException("Incorrect Type for variable typ");
+          tempGemensammaBlandadeKoder = tempGemensammaBlandadeKoder.append(icfKategori);
         }
+
+        icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.addAll(icd10Koder);
+      }
+
+      // lägg ihop svar i respektive kategori och sortera efter alfabetisk ordning på benämning.
+      gemensammaCentralKoder = gemensammaCentralKoder.appendAll(tempGemensammaCentralKoder);
+      gemensammaCentralKoder = gemensammaCentralKoder.sortBy(IcfKod::getBenamning);
+      gemensammaBlandadeKoder = gemensammaBlandadeKoder.appendAll(tempGemensammaBlandadeKoder);
+      gemensammaBlandadeKoder = gemensammaBlandadeKoder.sortBy(IcfKod::getBenamning);
+      gemensammaKompletterandeKoder =
+          gemensammaKompletterandeKoder.appendAll(tempGemensammaKompletterandeKoder);
+      gemensammaKompletterandeKoder = gemensammaKompletterandeKoder.sortBy(IcfKod::getBenamning);
     }
 
-    private Predicate<Tuple2<String, Optional<DiagnosInformation>>> hasIcfCodes() {
-        return pair -> {
-            if (!pair._2.isPresent()) {
-                return false;
-            }
-
-            final List<se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod> icfKods = List.ofAll(pair._2.get().getBeskrivningList())
-                .flatMap(Beskrivning::getIcfKodList)
-                .orElse(List.empty());
-
-            return !icfKods.isEmpty();
-        };
+    if (gemensammaCentralKoder.isEmpty()
+        && gemensammaBlandadeKoder.isEmpty()
+        && gemensammaKompletterandeKoder.isEmpty()) {
+      return Optional.empty();
     }
 
-    private Function<Tuple2<String, Optional<DiagnosInformation>>, Tuple2<String, IcfKoder>> getDiagnosKoder(final BeskrivningTyp typ) {
-        return pair -> pair._2
-            .map(info -> info.getBeskrivningList().stream()
-                .filter(filterBeskrivning(typ))
-                .collect(toOptional())
-                .map(toIcfKoder(null))
-                .map(koder -> Tuple.of(pair._1, koder))
-                .orElse(null))
+    List<IcfKod> all = List.ofAll(gemensammaCentralKoder);
+    all = all.appendAll(gemensammaBlandadeKoder);
+    all = all.appendAll(gemensammaKompletterandeKoder);
+
+    if (typ == BeskrivningTyp.FUNKTIONSNEDSATTNING) {
+      return Optional.of(
+          FunktionsNedsattningsKoder.of(icd10KoderMedGemensammaIcf.toJavaList(), all.toJavaList()));
+    } else if (typ == BeskrivningTyp.AKTIVITETSBEGRANSNING) {
+      return Optional.of(
+          AktivitetsBegransningsKoder.of(
+              icd10KoderMedGemensammaIcf.toJavaList(), all.toJavaList()));
+    } else {
+      throw new IllegalArgumentException("Incorrect Type for variable typ");
+    }
+  }
+
+  private Predicate<Tuple2<String, Optional<DiagnosInformation>>> hasIcfCodes() {
+    return pair -> {
+      if (!pair._2.isPresent()) {
+        return false;
+      }
+
+      final List<se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod> icfKods =
+          List.ofAll(pair._2.get().getBeskrivningList())
+              .flatMap(Beskrivning::getIcfKodList)
+              .orElse(List.empty());
+
+      return !icfKods.isEmpty();
+    };
+  }
+
+  private Function<Tuple2<String, Optional<DiagnosInformation>>, Tuple2<String, IcfKoder>>
+      getDiagnosKoder(final BeskrivningTyp typ) {
+    return pair ->
+        pair._2
+            .map(
+                info ->
+                    info.getBeskrivningList().stream()
+                        .filter(filterBeskrivning(typ))
+                        .collect(toOptional())
+                        .map(toIcfKoder(null))
+                        .map(koder -> Tuple.of(pair._1, koder))
+                        .orElse(null))
             .orElse(null);
-    }
+  }
 
-    private Function<DiagnosInformation, IcfKoder> getDiagnosKoder(final BeskrivningTyp typ, final IcfKoder exkludera) {
-        return info -> info.getBeskrivningList().stream()
+  private Function<DiagnosInformation, IcfKoder> getDiagnosKoder(
+      final BeskrivningTyp typ, final IcfKoder exkludera) {
+    return info ->
+        info.getBeskrivningList().stream()
             .filter(filterBeskrivning(typ))
             .collect(toOptional())
             .map(toIcfKoder(exkludera))
             .orElse(null);
-    }
+  }
 
-    private Predicate<Beskrivning> filterBeskrivning(final BeskrivningTyp beskrivningTyp) {
-        return beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), beskrivningTyp);
-    }
+  private Predicate<Beskrivning> filterBeskrivning(final BeskrivningTyp beskrivningTyp) {
+    return beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), beskrivningTyp);
+  }
 
-    private Function<Beskrivning, IcfKoder> toIcfKoder(final IcfKoder exkludera) {
-        return beskrivning -> {
-            final java.util.List<IcfKod> centralKoder = beskrivning.getIcfKodList().stream()
-                .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.CENTRAL)
-                .map(getIcfKodFromResource())
-                .filter(kod -> exkludera == null
-                    || (exkludera.getIcfKoder() != null && !exkludera.getIcfKoder().contains(kod)))
-                .collect(Collectors.toList());
+  private Function<Beskrivning, IcfKoder> toIcfKoder(final IcfKoder exkludera) {
+    return beskrivning -> {
+      final java.util.List<IcfKod> centralKoder =
+          beskrivning.getIcfKodList().stream()
+              .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.CENTRAL)
+              .map(getIcfKodFromResource())
+              .filter(
+                  kod ->
+                      exkludera == null
+                          || (exkludera.getIcfKoder() != null
+                              && !exkludera.getIcfKoder().contains(kod)))
+              .collect(Collectors.toList());
 
-            final java.util.List<IcfKod> kompletterandeKoder = beskrivning.getIcfKodList().stream()
-                .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.KOMPLETTERANDE)
-                .map(getIcfKodFromResource())
-                .filter(kod -> exkludera == null
-                    || (exkludera.getIcfKoder() != null && !exkludera.getIcfKoder().contains(kod)))
-                .collect(Collectors.toList());
+      final java.util.List<IcfKod> kompletterandeKoder =
+          beskrivning.getIcfKodList().stream()
+              .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.KOMPLETTERANDE)
+              .map(getIcfKodFromResource())
+              .filter(
+                  kod ->
+                      exkludera == null
+                          || (exkludera.getIcfKoder() != null
+                              && !exkludera.getIcfKoder().contains(kod)))
+              .collect(Collectors.toList());
 
-            if (CollectionUtils.isEmpty(centralKoder) && CollectionUtils.isEmpty(kompletterandeKoder)) {
-                return null;
-            }
+      if (CollectionUtils.isEmpty(centralKoder) && CollectionUtils.isEmpty(kompletterandeKoder)) {
+        return null;
+      }
 
-            List<IcfKod> sortedCentralKoder = List.ofAll(centralKoder);
-            sortedCentralKoder = sortedCentralKoder.sortBy(IcfKod::getBenamning);
+      List<IcfKod> sortedCentralKoder = List.ofAll(centralKoder);
+      sortedCentralKoder = sortedCentralKoder.sortBy(IcfKod::getBenamning);
 
-            List<IcfKod> sortedKompletterandeKoder = List.ofAll(kompletterandeKoder);
-            sortedKompletterandeKoder = sortedKompletterandeKoder.sortBy(IcfKod::getBenamning);
+      List<IcfKod> sortedKompletterandeKoder = List.ofAll(kompletterandeKoder);
+      sortedKompletterandeKoder = sortedKompletterandeKoder.sortBy(IcfKod::getBenamning);
 
-            List<IcfKod> allaKoder = List.empty();
-            allaKoder = allaKoder.appendAll(sortedCentralKoder);
-            allaKoder = allaKoder.appendAll(sortedKompletterandeKoder);
+      List<IcfKod> allaKoder = List.empty();
+      allaKoder = allaKoder.appendAll(sortedCentralKoder);
+      allaKoder = allaKoder.appendAll(sortedKompletterandeKoder);
 
-            IcfKoder icfKoder = null;
-            switch (beskrivning.getBeskrivningTyp()) {
-                case FUNKTIONSNEDSATTNING:
-                    icfKoder = FunktionsNedsattningsKoder.of(allaKoder.toJavaList());
-                    break;
-                case AKTIVITETSBEGRANSNING:
-                    icfKoder = AktivitetsBegransningsKoder.of(allaKoder.toJavaList());
-                    break;
-            }
-            return icfKoder;
-        };
-    }
+      IcfKoder icfKoder = null;
+      switch (beskrivning.getBeskrivningTyp()) {
+        case FUNKTIONSNEDSATTNING:
+          icfKoder = FunktionsNedsattningsKoder.of(allaKoder.toJavaList());
+          break;
+        case AKTIVITETSBEGRANSNING:
+          icfKoder = AktivitetsBegransningsKoder.of(allaKoder.toJavaList());
+          break;
+      }
+      return icfKoder;
+    };
+  }
 
-    private Function<se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod, IcfKod> getIcfKodFromResource() {
-        return kod -> {
+  private Function<se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod, IcfKod>
+      getIcfKodFromResource() {
+    return kod -> {
+      final Optional<IcfKod> lookup = textResource.lookupTextByIcfKod(kod.getKod());
 
-            final Optional<IcfKod> lookup = textResource.lookupTextByIcfKod(kod.getKod());
+      if (lookup.isPresent()) {
 
-            if (lookup.isPresent()) {
+        final IcfKod found = lookup.get();
+        return kod.getIcfKodTyp() == IcfKodTyp.CENTRAL
+            ? IcfCentralKod.of(
+                kod.getKod(), found.getBenamning(), found.getBeskrivning(), found.getInnefattar())
+            : IcfKompletterandeKod.of(
+                kod.getKod(), found.getBenamning(), found.getBeskrivning(), found.getInnefattar());
+      }
 
-                final IcfKod found = lookup.get();
-                return kod.getIcfKodTyp() == IcfKodTyp.CENTRAL
-                    ? IcfCentralKod.of(kod.getKod(), found.getBenamning(), found.getBeskrivning(), found.getInnefattar())
-                    : IcfKompletterandeKod.of(kod.getKod(), found.getBenamning(), found.getBeskrivning(), found.getInnefattar());
-            }
+      return kod.getIcfKodTyp() == IcfKodTyp.CENTRAL
+          ? IcfCentralKod.of(kod.getKod(), "", "", "")
+          : IcfKompletterandeKod.of(kod.getKod(), "", "", "");
+    };
+  }
 
-            return kod.getIcfKodTyp() == IcfKodTyp.CENTRAL
-                ? IcfCentralKod.of(kod.getKod(), "", "", "")
-                : IcfKompletterandeKod.of(kod.getKod(), "", "", "");
-        };
-    }
-
-    private java.util.List<IcfKod> emptyIfNull(Tuple2<String, IcfKoder> diagnos) {
-        return diagnos != null && diagnos._2 != null && diagnos._2.getIcfKoder() != null
-            ? diagnos._2.getIcfKoder() : Collections.emptyList();
-    }
+  private java.util.List<IcfKod> emptyIfNull(Tuple2<String, IcfKoder> diagnos) {
+    return diagnos != null && diagnos._2 != null && diagnos._2.getIcfKoder() != null
+        ? diagnos._2.getIcfKoder()
+        : Collections.emptyList();
+  }
 }

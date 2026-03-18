@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,96 +44,91 @@ import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 @ExtendWith(MockitoExtension.class)
 class GetCertificateFromCertificateServiceTest {
 
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    PDLLogService pdlLogService;
-    @Mock
-    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
-    @InjectMocks
-    GetCertificateFromCertificateService getCertificateFromCertificateService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock PDLLogService pdlLogService;
 
-    private static final String CERTIFICATE_ID = "ID";
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final GetCertificateRequestDTO REQUEST = GetCertificateRequestDTO.builder().build();
+  @Mock
+  DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
-    @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        assertNull(
-            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true)
-        );
+  @InjectMocks GetCertificateFromCertificateService getCertificateFromCertificateService;
+
+  private static final String CERTIFICATE_ID = "ID";
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final GetCertificateRequestDTO REQUEST =
+      GetCertificateRequestDTO.builder().build();
+
+  @Test
+  void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    assertNull(getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true));
+  }
+
+  @Test
+  void shouldNotPerformPDLLogIfTypeWasNotRetrievedFromCS() {
+    getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+    verifyNoInteractions(pdlLogService);
+  }
+
+  @Nested
+  class CertificateServiceHasCertificate {
+
+    @BeforeEach
+    void setup() {
+      when(csIntegrationService.certificateExists(CERTIFICATE_ID)).thenReturn(true);
+      when(csIntegrationService.getCertificate(CERTIFICATE_ID, REQUEST)).thenReturn(CERTIFICATE);
+      when(csIntegrationRequestFactory.getCertificateRequest()).thenReturn(REQUEST);
     }
 
     @Test
-    void shouldNotPerformPDLLogIfTypeWasNotRetrievedFromCS() {
-        getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
-        verifyNoInteractions(pdlLogService);
+    void shouldReturnCertificate() {
+      assertEquals(
+          CERTIFICATE,
+          getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true));
     }
 
-    @Nested
-    class CertificateServiceHasCertificate {
-
-        @BeforeEach
-        void setup() {
-            when(csIntegrationService.certificateExists(CERTIFICATE_ID))
-                .thenReturn(true);
-            when(csIntegrationService.getCertificate(CERTIFICATE_ID, REQUEST))
-                .thenReturn(CERTIFICATE);
-            when(csIntegrationRequestFactory.getCertificateRequest())
-                .thenReturn(REQUEST);
-        }
-
-        @Test
-        void shouldReturnCertificate() {
-            assertEquals(CERTIFICATE,
-                getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true)
-            );
-        }
-
-        @Test
-        void shouldPerformPDLForReadCertificateIfPdlLogIsTrue() {
-            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
-            verify(pdlLogService, times(1)).logRead(CERTIFICATE);
-        }
-
-        @Test
-            // Activity level 2 is performed if the certificate contains a link to create a certificate from a candidate
-            // which indicates that metadata about the candidate certificate is present
-        void shouldPerformPDLForReadActivityLevelTwoIfPdlLogIsTrueAndCandidateResourceLinkIsIncluded() {
-            CERTIFICATE.setLinks(
-                List.of(
-                    ResourceLink.builder()
-                        .type(ResourceLinkTypeEnum.CREATE_CERTIFICATE_FROM_CANDIDATE)
-                        .build()
-                )
-            );
-
-            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
-            verify(pdlLogService, times(1)).logReadLevelTwo(CERTIFICATE);
-        }
-
-        @Test
-            // Activity level 2 is performed if the certificate contains a link to create a certificate from a candidate
-            // which indicates that metadata about the candidate certificate is present
-        void shouldNotPerformPDLForReadActivityLevelTwoIfPdlLogIsTrueAndCandidateResourceLinkIsExcluded() {
-            CERTIFICATE.setLinks(List.of());
-
-            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
-            verify(pdlLogService, times(0)).logReadLevelTwo(CERTIFICATE);
-        }
-
-        @Test
-        void shouldNotPerformPDLForCreateCertificateIfPdlLogIsFalse() {
-            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, false, true);
-            verifyNoInteractions(pdlLogService);
-        }
-
-        @Test
-        void shouldDecorateCertificateFromCSWithInformationFromWC() {
-            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
-            verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
-        }
+    @Test
+    void shouldPerformPDLForReadCertificateIfPdlLogIsTrue() {
+      getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+      verify(pdlLogService, times(1)).logRead(CERTIFICATE);
     }
+
+    @Test
+    // Activity level 2 is performed if the certificate contains a link to create a certificate from
+    // a candidate
+    // which indicates that metadata about the candidate certificate is present
+    void shouldPerformPDLForReadActivityLevelTwoIfPdlLogIsTrueAndCandidateResourceLinkIsIncluded() {
+      CERTIFICATE.setLinks(
+          List.of(
+              ResourceLink.builder()
+                  .type(ResourceLinkTypeEnum.CREATE_CERTIFICATE_FROM_CANDIDATE)
+                  .build()));
+
+      getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+      verify(pdlLogService, times(1)).logReadLevelTwo(CERTIFICATE);
+    }
+
+    @Test
+    // Activity level 2 is performed if the certificate contains a link to create a certificate from
+    // a candidate
+    // which indicates that metadata about the candidate certificate is present
+    void
+        shouldNotPerformPDLForReadActivityLevelTwoIfPdlLogIsTrueAndCandidateResourceLinkIsExcluded() {
+      CERTIFICATE.setLinks(List.of());
+
+      getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+      verify(pdlLogService, times(0)).logReadLevelTwo(CERTIFICATE);
+    }
+
+    @Test
+    void shouldNotPerformPDLForCreateCertificateIfPdlLogIsFalse() {
+      getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, false, true);
+      verifyNoInteractions(pdlLogService);
+    }
+
+    @Test
+    void shouldDecorateCertificateFromCSWithInformationFromWC() {
+      getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+      verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
+    }
+  }
 }

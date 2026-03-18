@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,23 +28,26 @@ import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
  */
 public class IntegreradEnhetEntryWithSchemaVersion extends IntegreradEnhetEntry {
 
-    private String schemaVersion;
+  private String schemaVersion;
 
-    public IntegreradEnhetEntryWithSchemaVersion() {
-        super();
-    }
+  public IntegreradEnhetEntryWithSchemaVersion() {
+    super();
+  }
 
-    public IntegreradEnhetEntryWithSchemaVersion(IntegreradEnhet integreradEnhet) {
-        super(integreradEnhet.getEnhetsId(), integreradEnhet.getEnhetsNamn(), integreradEnhet.getVardgivarId(),
-            integreradEnhet.getVardgivarNamn());
-        this.schemaVersion = integreradEnhet.isSchemaVersion3() ? "2.0" : "1.0";
-    }
+  public IntegreradEnhetEntryWithSchemaVersion(IntegreradEnhet integreradEnhet) {
+    super(
+        integreradEnhet.getEnhetsId(),
+        integreradEnhet.getEnhetsNamn(),
+        integreradEnhet.getVardgivarId(),
+        integreradEnhet.getVardgivarNamn());
+    this.schemaVersion = integreradEnhet.isSchemaVersion3() ? "2.0" : "1.0";
+  }
 
-    public String getSchemaVersion() {
-        return schemaVersion;
-    }
+  public String getSchemaVersion() {
+    return schemaVersion;
+  }
 
-    public void setSchemaVersion(String schemaVersion) {
-        this.schemaVersion = schemaVersion;
-    }
+  public void setSchemaVersion(String schemaVersion) {
+    this.schemaVersion = schemaVersion;
+  }
 }

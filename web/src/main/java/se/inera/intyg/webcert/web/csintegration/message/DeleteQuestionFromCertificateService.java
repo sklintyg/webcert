@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import lombok.RequiredArgsConstructor;
@@ -29,14 +28,12 @@ import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeSe
 @Service("deleteQuestionFromCS")
 public class DeleteQuestionFromCertificateService implements DeleteQuestionFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Override
-    public void delete(String questionId) {
-        csIntegrationService.deleteMessage(
-            questionId,
-            csIntegrationRequestFactory.deleteMessageRequest()
-        );
-    }
+  @Override
+  public void delete(String questionId) {
+    csIntegrationService.deleteMessage(
+        questionId, csIntegrationRequestFactory.deleteMessageRequest());
+  }
 }

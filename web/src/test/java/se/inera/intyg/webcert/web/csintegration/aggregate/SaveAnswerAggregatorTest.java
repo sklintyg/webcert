@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,38 +32,33 @@ import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFaca
 @ExtendWith(MockitoExtension.class)
 class SaveAnswerAggregatorTest {
 
+  private static final String QUESTION_ID = "questionId";
+  private static final String MESSAGE = "content";
+  @Mock SaveQuestionAnswerFacadeService saveAnswerFromWC;
+  @Mock SaveQuestionAnswerFacadeService saveAnswerFromCS;
+  SaveAnswerAggregator saveAnswerAggregator;
 
-    private static final String QUESTION_ID = "questionId";
-    private static final String MESSAGE = "content";
-    @Mock
-    SaveQuestionAnswerFacadeService saveAnswerFromWC;
-    @Mock
-    SaveQuestionAnswerFacadeService saveAnswerFromCS;
-    SaveAnswerAggregator saveAnswerAggregator;
+  @BeforeEach
+  void setUp() {
+    saveAnswerAggregator = new SaveAnswerAggregator(saveAnswerFromWC, saveAnswerFromCS);
+  }
 
-    @BeforeEach
-    void setUp() {
-        saveAnswerAggregator = new SaveAnswerAggregator(
-            saveAnswerFromWC, saveAnswerFromCS
-        );
-    }
+  @Test
+  void shallReturnQuestionFromWCIfResponseFromCSIsNull() {
+    final var expectedQuestion = Question.builder().build();
+    doReturn(null).when(saveAnswerFromCS).save(QUESTION_ID, MESSAGE);
+    doReturn(expectedQuestion).when(saveAnswerFromWC).save(QUESTION_ID, MESSAGE);
 
-    @Test
-    void shallReturnQuestionFromWCIfResponseFromCSIsNull() {
-        final var expectedQuestion = Question.builder().build();
-        doReturn(null).when(saveAnswerFromCS).save(QUESTION_ID, MESSAGE);
-        doReturn(expectedQuestion).when(saveAnswerFromWC).save(QUESTION_ID, MESSAGE);
+    final var actualQuestion = saveAnswerAggregator.save(QUESTION_ID, MESSAGE);
+    assertEquals(expectedQuestion, actualQuestion);
+  }
 
-        final var actualQuestion = saveAnswerAggregator.save(QUESTION_ID, MESSAGE);
-        assertEquals(expectedQuestion, actualQuestion);
-    }
+  @Test
+  void shallReturnQuestionFromCSIResponseFromCSIsNotNull() {
+    final var expectedQuestion = Question.builder().build();
+    doReturn(expectedQuestion).when(saveAnswerFromCS).save(QUESTION_ID, MESSAGE);
 
-    @Test
-    void shallReturnQuestionFromCSIResponseFromCSIsNotNull() {
-        final var expectedQuestion = Question.builder().build();
-        doReturn(expectedQuestion).when(saveAnswerFromCS).save(QUESTION_ID, MESSAGE);
-
-        final var actualQuestion = saveAnswerAggregator.save(QUESTION_ID, MESSAGE);
-        assertEquals(expectedQuestion, actualQuestion);
-    }
+    final var actualQuestion = saveAnswerAggregator.save(QUESTION_ID, MESSAGE);
+    assertEquals(expectedQuestion, actualQuestion);
+  }
 }

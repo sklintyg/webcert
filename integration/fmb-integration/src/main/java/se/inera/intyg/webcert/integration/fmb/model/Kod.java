@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,137 +32,136 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "beskrivning",
-    "kod",
-    "kodsystem",
-    "kodsystemnamn",
-    "kodsystemversion"
-})
+@JsonPropertyOrder({"beskrivning", "kod", "kodsystem", "kodsystemnamn", "kodsystemversion"})
 public class Kod {
 
-    @JsonProperty("beskrivning")
-    private String beskrivning;
-    @JsonProperty("kod")
-    private String kod;
-    @JsonProperty("kodsystem")
-    private String kodsystem;
-    @JsonProperty("kodsystemnamn")
-    private String kodsystemnamn;
-    @JsonProperty("kodsystemversion")
-    private String kodsystemversion;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("beskrivning")
+  private String beskrivning;
 
-    @JsonProperty("beskrivning")
-    public String getBeskrivning() {
-        return beskrivning;
+  @JsonProperty("kod")
+  private String kod;
+
+  @JsonProperty("kodsystem")
+  private String kodsystem;
+
+  @JsonProperty("kodsystemnamn")
+  private String kodsystemnamn;
+
+  @JsonProperty("kodsystemversion")
+  private String kodsystemversion;
+
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+  @JsonProperty("beskrivning")
+  public String getBeskrivning() {
+    return beskrivning;
+  }
+
+  @JsonProperty("beskrivning")
+  public void setBeskrivning(String beskrivning) {
+    this.beskrivning = beskrivning;
+  }
+
+  @JsonProperty("kod")
+  public String getKod() {
+    return kod;
+  }
+
+  public Optional<String> getOptionalKod() {
+    return Optional.of(kod);
+  }
+
+  @JsonProperty("kod")
+  public void setKod(String kod) {
+    this.kod = kod;
+  }
+
+  @JsonProperty("kodsystem")
+  public String getKodsystem() {
+    return kodsystem;
+  }
+
+  @JsonProperty("kodsystem")
+  public void setKodsystem(String kodsystem) {
+    this.kodsystem = kodsystem;
+  }
+
+  @JsonProperty("kodsystemnamn")
+  public String getKodsystemnamn() {
+    return kodsystemnamn;
+  }
+
+  @JsonProperty("kodsystemnamn")
+  public void setKodsystemnamn(String kodsystemnamn) {
+    this.kodsystemnamn = kodsystemnamn;
+  }
+
+  @JsonProperty("kodsystemversion")
+  public String getKodsystemversion() {
+    return kodsystemversion;
+  }
+
+  @JsonProperty("kodsystemversion")
+  public void setKodsystemversion(String kodsystemversion) {
+    this.kodsystemversion = kodsystemversion;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
     }
 
-    @JsonProperty("beskrivning")
-    public void setBeskrivning(String beskrivning) {
-        this.beskrivning = beskrivning;
+    if (!(o instanceof Kod)) {
+      return false;
     }
 
-    @JsonProperty("kod")
-    public String getKod() {
-        return kod;
-    }
+    final Kod kod1 = (Kod) o;
 
-    public Optional<String> getOptionalKod() {
-        return Optional.of(kod);
-    }
+    return new EqualsBuilder()
+        .append(beskrivning, kod1.beskrivning)
+        .append(kod, kod1.kod)
+        .append(kodsystem, kod1.kodsystem)
+        .append(kodsystemnamn, kod1.kodsystemnamn)
+        .append(kodsystemversion, kod1.kodsystemversion)
+        .append(additionalProperties, kod1.additionalProperties)
+        .isEquals();
+  }
 
-    @JsonProperty("kod")
-    public void setKod(String kod) {
-        this.kod = kod;
-    }
+  // CHECKSTYLE:OFF MagicNumber
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 37)
+        .append(beskrivning)
+        .append(kod)
+        .append(kodsystem)
+        .append(kodsystemnamn)
+        .append(kodsystemversion)
+        .append(additionalProperties)
+        .toHashCode();
+  }
 
-    @JsonProperty("kodsystem")
-    public String getKodsystem() {
-        return kodsystem;
-    }
+  // CHECKSTYLE:ON MagicNumber
 
-    @JsonProperty("kodsystem")
-    public void setKodsystem(String kodsystem) {
-        this.kodsystem = kodsystem;
-    }
-
-    @JsonProperty("kodsystemnamn")
-    public String getKodsystemnamn() {
-        return kodsystemnamn;
-    }
-
-    @JsonProperty("kodsystemnamn")
-    public void setKodsystemnamn(String kodsystemnamn) {
-        this.kodsystemnamn = kodsystemnamn;
-    }
-
-    @JsonProperty("kodsystemversion")
-    public String getKodsystemversion() {
-        return kodsystemversion;
-    }
-
-    @JsonProperty("kodsystemversion")
-    public void setKodsystemversion(String kodsystemversion) {
-        this.kodsystemversion = kodsystemversion;
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof Kod)) {
-            return false;
-        }
-
-        final Kod kod1 = (Kod) o;
-
-        return new EqualsBuilder()
-            .append(beskrivning, kod1.beskrivning)
-            .append(kod, kod1.kod)
-            .append(kodsystem, kod1.kodsystem)
-            .append(kodsystemnamn, kod1.kodsystemnamn)
-            .append(kodsystemversion, kod1.kodsystemversion)
-            .append(additionalProperties, kod1.additionalProperties)
-            .isEquals();
-    }
-
-    // CHECKSTYLE:OFF MagicNumber
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-            .append(beskrivning)
-            .append(kod)
-            .append(kodsystem)
-            .append(kodsystemnamn)
-            .append(kodsystemversion)
-            .append(additionalProperties)
-            .toHashCode();
-    }
-    // CHECKSTYLE:ON MagicNumber
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("beskrivning", beskrivning)
-            .append("kod", kod)
-            .append("kodsystem", kodsystem)
-            .append("kodsystemnamn", kodsystemnamn)
-            .append("kodsystemversion", kodsystemversion)
-            .append("additionalProperties", additionalProperties)
-            .toString();
-    }
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("beskrivning", beskrivning)
+        .append("kod", kod)
+        .append("kodsystem", kodsystem)
+        .append("kodsystemnamn", kodsystemnamn)
+        .append("kodsystemversion", kodsystemversion)
+        .append("additionalProperties", additionalProperties)
+        .toString();
+  }
 }

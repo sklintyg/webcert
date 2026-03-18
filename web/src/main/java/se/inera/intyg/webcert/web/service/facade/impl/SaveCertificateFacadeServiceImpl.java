@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,44 +32,53 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Service("saveCertificateFacadeServiceWC")
 public class SaveCertificateFacadeServiceImpl implements SaveCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SaveCertificateFacadeServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SaveCertificateFacadeServiceImpl.class);
 
-    private final UtkastService utkastService;
-    private final IntygModuleRegistry moduleRegistry;
+  private final UtkastService utkastService;
+  private final IntygModuleRegistry moduleRegistry;
 
-    @Autowired
-    public SaveCertificateFacadeServiceImpl(UtkastService utkastService, IntygModuleRegistry moduleRegistry) {
-        this.utkastService = utkastService;
-        this.moduleRegistry = moduleRegistry;
-    }
+  @Autowired
+  public SaveCertificateFacadeServiceImpl(
+      UtkastService utkastService, IntygModuleRegistry moduleRegistry) {
+    this.utkastService = utkastService;
+    this.moduleRegistry = moduleRegistry;
+  }
 
-    @Override
-    public long saveCertificate(Certificate certificate, boolean pdlLog) {
-        LOG.debug("Retrieve current certificate '{}' to update", certificate.getMetadata().getId());
-        final Utkast currentCertificate = utkastService.getDraft(certificate.getMetadata().getId(), false);
+  @Override
+  public long saveCertificate(Certificate certificate, boolean pdlLog) {
+    LOG.debug("Retrieve current certificate '{}' to update", certificate.getMetadata().getId());
+    final Utkast currentCertificate =
+        utkastService.getDraft(certificate.getMetadata().getId(), false);
 
-        LOG.debug("Save certificate '{}' with version '{}'", certificate.getMetadata().getId(), certificate.getMetadata().getVersion());
-        final var saveDraftResponse = utkastService.saveDraft(
+    LOG.debug(
+        "Save certificate '{}' with version '{}'",
+        certificate.getMetadata().getId(),
+        certificate.getMetadata().getVersion());
+    final var saveDraftResponse =
+        utkastService.saveDraft(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getVersion(),
-            getJsonFromCertificate(certificate, currentCertificate.getModel(), currentCertificate.getSkapad()),
-            pdlLog
-        );
+            getJsonFromCertificate(
+                certificate, currentCertificate.getModel(), currentCertificate.getSkapad()),
+            pdlLog);
 
-        LOG.debug("Return new version '{}' of save certificate '{}'", saveDraftResponse.getVersion(), certificate.getMetadata().getId());
-        return saveDraftResponse.getVersion();
+    LOG.debug(
+        "Return new version '{}' of save certificate '{}'",
+        saveDraftResponse.getVersion(),
+        certificate.getMetadata().getId());
+    return saveDraftResponse.getVersion();
+  }
+
+  private String getJsonFromCertificate(
+      Certificate certificate, String currentModel, LocalDateTime created) {
+    try {
+      final var moduleApi =
+          moduleRegistry.getModuleApi(
+              certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion());
+
+      return moduleApi.getJsonFromCertificate(certificate, currentModel, created);
+    } catch (Exception ex) {
+      throw new IllegalStateException(ex);
     }
-
-    private String getJsonFromCertificate(Certificate certificate, String currentModel, LocalDateTime created) {
-        try {
-            final var moduleApi = moduleRegistry.getModuleApi(
-                certificate.getMetadata().getType(),
-                certificate.getMetadata().getTypeVersion()
-            );
-
-            return moduleApi.getJsonFromCertificate(certificate, currentModel, created);
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
+  }
 }

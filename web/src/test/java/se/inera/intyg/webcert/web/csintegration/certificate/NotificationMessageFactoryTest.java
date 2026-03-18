@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -65,279 +64,369 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 @ExtendWith(MockitoExtension.class)
 class NotificationMessageFactoryTest {
 
-    private static final String ID = "id1";
-    private static final String TYPE_1 = "type1";
-    private static final String UNIT_ID = "unit1";
-    private static final String EXTERNAL_REF = "externalRef";
-    private static final String PERSON_ID = "personId";
-    private static final String STAFF_ID = "staffId";
-    private static final Intyg EXPECTED_INTYG = new Intyg();
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String HSA_ID = "hsaId";
-    private static final ArendeCount ARENDE_COUNT = new ArendeCount(1, 1, 1, 1);
-    private static final ArendeAmne QUESTION_TYPE = ArendeAmne.KOMPLT;
-    private static final LocalDate LAST_DATE_TO_ANSWER = LocalDate.now();
-    private Certificate certificate;
-    private String xmlRepresentation;
-    private HandelsekodEnum eventType;
-    @Mock
-    private CSIntegrationService csIntegrationService;
-    @Mock
-    private QuestionCounter questionCounter;
-    @InjectMocks
-    private NotificationMessageFactory converter;
-    private RegisterCertificateType registerCertificateType;
+  private static final String ID = "id1";
+  private static final String TYPE_1 = "type1";
+  private static final String UNIT_ID = "unit1";
+  private static final String EXTERNAL_REF = "externalRef";
+  private static final String PERSON_ID = "personId";
+  private static final String STAFF_ID = "staffId";
+  private static final Intyg EXPECTED_INTYG = new Intyg();
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String HSA_ID = "hsaId";
+  private static final ArendeCount ARENDE_COUNT = new ArendeCount(1, 1, 1, 1);
+  private static final ArendeAmne QUESTION_TYPE = ArendeAmne.KOMPLT;
+  private static final LocalDate LAST_DATE_TO_ANSWER = LocalDate.now();
+  private Certificate certificate;
+  private String xmlRepresentation;
+  private HandelsekodEnum eventType;
+  @Mock private CSIntegrationService csIntegrationService;
+  @Mock private QuestionCounter questionCounter;
+  @InjectMocks private NotificationMessageFactory converter;
+  private RegisterCertificateType registerCertificateType;
 
-    @BeforeEach
-    void setUp() {
-        CertificateMetadata metadata = CertificateMetadata.builder()
+  @BeforeEach
+  void setUp() {
+    CertificateMetadata metadata =
+        CertificateMetadata.builder()
             .id(ID)
             .type(TYPE_1)
             .unit(Unit.builder().unitId(UNIT_ID).build())
-            .issuedBy(
-                Staff.builder()
-                    .personId(STAFF_ID)
-                    .build()
-            )
-            .patient(
-                Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id(PERSON_ID)
-                            .build()
-                    )
-                    .build()
-            )
+            .issuedBy(Staff.builder().personId(STAFF_ID).build())
+            .patient(Patient.builder().personId(PersonId.builder().id(PERSON_ID).build()).build())
             .externalReference(EXTERNAL_REF)
             .build();
 
-        final var intygId = new IntygId();
-        intygId.setExtension(CERTIFICATE_ID);
-        EXPECTED_INTYG.setIntygsId(intygId);
-        certificate = new Certificate();
-        certificate.setMetadata(metadata);
-        eventType = HandelsekodEnum.SIGNAT;
-        registerCertificateType = new RegisterCertificateType();
-        registerCertificateType.setIntyg(EXPECTED_INTYG);
-        final var marshall = marshall(registerCertificateType);
-        xmlRepresentation = Base64.getEncoder().encodeToString(marshall.getBytes(StandardCharsets.UTF_8));
+    final var intygId = new IntygId();
+    intygId.setExtension(CERTIFICATE_ID);
+    EXPECTED_INTYG.setIntygsId(intygId);
+    certificate = new Certificate();
+    certificate.setMetadata(metadata);
+    eventType = HandelsekodEnum.SIGNAT;
+    registerCertificateType = new RegisterCertificateType();
+    registerCertificateType.setIntyg(EXPECTED_INTYG);
+    final var marshall = marshall(registerCertificateType);
+    xmlRepresentation =
+        Base64.getEncoder().encodeToString(marshall.getBytes(StandardCharsets.UTF_8));
 
-        final var questionFromFK = Question.builder()
-            .author(FrageStallare.FORSAKRINGSKASSAN.getName())
-            .build();
-        final var questionFromWC = Question.builder()
-            .author(FrageStallare.WEBCERT.getName())
-            .build();
+    final var questionFromFK =
+        Question.builder().author(FrageStallare.FORSAKRINGSKASSAN.getName()).build();
+    final var questionFromWC = Question.builder().author(FrageStallare.WEBCERT.getName()).build();
 
-        final var questions = List.of(
-            questionFromFK,
-            questionFromWC
-        );
+    final var questions = List.of(questionFromFK, questionFromWC);
 
-        doReturn(questions).when(csIntegrationService).getQuestions(ID);
-        doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(List.of(questionFromFK));
-        doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(List.of(questionFromWC));
+    doReturn(questions).when(csIntegrationService).getQuestions(ID);
+    doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(List.of(questionFromFK));
+    doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(List.of(questionFromWC));
+  }
+
+  @Test
+  void shallConvertId() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(ID, result.getIntygsId());
+  }
+
+  @Test
+  void shallConvertType() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(TYPE_1, result.getIntygsTyp());
+  }
+
+  @Test
+  void shallSetCurrentTimestamp() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertNotNull(result.getHandelseTid());
+  }
+
+  @Test
+  void shallConvertEventType() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(eventType, result.getHandelse());
+  }
+
+  @Test
+  void shallConvertUnitId() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(UNIT_ID, result.getLogiskAdress());
+  }
+
+  @Test
+  void shallConvertFragorOchSvar() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(FragorOchSvar.getEmpty().getAntalFragor(), result.getFragaSvar().getAntalFragor());
+    assertEquals(FragorOchSvar.getEmpty().getAntalSvar(), result.getFragaSvar().getAntalSvar());
+    assertEquals(
+        FragorOchSvar.getEmpty().getAntalHanteradeSvar(),
+        result.getFragaSvar().getAntalHanteradeSvar());
+    assertEquals(
+        FragorOchSvar.getEmpty().getAntalHanteradeFragor(),
+        result.getFragaSvar().getAntalHanteradeFragor());
+  }
+
+  @Test
+  void shallConvertMottagnaFragor() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(ARENDE_COUNT.getBesvarade(), result.getSkickadeFragor().getBesvarade());
+    assertEquals(ARENDE_COUNT.getHanterade(), result.getSkickadeFragor().getHanterade());
+    assertEquals(ARENDE_COUNT.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
+    assertEquals(ARENDE_COUNT.getTotalt(), result.getSkickadeFragor().getTotalt());
+  }
+
+  @Test
+  void shallConvertSkickadeFragor() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(ARENDE_COUNT.getBesvarade(), result.getSkickadeFragor().getBesvarade());
+    assertEquals(ARENDE_COUNT.getHanterade(), result.getSkickadeFragor().getHanterade());
+    assertEquals(ARENDE_COUNT.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
+    assertEquals(ARENDE_COUNT.getTotalt(), result.getSkickadeFragor().getTotalt());
+  }
+
+  @Test
+  void shallConvertSchemaVersion() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(SchemaVersion.VERSION_3, result.getVersion());
+  }
+
+  @Test
+  void shallConvertExternalReference() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(EXTERNAL_REF, result.getReference());
+  }
+
+  @Test
+  void shallIncludeSubjectCode() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    final var subjectCode =
+        AmneskodCreator.create(QUESTION_TYPE.name(), QUESTION_TYPE.getDescription());
+
+    assertAll(
+        () -> assertEquals(subjectCode.getCode(), result.getAmne().getCode()),
+        () -> assertEquals(subjectCode.getCodeSystem(), result.getAmne().getCodeSystem()),
+        () ->
+            assertEquals(
+                subjectCode.getCodeSystemVersion(), result.getAmne().getCodeSystemVersion()),
+        () -> assertEquals(subjectCode.getDisplayName(), result.getAmne().getDisplayName()));
+  }
+
+  @Test
+  void shallIncludeLastDateToAnswer() {
+    final var result =
+        converter.create(
+            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+    assertEquals(LAST_DATE_TO_ANSWER, result.getSistaSvarsDatum());
+  }
+
+  @Nested
+  class StatusUpdateXmlTest {
+
+    @Test
+    void shallIncludeIntygIdInStatusUpdateXml() {
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      assertEquals(
+          EXPECTED_INTYG.getIntygsId().getExtension(),
+          careType.getIntyg().getIntygsId().getExtension());
     }
 
     @Test
-    void shallConvertId() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(ID, result.getIntygsId());
+    void shallIncludeHandelseInStatusUpdateXml() {
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      assertEquals(eventType.value(), careType.getHandelse().getHandelsekod().getCode());
     }
 
     @Test
-    void shallConvertType() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(TYPE_1, result.getIntygsTyp());
+    void shallIncludeHandelseCodeSystemInStatusUpdateXml() {
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      assertEquals(
+          KV_HANDELSE_CODE_SYSTEM, careType.getHandelse().getHandelsekod().getCodeSystem());
     }
 
     @Test
-    void shallSetCurrentTimestamp() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertNotNull(result.getHandelseTid());
+    void shallIncludeHandelseTidpunktInStatusUpdateXml() {
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      assertNotNull(careType.getHandelse().getTidpunkt());
     }
 
     @Test
-    void shallConvertEventType() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(eventType, result.getHandelse());
+    void shallIncludeHanteratAvInStatusUpdateXml() {
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      assertEquals(HSA_ID, careType.getHanteratAv().getExtension());
     }
 
     @Test
-    void shallConvertUnitId() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(UNIT_ID, result.getLogiskAdress());
+    void shallIncludeRef() {
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      assertEquals(EXTERNAL_REF, careType.getRef());
     }
 
     @Test
-    void shallConvertFragorOchSvar() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(FragorOchSvar.getEmpty().getAntalFragor(), result.getFragaSvar().getAntalFragor());
-        assertEquals(FragorOchSvar.getEmpty().getAntalSvar(), result.getFragaSvar().getAntalSvar());
-        assertEquals(FragorOchSvar.getEmpty().getAntalHanteradeSvar(), result.getFragaSvar().getAntalHanteradeSvar());
-        assertEquals(FragorOchSvar.getEmpty().getAntalHanteradeFragor(), result.getFragaSvar().getAntalHanteradeFragor());
+    void shallIncludeSentQuestions() {
+      final var arenden = toArenden(ARENDE_COUNT);
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      assertEquals(arenden.getBesvarade(), careType.getSkickadeFragor().getBesvarade());
+      assertEquals(arenden.getHanterade(), careType.getSkickadeFragor().getHanterade());
+      assertEquals(arenden.getEjBesvarade(), careType.getSkickadeFragor().getEjBesvarade());
+      assertEquals(arenden.getTotalt(), careType.getSkickadeFragor().getTotalt());
     }
 
     @Test
-    void shallConvertMottagnaFragor() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(ARENDE_COUNT.getBesvarade(), result.getSkickadeFragor().getBesvarade());
-        assertEquals(ARENDE_COUNT.getHanterade(), result.getSkickadeFragor().getHanterade());
-        assertEquals(ARENDE_COUNT.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
-        assertEquals(ARENDE_COUNT.getTotalt(), result.getSkickadeFragor().getTotalt());
+    void shallIncludeRecievedQuestions() {
+      final var arenden = toArenden(ARENDE_COUNT);
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      assertEquals(arenden.getBesvarade(), careType.getSkickadeFragor().getBesvarade());
+      assertEquals(arenden.getHanterade(), careType.getSkickadeFragor().getHanterade());
+      assertEquals(arenden.getEjBesvarade(), careType.getSkickadeFragor().getEjBesvarade());
+      assertEquals(arenden.getTotalt(), careType.getSkickadeFragor().getTotalt());
     }
 
     @Test
-    void shallConvertSkickadeFragor() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(ARENDE_COUNT.getBesvarade(), result.getSkickadeFragor().getBesvarade());
-        assertEquals(ARENDE_COUNT.getHanterade(), result.getSkickadeFragor().getHanterade());
-        assertEquals(ARENDE_COUNT.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
-        assertEquals(ARENDE_COUNT.getTotalt(), result.getSkickadeFragor().getTotalt());
-    }
+    void shallIncludeQuestionType() {
+      eventType = HandelsekodEnum.NYFRFM;
 
-    @Test
-    void shallConvertSchemaVersion() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(SchemaVersion.VERSION_3, result.getVersion());
-    }
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+      final var subjectCode =
+          AmneskodCreator.create(QUESTION_TYPE.name(), QUESTION_TYPE.getDescription());
 
-    @Test
-    void shallConvertExternalReference() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(EXTERNAL_REF, result.getReference());
-    }
-
-    @Test
-    void shallIncludeSubjectCode() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        final var subjectCode = AmneskodCreator.create(QUESTION_TYPE.name(), QUESTION_TYPE.getDescription());
-
-        assertAll(
-            () -> assertEquals(subjectCode.getCode(), result.getAmne().getCode()),
-            () -> assertEquals(subjectCode.getCodeSystem(), result.getAmne().getCodeSystem()),
-            () -> assertEquals(subjectCode.getCodeSystemVersion(), result.getAmne().getCodeSystemVersion()),
-            () -> assertEquals(subjectCode.getDisplayName(), result.getAmne().getDisplayName())
-        );
+      assertAll(
+          () -> assertEquals(subjectCode.getCode(), careType.getHandelse().getAmne().getCode()),
+          () ->
+              assertEquals(
+                  subjectCode.getCodeSystem(), careType.getHandelse().getAmne().getCodeSystem()),
+          () ->
+              assertEquals(
+                  subjectCode.getCodeSystemVersion(),
+                  careType.getHandelse().getAmne().getCodeSystemVersion()),
+          () ->
+              assertEquals(
+                  subjectCode.getDisplayName(), careType.getHandelse().getAmne().getDisplayName()));
     }
 
     @Test
     void shallIncludeLastDateToAnswer() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-        assertEquals(LAST_DATE_TO_ANSWER, result.getSistaSvarsDatum());
+      eventType = HandelsekodEnum.NYFRFM;
+      final var result =
+          converter.create(
+              certificate,
+              xmlRepresentation,
+              eventType,
+              HSA_ID,
+              QUESTION_TYPE,
+              LAST_DATE_TO_ANSWER);
+      final var careType = unmarshall(result.getStatusUpdateXml());
+
+      assertEquals(LAST_DATE_TO_ANSWER, careType.getHandelse().getSistaDatumForSvar());
     }
+  }
 
-    @Nested
-    class StatusUpdateXmlTest {
-
-        @Test
-        void shallIncludeIntygIdInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            assertEquals(EXPECTED_INTYG.getIntygsId().getExtension(), careType.getIntyg().getIntygsId().getExtension());
-        }
-
-        @Test
-        void shallIncludeHandelseInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            assertEquals(eventType.value(), careType.getHandelse().getHandelsekod().getCode());
-        }
-
-        @Test
-        void shallIncludeHandelseCodeSystemInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            assertEquals(KV_HANDELSE_CODE_SYSTEM, careType.getHandelse().getHandelsekod().getCodeSystem());
-        }
-
-        @Test
-        void shallIncludeHandelseTidpunktInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            assertNotNull(careType.getHandelse().getTidpunkt());
-        }
-
-        @Test
-        void shallIncludeHanteratAvInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            assertEquals(HSA_ID, careType.getHanteratAv().getExtension());
-        }
-
-        @Test
-        void shallIncludeRef() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            assertEquals(EXTERNAL_REF, careType.getRef());
-        }
-
-        @Test
-        void shallIncludeSentQuestions() {
-            final var arenden = toArenden(ARENDE_COUNT);
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            assertEquals(arenden.getBesvarade(), careType.getSkickadeFragor().getBesvarade());
-            assertEquals(arenden.getHanterade(), careType.getSkickadeFragor().getHanterade());
-            assertEquals(arenden.getEjBesvarade(), careType.getSkickadeFragor().getEjBesvarade());
-            assertEquals(arenden.getTotalt(), careType.getSkickadeFragor().getTotalt());
-        }
-
-        @Test
-        void shallIncludeRecievedQuestions() {
-            final var arenden = toArenden(ARENDE_COUNT);
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            assertEquals(arenden.getBesvarade(), careType.getSkickadeFragor().getBesvarade());
-            assertEquals(arenden.getHanterade(), careType.getSkickadeFragor().getHanterade());
-            assertEquals(arenden.getEjBesvarade(), careType.getSkickadeFragor().getEjBesvarade());
-            assertEquals(arenden.getTotalt(), careType.getSkickadeFragor().getTotalt());
-        }
-
-        @Test
-        void shallIncludeQuestionType() {
-            eventType = HandelsekodEnum.NYFRFM;
-            
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-            final var subjectCode = AmneskodCreator.create(QUESTION_TYPE.name(), QUESTION_TYPE.getDescription());
-
-            assertAll(
-                () -> assertEquals(subjectCode.getCode(), careType.getHandelse().getAmne().getCode()),
-                () -> assertEquals(subjectCode.getCodeSystem(), careType.getHandelse().getAmne().getCodeSystem()),
-                () -> assertEquals(subjectCode.getCodeSystemVersion(), careType.getHandelse().getAmne().getCodeSystemVersion()),
-                () -> assertEquals(subjectCode.getDisplayName(), careType.getHandelse().getAmne().getDisplayName())
-            );
-        }
-
-        @Test
-        void shallIncludeLastDateToAnswer() {
-            eventType = HandelsekodEnum.NYFRFM;
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-            final var careType = unmarshall(result.getStatusUpdateXml());
-
-            assertEquals(LAST_DATE_TO_ANSWER, careType.getHandelse().getSistaDatumForSvar());
-        }
+  private static String marshall(RegisterCertificateType registerCertificateType) {
+    final var factory = new ObjectFactory();
+    final var element = factory.createRegisterCertificate(registerCertificateType);
+    try {
+      final var context =
+          JAXBContext.newInstance(RegisterCertificateType.class, DatePeriodType.class);
+      final var writer = new StringWriter();
+      context.createMarshaller().marshal(element, writer);
+      return writer.toString();
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
     }
+  }
 
-    private static String marshall(RegisterCertificateType registerCertificateType) {
-        final var factory = new ObjectFactory();
-        final var element = factory.createRegisterCertificate(registerCertificateType);
-        try {
-            final var context = JAXBContext.newInstance(
-                RegisterCertificateType.class,
-                DatePeriodType.class
-            );
-            final var writer = new StringWriter();
-            context.createMarshaller().marshal(element, writer);
-            return writer.toString();
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private static CertificateStatusUpdateForCareType unmarshall(byte[] registerCertificateType) {
-        final var type = XmlMarshallerHelper.unmarshal(new String(registerCertificateType, StandardCharsets.UTF_8));
-        return (CertificateStatusUpdateForCareType) type.getValue();
-    }
+  private static CertificateStatusUpdateForCareType unmarshall(byte[] registerCertificateType) {
+    final var type =
+        XmlMarshallerHelper.unmarshal(new String(registerCertificateType, StandardCharsets.UTF_8));
+    return (CertificateStatusUpdateForCareType) type.getValue();
+  }
 }

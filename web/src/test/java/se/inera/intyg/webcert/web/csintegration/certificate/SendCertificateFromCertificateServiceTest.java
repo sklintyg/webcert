@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,128 +51,120 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class SendCertificateFromCertificateServiceTest {
 
-    private static final SendCertificateRequestDTO REQUEST = SendCertificateRequestDTO.builder().build();
-    private static final String ID = "ID";
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final String TYPE = "TYPE";
-    private static final String RECIPIENT_ID = "FKASSA";
+  private static final SendCertificateRequestDTO REQUEST =
+      SendCertificateRequestDTO.builder().build();
+  private static final String ID = "ID";
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final String TYPE = "TYPE";
+  private static final String RECIPIENT_ID = "FKASSA";
 
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock CSIntegrationService csIntegrationService;
 
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Mock
-    PDLLogService pdlLogService;
+  @Mock PDLLogService pdlLogService;
 
-    @Mock
-    MonitoringLogService monitoringLogService;
+  @Mock MonitoringLogService monitoringLogService;
 
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    SendCertificateFromCertificateService sendCertificateFromCertificateService;
+  @InjectMocks SendCertificateFromCertificateService sendCertificateFromCertificateService;
 
-    @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        final var response = sendCertificateFromCertificateService.sendCertificate(ID);
+  @Test
+  void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    final var response = sendCertificateFromCertificateService.sendCertificate(ID);
 
-        assertNull(response);
+    assertNull(response);
+  }
+
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+
+      CERTIFICATE.setMetadata(
+          CertificateMetadata.builder()
+              .id(ID)
+              .type(TYPE)
+              .recipient(CertificateRecipient.builder().id(RECIPIENT_ID).build())
+              .build());
+
+      when(csIntegrationService.certificateExists(ID)).thenReturn(true);
+
+      when(csIntegrationRequestFactory.sendCertificateRequest()).thenReturn(REQUEST);
     }
 
     @Nested
-    class CertificateExistsInCS {
+    class CertificateIsSentFromCS {
 
-        @BeforeEach
-        void setup() {
+      @BeforeEach
+      void setup() {
+        when(csIntegrationService.sendCertificate(ID, REQUEST)).thenReturn(CERTIFICATE);
+      }
 
-            CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .recipient(
-                    CertificateRecipient.builder()
-                        .id(RECIPIENT_ID)
-                        .build()
-                )
-                .build());
+      @Test
+      void shouldCallSendWithId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        sendCertificateFromCertificateService.sendCertificate(ID);
 
-            when(csIntegrationService.certificateExists(ID))
-                .thenReturn(true);
+        verify(csIntegrationService)
+            .sendCertificate(captor.capture(), any(SendCertificateRequestDTO.class));
+        assertEquals(ID, captor.getValue());
+      }
 
-            when(csIntegrationRequestFactory.sendCertificateRequest())
-                .thenReturn(REQUEST);
-        }
+      @Test
+      void shouldCallSendWithRequest() {
+        final var captor = ArgumentCaptor.forClass(SendCertificateRequestDTO.class);
+        sendCertificateFromCertificateService.sendCertificate(ID);
 
-        @Nested
-        class CertificateIsSentFromCS {
+        verify(csIntegrationService).sendCertificate(anyString(), captor.capture());
+        assertEquals(REQUEST, captor.getValue());
+      }
 
-            @BeforeEach
-            void setup() {
-                when(csIntegrationService.sendCertificate(ID, REQUEST))
-                    .thenReturn(CERTIFICATE);
-            }
+      @Test
+      void shouldPdlLogSent() {
+        sendCertificateFromCertificateService.sendCertificate(ID);
+        verify(pdlLogService).logSent(CERTIFICATE);
+      }
 
-            @Test
-            void shouldCallSendWithId() {
-                final var captor = ArgumentCaptor.forClass(String.class);
-                sendCertificateFromCertificateService.sendCertificate(ID);
+      @Test
+      void shouldMonitorLogSent() {
+        sendCertificateFromCertificateService.sendCertificate(ID);
+        verify(monitoringLogService).logIntygSent(ID, TYPE, RECIPIENT_ID);
+      }
 
-                verify(csIntegrationService).sendCertificate(captor.capture(), any(SendCertificateRequestDTO.class));
-                assertEquals(ID, captor.getValue());
-            }
+      @Test
+      void shouldPublishCertificateStatusUpdate() {
+        sendCertificateFromCertificateService.sendCertificate(ID);
+        verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.SKICKA);
+      }
 
-            @Test
-            void shouldCallSendWithRequest() {
-                final var captor = ArgumentCaptor.forClass(SendCertificateRequestDTO.class);
-                sendCertificateFromCertificateService.sendCertificate(ID);
+      @Test
+      void shouldPublishCertificateAnalyticsMessage() {
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateSent(CERTIFICATE, RECIPIENT_ID))
+            .thenReturn(analyticsMessage);
+        sendCertificateFromCertificateService.sendCertificate(ID);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+      }
 
-                verify(csIntegrationService).sendCertificate(anyString(), captor.capture());
-                assertEquals(REQUEST, captor.getValue());
-            }
-
-            @Test
-            void shouldPdlLogSent() {
-                sendCertificateFromCertificateService.sendCertificate(ID);
-                verify(pdlLogService).logSent(CERTIFICATE);
-
-            }
-
-            @Test
-            void shouldMonitorLogSent() {
-                sendCertificateFromCertificateService.sendCertificate(ID);
-                verify(monitoringLogService).logIntygSent(ID, TYPE, RECIPIENT_ID);
-            }
-
-            @Test
-            void shouldPublishCertificateStatusUpdate() {
-                sendCertificateFromCertificateService.sendCertificate(ID);
-                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.SKICKA);
-            }
-
-            @Test
-            void shouldPublishCertificateAnalyticsMessage() {
-                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.certificateSent(CERTIFICATE, RECIPIENT_ID)).thenReturn(analyticsMessage);
-                sendCertificateFromCertificateService.sendCertificate(ID);
-                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-            }
-
-            @Test
-            void shouldReturnOK() {
-                assertEquals(IntygServiceResult.OK.toString(), sendCertificateFromCertificateService.sendCertificate(ID));
-            }
-        }
-
-        @Test
-        void shouldThrowExceptionIfReturnedCertificateIsNull() {
-            assertThrows(IllegalStateException.class, () -> sendCertificateFromCertificateService.sendCertificate(ID));
-        }
+      @Test
+      void shouldReturnOK() {
+        assertEquals(
+            IntygServiceResult.OK.toString(),
+            sendCertificateFromCertificateService.sendCertificate(ID));
+      }
     }
+
+    @Test
+    void shouldThrowExceptionIfReturnedCertificateIsNull() {
+      assertThrows(
+          IllegalStateException.class,
+          () -> sendCertificateFromCertificateService.sendCertificate(ID));
+    }
+  }
 }

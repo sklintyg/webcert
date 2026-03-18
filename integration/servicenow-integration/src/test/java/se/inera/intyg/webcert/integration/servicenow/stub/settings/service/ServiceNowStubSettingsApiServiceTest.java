@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,92 +37,94 @@ import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.Service
 @ExtendWith(MockitoExtension.class)
 class ServiceNowStubSettingsApiServiceTest {
 
-    @Spy
-    private ServiceNowStubState stubState;
+  @Spy private ServiceNowStubState stubState;
 
-    @InjectMocks
-    private ServiceNowStubSettingsApiService serviceNowStubSettingsApiService;
+  @InjectMocks private ServiceNowStubSettingsApiService serviceNowStubSettingsApiService;
 
-    @BeforeEach
-    void setup() {
-        stubState.setSubscriptionReturnValue(true);
-        stubState.setHttpErrorCode(0);
-        stubState.setActiveSubscriptions(createActiveSubscriptions());
-    }
+  @BeforeEach
+  void setup() {
+    stubState.setSubscriptionReturnValue(true);
+    stubState.setHttpErrorCode(0);
+    stubState.setActiveSubscriptions(createActiveSubscriptions());
+  }
 
-    @Test
-    void shouldSetReturnValueAndClearActiveSubscriptions() {
-        serviceNowStubSettingsApiService.setSubscriptionReturnValue(false);
+  @Test
+  void shouldSetReturnValueAndClearActiveSubscriptions() {
+    serviceNowStubSettingsApiService.setSubscriptionReturnValue(false);
 
-        assertFalse(stubState.getSubscriptionReturnValue());
-        assertTrue(stubState.getActiveSubscriptions().isEmpty());
-    }
+    assertFalse(stubState.getSubscriptionReturnValue());
+    assertTrue(stubState.getActiveSubscriptions().isEmpty());
+  }
 
-    @Test
-    void shouldReturnSubscriptionReturnValue() {
-        final var response = serviceNowStubSettingsApiService.getSubscriptionReturnValue();
-        assertTrue(response);
-    }
+  @Test
+  void shouldReturnSubscriptionReturnValue() {
+    final var response = serviceNowStubSettingsApiService.getSubscriptionReturnValue();
+    assertTrue(response);
+  }
 
-    @Test
-    void shouldAddActiveSubscription() {
-        serviceNowStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_3", "SERVICE_CODE_1");
+  @Test
+  void shouldAddActiveSubscription() {
+    serviceNowStubSettingsApiService.setActiveSubscription(
+        "ORGANIZATION_NUMBER_3", "SERVICE_CODE_1");
 
-        assertTrue(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_3"));
-        assertEquals("SERVICE_CODE_1", stubState.getActiveSubscriptions().get("ORGANIZATION_NUMBER_3").getFirst());
-    }
+    assertTrue(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_3"));
+    assertEquals(
+        "SERVICE_CODE_1",
+        stubState.getActiveSubscriptions().get("ORGANIZATION_NUMBER_3").getFirst());
+  }
 
-    @Test
-    void shouldAddActiveSubscriptionToExistingOrganization() {
-        serviceNowStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_2", "SERVICE_CODE_2");
+  @Test
+  void shouldAddActiveSubscriptionToExistingOrganization() {
+    serviceNowStubSettingsApiService.setActiveSubscription(
+        "ORGANIZATION_NUMBER_2", "SERVICE_CODE_2");
 
-        assertTrue(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_2"));
-        assertEquals(2, stubState.getActiveSubscriptions().get("ORGANIZATION_NUMBER_2").size());
-    }
+    assertTrue(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_2"));
+    assertEquals(2, stubState.getActiveSubscriptions().get("ORGANIZATION_NUMBER_2").size());
+  }
 
-    @Test
-    void shouldRemoveActiveSubscriptions() {
-        serviceNowStubSettingsApiService.removeActiveSubscriptions("ORGANIZATION_NUMBER_1");
+  @Test
+  void shouldRemoveActiveSubscriptions() {
+    serviceNowStubSettingsApiService.removeActiveSubscriptions("ORGANIZATION_NUMBER_1");
 
-        assertFalse(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_1"));
-    }
+    assertFalse(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_1"));
+  }
 
-    @Test
-    void shouldClearActiveSubscriptions() {
-        stubState.setActiveSubscriptions(createActiveSubscriptions());
+  @Test
+  void shouldClearActiveSubscriptions() {
+    stubState.setActiveSubscriptions(createActiveSubscriptions());
 
-        serviceNowStubSettingsApiService.clearActiveSubscriptions();
+    serviceNowStubSettingsApiService.clearActiveSubscriptions();
 
-        assertTrue(stubState.getActiveSubscriptions().isEmpty());
-    }
+    assertTrue(stubState.getActiveSubscriptions().isEmpty());
+  }
 
-    @Test
-    void shouldGetActiveSubscriptions() {
-        final var response = serviceNowStubSettingsApiService.getActiveSubscriptions();
-        assertEquals(2, response.size());
-    }
+  @Test
+  void shouldGetActiveSubscriptions() {
+    final var response = serviceNowStubSettingsApiService.getActiveSubscriptions();
+    assertEquals(2, response.size());
+  }
 
-    @Test
-    void shouldCallStubStateWhenSettingErrorCode() {
-        serviceNowStubSettingsApiService.setHttpError(403);
-        assertEquals(403, stubState.getHttpErrorCode());
-    }
+  @Test
+  void shouldCallStubStateWhenSettingErrorCode() {
+    serviceNowStubSettingsApiService.setHttpError(403);
+    assertEquals(403, stubState.getHttpErrorCode());
+  }
 
-    @Test
-    void shouldSettubStateErrorCodeToZeroWhenClearingErrorCode() {
-        serviceNowStubSettingsApiService.setHttpError(403);
-        assertEquals(403, stubState.getHttpErrorCode());
+  @Test
+  void shouldSettubStateErrorCodeToZeroWhenClearingErrorCode() {
+    serviceNowStubSettingsApiService.setHttpError(403);
+    assertEquals(403, stubState.getHttpErrorCode());
 
-        serviceNowStubSettingsApiService.clearHttpError();
-        assertEquals(0, stubState.getHttpErrorCode());
-    }
+    serviceNowStubSettingsApiService.clearHttpError();
+    assertEquals(0, stubState.getHttpErrorCode());
+  }
 
-    private Map<String, List<String>> createActiveSubscriptions() {
-        final var map = new HashMap<String, List<String>>();
-        final var serviceCodes = new ArrayList<String>();
-        serviceCodes.add("SERVICE_CODE_1");
-        map.put("ORGANIZATION_NUMBER_1", serviceCodes);
-        map.put("ORGANIZATION_NUMBER_2", serviceCodes);
-        return map;
-    }
+  private Map<String, List<String>> createActiveSubscriptions() {
+    final var map = new HashMap<String, List<String>>();
+    final var serviceCodes = new ArrayList<String>();
+    serviceCodes.add("SERVICE_CODE_1");
+    map.put("ORGANIZATION_NUMBER_1", serviceCodes);
+    map.put("ORGANIZATION_NUMBER_2", serviceCodes);
+    return map;
+  }
 }

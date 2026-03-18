@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,29 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.common.dto;
 
 import lombok.Getter;
 
 @Getter
 public enum SentByDTO {
-    FK("FKASSA"), WC("HSVARD");
+  FK("FKASSA"),
+  WC("HSVARD");
 
-    private final String code;
+  private final String code;
 
-    SentByDTO(String code) {
-        this.code = code;
+  SentByDTO(String code) {
+    this.code = code;
+  }
+
+  public static SentByDTO getByCode(String code) {
+    for (SentByDTO sentByDTO : values()) {
+      if (sentByDTO.getCode().equals(code)) {
+        return sentByDTO;
+      }
     }
-
-    public static SentByDTO getByCode(String code) {
-        for (SentByDTO sentByDTO : values()) {
-            if (sentByDTO.getCode().equals(code)) {
-                return sentByDTO;
-            }
-        }
-        throw new IllegalArgumentException(
-            String.format("No matching code found for '%s'", code)
-        );
-    }
+    throw new IllegalArgumentException(String.format("No matching code found for '%s'", code));
+  }
 }

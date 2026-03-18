@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.stub.config;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
@@ -30,21 +29,21 @@ import org.springframework.core.io.ClassPathResource;
 @Configuration
 public class ServiceNowStubBeanConfig {
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        final var propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-        propertySourcesPlaceholderConfigurer.setLocation(new ClassPathResource("application.properties"));
-        return propertySourcesPlaceholderConfigurer;
-    }
+  @Bean
+  public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    final var propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+    propertySourcesPlaceholderConfigurer.setLocation(
+        new ClassPathResource("application.properties"));
+    return propertySourcesPlaceholderConfigurer;
+  }
 
-    @Bean
-    public JacksonJsonProvider getJsonProvider() {
-        return new JacksonJsonProvider();
-    }
+  @Bean
+  public JacksonJsonProvider getJsonProvider() {
+    return new JacksonJsonProvider();
+  }
 
-    @Bean(name = Bus.DEFAULT_BUS_ID)
-    public SpringBus springBus() {
-        return new SpringBus();
-    }
-
+  @Bean(name = Bus.DEFAULT_BUS_ID)
+  public SpringBus springBus() {
+    return new SpringBus();
+  }
 }

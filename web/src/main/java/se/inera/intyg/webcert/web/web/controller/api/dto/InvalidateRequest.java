@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,26 +20,26 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 public class InvalidateRequest {
 
-    private String launchId;
-    private String userHsaId;
+  private String launchId;
+  private String userHsaId;
 
-    public void setLaunchId(String launchId) {
-        this.launchId = launchId;
-    }
+  public void setLaunchId(String launchId) {
+    this.launchId = launchId;
+  }
 
-    public void setUserHsaId(String userHsaId) {
-        this.userHsaId = userHsaId;
-    }
+  public void setUserHsaId(String userHsaId) {
+    this.userHsaId = userHsaId;
+  }
 
-    public String getLaunchId() {
-        return launchId;
-    }
+  public String getLaunchId() {
+    return launchId;
+  }
 
-    public String getUserHsaId() {
-        return userHsaId;
-    }
+  public String getUserHsaId() {
+    return userHsaId;
+  }
 
-    public boolean formatIsWrong() {
-        return this.launchId == null || this.userHsaId == null;
-    }
+  public boolean formatIsWrong() {
+    return this.launchId == null || this.userHsaId == null;
+  }
 }

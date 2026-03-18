@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,44 +26,43 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class FakeAuthenticationToken extends AbstractAuthenticationToken {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-    private final WebCertUser webCertUser;
+  private final WebCertUser webCertUser;
 
-    public FakeAuthenticationToken(WebCertUser webCertUser) {
-        super(Collections.emptyList());
-        this.webCertUser = webCertUser;
-        setAuthenticated(true);
+  public FakeAuthenticationToken(WebCertUser webCertUser) {
+    super(Collections.emptyList());
+    this.webCertUser = webCertUser;
+    setAuthenticated(true);
+  }
+
+  @Override
+  public Object getCredentials() {
+    return webCertUser.getPersonId();
+  }
+
+  @Override
+  public Object getPrincipal() {
+    return webCertUser;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    @Override
-    public Object getCredentials() {
-        return webCertUser.getPersonId();
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
-
-    @Override
-    public Object getPrincipal() {
-        return webCertUser;
+    if (!super.equals(o)) {
+      return false;
     }
+    final var that = (FakeAuthenticationToken) o;
+    return Objects.equals(webCertUser, that.webCertUser);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        final var that = (FakeAuthenticationToken) o;
-        return Objects.equals(webCertUser, that.webCertUser);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), webCertUser);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), webCertUser);
+  }
 }

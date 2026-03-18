@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,52 +44,53 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 @Slf4j
 public class ConfigController {
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Value("${project.version}")
-    private String version;
+  @Value("${project.version}")
+  private String version;
 
-    @Value("${sakerhetstjanst.saml.idp.metadata.url}")
-    private String sakerhetstjanstIdpUrl;
+  @Value("${sakerhetstjanst.saml.idp.metadata.url}")
+  private String sakerhetstjanstIdpUrl;
 
-    @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
-    private String cgiFunktionstjansterIdpUrl;
+  @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
+  private String cgiFunktionstjansterIdpUrl;
 
-    @Value("${privatepractitioner.portal.registration.url}")
-    private String ppHost;
+  @Value("${privatepractitioner.portal.registration.url}")
+  private String ppHost;
 
-    @Value("${forward.draft.or.question.url}")
-    private String forwardDraftOrQuestionUrl;
+  @Value("${forward.draft.or.question.url}")
+  private String forwardDraftOrQuestionUrl;
 
-    @Value("${idp.connect.urls:}")
-    private String idpConnectUrls;
+  @Value("${idp.connect.urls:}")
+  private String idpConnectUrls;
 
-    @Autowired
-    private DynamicLinkService dynamicLinkService;
+  @Autowired private DynamicLinkService dynamicLinkService;
 
-    @Autowired
-    private IABannerService iaBannerService;
+  @Autowired private IABannerService iaBannerService;
 
-    @PostConstruct
-    public void init() {
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+  @PostConstruct
+  public void init() {
+    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+  }
+
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "config-get-configuration",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getConfiguration() {
+    if (log.isDebugEnabled()) {
+      log.debug("Getting configuration");
     }
 
-    @GET
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "config-get-configuration", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getConfiguration() {
-        if (log.isDebugEnabled()) {
-            log.debug("Getting configuration");
-        }
-
-        final var banners = iaBannerService.getCurrentBanners().stream()
+    final var banners =
+        iaBannerService.getCurrentBanners().stream()
             .filter((banner -> banner.getApplication() == Application.WEBCERT))
             .toList();
 
-        return Response.ok(
+    return Response.ok(
             ConfigurationDTO.builder()
                 .version(version)
                 .banners(banners)
@@ -98,21 +99,23 @@ public class ConfigController {
                 .cgiFunktionstjansterIdpUrl(cgiFunktionstjansterIdpUrl)
                 .forwardDraftOrQuestionUrl(forwardDraftOrQuestionUrl)
                 .idpConnectUrls(
-                    idpConnectUrls == null ? List.of() :
-                        Arrays.stream(idpConnectUrls.split(","))
+                    idpConnectUrls == null
+                        ? List.of()
+                        : Arrays.stream(idpConnectUrls.split(","))
                             .filter(url -> !url.isBlank())
-                            .toList()
-                )
-                .build()
-        ).build();
-    }
+                            .toList())
+                .build())
+        .build();
+  }
 
-    @GET
-    @Path("/links")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "config-get-dynamic-links", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Map<String, DynamicLink> getDynamicLinks() {
-        return dynamicLinkService.getAllAsMap();
-    }
+  @GET
+  @Path("/links")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "config-get-dynamic-links",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Map<String, DynamicLink> getDynamicLinks() {
+    return dynamicLinkService.getAllAsMap();
+  }
 }

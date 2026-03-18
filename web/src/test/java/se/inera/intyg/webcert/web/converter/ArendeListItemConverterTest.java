@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package se.inera.intyg.webcert.web.converter;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,331 +40,415 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 class ArendeListItemConverterTest {
 
-    private final String patientId = "191212121212";
+  private final String patientId = "191212121212";
 
-    @Test
-    void testConvert() {
-        final String fragestallare = "fragestallare";
-        final String intygId = "intygId";
-        final String intygTyp = "intygTyp";
-        final long internReferens = 13;
-        final LocalDateTime senasteHandelse = LocalDateTime.now();
-        final String signeratAv = "signeratAv";
-        final String enhetsnamn = "enhetsnamn";
-        final String vardgivarnamn = "vardgivarnamn";
-        final Amne amne = Amne.AVSTAMNINGSMOTE;
-        final boolean vidarebefordrad = false;
-        final Status status = Status.PENDING_INTERNAL_ACTION;
+  @Test
+  void testConvert() {
+    final String fragestallare = "fragestallare";
+    final String intygId = "intygId";
+    final String intygTyp = "intygTyp";
+    final long internReferens = 13;
+    final LocalDateTime senasteHandelse = LocalDateTime.now();
+    final String signeratAv = "signeratAv";
+    final String enhetsnamn = "enhetsnamn";
+    final String vardgivarnamn = "vardgivarnamn";
+    final Amne amne = Amne.AVSTAMNINGSMOTE;
+    final boolean vidarebefordrad = false;
+    final Status status = Status.PENDING_INTERNAL_ACTION;
 
-        FragaSvar fs = createFragaSvar(fragestallare, intygId, intygTyp, patientId, internReferens, senasteHandelse, signeratAv, enhetsnamn,
-            vardgivarnamn, amne, vidarebefordrad, status);
-        ArendeListItem arende = ArendeListItemConverter.convert(fs);
+    FragaSvar fs =
+        createFragaSvar(
+            fragestallare,
+            intygId,
+            intygTyp,
+            patientId,
+            internReferens,
+            senasteHandelse,
+            signeratAv,
+            enhetsnamn,
+            vardgivarnamn,
+            amne,
+            vidarebefordrad,
+            status);
+    ArendeListItem arende = ArendeListItemConverter.convert(fs);
 
-        assertNotNull(arende);
-        assertEquals(fragestallare, arende.getFragestallare());
-        assertEquals(intygId, arende.getIntygId());
-        assertEquals(intygTyp, arende.getIntygTyp());
-        assertEquals(patientId, arende.getPatientId());
-        assertEquals(Long.toString(internReferens), arende.getMeddelandeId());
-        assertEquals(senasteHandelse, arende.getReceivedDate());
-        assertEquals(signeratAv, arende.getSigneratAvNamn());
-        assertEquals(enhetsnamn, arende.getEnhetsnamn());
-        assertEquals(vardgivarnamn, arende.getVardgivarnamn());
-        assertEquals(ArendeAmne.AVSTMN.name(), arende.getAmne());
-        assertEquals(vidarebefordrad, arende.isVidarebefordrad());
-        assertEquals(status, arende.getStatus());
-    }
+    assertNotNull(arende);
+    assertEquals(fragestallare, arende.getFragestallare());
+    assertEquals(intygId, arende.getIntygId());
+    assertEquals(intygTyp, arende.getIntygTyp());
+    assertEquals(patientId, arende.getPatientId());
+    assertEquals(Long.toString(internReferens), arende.getMeddelandeId());
+    assertEquals(senasteHandelse, arende.getReceivedDate());
+    assertEquals(signeratAv, arende.getSigneratAvNamn());
+    assertEquals(enhetsnamn, arende.getEnhetsnamn());
+    assertEquals(vardgivarnamn, arende.getVardgivarnamn());
+    assertEquals(ArendeAmne.AVSTMN.name(), arende.getAmne());
+    assertEquals(vidarebefordrad, arende.isVidarebefordrad());
+    assertEquals(status, arende.getStatus());
+  }
 
-    @Test
-    void testConvertFragaSvarWithoutCorrespondingArendeAmne() {
-        final Amne amne = Amne.ARBETSTIDSFORLAGGNING;
-        FragaSvar fs = createFragaSvar("fragestallare", "intygId", "intygTyp", patientId, (long) 13, LocalDateTime.now(), "signeratAv",
-            "enhetsnamn", "vardgivarnamn", amne, false, Status.PENDING_INTERNAL_ACTION);
-        ArendeListItem arende = ArendeListItemConverter.convert(fs);
+  @Test
+  void testConvertFragaSvarWithoutCorrespondingArendeAmne() {
+    final Amne amne = Amne.ARBETSTIDSFORLAGGNING;
+    FragaSvar fs =
+        createFragaSvar(
+            "fragestallare",
+            "intygId",
+            "intygTyp",
+            patientId,
+            (long) 13,
+            LocalDateTime.now(),
+            "signeratAv",
+            "enhetsnamn",
+            "vardgivarnamn",
+            amne,
+            false,
+            Status.PENDING_INTERNAL_ACTION);
+    ArendeListItem arende = ArendeListItemConverter.convert(fs);
 
-        assertNotNull(arende);
-        assertEquals(amne.name(), arende.getAmne());
-    }
+    assertNotNull(arende);
+    assertEquals(amne.name(), arende.getAmne());
+  }
 
-    @Test
-    void testConvertEmptyIntygReferens() {
-        FragaSvar fs = new FragaSvar();
-        fs.setVardperson(new Vardperson());
-        ArendeListItem arende = ArendeListItemConverter.convert(fs);
-        assertNull(arende);
-    }
+  @Test
+  void testConvertEmptyIntygReferens() {
+    FragaSvar fs = new FragaSvar();
+    fs.setVardperson(new Vardperson());
+    ArendeListItem arende = ArendeListItemConverter.convert(fs);
+    assertNull(arende);
+  }
 
-    @Test
-    void testConvertEmptyVardperson() {
-        FragaSvar fs = new FragaSvar();
-        fs.setIntygsReferens(new IntygsReferens());
-        ArendeListItem arende = ArendeListItemConverter.convert(fs);
-        assertNull(arende);
-    }
+  @Test
+  void testConvertEmptyVardperson() {
+    FragaSvar fs = new FragaSvar();
+    fs.setIntygsReferens(new IntygsReferens());
+    ArendeListItem arende = ArendeListItemConverter.convert(fs);
+    assertNull(arende);
+  }
 
-    @Test
-    void testConvertArende() {
-        final ArendeAmne amne = ArendeAmne.KONTKT;
-        final String intygsId = "intygsId";
-        final String intygTyp = "luse";
-        final String meddelandeId = "meddelandeId";
-        final String patientPersonId = "patientPersonId";
-        final String signeratAvName = "signeratAvName";
-        final String skickatAv = "skickatAv";
-        final LocalDateTime skickatTidpunkt = LocalDateTime.now();
-        final Status status = Status.ANSWERED;
-        final Boolean vidarebefordrad = Boolean.TRUE;
-        final String enhetsnamn = "enhetsnamn";
-        final String vardgivarnamn = "vardgivarnamn";
+  @Test
+  void testConvertArende() {
+    final ArendeAmne amne = ArendeAmne.KONTKT;
+    final String intygsId = "intygsId";
+    final String intygTyp = "luse";
+    final String meddelandeId = "meddelandeId";
+    final String patientPersonId = "patientPersonId";
+    final String signeratAvName = "signeratAvName";
+    final String skickatAv = "skickatAv";
+    final LocalDateTime skickatTidpunkt = LocalDateTime.now();
+    final Status status = Status.ANSWERED;
+    final Boolean vidarebefordrad = Boolean.TRUE;
+    final String enhetsnamn = "enhetsnamn";
+    final String vardgivarnamn = "vardgivarnamn";
 
-        Arende arende = createArende(amne, intygsId, intygTyp, meddelandeId, patientPersonId, signeratAvName, skickatAv, skickatTidpunkt,
+    Arende arende =
+        createArende(
+            amne,
+            intygsId,
+            intygTyp,
+            meddelandeId,
+            patientPersonId,
+            signeratAvName,
+            skickatAv,
+            skickatTidpunkt,
             status,
-            vidarebefordrad, enhetsnamn, vardgivarnamn);
-        ArendeListItem result = ArendeListItemConverter.convert(arende);
+            vidarebefordrad,
+            enhetsnamn,
+            vardgivarnamn);
+    ArendeListItem result = ArendeListItemConverter.convert(arende);
 
-        assertEquals(amne.name(), result.getAmne());
-        assertEquals(intygsId, result.getIntygId());
-        assertEquals(intygTyp, result.getIntygTyp());
-        assertEquals(meddelandeId, result.getMeddelandeId());
-        assertEquals(patientPersonId, result.getPatientId());
-        assertEquals(signeratAvName, result.getSigneratAvNamn());
-        assertEquals(skickatAv, result.getFragestallare());
-        assertEquals(skickatTidpunkt, result.getReceivedDate());
-        assertEquals(status, result.getStatus());
-        assertTrue(result.isVidarebefordrad());
-        assertEquals(enhetsnamn, result.getEnhetsnamn());
-        assertEquals(vardgivarnamn, result.getVardgivarnamn());
+    assertEquals(amne.name(), result.getAmne());
+    assertEquals(intygsId, result.getIntygId());
+    assertEquals(intygTyp, result.getIntygTyp());
+    assertEquals(meddelandeId, result.getMeddelandeId());
+    assertEquals(patientPersonId, result.getPatientId());
+    assertEquals(signeratAvName, result.getSigneratAvNamn());
+    assertEquals(skickatAv, result.getFragestallare());
+    assertEquals(skickatTidpunkt, result.getReceivedDate());
+    assertEquals(status, result.getStatus());
+    assertTrue(result.isVidarebefordrad());
+    assertEquals(enhetsnamn, result.getEnhetsnamn());
+    assertEquals(vardgivarnamn, result.getVardgivarnamn());
+  }
+
+  @Test
+  void testConvertArendeVidarebefordradNull() {
+    Arende arende =
+        createArende(
+            ArendeAmne.KONTKT,
+            "intygsId",
+            "intygTyp",
+            "meddelandeId",
+            "patientPersonId",
+            "signeratAvName",
+            "skickatAv",
+            LocalDateTime.now(),
+            Status.ANSWERED,
+            null,
+            "enhetsnamn",
+            "vardgivarnamn");
+    ArendeListItem result = ArendeListItemConverter.convert(arende);
+
+    assertEquals(false, result.isVidarebefordrad());
+  }
+
+  @Nested
+  class ArendeListItemProjectionConverterTest {
+
+    private static final String MEDDELANDE_ID = "meddelande-123";
+    private static final String INTYG_ID = "intyg-456";
+    private static final String INTYG_TYP = "lisjp";
+    private static final String SIGNERAT_AV = "HSA123456";
+    private static final String SIGNERAT_AV_NAME = "Dr. Test Testsson";
+    private static final Status STATUS = Status.PENDING_INTERNAL_ACTION;
+    private static final String PATIENT_PERSON_ID = "191212121212";
+    private static final LocalDateTime SENASTE_HANDELSE = LocalDateTime.of(2026, 1, 15, 10, 30);
+    private static final Boolean VIDAREBEFORDRAD = true;
+    private static final String SKICKAT_AV = "FK";
+    private static final ArendeAmne AMNE = ArendeAmne.KOMPLT;
+    private static final String ENHET_NAME = "Testenheten";
+    private static final String VARDGIVARE_NAME = "Testvårdgivaren";
+
+    private ArendeListItemProjection createProjection() {
+      return new ArendeListItemProjection(
+          MEDDELANDE_ID,
+          INTYG_ID,
+          INTYG_TYP,
+          SIGNERAT_AV,
+          SIGNERAT_AV_NAME,
+          STATUS,
+          PATIENT_PERSON_ID,
+          SENASTE_HANDELSE,
+          VIDAREBEFORDRAD,
+          SKICKAT_AV,
+          AMNE,
+          ENHET_NAME,
+          VARDGIVARE_NAME);
     }
 
     @Test
-    void testConvertArendeVidarebefordradNull() {
-        Arende arende = createArende(ArendeAmne.KONTKT, "intygsId", "intygTyp", "meddelandeId", "patientPersonId", "signeratAvName",
-            "skickatAv",
-            LocalDateTime.now(), Status.ANSWERED,
-            null, "enhetsnamn", "vardgivarnamn");
-        ArendeListItem result = ArendeListItemConverter.convert(arende);
+    void shouldConvertMeddelandeId() {
+      final var projection = createProjection();
 
-        assertEquals(false, result.isVidarebefordrad());
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(MEDDELANDE_ID, result.getMeddelandeId());
     }
 
-    @Nested
-    class ArendeListItemProjectionConverterTest {
+    @Test
+    void shouldConvertIntygId() {
+      final var projection = createProjection();
 
-        private static final String MEDDELANDE_ID = "meddelande-123";
-        private static final String INTYG_ID = "intyg-456";
-        private static final String INTYG_TYP = "lisjp";
-        private static final String SIGNERAT_AV = "HSA123456";
-        private static final String SIGNERAT_AV_NAME = "Dr. Test Testsson";
-        private static final Status STATUS = Status.PENDING_INTERNAL_ACTION;
-        private static final String PATIENT_PERSON_ID = "191212121212";
-        private static final LocalDateTime SENASTE_HANDELSE = LocalDateTime.of(2026, 1, 15, 10, 30);
-        private static final Boolean VIDAREBEFORDRAD = true;
-        private static final String SKICKAT_AV = "FK";
-        private static final ArendeAmne AMNE = ArendeAmne.KOMPLT;
-        private static final String ENHET_NAME = "Testenheten";
-        private static final String VARDGIVARE_NAME = "Testvårdgivaren";
+      final var result = ArendeListItemConverter.convert(projection);
 
-        private ArendeListItemProjection createProjection() {
-            return new ArendeListItemProjection(
-                MEDDELANDE_ID,
-                INTYG_ID,
-                INTYG_TYP,
-                SIGNERAT_AV,
-                SIGNERAT_AV_NAME,
-                STATUS,
-                PATIENT_PERSON_ID,
-                SENASTE_HANDELSE,
-                VIDAREBEFORDRAD,
-                SKICKAT_AV,
-                AMNE,
-                ENHET_NAME,
-                VARDGIVARE_NAME
-            );
-        }
-
-        @Test
-        void shouldConvertMeddelandeId() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(MEDDELANDE_ID, result.getMeddelandeId());
-        }
-
-        @Test
-        void shouldConvertIntygId() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(INTYG_ID, result.getIntygId());
-        }
-
-        @Test
-        void shouldConvertIntygTyp() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(INTYG_TYP, result.getIntygTyp());
-        }
-
-        @Test
-        void shouldConvertSigneratAv() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(SIGNERAT_AV, result.getSigneratAv());
-        }
-
-        @Test
-        void shouldConvertSigneratAvName() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(SIGNERAT_AV_NAME, result.getSigneratAvNamn());
-        }
-
-        @Test
-        void shouldConvertStatus() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(STATUS, result.getStatus());
-        }
-
-        @Test
-        void shouldConvertPatientPersonId() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(PATIENT_PERSON_ID, result.getPatientId());
-        }
-
-        @Test
-        void shouldConvertSenasteHandelse() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(SENASTE_HANDELSE, result.getReceivedDate());
-        }
-
-        @Test
-        void shouldConvertVidarebefordrad() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertTrue(result.isVidarebefordrad());
-        }
-
-        @Test
-        void shouldConvertVidarebefordradWhenFalse() {
-            final var projection = new ArendeListItemProjection(
-                MEDDELANDE_ID, INTYG_ID, INTYG_TYP, SIGNERAT_AV, SIGNERAT_AV_NAME,
-                STATUS, PATIENT_PERSON_ID, SENASTE_HANDELSE, false,
-                SKICKAT_AV, AMNE, ENHET_NAME, VARDGIVARE_NAME
-            );
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertFalse(result.isVidarebefordrad());
-        }
-
-        @Test
-        void shouldConvertVidarebefordradWhenNull() {
-            final var projection = new ArendeListItemProjection(
-                MEDDELANDE_ID, INTYG_ID, INTYG_TYP, SIGNERAT_AV, SIGNERAT_AV_NAME,
-                STATUS, PATIENT_PERSON_ID, SENASTE_HANDELSE, null,
-                SKICKAT_AV, AMNE, ENHET_NAME, VARDGIVARE_NAME
-            );
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertFalse(result.isVidarebefordrad());
-        }
-
-        @Test
-        void shouldConvertSkickatAv() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(SKICKAT_AV, result.getFragestallare());
-        }
-
-        @Test
-        void shouldConvertAmne() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(AMNE.name(), result.getAmne());
-        }
-
-        @Test
-        void shouldConvertEnhetName() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(ENHET_NAME, result.getEnhetsnamn());
-        }
-
-        @Test
-        void shouldConvertVardgivareName() {
-            final var projection = createProjection();
-
-            final var result = ArendeListItemConverter.convert(projection);
-
-            assertEquals(VARDGIVARE_NAME, result.getVardgivarnamn());
-        }
-
+      assertEquals(INTYG_ID, result.getIntygId());
     }
 
-    private FragaSvar createFragaSvar(String fragestallare, String intygsId, String intygsTyp, String patientId, Long internReferens,
-        LocalDateTime senasteHandelse, String signeratAv, String enhetsnamn, String vardgivarnamn, Amne amne, Boolean vidarebefordrad,
-        Status status) {
-        FragaSvar res = new FragaSvar();
-        res.setFrageStallare(fragestallare);
-        res.setIntygsReferens(new IntygsReferens(intygsId, intygsTyp,
-            Personnummer.createPersonnummer(patientId).get(), null, null));
-        res.setInternReferens(internReferens);
-        res.setFrageSkickadDatum(senasteHandelse);
-        Vardperson vp = new Vardperson();
-        vp.setNamn(signeratAv);
-        vp.setEnhetsnamn(enhetsnamn);
-        vp.setVardgivarnamn(vardgivarnamn);
-        res.setVardperson(vp);
-        res.setAmne(amne);
-        res.setVidarebefordrad(vidarebefordrad);
-        res.setStatus(status);
-        return res;
+    @Test
+    void shouldConvertIntygTyp() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(INTYG_TYP, result.getIntygTyp());
     }
 
-    private Arende createArende(ArendeAmne amne, String intygsId, String intygTyp, String meddelandeId, String patientPersonId,
-        String signeratAvName, String skickatAv, LocalDateTime senasteHandelse, Status status, Boolean vidarebefordrad,
-        String enhetName, String vardgivareName) {
+    @Test
+    void shouldConvertSigneratAv() {
+      final var projection = createProjection();
 
-        Arende arende = new Arende();
-        arende.setAmne(amne);
-        arende.setIntygsId(intygsId);
-        arende.setIntygTyp(intygTyp);
-        arende.setMeddelandeId(meddelandeId);
-        arende.setPatientPersonId(patientPersonId);
-        arende.setSigneratAvName(signeratAvName);
-        arende.setSkickatAv(skickatAv);
-        arende.setSenasteHandelse(senasteHandelse);
-        arende.setStatus(status);
-        arende.setVidarebefordrad(vidarebefordrad);
-        arende.setEnhetName(enhetName);
-        arende.setVardgivareName(vardgivareName);
+      final var result = ArendeListItemConverter.convert(projection);
 
-        return arende;
+      assertEquals(SIGNERAT_AV, result.getSigneratAv());
     }
+
+    @Test
+    void shouldConvertSigneratAvName() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(SIGNERAT_AV_NAME, result.getSigneratAvNamn());
+    }
+
+    @Test
+    void shouldConvertStatus() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(STATUS, result.getStatus());
+    }
+
+    @Test
+    void shouldConvertPatientPersonId() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(PATIENT_PERSON_ID, result.getPatientId());
+    }
+
+    @Test
+    void shouldConvertSenasteHandelse() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(SENASTE_HANDELSE, result.getReceivedDate());
+    }
+
+    @Test
+    void shouldConvertVidarebefordrad() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertTrue(result.isVidarebefordrad());
+    }
+
+    @Test
+    void shouldConvertVidarebefordradWhenFalse() {
+      final var projection =
+          new ArendeListItemProjection(
+              MEDDELANDE_ID,
+              INTYG_ID,
+              INTYG_TYP,
+              SIGNERAT_AV,
+              SIGNERAT_AV_NAME,
+              STATUS,
+              PATIENT_PERSON_ID,
+              SENASTE_HANDELSE,
+              false,
+              SKICKAT_AV,
+              AMNE,
+              ENHET_NAME,
+              VARDGIVARE_NAME);
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertFalse(result.isVidarebefordrad());
+    }
+
+    @Test
+    void shouldConvertVidarebefordradWhenNull() {
+      final var projection =
+          new ArendeListItemProjection(
+              MEDDELANDE_ID,
+              INTYG_ID,
+              INTYG_TYP,
+              SIGNERAT_AV,
+              SIGNERAT_AV_NAME,
+              STATUS,
+              PATIENT_PERSON_ID,
+              SENASTE_HANDELSE,
+              null,
+              SKICKAT_AV,
+              AMNE,
+              ENHET_NAME,
+              VARDGIVARE_NAME);
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertFalse(result.isVidarebefordrad());
+    }
+
+    @Test
+    void shouldConvertSkickatAv() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(SKICKAT_AV, result.getFragestallare());
+    }
+
+    @Test
+    void shouldConvertAmne() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(AMNE.name(), result.getAmne());
+    }
+
+    @Test
+    void shouldConvertEnhetName() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(ENHET_NAME, result.getEnhetsnamn());
+    }
+
+    @Test
+    void shouldConvertVardgivareName() {
+      final var projection = createProjection();
+
+      final var result = ArendeListItemConverter.convert(projection);
+
+      assertEquals(VARDGIVARE_NAME, result.getVardgivarnamn());
+    }
+  }
+
+  private FragaSvar createFragaSvar(
+      String fragestallare,
+      String intygsId,
+      String intygsTyp,
+      String patientId,
+      Long internReferens,
+      LocalDateTime senasteHandelse,
+      String signeratAv,
+      String enhetsnamn,
+      String vardgivarnamn,
+      Amne amne,
+      Boolean vidarebefordrad,
+      Status status) {
+    FragaSvar res = new FragaSvar();
+    res.setFrageStallare(fragestallare);
+    res.setIntygsReferens(
+        new IntygsReferens(
+            intygsId, intygsTyp, Personnummer.createPersonnummer(patientId).get(), null, null));
+    res.setInternReferens(internReferens);
+    res.setFrageSkickadDatum(senasteHandelse);
+    Vardperson vp = new Vardperson();
+    vp.setNamn(signeratAv);
+    vp.setEnhetsnamn(enhetsnamn);
+    vp.setVardgivarnamn(vardgivarnamn);
+    res.setVardperson(vp);
+    res.setAmne(amne);
+    res.setVidarebefordrad(vidarebefordrad);
+    res.setStatus(status);
+    return res;
+  }
+
+  private Arende createArende(
+      ArendeAmne amne,
+      String intygsId,
+      String intygTyp,
+      String meddelandeId,
+      String patientPersonId,
+      String signeratAvName,
+      String skickatAv,
+      LocalDateTime senasteHandelse,
+      Status status,
+      Boolean vidarebefordrad,
+      String enhetName,
+      String vardgivareName) {
+
+    Arende arende = new Arende();
+    arende.setAmne(amne);
+    arende.setIntygsId(intygsId);
+    arende.setIntygTyp(intygTyp);
+    arende.setMeddelandeId(meddelandeId);
+    arende.setPatientPersonId(patientPersonId);
+    arende.setSigneratAvName(signeratAvName);
+    arende.setSkickatAv(skickatAv);
+    arende.setSenasteHandelse(senasteHandelse);
+    arende.setStatus(status);
+    arende.setVidarebefordrad(vidarebefordrad);
+    arende.setEnhetName(enhetName);
+    arende.setVardgivareName(vardgivareName);
+
+    return arende;
+  }
 }

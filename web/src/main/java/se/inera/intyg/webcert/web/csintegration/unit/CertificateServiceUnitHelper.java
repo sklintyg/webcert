@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import lombok.RequiredArgsConstructor;
@@ -28,31 +27,26 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @RequiredArgsConstructor
 public class CertificateServiceUnitHelper {
 
-    private final WebCertUserService webCertUserService;
-    private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
+  private final WebCertUserService webCertUserService;
+  private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
 
-    public CertificateServiceUnitDTO getCareProvider() {
-        final var user = webCertUserService.getUser();
-        return CertificateServiceUnitDTO.builder()
-            .id(user.getValdVardgivare().getId())
-            .name(user.getValdVardgivare().getNamn())
-            .build();
-    }
+  public CertificateServiceUnitDTO getCareProvider() {
+    final var user = webCertUserService.getUser();
+    return CertificateServiceUnitDTO.builder()
+        .id(user.getValdVardgivare().getId())
+        .name(user.getValdVardgivare().getNamn())
+        .build();
+  }
 
-    public CertificateServiceUnitDTO getCareUnit() {
-        final var user = webCertUserService.getUser();
-        final var careUnit = CertificateServiceUnitUtil.getCareUnit(user);
-        return certificateServiceVardenhetConverter.convert(
-            careUnit,
-            false
-        );
-    }
+  public CertificateServiceUnitDTO getCareUnit() {
+    final var user = webCertUserService.getUser();
+    final var careUnit = CertificateServiceUnitUtil.getCareUnit(user);
+    return certificateServiceVardenhetConverter.convert(careUnit, false);
+  }
 
-    public CertificateServiceUnitDTO getUnit() {
-        final var user = webCertUserService.getUser();
-        return certificateServiceVardenhetConverter.convert(
-            (AbstractVardenhet) user.getValdVardenhet(),
-            user.isUnitInactive()
-        );
-    }
+  public CertificateServiceUnitDTO getUnit() {
+    final var user = webCertUserService.getUser();
+    return certificateServiceVardenhetConverter.convert(
+        (AbstractVardenhet) user.getValdVardenhet(), user.isUnitInactive());
+  }
 }

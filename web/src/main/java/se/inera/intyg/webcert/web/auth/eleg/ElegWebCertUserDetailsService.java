@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,70 +41,85 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class ElegWebCertUserDetailsService {
 
-    private final CommonAuthoritiesResolver commonAuthoritiesResolver;
-    private final Optional<UserOrigin> userOrigin;
-    private final SubscriptionService subscriptionService;
-    private final HashUtility hashUtility;
-    @Nullable
-    private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    @Nullable
-    private final UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
-    @Nullable
-    private final AuthorizedPrivatePractitionerService authorizedPrivatePractitionerService;
+  private final CommonAuthoritiesResolver commonAuthoritiesResolver;
+  private final Optional<UserOrigin> userOrigin;
+  private final SubscriptionService subscriptionService;
+  private final HashUtility hashUtility;
 
-    public WebCertUser buildFakeUserPrincipal(String personId) {
-        return buildUserPrincipal(personId, AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF, AuthenticationMethod.FAKE);
+  @Nullable private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+
+  @Nullable private final UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
+
+  @Nullable private final AuthorizedPrivatePractitionerService authorizedPrivatePractitionerService;
+
+  public WebCertUser buildFakeUserPrincipal(String personId) {
+    return buildUserPrincipal(
+        personId, AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF, AuthenticationMethod.FAKE);
+  }
+
+  public WebCertUser buildUserPrincipal(
+      String personId,
+      String authenticationScheme,
+      AuthenticationMethod authenticationMethodMethod) {
+    return handleWithPrivatePractitionerService(
+        personId, authenticationScheme, authenticationMethodMethod);
+  }
+
+  private WebCertUser handleWithPrivatePractitionerService(
+      String personId, String authScheme, AuthenticationMethod authMethod) {
+    if (unauthorizedPrivatePractitionerService == null) {
+      throw new IllegalStateException("UnauthorizedPrivatePractitionerService is not available");
     }
 
-    public WebCertUser buildUserPrincipal(String personId, String authenticationScheme, AuthenticationMethod authenticationMethodMethod) {
-        return handleWithPrivatePractitionerService(personId, authenticationScheme, authenticationMethodMethod);
+    if (authorizedPrivatePractitionerService == null) {
+      throw new IllegalStateException("AuthorizedPrivatePractitionerService is not available");
     }
 
-    private WebCertUser handleWithPrivatePractitionerService(String personId, String authScheme, AuthenticationMethod authMethod) {
-        if (unauthorizedPrivatePractitionerService == null) {
-            throw new IllegalStateException("UnauthorizedPrivatePractitionerService is not available");
-        }
-
-        if (authorizedPrivatePractitionerService == null) {
-            throw new IllegalStateException("AuthorizedPrivatePractitionerService is not available");
-        }
-
-        if (privatePractitionerIntegrationService == null) {
-            throw new IllegalStateException("PrivatePractitionerIntegrationService is not available");
-        }
-
-        final var origin = resolveRequestOrigin();
-        final var validationResult = privatePractitionerIntegrationService.validatePrivatePractitioner(personId);
-        return switch (validationResult.resultCode()) {
-            case OK -> {
-                final var user = authorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
-                subscriptionService.checkSubscriptions(user);
-                yield user;
-            }
-            case NOT_AUTHORIZED_IN_HOSP -> unauthorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
-            case NO_ACCOUNT -> {
-                if (subscriptionService.isUnregisteredElegUserMissingSubscription(personId)) {
-                    throw missingSubscriptionException(hashUtility.hash(personId));
-                }
-                yield unauthorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
-            }
-        };
+    if (privatePractitionerIntegrationService == null) {
+      throw new IllegalStateException("PrivatePractitionerIntegrationService is not available");
     }
 
-    private static MissingSubscriptionException missingSubscriptionException(String hashedPersonIdOrHsaId) {
-        return new MissingSubscriptionException("Private practitioner '" + hashedPersonIdOrHsaId + "' was denied access to Webcert due to "
+    final var origin = resolveRequestOrigin();
+    final var validationResult =
+        privatePractitionerIntegrationService.validatePrivatePractitioner(personId);
+    return switch (validationResult.resultCode()) {
+      case OK -> {
+        final var user =
+            authorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
+        subscriptionService.checkSubscriptions(user);
+        yield user;
+      }
+      case NOT_AUTHORIZED_IN_HOSP ->
+          unauthorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
+      case NO_ACCOUNT -> {
+        if (subscriptionService.isUnregisteredElegUserMissingSubscription(personId)) {
+          throw missingSubscriptionException(hashUtility.hash(personId));
+        }
+        yield unauthorizedPrivatePractitionerService.create(
+            personId, origin, authScheme, authMethod);
+      }
+    };
+  }
+
+  private static MissingSubscriptionException missingSubscriptionException(
+      String hashedPersonIdOrHsaId) {
+    return new MissingSubscriptionException(
+        "Private practitioner '"
+            + hashedPersonIdOrHsaId
+            + "' was denied access to Webcert due to "
             + "missing subscription.");
-    }
+  }
 
-    private String resolveRequestOrigin() {
-        if (userOrigin.isEmpty()) {
-            throw new IllegalStateException("No WebCertUserOrigin present, cannot login user.");
-        }
-        final var requestOrigin = userOrigin.get().resolveOrigin(getCurrentRequest());
-        return commonAuthoritiesResolver.getRequestOrigin(requestOrigin).getName();
+  private String resolveRequestOrigin() {
+    if (userOrigin.isEmpty()) {
+      throw new IllegalStateException("No WebCertUserOrigin present, cannot login user.");
     }
+    final var requestOrigin = userOrigin.get().resolveOrigin(getCurrentRequest());
+    return commonAuthoritiesResolver.getRequestOrigin(requestOrigin).getName();
+  }
 
-    private HttpServletRequest getCurrentRequest() {
-        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-    }
+  private HttpServletRequest getCurrentRequest() {
+    return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+        .getRequest();
+  }
 }

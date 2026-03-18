@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,10 +23,9 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 public interface NotificationStoreV3 {
 
-    void put(CertificateStatusUpdateForCareType request);
+  void put(CertificateStatusUpdateForCareType request);
 
-    Collection<CertificateStatusUpdateForCareType> getNotifications();
+  Collection<CertificateStatusUpdateForCareType> getNotifications();
 
-    void clear();
-
+  void clear();
 }

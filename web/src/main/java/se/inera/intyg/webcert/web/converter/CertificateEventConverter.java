@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,38 +33,38 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 @Component
 public class CertificateEventConverter {
 
-    @Autowired
-    private IntygService intygService;
+  @Autowired private IntygService intygService;
 
-    public CertificateEventDTO convertToCertificateEventDTO(CertificateEvent event) {
-        CertificateEventDTO eventDto = new CertificateEventDTO(event);
+  public CertificateEventDTO convertToCertificateEventDTO(CertificateEvent event) {
+    CertificateEventDTO eventDto = new CertificateEventDTO(event);
 
-        if (event.getEventCode() == EventCode.ERSATTER
-            || event.getEventCode() == EventCode.FORLANGER
-            || event.getEventCode() == EventCode.SKAPATFRAN
-            || event.getEventCode() == EventCode.KOPIERATFRAN
-            || event.getEventCode() == EventCode.KOMPLETTERAR) {
-            Optional<ExtendedEventMessage> dataForExtendedMessage = getDataForExtendedMessage(event);
-            dataForExtendedMessage.ifPresent(message -> eventDto.setExtendedMessage(message));
-        }
-        return eventDto;
+    if (event.getEventCode() == EventCode.ERSATTER
+        || event.getEventCode() == EventCode.FORLANGER
+        || event.getEventCode() == EventCode.SKAPATFRAN
+        || event.getEventCode() == EventCode.KOPIERATFRAN
+        || event.getEventCode() == EventCode.KOMPLETTERAR) {
+      Optional<ExtendedEventMessage> dataForExtendedMessage = getDataForExtendedMessage(event);
+      dataForExtendedMessage.ifPresent(message -> eventDto.setExtendedMessage(message));
     }
+    return eventDto;
+  }
 
-    private Optional<ExtendedEventMessage> getDataForExtendedMessage(CertificateEvent event) {
-        IntygContentHolder currentCertificate = intygService.fetchIntygDataForInternalUse(event.getCertificateId(), true);
-        if (currentCertificate != null && currentCertificate.getRelations() != null) {
-            WebcertCertificateRelation parent = currentCertificate.getRelations().getParent();
+  private Optional<ExtendedEventMessage> getDataForExtendedMessage(CertificateEvent event) {
+    IntygContentHolder currentCertificate =
+        intygService.fetchIntygDataForInternalUse(event.getCertificateId(), true);
+    if (currentCertificate != null && currentCertificate.getRelations() != null) {
+      WebcertCertificateRelation parent = currentCertificate.getRelations().getParent();
 
-            if (parent != null) {
-                IntygTypeInfo parentIntygTypeInfo = intygService.getIntygTypeInfo(parent.getIntygsId());
+      if (parent != null) {
+        IntygTypeInfo parentIntygTypeInfo = intygService.getIntygTypeInfo(parent.getIntygsId());
 
-                ExtendedEventMessage message = new ExtendedEventMessage();
-                message.setOriginalCertificateId(parent.getIntygsId());
-                message.setOriginalCertificateType(parentIntygTypeInfo.getIntygType());
-                message.setOriginalCertificateTypeVersion(parentIntygTypeInfo.getIntygTypeVersion());
-                return Optional.of(message);
-            }
-        }
-        return Optional.empty();
+        ExtendedEventMessage message = new ExtendedEventMessage();
+        message.setOriginalCertificateId(parent.getIntygsId());
+        message.setOriginalCertificateType(parentIntygTypeInfo.getIntygType());
+        message.setOriginalCertificateTypeVersion(parentIntygTypeInfo.getIntygTypeVersion());
+        return Optional.of(message);
+      }
     }
+    return Optional.empty();
+  }
 }

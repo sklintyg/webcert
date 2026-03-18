@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.logging;
 
 import jakarta.servlet.Filter;
@@ -43,61 +42,61 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Component
 public class MdcUserServletFilter implements Filter {
 
-    @Autowired
-    private WebCertUserService webCertUserService;
+  @Autowired private WebCertUserService webCertUserService;
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
-        if (webCertUserService.hasAuthenticationContext()) {
-            final var user = webCertUserService.getUser();
-            final var unitId = selectedUnitId(user.getValdVardenhet());
-            final var careUnitId = selectedCareUnitId(user.getValdVardenhet());
-            final var careProviderId = selectedUnitId(user.getValdVardgivare());
-            final var userRole = userRole(user.getRoles());
-            final var userOrigin = userOrigin(user);
-            try (final var mdcLogConstants =
-                MdcCloseableMap.builder()
-                    .put(MdcLogConstants.USER_ID, user.getHsaId())
-                    .put(MdcLogConstants.ORGANIZATION_ID, unitId)
-                    .put(MdcLogConstants.ORGANIZATION_CARE_UNIT_ID, careUnitId)
-                    .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, careProviderId)
-                    .put(MdcLogConstants.USER_ORIGIN, userOrigin)
-                    .put(MdcLogConstants.USER_ROLE, userRole)
-                    .build()
-            ) {
-                chain.doFilter(request, response);
-            }
-        } else {
-            chain.doFilter(request, response);
-        }
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
+    if (webCertUserService.hasAuthenticationContext()) {
+      final var user = webCertUserService.getUser();
+      final var unitId = selectedUnitId(user.getValdVardenhet());
+      final var careUnitId = selectedCareUnitId(user.getValdVardenhet());
+      final var careProviderId = selectedUnitId(user.getValdVardgivare());
+      final var userRole = userRole(user.getRoles());
+      final var userOrigin = userOrigin(user);
+      try (final var mdcLogConstants =
+          MdcCloseableMap.builder()
+              .put(MdcLogConstants.USER_ID, user.getHsaId())
+              .put(MdcLogConstants.ORGANIZATION_ID, unitId)
+              .put(MdcLogConstants.ORGANIZATION_CARE_UNIT_ID, careUnitId)
+              .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, careProviderId)
+              .put(MdcLogConstants.USER_ORIGIN, userOrigin)
+              .put(MdcLogConstants.USER_ROLE, userRole)
+              .build()) {
+        chain.doFilter(request, response);
+      }
+    } else {
+      chain.doFilter(request, response);
     }
+  }
 
-    @Override
-    public void init(FilterConfig filterConfig) {
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-            filterConfig.getServletContext());
-    }
+  @Override
+  public void init(FilterConfig filterConfig) {
+    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(
+        this, filterConfig.getServletContext());
+  }
 
-    private String selectedUnitId(SelectableVardenhet selectableVardenhet) {
-        if (selectableVardenhet == null) {
-            return "-";
-        }
-        return selectableVardenhet.getId();
+  private String selectedUnitId(SelectableVardenhet selectableVardenhet) {
+    if (selectableVardenhet == null) {
+      return "-";
     }
+    return selectableVardenhet.getId();
+  }
 
-    private String selectedCareUnitId(SelectableVardenhet selectedVardenhet) {
-        if (selectedVardenhet instanceof Mottagning mottagning) {
-            return mottagning.getParentHsaId();
-        }
-        return selectedUnitId(selectedVardenhet);
+  private String selectedCareUnitId(SelectableVardenhet selectedVardenhet) {
+    if (selectedVardenhet instanceof Mottagning mottagning) {
+      return mottagning.getParentHsaId();
     }
+    return selectedUnitId(selectedVardenhet);
+  }
 
-    private static String userRole(Map<String, Role> roles) {
-        return roles != null && roles.size() == 1 ? roles.keySet().iterator().next() : MdcLogConstants.NO_ROLE;
-    }
+  private static String userRole(Map<String, Role> roles) {
+    return roles != null && roles.size() == 1
+        ? roles.keySet().iterator().next()
+        : MdcLogConstants.NO_ROLE;
+  }
 
-    private static String userOrigin(WebCertUser user) {
-        return user.getOrigin() != null ? user.getOrigin() : MdcLogConstants.NO_ORIGIN;
-    }
+  private static String userOrigin(WebCertUser user) {
+    return user.getOrigin() != null ? user.getOrigin() : MdcLogConstants.NO_ORIGIN;
+  }
 }

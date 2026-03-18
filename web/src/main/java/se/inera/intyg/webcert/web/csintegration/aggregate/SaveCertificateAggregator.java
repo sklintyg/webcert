@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,26 +26,26 @@ import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 @Service("saveCertificateAggregator")
 public class SaveCertificateAggregator implements SaveCertificateFacadeService {
 
-    private final SaveCertificateFacadeService saveCertificateFacadeServiceWC;
-    private final SaveCertificateFacadeService saveCertificateFacadeServiceCS;
+  private final SaveCertificateFacadeService saveCertificateFacadeServiceWC;
+  private final SaveCertificateFacadeService saveCertificateFacadeServiceCS;
 
-    public SaveCertificateAggregator(
-        @Qualifier("saveCertificateFacadeServiceWC") SaveCertificateFacadeService saveCertificateFacadeServiceWC,
-        @Qualifier("saveCertificateFacadeServiceCS") SaveCertificateFacadeService saveCertificateFacadeServiceCS) {
-        this.saveCertificateFacadeServiceWC = saveCertificateFacadeServiceWC;
-        this.saveCertificateFacadeServiceCS = saveCertificateFacadeServiceCS;
-    }
+  public SaveCertificateAggregator(
+      @Qualifier("saveCertificateFacadeServiceWC") SaveCertificateFacadeService saveCertificateFacadeServiceWC,
+      @Qualifier("saveCertificateFacadeServiceCS") SaveCertificateFacadeService saveCertificateFacadeServiceCS) {
+    this.saveCertificateFacadeServiceWC = saveCertificateFacadeServiceWC;
+    this.saveCertificateFacadeServiceCS = saveCertificateFacadeServiceCS;
+  }
 
-    @Override
-    public long saveCertificate(Certificate certificate, boolean pdlLog) {
-        final var versionFromCS = saveCertificateFacadeServiceCS.saveCertificate(certificate, pdlLog);
+  @Override
+  public long saveCertificate(Certificate certificate, boolean pdlLog) {
+    final var versionFromCS = saveCertificateFacadeServiceCS.saveCertificate(certificate, pdlLog);
 
-        return hasBeenSavedInCC(versionFromCS)
-            ? versionFromCS
-            : saveCertificateFacadeServiceWC.saveCertificate(certificate, pdlLog);
-    }
+    return hasBeenSavedInCC(versionFromCS)
+        ? versionFromCS
+        : saveCertificateFacadeServiceWC.saveCertificate(certificate, pdlLog);
+  }
 
-    private static boolean hasBeenSavedInCC(long responseFromCS) {
-        return responseFromCS > 0;
-    }
+  private static boolean hasBeenSavedInCC(long responseFromCS) {
+    return responseFromCS > 0;
+  }
 }

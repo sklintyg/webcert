@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,27 +38,25 @@ import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 @Transactional
 public class IntegreradEnhetRepositoryTest {
 
-    @Autowired
-    private IntegreradEnhetRepository repository;
+  @Autowired private IntegreradEnhetRepository repository;
 
-    @Test
-    public void testSaveIntegreradEnhet() {
+  @Test
+  public void testSaveIntegreradEnhet() {
 
-        IntegreradEnhet enhet = new IntegreradEnhet();
-        enhet.setEnhetsId("SE1234567890-1A01");
-        enhet.setEnhetsNamn("Enhet 1");
-        enhet.setVardgivarId("SE1234567890-2B01");
-        enhet.setVardgivarNamn("Vardgivare 1");
-        enhet.setSchemaVersion1(true);
-        enhet.setSchemaVersion3(false);
+    IntegreradEnhet enhet = new IntegreradEnhet();
+    enhet.setEnhetsId("SE1234567890-1A01");
+    enhet.setEnhetsNamn("Enhet 1");
+    enhet.setVardgivarId("SE1234567890-2B01");
+    enhet.setVardgivarNamn("Vardgivare 1");
+    enhet.setSchemaVersion1(true);
+    enhet.setSchemaVersion3(false);
 
-        IntegreradEnhet savedEnhet = repository.save(enhet);
+    IntegreradEnhet savedEnhet = repository.save(enhet);
 
-        assertNotNull(savedEnhet);
-        assertNotNull(savedEnhet.getSkapadDatum());
-        assertNull(savedEnhet.getSenasteKontrollDatum());
-        assertTrue(savedEnhet.isSchemaVersion1());
-        assertFalse(savedEnhet.isSchemaVersion3());
-    }
-
+    assertNotNull(savedEnhet);
+    assertNotNull(savedEnhet.getSkapadDatum());
+    assertNull(savedEnhet.getSenasteKontrollDatum());
+    assertTrue(savedEnhet.isSchemaVersion1());
+    assertFalse(savedEnhet.isSchemaVersion3());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -60,105 +60,106 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiveQuestionResponderImplTest {
 
-    private static final Long QUESTION_ID = 1234L;
+  private static final Long QUESTION_ID = 1234L;
 
-    private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
+  private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
 
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
+  private static final Personnummer PATIENT_ID =
+      Personnummer.createPersonnummer("19121212-1212").get();
 
-    @Spy
-    private FragaSvarConverter converter = new FragaSvarConverter();
+  @Spy private FragaSvarConverter converter = new FragaSvarConverter();
 
-    @Mock
-    private FragaSvarService mockFragaSvarService;
+  @Mock private FragaSvarService mockFragaSvarService;
 
-    @Mock
-    private NotificationService mockNotificationService;
+  @Mock private NotificationService mockNotificationService;
 
-    @Mock
-    private CertificateEventService certificateEventService;
+  @Mock private CertificateEventService certificateEventService;
 
-    @InjectMocks
-    private ReceiveQuestionResponderImpl receiveQuestionResponder;
+  @InjectMocks private ReceiveQuestionResponderImpl receiveQuestionResponder;
 
-    @Test
-    public void testReceiveQuestionOK() {
-        FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
-        when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
+  @Test
+  public void testReceiveQuestionOK() {
+    FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
+    when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
 
-        ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
-        ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
+    ReceiveMedicalCertificateQuestionType request =
+        createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
+    ReceiveMedicalCertificateQuestionResponseType response =
+        receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
 
-        // should place notification on queue
-        verify(mockNotificationService).sendNotificationForQuestionReceived(any(FragaSvar.class));
-        verify(certificateEventService)
-            .createCertificateEvent(anyString(), anyString(), eq(EventCode.NYFRFM), anyString());
+    // should place notification on queue
+    verify(mockNotificationService).sendNotificationForQuestionReceived(any(FragaSvar.class));
+    verify(certificateEventService)
+        .createCertificateEvent(anyString(), anyString(), eq(EventCode.NYFRFM), anyString());
 
-        assertNotNull(response);
-        assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+    assertNotNull(response);
+    assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+  }
+
+  @Test
+  public void testReceiveQuestionValidationError() {
+    ReceiveMedicalCertificateQuestionType request =
+        createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
+    request.getQuestion().setAmne(null); // invalid
+    ReceiveMedicalCertificateQuestionResponseType response =
+        receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
+
+    verifyNoInteractions(mockNotificationService);
+    verifyNoInteractions(mockFragaSvarService);
+
+    assertNotNull(response);
+    assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
+    assertEquals("Amne är felaktigt", response.getResult().getErrorText());
+  }
+
+  private ReceiveMedicalCertificateQuestionType createRequest(String questionFile) {
+    ReceiveMedicalCertificateQuestionType request = new ReceiveMedicalCertificateQuestionType();
+    QuestionFromFkType question = inflateQuestion(questionFile);
+
+    if (question == null) {
+      throw new RuntimeException("Could not inflate file");
     }
 
-    @Test
-    public void testReceiveQuestionValidationError() {
-        ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
-        request.getQuestion().setAmne(null); // invalid
-        ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
+    request.setQuestion(question);
+    return request;
+  }
 
-        verifyNoInteractions(mockNotificationService);
-        verifyNoInteractions(mockFragaSvarService);
-
-        assertNotNull(response);
-        assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
-        assertEquals("Amne är felaktigt", response.getResult().getErrorText());
+  private QuestionFromFkType inflateQuestion(String filePath) {
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
+      Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+      QuestionFromFkType question =
+          unmarshaller
+              .unmarshal(
+                  new StreamSource(new ClassPathResource(filePath).getInputStream()),
+                  QuestionFromFkType.class)
+              .getValue();
+      return question;
+    } catch (Exception e) {
+      return null;
     }
+  }
 
-    private ReceiveMedicalCertificateQuestionType createRequest(String questionFile) {
-        ReceiveMedicalCertificateQuestionType request = new ReceiveMedicalCertificateQuestionType();
-        QuestionFromFkType question = inflateQuestion(questionFile);
+  private FragaSvar buildFraga(String vardpersonEnhetsId, Status status) {
+    FragaSvar f = new FragaSvar();
+    f.setStatus(status);
+    f.setAmne(Amne.OVRIGT);
+    f.setExternReferens("<fk-extern-referens>");
+    f.setInternReferens(QUESTION_ID);
+    f.setFrageSkickadDatum(LocalDateTime.now());
+    f.setSvarSigneringsDatum(LocalDateTime.now());
+    f.setSvarsText("Ett svar");
 
-        if (question == null) {
-            throw new RuntimeException("Could not inflate file");
-        }
-
-        request.setQuestion(question);
-        return request;
-    }
-
-    private QuestionFromFkType inflateQuestion(String filePath) {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            QuestionFromFkType question = unmarshaller
-                .unmarshal(new StreamSource(new ClassPathResource(filePath).getInputStream()),
-                    QuestionFromFkType.class)
-                .getValue();
-            return question;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private FragaSvar buildFraga(String vardpersonEnhetsId, Status status) {
-        FragaSvar f = new FragaSvar();
-        f.setStatus(status);
-        f.setAmne(Amne.OVRIGT);
-        f.setExternReferens("<fk-extern-referens>");
-        f.setInternReferens(QUESTION_ID);
-        f.setFrageSkickadDatum(LocalDateTime.now());
-        f.setSvarSigneringsDatum(LocalDateTime.now());
-        f.setSvarsText("Ett svar");
-
-        IntygsReferens intygsReferens = new IntygsReferens();
-        intygsReferens.setIntygsId("<intygsId>");
-        intygsReferens.setIntygsTyp("fk7263");
-        intygsReferens.setPatientId(PATIENT_ID);
-        f.setIntygsReferens(intygsReferens);
-        f.setKompletteringar(new HashSet<Komplettering>());
-        f.setVardperson(new Vardperson());
-        f.getVardperson().setEnhetsId(vardpersonEnhetsId);
-        f.getVardperson().setEnhetsnamn("WebCert-Integration Enhet 1");
-        return f;
-    }
-
+    IntygsReferens intygsReferens = new IntygsReferens();
+    intygsReferens.setIntygsId("<intygsId>");
+    intygsReferens.setIntygsTyp("fk7263");
+    intygsReferens.setPatientId(PATIENT_ID);
+    f.setIntygsReferens(intygsReferens);
+    f.setKompletteringar(new HashSet<Komplettering>());
+    f.setVardperson(new Vardperson());
+    f.getVardperson().setEnhetsId(vardpersonEnhetsId);
+    f.getVardperson().setEnhetsnamn("WebCert-Integration Enhet 1");
+    return f;
+  }
 }

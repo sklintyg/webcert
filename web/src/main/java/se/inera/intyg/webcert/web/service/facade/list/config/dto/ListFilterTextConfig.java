@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,22 +20,20 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public class ListFilterTextConfig extends ListFilterConfig {
 
-    private String placeholder;
+  private String placeholder;
 
-    public ListFilterTextConfig(String id, String title, String placeholder) {
-        super(ListFilterType.TEXT, id, title);
-        this.placeholder = placeholder;
-    }
+  public ListFilterTextConfig(String id, String title, String placeholder) {
+    super(ListFilterType.TEXT, id, title);
+    this.placeholder = placeholder;
+  }
 
-    public ListFilterTextConfig() {
+  public ListFilterTextConfig() {}
 
-    }
+  public String getPlaceholder() {
+    return placeholder;
+  }
 
-    public String getPlaceholder() {
-        return placeholder;
-    }
-
-    public void setPlaceholder(String placeholder) {
-        this.placeholder = placeholder;
-    }
+  public void setPlaceholder(String placeholder) {
+    this.placeholder = placeholder;
+  }
 }

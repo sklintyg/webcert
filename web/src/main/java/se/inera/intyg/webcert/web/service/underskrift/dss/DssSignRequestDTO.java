@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,31 +20,31 @@ package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 public class DssSignRequestDTO {
 
-    private String transactionId;
-    private String signRequest;
-    private String actionUrl;
+  private String transactionId;
+  private String signRequest;
+  private String actionUrl;
 
-    public String getTransactionId() {
-        return transactionId;
-    }
+  public String getTransactionId() {
+    return transactionId;
+  }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
+  public void setTransactionId(String transactionId) {
+    this.transactionId = transactionId;
+  }
 
-    public String getSignRequest() {
-        return signRequest;
-    }
+  public String getSignRequest() {
+    return signRequest;
+  }
 
-    public void setSignRequest(String signRequest) {
-        this.signRequest = signRequest;
-    }
+  public void setSignRequest(String signRequest) {
+    this.signRequest = signRequest;
+  }
 
-    public String getActionUrl() {
-        return actionUrl;
-    }
+  public String getActionUrl() {
+    return actionUrl;
+  }
 
-    public void setActionUrl(String actionUrl) {
-        this.actionUrl = actionUrl;
-    }
+  public void setActionUrl(String actionUrl) {
+    this.actionUrl = actionUrl;
+  }
 }

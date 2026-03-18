@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDateTime;
@@ -31,38 +30,40 @@ import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
 @Component
 public class CertificateRelationToIntygEventInfoConverter {
 
-    public IntygInfoEvent convert(CertificateRelation relation, Certificate relatedCertificate, boolean isChild) {
-        final var relationEvent = createEvent(
+  public IntygInfoEvent convert(
+      CertificateRelation relation, Certificate relatedCertificate, boolean isChild) {
+    final var relationEvent =
+        createEvent(
             relation.getCreated(),
             getType(relation, isChild),
             "intygsId",
-            relation.getCertificateId()
-        );
+            relation.getCertificateId());
 
-        if (relatedCertificate != null) {
-            relationEvent.addData("name", relatedCertificate.getMetadata().getIssuedBy().getFullName());
-            relationEvent.addData("hsaId", relatedCertificate.getMetadata().getIssuedBy().getPersonId());
-        }
-
-        return relationEvent;
+    if (relatedCertificate != null) {
+      relationEvent.addData("name", relatedCertificate.getMetadata().getIssuedBy().getFullName());
+      relationEvent.addData("hsaId", relatedCertificate.getMetadata().getIssuedBy().getPersonId());
     }
 
-    private static IntygInfoEventType getType(CertificateRelation relation, boolean isChild) {
-        return switch (relation.getType()) {
-            case EXTENDED -> isChild ? IntygInfoEventType.IS007 : IntygInfoEventType.IS019;
-            case REPLACED -> isChild ? IntygInfoEventType.IS008 : IntygInfoEventType.IS020;
-            case COMPLEMENTED -> isChild ? IntygInfoEventType.IS014 : IntygInfoEventType.IS021;
-            case COPIED -> isChild ? IntygInfoEventType.IS026 : IntygInfoEventType.IS022;
-        };
+    return relationEvent;
+  }
+
+  private static IntygInfoEventType getType(CertificateRelation relation, boolean isChild) {
+    return switch (relation.getType()) {
+      case EXTENDED -> isChild ? IntygInfoEventType.IS007 : IntygInfoEventType.IS019;
+      case REPLACED -> isChild ? IntygInfoEventType.IS008 : IntygInfoEventType.IS020;
+      case COMPLEMENTED -> isChild ? IntygInfoEventType.IS014 : IntygInfoEventType.IS021;
+      case COPIED -> isChild ? IntygInfoEventType.IS026 : IntygInfoEventType.IS022;
+    };
+  }
+
+  private IntygInfoEvent createEvent(
+      LocalDateTime date, IntygInfoEventType type, String key1, String data1) {
+    IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, date, type);
+
+    if (!Objects.isNull(key1) && !Objects.isNull(data1)) {
+      event.addData(key1, data1);
     }
 
-    private IntygInfoEvent createEvent(LocalDateTime date, IntygInfoEventType type, String key1, String data1) {
-        IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, date, type);
-
-        if (!Objects.isNull(key1) && !Objects.isNull(data1)) {
-            event.addData(key1, data1);
-        }
-
-        return event;
-    }
+    return event;
+  }
 }

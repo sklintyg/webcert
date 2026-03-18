@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,262 +35,229 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 class GetQuestionsAvailableFunctionsServiceImplTest {
 
-    private GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService;
+  private GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService;
+
+  @BeforeEach
+  void setUp() {
+    getQuestionsAvailableFunctionsService = new GetQuestionsAvailableFunctionsServiceImpl();
+  }
+
+  @Nested
+  class RecievedAdministrativeQuestions {
+
+    private QuestionBuilder questionBuilder;
 
     @BeforeEach
     void setUp() {
-        getQuestionsAvailableFunctionsService = new GetQuestionsAvailableFunctionsServiceImpl();
+      questionBuilder =
+          Question.builder().type(QuestionType.COORDINATION).author("Försäkringskassan");
     }
 
-    @Nested
-    class RecievedAdministrativeQuestions {
-
-        private QuestionBuilder questionBuilder;
-
-        @BeforeEach
-        void setUp() {
-            questionBuilder = Question.builder()
-                .type(QuestionType.COORDINATION)
-                .author("Försäkringskassan");
-        }
-
-        @Test
-        void shallIncludeAnswerQuestionIfMissingAnswer() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
-        void shallIncludeAnswerQuestionIfExistingAnswerIsNotSent() {
-            final var question = questionBuilder
-                .answer(Answer.builder().build())
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
-        void shallExcludeAnswerQuestionIfExistingAnswerIsSent() {
-            final var question = questionBuilder
-                .answer(Answer.builder()
-                    .sent(LocalDateTime.now())
-                    .build())
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
-        void shallExcludeAnswerQuestionIfQuestionIsHandled() {
-            final var question = questionBuilder
-                .isHandled(true)
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
-        void shallIncludeHandleQuestionIfMissingAnswer() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallIncludeHandleQuestionIfExistingAnswerIsNotSent() {
-            final var question = questionBuilder
-                .answer(Answer.builder().build())
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallExcludeHandleQuestionIfExistingAnswerIsSent() {
-            final var question = questionBuilder
-                .answer(Answer.builder()
-                    .sent(LocalDateTime.now())
-                    .build())
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallExcludeComplementCertificate() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
+    @Test
+    void shallIncludeAnswerQuestionIfMissingAnswer() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
     }
 
-    @Nested
-    class RecievedComplementQuestions {
-
-        private QuestionBuilder questionBuilder;
-
-        @BeforeEach
-        void setUp() {
-            questionBuilder = Question.builder()
-                .type(QuestionType.COMPLEMENT)
-                .author("Försäkringskassan");
-        }
-
-        @Test
-        void shallExcludeAnswerQuestionIfQuestionIsComplement() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
-        void shallIncludeHandleQuestionIfNotHandled() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallExcludeHandleQuestionIfHandled() {
-            final var question = questionBuilder
-                .isHandled(true)
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallIncludeComplementCertificateIfNotHandled() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeComplementCertificateIfHandled() {
-            final var question = questionBuilder
-                .isHandled(true)
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeComplementCertificateIfHasAnswerByCertificate() {
-            final var question = questionBuilder
-                .answeredByCertificate(
-                    CertificateRelation.builder().build()
-                )
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeCannotComplementCertificateIfNotHandled() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeCannotComplementCertificateIfHandled() {
-            final var question = questionBuilder
-                .isHandled(true)
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeCannotComplementCertificateIfHasAnswerByCertificate() {
-            final var question = questionBuilder
-                .answeredByCertificate(
-                    CertificateRelation.builder().build()
-                )
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
+    @Test
+    void shallIncludeAnswerQuestionIfExistingAnswerIsNotSent() {
+      final var question = questionBuilder.answer(Answer.builder().build()).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
     }
 
-    @Nested
-    class SentQuestions {
-
-        private QuestionBuilder questionBuilder;
-
-        @BeforeEach
-        void setUp() {
-            questionBuilder = Question.builder()
-                .author("Dr Doktor");
-        }
-
-        @Test
-        void shallExcludeAnswerQuestion() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
-        void shallIncludeHandleQuestionIfMissingAnswer() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallIncludeHandleQuestionIfExistingAnswerIsNotSent() {
-            final var question = questionBuilder
-                .answer(Answer.builder().build())
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallIncludeHandleQuestionIfExistingAnswerIsSent() {
-            final var question = questionBuilder
-                .answer(Answer.builder()
-                    .sent(LocalDateTime.now())
-                    .build())
-                .build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallExcludeComplementCertificate() {
-            final var question = questionBuilder.build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
+    @Test
+    void shallExcludeAnswerQuestionIfExistingAnswerIsSent() {
+      final var question =
+          questionBuilder.answer(Answer.builder().sent(LocalDateTime.now()).build()).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
     }
 
-    @Nested
-    class ForwardQuestion {
-
-        private QuestionBuilder questionBuilder;
-
-        @BeforeEach
-        void setUp() {
-            questionBuilder = Question.builder()
-                .author("Dr Doktor");
-        }
-
-        @Test
-        void shallExcludeForwardQuestion() {
-            final var question = questionBuilder.isHandled(true).build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertExclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-
-        @Test
-        void shallIncludeForwardQuestion() {
-            final var question = questionBuilder.isHandled(false).build();
-            final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
-            assertInclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
+    @Test
+    void shallExcludeAnswerQuestionIfQuestionIsHandled() {
+      final var question = questionBuilder.isHandled(true).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
     }
+
+    @Test
+    void shallIncludeHandleQuestionIfMissingAnswer() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+    }
+
+    @Test
+    void shallIncludeHandleQuestionIfExistingAnswerIsNotSent() {
+      final var question = questionBuilder.answer(Answer.builder().build()).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+    }
+
+    @Test
+    void shallExcludeHandleQuestionIfExistingAnswerIsSent() {
+      final var question =
+          questionBuilder.answer(Answer.builder().sent(LocalDateTime.now()).build()).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+    }
+
+    @Test
+    void shallExcludeComplementCertificate() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+    }
+  }
+
+  @Nested
+  class RecievedComplementQuestions {
+
+    private QuestionBuilder questionBuilder;
+
+    @BeforeEach
+    void setUp() {
+      questionBuilder =
+          Question.builder().type(QuestionType.COMPLEMENT).author("Försäkringskassan");
+    }
+
+    @Test
+    void shallExcludeAnswerQuestionIfQuestionIsComplement() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
+    }
+
+    @Test
+    void shallIncludeHandleQuestionIfNotHandled() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+    }
+
+    @Test
+    void shallExcludeHandleQuestionIfHandled() {
+      final var question = questionBuilder.isHandled(true).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+    }
+
+    @Test
+    void shallIncludeComplementCertificateIfNotHandled() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+    }
+
+    @Test
+    void shallExcludeComplementCertificateIfHandled() {
+      final var question = questionBuilder.isHandled(true).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+    }
+
+    @Test
+    void shallExcludeComplementCertificateIfHasAnswerByCertificate() {
+      final var question =
+          questionBuilder.answeredByCertificate(CertificateRelation.builder().build()).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+    }
+
+    @Test
+    void shallIncludeCannotComplementCertificateIfNotHandled() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+    }
+
+    @Test
+    void shallExcludeCannotComplementCertificateIfHandled() {
+      final var question = questionBuilder.isHandled(true).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+    }
+
+    @Test
+    void shallExcludeCannotComplementCertificateIfHasAnswerByCertificate() {
+      final var question =
+          questionBuilder.answeredByCertificate(CertificateRelation.builder().build()).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+    }
+  }
+
+  @Nested
+  class SentQuestions {
+
+    private QuestionBuilder questionBuilder;
+
+    @BeforeEach
+    void setUp() {
+      questionBuilder = Question.builder().author("Dr Doktor");
+    }
+
+    @Test
+    void shallExcludeAnswerQuestion() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
+    }
+
+    @Test
+    void shallIncludeHandleQuestionIfMissingAnswer() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+    }
+
+    @Test
+    void shallIncludeHandleQuestionIfExistingAnswerIsNotSent() {
+      final var question = questionBuilder.answer(Answer.builder().build()).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+    }
+
+    @Test
+    void shallIncludeHandleQuestionIfExistingAnswerIsSent() {
+      final var question =
+          questionBuilder.answer(Answer.builder().sent(LocalDateTime.now()).build()).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+    }
+
+    @Test
+    void shallExcludeComplementCertificate() {
+      final var question = questionBuilder.build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+    }
+  }
+
+  @Nested
+  class ForwardQuestion {
+
+    private QuestionBuilder questionBuilder;
+
+    @BeforeEach
+    void setUp() {
+      questionBuilder = Question.builder().author("Dr Doktor");
+    }
+
+    @Test
+    void shallExcludeForwardQuestion() {
+      final var question = questionBuilder.isHandled(true).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertExclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
+    }
+
+    @Test
+    void shallIncludeForwardQuestion() {
+      final var question = questionBuilder.isHandled(false).build();
+      final var actualLinks = getQuestionsAvailableFunctionsService.get(question);
+      assertInclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
+    }
+  }
 }

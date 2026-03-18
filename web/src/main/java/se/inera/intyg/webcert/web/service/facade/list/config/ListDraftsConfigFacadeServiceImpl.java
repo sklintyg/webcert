@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,83 +34,90 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @Service
 public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeService {
 
-    private static final String TITLE = "Ej signerade utkast";
-    private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar utkastet.";
-    private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
-    private static final String DESCRIPTION = "Nedan visas alla ej signerade utkast för den enhet du är inloggad på. Ej signerade utkast raderas efter 3 månader.";
-    private static final String EMPTY_LIST_TEXT = "Det finns inga ej signerade utkast för den enhet du är inloggad på.";
-    private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej signerade utkast.";
+  private static final String TITLE = "Ej signerade utkast";
+  private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar utkastet.";
+  private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
+  private static final String DESCRIPTION =
+      "Nedan visas alla ej signerade utkast för den enhet du är inloggad på. Ej signerade utkast raderas efter 3 månader.";
+  private static final String EMPTY_LIST_TEXT =
+      "Det finns inga ej signerade utkast för den enhet du är inloggad på.";
+  private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej signerade utkast.";
 
-    private final GetStaffInfoFacadeService getStaffInfoFacadeService;
-    private final WebCertUserService webCertUserService;
+  private final GetStaffInfoFacadeService getStaffInfoFacadeService;
+  private final WebCertUserService webCertUserService;
 
-    @Autowired
-    public ListDraftsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService,
-        WebCertUserService webCertUserService) {
-        this.getStaffInfoFacadeService = getStaffInfoFacadeService;
-        this.webCertUserService = webCertUserService;
-    }
+  @Autowired
+  public ListDraftsConfigFacadeServiceImpl(
+      GetStaffInfoFacadeService getStaffInfoFacadeService, WebCertUserService webCertUserService) {
+    this.getStaffInfoFacadeService = getStaffInfoFacadeService;
+    this.webCertUserService = webCertUserService;
+  }
 
-    @Override
-    public ListConfig get() {
-        return getListDraftsConfig();
-    }
+  @Override
+  public ListConfig get() {
+    return getListDraftsConfig();
+  }
 
-    private ListConfig getListDraftsConfig() {
-        final var config = new ListConfig();
-        config.setTitle(TITLE);
-        config.setFilters(getListDraftsFilters());
-        config.addButtonTooltip(CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
-        config.addButtonTooltip(CertificateListItemValueType.SEARCH_BUTTON.toString(), SEARCH_CERTIFICATE_TOOLTIP);
-        config.addButtonTooltip(CertificateListItemValueType.RESET_BUTTON.toString(), RESET_FILTER_TOOLTIP);
-        config.setTableHeadings(getTableHeadings());
-        config.setDescription(DESCRIPTION);
-        config.setEmptyListText(EMPTY_LIST_TEXT);
-        config.setSecondaryTitle(getSecondaryTitle());
-        return config;
-    }
+  private ListConfig getListDraftsConfig() {
+    final var config = new ListConfig();
+    config.setTitle(TITLE);
+    config.setFilters(getListDraftsFilters());
+    config.addButtonTooltip(
+        CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
+    config.addButtonTooltip(
+        CertificateListItemValueType.SEARCH_BUTTON.toString(), SEARCH_CERTIFICATE_TOOLTIP);
+    config.addButtonTooltip(
+        CertificateListItemValueType.RESET_BUTTON.toString(), RESET_FILTER_TOOLTIP);
+    config.setTableHeadings(getTableHeadings());
+    config.setDescription(DESCRIPTION);
+    config.setEmptyListText(EMPTY_LIST_TEXT);
+    config.setSecondaryTitle(getSecondaryTitle());
+    return config;
+  }
 
-    private String getSecondaryTitle() {
-        final var user = webCertUserService.getUser();
-        return "Intyg visas för " + user.getValdVardenhet().getNamn();
-    }
+  private String getSecondaryTitle() {
+    final var user = webCertUserService.getUser();
+    return "Intyg visas för " + user.getValdVardenhet().getNamn();
+  }
 
-    public TableHeading[] getTableHeadings() {
-        return new TableHeading[]{
-            TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
-            TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
-            TableHeadingFactory.date(ListColumnType.SAVED, false),
-            TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
-            TableHeadingFactory.text(ListColumnType.SAVED_BY),
-            TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),
-            TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
-            TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
-        };
-    }
+  public TableHeading[] getTableHeadings() {
+    return new TableHeading[] {
+      TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
+      TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
+      TableHeadingFactory.date(ListColumnType.SAVED, false),
+      TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
+      TableHeadingFactory.text(ListColumnType.SAVED_BY),
+      TableHeadingFactory.forwarded(
+          ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),
+      TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
+      TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
+    };
+  }
 
-    private List<ListFilterConfig> getListDraftsFilters() {
-        final var filters = new ArrayList<ListFilterConfig>();
-        filters.add(ListFilterConfigFactory.forwardedSelect());
-        filters.add(ListFilterConfigFactory.draftStatusSelect());
-        filters.add(getSavedByFilter());
-        filters.add(ListFilterConfigFactory.defaultPersonId());
-        filters.add(ListFilterConfigFactory.savedDateRange());
-        filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED));
-        filters.add(ListFilterConfigFactory.ascending());
-        filters.add(ListFilterConfigFactory.pageSize());
-        return filters;
-    }
+  private List<ListFilterConfig> getListDraftsFilters() {
+    final var filters = new ArrayList<ListFilterConfig>();
+    filters.add(ListFilterConfigFactory.forwardedSelect());
+    filters.add(ListFilterConfigFactory.draftStatusSelect());
+    filters.add(getSavedByFilter());
+    filters.add(ListFilterConfigFactory.defaultPersonId());
+    filters.add(ListFilterConfigFactory.savedDateRange());
+    filters.add(ListFilterConfigFactory.orderBy(ListColumnType.SAVED));
+    filters.add(ListFilterConfigFactory.ascending());
+    filters.add(ListFilterConfigFactory.pageSize());
+    return filters;
+  }
 
-    private ListFilterConfig getSavedByFilter() {
-        final var savedByList = getStaffInfoFacadeService.get();
-        final var defaultValue = getStaffInfoFacadeService.getLoggedInStaffHsaId();
-        return ListFilterConfigFactory.createStaffSelect("SAVED_BY", "Sparat av", savedByList, defaultValue);
-    }
+  private ListFilterConfig getSavedByFilter() {
+    final var savedByList = getStaffInfoFacadeService.get();
+    final var defaultValue = getStaffInfoFacadeService.getLoggedInStaffHsaId();
+    return ListFilterConfigFactory.createStaffSelect(
+        "SAVED_BY", "Sparat av", savedByList, defaultValue);
+  }
 
-    private String getStatusDescription() {
-        return "<p>Visar utkastets status:<ul>"
-            + "<li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas."
-            + "</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li>"
-            + "<li>Utkast, låst = Utkastet är låst.</li></ul></p>";
-    }
+  private String getStatusDescription() {
+    return "<p>Visar utkastets status:<ul>"
+        + "<li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas."
+        + "</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li>"
+        + "<li>Utkast, låst = Utkastet är låst.</li></ul></p>";
+  }
 }

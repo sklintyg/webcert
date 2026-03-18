@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,306 +43,356 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 @ExtendWith(MockitoExtension.class)
 class CertificateTypeMessageServiceImplTest {
 
-    private static final String CERTIFICATE_TYPE_DB = "db";
-    private static final String CERTIFICATE_TYPE_NOT_DB = "not db";
-    private static final String CERTIFICATE_TYPE_DOI = "doi";
-    private static final String CERTIFICATE_TYPE_NOT_DOI = "not doi";
-    private static final Personnummer PERSON_ID = Personnummer.createPersonnummer("19121212-1212").get();
-    @Mock
-    private WebCertUserService webCertUserService;
+  private static final String CERTIFICATE_TYPE_DB = "db";
+  private static final String CERTIFICATE_TYPE_NOT_DB = "not db";
+  private static final String CERTIFICATE_TYPE_DOI = "doi";
+  private static final String CERTIFICATE_TYPE_NOT_DOI = "not doi";
+  private static final Personnummer PERSON_ID =
+      Personnummer.createPersonnummer("19121212-1212").get();
+  @Mock private WebCertUserService webCertUserService;
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @InjectMocks
-    private CertificateTypeMessageServiceImpl certificateTypeMessageService;
+  @InjectMocks private CertificateTypeMessageServiceImpl certificateTypeMessageService;
 
-    private WebCertUser mockedUser;
+  private WebCertUser mockedUser;
 
-    @Nested
-    class WithTypeDb {
+  @Nested
+  class WithTypeDb {
 
-        @BeforeEach
-        void setUp() {
-            mockedUser = mock(WebCertUser.class);
-            doReturn(mockedUser)
-                .when(webCertUserService).getUser();
-        }
-
-        @Test
-        void shallReturnMessageForExistingDraftWithinSameCareProviderSameCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_CARE_UNIT,
-                "Det finns ett utkast på dödsbevis för detta personnummer."
-                    + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet."
-            );
-
-            doReturn(
-                Map.of(UTKAST_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DB,
-                        PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingDraftWithinSameCareProviderButDifferentCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_UNIT,
-                "Det finns ett utkast på dödsbevis för detta personnummer på annan vårdenhet."
-                    + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet."
-            );
-
-            doReturn(
-                Map.of(UTKAST_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DB,
-                        PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingDraftDifferentCareProvider() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
-                "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
-                    + " Senast skapade dödsbevis är det som gäller."
-                    + " Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller."
-            );
-
-            doReturn(
-                Map.of(UTKAST_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DB,
-                        PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingCertificateWithinSameCareProviderSameCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
-                "Det finns ett signerat dödsbevis för detta personnummer."
-                    + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset."
-            );
-
-            doReturn(
-                Map.of(INTYG_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DB,
-                        PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingCertificateWithinSameCareProviderDifferentCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_UNIT,
-                "Det finns ett signerat dödsbevis för detta personnummer på annan vårdenhet."
-                    + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset."
-            );
-
-            doReturn(
-                Map.of(INTYG_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DB,
-                        PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingCertificateDifferentCareProvider() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
-                "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
-                    + " Det är inte möjligt att skapa ett nytt dödsbevis."
-            );
-
-            doReturn(
-                Map.of(INTYG_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DB,
-                        PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnCertificateMessageWhenBothCertificateAndDraftMessageIsPresent() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
-                "Det finns ett signerat dödsbevis för detta personnummer."
-                    + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset."
-            );
-
-            doReturn(
-                Map.of(INTYG_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DB,
-                        PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now())),
-                    UTKAST_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DB,
-                        PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
+    @BeforeEach
+    void setUp() {
+      mockedUser = mock(WebCertUser.class);
+      doReturn(mockedUser).when(webCertUserService).getUser();
     }
 
-    @Nested
-    class NotTypeDb {
+    @Test
+    void shallReturnMessageForExistingDraftWithinSameCareProviderSameCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.DRAFT_ON_SAME_CARE_UNIT,
+              "Det finns ett utkast på dödsbevis för detta personnummer."
+                  + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
 
-        @Test
-        void shallReturnEmptyIfCertificateTypeDoesNotMatch() {
+      doReturn(
+              Map.of(
+                  UTKAST_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DB,
+                      PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_NOT_DB, PERSON_ID);
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
-            assertTrue(actualMessage.isEmpty());
-        }
+      assertEquals(expectedMessage, actualMessage.get());
     }
 
-    @Nested
-    class NotTypeDoi {
+    @Test
+    void shallReturnMessageForExistingDraftWithinSameCareProviderButDifferentCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_UNIT,
+              "Det finns ett utkast på dödsbevis för detta personnummer på annan vårdenhet."
+                  + " Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
 
-        @Test
-        void shallReturnEmptyIfCertificateTypeDoesNotMatch() {
+      doReturn(
+              Map.of(
+                  UTKAST_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DB,
+                      PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_NOT_DOI, PERSON_ID);
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
-            assertTrue(actualMessage.isEmpty());
-        }
+      assertEquals(expectedMessage, actualMessage.get());
     }
 
-    @Nested
-    class WithTypeDoi {
+    @Test
+    void shallReturnMessageForExistingDraftDifferentCareProvider() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
+              "Det finns ett utkast på dödsbevis för detta personnummer hos annan vårdgivare."
+                  + " Senast skapade dödsbevis är det som gäller."
+                  + " Om du fortsätter och lämnar in dödsbeviset så blir det därför detta dödsbevis som gäller.");
 
-        @BeforeEach
-        void setUp() {
-            mockedUser = mock(WebCertUser.class);
-            doReturn(mockedUser)
-                .when(webCertUserService).getUser();
-        }
+      doReturn(
+              Map.of(
+                  UTKAST_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DB,
+                      PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
 
-        @Test
-        void shallReturnMessageForExistingDraftWithinSameCareProviderSameCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_SAME_CARE_UNIT,
-                "Det finns ett utkast på dödsorsaksintyg för detta personnummer. "
-                    + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet."
-            );
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
 
-            doReturn(
-                Map.of(UTKAST_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DOI,
-                        PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingDraftWithinSameCareProviderNotSameCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_UNIT,
-                "Det finns ett utkast på dödsorsaksintyg för detta personnummer på annan vårdenhet. "
-                    + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet."
-            );
-
-            doReturn(
-                Map.of(UTKAST_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DOI,
-                        PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingDraftNotWithinSameCareProviderNotSameCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
-                "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
-                    + "Senast skapade dödsorsaksintyg är det som gäller. "
-                    + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller."
-            );
-
-            doReturn(
-                Map.of(UTKAST_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DOI,
-                        PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingCertificateWithinSameCareProviderSameCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
-                "Det finns ett signerat dödsorsaksintyg för detta personnummer. "
-                    + "Du kan inte skapa ett nytt dödsorsaksintyg men kan däremot välja att ersätta det befintliga dödsorsaksintyget."
-            );
-
-            doReturn(
-                Map.of(INTYG_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DOI,
-                        PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingCertificateWithinSameCareProviderDifferentCareUnit() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_UNIT,
-                "Det finns ett signerat dödsorsaksintyg för detta personnummer på annan vårdenhet. "
-                    + "Du kan inte skapa ett nytt dödsorsaksintyg men kan däremot välja att ersätta det befintliga dödsorsaksintyget."
-            );
-
-            doReturn(
-                Map.of(INTYG_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DOI,
-                        PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
-
-        @Test
-        void shallReturnMessageForExistingCertificateDifferentCareProvider() {
-            final var expectedMessage = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
-                "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
-                    + "Senast skapade dödsorsaksintyg är det som gäller. "
-                    + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller."
-            );
-
-            doReturn(
-                Map.of(INTYG_INDICATOR,
-                    Map.of(CERTIFICATE_TYPE_DOI,
-                        PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
-
-            final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
-
-            assertEquals(expectedMessage, actualMessage.get());
-        }
+      assertEquals(expectedMessage, actualMessage.get());
     }
+
+    @Test
+    void shallReturnMessageForExistingCertificateWithinSameCareProviderSameCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
+              "Det finns ett signerat dödsbevis för detta personnummer."
+                  + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.");
+
+      doReturn(
+              Map.of(
+                  INTYG_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DB,
+                      PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+
+    @Test
+    void shallReturnMessageForExistingCertificateWithinSameCareProviderDifferentCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_UNIT,
+              "Det finns ett signerat dödsbevis för detta personnummer på annan vårdenhet."
+                  + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.");
+
+      doReturn(
+              Map.of(
+                  INTYG_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DB,
+                      PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+
+    @Test
+    void shallReturnMessageForExistingCertificateDifferentCareProvider() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+              "Det finns ett signerat dödsbevis för detta personnummer hos annan vårdgivare."
+                  + " Det är inte möjligt att skapa ett nytt dödsbevis.");
+
+      doReturn(
+              Map.of(
+                  INTYG_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DB,
+                      PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+
+    @Test
+    void shallReturnCertificateMessageWhenBothCertificateAndDraftMessageIsPresent() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
+              "Det finns ett signerat dödsbevis för detta personnummer."
+                  + " Du kan inte skapa ett nytt dödsbevis men kan däremot välja att ersätta det befintliga dödsbeviset.");
+
+      doReturn(
+              Map.of(
+                  INTYG_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DB,
+                      PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now())),
+                  UTKAST_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DB,
+                      PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DB, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+  }
+
+  @Nested
+  class NotTypeDb {
+
+    @Test
+    void shallReturnEmptyIfCertificateTypeDoesNotMatch() {
+
+      final var actualMessage =
+          certificateTypeMessageService.get(CERTIFICATE_TYPE_NOT_DB, PERSON_ID);
+
+      assertTrue(actualMessage.isEmpty());
+    }
+  }
+
+  @Nested
+  class NotTypeDoi {
+
+    @Test
+    void shallReturnEmptyIfCertificateTypeDoesNotMatch() {
+
+      final var actualMessage =
+          certificateTypeMessageService.get(CERTIFICATE_TYPE_NOT_DOI, PERSON_ID);
+
+      assertTrue(actualMessage.isEmpty());
+    }
+  }
+
+  @Nested
+  class WithTypeDoi {
+
+    @BeforeEach
+    void setUp() {
+      mockedUser = mock(WebCertUser.class);
+      doReturn(mockedUser).when(webCertUserService).getUser();
+    }
+
+    @Test
+    void shallReturnMessageForExistingDraftWithinSameCareProviderSameCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.DRAFT_ON_SAME_CARE_UNIT,
+              "Det finns ett utkast på dödsorsaksintyg för detta personnummer. "
+                  + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
+
+      doReturn(
+              Map.of(
+                  UTKAST_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DOI,
+                      PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+
+    @Test
+    void shallReturnMessageForExistingDraftWithinSameCareProviderNotSameCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_UNIT,
+              "Det finns ett utkast på dödsorsaksintyg för detta personnummer på annan vårdenhet. "
+                  + "Du kan inte skapa ett nytt utkast men kan däremot välja att fortsätta med det befintliga utkastet.");
+
+      doReturn(
+              Map.of(
+                  UTKAST_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DOI,
+                      PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+
+    @Test
+    void shallReturnMessageForExistingDraftNotWithinSameCareProviderNotSameCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
+              "Det finns ett utkast på dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                  + "Senast skapade dödsorsaksintyg är det som gäller. "
+                  + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.");
+
+      doReturn(
+              Map.of(
+                  UTKAST_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DOI,
+                      PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+
+    @Test
+    void shallReturnMessageForExistingCertificateWithinSameCareProviderSameCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT,
+              "Det finns ett signerat dödsorsaksintyg för detta personnummer. "
+                  + "Du kan inte skapa ett nytt dödsorsaksintyg men kan däremot välja att ersätta det befintliga dödsorsaksintyget.");
+
+      doReturn(
+              Map.of(
+                  INTYG_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DOI,
+                      PreviousIntyg.of(true, true, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+
+    @Test
+    void shallReturnMessageForExistingCertificateWithinSameCareProviderDifferentCareUnit() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_UNIT,
+              "Det finns ett signerat dödsorsaksintyg för detta personnummer på annan vårdenhet. "
+                  + "Du kan inte skapa ett nytt dödsorsaksintyg men kan däremot välja att ersätta det befintliga dödsorsaksintyget.");
+
+      doReturn(
+              Map.of(
+                  INTYG_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DOI,
+                      PreviousIntyg.of(true, false, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+
+    @Test
+    void shallReturnMessageForExistingCertificateDifferentCareProvider() {
+      final var expectedMessage =
+          new CertificateMessage(
+              CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+              "Det finns ett signerat dödsorsaksintyg för detta personnummer hos annan vårdgivare. "
+                  + "Senast skapade dödsorsaksintyg är det som gäller. "
+                  + "Om du fortsätter och lämnar in dödsorsaksintyget så blir det därför detta dödsorsaksintyg som gäller.");
+
+      doReturn(
+              Map.of(
+                  INTYG_INDICATOR,
+                  Map.of(
+                      CERTIFICATE_TYPE_DOI,
+                      PreviousIntyg.of(false, false, false, "", "123", LocalDateTime.now()))))
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(PERSON_ID, mockedUser, null);
+
+      final var actualMessage = certificateTypeMessageService.get(CERTIFICATE_TYPE_DOI, PERSON_ID);
+
+      assertEquals(expectedMessage, actualMessage.get());
+    }
+  }
 }

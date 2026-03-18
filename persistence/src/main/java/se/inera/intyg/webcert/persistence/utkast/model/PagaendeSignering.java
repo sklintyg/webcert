@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,88 +30,83 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 /**
- * Defines an ongoing signature operation. Started, but not yet ready to be commited to the INTYG table.
+ * Defines an ongoing signature operation. Started, but not yet ready to be commited to the INTYG
+ * table.
  */
 @Entity
 @Table(name = "PAGAENDE_SIGNERING")
 public class PagaendeSignering {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "INTERN_REFERENS")
-    private Long internReferens;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "INTERN_REFERENS")
+  private Long internReferens;
 
-    @Column(name = "INTYG_ID")
-    private String intygsId;
+  @Column(name = "INTYG_ID")
+  private String intygsId;
 
-    @Column(name = "SIGNERINGS_DATUM")
-    private LocalDateTime signeringsDatum;
+  @Column(name = "SIGNERINGS_DATUM")
+  private LocalDateTime signeringsDatum;
 
-    /**
-     * HSA id of the person performing the signing.
-     */
-    @Column(name = "SIGNERAD_AV_HSA_ID")
-    private String signeradAvHsaId;
+  /** HSA id of the person performing the signing. */
+  @Column(name = "SIGNERAD_AV_HSA_ID")
+  private String signeradAvHsaId;
 
-    /**
-     * HSA id of the person performing the signing.
-     */
-    @Column(name = "SIGNERAD_AV_NAMN")
-    private String signeradAvNamn;
+  /** HSA id of the person performing the signing. */
+  @Column(name = "SIGNERAD_AV_NAMN")
+  private String signeradAvNamn;
 
-    /**
-     * The certificate data being signed.
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "INTYG_DATA")
-    private String intygData;
+  /** The certificate data being signed. */
+  @Lob
+  @Basic(fetch = FetchType.LAZY)
+  @Column(name = "INTYG_DATA")
+  private String intygData;
 
-    public Long getInternReferens() {
-        return internReferens;
-    }
+  public Long getInternReferens() {
+    return internReferens;
+  }
 
-    public void setInternReferens(Long internReferens) {
-        this.internReferens = internReferens;
-    }
+  public void setInternReferens(Long internReferens) {
+    this.internReferens = internReferens;
+  }
 
-    public String getIntygsId() {
-        return intygsId;
-    }
+  public String getIntygsId() {
+    return intygsId;
+  }
 
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
-    }
+  public void setIntygsId(String intygsId) {
+    this.intygsId = intygsId;
+  }
 
-    public LocalDateTime getSigneringsDatum() {
-        return signeringsDatum;
-    }
+  public LocalDateTime getSigneringsDatum() {
+    return signeringsDatum;
+  }
 
-    public void setSigneringsDatum(LocalDateTime signeringsDatum) {
-        this.signeringsDatum = signeringsDatum;
-    }
+  public void setSigneringsDatum(LocalDateTime signeringsDatum) {
+    this.signeringsDatum = signeringsDatum;
+  }
 
-    public String getSigneradAvHsaId() {
-        return signeradAvHsaId;
-    }
+  public String getSigneradAvHsaId() {
+    return signeradAvHsaId;
+  }
 
-    public void setSigneradAvHsaId(String signeradAvHsaId) {
-        this.signeradAvHsaId = signeradAvHsaId;
-    }
+  public void setSigneradAvHsaId(String signeradAvHsaId) {
+    this.signeradAvHsaId = signeradAvHsaId;
+  }
 
-    public String getSigneradAvNamn() {
-        return signeradAvNamn;
-    }
+  public String getSigneradAvNamn() {
+    return signeradAvNamn;
+  }
 
-    public void setSigneradAvNamn(String signeradAvNamn) {
-        this.signeradAvNamn = signeradAvNamn;
-    }
+  public void setSigneradAvNamn(String signeradAvNamn) {
+    this.signeradAvNamn = signeradAvNamn;
+  }
 
-    public String getIntygData() {
-        return intygData;
-    }
+  public String getIntygData() {
+    return intygData;
+  }
 
-    public void setIntygData(String intygData) {
-        this.intygData = intygData;
-    }
+  public void setIntygData(String intygData) {
+    this.intygData = intygData;
+  }
 }

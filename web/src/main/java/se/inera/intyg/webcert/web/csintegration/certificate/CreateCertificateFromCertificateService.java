@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -38,58 +37,56 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @RequiredArgsConstructor
 public class CreateCertificateFromCertificateService implements CreateCertificateFacadeService {
 
-    private static final int NO_PREFILL_ELEMENTS = 0;
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final MonitoringLogService monitoringLogService;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private static final int NO_PREFILL_ELEMENTS = 0;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PDLLogService pdlLogService;
+  private final MonitoringLogService monitoringLogService;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Override
-    public String create(String certificateType, String patientId) throws CreateCertificateException {
-        log.debug("Attempting to create certificate of type '{}'", certificateType);
+  @Override
+  public String create(String certificateType, String patientId) throws CreateCertificateException {
+    log.debug("Attempting to create certificate of type '{}'", certificateType);
 
-        final var modelId = csIntegrationService.certificateTypeExists(certificateType);
-        if (modelId.isEmpty()) {
-            log.debug("Certificate type '{}' does not exist in certificate service", certificateType);
-            return null;
-        }
-
-        try {
-            return createCertificate(patientId, modelId.get());
-        } catch (Exception ex) {
-            log.error("Failed to create certificate in certificate-service!", ex);
-            throw new CreateCertificateException("Could not create certificate in certificate service!");
-        }
+    final var modelId = csIntegrationService.certificateTypeExists(certificateType);
+    if (modelId.isEmpty()) {
+      log.debug("Certificate type '{}' does not exist in certificate service", certificateType);
+      return null;
     }
 
-    private String createCertificate(String patientId, CertificateModelIdDTO modelId) {
-        final var certificate = csIntegrationService.createCertificate(
-            csIntegrationRequestFactory.createCertificateRequest(modelId, patientId)
-        );
-
-        pdlLogService.logCreated(certificate);
-        monitoringLogService.logUtkastCreated(
-            certificate.getMetadata().getId(),
-            certificate.getMetadata().getType(),
-            certificate.getMetadata().getUnit().getUnitId(),
-            certificate.getMetadata().getIssuedBy().getPersonId(),
-            NO_PREFILL_ELEMENTS
-        );
-
-        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
-
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftCreated(certificate)
-        );
-
-        log.debug("Created certificate using certificate service of type '{}' and version '{}'",
-            modelId.getType(),
-            modelId.getVersion()
-        );
-
-        return certificate.getMetadata().getId();
+    try {
+      return createCertificate(patientId, modelId.get());
+    } catch (Exception ex) {
+      log.error("Failed to create certificate in certificate-service!", ex);
+      throw new CreateCertificateException("Could not create certificate in certificate service!");
     }
+  }
+
+  private String createCertificate(String patientId, CertificateModelIdDTO modelId) {
+    final var certificate =
+        csIntegrationService.createCertificate(
+            csIntegrationRequestFactory.createCertificateRequest(modelId, patientId));
+
+    pdlLogService.logCreated(certificate);
+    monitoringLogService.logUtkastCreated(
+        certificate.getMetadata().getId(),
+        certificate.getMetadata().getType(),
+        certificate.getMetadata().getUnit().getUnitId(),
+        certificate.getMetadata().getIssuedBy().getPersonId(),
+        NO_PREFILL_ELEMENTS);
+
+    publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
+
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.draftCreated(certificate));
+
+    log.debug(
+        "Created certificate using certificate service of type '{}' and version '{}'",
+        modelId.getType(),
+        modelId.getVersion());
+
+    return certificate.getMetadata().getId();
+  }
 }

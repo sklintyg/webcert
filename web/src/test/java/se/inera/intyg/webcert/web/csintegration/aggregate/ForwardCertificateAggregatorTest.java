@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.mock;
@@ -34,38 +33,35 @@ import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService
 @ExtendWith(MockitoExtension.class)
 class ForwardCertificateAggregatorTest {
 
-    private static final String ID = "ID";
-    private static final boolean FORWARDED = true;
-    private static final Certificate CERTIFICATE = new Certificate();
+  private static final String ID = "ID";
+  private static final boolean FORWARDED = true;
+  private static final Certificate CERTIFICATE = new Certificate();
 
-    ForwardCertificateFacadeService forwardCertificateFromWC;
-    ForwardCertificateFacadeService forwardCertificateFromCS;
-    ForwardCertificateFacadeService aggregator;
+  ForwardCertificateFacadeService forwardCertificateFromWC;
+  ForwardCertificateFacadeService forwardCertificateFromCS;
+  ForwardCertificateFacadeService aggregator;
 
-    @BeforeEach
-    void setup() {
-        forwardCertificateFromWC = mock(ForwardCertificateFacadeService.class);
-        forwardCertificateFromCS = mock(ForwardCertificateFacadeService.class);
+  @BeforeEach
+  void setup() {
+    forwardCertificateFromWC = mock(ForwardCertificateFacadeService.class);
+    forwardCertificateFromCS = mock(ForwardCertificateFacadeService.class);
 
-        aggregator = new ForwardCertificateAggregator(
-            forwardCertificateFromWC,
-            forwardCertificateFromCS
-        );
-    }
+    aggregator =
+        new ForwardCertificateAggregator(forwardCertificateFromWC, forwardCertificateFromCS);
+  }
 
-    @Test
-    void shouldForwardFromCSIfExists() {
-        when(forwardCertificateFromCS.forwardCertificate(ID, FORWARDED))
-            .thenReturn(CERTIFICATE);
-        aggregator.forwardCertificate(ID, FORWARDED);
+  @Test
+  void shouldForwardFromCSIfExists() {
+    when(forwardCertificateFromCS.forwardCertificate(ID, FORWARDED)).thenReturn(CERTIFICATE);
+    aggregator.forwardCertificate(ID, FORWARDED);
 
-        Mockito.verify(forwardCertificateFromWC, times(0)).forwardCertificate(ID, FORWARDED);
-    }
+    Mockito.verify(forwardCertificateFromWC, times(0)).forwardCertificate(ID, FORWARDED);
+  }
 
-    @Test
-    void shouldForwardFromWCIfCertificateDoesNotExistInCS() {
-        aggregator.forwardCertificate(ID, FORWARDED);
+  @Test
+  void shouldForwardFromWCIfCertificateDoesNotExistInCS() {
+    aggregator.forwardCertificate(ID, FORWARDED);
 
-        Mockito.verify(forwardCertificateFromWC, times(1)).forwardCertificate(ID, FORWARDED);
-    }
+    Mockito.verify(forwardCertificateFromWC, times(1)).forwardCertificate(ID, FORWARDED);
+  }
 }

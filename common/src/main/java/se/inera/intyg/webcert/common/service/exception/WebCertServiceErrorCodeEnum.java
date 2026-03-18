@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,36 +19,38 @@
 package se.inera.intyg.webcert.common.service.exception;
 
 public enum WebCertServiceErrorCodeEnum {
-    // @formatter:off
+  // @formatter:off
 
-    INTERNAL_PROBLEM,                // Generic tech problem
-    INVALID_STATE,                   // Operation not allowed at this state, probably because of concurrency issues
+  INTERNAL_PROBLEM, // Generic tech problem
+  INVALID_STATE, // Operation not allowed at this state, probably because of concurrency issues
 
-    INVALID_STATE_REPLACED,          // Operation not allowed at this state (because it's replaced). This error code is a
-    // temporary fix until we can get relations for intyg from IT and therefore disable certain
-    // actions in gui, (see INTYG-3619)
+  INVALID_STATE_REPLACED, // Operation not allowed at this state (because it's replaced). This error
+  // code is a
+  // temporary fix until we can get relations for intyg from IT and therefore disable certain
+  // actions in gui, (see INTYG-3619)
 
-    COMPLEMENT_INTYG_EXISTS,            // Due to existence of complement intyg, operation is not allowed.
+  COMPLEMENT_INTYG_EXISTS, // Due to existence of complement intyg, operation is not allowed.
 
-    INTYG_CREATED_AFTER_EXISTS,
+  INTYG_CREATED_AFTER_EXISTS,
 
-    AUTHORIZATION_PROBLEM,           // User is not authorized for the operation
-    AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-    AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
-    AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE,  // The user already uses Webcert and has an active session
-    PU_PROBLEM,                      // The PU service did not return useful data
-    INDETERMINATE_IDENTITY,          // Operation not allowed due to identity being indeterminate-
-    EXTERNAL_SYSTEM_PROBLEM,         // Other system in unavailable, gave technical error response
-    MODULE_PROBLEM,                  // Problem that occured inside a module
-    UNKNOWN_INTERNAL_PROBLEM,        // All others
-    DATA_NOT_FOUND,                  // Certificate (or other resource) not found
-    CERTIFICATE_REVOKED,
-    CONCURRENT_MODIFICATION,
-    GRP_PROBLEM,
-    MISSING_PARAMETER,
-    CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
-    MESSAGE_ALREADY_EXISTS,
-    INVALID_LAUNCHID,
+  AUTHORIZATION_PROBLEM, // User is not authorized for the operation
+  AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+  AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
+  AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE, // The user already uses Webcert and has an active
+  // session
+  PU_PROBLEM, // The PU service did not return useful data
+  INDETERMINATE_IDENTITY, // Operation not allowed due to identity being indeterminate-
+  EXTERNAL_SYSTEM_PROBLEM, // Other system in unavailable, gave technical error response
+  MODULE_PROBLEM, // Problem that occured inside a module
+  UNKNOWN_INTERNAL_PROBLEM, // All others
+  DATA_NOT_FOUND, // Certificate (or other resource) not found
+  CERTIFICATE_REVOKED,
+  CONCURRENT_MODIFICATION,
+  GRP_PROBLEM,
+  MISSING_PARAMETER,
+  CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
+  MESSAGE_ALREADY_EXISTS,
+  INVALID_LAUNCHID,
 
-    // @formatter:on
+  // @formatter:on
 }

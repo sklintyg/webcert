@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.mock;
@@ -33,36 +32,34 @@ import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService
 @ExtendWith(MockitoExtension.class)
 class ReplaceCertificateAggregatorTest {
 
-    private static final String ID = "ID";
-    private static final String NEW_ID = "NEW_ID";
+  private static final String ID = "ID";
+  private static final String NEW_ID = "NEW_ID";
 
-    ReplaceCertificateFacadeService replaceCertificateFromWC;
-    ReplaceCertificateFacadeService replaceCertificateFromCS;
-    ReplaceCertificateFacadeService aggregator;
+  ReplaceCertificateFacadeService replaceCertificateFromWC;
+  ReplaceCertificateFacadeService replaceCertificateFromCS;
+  ReplaceCertificateFacadeService aggregator;
 
-    @BeforeEach
-    void setup() {
-        replaceCertificateFromWC = mock(ReplaceCertificateFacadeService.class);
-        replaceCertificateFromCS = mock(ReplaceCertificateFacadeService.class);
+  @BeforeEach
+  void setup() {
+    replaceCertificateFromWC = mock(ReplaceCertificateFacadeService.class);
+    replaceCertificateFromCS = mock(ReplaceCertificateFacadeService.class);
 
-        aggregator = new ReplaceCertificateAggregator(
-            replaceCertificateFromWC,
-            replaceCertificateFromCS);
-    }
+    aggregator =
+        new ReplaceCertificateAggregator(replaceCertificateFromWC, replaceCertificateFromCS);
+  }
 
-    @Test
-    void shouldReplaceFromCSIfExists() {
-        when(replaceCertificateFromCS.replaceCertificate(ID))
-            .thenReturn(NEW_ID);
-        aggregator.replaceCertificate(ID);
+  @Test
+  void shouldReplaceFromCSIfExists() {
+    when(replaceCertificateFromCS.replaceCertificate(ID)).thenReturn(NEW_ID);
+    aggregator.replaceCertificate(ID);
 
-        Mockito.verify(replaceCertificateFromWC, times(0)).replaceCertificate(ID);
-    }
+    Mockito.verify(replaceCertificateFromWC, times(0)).replaceCertificate(ID);
+  }
 
-    @Test
-    void shouldReplaceFromWCIfCertificateDoesNotExistInCS() {
-        aggregator.replaceCertificate(ID);
+  @Test
+  void shouldReplaceFromWCIfCertificateDoesNotExistInCS() {
+    aggregator.replaceCertificate(ID);
 
-        Mockito.verify(replaceCertificateFromWC, times(1)).replaceCertificate(ID);
-    }
+    Mockito.verify(replaceCertificateFromWC, times(1)).replaceCertificate(ID);
+  }
 }

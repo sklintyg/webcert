@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.patient;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -40,76 +39,94 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 class ListItemNotificationDecoratorTest {
 
-    private static final String CERTIFICATE_ID_1 = "CERTIFICATE_1";
-    private static final String CERTIFICATE_ID_2 = "CERTIFICATE_2";
+  private static final String CERTIFICATE_ID_1 = "CERTIFICATE_1";
+  private static final String CERTIFICATE_ID_2 = "CERTIFICATE_2";
 
-    ListItemNotificationDecorator listItemNotificationDecorator;
+  ListItemNotificationDecorator listItemNotificationDecorator;
 
-    @BeforeEach
-    void setUp() {
-        listItemNotificationDecorator = new ListItemNotificationDecorator();
-    }
+  @BeforeEach
+  void setUp() {
+    listItemNotificationDecorator = new ListItemNotificationDecorator();
+  }
 
-    @Test
-    void shallReturnEmptyListIfListItemsIsEmpty() {
-        final var expectedResult = new ArrayList<ListItem>();
-        listItemNotificationDecorator.decorate(expectedResult, Collections.emptyList());
-        assertEquals(Collections.emptyList(), expectedResult);
-    }
+  @Test
+  void shallReturnEmptyListIfListItemsIsEmpty() {
+    final var expectedResult = new ArrayList<ListItem>();
+    listItemNotificationDecorator.decorate(expectedResult, Collections.emptyList());
+    assertEquals(Collections.emptyList(), expectedResult);
+  }
 
-    @Test
-    void shallReturnListOfListItemsWithNotification() {
-        final var listItem1 = buildListItem(CERTIFICATE_ID_1);
-        final var listItem2 = buildListItem(CERTIFICATE_ID_2);
-        final var notifications = List.of(buildHandelse(CERTIFICATE_ID_1), buildHandelse(CERTIFICATE_ID_2));
+  @Test
+  void shallReturnListOfListItemsWithNotification() {
+    final var listItem1 = buildListItem(CERTIFICATE_ID_1);
+    final var listItem2 = buildListItem(CERTIFICATE_ID_2);
+    final var notifications =
+        List.of(buildHandelse(CERTIFICATE_ID_1), buildHandelse(CERTIFICATE_ID_2));
 
-        final var handelseList1 = new HandelseList();
-        final var listItem1Notifications1 = notifications.stream()
-            .filter(notification -> notification.getIntygsId().equals(listItem1.getIntyg().getIntygsId().getExtension()))
+    final var handelseList1 = new HandelseList();
+    final var listItem1Notifications1 =
+        notifications.stream()
+            .filter(
+                notification ->
+                    notification
+                        .getIntygsId()
+                        .equals(listItem1.getIntyg().getIntygsId().getExtension()))
             .map(HandelseFactory::toHandelse)
             .collect(Collectors.toList());
 
-        final var handelseList2 = new HandelseList();
-        final var listItem1Notifications2 = notifications.stream()
-            .filter(notification -> notification.getIntygsId().equals(listItem2.getIntyg().getIntygsId().getExtension()))
+    final var handelseList2 = new HandelseList();
+    final var listItem1Notifications2 =
+        notifications.stream()
+            .filter(
+                notification ->
+                    notification
+                        .getIntygsId()
+                        .equals(listItem2.getIntyg().getIntygsId().getExtension()))
             .map(HandelseFactory::toHandelse)
             .collect(Collectors.toList());
 
-        handelseList1.getHandelse().addAll(listItem1Notifications1);
-        handelseList2.getHandelse().addAll(listItem1Notifications2);
+    handelseList1.getHandelse().addAll(listItem1Notifications1);
+    handelseList2.getHandelse().addAll(listItem1Notifications2);
 
-        final var listItems = List.of(listItem1, listItem2);
+    final var listItems = List.of(listItem1, listItem2);
 
-        listItemNotificationDecorator.decorate(listItems, notifications);
+    listItemNotificationDecorator.decorate(listItems, notifications);
 
-        assertAll(
-            () -> assertEquals(handelseList1.getHandelse().get(0).getHandelsekod().getCode(),
+    assertAll(
+        () ->
+            assertEquals(
+                handelseList1.getHandelse().get(0).getHandelsekod().getCode(),
                 listItem1.getHandelser().getHandelse().get(0).getHandelsekod().getCode()),
-            () -> assertEquals(handelseList2.getHandelse().get(0).getHandelsekod().getCode(),
+        () ->
+            assertEquals(
+                handelseList2.getHandelse().get(0).getHandelsekod().getCode(),
                 listItem2.getHandelser().getHandelse().get(0).getHandelsekod().getCode()),
-            () -> assertEquals(handelseList1.getHandelse().get(0).getSistaDatumForSvar(),
+        () ->
+            assertEquals(
+                handelseList1.getHandelse().get(0).getSistaDatumForSvar(),
                 listItem1.getHandelser().getHandelse().get(0).getSistaDatumForSvar()),
-            () -> assertEquals(handelseList2.getHandelse().get(0).getTidpunkt(),
-                listItem2.getHandelser().getHandelse().get(0).getTidpunkt())
-        );
-    }
+        () ->
+            assertEquals(
+                handelseList2.getHandelse().get(0).getTidpunkt(),
+                listItem2.getHandelser().getHandelse().get(0).getTidpunkt()));
+  }
 
-    private Handelse buildHandelse(String certificateId) {
-        final var event = new Handelse();
-        event.setCode(HandelsekodEnum.SKAPAT);
-        event.setIntygsId(certificateId);
-        event.setSistaDatumForSvar(LocalDate.now());
-        event.setTimestamp(LocalDateTime.now());
-        return event;
-    }
+  private Handelse buildHandelse(String certificateId) {
+    final var event = new Handelse();
+    event.setCode(HandelsekodEnum.SKAPAT);
+    event.setIntygsId(certificateId);
+    event.setSistaDatumForSvar(LocalDate.now());
+    event.setTimestamp(LocalDateTime.now());
+    return event;
+  }
 
-    private ListItem buildListItem(String certificateId) {
-        final var listItem = new ListItem();
-        final var intyg = new Intyg();
-        final var intygId = new IntygId();
-        intygId.setExtension(certificateId);
-        intyg.setIntygsId(intygId);
-        listItem.setIntyg(intyg);
-        return listItem;
-    }
+  private ListItem buildListItem(String certificateId) {
+    final var listItem = new ListItem();
+    final var intyg = new Intyg();
+    final var intygId = new IntygId();
+    intygId.setExtension(certificateId);
+    intyg.setIntygsId(intygId);
+    listItem.setIntyg(intyg);
+    return listItem;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,37 +32,32 @@ import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeServ
 @ExtendWith(MockitoExtension.class)
 class SendQuestionAggregatorTest {
 
+  private static final Question QUESTION = Question.builder().build();
+  @Mock SendQuestionAggregator sendQuestionFromWC;
+  @Mock SendQuestionAggregator sendQuestionFromCS;
+  SendQuestionFacadeService sendQuestionFacadeService;
 
-    private static final Question QUESTION = Question.builder().build();
-    @Mock
-    SendQuestionAggregator sendQuestionFromWC;
-    @Mock
-    SendQuestionAggregator sendQuestionFromCS;
-    SendQuestionFacadeService sendQuestionFacadeService;
+  @BeforeEach
+  void setUp() {
+    sendQuestionFacadeService = new SendQuestionAggregator(sendQuestionFromWC, sendQuestionFromCS);
+  }
 
-    @BeforeEach
-    void setUp() {
-        sendQuestionFacadeService = new SendQuestionAggregator(
-            sendQuestionFromWC, sendQuestionFromCS
-        );
-    }
+  @Test
+  void shallReturnQuestionFromWCIfResponseFromCSIsNull() {
+    final var expectedQuestion = Question.builder().build();
+    doReturn(null).when(sendQuestionFromCS).send(QUESTION);
+    doReturn(expectedQuestion).when(sendQuestionFromWC).send(QUESTION);
 
-    @Test
-    void shallReturnQuestionFromWCIfResponseFromCSIsNull() {
-        final var expectedQuestion = Question.builder().build();
-        doReturn(null).when(sendQuestionFromCS).send(QUESTION);
-        doReturn(expectedQuestion).when(sendQuestionFromWC).send(QUESTION);
+    final var actualQuestion = sendQuestionFacadeService.send(QUESTION);
+    assertEquals(expectedQuestion, actualQuestion);
+  }
 
-        final var actualQuestion = sendQuestionFacadeService.send(QUESTION);
-        assertEquals(expectedQuestion, actualQuestion);
-    }
+  @Test
+  void shallReturnQuestionFromCSIfResponseFromCSIsNotNull() {
+    final var expectedQuestion = Question.builder().build();
+    doReturn(expectedQuestion).when(sendQuestionFromCS).send(QUESTION);
 
-    @Test
-    void shallReturnQuestionFromCSIfResponseFromCSIsNotNull() {
-        final var expectedQuestion = Question.builder().build();
-        doReturn(expectedQuestion).when(sendQuestionFromCS).send(QUESTION);
-
-        final var actualQuestion = sendQuestionFacadeService.send(QUESTION);
-        assertEquals(expectedQuestion, actualQuestion);
-    }
+    final var actualQuestion = sendQuestionFacadeService.send(QUESTION);
+    assertEquals(expectedQuestion, actualQuestion);
+  }
 }

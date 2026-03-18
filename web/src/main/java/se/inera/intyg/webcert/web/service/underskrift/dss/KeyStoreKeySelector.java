@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,101 +32,93 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 
 /**
- * A <code>KeySelector</code> that returns {@link PublicKey}s of trusted
- * {@link X509Certificate}s.
+ * A <code>KeySelector</code> that returns {@link PublicKey}s of trusted {@link X509Certificate}s.
  *
- * Certificates from KeyInfo must be found in the KeySelector's KeyStore
- * to pass as a valid certificate.
+ * <p>Certificates from KeyInfo must be found in the KeySelector's KeyStore to pass as a valid
+ * certificate.
  */
 public class KeyStoreKeySelector extends KeySelector {
 
+  private KeyStore keyStore;
 
-    private KeyStore keyStore;
-
-    /**
-     * Creates an <code>KeyStoreKeySelector</code>.
-     *
-     * @param keyStore the keystore
-     * @throws KeyStoreException if the keystore has not been initialized
-     * @throws NullPointerException if <code>keyStore</code> is
-     * <code>null</code>
-     */
-    public KeyStoreKeySelector(KeyStore keyStore) throws KeyStoreException {
-        if (keyStore == null) {
-            throw new NullPointerException("keyStore is null");
-        }
-        this.keyStore = keyStore;
-        // test to see if KeyStore has been initialized
-        this.keyStore.size();
+  /**
+   * Creates an <code>KeyStoreKeySelector</code>.
+   *
+   * @param keyStore the keystore
+   * @throws KeyStoreException if the keystore has not been initialized
+   * @throws NullPointerException if <code>keyStore</code> is <code>null</code>
+   */
+  public KeyStoreKeySelector(KeyStore keyStore) throws KeyStoreException {
+    if (keyStore == null) {
+      throw new NullPointerException("keyStore is null");
     }
+    this.keyStore = keyStore;
+    // test to see if KeyStore has been initialized
+    this.keyStore.size();
+  }
 
-    @Override
-    public KeySelectorResult select(KeyInfo keyInfo,
-        Purpose purpose,
-        AlgorithmMethod method,
-        XMLCryptoContext context)
-        throws KeySelectorException {
+  @Override
+  public KeySelectorResult select(
+      KeyInfo keyInfo, Purpose purpose, AlgorithmMethod method, XMLCryptoContext context)
+      throws KeySelectorException {
 
-        for (Object o1 : keyInfo.getContent()) {
-            XMLStructure info = (XMLStructure) o1;
+    for (Object o1 : keyInfo.getContent()) {
+      XMLStructure info = (XMLStructure) o1;
 
-            if (info instanceof X509Data) {
-                for (Object o : ((X509Data) info).getContent()) {
-                    if (o instanceof X509Certificate) {
-                        try {
-                            KeySelectorResult keySelectorResult = certSelect((X509Certificate) o, method);
-                            if (keySelectorResult != null) {
-                                return keySelectorResult;
-                            }
-                        } catch (KeyStoreException e) {
-                            throw new KeySelectorException("KeyStore not initialized", e);
-                        }
-                    }
-
-                }
+      if (info instanceof X509Data) {
+        for (Object o : ((X509Data) info).getContent()) {
+          if (o instanceof X509Certificate) {
+            try {
+              KeySelectorResult keySelectorResult = certSelect((X509Certificate) o, method);
+              if (keySelectorResult != null) {
+                return keySelectorResult;
+              }
+            } catch (KeyStoreException e) {
+              throw new KeySelectorException("KeyStore not initialized", e);
             }
-
+          }
         }
-        throw new KeySelectorException("No key found!");
+      }
     }
+    throw new KeySelectorException("No key found!");
+  }
 
-    /**
-     * Searches the specified keystore for a certificate that matches the
-     * specified X509Certificate and contains a public key that is compatible
-     * with the specified SignatureMethod.
-     *
-     * @return a KeySelectorResult containing the cert's public key if there
-     * is a match; otherwise null
-     */
-    private KeySelectorResult certSelect(X509Certificate x509Certificate,
-        AlgorithmMethod algorithmMethod) throws KeyStoreException {
-        // skip non-signer certs
-        boolean[] keyUsage = x509Certificate.getKeyUsage();
-        if (keyUsage == null || keyUsage[0] == false) {
-            return null;
-        }
-        String alias = keyStore.getCertificateAlias(x509Certificate);
-        if (alias != null) {
-            PublicKey publikKey = keyStore.getCertificate(alias).getPublicKey();
-            // make sure algorithm is compatible with method
-            if (algEquals(algorithmMethod.getAlgorithm(), publikKey.getAlgorithm())) {
-                return () -> publikKey;
-            }
-        }
-        return null;
+  /**
+   * Searches the specified keystore for a certificate that matches the specified X509Certificate
+   * and contains a public key that is compatible with the specified SignatureMethod.
+   *
+   * @return a KeySelectorResult containing the cert's public key if there is a match; otherwise
+   *     null
+   */
+  private KeySelectorResult certSelect(
+      X509Certificate x509Certificate, AlgorithmMethod algorithmMethod) throws KeyStoreException {
+    // skip non-signer certs
+    boolean[] keyUsage = x509Certificate.getKeyUsage();
+    if (keyUsage == null || keyUsage[0] == false) {
+      return null;
     }
-
-    private static boolean algEquals(String algURI, String algName) {
-        var lastSignMethodPart = algURI.substring(algURI.lastIndexOf("#") + 1);
-
-        if ("EC".equalsIgnoreCase(algName) && lastSignMethodPart.startsWith("ecdsa")) {
-            return true;
-        } else if ("RSA".equalsIgnoreCase(algName) && lastSignMethodPart.startsWith("rsa")) {
-            return true;
-        } else if ("DSA".equalsIgnoreCase(algName) && lastSignMethodPart.startsWith("dsa")) {
-            return true;
-        } else {
-            return false;
-        }
+    String alias = keyStore.getCertificateAlias(x509Certificate);
+    if (alias != null) {
+      PublicKey publikKey = keyStore.getCertificate(alias).getPublicKey();
+      // make sure algorithm is compatible with method
+      if (algEquals(algorithmMethod.getAlgorithm(), publikKey.getAlgorithm())) {
+        return () -> publikKey;
+      }
     }
+    return null;
+  }
+
+  private static boolean algEquals(String algURI, String algName) {
+    var lastSignMethodPart = algURI.substring(algURI.lastIndexOf("#") + 1);
+
+    if ("EC".equalsIgnoreCase(algName) && lastSignMethodPart.startsWith("ecdsa")) {
+      return true;
+    } else if ("RSA".equalsIgnoreCase(algName) && lastSignMethodPart.startsWith("rsa")) {
+      return true;
+    } else if ("DSA".equalsIgnoreCase(algName) && lastSignMethodPart.startsWith("dsa")) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

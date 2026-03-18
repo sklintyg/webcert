@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -57,131 +57,133 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class CertificateServiceTest {
 
-    @Mock
-    private WebCertUserService webCertUserService;
-    @Mock
-    private LogService logService;
-    @Mock
-    private ITIntegrationService itIntegrationService;
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
-    @InjectMocks
-    CertificateServiceImpl certificateService;
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private LogService logService;
+  @Mock private ITIntegrationService itIntegrationService;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
+  @Mock private AuthoritiesHelper authoritiesHelper;
+  @InjectMocks CertificateServiceImpl certificateService;
 
-    private final String civicRegistrationNumber = "191212121212";
-    private final String civicRegistrationNumberWithDash = "19121212-1212";
-    private final String CERTIFICATE_TYPE = "lisjp";
+  private final String civicRegistrationNumber = "191212121212";
+  private final String civicRegistrationNumberWithDash = "19121212-1212";
+  private final String CERTIFICATE_TYPE = "lisjp";
 
-    @Test
-    public void errorGettingCertificatesFromIT() {
-        Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
-        var certificateListResponse = certificateService.listCertificatesForDoctor(null);
-        verify(logService, times(0)).logReadLevelTwo(any(), any());
-        assertTrue(certificateListResponse.isErrorFromIT());
+  @Test
+  public void errorGettingCertificatesFromIT() {
+    Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
+    var certificateListResponse = certificateService.listCertificatesForDoctor(null);
+    verify(logService, times(0)).logReadLevelTwo(any(), any());
+    assertTrue(certificateListResponse.isErrorFromIT());
+  }
+
+  @Test
+  public void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
+    Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
+    var certificateListResponse = certificateService.listCertificatesForDoctor(null);
+    verify(logService, times(0)).logReadLevelTwo(any(), any());
+    assertTrue(certificateListResponse.getCertificates().isEmpty());
+  }
+
+  @Test
+  public void decoratePatientWithAllFlags() {
+    testDecorateWithPatientFlags(true, false);
+  }
+
+  @Test
+  public void decoratePatientWithNoFlags() {
+    testDecorateWithPatientFlags(false, false);
+  }
+
+  @Test
+  public void decoratePatientWithOnlyUndefinedSekretessStatus() {
+    testDecorateWithPatientFlags(false, true);
+  }
+
+  @Test
+  public void decoratePatientWithUndefinedSekretessStatus() {
+    testDecorateWithPatientFlags(true, true);
+  }
+
+  private void testDecorateWithPatientFlags(boolean hasFlags, boolean testUndefined) {
+    WebCertUser user = buildUser();
+    var response = getCertificateListResponse();
+    var parameters = new QueryIntygParameter();
+    SekretessStatus sekretessStatus;
+    Set<String> certificateTypes = new HashSet<>();
+    certificateTypes.add(CERTIFICATE_TYPE);
+
+    if (testUndefined) {
+      sekretessStatus = SekretessStatus.UNDEFINED;
+    } else if (hasFlags) {
+      sekretessStatus = SekretessStatus.TRUE;
+    } else {
+      sekretessStatus = SekretessStatus.FALSE;
     }
 
-    @Test
-    public void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
-        Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
-        var certificateListResponse = certificateService.listCertificatesForDoctor(null);
-        verify(logService, times(0)).logReadLevelTwo(any(), any());
-        assertTrue(certificateListResponse.getCertificates().isEmpty());
-    }
+    Mockito.when(webCertUserService.getUser()).thenReturn(user);
+    Mockito.when(
+            authoritiesHelper.getIntygstyperForPrivilege(
+                user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG))
+        .thenReturn(certificateTypes);
+    Mockito.when(
+            patientDetailsResolver.getSekretessStatus(
+                getCivicRegistrationNumber(civicRegistrationNumber)))
+        .thenReturn(sekretessStatus);
+    Mockito.when(
+            patientDetailsResolver.isAvliden(getCivicRegistrationNumber(civicRegistrationNumber)))
+        .thenReturn(hasFlags);
+    Mockito.when(
+            patientDetailsResolver.isTestIndicator(
+                getCivicRegistrationNumber(civicRegistrationNumber)))
+        .thenReturn(hasFlags);
+    Mockito.when(itIntegrationService.getCertificatesForDoctor(any(), any())).thenReturn(response);
 
-    @Test
-    public void decoratePatientWithAllFlags() {
-        testDecorateWithPatientFlags(true, false);
-    }
+    response = certificateService.listCertificatesForDoctor(parameters);
+    List<CertificateListEntry> certificates = response.getCertificates();
 
-    @Test
-    public void decoratePatientWithNoFlags() {
-        testDecorateWithPatientFlags(false, false);
-    }
+    assertFalse(response.isErrorFromIT());
+    assertTrue(certificates.size() > 0);
+    assertEquals(testUndefined || hasFlags, certificates.get(0).isProtectedIdentity());
+    assertEquals(hasFlags, certificates.get(0).isDeceased());
+    assertEquals(hasFlags, certificates.get(0).isTestIndicator());
+    verify(logService, times(1)).logReadLevelTwo(user, civicRegistrationNumberWithDash);
+  }
 
-    @Test
-    public void decoratePatientWithOnlyUndefinedSekretessStatus() {
-        testDecorateWithPatientFlags(false, true);
-    }
-
-    @Test
-    public void decoratePatientWithUndefinedSekretessStatus() {
-        testDecorateWithPatientFlags(true, true);
-    }
-
-    private void testDecorateWithPatientFlags(boolean hasFlags, boolean testUndefined) {
-        WebCertUser user = buildUser();
-        var response = getCertificateListResponse();
-        var parameters = new QueryIntygParameter();
-        SekretessStatus sekretessStatus;
-        Set<String> certificateTypes = new HashSet<>();
-        certificateTypes.add(CERTIFICATE_TYPE);
-
-        if (testUndefined) {
-            sekretessStatus = SekretessStatus.UNDEFINED;
-        } else if (hasFlags) {
-            sekretessStatus = SekretessStatus.TRUE;
-        } else {
-            sekretessStatus = SekretessStatus.FALSE;
-        }
-
-        Mockito.when(webCertUserService.getUser()).thenReturn(user);
-        Mockito.when(authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG))
-            .thenReturn(certificateTypes);
-        Mockito.when(patientDetailsResolver.getSekretessStatus(getCivicRegistrationNumber(civicRegistrationNumber))).
-            thenReturn(sekretessStatus);
-        Mockito.when(patientDetailsResolver.isAvliden(getCivicRegistrationNumber(civicRegistrationNumber))).thenReturn(hasFlags);
-        Mockito.when(patientDetailsResolver.isTestIndicator(getCivicRegistrationNumber(civicRegistrationNumber))).thenReturn(hasFlags);
-        Mockito.when(itIntegrationService.getCertificatesForDoctor(any(), any())).
-            thenReturn(response);
-
-        response = certificateService.listCertificatesForDoctor(parameters);
-        List<CertificateListEntry> certificates = response.getCertificates();
-
-        assertFalse(response.isErrorFromIT());
-        assertTrue(certificates.size() > 0);
-        assertEquals(testUndefined || hasFlags, certificates.get(0).isProtectedIdentity());
-        assertEquals(hasFlags, certificates.get(0).isDeceased());
-        assertEquals(hasFlags, certificates.get(0).isTestIndicator());
-        verify(logService, times(1)).logReadLevelTwo(user, civicRegistrationNumberWithDash);
-    }
-
-    private WebCertUser buildUser() {
-        WebCertUser user = new WebCertUser();
-        user.setOrigin(UserOriginType.NORMAL.name());
-        user.setAuthorities(new HashMap<>());
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+  private WebCertUser buildUser() {
+    WebCertUser user = new WebCertUser();
+    user.setOrigin(UserOriginType.NORMAL.name());
+    user.setAuthorities(new HashMap<>());
+    user.getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
-        return user;
-    }
+    return user;
+  }
 
-    private Privilege createPrivilege(String privilegeName) {
-        Privilege privilege = new Privilege();
-        privilege.setName(privilegeName);
-        RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(UserOriginType.NORMAL.name());
-        requestOrigin.setIntygstyper(Collections.singletonList(CERTIFICATE_TYPE));
-        privilege.setRequestOrigins(Collections.singletonList(requestOrigin));
-        privilege.setIntygstyper(Collections.singletonList(CERTIFICATE_TYPE));
-        return privilege;
-    }
+  private Privilege createPrivilege(String privilegeName) {
+    Privilege privilege = new Privilege();
+    privilege.setName(privilegeName);
+    RequestOrigin requestOrigin = new RequestOrigin();
+    requestOrigin.setName(UserOriginType.NORMAL.name());
+    requestOrigin.setIntygstyper(Collections.singletonList(CERTIFICATE_TYPE));
+    privilege.setRequestOrigins(Collections.singletonList(requestOrigin));
+    privilege.setIntygstyper(Collections.singletonList(CERTIFICATE_TYPE));
+    return privilege;
+  }
 
-    private Personnummer getCivicRegistrationNumber(String civicRegistrationNumber) {
-        Optional<Personnummer> optionalCRN = Personnummer.createPersonnummer(civicRegistrationNumber);
-        return optionalCRN.get();
-    }
+  private Personnummer getCivicRegistrationNumber(String civicRegistrationNumber) {
+    Optional<Personnummer> optionalCRN = Personnummer.createPersonnummer(civicRegistrationNumber);
+    return optionalCRN.get();
+  }
 
-    private CertificateListResponse getCertificateListResponse() {
-        CertificateListEntry certificate = new CertificateListEntry();
-        certificate.setCertificateType(CERTIFICATE_TYPE);
-        certificate.setCivicRegistrationNumber(civicRegistrationNumber);
-        List<CertificateListEntry> certificates = new ArrayList<>();
-        certificates.add(certificate);
-        CertificateListResponse response = new CertificateListResponse();
-        response.setCertificates(certificates);
-        return response;
-    }
-
+  private CertificateListResponse getCertificateListResponse() {
+    CertificateListEntry certificate = new CertificateListEntry();
+    certificate.setCertificateType(CERTIFICATE_TYPE);
+    certificate.setCivicRegistrationNumber(civicRegistrationNumber);
+    List<CertificateListEntry> certificates = new ArrayList<>();
+    certificates.add(certificate);
+    CertificateListResponse response = new CertificateListResponse();
+    response.setCertificates(certificates);
+    return response;
+  }
 }
-

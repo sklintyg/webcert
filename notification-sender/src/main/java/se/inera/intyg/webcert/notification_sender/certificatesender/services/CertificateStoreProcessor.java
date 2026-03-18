@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,38 +30,38 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 /**
- * Camel message processor responsible for consuming {@link Constants#STORE_MESSAGE} messages,
- * using the ModuleApi to register certificates in intygstjansten.
+ * Camel message processor responsible for consuming {@link Constants#STORE_MESSAGE} messages, using
+ * the ModuleApi to register certificates in intygstjansten.
  */
 public class CertificateStoreProcessor {
 
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
-    @Autowired
-    private MdcHelper mdcHelper;
+  @Autowired private IntygModuleRegistry moduleRegistry;
+  @Autowired private MdcHelper mdcHelper;
 
-    public void process(@Body String utkastAsJson,
-        @Header(Constants.INTYGS_TYP) String intygsTyp,
-        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
-        throws TemporaryException {
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
-            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+  public void process(
+      @Body String utkastAsJson,
+      @Header(Constants.INTYGS_TYP) String intygsTyp,
+      @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
+      throws TemporaryException {
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
+      MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
 
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp,
-                moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, utkastAsJson));
+      ModuleApi moduleApi =
+          moduleRegistry.getModuleApi(
+              intygsTyp, moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, utkastAsJson));
 
-            moduleApi.registerCertificate(utkastAsJson, logicalAddress);
+      moduleApi.registerCertificate(utkastAsJson, logicalAddress);
 
-        } catch (Exception e) {
-            throw new TemporaryException(
-                "Error occurred when trying to store certificate of type '%s' in intygstjansten.".formatted(intygsTyp),
-                e
-            );
-        } finally {
-            MDC.clear();
-        }
+    } catch (Exception e) {
+      throw new TemporaryException(
+          "Error occurred when trying to store certificate of type '%s' in intygstjansten."
+              .formatted(intygsTyp),
+          e);
+    } finally {
+      MDC.clear();
     }
+  }
 }

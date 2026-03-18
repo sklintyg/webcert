@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,218 +29,218 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  */
 public interface LogService {
 
-    /**
-     * Creates a log event when a user creates an intyg.
-     *
-     * @param logRequest the logging details
-     */
-    void logCreateIntyg(LogRequest logRequest);
+  /**
+   * Creates a log event when a user creates an intyg.
+   *
+   * @param logRequest the logging details
+   */
+  void logCreateIntyg(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user creates an intyg.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logCreateIntyg(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user creates an intyg.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logCreateIntyg(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user accesses an intyg.
-     *
-     * @param logRequest the logging details
-     */
-    void logReadIntyg(LogRequest logRequest);
+  /**
+   * Creates a log event when a user accesses an intyg.
+   *
+   * @param logRequest the logging details
+   */
+  void logReadIntyg(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user accesses an intyg.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logReadIntyg(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user accesses an intyg.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logReadIntyg(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user updates an intyg.
-     *
-     * @param logRequest the logging details
-     */
-    void logUpdateIntyg(LogRequest logRequest);
+  /**
+   * Creates a log event when a user updates an intyg.
+   *
+   * @param logRequest the logging details
+   */
+  void logUpdateIntyg(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user updates an intyg.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logUpdateIntyg(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user updates an intyg.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logUpdateIntyg(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user deletes an intyg.
-     *
-     * @param logRequest the logging details
-     */
-    void logDeleteIntyg(LogRequest logRequest);
+  /**
+   * Creates a log event when a user deletes an intyg.
+   *
+   * @param logRequest the logging details
+   */
+  void logDeleteIntyg(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user deletes an intyg.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logDeleteIntyg(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user deletes an intyg.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logDeleteIntyg(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user signs an intyg.
-     *
-     * @param logRequest the logging details
-     */
-    void logSignIntyg(LogRequest logRequest);
+  /**
+   * Creates a log event when a user signs an intyg.
+   *
+   * @param logRequest the logging details
+   */
+  void logSignIntyg(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user signs an intyg.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logSignIntyg(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user signs an intyg.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logSignIntyg(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user revokes an intyg.
-     *
-     * @param logRequest the logging details
-     */
-    void logRevokeIntyg(LogRequest logRequest);
+  /**
+   * Creates a log event when a user revokes an intyg.
+   *
+   * @param logRequest the logging details
+   */
+  void logRevokeIntyg(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user revokes an intyg.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logRevokeIntyg(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user revokes an intyg.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logRevokeIntyg(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user requests an intyg as PDF.
-     *
-     * @param logRequest the logging details
-     */
-    void logPrintIntygAsPDF(LogRequest logRequest);
+  /**
+   * Creates a log event when a user requests an intyg as PDF.
+   *
+   * @param logRequest the logging details
+   */
+  void logPrintIntygAsPDF(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user requests an intyg as PDF.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logPrintIntygAsPDF(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user requests an intyg as PDF.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logPrintIntygAsPDF(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user requests a print-out of an intyg as draft.
-     *
-     * @param logRequest the logging details
-     */
-    void logPrintIntygAsDraft(LogRequest logRequest);
+  /**
+   * Creates a log event when a user requests a print-out of an intyg as draft.
+   *
+   * @param logRequest the logging details
+   */
+  void logPrintIntygAsDraft(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user requests a print-out of an intyg as draft.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logPrintIntygAsDraft(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user requests a print-out of an intyg as draft.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logPrintIntygAsDraft(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user requests a print-out of a revoked intyg.
-     *
-     * @param logRequest the logging details
-     */
-    void logPrintRevokedIntygAsPDF(LogRequest logRequest);
+  /**
+   * Creates a log event when a user requests a print-out of a revoked intyg.
+   *
+   * @param logRequest the logging details
+   */
+  void logPrintRevokedIntygAsPDF(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user requests a print-out of a revoked intyg.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user requests a print-out of a revoked intyg.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user sends a signed intyg directly to a recipient.
-     *
-     * @param logRequest the logging details
-     */
-    void logSendIntygToRecipient(LogRequest logRequest);
+  /**
+   * Creates a log event when a user sends a signed intyg directly to a recipient.
+   *
+   * @param logRequest the logging details
+   */
+  void logSendIntygToRecipient(LogRequest logRequest);
 
-    /**
-     * Creates a log event when a user sends a signed intyg directly to a recipient.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logSendIntygToRecipient(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user sends a signed intyg directly to a recipient.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logSendIntygToRecipient(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user sends a signed intyg directly to a recipient.
-     *
-     * @param patientId the id of the patient
-     * @param intygId The id of the current certificate
-     */
-    void logShowPrediction(String patientId, String intygId);
+  /**
+   * Creates a log event when a user sends a signed intyg directly to a recipient.
+   *
+   * @param patientId the id of the patient
+   * @param intygId The id of the current certificate
+   */
+  void logShowPrediction(String patientId, String intygId);
 
-    /**
-     * Creates a log event when a user shows SRS prediction.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logShowPrediction(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user shows SRS prediction.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logShowPrediction(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user sets an own opinion on a SRS risk prediction.
-     *
-     * @param patientId the id of the patient
-     * @param intygId the id of the certificate
-     */
-    void logSetOwnOpinion(String patientId, String intygId);
+  /**
+   * Creates a log event when a user sets an own opinion on a SRS risk prediction.
+   *
+   * @param patientId the id of the patient
+   * @param intygId the id of the certificate
+   */
+  void logSetOwnOpinion(String patientId, String intygId);
 
-    /**
-     * Creates a log event when a user sets an own opinion on a SRS risk prediction.
-     *
-     * @param logRequest the logging details
-     * @param user the user who performs the action that is being logged
-     */
-    void logSetOwnOpinion(LogRequest logRequest, LogUser user);
+  /**
+   * Creates a log event when a user sets an own opinion on a SRS risk prediction.
+   *
+   * @param logRequest the logging details
+   * @param user the user who performs the action that is being logged
+   */
+  void logSetOwnOpinion(LogRequest logRequest, LogUser user);
 
-    /**
-     * Creates a log event when a user metadata from one or more intyg.
-     *
-     * @param user the user who performs the action that is being logged
-     * @param patient the user who performs the action that is being logged
-     */
-    void logReadLevelTwo(WebCertUser user, String patient);
+  /**
+   * Creates a log event when a user metadata from one or more intyg.
+   *
+   * @param user the user who performs the action that is being logged
+   * @param patient the user who performs the action that is being logged
+   */
+  void logReadLevelTwo(WebCertUser user, String patient);
 
-    /**
-     * Creates a log event when a user metadata from one or more intyg.
-     *
-     * @param user the user who performs the action that is being logged
-     * @param patient the user who performs the action that is being logged
-     */
-    void logReadLevelOne(WebCertUser user, String patient);
+  /**
+   * Creates a log event when a user metadata from one or more intyg.
+   *
+   * @param user the user who performs the action that is being logged
+   * @param patient the user who performs the action that is being logged
+   */
+  void logReadLevelOne(WebCertUser user, String patient);
 
-    /**
-     * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}
-     *
-     * Use when you can't access the WebCertUser in the current ThreadLocal, e.g. a background job spawned
-     * by a HTTP request that has manually supplied the job with the original WebCertUser.
-     *
-     * @return A {@link LogUser} instance
-     */
-    LogUser getLogUser(WebCertUser webCertUser);
+  /**
+   * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}
+   *
+   * <p>Use when you can't access the WebCertUser in the current ThreadLocal, e.g. a background job
+   * spawned by a HTTP request that has manually supplied the job with the original WebCertUser.
+   *
+   * @return A {@link LogUser} instance
+   */
+  LogUser getLogUser(WebCertUser webCertUser);
 
-    /**
-     * Creates a log event when a user sends message to recipient
-     *
-     * @param user the user who performs the action that is being logged
-     */
-    void logCreateMessage(WebCertUser user, String personId, String certificateId);
+  /**
+   * Creates a log event when a user sends message to recipient
+   *
+   * @param user the user who performs the action that is being logged
+   */
+  void logCreateMessage(WebCertUser user, String personId, String certificateId);
 }

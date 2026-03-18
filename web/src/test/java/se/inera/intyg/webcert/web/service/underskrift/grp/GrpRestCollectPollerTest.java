@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -57,138 +57,142 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class GrpRestCollectPollerTest extends AuthoritiesConfigurationJunit5TestSetup {
 
-    @Mock
-    private RedisTicketTracker redisTicketTracker;
-    @Mock
-    private UnderskriftService underskriftService;
-    @Mock
-    private GrpRestService grpRestService;
+  @Mock private RedisTicketTracker redisTicketTracker;
+  @Mock private UnderskriftService underskriftService;
+  @Mock private GrpRestService grpRestService;
 
-    @InjectMocks
-    private GrpRestCollectPollerImpl grpCollectPoller;
+  @InjectMocks private GrpRestCollectPollerImpl grpCollectPoller;
 
-    private static final int ONE = 1;
-    private static final int THREE = 3;
-    private static final int FOUR = 4;
-    private static final String REF_ID = "refId";
-    private static final String SIGNATURE = "signature";
-    private static final String PERSON_ID = "191212121212";
-    private static final String TRANSACTION_ID = "transactionId";
+  private static final int ONE = 1;
+  private static final int THREE = 3;
+  private static final int FOUR = 4;
+  private static final String REF_ID = "refId";
+  private static final String SIGNATURE = "signature";
+  private static final String PERSON_ID = "191212121212";
+  private static final String TRANSACTION_ID = "transactionId";
 
-    private static final GrpCollectResponse RESPONSE_COMPLETED = GrpCollectResponse.builder()
-        .progressStatus(GrpProgressStatus.builder().status(STATUS_COMPLETE).build())
-        .userInfo(GrpUserInfo.builder().tin(PERSON_ID).build())
-        .validationInfo(GrpValidationInfo.builder().signature(SIGNATURE).build())
-        .build();
+  private static final GrpCollectResponse RESPONSE_COMPLETED =
+      GrpCollectResponse.builder()
+          .progressStatus(GrpProgressStatus.builder().status(STATUS_COMPLETE).build())
+          .userInfo(GrpUserInfo.builder().tin(PERSON_ID).build())
+          .validationInfo(GrpValidationInfo.builder().signature(SIGNATURE).build())
+          .build();
 
-    private static final GrpCollectResponse RESPONSE_PENDING = GrpCollectResponse.builder()
-        .progressStatus(GrpProgressStatus.builder()
-            .status(STATUS_PENDING)
-            .build())
-        .build();
+  private static final GrpCollectResponse RESPONSE_PENDING =
+      GrpCollectResponse.builder()
+          .progressStatus(GrpProgressStatus.builder().status(STATUS_PENDING).build())
+          .build();
 
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(grpCollectPoller, "grpPollingTimeout", 24000L);
-        ReflectionTestUtils.setField(grpCollectPoller, "pollingInterval", 50L);
-        grpCollectPoller.setRefId(REF_ID);
-        grpCollectPoller.setTransactionId(TRANSACTION_ID);
-        grpCollectPoller.setSecurityContext(buildAuthentication());
-    }
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(grpCollectPoller, "grpPollingTimeout", 24000L);
+    ReflectionTestUtils.setField(grpCollectPoller, "pollingInterval", 50L);
+    grpCollectPoller.setRefId(REF_ID);
+    grpCollectPoller.setTransactionId(TRANSACTION_ID);
+    grpCollectPoller.setSecurityContext(buildAuthentication());
+  }
 
-    @Test
-    void shouldSignWhenProgressStatusComplete() {
-        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_COMPLETED);
+  @Test
+  void shouldSignWhenProgressStatusComplete() {
+    when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_COMPLETED);
 
-        grpCollectPoller.run();
-        verifyNoInteractions(redisTicketTracker);
-        verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
-        verify(underskriftService, times(ONE)).grpSignature(TRANSACTION_ID, SIGNATURE.getBytes(StandardCharsets.UTF_8));
-    }
+    grpCollectPoller.run();
+    verifyNoInteractions(redisTicketTracker);
+    verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+    verify(underskriftService, times(ONE))
+        .grpSignature(TRANSACTION_ID, SIGNATURE.getBytes(StandardCharsets.UTF_8));
+  }
 
-    @Test
-    void shouldUpdateRedisTrackerWhenProgressStatusFailed() {
-        final var collectResponse = GrpCollectResponse.builder()
-            .progressStatus(GrpProgressStatus.builder().status(STATUS_FAILED).build()).build();
+  @Test
+  void shouldUpdateRedisTrackerWhenProgressStatusFailed() {
+    final var collectResponse =
+        GrpCollectResponse.builder()
+            .progressStatus(GrpProgressStatus.builder().status(STATUS_FAILED).build())
+            .build();
 
-        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
+    when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
 
-        grpCollectPoller.run();
-        verifyNoInteractions(underskriftService);
-        verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
-        verify(redisTicketTracker, times(ONE)).updateStatus(TRANSACTION_ID, SignaturStatus.OKAND);
-    }
+    grpCollectPoller.run();
+    verifyNoInteractions(underskriftService);
+    verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+    verify(redisTicketTracker, times(ONE)).updateStatus(TRANSACTION_ID, SignaturStatus.OKAND);
+  }
 
-    @Test
-    void shouldUpdateRedisTrackerWhenProgressStatusCanceled() {
-        final var collectResponse = GrpCollectResponse.builder()
-            .progressStatus(GrpProgressStatus.builder().status(STATUS_CANCELLED).build()).build();
+  @Test
+  void shouldUpdateRedisTrackerWhenProgressStatusCanceled() {
+    final var collectResponse =
+        GrpCollectResponse.builder()
+            .progressStatus(GrpProgressStatus.builder().status(STATUS_CANCELLED).build())
+            .build();
 
-        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
+    when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
 
-        grpCollectPoller.run();
-        verifyNoInteractions(underskriftService);
-        verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
-        verify(redisTicketTracker, times(ONE)).updateStatus(TRANSACTION_ID, SignaturStatus.AVBRUTEN);
-    }
+    grpCollectPoller.run();
+    verifyNoInteractions(underskriftService);
+    verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+    verify(redisTicketTracker, times(ONE)).updateStatus(TRANSACTION_ID, SignaturStatus.AVBRUTEN);
+  }
 
-    @Test
-    void shouldUpdateRedisTrackerWhenProgressStatusPending() {
-        ReflectionTestUtils.setField(grpCollectPoller, "grpPollingTimeout", 200);
-        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING);
+  @Test
+  void shouldUpdateRedisTrackerWhenProgressStatusPending() {
+    ReflectionTestUtils.setField(grpCollectPoller, "grpPollingTimeout", 200);
+    when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING);
 
-        grpCollectPoller.run();
-        verifyNoInteractions(underskriftService);
-        verify(grpRestService, atLeastOnce()).collect(REF_ID, TRANSACTION_ID);
-        verify(redisTicketTracker, atLeastOnce()).updateStatus(TRANSACTION_ID, SignaturStatus.VANTA_SIGN);
-    }
+    grpCollectPoller.run();
+    verifyNoInteractions(underskriftService);
+    verify(grpRestService, atLeastOnce()).collect(REF_ID, TRANSACTION_ID);
+    verify(redisTicketTracker, atLeastOnce())
+        .updateStatus(TRANSACTION_ID, SignaturStatus.VANTA_SIGN);
+  }
 
-    @Test
-    void shouldThrowIllegalStateWhenPersonIdsDontMatch() {
-        final var collectResponse = GrpCollectResponse.builder()
+  @Test
+  void shouldThrowIllegalStateWhenPersonIdsDontMatch() {
+    final var collectResponse =
+        GrpCollectResponse.builder()
             .progressStatus(GrpProgressStatus.builder().status(STATUS_COMPLETE).build())
             .userInfo(GrpUserInfo.builder().tin("201212121212").build())
             .validationInfo(GrpValidationInfo.builder().signature(SIGNATURE).build())
             .build();
 
-        when(grpRestService.collect(anyString(), anyString())).thenReturn(collectResponse);
+    when(grpRestService.collect(anyString(), anyString())).thenReturn(collectResponse);
 
-        assertThrows(IllegalStateException.class, () -> grpCollectPoller.run());
-    }
+    assertThrows(IllegalStateException.class, () -> grpCollectPoller.run());
+  }
 
-    @Test
-    void shuoldExitWithoutInteractionsWhenGrpClientRequestReturnsNull() {
-        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(null);
+  @Test
+  void shuoldExitWithoutInteractionsWhenGrpClientRequestReturnsNull() {
+    when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(null);
 
-        grpCollectPoller.run();
-        verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
-        verifyNoInteractions(redisTicketTracker);
-        verifyNoInteractions(underskriftService);
-    }
+    grpCollectPoller.run();
+    verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+    verifyNoInteractions(redisTicketTracker);
+    verifyNoInteractions(underskriftService);
+  }
 
-    @Test
-    void shuoldHandleExpectedSequenceOfCollectResponses() {
-        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING, RESPONSE_PENDING, RESPONSE_PENDING,
-            RESPONSE_COMPLETED);
+  @Test
+  void shuoldHandleExpectedSequenceOfCollectResponses() {
+    when(grpRestService.collect(REF_ID, TRANSACTION_ID))
+        .thenReturn(RESPONSE_PENDING, RESPONSE_PENDING, RESPONSE_PENDING, RESPONSE_COMPLETED);
 
-        grpCollectPoller.run();
-        verify(grpRestService, times(FOUR)).collect(REF_ID, TRANSACTION_ID);
-        verify(redisTicketTracker, times(THREE)).updateStatus(TRANSACTION_ID, SignaturStatus.VANTA_SIGN);
-        verify(underskriftService, times(ONE)).grpSignature(TRANSACTION_ID, SIGNATURE.getBytes(StandardCharsets.UTF_8));
-    }
+    grpCollectPoller.run();
+    verify(grpRestService, times(FOUR)).collect(REF_ID, TRANSACTION_ID);
+    verify(redisTicketTracker, times(THREE))
+        .updateStatus(TRANSACTION_ID, SignaturStatus.VANTA_SIGN);
+    verify(underskriftService, times(ONE))
+        .grpSignature(TRANSACTION_ID, SIGNATURE.getBytes(StandardCharsets.UTF_8));
+  }
 
-    private SecurityContext buildAuthentication() {
-        final var role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+  private SecurityContext buildAuthentication() {
+    final var role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
-        final var user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-        user.setPersonId("19121212-1212");
+    final var user = new WebCertUser();
+    user.setRoles(AuthoritiesResolverUtil.toMap(role));
+    user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+    user.setPersonId("19121212-1212");
 
-        final var authentication = new TestingAuthenticationToken(user, null);
-        final var securityContext = new SecurityContextImpl();
-        securityContext.setAuthentication(authentication);
-        return securityContext;
-    }
-
+    final var authentication = new TestingAuthenticationToken(user, null);
+    final var securityContext = new SecurityContextImpl();
+    securityContext.setAuthentication(authentication);
+    return securityContext;
+  }
 }

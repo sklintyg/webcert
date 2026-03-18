@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -30,18 +29,16 @@ import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO.C
 @Builder
 public class CertificateServiceUnitDTO {
 
-    String id;
-    String name;
-    String address;
-    String zipCode;
-    String city;
-    String phoneNumber;
-    String email;
-    String workplaceCode;
-    Boolean inactive;
+  String id;
+  String name;
+  String address;
+  String zipCode;
+  String city;
+  String phoneNumber;
+  String email;
+  String workplaceCode;
+  Boolean inactive;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceUnitDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class CertificateServiceUnitDTOBuilder {}
 }

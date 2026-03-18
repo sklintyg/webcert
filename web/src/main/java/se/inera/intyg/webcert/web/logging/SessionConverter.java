@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,15 +30,14 @@ import org.springframework.web.context.request.RequestContextHolder;
  */
 public class SessionConverter extends ClassicConverter {
 
-    private static final String NO_SESSION = "NO SESSION";
+  private static final String NO_SESSION = "NO SESSION";
 
-    @Override
-    public String convert(ILoggingEvent event) {
-        RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
-        if (attrs != null) {
-            return attrs.getSessionId();
-        }
-        return NO_SESSION;
+  @Override
+  public String convert(ILoggingEvent event) {
+    RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
+    if (attrs != null) {
+      return attrs.getSessionId();
     }
-
+    return NO_SESSION;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,52 +30,60 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 @Component
 public final class AnsweredWithIntygUtil {
 
-    private AnsweredWithIntygUtil() {
-    }
+  private AnsweredWithIntygUtil() {}
 
-    /**
-     * Returns the info of kompletterande intyg associated with the message sent at the given date and time. If no such
-     * intyg exist, null is returned.
-     *
-     * Note: using this method is inefficient if checking multiple messages, due to unnecessary database lookups.
-     */
-    public static AnsweredWithIntyg findIntygKompletteringForMessage(String intygsId, LocalDateTime messageSendDate,
-        UtkastRepository utkastRepository) {
-        return returnOldestKompltOlderThan(messageSendDate, findAllKomplementForGivenIntyg(intygsId, utkastRepository));
-    }
+  /**
+   * Returns the info of kompletterande intyg associated with the message sent at the given date and
+   * time. If no such intyg exist, null is returned.
+   *
+   * <p>Note: using this method is inefficient if checking multiple messages, due to unnecessary
+   * database lookups.
+   */
+  public static AnsweredWithIntyg findIntygKompletteringForMessage(
+      String intygsId, LocalDateTime messageSendDate, UtkastRepository utkastRepository) {
+    return returnOldestKompltOlderThan(
+        messageSendDate, findAllKomplementForGivenIntyg(intygsId, utkastRepository));
+  }
 
-    public static AnsweredWithIntyg returnOldestKompltOlderThan(LocalDateTime fragaSendDate,
-        List<AnsweredWithIntyg> kompltForIntyg) {
-        return kompltForIntyg.stream()
-            .reduce(null, (saved, current) -> {
-                if (saved == null) {
-                    return current;
-                }
-                return isInsideBounds(current.getSigneratDatum(), fragaSendDate, saved.getSkickatDatum()) ? current : saved;
+  public static AnsweredWithIntyg returnOldestKompltOlderThan(
+      LocalDateTime fragaSendDate, List<AnsweredWithIntyg> kompltForIntyg) {
+    return kompltForIntyg.stream()
+        .reduce(
+            null,
+            (saved, current) -> {
+              if (saved == null) {
+                return current;
+              }
+              return isInsideBounds(
+                      current.getSigneratDatum(), fragaSendDate, saved.getSkickatDatum())
+                  ? current
+                  : saved;
             });
-    }
+  }
 
-    private static boolean isInsideBounds(LocalDateTime arg, LocalDateTime lowerBound, LocalDateTime upperBound) {
-        return (arg.compareTo(lowerBound) > 0) && (arg.compareTo(upperBound) < 0);
-    }
+  private static boolean isInsideBounds(
+      LocalDateTime arg, LocalDateTime lowerBound, LocalDateTime upperBound) {
+    return (arg.compareTo(lowerBound) > 0) && (arg.compareTo(upperBound) < 0);
+  }
 
-    /**
-     * Given an existing intyg's id, will return info about all associated supplemental (kompletterande) intyg, and an
-     * empty list if no such intyg are found.
-     */
-    public static List<AnsweredWithIntyg> findAllKomplementForGivenIntyg(String intygsId, UtkastRepository utkastRepository) {
-        return utkastRepository.findAllByRelationIntygsId(intygsId).stream()
-            .filter(u -> Objects.equals(u.getRelationKod(), RelationKod.KOMPLT))
-            .filter(u -> u.getSignatur() != null)
-            .map(utkast ->
+  /**
+   * Given an existing intyg's id, will return info about all associated supplemental
+   * (kompletterande) intyg, and an empty list if no such intyg are found.
+   */
+  public static List<AnsweredWithIntyg> findAllKomplementForGivenIntyg(
+      String intygsId, UtkastRepository utkastRepository) {
+    return utkastRepository.findAllByRelationIntygsId(intygsId).stream()
+        .filter(u -> Objects.equals(u.getRelationKod(), RelationKod.KOMPLT))
+        .filter(u -> u.getSignatur() != null)
+        .map(
+            utkast ->
                 AnsweredWithIntyg.builder()
                     .intygsId(utkast.getIntygsId())
                     .signeratAv(utkast.getSignatur().getSigneradAv())
                     .signeratDatum(utkast.getSignatur().getSigneringsDatum())
                     .skickatDatum(utkast.getSkickadTillMottagareDatum())
                     .namnetPaSkapareAvIntyg(utkast.getSkapadAv().getNamn())
-                    .build()
-            )
-            .collect(Collectors.toList());
-    }
+                    .build())
+        .collect(Collectors.toList());
+  }
 }

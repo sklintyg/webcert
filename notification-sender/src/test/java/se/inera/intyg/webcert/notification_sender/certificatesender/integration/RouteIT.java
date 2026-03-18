@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,85 +41,94 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.testconfig.C
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RouteIT {
 
-    private static final int SECONDS_TO_WAIT = 20;
+  private static final int SECONDS_TO_WAIT = 20;
 
-    private static final String INTYGS_ID_1 = "intygsId1";
+  private static final String INTYGS_ID_1 = "intygsId1";
 
-    @Autowired
-    private JmsTemplate jmsTemplate;
+  @Autowired private JmsTemplate jmsTemplate;
 
-    @Autowired
-    @Qualifier("certificateQueue")
-    private Queue sendQueue;
+  @Autowired
+  @Qualifier("certificateQueue") private Queue sendQueue;
 
-    @Autowired
-    private Queue dlq;
+  @Autowired private Queue dlq;
 
-    @Autowired
-    private MockSendCertificateServiceClientImpl sendCertificateServiceClient;
+  @Autowired private MockSendCertificateServiceClientImpl sendCertificateServiceClient;
 
-    @BeforeEach
-    public void resetStub() {
-        sendCertificateServiceClient.reset();
-    }
+  @BeforeEach
+  public void resetStub() {
+    sendCertificateServiceClient.reset();
+  }
 
-    @Test
-    public void ensureStubReceivesAllMessages() {
-        sendMessage(INTYGS_ID_1);
-        sendMessage(INTYGS_ID_1);
-        sendMessage(INTYGS_ID_1);
+  @Test
+  public void ensureStubReceivesAllMessages() {
+    sendMessage(INTYGS_ID_1);
+    sendMessage(INTYGS_ID_1);
+    sendMessage(INTYGS_ID_1);
 
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
-            int numberOfReceivedMessages = sendCertificateServiceClient.getNumberOfReceivedMessages();
-            return (numberOfReceivedMessages == 3);
+    await()
+        .atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS)
+        .until(
+            () -> {
+              int numberOfReceivedMessages =
+                  sendCertificateServiceClient.getNumberOfReceivedMessages();
+              return (numberOfReceivedMessages == 3);
+            });
+  }
+
+  @Test
+  public void ensureStubReceivesAllMessagesAfterResend() {
+    sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "2");
+    sendMessage(INTYGS_ID_1);
+
+    await()
+        .atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS)
+        .until(
+            () -> {
+              int numberOfSentMessages = sendCertificateServiceClient.getNumberOfSentMessages();
+              return (numberOfSentMessages == 2);
+            });
+  }
+
+  @Test
+  public void ensureMessageEndsUpInDLQ() {
+    sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "5");
+
+    await()
+        .atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS)
+        .until(
+            () -> {
+              int numberOfDLQMessages = numberOfDLQMessages();
+              return (numberOfDLQMessages == 1);
+            });
+  }
+
+  private void sendMessage(final String intygsId) {
+    jmsTemplate.send(
+        sendQueue,
+        session -> {
+          try {
+            TextMessage textMessage = session.createTextMessage("body");
+            textMessage.setStringProperty(Constants.INTYGS_ID, intygsId);
+            textMessage.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
+            textMessage.setStringProperty("DELAY_MESSAGE", "true");
+            return textMessage;
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
         });
-    }
+  }
 
-    @Test
-    public void ensureStubReceivesAllMessagesAfterResend() {
-        sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "2");
-        sendMessage(INTYGS_ID_1);
-
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
-            int numberOfSentMessages = sendCertificateServiceClient.getNumberOfSentMessages();
-            return (numberOfSentMessages == 2);
+  private Integer numberOfDLQMessages() {
+    return jmsTemplate.browse(
+        dlq,
+        (session, browser) -> {
+          int counter = 0;
+          Enumeration<?> msgs = browser.getEnumeration();
+          while (msgs.hasMoreElements()) {
+            msgs.nextElement();
+            counter++;
+          }
+          return counter;
         });
-    }
-
-    @Test
-    public void ensureMessageEndsUpInDLQ() {
-        sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "5");
-
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
-            int numberOfDLQMessages = numberOfDLQMessages();
-            return (numberOfDLQMessages == 1);
-        });
-    }
-
-    private void sendMessage(final String intygsId) {
-        jmsTemplate.send(sendQueue, session -> {
-            try {
-                TextMessage textMessage = session.createTextMessage("body");
-                textMessage.setStringProperty(Constants.INTYGS_ID, intygsId);
-                textMessage.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
-                textMessage.setStringProperty("DELAY_MESSAGE", "true");
-                return textMessage;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    private Integer numberOfDLQMessages() {
-        return jmsTemplate.browse(dlq, (session, browser) -> {
-            int counter = 0;
-            Enumeration<?> msgs = browser.getEnumeration();
-            while (msgs.hasMoreElements()) {
-                msgs.nextElement();
-                counter++;
-            }
-            return counter;
-        });
-    }
-
+  }
 }

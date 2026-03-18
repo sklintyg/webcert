@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -31,42 +30,40 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 @JsonDeserialize(builder = PrivatePractitionerResponseBuilder.class)
 public class PrivatePractitionerResponse {
 
-    String personId;
+  String personId;
 
-    String position;
-    String careUnitName;
-    String typeOfCare;
-    String healthcareServiceType;
-    String workplaceCode;
+  String position;
+  String careUnitName;
+  String typeOfCare;
+  String healthcareServiceType;
+  String workplaceCode;
 
-    String phoneNumber;
-    String email;
-    String address;
-    String zipCode;
-    String city;
-    String municipality;
-    String county;
+  String phoneNumber;
+  String email;
+  String address;
+  String zipCode;
+  String city;
+  String municipality;
+  String county;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerResponseBuilder {
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class PrivatePractitionerResponseBuilder {}
 
-    }
-
-    public static PrivatePractitionerResponse convert(PrivatePractitioner privatePractitioner) {
-        return PrivatePractitionerResponse.builder()
-            .personId(privatePractitioner.getPersonId())
-            .position(privatePractitioner.getPosition())
-            .careUnitName(privatePractitioner.getCareUnitName())
-            .typeOfCare(privatePractitioner.getTypeOfCare())
-            .healthcareServiceType(privatePractitioner.getHealthcareServiceType())
-            .workplaceCode(privatePractitioner.getWorkplaceCode())
-            .phoneNumber(privatePractitioner.getPhoneNumber())
-            .email(privatePractitioner.getEmail())
-            .address(privatePractitioner.getAddress())
-            .zipCode(privatePractitioner.getZipCode())
-            .city(privatePractitioner.getCity())
-            .municipality(privatePractitioner.getMunicipality())
-            .county(privatePractitioner.getCounty())
-            .build();
-    }
+  public static PrivatePractitionerResponse convert(PrivatePractitioner privatePractitioner) {
+    return PrivatePractitionerResponse.builder()
+        .personId(privatePractitioner.getPersonId())
+        .position(privatePractitioner.getPosition())
+        .careUnitName(privatePractitioner.getCareUnitName())
+        .typeOfCare(privatePractitioner.getTypeOfCare())
+        .healthcareServiceType(privatePractitioner.getHealthcareServiceType())
+        .workplaceCode(privatePractitioner.getWorkplaceCode())
+        .phoneNumber(privatePractitioner.getPhoneNumber())
+        .email(privatePractitioner.getEmail())
+        .address(privatePractitioner.getAddress())
+        .zipCode(privatePractitioner.getZipCode())
+        .city(privatePractitioner.getCity())
+        .municipality(privatePractitioner.getMunicipality())
+        .county(privatePractitioner.getCounty())
+        .build();
+  }
 }

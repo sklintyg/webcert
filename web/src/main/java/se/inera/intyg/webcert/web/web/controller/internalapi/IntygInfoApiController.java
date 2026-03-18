@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,29 +38,30 @@ import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 @Api(value = "/internalapi/intygInfo", produces = MediaType.APPLICATION_JSON)
 public class IntygInfoApiController {
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final IntygInfoServiceInterface intygInfoService;
+  private final IntygInfoServiceInterface intygInfoService;
 
-    public IntygInfoApiController(@Qualifier("intygInfoAggregator")
-    IntygInfoServiceInterface intygInfoService) {
-        this.intygInfoService = intygInfoService;
+  public IntygInfoApiController(
+      @Qualifier("intygInfoAggregator") IntygInfoServiceInterface intygInfoService) {
+    this.intygInfoService = intygInfoService;
+  }
+
+  @GET
+  @Path("/{intygId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "intyg-info-get-certificate-info",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getIntygInfo(@PathParam("intygId") String intygId) {
+
+    Optional<WcIntygInfo> wcIntygInfo = intygInfoService.getIntygInfo(intygId);
+
+    if (!wcIntygInfo.isPresent()) {
+      return Response.status(Status.NOT_FOUND).build();
     }
 
-    @GET
-    @Path("/{intygId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "intyg-info-get-certificate-info", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getIntygInfo(@PathParam("intygId") String intygId) {
-
-        Optional<WcIntygInfo> wcIntygInfo = intygInfoService.getIntygInfo(intygId);
-
-        if (!wcIntygInfo.isPresent()) {
-            return Response.status(Status.NOT_FOUND).build();
-        }
-
-        return Response.ok(wcIntygInfo.get()).build();
-    }
-
+    return Response.ok(wcIntygInfo.get()).build();
+  }
 }

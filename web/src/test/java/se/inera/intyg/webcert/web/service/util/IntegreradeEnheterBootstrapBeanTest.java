@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,23 +34,21 @@ import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradE
 @RunWith(MockitoJUnitRunner.class)
 public class IntegreradeEnheterBootstrapBeanTest {
 
-    @Mock
-    private IntegreradEnhetRepository integreradEnhetRepository;
+  @Mock private IntegreradEnhetRepository integreradEnhetRepository;
 
-    @InjectMocks
-    private IntegreradeEnheterBootstrapBean bootstrapBean;
+  @InjectMocks private IntegreradeEnheterBootstrapBean bootstrapBean;
 
-    @Test
-    public void testInitDataRequiredFields() {
-        bootstrapBean.initData();
-        ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
-        verify(integreradEnhetRepository, atLeastOnce()).save(enhetCaptor.capture());
+  @Test
+  public void testInitDataRequiredFields() {
+    bootstrapBean.initData();
+    ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
+    verify(integreradEnhetRepository, atLeastOnce()).save(enhetCaptor.capture());
 
-        for (IntegreradEnhet enhet : enhetCaptor.getAllValues()) {
-            assertNotNull(enhet.getEnhetsId());
-            assertNotNull(enhet.getEnhetsNamn());
-            assertNotNull(enhet.getVardgivarId());
-            assertNotNull(enhet.getVardgivarNamn());
-        }
+    for (IntegreradEnhet enhet : enhetCaptor.getAllValues()) {
+      assertNotNull(enhet.getEnhetsId());
+      assertNotNull(enhet.getEnhetsNamn());
+      assertNotNull(enhet.getVardgivarId());
+      assertNotNull(enhet.getVardgivarNamn());
     }
+  }
 }

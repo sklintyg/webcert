@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,75 +33,74 @@ import se.inera.intyg.common.support.common.enumerations.EventCode;
 @Table(name = "CERTIFICATE_EVENT")
 public class CertificateEvent {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  private Long id;
 
-    @Column(name = "CERTIFICATE_ID")
-    private String certificateId;
+  @Column(name = "CERTIFICATE_ID")
+  private String certificateId;
 
-    @Column(name = "USER")
-    private String user;
+  @Column(name = "USER")
+  private String user;
 
-    @Column(name = "EVENT_CODE")
-    @Enumerated(EnumType.STRING)
-    private EventCode eventCode;
+  @Column(name = "EVENT_CODE")
+  @Enumerated(EnumType.STRING)
+  private EventCode eventCode;
 
-    @Column(name = "TIMESTAMP")
-    private LocalDateTime timestamp;
+  @Column(name = "TIMESTAMP")
+  private LocalDateTime timestamp;
 
-    @Column(name = "MESSAGE")
-    private String message;
+  @Column(name = "MESSAGE")
+  private String message;
 
-    public CertificateEvent() {
-    }
+  public CertificateEvent() {}
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getCertificateId() {
-        return this.certificateId;
-    }
+  public String getCertificateId() {
+    return this.certificateId;
+  }
 
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
-    }
+  public void setCertificateId(String certificateId) {
+    this.certificateId = certificateId;
+  }
 
-    public String getUser() {
-        return user;
-    }
+  public String getUser() {
+    return user;
+  }
 
-    public void setUser(String user) {
-        this.user = user;
-    }
+  public void setUser(String user) {
+    this.user = user;
+  }
 
-    public EventCode getEventCode() {
-        return eventCode;
-    }
+  public EventCode getEventCode() {
+    return eventCode;
+  }
 
-    public void setEventCode(EventCode eventCode) {
-        this.eventCode = eventCode;
-    }
+  public void setEventCode(EventCode eventCode) {
+    this.eventCode = eventCode;
+  }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
+  public LocalDateTime getTimestamp() {
+    return timestamp;
+  }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
+  public void setTimestamp(LocalDateTime timestamp) {
+    this.timestamp = timestamp;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }

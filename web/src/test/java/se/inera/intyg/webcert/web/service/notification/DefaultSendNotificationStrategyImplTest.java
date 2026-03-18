@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,97 +40,107 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultSendNotificationStrategyImplTest {
 
-    @Mock
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Mock private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    @InjectMocks
-    private DefaultSendNotificationStrategyImpl defaultSendNotificationStrategy;
+  @InjectMocks private DefaultSendNotificationStrategyImpl defaultSendNotificationStrategy;
 
-    @Test
-    public void testDecideNotificationForIntygBasedOnDraft() {
-        final var unitId = "unitId";
-        final var certificateType = "certificateType";
-        final var draft = mock(Utkast.class);
-        doReturn(unitId).when(draft).getEnhetsId();
-        doReturn(certificateType).when(draft).getIntygsTyp();
+  @Test
+  public void testDecideNotificationForIntygBasedOnDraft() {
+    final var unitId = "unitId";
+    final var certificateType = "certificateType";
+    final var draft = mock(Utkast.class);
+    doReturn(unitId).when(draft).getEnhetsId();
+    doReturn(certificateType).when(draft).getIntygsTyp();
 
-        final var schemaVersion = SchemaVersion.VERSION_3;
-        final var optionalSchemaVersion = Optional.of(schemaVersion);
+    final var schemaVersion = SchemaVersion.VERSION_3;
+    final var optionalSchemaVersion = Optional.of(schemaVersion);
 
-        doReturn(optionalSchemaVersion).when(integreradeEnheterRegistry).getSchemaVersion(unitId, certificateType);
+    doReturn(optionalSchemaVersion)
+        .when(integreradeEnheterRegistry)
+        .getSchemaVersion(unitId, certificateType);
 
-        final var actualOptionalSchemaVersion = defaultSendNotificationStrategy.decideNotificationForIntyg(draft);
+    final var actualOptionalSchemaVersion =
+        defaultSendNotificationStrategy.decideNotificationForIntyg(draft);
 
-        assertNotNull(actualOptionalSchemaVersion);
-        assertEquals(optionalSchemaVersion.isPresent(), actualOptionalSchemaVersion.isPresent());
-        assertEquals(optionalSchemaVersion.get(), actualOptionalSchemaVersion.get());
-    }
+    assertNotNull(actualOptionalSchemaVersion);
+    assertEquals(optionalSchemaVersion.isPresent(), actualOptionalSchemaVersion.isPresent());
+    assertEquals(optionalSchemaVersion.get(), actualOptionalSchemaVersion.get());
+  }
 
-    @Test
-    public void testDecideNotificationForIntygBasedOnDraftEmpty() {
-        final var unitId = "unitId";
-        final var certificateType = "certificateType";
-        final var draft = mock(Utkast.class);
-        doReturn(unitId).when(draft).getEnhetsId();
-        doReturn(certificateType).when(draft).getIntygsTyp();
+  @Test
+  public void testDecideNotificationForIntygBasedOnDraftEmpty() {
+    final var unitId = "unitId";
+    final var certificateType = "certificateType";
+    final var draft = mock(Utkast.class);
+    doReturn(unitId).when(draft).getEnhetsId();
+    doReturn(certificateType).when(draft).getIntygsTyp();
 
-        final var optionalSchemaVersion = Optional.empty();
+    final var optionalSchemaVersion = Optional.empty();
 
-        doReturn(optionalSchemaVersion).when(integreradeEnheterRegistry).getSchemaVersion(unitId, certificateType);
+    doReturn(optionalSchemaVersion)
+        .when(integreradeEnheterRegistry)
+        .getSchemaVersion(unitId, certificateType);
 
-        final var actualOptionalSchemaVersion = defaultSendNotificationStrategy.decideNotificationForIntyg(draft);
+    final var actualOptionalSchemaVersion =
+        defaultSendNotificationStrategy.decideNotificationForIntyg(draft);
 
-        assertNotNull(actualOptionalSchemaVersion);
-        assertEquals(optionalSchemaVersion.isEmpty(), actualOptionalSchemaVersion.isEmpty());
-    }
+    assertNotNull(actualOptionalSchemaVersion);
+    assertEquals(optionalSchemaVersion.isEmpty(), actualOptionalSchemaVersion.isEmpty());
+  }
 
-    @Test
-    public void testDecideNotificationForIntygBasedOnCertificate() {
-        final var unitId = "unitId";
-        final var certificateType = "certificateType";
-        final var certificate = mock(Utlatande.class);
-        final var baseData = mock(GrundData.class);
-        doReturn(baseData).when(certificate).getGrundData();
-        final var createdBy = mock(HoSPersonal.class);
-        doReturn(createdBy).when(baseData).getSkapadAv();
-        final var careUnit = mock(Vardenhet.class);
-        doReturn(careUnit).when(createdBy).getVardenhet();
-        doReturn(unitId).when(careUnit).getEnhetsid();
-        doReturn(certificateType).when(certificate).getTyp();
+  @Test
+  public void testDecideNotificationForIntygBasedOnCertificate() {
+    final var unitId = "unitId";
+    final var certificateType = "certificateType";
+    final var certificate = mock(Utlatande.class);
+    final var baseData = mock(GrundData.class);
+    doReturn(baseData).when(certificate).getGrundData();
+    final var createdBy = mock(HoSPersonal.class);
+    doReturn(createdBy).when(baseData).getSkapadAv();
+    final var careUnit = mock(Vardenhet.class);
+    doReturn(careUnit).when(createdBy).getVardenhet();
+    doReturn(unitId).when(careUnit).getEnhetsid();
+    doReturn(certificateType).when(certificate).getTyp();
 
-        final var schemaVersion = SchemaVersion.VERSION_3;
-        final var optionalSchemaVersion = Optional.of(schemaVersion);
+    final var schemaVersion = SchemaVersion.VERSION_3;
+    final var optionalSchemaVersion = Optional.of(schemaVersion);
 
-        doReturn(optionalSchemaVersion).when(integreradeEnheterRegistry).getSchemaVersion(unitId, certificateType);
+    doReturn(optionalSchemaVersion)
+        .when(integreradeEnheterRegistry)
+        .getSchemaVersion(unitId, certificateType);
 
-        final var actualOptionalSchemaVersion = defaultSendNotificationStrategy.decideNotificationForIntyg(certificate);
+    final var actualOptionalSchemaVersion =
+        defaultSendNotificationStrategy.decideNotificationForIntyg(certificate);
 
-        assertNotNull(actualOptionalSchemaVersion);
-        assertEquals(optionalSchemaVersion.isPresent(), actualOptionalSchemaVersion.isPresent());
-        assertEquals(optionalSchemaVersion.get(), actualOptionalSchemaVersion.get());
-    }
+    assertNotNull(actualOptionalSchemaVersion);
+    assertEquals(optionalSchemaVersion.isPresent(), actualOptionalSchemaVersion.isPresent());
+    assertEquals(optionalSchemaVersion.get(), actualOptionalSchemaVersion.get());
+  }
 
-    @Test
-    public void testDecideNotificationForIntygBasedOnCertificateEmpty() {
-        final var unitId = "unitId";
-        final var certificateType = "certificateType";
-        final var certificate = mock(Utlatande.class);
-        final var baseData = mock(GrundData.class);
-        doReturn(baseData).when(certificate).getGrundData();
-        final var createdBy = mock(HoSPersonal.class);
-        doReturn(createdBy).when(baseData).getSkapadAv();
-        final var careUnit = mock(Vardenhet.class);
-        doReturn(careUnit).when(createdBy).getVardenhet();
-        doReturn(unitId).when(careUnit).getEnhetsid();
-        doReturn(certificateType).when(certificate).getTyp();
+  @Test
+  public void testDecideNotificationForIntygBasedOnCertificateEmpty() {
+    final var unitId = "unitId";
+    final var certificateType = "certificateType";
+    final var certificate = mock(Utlatande.class);
+    final var baseData = mock(GrundData.class);
+    doReturn(baseData).when(certificate).getGrundData();
+    final var createdBy = mock(HoSPersonal.class);
+    doReturn(createdBy).when(baseData).getSkapadAv();
+    final var careUnit = mock(Vardenhet.class);
+    doReturn(careUnit).when(createdBy).getVardenhet();
+    doReturn(unitId).when(careUnit).getEnhetsid();
+    doReturn(certificateType).when(certificate).getTyp();
 
-        final var optionalSchemaVersion = Optional.empty();
+    final var optionalSchemaVersion = Optional.empty();
 
-        doReturn(optionalSchemaVersion).when(integreradeEnheterRegistry).getSchemaVersion(unitId, certificateType);
+    doReturn(optionalSchemaVersion)
+        .when(integreradeEnheterRegistry)
+        .getSchemaVersion(unitId, certificateType);
 
-        final var actualOptionalSchemaVersion = defaultSendNotificationStrategy.decideNotificationForIntyg(certificate);
+    final var actualOptionalSchemaVersion =
+        defaultSendNotificationStrategy.decideNotificationForIntyg(certificate);
 
-        assertNotNull(actualOptionalSchemaVersion);
-        assertEquals(optionalSchemaVersion.isEmpty(), actualOptionalSchemaVersion.isEmpty());
-    }
+    assertNotNull(actualOptionalSchemaVersion);
+    assertEquals(optionalSchemaVersion.isEmpty(), actualOptionalSchemaVersion.isEmpty());
+  }
 }

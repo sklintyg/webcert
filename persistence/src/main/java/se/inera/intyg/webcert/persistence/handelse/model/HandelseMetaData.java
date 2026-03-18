@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,52 +27,50 @@ import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum
 @Embeddable
 public class HandelseMetaData {
 
-    @Column(name = "DELIVERY_STATUS", table = "HANDELSE_METADATA")
-    @Enumerated(EnumType.STRING)
-    private NotificationDeliveryStatusEnum deliveryStatus;
+  @Column(name = "DELIVERY_STATUS", table = "HANDELSE_METADATA")
+  @Enumerated(EnumType.STRING)
+  private NotificationDeliveryStatusEnum deliveryStatus;
 
-    @Column(name = "CERTIFICATE_TYPE", table = "HANDELSE_METADATA")
-    private String certificateType;
+  @Column(name = "CERTIFICATE_TYPE", table = "HANDELSE_METADATA")
+  private String certificateType;
 
-    @Column(name = "CERTIFICATE_VERSION", table = "HANDELSE_METADATA")
-    private String certificateVersion;
+  @Column(name = "CERTIFICATE_VERSION", table = "HANDELSE_METADATA")
+  private String certificateVersion;
 
-    @Column(name = "CERTIFICATE_ISSUER", table = "HANDELSE_METADATA")
-    private String certificateIssuer;
+  @Column(name = "CERTIFICATE_ISSUER", table = "HANDELSE_METADATA")
+  private String certificateIssuer;
 
+  public HandelseMetaData() {}
 
-    public HandelseMetaData() {
-    }
+  public NotificationDeliveryStatusEnum getDeliveryStatus() {
+    return deliveryStatus;
+  }
 
-    public NotificationDeliveryStatusEnum getDeliveryStatus() {
-        return deliveryStatus;
-    }
+  public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
+    this.deliveryStatus = deliveryStatus;
+  }
 
-    public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
-        this.deliveryStatus = deliveryStatus;
-    }
+  public String getCertificateType() {
+    return certificateType;
+  }
 
-    public String getCertificateType() {
-        return certificateType;
-    }
+  public void setCertificateType(String certificateType) {
+    this.certificateType = certificateType;
+  }
 
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
-    }
+  public String getCertificateVersion() {
+    return certificateVersion;
+  }
 
-    public String getCertificateVersion() {
-        return certificateVersion;
-    }
+  public void setCertificateVersion(String certificateVersion) {
+    this.certificateVersion = certificateVersion;
+  }
 
-    public void setCertificateVersion(String certificateVersion) {
-        this.certificateVersion = certificateVersion;
-    }
+  public String getCertificateIssuer() {
+    return certificateIssuer;
+  }
 
-    public String getCertificateIssuer() {
-        return certificateIssuer;
-    }
-
-    public void setCertificateIssuer(String certificateIssuer) {
-        this.certificateIssuer = certificateIssuer;
-    }
+  public void setCertificateIssuer(String certificateIssuer) {
+    this.certificateIssuer = certificateIssuer;
+  }
 }

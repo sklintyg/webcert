@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,241 +33,256 @@ import se.inera.intyg.webcert.integration.fmb.model.Sjukdomsgrupp;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "beskrivning",
-    "giltighetsperiod",
-    "gradavstyrning",
-    "id",
-    "malgrupp",
-    "nyckelord",
-    "publiceringsdatum",
-    "senastegenomgang",
-    "senastuppdaterad",
-    "sjukdomsgrupp",
-    "skapaddatum",
-    "sprak",
-    "status",
-    "syfte",
-    "titel",
-    "typavdokument",
-    "version"
+  "beskrivning",
+  "giltighetsperiod",
+  "gradavstyrning",
+  "id",
+  "malgrupp",
+  "nyckelord",
+  "publiceringsdatum",
+  "senastegenomgang",
+  "senastuppdaterad",
+  "sjukdomsgrupp",
+  "skapaddatum",
+  "sprak",
+  "status",
+  "syfte",
+  "titel",
+  "typavdokument",
+  "version"
 })
 public class Metadata {
 
-    @JsonProperty("beskrivning")
-    private String beskrivning;
-    @JsonProperty("giltighetsperiod")
-    private Giltighetsperiod giltighetsperiod;
-    @JsonProperty("gradavstyrning")
-    private Kod gradavstyrning;
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("malgrupp")
-    private List<Kod> malgrupp = null;
-    @JsonProperty("nyckelord")
-    private List<Kod> nyckelord = null;
-    @JsonProperty("publiceringsdatum")
-    private String publiceringsdatum;
-    @JsonProperty("senastegenomgang")
-    private String senastegenomgang;
-    @JsonProperty("senastuppdaterad")
-    private String senastuppdaterad;
-    @JsonProperty("sjukdomsgrupp")
-    private Sjukdomsgrupp sjukdomsgrupp;
-    @JsonProperty("skapaddatum")
-    private String skapaddatum;
-    @JsonProperty("sprak")
-    private String sprak;
-    @JsonProperty("status")
-    private Kod status;
-    @JsonProperty("syfte")
-    private String syfte;
-    @JsonProperty("titel")
-    private String titel;
-    @JsonProperty("typavdokument")
-    private Kod typavdokument;
-    @JsonProperty("version")
-    private String version;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("beskrivning")
+  private String beskrivning;
 
-    @JsonProperty("beskrivning")
-    public String getBeskrivning() {
-        return beskrivning;
-    }
+  @JsonProperty("giltighetsperiod")
+  private Giltighetsperiod giltighetsperiod;
 
-    @JsonProperty("beskrivning")
-    public void setBeskrivning(String beskrivning) {
-        this.beskrivning = beskrivning;
-    }
+  @JsonProperty("gradavstyrning")
+  private Kod gradavstyrning;
 
-    @JsonProperty("giltighetsperiod")
-    public Giltighetsperiod getGiltighetsperiod() {
-        return giltighetsperiod;
-    }
+  @JsonProperty("id")
+  private String id;
 
-    @JsonProperty("giltighetsperiod")
-    public void setGiltighetsperiod(Giltighetsperiod giltighetsperiod) {
-        this.giltighetsperiod = giltighetsperiod;
-    }
+  @JsonProperty("malgrupp")
+  private List<Kod> malgrupp = null;
 
-    @JsonProperty("gradavstyrning")
-    public Kod getGradavstyrning() {
-        return gradavstyrning;
-    }
+  @JsonProperty("nyckelord")
+  private List<Kod> nyckelord = null;
 
-    @JsonProperty("gradavstyrning")
-    public void setGradavstyrning(Kod gradavstyrning) {
-        this.gradavstyrning = gradavstyrning;
-    }
+  @JsonProperty("publiceringsdatum")
+  private String publiceringsdatum;
 
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
+  @JsonProperty("senastegenomgang")
+  private String senastegenomgang;
 
-    @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
-    }
+  @JsonProperty("senastuppdaterad")
+  private String senastuppdaterad;
 
-    @JsonProperty("malgrupp")
-    public List<Kod> getMalgrupp() {
-        return malgrupp;
-    }
+  @JsonProperty("sjukdomsgrupp")
+  private Sjukdomsgrupp sjukdomsgrupp;
 
-    @JsonProperty("malgrupp")
-    public void setMalgrupp(List<Kod> malgrupp) {
-        this.malgrupp = malgrupp;
-    }
+  @JsonProperty("skapaddatum")
+  private String skapaddatum;
 
-    @JsonProperty("nyckelord")
-    public List<Kod> getNyckelord() {
-        return nyckelord;
-    }
+  @JsonProperty("sprak")
+  private String sprak;
 
-    @JsonProperty("nyckelord")
-    public void setNyckelord(List<Kod> nyckelord) {
-        this.nyckelord = nyckelord;
-    }
+  @JsonProperty("status")
+  private Kod status;
 
-    @JsonProperty("publiceringsdatum")
-    public String getPubliceringsdatum() {
-        return publiceringsdatum;
-    }
+  @JsonProperty("syfte")
+  private String syfte;
 
-    @JsonProperty("publiceringsdatum")
-    public void setPubliceringsdatum(String publiceringsdatum) {
-        this.publiceringsdatum = publiceringsdatum;
-    }
+  @JsonProperty("titel")
+  private String titel;
 
-    @JsonProperty("senastegenomgang")
-    public String getSenastegenomgang() {
-        return senastegenomgang;
-    }
+  @JsonProperty("typavdokument")
+  private Kod typavdokument;
 
-    @JsonProperty("senastegenomgang")
-    public void setSenastegenomgang(String senastegenomgang) {
-        this.senastegenomgang = senastegenomgang;
-    }
+  @JsonProperty("version")
+  private String version;
 
-    @JsonProperty("senastuppdaterad")
-    public String getSenastuppdaterad() {
-        return senastuppdaterad;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("senastuppdaterad")
-    public void setSenastuppdaterad(String senastuppdaterad) {
-        this.senastuppdaterad = senastuppdaterad;
-    }
+  @JsonProperty("beskrivning")
+  public String getBeskrivning() {
+    return beskrivning;
+  }
 
-    @JsonProperty("sjukdomsgrupp")
-    public Sjukdomsgrupp getSjukdomsgrupp() {
-        return sjukdomsgrupp;
-    }
+  @JsonProperty("beskrivning")
+  public void setBeskrivning(String beskrivning) {
+    this.beskrivning = beskrivning;
+  }
 
-    @JsonProperty("sjukdomsgrupp")
-    public void setSjukdomsgrupp(Sjukdomsgrupp sjukdomsgrupp) {
-        this.sjukdomsgrupp = sjukdomsgrupp;
-    }
+  @JsonProperty("giltighetsperiod")
+  public Giltighetsperiod getGiltighetsperiod() {
+    return giltighetsperiod;
+  }
 
-    @JsonProperty("skapaddatum")
-    public String getSkapaddatum() {
-        return skapaddatum;
-    }
+  @JsonProperty("giltighetsperiod")
+  public void setGiltighetsperiod(Giltighetsperiod giltighetsperiod) {
+    this.giltighetsperiod = giltighetsperiod;
+  }
 
-    @JsonProperty("skapaddatum")
-    public void setSkapaddatum(String skapaddatum) {
-        this.skapaddatum = skapaddatum;
-    }
+  @JsonProperty("gradavstyrning")
+  public Kod getGradavstyrning() {
+    return gradavstyrning;
+  }
 
-    @JsonProperty("sprak")
-    public String getSprak() {
-        return sprak;
-    }
+  @JsonProperty("gradavstyrning")
+  public void setGradavstyrning(Kod gradavstyrning) {
+    this.gradavstyrning = gradavstyrning;
+  }
 
-    @JsonProperty("sprak")
-    public void setSprak(String sprak) {
-        this.sprak = sprak;
-    }
+  @JsonProperty("id")
+  public String getId() {
+    return id;
+  }
 
-    @JsonProperty("status")
-    public Kod getStatus() {
-        return status;
-    }
+  @JsonProperty("id")
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @JsonProperty("status")
-    public void setStatus(Kod status) {
-        this.status = status;
-    }
+  @JsonProperty("malgrupp")
+  public List<Kod> getMalgrupp() {
+    return malgrupp;
+  }
 
-    @JsonProperty("syfte")
-    public String getSyfte() {
-        return syfte;
-    }
+  @JsonProperty("malgrupp")
+  public void setMalgrupp(List<Kod> malgrupp) {
+    this.malgrupp = malgrupp;
+  }
 
-    @JsonProperty("syfte")
-    public void setSyfte(String syfte) {
-        this.syfte = syfte;
-    }
+  @JsonProperty("nyckelord")
+  public List<Kod> getNyckelord() {
+    return nyckelord;
+  }
 
-    @JsonProperty("titel")
-    public String getTitel() {
-        return titel;
-    }
+  @JsonProperty("nyckelord")
+  public void setNyckelord(List<Kod> nyckelord) {
+    this.nyckelord = nyckelord;
+  }
 
-    @JsonProperty("titel")
-    public void setTitel(String titel) {
-        this.titel = titel;
-    }
+  @JsonProperty("publiceringsdatum")
+  public String getPubliceringsdatum() {
+    return publiceringsdatum;
+  }
 
-    @JsonProperty("typavdokument")
-    public Kod getTypavdokument() {
-        return typavdokument;
-    }
+  @JsonProperty("publiceringsdatum")
+  public void setPubliceringsdatum(String publiceringsdatum) {
+    this.publiceringsdatum = publiceringsdatum;
+  }
 
-    @JsonProperty("typavdokument")
-    public void setTypavdokument(Kod typavdokument) {
-        this.typavdokument = typavdokument;
-    }
+  @JsonProperty("senastegenomgang")
+  public String getSenastegenomgang() {
+    return senastegenomgang;
+  }
 
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
-    }
+  @JsonProperty("senastegenomgang")
+  public void setSenastegenomgang(String senastegenomgang) {
+    this.senastegenomgang = senastegenomgang;
+  }
 
-    @JsonProperty("version")
-    public void setVersion(String version) {
-        this.version = version;
-    }
+  @JsonProperty("senastuppdaterad")
+  public String getSenastuppdaterad() {
+    return senastuppdaterad;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("senastuppdaterad")
+  public void setSenastuppdaterad(String senastuppdaterad) {
+    this.senastuppdaterad = senastuppdaterad;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("sjukdomsgrupp")
+  public Sjukdomsgrupp getSjukdomsgrupp() {
+    return sjukdomsgrupp;
+  }
 
+  @JsonProperty("sjukdomsgrupp")
+  public void setSjukdomsgrupp(Sjukdomsgrupp sjukdomsgrupp) {
+    this.sjukdomsgrupp = sjukdomsgrupp;
+  }
+
+  @JsonProperty("skapaddatum")
+  public String getSkapaddatum() {
+    return skapaddatum;
+  }
+
+  @JsonProperty("skapaddatum")
+  public void setSkapaddatum(String skapaddatum) {
+    this.skapaddatum = skapaddatum;
+  }
+
+  @JsonProperty("sprak")
+  public String getSprak() {
+    return sprak;
+  }
+
+  @JsonProperty("sprak")
+  public void setSprak(String sprak) {
+    this.sprak = sprak;
+  }
+
+  @JsonProperty("status")
+  public Kod getStatus() {
+    return status;
+  }
+
+  @JsonProperty("status")
+  public void setStatus(Kod status) {
+    this.status = status;
+  }
+
+  @JsonProperty("syfte")
+  public String getSyfte() {
+    return syfte;
+  }
+
+  @JsonProperty("syfte")
+  public void setSyfte(String syfte) {
+    this.syfte = syfte;
+  }
+
+  @JsonProperty("titel")
+  public String getTitel() {
+    return titel;
+  }
+
+  @JsonProperty("titel")
+  public void setTitel(String titel) {
+    this.titel = titel;
+  }
+
+  @JsonProperty("typavdokument")
+  public Kod getTypavdokument() {
+    return typavdokument;
+  }
+
+  @JsonProperty("typavdokument")
+  public void setTypavdokument(Kod typavdokument) {
+    this.typavdokument = typavdokument;
+  }
+
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
+
+  @JsonProperty("version")
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

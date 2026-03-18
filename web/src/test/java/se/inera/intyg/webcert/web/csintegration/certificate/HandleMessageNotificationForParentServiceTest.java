@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,96 +50,78 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 @ExtendWith(MockitoExtension.class)
 class HandleMessageNotificationForParentServiceTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @InjectMocks
-    HandleMessageNotificationForParentService handleMessageNotificationForParentService;
+  private static final String CERTIFICATE_ID = "certificateId";
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @InjectMocks HandleMessageNotificationForParentService handleMessageNotificationForParentService;
 
-    private static Stream<Arguments> invalidRelations() {
-        return Stream.of(
-            Arguments.of(CertificateRelations.builder().build()),
-            Arguments.of(
-                CertificateRelations.builder().parent(
-                        CertificateRelation.builder()
-                            .type(CertificateRelationType.COPIED)
-                            .build()
-                    )
-                    .build()
-            )
-        );
-    }
+  private static Stream<Arguments> invalidRelations() {
+    return Stream.of(
+        Arguments.of(CertificateRelations.builder().build()),
+        Arguments.of(
+            CertificateRelations.builder()
+                .parent(CertificateRelation.builder().type(CertificateRelationType.COPIED).build())
+                .build()));
+  }
 
-    @NullSource
-    @MethodSource("invalidRelations")
-    @ParameterizedTest
-    void shouldNotPublishEventIfRelationsIsInvalid(CertificateRelations relations) {
-        handleMessageNotificationForParentService.notify(relations);
-        verifyNoInteractions(publishCertificateStatusUpdateService);
-    }
+  @NullSource
+  @MethodSource("invalidRelations")
+  @ParameterizedTest
+  void shouldNotPublishEventIfRelationsIsInvalid(CertificateRelations relations) {
+    handleMessageNotificationForParentService.notify(relations);
+    verifyNoInteractions(publishCertificateStatusUpdateService);
+  }
 
-    @Test
-    void shouldPublishEventIfQuestionIsComplement() {
-        final var certificateRelations = CertificateRelations.builder()
+  @Test
+  void shouldPublishEventIfQuestionIsComplement() {
+    final var certificateRelations =
+        CertificateRelations.builder()
             .parent(
                 CertificateRelation.builder()
                     .type(CertificateRelationType.COMPLEMENTED)
                     .certificateId(CERTIFICATE_ID)
-                    .build()
-            )
+                    .build())
             .build();
 
-        final var questions = List.of(
-            Question.builder()
-                .type(QuestionType.COMPLEMENT)
-                .build(),
-            Question.builder()
-                .type(QuestionType.COMPLEMENT)
-                .build()
-        );
+    final var questions =
+        List.of(
+            Question.builder().type(QuestionType.COMPLEMENT).build(),
+            Question.builder().type(QuestionType.COMPLEMENT).build());
 
-        final var certificate = mock(Certificate.class);
+    final var certificate = mock(Certificate.class);
 
-        when(csIntegrationService.getQuestions(CERTIFICATE_ID)).thenReturn(questions);
-        when(csIntegrationService.getCertificate(eq(CERTIFICATE_ID), any())).thenReturn(certificate);
+    when(csIntegrationService.getQuestions(CERTIFICATE_ID)).thenReturn(questions);
+    when(csIntegrationService.getCertificate(eq(CERTIFICATE_ID), any())).thenReturn(certificate);
 
-        handleMessageNotificationForParentService.notify(certificateRelations);
-        verify(publishCertificateStatusUpdateService, times(2)).publish(certificate, HandelsekodEnum.NYFRFM);
-    }
+    handleMessageNotificationForParentService.notify(certificateRelations);
+    verify(publishCertificateStatusUpdateService, times(2))
+        .publish(certificate, HandelsekodEnum.NYFRFM);
+  }
 
-    @Test
-    void shouldNotPublishEventIfQuestionIsNotComplement() {
-        final var certificateRelations = CertificateRelations.builder()
+  @Test
+  void shouldNotPublishEventIfQuestionIsNotComplement() {
+    final var certificateRelations =
+        CertificateRelations.builder()
             .parent(
                 CertificateRelation.builder()
                     .type(CertificateRelationType.COMPLEMENTED)
                     .certificateId(CERTIFICATE_ID)
-                    .build()
-            )
+                    .build())
             .build();
 
-        final var questions = List.of(
-            Question.builder()
-                .type(QuestionType.OTHER)
-                .build(),
-            Question.builder()
-                .type(QuestionType.OTHER)
-                .build(),
-            Question.builder()
-                .type(QuestionType.MISSING)
-                .build()
-        );
+    final var questions =
+        List.of(
+            Question.builder().type(QuestionType.OTHER).build(),
+            Question.builder().type(QuestionType.OTHER).build(),
+            Question.builder().type(QuestionType.MISSING).build());
 
-        final var certificate = mock(Certificate.class);
+    final var certificate = mock(Certificate.class);
 
-        when(csIntegrationService.getQuestions(CERTIFICATE_ID)).thenReturn(questions);
-        when(csIntegrationService.getCertificate(eq(CERTIFICATE_ID), any())).thenReturn(certificate);
+    when(csIntegrationService.getQuestions(CERTIFICATE_ID)).thenReturn(questions);
+    when(csIntegrationService.getCertificate(eq(CERTIFICATE_ID), any())).thenReturn(certificate);
 
-        handleMessageNotificationForParentService.notify(certificateRelations);
-        verifyNoInteractions(publishCertificateStatusUpdateService);
-    }
+    handleMessageNotificationForParentService.notify(certificateRelations);
+    verifyNoInteractions(publishCertificateStatusUpdateService);
+  }
 }

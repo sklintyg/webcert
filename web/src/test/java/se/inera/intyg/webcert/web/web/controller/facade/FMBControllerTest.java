@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,27 +34,24 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePer
 @ExtendWith(MockitoExtension.class)
 public class FMBControllerTest {
 
-    @Mock
-    private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
+  @Mock private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
 
-    @InjectMocks
-    private FMBController fmbController;
+  @InjectMocks private FMBController fmbController;
 
-    private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
-    private static final long CERTIFICATE_VERSION = 1L;
+  private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
+  private static final long CERTIFICATE_VERSION = 1L;
 
-    @Nested
-    class ValidateSickLeavePeriod {
+  @Nested
+  class ValidateSickLeavePeriod {
 
-        @BeforeEach
-        void setup() {
-        }
+    @BeforeEach
+    void setup() {}
 
-        @Test
-        void shallValidateSickLeavePeriod() {
-            ValidateSickLeavePeriodRequestDTO request = new ValidateSickLeavePeriodRequestDTO();
-            fmbController.validateSickLeavePeriod(request);
-            verify(validateSickLeavePeriodFacadeService).validateSickLeavePeriod(any());
-        }
+    @Test
+    void shallValidateSickLeavePeriod() {
+      ValidateSickLeavePeriodRequestDTO request = new ValidateSickLeavePeriodRequestDTO();
+      fmbController.validateSickLeavePeriod(request);
+      verify(validateSickLeavePeriodFacadeService).validateSickLeavePeriod(any());
     }
+  }
 }

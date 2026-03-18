@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,17 +19,17 @@
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 public enum FilterStatusType {
-    CURRENT_CERTIFICATES("Aktuella intyg"),
-    MODIFIED_CERTIFICATES("Ersatta, makulerade, låsta och kompletterade intyg"),
-    ALL_CERTIFICATES("Alla intyg");
+  CURRENT_CERTIFICATES("Aktuella intyg"),
+  MODIFIED_CERTIFICATES("Ersatta, makulerade, låsta och kompletterade intyg"),
+  ALL_CERTIFICATES("Alla intyg");
 
-    private final String name;
+  private final String name;
 
-    FilterStatusType(String name) {
-        this.name = name;
-    }
+  FilterStatusType(String name) {
+    this.name = name;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 }

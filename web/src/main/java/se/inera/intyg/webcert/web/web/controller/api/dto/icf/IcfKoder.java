@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,40 +24,37 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public abstract class IcfKoder {
 
-    private List<String> icd10Koder;
-    private List<IcfKod> icfKoder;
+  private List<String> icd10Koder;
+  private List<IcfKod> icfKoder;
 
-    public IcfKoder() {
-    }
+  public IcfKoder() {}
 
-    IcfKoder(
-        final List<String> icd10Koder,
-        final List<IcfKod> icfKoder) {
-        this.icd10Koder = CollectionUtils.isEmpty(icd10Koder) ? null : icd10Koder;
-        this.icfKoder = CollectionUtils.isEmpty(icfKoder) ? null : icfKoder;
-    }
+  IcfKoder(final List<String> icd10Koder, final List<IcfKod> icfKoder) {
+    this.icd10Koder = CollectionUtils.isEmpty(icd10Koder) ? null : icd10Koder;
+    this.icfKoder = CollectionUtils.isEmpty(icfKoder) ? null : icfKoder;
+  }
 
-    public List<String> getIcd10Koder() {
-        return icd10Koder;
-    }
+  public List<String> getIcd10Koder() {
+    return icd10Koder;
+  }
 
-    public void setIcd10Koder(final List<String> icd10Koder) {
-        this.icd10Koder = icd10Koder;
-    }
+  public void setIcd10Koder(final List<String> icd10Koder) {
+    this.icd10Koder = icd10Koder;
+  }
 
-    public List<IcfKod> getIcfKoder() {
-        return icfKoder;
-    }
+  public List<IcfKod> getIcfKoder() {
+    return icfKoder;
+  }
 
-    public void setIcfKoder(final List<IcfKod> icfKoder) {
-        this.icfKoder = icfKoder;
-    }
+  public void setIcfKoder(final List<IcfKod> icfKoder) {
+    this.icfKoder = icfKoder;
+  }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("icd10Koder", icd10Koder)
-            .append("icfKoder", icfKoder)
-            .toString();
-    }
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("icd10Koder", icd10Koder)
+        .append("icfKoder", icfKoder)
+        .toString();
+  }
 }

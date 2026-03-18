@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -54,104 +54,119 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final String ELEG_AUTH_SCHEME = "http://id.elegnamnden.se/loa/1.0/loa3";
-    private static final AuthenticationMethod AUTH_METHOD = AuthenticationMethod.MOBILT_BANK_ID;
+  private static final String ELEG_AUTH_SCHEME = "http://id.elegnamnden.se/loa/1.0/loa3";
+  private static final AuthenticationMethod AUTH_METHOD = AuthenticationMethod.MOBILT_BANK_ID;
 
-    @Mock
-    private SubscriptionService subscriptionService;
-    @Mock
-    private HashUtility hashUtility;
-    @Mock
-    private PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    @Mock
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
-    @Mock
-    private UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
-    @Mock
-    private AuthorizedPrivatePractitionerService authorizedPrivatePractitionerService;
-    @InjectMocks
-    private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
+  @Mock private SubscriptionService subscriptionService;
+  @Mock private HashUtility hashUtility;
+  @Mock private PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+  @Mock private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  @Mock private UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
+  @Mock private AuthorizedPrivatePractitionerService authorizedPrivatePractitionerService;
+  @InjectMocks private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
-    @BeforeEach
-    void setup() {
-        final var request = mock(HttpServletRequest.class);
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+  @BeforeEach
+  void setup() {
+    final var request = mock(HttpServletRequest.class);
+    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        final var userOrigin = mock(WebCertUserOrigin.class);
-        lenient().when(userOrigin.resolveOrigin(any(HttpServletRequest.class))).thenReturn("NORMAL");
-        ReflectionTestUtils.setField(elegWebCertUserDetailsService, "userOrigin", Optional.of(userOrigin));
+    final var userOrigin = mock(WebCertUserOrigin.class);
+    lenient().when(userOrigin.resolveOrigin(any(HttpServletRequest.class))).thenReturn("NORMAL");
+    ReflectionTestUtils.setField(
+        elegWebCertUserDetailsService, "userOrigin", Optional.of(userOrigin));
 
-        final var requestOrigin = mock(RequestOrigin.class);
-        when(requestOrigin.getName()).thenReturn("origin");
-        when(commonAuthoritiesResolver.getRequestOrigin(any())).thenReturn(requestOrigin);
-    }
+    final var requestOrigin = mock(RequestOrigin.class);
+    when(requestOrigin.getName()).thenReturn("origin");
+    when(commonAuthoritiesResolver.getRequestOrigin(any())).thenReturn(requestOrigin);
+  }
 
-    @Test
-    void shouldThrowMissingSubscriptionExceptionWhenNoAccoundAndNoSubscription() {
-        when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
-            .thenReturn(
-                new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.NO_ACCOUNT, "Test result text"));
-        when(subscriptionService.isUnregisteredElegUserMissingSubscription(DR_KRANSTEGE_PERSON_ID)).thenReturn(true);
+  @Test
+  void shouldThrowMissingSubscriptionExceptionWhenNoAccoundAndNoSubscription() {
+    when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(
+            new PrivatePractitionerValidationResponse(
+                PrivatePractitionerValidationResultCode.NO_ACCOUNT, "Test result text"));
+    when(subscriptionService.isUnregisteredElegUserMissingSubscription(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(true);
 
-        assertThrows(MissingSubscriptionException.class,
-            () -> elegWebCertUserDetailsService.buildUserPrincipal(DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
-        );
-    }
+    assertThrows(
+        MissingSubscriptionException.class,
+        () ->
+            elegWebCertUserDetailsService.buildUserPrincipal(
+                DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD));
+  }
 
-    @Test
-    void shouldUnauthorizedUserWhenNoAccoundAndHaveSubscription() {
-        final var expected = mockCreateUnauthorisedUser();
-        when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
-            .thenReturn(
-                new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.NO_ACCOUNT, "Test result text"));
-        when(subscriptionService.isUnregisteredElegUserMissingSubscription(DR_KRANSTEGE_PERSON_ID)).thenReturn(false);
+  @Test
+  void shouldUnauthorizedUserWhenNoAccoundAndHaveSubscription() {
+    final var expected = mockCreateUnauthorisedUser();
+    when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(
+            new PrivatePractitionerValidationResponse(
+                PrivatePractitionerValidationResultCode.NO_ACCOUNT, "Test result text"));
+    when(subscriptionService.isUnregisteredElegUserMissingSubscription(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(false);
 
-        final var actual = elegWebCertUserDetailsService.buildUserPrincipal(DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
-        assertEquals(expected, actual);
-    }
+    final var actual =
+        elegWebCertUserDetailsService.buildUserPrincipal(
+            DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    void shouldUnauthorizedUserWhenNotAuthorizedAndNoSubscription() {
-        final var expected = mockCreateUnauthorisedUser();
-        when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
-            .thenReturn(new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP,
+  @Test
+  void shouldUnauthorizedUserWhenNotAuthorizedAndNoSubscription() {
+    final var expected = mockCreateUnauthorisedUser();
+    when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(
+            new PrivatePractitionerValidationResponse(
+                PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP,
                 "Test result text"));
 
-        final var actual = elegWebCertUserDetailsService.buildUserPrincipal(DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
-        assertEquals(expected, actual);
-    }
+    final var actual =
+        elegWebCertUserDetailsService.buildUserPrincipal(
+            DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    void shouldAuthorizedUserWhenAuthorized() {
-        final var expected = mockCreateAuthorizedUser();
-        when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
-            .thenReturn(new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.OK, "Test result text"));
+  @Test
+  void shouldAuthorizedUserWhenAuthorized() {
+    final var expected = mockCreateAuthorizedUser();
+    when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(
+            new PrivatePractitionerValidationResponse(
+                PrivatePractitionerValidationResultCode.OK, "Test result text"));
 
-        final var actual = elegWebCertUserDetailsService.buildUserPrincipal(DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
-        assertEquals(expected, actual);
-    }
+    final var actual =
+        elegWebCertUserDetailsService.buildUserPrincipal(
+            DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    void shouldDecorateAuthorizedUserWithSubscriptionInfoWhenAuthorized() {
-        final var authorizedUser = mockCreateAuthorizedUser();
-        when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
-            .thenReturn(new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.OK, "Test result text"));
+  @Test
+  void shouldDecorateAuthorizedUserWithSubscriptionInfoWhenAuthorized() {
+    final var authorizedUser = mockCreateAuthorizedUser();
+    when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(
+            new PrivatePractitionerValidationResponse(
+                PrivatePractitionerValidationResultCode.OK, "Test result text"));
 
-        elegWebCertUserDetailsService.buildUserPrincipal(DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
-        verify(subscriptionService).checkSubscriptions(authorizedUser);
-    }
+    elegWebCertUserDetailsService.buildUserPrincipal(
+        DR_KRANSTEGE_PERSON_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+    verify(subscriptionService).checkSubscriptions(authorizedUser);
+  }
 
-    private WebCertUser mockCreateUnauthorisedUser() {
-        final var webcertUser = new WebCertUser("test");
-        when(unauthorizedPrivatePractitionerService.create(
-            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD)).thenReturn(webcertUser);
-        return webcertUser;
-    }
+  private WebCertUser mockCreateUnauthorisedUser() {
+    final var webcertUser = new WebCertUser("test");
+    when(unauthorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD))
+        .thenReturn(webcertUser);
+    return webcertUser;
+  }
 
-    private WebCertUser mockCreateAuthorizedUser() {
-        final var webcertUser = new WebCertUser("test");
-        when(authorizedPrivatePractitionerService.create(
-            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD)).thenReturn(webcertUser);
-        return webcertUser;
-    }
+  private WebCertUser mockCreateAuthorizedUser() {
+    final var webcertUser = new WebCertUser("test");
+    when(authorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD))
+        .thenReturn(webcertUser);
+    return webcertUser;
+  }
 }

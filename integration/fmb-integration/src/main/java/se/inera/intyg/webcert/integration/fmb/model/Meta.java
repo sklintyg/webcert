@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,60 +28,57 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "buildnumber",
-    "buildtimestamp",
-    "version"
-})
+@JsonPropertyOrder({"buildnumber", "buildtimestamp", "version"})
 public class Meta {
 
-    @JsonProperty("buildnumber")
-    private String buildnumber;
-    @JsonProperty("buildtimestamp")
-    private String buildtimestamp;
-    @JsonProperty("version")
-    private String version;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("buildnumber")
+  private String buildnumber;
 
-    @JsonProperty("buildnumber")
-    public String getBuildnumber() {
-        return buildnumber;
-    }
+  @JsonProperty("buildtimestamp")
+  private String buildtimestamp;
 
-    @JsonProperty("buildnumber")
-    public void setBuildnumber(String buildnumber) {
-        this.buildnumber = buildnumber;
-    }
+  @JsonProperty("version")
+  private String version;
 
-    @JsonProperty("buildtimestamp")
-    public String getBuildtimestamp() {
-        return buildtimestamp;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("buildtimestamp")
-    public void setBuildtimestamp(String buildtimestamp) {
-        this.buildtimestamp = buildtimestamp;
-    }
+  @JsonProperty("buildnumber")
+  public String getBuildnumber() {
+    return buildnumber;
+  }
 
-    @JsonProperty("version")
-    public String getVersion() {
-        return version;
-    }
+  @JsonProperty("buildnumber")
+  public void setBuildnumber(String buildnumber) {
+    this.buildnumber = buildnumber;
+  }
 
-    @JsonProperty("version")
-    public void setVersion(String version) {
-        this.version = version;
-    }
+  @JsonProperty("buildtimestamp")
+  public String getBuildtimestamp() {
+    return buildtimestamp;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("buildtimestamp")
+  public void setBuildtimestamp(String buildtimestamp) {
+    this.buildtimestamp = buildtimestamp;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("version")
+  public String getVersion() {
+    return version;
+  }
 
+  @JsonProperty("version")
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

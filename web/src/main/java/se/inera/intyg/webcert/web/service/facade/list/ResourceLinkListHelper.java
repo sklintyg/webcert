@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,19 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
+import java.util.List;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
-import java.util.List;
-
 public interface ResourceLinkListHelper {
 
-    List<ResourceLinkDTO> get(ListIntygEntry entry, CertificateListItemStatus status);
+  List<ResourceLinkDTO> get(ListIntygEntry entry, CertificateListItemStatus status);
 
-    List<ResourceLinkDTO> get(CertificateListEntry entry, CertificateListItemStatus status);
+  List<ResourceLinkDTO> get(CertificateListEntry entry, CertificateListItemStatus status);
 
-    List<ResourceLinkDTO> get(ArendeListItem entry, CertificateListItemStatus status);
+  List<ResourceLinkDTO> get(ArendeListItem entry, CertificateListItemStatus status);
 }

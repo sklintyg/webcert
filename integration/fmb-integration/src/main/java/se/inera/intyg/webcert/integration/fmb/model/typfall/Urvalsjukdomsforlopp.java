@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,34 +30,31 @@ import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "sjukdomsforlopp"
-})
+@JsonPropertyOrder({"sjukdomsforlopp"})
 public class Urvalsjukdomsforlopp {
 
-    @JsonProperty("sjukdomsforlopp")
-    private List<Kod> sjukdomsforlopp = null;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("sjukdomsforlopp")
+  private List<Kod> sjukdomsforlopp = null;
 
-    @JsonProperty("sjukdomsforlopp")
-    public List<Kod> getSjukdomsforlopp() {
-        return sjukdomsforlopp;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("sjukdomsforlopp")
-    public void setSjukdomsforlopp(List<Kod> sjukdomsforlopp) {
-        this.sjukdomsforlopp = sjukdomsforlopp;
-    }
+  @JsonProperty("sjukdomsforlopp")
+  public List<Kod> getSjukdomsforlopp() {
+    return sjukdomsforlopp;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("sjukdomsforlopp")
+  public void setSjukdomsforlopp(List<Kod> sjukdomsforlopp) {
+    this.sjukdomsforlopp = sjukdomsforlopp;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
 
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

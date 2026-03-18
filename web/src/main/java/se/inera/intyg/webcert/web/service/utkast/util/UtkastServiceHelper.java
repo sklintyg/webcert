@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,45 +37,45 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 @Component
 public final class UtkastServiceHelper {
 
-    @Autowired
-    UtkastRepository utkastRepository;
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
-    @Autowired
-    private IntygService intygService;
+  @Autowired UtkastRepository utkastRepository;
+  @Autowired private IntygModuleRegistry moduleRegistry;
+  @Autowired private IntygService intygService;
 
-    public Utlatande getUtlatandeFromIT(String intygId, String intygsTyp, boolean pdlLoggning) {
-        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, pdlLoggning);
-        return signedIntygHolder.getUtlatande();
+  public Utlatande getUtlatandeFromIT(String intygId, String intygsTyp, boolean pdlLoggning) {
+    IntygContentHolder signedIntygHolder =
+        intygService.fetchIntygData(intygId, intygsTyp, pdlLoggning);
+    return signedIntygHolder.getUtlatande();
+  }
+
+  public Utlatande getUtlatandeForCandidateFromIT(
+      String intygId, String intygsTyp, boolean pdlLoggning) {
+    IntygContentHolder signedIntygHolder =
+        intygService.fetchIntygDataforCandidate(intygId, intygsTyp, pdlLoggning);
+    return signedIntygHolder.getUtlatande();
+  }
+
+  public Utlatande getUtlatande(String intygId, String intygsTyp, boolean pdlLoggning)
+      throws ModuleException, ModuleNotFoundException {
+    Utlatande utlatande;
+    if (utkastRepository.existsById(intygId)) {
+      final Utkast utkast = utkastRepository.findById(intygId).orElse(null);
+
+      if (utkast == null) {
+        throw new ModuleException(
+            "Could not convert original certificate to Utlatande. Original certificate not found");
+      }
+
+      ModuleApi orgModuleApi = moduleRegistry.getModuleApi(intygsTyp, utkast.getIntygTypeVersion());
+      try {
+        utlatande = orgModuleApi.getUtlatandeFromJson(utkast.getModel());
+      } catch (IOException e) {
+        throw new ModuleException("Could not convert original certificate to Utlatande", e);
+      }
+    } else {
+      IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, true);
+      utlatande = signedIntygHolder.getUtlatande();
     }
 
-    public Utlatande getUtlatandeForCandidateFromIT(String intygId, String intygsTyp, boolean pdlLoggning) {
-        IntygContentHolder signedIntygHolder = intygService.fetchIntygDataforCandidate(intygId, intygsTyp, pdlLoggning);
-        return signedIntygHolder.getUtlatande();
-    }
-
-    public Utlatande getUtlatande(String intygId, String intygsTyp, boolean pdlLoggning)
-        throws ModuleException, ModuleNotFoundException {
-        Utlatande utlatande;
-        if (utkastRepository.existsById(intygId)) {
-            final Utkast utkast = utkastRepository.findById(intygId).orElse(null);
-
-            if (utkast == null) {
-                throw new ModuleException("Could not convert original certificate to Utlatande. Original certificate not found");
-            }
-
-            ModuleApi orgModuleApi = moduleRegistry.getModuleApi(intygsTyp, utkast.getIntygTypeVersion());
-            try {
-                utlatande = orgModuleApi.getUtlatandeFromJson(utkast.getModel());
-            } catch (IOException e) {
-                throw new ModuleException("Could not convert original certificate to Utlatande", e);
-            }
-        } else {
-            IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, true);
-            utlatande = signedIntygHolder.getUtlatande();
-        }
-
-        return utlatande;
-    }
-
+    return utlatande;
+  }
 }

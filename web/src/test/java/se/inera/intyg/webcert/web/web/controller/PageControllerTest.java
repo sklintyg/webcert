@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -54,103 +54,105 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 @RunWith(MockitoJUnitRunner.class)
 public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final String INTYG_ID = "intyg-123";
-    private static final String INTYG_TYPE_VERSION = "1.0";
-    private static final String INTYG_TYP_FK7263 = "fk7263";
+  private static final String INTYG_ID = "intyg-123";
+  private static final String INTYG_TYPE_VERSION = "1.0";
+  private static final String INTYG_TYP_FK7263 = "fk7263";
 
-    @Mock
-    private WebCertUserService webCertUserService;
-    @Mock
-    private IntygService intygService;
-    @Mock
-    private MailLinkService mailLinkService;
-    @Mock
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private IntygService intygService;
+  @Mock private MailLinkService mailLinkService;
+  @Mock private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
-    @InjectMocks
-    private PageController controller;
+  @InjectMocks private PageController controller;
 
-    private IntygTypeInfo intygTypeInfo;
+  private IntygTypeInfo intygTypeInfo;
 
-    @Before
-    public void setup() throws Exception {
-        CONFIGURATION_LOADER.afterPropertiesSet();
-        intygTypeInfo = new IntygTypeInfo(INTYG_ID, INTYG_TYP_FK7263, INTYG_TYPE_VERSION);
-        when(intygService.getIntygTypeInfo(any(String.class))).thenReturn(intygTypeInfo);
+  @Before
+  public void setup() throws Exception {
+    CONFIGURATION_LOADER.afterPropertiesSet();
+    intygTypeInfo = new IntygTypeInfo(INTYG_ID, INTYG_TYP_FK7263, INTYG_TYPE_VERSION);
+    when(intygService.getIntygTypeInfo(any(String.class))).thenReturn(intygTypeInfo);
+  }
+
+  @Test
+  public void testRedirectToIntygUserHasAccess() {
+    when(webCertUserService.getUser()).thenReturn(createMockUser(false));
+    when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
+    when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID))
+        .thenReturn(buildMockURI());
+    ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
+    assertEquals(303, result.getStatusCode().value());
+  }
+
+  @Test
+  public void testFeaturesUpdatedWhenUserHasAccess() {
+    final var webCertUser = createMockUser(false);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+
+    final var expectedFeatures = Collections.emptyMap();
+    doReturn(expectedFeatures).when(commonAuthoritiesResolver).getFeatures(anyList());
+
+    when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
+    when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID))
+        .thenReturn(buildMockURI());
+
+    controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
+
+    assertEquals(expectedFeatures, webCertUser.getFeatures());
+  }
+
+  @Test
+  public void testRedirectToIntygNoUnitFoundForIntyg() {
+    when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn(null);
+    ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
+    assertEquals(404, result.getStatusCode().value());
+  }
+
+  @Test
+  public void testRedirectToIntygMaillinkReturnsNull() {
+    when(webCertUserService.getUser()).thenReturn(createMockUser(false));
+    when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
+    when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID))
+        .thenReturn(null);
+
+    ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
+    assertEquals(404, result.getStatusCode().value());
+  }
+
+  private URI buildMockURI() {
+    return URI.create("https://some.url/path/questions");
+  }
+
+  private WebCertUser createMockUser(boolean doctor, String... features) {
+    Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
+    if (!doctor) {
+      role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN);
     }
 
-    @Test
-    public void testRedirectToIntygUserHasAccess() {
-        when(webCertUserService.getUser()).thenReturn(createMockUser(false));
-        when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
-        when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID)).thenReturn(buildMockURI());
-        ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
-        assertEquals(303, result.getStatusCode().value());
-    }
+    WebCertUser user = new WebCertUser();
+    user.setRoles(AuthoritiesResolverUtil.toMap(role));
+    user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+    user.setVardgivare(Collections.singletonList(createMockVardgivare()));
+    user.setFeatures(
+        Stream.of(features)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setGlobal(true);
+                      feature.setIntygstyper(Collections.singletonList(INTYG_TYP_FK7263));
+                      return feature;
+                    })));
+    return user;
+  }
 
-    @Test
-    public void testFeaturesUpdatedWhenUserHasAccess() {
-        final var webCertUser = createMockUser(false);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-
-        final var expectedFeatures = Collections.emptyMap();
-        doReturn(expectedFeatures).when(commonAuthoritiesResolver).getFeatures(anyList());
-
-        when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
-        when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID)).thenReturn(buildMockURI());
-
-        controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
-
-        assertEquals(expectedFeatures, webCertUser.getFeatures());
-    }
-
-    @Test
-    public void testRedirectToIntygNoUnitFoundForIntyg() {
-        when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn(null);
-        ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
-        assertEquals(404, result.getStatusCode().value());
-    }
-
-    @Test
-    public void testRedirectToIntygMaillinkReturnsNull() {
-        when(webCertUserService.getUser()).thenReturn(createMockUser(false));
-        when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
-        when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID)).thenReturn(null);
-
-        ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
-        assertEquals(404, result.getStatusCode().value());
-    }
-
-    private URI buildMockURI() {
-        return URI.create("https://some.url/path/questions");
-    }
-
-    private WebCertUser createMockUser(boolean doctor, String... features) {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-
-        if (!doctor) {
-            role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN);
-        }
-
-        WebCertUser user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-        user.setVardgivare(Collections.singletonList(createMockVardgivare()));
-        user.setFeatures(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
-            Feature feature = new Feature();
-            feature.setName(s);
-            feature.setGlobal(true);
-            feature.setIntygstyper(Collections.singletonList(INTYG_TYP_FK7263));
-            return feature;
-        })));
-        return user;
-    }
-
-    private Vardgivare createMockVardgivare() {
-        Vardgivare vg = new Vardgivare("vg-1", "Vårdgivare 1");
-        Vardenhet ve = new Vardenhet("ve-1", "Vårdenhet 1");
-        vg.setVardenheter(Collections.singletonList(ve));
-        return vg;
-    }
-
+  private Vardgivare createMockVardgivare() {
+    Vardgivare vg = new Vardgivare("vg-1", "Vårdgivare 1");
+    Vardenhet ve = new Vardenhet("ve-1", "Vårdenhet 1");
+    vg.setVardenheter(Collections.singletonList(ve));
+    return vg;
+  }
 }

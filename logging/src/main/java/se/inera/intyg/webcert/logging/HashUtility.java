@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.logging;
 
 import com.google.common.base.Strings;
@@ -30,19 +29,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class HashUtility {
 
-    @Value("${hash.salt}")
-    private String salt;
+  @Value("${hash.salt}")
+  private String salt;
 
-    public static final String EMPTY = "EMPTY";
-    private static final HashFunction hf = Hashing.sha256();
+  public static final String EMPTY = "EMPTY";
+  private static final HashFunction hf = Hashing.sha256();
 
-    public String hash(final String payload) {
-        if (Strings.isNullOrEmpty(payload)) {
-            return EMPTY;
-        }
-
-        final var saltedPayload = salt + payload;
-        final var digest = hf.hashString(saltedPayload, StandardCharsets.UTF_8).asBytes();
-        return BaseEncoding.base16().lowerCase().encode(digest);
+  public String hash(final String payload) {
+    if (Strings.isNullOrEmpty(payload)) {
+      return EMPTY;
     }
+
+    final var saltedPayload = salt + payload;
+    final var digest = hf.hashString(saltedPayload, StandardCharsets.UTF_8).asBytes();
+    return BaseEncoding.base16().lowerCase().encode(digest);
+  }
 }

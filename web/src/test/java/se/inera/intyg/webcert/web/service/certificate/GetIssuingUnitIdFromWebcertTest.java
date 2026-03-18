@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,22 +32,23 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 @ExtendWith(MockitoExtension.class)
 class GetIssuingUnitIdFromWebcertTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
-    @Mock
-    IntygService intygService;
-    @InjectMocks
-    GetIssuingUnitIdFromWebcert getIssuingUnitIdFromWebcert;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
+  @Mock IntygService intygService;
+  @InjectMocks GetIssuingUnitIdFromWebcert getIssuingUnitIdFromWebcert;
 
-    @Test
-    void shallReturnUnitIdForCertificate() {
-        final var expectedUnitId = "expectedUnitId";
-        final var intygTypeInfo = new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-        doReturn(intygTypeInfo).when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
-        doReturn(expectedUnitId).when(intygService).getIssuingVardenhetHsaId(CERTIFICATE_ID, CERTIFICATE_TYPE);
+  @Test
+  void shallReturnUnitIdForCertificate() {
+    final var expectedUnitId = "expectedUnitId";
+    final var intygTypeInfo =
+        new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+    doReturn(intygTypeInfo).when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
+    doReturn(expectedUnitId)
+        .when(intygService)
+        .getIssuingVardenhetHsaId(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
-        final var actualResult = getIssuingUnitIdFromWebcert.get(CERTIFICATE_ID);
-        assertEquals(expectedUnitId, actualResult);
-    }
+    final var actualResult = getIssuingUnitIdFromWebcert.get(CERTIFICATE_ID);
+    assertEquals(expectedUnitId, actualResult);
+  }
 }

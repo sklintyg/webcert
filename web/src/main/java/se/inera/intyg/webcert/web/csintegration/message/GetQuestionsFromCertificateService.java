@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import java.util.List;
@@ -32,28 +31,25 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 @Service("getQuestionsFromCertificateService")
 public class GetQuestionsFromCertificateService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
+  public List<Question> get(String certificateId) {
+    log.debug(
+        "Attempting to get questions for certificate '{}' from Certificate Service", certificateId);
 
-    public List<Question> get(String certificateId) {
-        log.debug("Attempting to get questions for certificate '{}' from Certificate Service", certificateId);
-
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
-
-        final var certificate = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
-
-        return csIntegrationService.getQuestions(
-            csIntegrationRequestFactory.getCertificateMessageRequest(
-                certificate.getMetadata().getPatient().getActualPersonId().getId()
-            ),
-            certificateId
-        );
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
     }
+
+    final var certificate =
+        csIntegrationService.getCertificate(
+            certificateId, csIntegrationRequestFactory.getCertificateRequest());
+
+    return csIntegrationService.getQuestions(
+        csIntegrationRequestFactory.getCertificateMessageRequest(
+            certificate.getMetadata().getPatient().getActualPersonId().getId()),
+        certificateId);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,54 +32,47 @@ import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFac
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doReturn;
-
 @ExtendWith(MockitoExtension.class)
 public class ListConfigControllerTest {
 
-    @Mock
-    private ListDraftsConfigFacadeServiceImpl listDraftsConfigFacadeService;
-    @Mock
-    private ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService;
-    @InjectMocks
-    private ListConfigController listConfigController;
+  @Mock private ListDraftsConfigFacadeServiceImpl listDraftsConfigFacadeService;
 
-    @Nested
-    class ListDraftsConfig {
+  @Mock
+  private ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService;
 
-        final ListConfig config = new ListConfig();
+  @InjectMocks private ListConfigController listConfigController;
 
-        @BeforeEach
-        void setup() {
-            doReturn(config)
-                .when(listDraftsConfigFacadeService)
-                .get();
-        }
+  @Nested
+  class ListDraftsConfig {
 
-        @Test
-        void shallIncludeConfigInResponse() {
-            final var response = listConfigController.getListOfDraftsConfig().getEntity();
-            assertEquals(config, response);
-        }
+    final ListConfig config = new ListConfig();
+
+    @BeforeEach
+    void setup() {
+      doReturn(config).when(listDraftsConfigFacadeService).get();
     }
 
-    @Nested
-    class ListSignedCertificatesConfig {
-
-        final ListConfig config = new ListConfig();
-
-        @BeforeEach
-        void setup() {
-            doReturn(config)
-                .when(listSignedCertificatesConfigFacadeService)
-                .get();
-        }
-
-        @Test
-        void shallIncludeConfigInResponse() {
-            final var response = listConfigController.getListOfSignedCertificatesConfig().getEntity();
-            assertEquals(config, response);
-        }
+    @Test
+    void shallIncludeConfigInResponse() {
+      final var response = listConfigController.getListOfDraftsConfig().getEntity();
+      assertEquals(config, response);
     }
+  }
+
+  @Nested
+  class ListSignedCertificatesConfig {
+
+    final ListConfig config = new ListConfig();
+
+    @BeforeEach
+    void setup() {
+      doReturn(config).when(listSignedCertificatesConfigFacadeService).get();
+    }
+
+    @Test
+    void shallIncludeConfigInResponse() {
+      final var response = listConfigController.getListOfSignedCertificatesConfig().getEntity();
+      assertEquals(config, response);
+    }
+  }
 }

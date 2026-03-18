@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -54,180 +54,204 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestD
 @Path("/question")
 public class QuestionController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Autowired
-    private DeleteQuestionFacadeService deleteQuestionAggregator;
-    @Autowired
-    private CreateQuestionFacadeService createQuestionAggregator;
-    @Autowired
-    private SaveQuestionFacadeService saveQuestionAggregator;
-    @Autowired
-    private SendQuestionFacadeService sendQuestionAggregator;
-    @Autowired
-    private SaveQuestionAnswerFacadeService saveAnswerAggregator;
-    @Autowired
-    private DeleteQuestionAnswerFacadeService deleteAnswerAggregator;
-    @Autowired
-    private SendQuestionAnswerFacadeService sendAnswerAggregator;
-    @Autowired
-    private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
-    @Autowired
-    private GetQuestionsFacadeService getQuestionsAggregator;
-    @Autowired
-    private HandleQuestionFacadeService handleQuestionAggregator;
+  @Autowired private DeleteQuestionFacadeService deleteQuestionAggregator;
+  @Autowired private CreateQuestionFacadeService createQuestionAggregator;
+  @Autowired private SaveQuestionFacadeService saveQuestionAggregator;
+  @Autowired private SendQuestionFacadeService sendQuestionAggregator;
+  @Autowired private SaveQuestionAnswerFacadeService saveAnswerAggregator;
+  @Autowired private DeleteQuestionAnswerFacadeService deleteAnswerAggregator;
+  @Autowired private SendQuestionAnswerFacadeService sendAnswerAggregator;
+  @Autowired private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
+  @Autowired private GetQuestionsFacadeService getQuestionsAggregator;
+  @Autowired private HandleQuestionFacadeService handleQuestionAggregator;
 
-    @GET
-    @Path("/{certificateId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-get-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getQuestions(@PathParam("certificateId") @NotNull String certificateId) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
-        }
-
-        final var questions = getQuestionsAggregator.getQuestions(certificateId);
-        final var links = getQuestionsResourceLinkService.get(questions);
-        return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
+  @GET
+  @Path("/{certificateId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-get-questions",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getQuestions(@PathParam("certificateId") @NotNull String certificateId) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
     }
 
-    @GET
-    @Path("/{certificateId}/complements")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-get-complement-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getComplementQuestions(@PathParam("certificateId") @NotNull String certificateId) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Getting complement questions for certificate with id: '{}'", certificateId);
-        }
+    final var questions = getQuestionsAggregator.getQuestions(certificateId);
+    final var links = getQuestionsResourceLinkService.get(questions);
+    return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
+  }
 
-        final var questions = getQuestionsAggregator.getComplementQuestions(certificateId);
-        final var links = getQuestionsResourceLinkService.get(questions);
-        return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
+  @GET
+  @Path("/{certificateId}/complements")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-get-complement-questions",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getComplementQuestions(
+      @PathParam("certificateId") @NotNull String certificateId) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Getting complement questions for certificate with id: '{}'", certificateId);
     }
 
-    @DELETE
-    @Path("/{questionId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-delete-questions", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-    public Response deleteQuestion(@PathParam("questionId") @NotNull String questionId) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Deleting question with id: '{}'", questionId);
-        }
+    final var questions = getQuestionsAggregator.getComplementQuestions(certificateId);
+    final var links = getQuestionsResourceLinkService.get(questions);
+    return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
+  }
 
-        deleteQuestionAggregator.delete(questionId);
-        return Response.ok().build();
+  @DELETE
+  @Path("/{questionId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-delete-questions",
+      eventType = MdcLogConstants.EVENT_TYPE_DELETION)
+  public Response deleteQuestion(@PathParam("questionId") @NotNull String questionId) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Deleting question with id: '{}'", questionId);
     }
 
-    @POST
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-create-question", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-    public Response createQuestion(CreateQuestionRequestDTO createQuestionRequest) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating question for certificate with id: '{}'", createQuestionRequest.getCertificateId());
-        }
+    deleteQuestionAggregator.delete(questionId);
+    return Response.ok().build();
+  }
 
-        final var question = createQuestionAggregator.create(
+  @POST
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-create-question",
+      eventType = MdcLogConstants.EVENT_TYPE_CREATION)
+  public Response createQuestion(CreateQuestionRequestDTO createQuestionRequest) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug(
+          "Creating question for certificate with id: '{}'",
+          createQuestionRequest.getCertificateId());
+    }
+
+    final var question =
+        createQuestionAggregator.create(
             createQuestionRequest.getCertificateId(),
             createQuestionRequest.getType(),
-            createQuestionRequest.getMessage()
-        );
+            createQuestionRequest.getMessage());
 
-        final var links = getQuestionsResourceLinkService.get(question);
-        return Response.ok(QuestionResponseDTO.create(question, links)).build();
+    final var links = getQuestionsResourceLinkService.get(question);
+    return Response.ok(QuestionResponseDTO.create(question, links)).build();
+  }
+
+  @POST
+  @Path("/{questionId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-save-question",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public Response saveQuestion(
+      @PathParam("questionId") @NotNull String questionId,
+      SaveQuestionRequestDTO saveQuestionRequest) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Saving question with id: '{}'", saveQuestionRequest.getQuestion().getId());
     }
 
-    @POST
-    @Path("/{questionId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-save-question", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response saveQuestion(@PathParam("questionId") @NotNull String questionId, SaveQuestionRequestDTO saveQuestionRequest) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Saving question with id: '{}'", saveQuestionRequest.getQuestion().getId());
-        }
+    final var savedQuestion = saveQuestionAggregator.save(saveQuestionRequest.getQuestion());
+    final var links = getQuestionsResourceLinkService.get(savedQuestion);
+    return Response.ok(QuestionResponseDTO.create(savedQuestion, links)).build();
+  }
 
-        final var savedQuestion = saveQuestionAggregator.save(saveQuestionRequest.getQuestion());
-        final var links = getQuestionsResourceLinkService.get(savedQuestion);
-        return Response.ok(QuestionResponseDTO.create(savedQuestion, links)).build();
+  @POST
+  @Path("/{questionId}/send")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-send-question",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public Response sendQuestion(
+      @PathParam("questionId") @NotNull String questionId,
+      SendQuestionRequestDTO sendQuestionRequestDTO) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Sending question with id: '{}'", questionId);
     }
 
-    @POST
-    @Path("/{questionId}/send")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-send-question", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response sendQuestion(@PathParam("questionId") @NotNull String questionId, SendQuestionRequestDTO sendQuestionRequestDTO) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Sending question with id: '{}'", questionId);
-        }
+    final var question = sendQuestionAggregator.send(sendQuestionRequestDTO.getQuestion());
+    final var links = getQuestionsResourceLinkService.get(question);
+    return Response.ok(QuestionResponseDTO.create(question, links)).build();
+  }
 
-        final var question = sendQuestionAggregator.send(sendQuestionRequestDTO.getQuestion());
-        final var links = getQuestionsResourceLinkService.get(question);
-        return Response.ok(QuestionResponseDTO.create(question, links)).build();
+  @POST
+  @Path("/{questionId}/saveanswer")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-save-question-answer",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public Response saveQuestionAnswer(
+      @PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Saving answer for question with id: '{}'", questionId);
     }
 
-    @POST
-    @Path("/{questionId}/saveanswer")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-save-question-answer", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response saveQuestionAnswer(@PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Saving answer for question with id: '{}'", questionId);
-        }
+    final var questionWithSavedAnswer =
+        saveAnswerAggregator.save(questionId, answerRequestDTO.getMessage());
+    final var links = getQuestionsResourceLinkService.get(questionWithSavedAnswer);
+    return Response.ok(QuestionResponseDTO.create(questionWithSavedAnswer, links)).build();
+  }
 
-        final var questionWithSavedAnswer = saveAnswerAggregator.save(questionId, answerRequestDTO.getMessage());
-        final var links = getQuestionsResourceLinkService.get(questionWithSavedAnswer);
-        return Response.ok(QuestionResponseDTO.create(questionWithSavedAnswer, links)).build();
+  @DELETE
+  @Path("/{questionId}/answer")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-delete-question-answer",
+      eventType = MdcLogConstants.EVENT_TYPE_DELETION)
+  public Response deleteQuestionAnswer(@PathParam("questionId") @NotNull String questionId) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Deleting answer for question with id: '{}'", questionId);
     }
 
-    @DELETE
-    @Path("/{questionId}/answer")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-delete-question-answer", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-    public Response deleteQuestionAnswer(@PathParam("questionId") @NotNull String questionId) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Deleting answer for question with id: '{}'", questionId);
-        }
+    final var questionWithDeletedAnswer = deleteAnswerAggregator.delete(questionId);
+    final var links = getQuestionsResourceLinkService.get(questionWithDeletedAnswer);
+    return Response.ok(QuestionResponseDTO.create(questionWithDeletedAnswer, links)).build();
+  }
 
-        final var questionWithDeletedAnswer = deleteAnswerAggregator.delete(questionId);
-        final var links = getQuestionsResourceLinkService.get(questionWithDeletedAnswer);
-        return Response.ok(QuestionResponseDTO.create(questionWithDeletedAnswer, links)).build();
+  @POST
+  @Path("/{questionId}/sendanswer")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-send-question-answer",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public Response sendQuestionAnswer(
+      @PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Send answer for question with id: '{}'", questionId);
     }
 
-    @POST
-    @Path("/{questionId}/sendanswer")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-send-question-answer", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response sendQuestionAnswer(@PathParam("questionId") @NotNull String questionId, AnswerRequestDTO answerRequestDTO) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Send answer for question with id: '{}'", questionId);
-        }
+    final var questionWithSentAnswer =
+        sendAnswerAggregator.send(questionId, answerRequestDTO.getMessage());
+    final var links = getQuestionsResourceLinkService.get(questionWithSentAnswer);
+    return Response.ok(QuestionResponseDTO.create(questionWithSentAnswer, links)).build();
+  }
 
-        final var questionWithSentAnswer = sendAnswerAggregator.send(questionId, answerRequestDTO.getMessage());
-        final var links = getQuestionsResourceLinkService.get(questionWithSentAnswer);
-        return Response.ok(QuestionResponseDTO.create(questionWithSentAnswer, links)).build();
+  @POST
+  @Path("/{questionId}/handle")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "question-handle-question",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public Response handleQuestion(
+      @PathParam("questionId") @NotNull String questionId,
+      HandleQuestionRequestDTO handleQuestionRequestDTO) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Handle question with id: '{}'", questionId);
     }
-
-    @POST
-    @Path("/{questionId}/handle")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "question-handle-question", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response handleQuestion(@PathParam("questionId") @NotNull String questionId, HandleQuestionRequestDTO handleQuestionRequestDTO) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Handle question with id: '{}'", questionId);
-        }
-        final var question = handleQuestionAggregator.handle(questionId, handleQuestionRequestDTO.isHandled());
-        final var links = getQuestionsResourceLinkService.get(question);
-        return Response.ok(QuestionResponseDTO.create(question, links)).build();
-    }
+    final var question =
+        handleQuestionAggregator.handle(questionId, handleQuestionRequestDTO.isHandled());
+    final var links = getQuestionsResourceLinkService.get(question);
+    return Response.ok(QuestionResponseDTO.create(question, links)).build();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -69,253 +69,254 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
 @RunWith(MockitoJUnitRunner.class)
 public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final int OK = 200;
+  private static final int OK = 200;
 
-    @Mock
-    private WebCertUserService webCertUserService;
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
-    @Mock
-    private FragaSvarService fragaSvarService;
-    @Mock
-    private ArendeService arendeService;
-    @Mock
-    private UtkastService intygDraftService;
-    @Captor
-    private ArgumentCaptor<List<String>> listCaptor;
-    @Captor
-    private ArgumentCaptor<Set<String>> intygsTypSetCaptor;
-    @InjectMocks
-    private StatModuleApiController statController;
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private AuthoritiesHelper authoritiesHelper;
+  @Mock private FragaSvarService fragaSvarService;
+  @Mock private ArendeService arendeService;
+  @Mock private UtkastService intygDraftService;
+  @Captor private ArgumentCaptor<List<String>> listCaptor;
+  @Captor private ArgumentCaptor<Set<String>> intygsTypSetCaptor;
+  @InjectMocks private StatModuleApiController statController;
 
-    private WebCertUser mockUser;
-    private Map<String, Long> fragaSvarStatsMap;
-    private Map<String, Long> arendeStatsMap;
-    private Map<String, Long> intygStatsMap;
-    private Vardenhet ve1, ve2, ve3, ve4;
+  private WebCertUser mockUser;
+  private Map<String, Long> fragaSvarStatsMap;
+  private Map<String, Long> arendeStatsMap;
+  private Map<String, Long> intygStatsMap;
+  private Vardenhet ve1, ve2, ve3, ve4;
 
+  @Before
+  public void setupDataAndExpectations() {
 
-    @Before
-    public void setupDataAndExpectations() {
+    fragaSvarStatsMap = new HashMap<>();
 
-        fragaSvarStatsMap = new HashMap<>();
+    fragaSvarStatsMap.put("VE1", 2L);
+    fragaSvarStatsMap.put("VE1M1", 3L);
+    fragaSvarStatsMap.put("VE1M2", 3L);
+    fragaSvarStatsMap.put("VE2", 2L);
+    fragaSvarStatsMap.put("VE3", 1L);
 
-        fragaSvarStatsMap.put("VE1", 2L);
-        fragaSvarStatsMap.put("VE1M1", 3L);
-        fragaSvarStatsMap.put("VE1M2", 3L);
-        fragaSvarStatsMap.put("VE2", 2L);
-        fragaSvarStatsMap.put("VE3", 1L);
+    arendeStatsMap = new HashMap<>();
 
-        arendeStatsMap = new HashMap<>();
+    arendeStatsMap.put("VE1", 2L);
+    arendeStatsMap.put("VE1M1", 3L);
+    arendeStatsMap.put("VE1M2", 3L);
+    arendeStatsMap.put("VE2", 2L);
+    arendeStatsMap.put("VE3", 1L);
 
-        arendeStatsMap.put("VE1", 2L);
-        arendeStatsMap.put("VE1M1", 3L);
-        arendeStatsMap.put("VE1M2", 3L);
-        arendeStatsMap.put("VE2", 2L);
-        arendeStatsMap.put("VE3", 1L);
+    intygStatsMap = new HashMap<>();
 
-        intygStatsMap = new HashMap<>();
+    intygStatsMap.put("VE1M1", 1L);
+    intygStatsMap.put("VE1M2", 2L);
+    intygStatsMap.put("VE2", 2L);
 
-        intygStatsMap.put("VE1M1", 1L);
-        intygStatsMap.put("VE1M2", 2L);
-        intygStatsMap.put("VE2", 2L);
+    mockUser = new WebCertUser();
 
-        mockUser = new WebCertUser();
+    Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+    mockUser.setRoles(AuthoritiesResolverUtil.toMap(role));
+    mockUser.setAuthorities(
+        AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
 
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-        mockUser.setRoles(AuthoritiesResolverUtil.toMap(role));
-        mockUser.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+    ve1 = new Vardenhet("VE1", "Vardenhet1");
+    ve1.getMottagningar().add(new Mottagning("VE1M1", "Mottagning1"));
+    ve1.getMottagningar().add(new Mottagning("VE1M2", "Mottagning2"));
 
-        ve1 = new Vardenhet("VE1", "Vardenhet1");
-        ve1.getMottagningar().add(new Mottagning("VE1M1", "Mottagning1"));
-        ve1.getMottagningar().add(new Mottagning("VE1M2", "Mottagning2"));
+    ve2 = new Vardenhet("VE2", "Vardenhet2");
+    ve2.getMottagningar().add(new Mottagning("VE2M1", "Mottagning3"));
 
-        ve2 = new Vardenhet("VE2", "Vardenhet2");
-        ve2.getMottagningar().add(new Mottagning("VE2M1", "Mottagning3"));
+    ve3 = new Vardenhet("VE3", "Vardenhet3");
 
-        ve3 = new Vardenhet("VE3", "Vardenhet3");
+    ve4 = new Vardenhet("VE4", "Vardenhet4");
 
-        ve4 = new Vardenhet("VE4", "Vardenhet4");
+    Vardgivare vg = new Vardgivare("VG1", "Vardgivaren");
+    vg.setVardenheter(Arrays.asList(ve1, ve2, ve3, ve4));
 
-        Vardgivare vg = new Vardgivare("VG1", "Vardgivaren");
-        vg.setVardenheter(Arrays.asList(ve1, ve2, ve3, ve4));
+    mockUser.setVardgivare(Collections.singletonList(vg));
+    mockUser.setValdVardgivare(vg);
 
-        mockUser.setVardgivare(Collections.singletonList(vg));
-        mockUser.setValdVardgivare(vg);
+    when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+        .thenReturn(Stream.of("fk7263").collect(Collectors.toSet()));
+    when(webCertUserService.getUser()).thenReturn(mockUser);
+  }
 
-        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
-            .thenReturn(Stream.of("fk7263").collect(Collectors.toSet()));
-        when(webCertUserService.getUser()).thenReturn(mockUser);
+  @Test
+  public void testGetStatisticsWithSelectedUnitVE2() {
+
+    mockUser.setValdVardenhet(ve2);
+
+    when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet()))
+        .thenReturn(fragaSvarStatsMap);
+    when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet()))
+        .thenReturn(arendeStatsMap);
+    when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
+
+    Response response = statController.getStatistics();
+
+    assertNotNull(response);
+    assertEquals(OK, response.getStatus());
+
+    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    assertNotNull(statsResponse);
+
+    assertEquals(4, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
+    assertEquals(18, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+
+    assertEquals(2, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
+    assertEquals(3, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
+  }
+
+  @Test
+  public void testGetStatisticsWithSelectedUnitVE3() {
+
+    mockUser.setValdVardenhet(ve3);
+
+    when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet()))
+        .thenReturn(fragaSvarStatsMap);
+    when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet()))
+        .thenReturn(arendeStatsMap);
+    when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
+
+    Response response = statController.getStatistics();
+
+    assertNotNull(response);
+    assertEquals(OK, response.getStatus());
+
+    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    assertNotNull(statsResponse);
+
+    assertEquals(2, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
+    assertEquals(20, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+
+    assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
+    assertEquals(5, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
+  }
+
+  @Test
+  public void testGetStatisticsWithSelectedUnitVE4() {
+
+    mockUser.setValdVardenhet(ve4);
+
+    when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet()))
+        .thenReturn(fragaSvarStatsMap);
+    when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet()))
+        .thenReturn(arendeStatsMap);
+    when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
+
+    Response response = statController.getStatistics();
+
+    verify(webCertUserService).getUser();
+
+    verify(fragaSvarService)
+        .getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture(), intygsTypSetCaptor.capture());
+
+    List<String> listArgs = listCaptor.getValue();
+    assertEquals(7, listArgs.size());
+
+    assertNotNull(response);
+    assertEquals(OK, response.getStatus());
+
+    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    assertNotNull(statsResponse);
+
+    assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
+    assertEquals(22, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+  }
+
+  @Test
+  public void testGetStatisticsWithSelectedUnitVE1() {
+
+    mockUser.setValdVardenhet(ve1);
+
+    when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet()))
+        .thenReturn(fragaSvarStatsMap);
+    when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet()))
+        .thenReturn(arendeStatsMap);
+    when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
+
+    Response response = statController.getStatistics();
+
+    verify(webCertUserService).getUser();
+
+    verify(fragaSvarService)
+        .getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture(), intygsTypSetCaptor.capture());
+
+    List<String> listArgs = listCaptor.getValue();
+    assertEquals(7, listArgs.size());
+
+    assertNotNull(response);
+    assertEquals(OK, response.getStatus());
+
+    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    assertNotNull(statsResponse);
+
+    assertEquals(16, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
+    assertEquals(6, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+
+    assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
+    assertEquals(2, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
+
+    StatsResponse refStatsResponse = getReference("StatModuleApiControllerTest/reference.json");
+    assertEquals(refStatsResponse.toString(), statsResponse.toString());
+  }
+
+  @Test
+  public void testWebcertUserIsNull() {
+    when(webCertUserService.getUser()).thenReturn(null);
+
+    Response response = statController.getStatistics();
+    assertNotNull(response);
+
+    verify(webCertUserService).getUser();
+    assertEquals(OK, response.getStatus());
+  }
+
+  @Test
+  public void testWebcertUserIsDjupintegrerad() {
+    mockUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+    Response response = statController.getStatistics();
+
+    assertNotNull(response);
+    verify(webCertUserService).getUser();
+    verifyNoInteractions(authoritiesHelper);
+    verifyNoInteractions(fragaSvarService);
+    verifyNoInteractions(arendeService);
+    verifyNoInteractions(intygDraftService);
+
+    assertEquals(OK, response.getStatus());
+
+    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    assertNotNull(statsResponse);
+
+    assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
+    assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+
+    assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
+    assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
+  }
+
+  @Test
+  public void testMergeMaps() {
+    Map<String, Long> m1 = new HashMap<>();
+    m1.put("enhet-1", 2l);
+    m1.put("enhet-2", 3l);
+    Map<String, Long> m2 = new HashMap<>();
+    m2.put("enhet-2", 2l);
+    m2.put("enhet-3", 4l);
+    Map<String, Long> m3 = StatisticsHelper.mergeArendeAndFragaSvarMaps(m1, m2);
+    assertEquals(3, m3.size());
+    assertEquals((long) 2, (long) m3.get("enhet-1"));
+    assertEquals((long) 5, (long) m3.get("enhet-2"));
+    assertEquals((long) 4, (long) m3.get("enhet-3"));
+  }
+
+  private StatsResponse getReference(String referenceFilePath) {
+    try {
+      return new CustomObjectMapper()
+          .readValue(new ClassPathResource(referenceFilePath).getFile(), StatsResponse.class);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
-
-    @Test
-    public void testGetStatisticsWithSelectedUnitVE2() {
-
-        mockUser.setValdVardenhet(ve2);
-
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet())).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet())).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
-
-        Response response = statController.getStatistics();
-
-        assertNotNull(response);
-        assertEquals(OK, response.getStatus());
-
-        StatsResponse statsResponse = (StatsResponse) response.getEntity();
-        assertNotNull(statsResponse);
-
-        assertEquals(4, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
-        assertEquals(18, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
-
-        assertEquals(2, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
-        assertEquals(3, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
-    }
-
-    @Test
-    public void testGetStatisticsWithSelectedUnitVE3() {
-
-        mockUser.setValdVardenhet(ve3);
-
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet())).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet())).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
-
-        Response response = statController.getStatistics();
-
-        assertNotNull(response);
-        assertEquals(OK, response.getStatus());
-
-        StatsResponse statsResponse = (StatsResponse) response.getEntity();
-        assertNotNull(statsResponse);
-
-        assertEquals(2, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
-        assertEquals(20, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
-
-        assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
-        assertEquals(5, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
-    }
-
-    @Test
-    public void testGetStatisticsWithSelectedUnitVE4() {
-
-        mockUser.setValdVardenhet(ve4);
-
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet())).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet())).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
-
-        Response response = statController.getStatistics();
-
-        verify(webCertUserService).getUser();
-
-        verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture(), intygsTypSetCaptor.capture());
-
-        List<String> listArgs = listCaptor.getValue();
-        assertEquals(7, listArgs.size());
-
-        assertNotNull(response);
-        assertEquals(OK, response.getStatus());
-
-        StatsResponse statsResponse = (StatsResponse) response.getEntity();
-        assertNotNull(statsResponse);
-
-        assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
-        assertEquals(22, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
-    }
-
-    @Test
-    public void testGetStatisticsWithSelectedUnitVE1() {
-
-        mockUser.setValdVardenhet(ve1);
-
-        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyList(), anySet())).thenReturn(fragaSvarStatsMap);
-        when(arendeService.getNbrOfUnhandledArendenForCareUnits(anyList(), anySet())).thenReturn(arendeStatsMap);
-        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
-
-        Response response = statController.getStatistics();
-
-        verify(webCertUserService).getUser();
-
-        verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture(), intygsTypSetCaptor.capture());
-
-        List<String> listArgs = listCaptor.getValue();
-        assertEquals(7, listArgs.size());
-
-        assertNotNull(response);
-        assertEquals(OK, response.getStatus());
-
-        StatsResponse statsResponse = (StatsResponse) response.getEntity();
-        assertNotNull(statsResponse);
-
-        assertEquals(16, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
-        assertEquals(6, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
-
-        assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
-        assertEquals(2, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
-
-        StatsResponse refStatsResponse = getReference("StatModuleApiControllerTest/reference.json");
-        assertEquals(refStatsResponse.toString(), statsResponse.toString());
-    }
-
-    @Test
-    public void testWebcertUserIsNull() {
-        when(webCertUserService.getUser()).thenReturn(null);
-
-        Response response = statController.getStatistics();
-        assertNotNull(response);
-
-        verify(webCertUserService).getUser();
-        assertEquals(OK, response.getStatus());
-    }
-
-    @Test
-    public void testWebcertUserIsDjupintegrerad() {
-        mockUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-
-        Response response = statController.getStatistics();
-
-        assertNotNull(response);
-        verify(webCertUserService).getUser();
-        verifyNoInteractions(authoritiesHelper);
-        verifyNoInteractions(fragaSvarService);
-        verifyNoInteractions(arendeService);
-        verifyNoInteractions(intygDraftService);
-
-        assertEquals(OK, response.getStatus());
-
-        StatsResponse statsResponse = (StatsResponse) response.getEntity();
-        assertNotNull(statsResponse);
-
-        assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
-        assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
-
-        assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
-        assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
-    }
-
-    @Test
-    public void testMergeMaps() {
-        Map<String, Long> m1 = new HashMap<>();
-        m1.put("enhet-1", 2l);
-        m1.put("enhet-2", 3l);
-        Map<String, Long> m2 = new HashMap<>();
-        m2.put("enhet-2", 2l);
-        m2.put("enhet-3", 4l);
-        Map<String, Long> m3 = StatisticsHelper.mergeArendeAndFragaSvarMaps(m1, m2);
-        assertEquals(3, m3.size());
-        assertEquals((long) 2, (long) m3.get("enhet-1"));
-        assertEquals((long) 5, (long) m3.get("enhet-2"));
-        assertEquals((long) 4, (long) m3.get("enhet-3"));
-    }
-
-    private StatsResponse getReference(String referenceFilePath) {
-        try {
-            return new CustomObjectMapper().readValue(new ClassPathResource(
-                referenceFilePath).getFile(), StatsResponse.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+  }
 }

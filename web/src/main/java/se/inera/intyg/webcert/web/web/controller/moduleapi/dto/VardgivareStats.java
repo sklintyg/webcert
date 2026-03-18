@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,48 +27,53 @@ import java.util.List;
 @JsonPropertyOrder({"namn", "id", "vardenheter"})
 public class VardgivareStats {
 
-    @JsonProperty("namn")
-    private String namn;
+  @JsonProperty("namn")
+  private String namn;
 
-    @JsonProperty("id")
-    private String hsaId;
+  @JsonProperty("id")
+  private String hsaId;
 
-    private List<VardenhetStats> vardenheter = new ArrayList<>();
+  private List<VardenhetStats> vardenheter = new ArrayList<>();
 
-    public VardgivareStats(@JsonProperty("namn") String namn, @JsonProperty("id") String hsaId) {
-        super();
-        this.namn = namn;
-        this.hsaId = hsaId;
-    }
+  public VardgivareStats(@JsonProperty("namn") String namn, @JsonProperty("id") String hsaId) {
+    super();
+    this.namn = namn;
+    this.hsaId = hsaId;
+  }
 
-    public String getNamn() {
-        return namn;
-    }
+  public String getNamn() {
+    return namn;
+  }
 
-    public void setNamn(String namn) {
-        this.namn = namn;
-    }
+  public void setNamn(String namn) {
+    this.namn = namn;
+  }
 
-    public String getHsaId() {
-        return hsaId;
-    }
+  public String getHsaId() {
+    return hsaId;
+  }
 
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
+  public void setHsaId(String hsaId) {
+    this.hsaId = hsaId;
+  }
 
-    public List<VardenhetStats> getVardenheter() {
-        return vardenheter;
-    }
+  public List<VardenhetStats> getVardenheter() {
+    return vardenheter;
+  }
 
-    public void setVardenheter(List<VardenhetStats> vardenheter) {
-        this.vardenheter = vardenheter;
-    }
+  public void setVardenheter(List<VardenhetStats> vardenheter) {
+    this.vardenheter = vardenheter;
+  }
 
-    @Override
-    @JsonIgnore
-    public String toString() {
-        return "VardgivareStats [namn=" + namn + ", hsaId=" + hsaId + ", vardenheter=" + vardenheter + "]";
-    }
-
+  @Override
+  @JsonIgnore
+  public String toString() {
+    return "VardgivareStats [namn="
+        + namn
+        + ", hsaId="
+        + hsaId
+        + ", vardenheter="
+        + vardenheter
+        + "]";
+  }
 }

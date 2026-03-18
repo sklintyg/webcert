@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 
 import org.springframework.stereotype.Component;
@@ -28,42 +27,44 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActio
 @Component
 public class DbConfirmationModalProvider implements ConfirmationModalProvider {
 
-    @Override
-    public CertificateConfirmationModal create(String patientName, String patientId, String origin) {
-        final var isIntegratedOrigin = origin.equals("DJUPINTEGRATION");
+  @Override
+  public CertificateConfirmationModal create(String patientName, String patientId, String origin) {
+    final var isIntegratedOrigin = origin.equals("DJUPINTEGRATION");
 
-        return CertificateConfirmationModal.builder()
-            .title("Kontrollera namn och personnummer på den avlidne")
-            .alert(
-                Alert.builder()
-                    .type(MessageLevel.ERROR)
-                    .text(getAlertText(patientName, patientId))
-                    .build()
-            )
-            .checkboxText("Jag har kontrollerat att personuppgifterna stämmer")
-            .primaryAction(CertificateModalActionType.READ)
-            .secondaryAction(
-                !isIntegratedOrigin ? CertificateModalActionType.CANCEL : CertificateModalActionType.DELETE)
-            .text(getText(!isIntegratedOrigin))
-            .build();
-    }
+    return CertificateConfirmationModal.builder()
+        .title("Kontrollera namn och personnummer på den avlidne")
+        .alert(
+            Alert.builder()
+                .type(MessageLevel.ERROR)
+                .text(getAlertText(patientName, patientId))
+                .build())
+        .checkboxText("Jag har kontrollerat att personuppgifterna stämmer")
+        .primaryAction(CertificateModalActionType.READ)
+        .secondaryAction(
+            !isIntegratedOrigin
+                ? CertificateModalActionType.CANCEL
+                : CertificateModalActionType.DELETE)
+        .text(getText(!isIntegratedOrigin))
+        .build();
+  }
 
-    private String getText(boolean isNormalOrigin) {
-        var text = "<p>Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.</p>"
+  private String getText(boolean isNormalOrigin) {
+    var text =
+        "<p>Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.</p>"
             + "<p>Kontrollera därför en extra gång att personuppgifterna stämmer.</p>";
 
-        if (!isNormalOrigin) {
-            text += "<p>Om fel personuppgifter visas ovan, välj Radera.</p>";
-        }
-
-        return text;
+    if (!isNormalOrigin) {
+      text += "<p>Om fel personuppgifter visas ovan, välj Radera.</p>";
     }
 
-    private String getAlertText(String patientName, String patientId) {
-        return "Du är på väg att utfärda ett dödsbevis för<br/><strong>"
-            + patientName
-            + " - "
-            + patientId
-            + "</strong>";
-    }
+    return text;
+  }
+
+  private String getAlertText(String patientName, String patientId) {
+    return "Du är på väg att utfärda ett dödsbevis för<br/><strong>"
+        + patientName
+        + " - "
+        + patientId
+        + "</strong>";
+  }
 }

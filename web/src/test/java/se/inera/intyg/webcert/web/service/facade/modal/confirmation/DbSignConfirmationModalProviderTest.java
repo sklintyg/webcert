@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,52 +28,52 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActio
 
 class DbSignConfirmationModalProviderTest {
 
-    private static final String NAME = "NAME MIDDLE LAST";
-    private static final String PATIENT_ID = "ID";
+  private static final String NAME = "NAME MIDDLE LAST";
+  private static final String PATIENT_ID = "ID";
 
-    private final DbSignConfirmationModalProvider provider = new DbSignConfirmationModalProvider();
+  private final DbSignConfirmationModalProvider provider = new DbSignConfirmationModalProvider();
 
-    @Test
-    void shouldReturnExpectedModalForNormalOrigin() {
-        final var expected = CertificateConfirmationModal.builder()
+  @Test
+  void shouldReturnExpectedModalForNormalOrigin() {
+    final var expected =
+        CertificateConfirmationModal.builder()
             .title("Kontrollera namn och personnummer på den avlidne")
             .alert(
                 Alert.builder()
                     .type(MessageLevel.ERROR)
                     .text(
                         "När dödsbevis signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras. "
-                            + "<strong>Detta går inte att ångra.</strong>"
-                    )
-                    .build()
-            )
-            .checkboxText("<div>Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong></div>")
+                            + "<strong>Detta går inte att ångra.</strong>")
+                    .build())
+            .checkboxText(
+                "<div>Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong></div>")
             .primaryAction(CertificateModalActionType.SIGN)
             .secondaryAction(CertificateModalActionType.CANCEL)
             .text("För att kunna signera behöver du kontrollera att personuppgifterna stämmer.")
             .build();
 
-        assertEquals(expected, provider.create(NAME, PATIENT_ID, "NORMAL"));
-    }
+    assertEquals(expected, provider.create(NAME, PATIENT_ID, "NORMAL"));
+  }
 
-    @Test
-    void shouldReturnExpectedModalForIntegratedOrigin() {
-        final var expected = CertificateConfirmationModal.builder()
+  @Test
+  void shouldReturnExpectedModalForIntegratedOrigin() {
+    final var expected =
+        CertificateConfirmationModal.builder()
             .title("Kontrollera namn och personnummer på den avlidne")
             .alert(
                 Alert.builder()
                     .type(MessageLevel.ERROR)
                     .text(
                         "När dödsbevis signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras. "
-                            + "<strong>Detta går inte att ångra.</strong>"
-                    ).build()
-            )
-            .checkboxText("<div>Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong></div>")
+                            + "<strong>Detta går inte att ångra.</strong>")
+                    .build())
+            .checkboxText(
+                "<div>Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong></div>")
             .primaryAction(CertificateModalActionType.SIGN)
             .secondaryAction(CertificateModalActionType.CANCEL)
             .text("För att kunna signera behöver du kontrollera att personuppgifterna stämmer.")
             .build();
 
-        assertEquals(expected, provider.create(NAME, PATIENT_ID, "DJUPINTEGRATION"));
-    }
-
+    assertEquals(expected, provider.create(NAME, PATIENT_ID, "DJUPINTEGRATION"));
+  }
 }

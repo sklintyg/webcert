@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,70 +32,63 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 
 public interface ArendeService {
 
-    /**
-     * Validates and decorates incoming arende with additional information.
-     */
-    Arende processIncomingMessage(Arende arende);
+  /** Validates and decorates incoming arende with additional information. */
+  Arende processIncomingMessage(Arende arende);
 
-    ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande);
+  ArendeConversationView createMessage(
+      String intygId, ArendeAmne amne, String rubrik, String meddelande);
 
-    Arende sendMessage(ArendeDraft arendeDraft);
+  Arende sendMessage(ArendeDraft arendeDraft);
 
-    ArendeConversationView answer(String svarPaMeddelandeId, String meddelande);
+  ArendeConversationView answer(String svarPaMeddelandeId, String meddelande);
 
-    List<ArendeConversationView> answerKomplettering(String intygsId, String meddelande);
+  List<ArendeConversationView> answerKomplettering(String intygsId, String meddelande);
 
-    List<ArendeConversationView> setForwarded(String intygsId);
+  List<ArendeConversationView> setForwarded(String intygsId);
 
-    ArendeConversationView openArendeAsUnhandled(String meddelandeId);
+  ArendeConversationView openArendeAsUnhandled(String meddelandeId);
 
-    /**
-     * List names of signing doctors for units where the webcert user is logged in.
-     */
-    List<Lakare> listSignedByForUnits(String enhetsId);
+  /** List names of signing doctors for units where the webcert user is logged in. */
+  List<Lakare> listSignedByForUnits(String enhetsId);
 
-    List<ArendeConversationView> getArenden(String intygsId);
+  List<ArendeConversationView> getArenden(String intygsId);
 
-    QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters);
+  QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters);
 
-    QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters, boolean excludeUnhandledQuestions);
+  QueryFragaSvarResponse filterArende(
+      QueryFragaSvarParameter filterParameters, boolean excludeUnhandledQuestions);
 
-    /**
-     * Close Arende and set status 'CLOSED'.
-     */
-    ArendeConversationView closeArendeAsHandled(String meddelandeId, String intygTyp);
+  /** Close Arende and set status 'CLOSED'. */
+  ArendeConversationView closeArendeAsHandled(String meddelandeId, String intygTyp);
 
-    /**
-     * Close all Kompletteringsbegäran for the given certificate.
-     */
-    void closeCompletionsAsHandled(String intygId, String intygTyp);
+  /** Close all Kompletteringsbegäran for the given certificate. */
+  void closeCompletionsAsHandled(String intygId, String intygTyp);
 
-    /**
-     * Close all messages related to a certificate.
-     *
-     * @param intygsId the certificates unique identifier
-     */
-    void closeAllNonClosedQuestions(String intygsId);
+  /**
+   * Close all messages related to a certificate.
+   *
+   * @param intygsId the certificates unique identifier
+   */
+  void closeAllNonClosedQuestions(String intygsId);
 
-    void reopenClosedCompletions(String intygsId);
+  void reopenClosedCompletions(String intygsId);
 
-    Arende getArende(String meddelandeId);
+  Arende getArende(String meddelandeId);
 
-    Map<String, Long> getNbrOfUnhandledArendenForCareUnits(List<String> allUnitIds, Set<String> intygsTyper);
+  Map<String, Long> getNbrOfUnhandledArendenForCareUnits(
+      List<String> allUnitIds, Set<String> intygsTyper);
 
-    /**
-     * Return the ID of the most recent message for the care unit currently logged
-     * in to.
-     */
-    String getLatestMeddelandeIdForCurrentCareUnit(String intygsId);
+  /** Return the ID of the most recent message for the care unit currently logged in to. */
+  String getLatestMeddelandeIdForCurrentCareUnit(String intygsId);
 
-    List<Arende> getKompletteringar(List<String> intygsIds);
+  List<Arende> getKompletteringar(List<String> intygsIds);
 
-    List<Arende> getArendenExternal(List<String> intygsIds);
+  List<Arende> getArendenExternal(List<String> intygsIds);
 
-    List<Arende> getArendenInternal(String intygsId);
+  List<Arende> getArendenInternal(String intygsId);
 
-    List<Arende> getRelatedArenden(String questionId);
+  List<Arende> getRelatedArenden(String questionId);
 
-    List<Arende> getArendenForPatientsWithTimestampAfterDate(List<String> patientIds, LocalDateTime earliestValidDate);
+  List<Arende> getArendenForPatientsWithTimestampAfterDate(
+      List<String> patientIds, LocalDateTime earliestValidDate);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.client;
 
 import java.util.ArrayList;
@@ -36,46 +35,52 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 @Service
 public class SubscriptionRestClient {
 
-    @Value("${servicenow.username}")
-    private String serviceNowUsername;
+  @Value("${servicenow.username}")
+  private String serviceNowUsername;
 
-    @Value("${servicenow.password}")
-    private String serviceNowPassword;
+  @Value("${servicenow.password}")
+  private String serviceNowPassword;
 
-    @Value("${servicenow.subscription.url.v2}")
-    private String serviceNowSubscriptionServiceUrl;
+  @Value("${servicenow.subscription.url.v2}")
+  private String serviceNowSubscriptionServiceUrl;
 
-    @Value("#{${servicenow.subscription.service.names}}")
-    private List<String> serviceNowSubscriptionServiceNames;
+  @Value("#{${servicenow.subscription.service.names}}")
+  private List<String> serviceNowSubscriptionServiceNames;
 
-    private final RestTemplate serviceNowRestTemplate;
+  private final RestTemplate serviceNowRestTemplate;
 
-    public SubscriptionRestClient(@Qualifier("serviceNowRestTemplate") RestTemplate serviceNowRestTemplate) {
-        this.serviceNowRestTemplate = serviceNowRestTemplate;
-    }
+  public SubscriptionRestClient(
+      @Qualifier("serviceNowRestTemplate") RestTemplate serviceNowRestTemplate) {
+    this.serviceNowRestTemplate = serviceNowRestTemplate;
+  }
 
-    public OrganizationResponse getSubscriptionServiceResponse(Set<String> organizationNumbers) {
-        final var httpEntity = getRequestEntity(organizationNumbers);
-        final var response = serviceNowRestTemplate.exchange(serviceNowSubscriptionServiceUrl, HttpMethod.POST, httpEntity,
+  public OrganizationResponse getSubscriptionServiceResponse(Set<String> organizationNumbers) {
+    final var httpEntity = getRequestEntity(organizationNumbers);
+    final var response =
+        serviceNowRestTemplate.exchange(
+            serviceNowSubscriptionServiceUrl,
+            HttpMethod.POST,
+            httpEntity,
             OrganizationResponse.class);
 
-        if (response.getBody() == null) {
-            throw new IllegalStateException("Response body was null");
-        }
-
-        return response.getBody();
+    if (response.getBody() == null) {
+      throw new IllegalStateException("Response body was null");
     }
 
-    private HttpEntity<OrganizationRequest> getRequestEntity(Set<String> organizationNumbers) {
-        final var requestBody = OrganizationRequest.builder()
+    return response.getBody();
+  }
+
+  private HttpEntity<OrganizationRequest> getRequestEntity(Set<String> organizationNumbers) {
+    final var requestBody =
+        OrganizationRequest.builder()
             .services(serviceNowSubscriptionServiceNames)
             .customers(new ArrayList<>(organizationNumbers))
             .build();
 
-        final var headers = new HttpHeaders();
-        headers.setBasicAuth(serviceNowUsername, serviceNowPassword);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        return new HttpEntity<>(requestBody, headers);
-    }
+    final var headers = new HttpHeaders();
+    headers.setBasicAuth(serviceNowUsername, serviceNowPassword);
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    return new HttpEntity<>(requestBody, headers);
+  }
 }

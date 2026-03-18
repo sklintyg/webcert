@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,11 +34,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableSchedulerLock(defaultLockAtMostFor = "PT10M")
 public class JobConfig {
 
-    @Autowired
-    private JedisConnectionFactory jedisConnectionFactory;
+  @Autowired private JedisConnectionFactory jedisConnectionFactory;
 
-    @Bean
-    public LockProvider lockProvider() {
-        return new RedisLockProvider(jedisConnectionFactory, "webcert");
-    }
+  @Bean
+  public LockProvider lockProvider() {
+    return new RedisLockProvider(jedisConnectionFactory, "webcert");
+  }
 }

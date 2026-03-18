@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,8 +23,7 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 
 public interface FmbConsumer {
 
-    Typfall getTypfall() throws FailedToFetchFmbDataException;
+  Typfall getTypfall() throws FailedToFetchFmbDataException;
 
-    FmdxInformation getForsakringsmedicinskDiagnosinformation() throws FailedToFetchFmbDataException;
-
+  FmdxInformation getForsakringsmedicinskDiagnosinformation() throws FailedToFetchFmbDataException;
 }

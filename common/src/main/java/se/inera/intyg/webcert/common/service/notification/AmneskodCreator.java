@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,19 +28,17 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
  */
 public final class AmneskodCreator {
 
-    // It's an utility class, hide the default constructor
-    private AmneskodCreator() {
-    }
+  // It's an utility class, hide the default constructor
+  private AmneskodCreator() {}
 
-    public static Amneskod create(String code, String displayName) {
-        Assert.notNull(code, "The code argument must not be null");
+  public static Amneskod create(String code, String displayName) {
+    Assert.notNull(code, "The code argument must not be null");
 
-        Amneskod amne = new Amneskod();
-        amne.setCode(code);
-        amne.setCodeSystem(KV_AMNE_CODE_SYSTEM);
-        amne.setDisplayName(displayName);
+    Amneskod amne = new Amneskod();
+    amne.setCode(code);
+    amne.setCodeSystem(KV_AMNE_CODE_SYSTEM);
+    amne.setDisplayName(displayName);
 
-        return amne;
-    }
-
+    return amne;
+  }
 }

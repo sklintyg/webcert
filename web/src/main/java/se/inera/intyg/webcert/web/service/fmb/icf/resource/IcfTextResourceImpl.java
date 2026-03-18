@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,131 +47,134 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 @Component
 public class IcfTextResourceImpl implements IcfTextResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
-    private static final String ACTION = "Initiate ICF Text Resources";
+  private static final Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+  private static final String ACTION = "Initiate ICF Text Resources";
 
-    private static final int ICF_KODER_COLUMN = 8;
-    private static final int BENAMNING_COLUMN = 10;
-    private static final int ALTERNATIV_TERM_COLUMN = 11;
-    private static final int BESKRIVNING_COLUMN = 12;
-    private static final int INNEFATTAR_COLUMN = 13;
+  private static final int ICF_KODER_COLUMN = 8;
+  private static final int BENAMNING_COLUMN = 10;
+  private static final int ALTERNATIV_TERM_COLUMN = 11;
+  private static final int BESKRIVNING_COLUMN = 12;
+  private static final int INNEFATTAR_COLUMN = 13;
 
-    private HashMap<String, IcfKod> icfKoder = HashMap.empty();
+  private HashMap<String, IcfKod> icfKoder = HashMap.empty();
 
-    @Value("${icf.text.resource.path}")
-    private String location;
+  @Value("${icf.text.resource.path}")
+  private String location;
 
-    @Autowired
-    ResourceLoader resourceLoader;
+  @Autowired ResourceLoader resourceLoader;
 
-    @PostConstruct
-    void init() {
-        LOG.info(MessageFormat.format("Starting: {0}", ACTION));
+  @PostConstruct
+  void init() {
+    LOG.info(MessageFormat.format("Starting: {0}", ACTION));
 
-        if (!ResourceUtils.isUrl(location)) {
-            location = "file:" + location;
-        }
-
-        final Try<Void> initJob = Try.run(this::initIcfTextResources);
-
-        if (initJob.isFailure()) {
-            LOG.warn(MessageFormat.format("Could not {0}", ACTION));
-            initJob.getCause().printStackTrace();
-        } else {
-            LOG.info(MessageFormat.format("Done: {0}", ACTION));
-        }
-
+    if (!ResourceUtils.isUrl(location)) {
+      location = "file:" + location;
     }
 
-    @Override
-    public Optional<IcfKod> lookupTextByIcfKod(final String icfKod) {
-        return icfKoder.get(lowerCase(icfKod)).toJavaOptional();
+    final Try<Void> initJob = Try.run(this::initIcfTextResources);
+
+    if (initJob.isFailure()) {
+      LOG.warn(MessageFormat.format("Could not {0}", ACTION));
+      initJob.getCause().printStackTrace();
+    } else {
+      LOG.info(MessageFormat.format("Done: {0}", ACTION));
     }
+  }
 
-    private void initIcfTextResources() throws IOException {
-        final HashMap<Integer, HashMap<Integer, String>> rowsContent = getRowContent();
-        parseIcfKodInfo(rowsContent);
-    }
+  @Override
+  public Optional<IcfKod> lookupTextByIcfKod(final String icfKod) {
+    return icfKoder.get(lowerCase(icfKod)).toJavaOptional();
+  }
 
-    private HashMap<Integer, HashMap<Integer, String>> getRowContent() throws IOException {
+  private void initIcfTextResources() throws IOException {
+    final HashMap<Integer, HashMap<Integer, String>> rowsContent = getRowContent();
+    parseIcfKodInfo(rowsContent);
+  }
 
-        try (InputStream is = resourceLoader.getResource(location).getInputStream();
-            Workbook workbook = WorkbookFactory.create(is)) {
+  private HashMap<Integer, HashMap<Integer, String>> getRowContent() throws IOException {
 
-            final Sheet diagnoseCodesSheet = workbook.getSheetAt(1);
+    try (InputStream is = resourceLoader.getResource(location).getInputStream();
+        Workbook workbook = WorkbookFactory.create(is)) {
 
-            final int lastRowNum = diagnoseCodesSheet.getLastRowNum();
-            final int rows = lastRowNum + 1;
+      final Sheet diagnoseCodesSheet = workbook.getSheetAt(1);
 
-            final int startRow = 1;
-            final int startColumn = 1;
+      final int lastRowNum = diagnoseCodesSheet.getLastRowNum();
+      final int rows = lastRowNum + 1;
 
-            HashMap<Integer, HashMap<Integer, String>> data = HashMap.empty();
-            for (int rowNum = startRow; rowNum < rows; rowNum++) {
-                final Row row = diagnoseCodesSheet.getRow(rowNum);
-                if (row == null) {
-                    continue;
-                }
+      final int startRow = 1;
+      final int startColumn = 1;
 
-                // Check if row has any data in the ICF_KODER_COLUMN (column 8) - skip empty rows
-                final Cell icfKodCell = row.getCell(ICF_KODER_COLUMN);
-                if (icfKodCell == null || StringUtils.isBlank(getCellValueAsString(icfKodCell))) {
-                    continue;
-                }
-
-                HashMap<Integer, String> rowContent = HashMap.empty();
-                final int lastCellNum = row.getLastCellNum();
-
-                for (int column = startColumn; column < lastCellNum; column++) {
-                    final Cell cell = row.getCell(column);
-                    final String cellValue = getCellValueAsString(cell);
-                    rowContent = rowContent.put(column, cellValue);
-                }
-                data = data.put(rowNum, rowContent);
-            }
-            return data;
-        }
-    }
-
-    private String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return "";
+      HashMap<Integer, HashMap<Integer, String>> data = HashMap.empty();
+      for (int rowNum = startRow; rowNum < rows; rowNum++) {
+        final Row row = diagnoseCodesSheet.getRow(rowNum);
+        if (row == null) {
+          continue;
         }
 
-        CellType cellType = cell.getCellType();
-        if (cellType == CellType.FORMULA) {
-            cellType = cell.getCachedFormulaResultType();
+        // Check if row has any data in the ICF_KODER_COLUMN (column 8) - skip empty rows
+        final Cell icfKodCell = row.getCell(ICF_KODER_COLUMN);
+        if (icfKodCell == null || StringUtils.isBlank(getCellValueAsString(icfKodCell))) {
+          continue;
         }
 
-        switch (cellType) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case BLANK:
-                return "";
-            default:
-                return "";
+        HashMap<Integer, String> rowContent = HashMap.empty();
+        final int lastCellNum = row.getLastCellNum();
+
+        for (int column = startColumn; column < lastCellNum; column++) {
+          final Cell cell = row.getCell(column);
+          final String cellValue = getCellValueAsString(cell);
+          rowContent = rowContent.put(column, cellValue);
         }
+        data = data.put(rowNum, rowContent);
+      }
+      return data;
+    }
+  }
+
+  private String getCellValueAsString(Cell cell) {
+    if (cell == null) {
+      return "";
     }
 
-    private void parseIcfKodInfo(final HashMap<Integer, HashMap<Integer, String>> rowsContent) {
-        rowsContent.forEach(rowContent -> {
-            final HashMap<Integer, String> rowColumns = rowContent._2;
+    CellType cellType = cell.getCellType();
+    if (cellType == CellType.FORMULA) {
+      cellType = cell.getCachedFormulaResultType();
+    }
 
-            final String icfKod = StringUtils.trim(lowerCase(rowColumns.get(ICF_KODER_COLUMN).getOrElse("")));
-            final String benamning = StringUtils.trim(rowColumns.get(BENAMNING_COLUMN).getOrElse(""));
-            final String alternativTerm = StringUtils.trim(rowColumns.get(ALTERNATIV_TERM_COLUMN).getOrElse(""));
-            final String beskrivning = StringUtils.trim(rowColumns.get(BESKRIVNING_COLUMN).getOrElse(""));
-            final String innefattar = StringUtils.trim(rowColumns.get(INNEFATTAR_COLUMN).getOrElse(""));
+    switch (cellType) {
+      case STRING:
+        return cell.getStringCellValue();
+      case NUMERIC:
+        return String.valueOf(cell.getNumericCellValue());
+      case BOOLEAN:
+        return String.valueOf(cell.getBooleanCellValue());
+      case BLANK:
+        return "";
+      default:
+        return "";
+    }
+  }
 
-            final String benamningToReturn = StringUtils.isNotEmpty(alternativTerm)
-                ? alternativTerm
-                : benamning;
+  private void parseIcfKodInfo(final HashMap<Integer, HashMap<Integer, String>> rowsContent) {
+    rowsContent.forEach(
+        rowContent -> {
+          final HashMap<Integer, String> rowColumns = rowContent._2;
 
-            icfKoder = icfKoder.put(icfKod, IcfKod.of(icfKod, benamningToReturn, beskrivning, innefattar));
+          final String icfKod =
+              StringUtils.trim(lowerCase(rowColumns.get(ICF_KODER_COLUMN).getOrElse("")));
+          final String benamning = StringUtils.trim(rowColumns.get(BENAMNING_COLUMN).getOrElse(""));
+          final String alternativTerm =
+              StringUtils.trim(rowColumns.get(ALTERNATIV_TERM_COLUMN).getOrElse(""));
+          final String beskrivning =
+              StringUtils.trim(rowColumns.get(BESKRIVNING_COLUMN).getOrElse(""));
+          final String innefattar =
+              StringUtils.trim(rowColumns.get(INNEFATTAR_COLUMN).getOrElse(""));
+
+          final String benamningToReturn =
+              StringUtils.isNotEmpty(alternativTerm) ? alternativTerm : benamning;
+
+          icfKoder =
+              icfKoder.put(icfKod, IcfKod.of(icfKod, benamningToReturn, beskrivning, innefattar));
         });
-    }
+  }
 }

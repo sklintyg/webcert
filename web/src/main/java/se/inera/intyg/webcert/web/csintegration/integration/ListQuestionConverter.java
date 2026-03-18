@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,82 +36,84 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 @Component
 public class ListQuestionConverter {
 
-    public ArendeListItem convert(Optional<CertificateDTO> certificate, Question question) {
-        if (certificate.isEmpty()) {
-            throw new IllegalStateException("Certificate for question was not available");
-        }
-
-        final var arendeListItem = new ArendeListItem();
-        final var metadata = certificate.get().getMetadata();
-
-        arendeListItem.setIntygId(metadata.getId());
-        arendeListItem.setTestIntyg(metadata.isTestCertificate());
-        arendeListItem.setPatientId(metadata.getPatient().getPersonId().getId());
-        arendeListItem.setAvliden(metadata.getPatient().isDeceased());
-        arendeListItem.setSigneratAv(metadata.getIssuedBy().getPersonId());
-        arendeListItem.setSekretessmarkering(metadata.getPatient().isProtectedPerson());
-        arendeListItem.setAmne(convertSubject(question.getType()).name());
-        arendeListItem.setSigneratAvNamn(metadata.getIssuedBy().getFullName());
-        arendeListItem.setFragestallare(convertAuthor(question.getAuthor()));
-        arendeListItem.setReceivedDate(question.getSent());
-        arendeListItem.setPaminnelse(question.getReminders() != null && question.getReminders().length > 0);
-        arendeListItem.setStatus(convertStatusQuestion(question));
-        arendeListItem.setVidarebefordrad(question.isForwarded());
-        arendeListItem.setLinks(getLinks(question));
-
-        return arendeListItem;
+  public ArendeListItem convert(Optional<CertificateDTO> certificate, Question question) {
+    if (certificate.isEmpty()) {
+      throw new IllegalStateException("Certificate for question was not available");
     }
 
-    private String convertAuthor(String authorName) {
-        if (authorName.equals(QuestionSenderType.FK.getName())) {
-            return QuestionSenderType.FK.toString();
-        }
+    final var arendeListItem = new ArendeListItem();
+    final var metadata = certificate.get().getMetadata();
 
-        return QuestionSenderType.WC.toString();
+    arendeListItem.setIntygId(metadata.getId());
+    arendeListItem.setTestIntyg(metadata.isTestCertificate());
+    arendeListItem.setPatientId(metadata.getPatient().getPersonId().getId());
+    arendeListItem.setAvliden(metadata.getPatient().isDeceased());
+    arendeListItem.setSigneratAv(metadata.getIssuedBy().getPersonId());
+    arendeListItem.setSekretessmarkering(metadata.getPatient().isProtectedPerson());
+    arendeListItem.setAmne(convertSubject(question.getType()).name());
+    arendeListItem.setSigneratAvNamn(metadata.getIssuedBy().getFullName());
+    arendeListItem.setFragestallare(convertAuthor(question.getAuthor()));
+    arendeListItem.setReceivedDate(question.getSent());
+    arendeListItem.setPaminnelse(
+        question.getReminders() != null && question.getReminders().length > 0);
+    arendeListItem.setStatus(convertStatusQuestion(question));
+    arendeListItem.setVidarebefordrad(question.isForwarded());
+    arendeListItem.setLinks(getLinks(question));
+
+    return arendeListItem;
+  }
+
+  private String convertAuthor(String authorName) {
+    if (authorName.equals(QuestionSenderType.FK.getName())) {
+      return QuestionSenderType.FK.toString();
     }
 
-    private Status convertStatusQuestion(Question question) {
-        if (question.isHandled()) {
-            return Status.CLOSED;
-        }
+    return QuestionSenderType.WC.toString();
+  }
 
-        if (isAnswered(question)) {
-            return Status.ANSWERED;
-        }
-
-        return question.getAuthor() != null && question.getAuthor().equals(QuestionSenderType.FK.getName())
-            ? Status.PENDING_INTERNAL_ACTION
-            : Status.PENDING_EXTERNAL_ACTION;
+  private Status convertStatusQuestion(Question question) {
+    if (question.isHandled()) {
+      return Status.CLOSED;
     }
 
-    private static boolean isAnswered(final Question question) {
-        return question.getAnswer() != null && question.getAnswer().getSent() != null;
+    if (isAnswered(question)) {
+      return Status.ANSWERED;
     }
 
-    private ArendeAmne convertSubject(QuestionType questionType) {
-        switch (questionType) {
-            case COORDINATION:
-                return ArendeAmne.AVSTMN;
-            case CONTACT:
-                return ArendeAmne.KONTKT;
-            case MISSING:
-            case OTHER:
-                return ArendeAmne.OVRIGT;
-            case COMPLEMENT:
-                return ArendeAmne.KOMPLT;
-        }
-        throw new IllegalArgumentException("Unsupported question type: " + questionType);
+    return question.getAuthor() != null
+            && question.getAuthor().equals(QuestionSenderType.FK.getName())
+        ? Status.PENDING_INTERNAL_ACTION
+        : Status.PENDING_EXTERNAL_ACTION;
+  }
+
+  private static boolean isAnswered(final Question question) {
+    return question.getAnswer() != null && question.getAnswer().getSent() != null;
+  }
+
+  private ArendeAmne convertSubject(QuestionType questionType) {
+    switch (questionType) {
+      case COORDINATION:
+        return ArendeAmne.AVSTMN;
+      case CONTACT:
+        return ArendeAmne.KONTKT;
+      case MISSING:
+      case OTHER:
+        return ArendeAmne.OVRIGT;
+      case COMPLEMENT:
+        return ArendeAmne.KOMPLT;
+    }
+    throw new IllegalArgumentException("Unsupported question type: " + questionType);
+  }
+
+  private List<ActionLink> getLinks(Question question) {
+    final var links = new ArrayList<ActionLink>();
+    links.add(new ActionLink(ActionLinkType.LASA_FRAGA));
+
+    if (question.getLinks().stream()
+        .anyMatch(link -> link.getType() == ResourceLinkTypeEnum.FORWARD_QUESTION)) {
+      links.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
     }
 
-    private List<ActionLink> getLinks(Question question) {
-        final var links = new ArrayList<ActionLink>();
-        links.add(new ActionLink(ActionLinkType.LASA_FRAGA));
-
-        if (question.getLinks().stream().anyMatch(link -> link.getType() == ResourceLinkTypeEnum.FORWARD_QUESTION)) {
-            links.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
-        }
-
-        return links;
-    }
-
+    return links;
+  }
 }

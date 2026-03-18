@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,43 +35,38 @@ import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFa
 @ExtendWith(MockitoExtension.class)
 class DeleteAnswerAggregatorTest {
 
-    private static final String QUESTION_ID = "questionId";
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    DeleteQuestionAnswerFacadeService deleteAnswerFromWC;
-    @Mock
-    DeleteQuestionAnswerFacadeService deleteAnswerFromCS;
+  private static final String QUESTION_ID = "questionId";
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock DeleteQuestionAnswerFacadeService deleteAnswerFromWC;
+  @Mock DeleteQuestionAnswerFacadeService deleteAnswerFromCS;
 
-    DeleteAnswerAggregator deleteAnswerAggregator;
+  DeleteAnswerAggregator deleteAnswerAggregator;
 
-    @BeforeEach
-    void setUp() {
-        deleteAnswerAggregator = new DeleteAnswerAggregator(
-            deleteAnswerFromWC, deleteAnswerFromCS
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    deleteAnswerAggregator = new DeleteAnswerAggregator(deleteAnswerFromWC, deleteAnswerFromCS);
+  }
 
-    @Test
-    void shallReturnResponseFromCSIfResponseIsNotNull() {
-        final var expectedResult = Question.builder().build();
-        doReturn(expectedResult).when(deleteAnswerFromCS).delete(QUESTION_ID);
+  @Test
+  void shallReturnResponseFromCSIfResponseIsNotNull() {
+    final var expectedResult = Question.builder().build();
+    doReturn(expectedResult).when(deleteAnswerFromCS).delete(QUESTION_ID);
 
-        final var actualResult = deleteAnswerAggregator.delete(QUESTION_ID);
+    final var actualResult = deleteAnswerAggregator.delete(QUESTION_ID);
 
-        verify(deleteAnswerFromWC, never()).delete(QUESTION_ID);
+    verify(deleteAnswerFromWC, never()).delete(QUESTION_ID);
 
-        assertEquals(expectedResult, actualResult);
-    }
+    assertEquals(expectedResult, actualResult);
+  }
 
-    @Test
-    void shallReturnResponseFromWCIfResponseIsFromCSIsNull() {
-        final var expectedResult = Question.builder().build();
-        doReturn(null).when(deleteAnswerFromCS).delete(QUESTION_ID);
-        doReturn(expectedResult).when(deleteAnswerFromWC).delete(QUESTION_ID);
+  @Test
+  void shallReturnResponseFromWCIfResponseIsFromCSIsNull() {
+    final var expectedResult = Question.builder().build();
+    doReturn(null).when(deleteAnswerFromCS).delete(QUESTION_ID);
+    doReturn(expectedResult).when(deleteAnswerFromWC).delete(QUESTION_ID);
 
-        final var actualResult = deleteAnswerAggregator.delete(QUESTION_ID);
+    final var actualResult = deleteAnswerAggregator.delete(QUESTION_ID);
 
-        assertEquals(expectedResult, actualResult);
-    }
+    assertEquals(expectedResult, actualResult);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,31 +31,34 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 @Service("sendCertificateFromWebcert")
 public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeService {
 
-    private final IntygService intygService;
-    private final CertificateReceiverService certificateReceiverService;
+  private final IntygService intygService;
+  private final CertificateReceiverService certificateReceiverService;
 
-    @Autowired
-    public SendCertificateFacadeServiceImpl(IntygService intygService, CertificateReceiverService certificateReceiverService) {
-        this.intygService = intygService;
-        this.certificateReceiverService = certificateReceiverService;
-    }
+  @Autowired
+  public SendCertificateFacadeServiceImpl(
+      IntygService intygService, CertificateReceiverService certificateReceiverService) {
+    this.intygService = intygService;
+    this.certificateReceiverService = certificateReceiverService;
+  }
 
-    @Override
-    public String sendCertificate(String certificateId) {
-        final var intygTypeInfo = intygService.getIntygTypeInfo(certificateId);
-        final var receivers = getMainReceivers(intygTypeInfo.getIntygType());
+  @Override
+  public String sendCertificate(String certificateId) {
+    final var intygTypeInfo = intygService.getIntygTypeInfo(certificateId);
+    final var receivers = getMainReceivers(intygTypeInfo.getIntygType());
 
-        return receivers.stream()
-            .map(r -> intygService.sendIntyg(certificateId, intygTypeInfo.getIntygType(), r.getId(), false))
-            .reduce((r1, r2) -> r1 != IntygServiceResult.OK ? r1 : r2)
-            .orElse(IntygServiceResult.FAILED)
-            .toString();
-    }
+    return receivers.stream()
+        .map(
+            r ->
+                intygService.sendIntyg(
+                    certificateId, intygTypeInfo.getIntygType(), r.getId(), false))
+        .reduce((r1, r2) -> r1 != IntygServiceResult.OK ? r1 : r2)
+        .orElse(IntygServiceResult.FAILED)
+        .toString();
+  }
 
-    private List<IntygReceiver> getMainReceivers(String type) {
-        return certificateReceiverService.listPossibleReceivers(type)
-            .stream()
-            .filter(IntygReceiver::isLocked)
-            .collect(Collectors.toList());
-    }
+  private List<IntygReceiver> getMainReceivers(String type) {
+    return certificateReceiverService.listPossibleReceivers(type).stream()
+        .filter(IntygReceiver::isLocked)
+        .collect(Collectors.toList());
+  }
 }

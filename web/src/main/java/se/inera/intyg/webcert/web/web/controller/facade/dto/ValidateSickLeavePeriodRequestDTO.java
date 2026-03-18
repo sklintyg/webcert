@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,36 +22,35 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDate
 
 public class ValidateSickLeavePeriodRequestDTO {
 
-    private String personId;
-    private String[] icd10Codes;
-    private CertificateDataValueDateRangeList dateRangeList;
+  private String personId;
+  private String[] icd10Codes;
+  private CertificateDataValueDateRangeList dateRangeList;
 
-    public String getPersonId() {
-        return personId;
-    }
+  public String getPersonId() {
+    return personId;
+  }
 
-    public void setPersonId(String personId) {
-        this.personId = personId;
-    }
+  public void setPersonId(String personId) {
+    this.personId = personId;
+  }
 
-    public void setIcd10Codes(String[] icd10Codes) {
-        this.icd10Codes = icd10Codes;
-    }
+  public void setIcd10Codes(String[] icd10Codes) {
+    this.icd10Codes = icd10Codes;
+  }
 
-    public String[] getIcd10Codes() {
-        return icd10Codes;
-    }
+  public String[] getIcd10Codes() {
+    return icd10Codes;
+  }
 
-    public String getIcd10Code(int index) {
-        return icd10Codes.length - 1 < index ? "" : icd10Codes[index];
-    }
+  public String getIcd10Code(int index) {
+    return icd10Codes.length - 1 < index ? "" : icd10Codes[index];
+  }
 
-    public void setDateRangeList(CertificateDataValueDateRangeList dateRangeList) {
-        this.dateRangeList = dateRangeList;
-    }
+  public void setDateRangeList(CertificateDataValueDateRangeList dateRangeList) {
+    this.dateRangeList = dateRangeList;
+  }
 
-    public CertificateDataValueDateRangeList getDateRangeList() {
-        return dateRangeList;
-    }
-
+  public CertificateDataValueDateRangeList getDateRangeList() {
+    return dateRangeList;
+  }
 }

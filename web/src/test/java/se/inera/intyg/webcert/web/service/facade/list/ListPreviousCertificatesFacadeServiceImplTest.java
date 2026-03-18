@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,90 +56,82 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 @ExtendWith(MockitoExtension.class)
 class ListPreviousCertificatesFacadeServiceImplTest {
 
-    @Mock
-    private WebCertUserService webCertUserService;
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
 
-    @Mock
-    private AuthoritiesValidator authoritiesValidator;
+  @Mock private AuthoritiesValidator authoritiesValidator;
 
-    @Mock
-    private GetStaffInfoFacadeService getStaffInfoFacadeService;
+  @Mock private GetStaffInfoFacadeService getStaffInfoFacadeService;
 
-    @Mock
-    private ResourceLinkHelper resourceLinkListHelper;
+  @Mock private ResourceLinkHelper resourceLinkListHelper;
 
-    @Mock
-    private ListDecorator listDecorator;
+  @Mock private ListDecorator listDecorator;
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
 
-    @Mock
-    private ListSortHelper listSortHelper;
+  @Mock private ListSortHelper listSortHelper;
 
-    @Mock
-    private CertificateListItemConverter certificateListItemConverter;
+  @Mock private CertificateListItemConverter certificateListItemConverter;
 
-    @Mock
-    private ListPaginationHelper listPaginationHelper;
+  @Mock private ListPaginationHelper listPaginationHelper;
 
-    @Mock
-    private LogService logService;
+  @Mock private LogService logService;
 
-    @Mock
-    private CertificateForPatientService certificateForPatientService;
+  @Mock private CertificateForPatientService certificateForPatientService;
 
-    @Mock
-    private ListCertificatesAggregator listCertificatesAggregator;
+  @Mock private ListCertificatesAggregator listCertificatesAggregator;
 
-    @InjectMocks
-    private ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService;
+  @InjectMocks
+  private ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService;
 
-    public static final ListIntygEntry CERTIFICATE_FROM_CS = new ListIntygEntry();
-    private static final List<ListIntygEntry> LIST_FROM_CERTIFICATE_SERVICE = List.of(CERTIFICATE_FROM_CS);
-    private static final ListFilter LIST_FILTER = getTestListFilter();
-    private static final List<String> UNITS = List.of("unitId");
-    private static final List<CertificateListItem> EXPECTED_LIST = List.of(new CertificateListItem(), new CertificateListItem());
+  public static final ListIntygEntry CERTIFICATE_FROM_CS = new ListIntygEntry();
+  private static final List<ListIntygEntry> LIST_FROM_CERTIFICATE_SERVICE =
+      List.of(CERTIFICATE_FROM_CS);
+  private static final ListFilter LIST_FILTER = getTestListFilter();
+  private static final List<String> UNITS = List.of("unitId");
+  private static final List<CertificateListItem> EXPECTED_LIST =
+      List.of(new CertificateListItem(), new CertificateListItem());
 
-    @BeforeEach
-    void setup() {
-        final var webCertUser = new WebCertUser();
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
+  @BeforeEach
+  void setup() {
+    final var webCertUser = new WebCertUser();
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
 
-        when(patientDetailsResolver.getSekretessStatus(Personnummer.createPersonnummer("19121212-1212").orElseThrow()))
-            .thenReturn(SekretessStatus.FALSE);
+    when(patientDetailsResolver.getSekretessStatus(
+            Personnummer.createPersonnummer("19121212-1212").orElseThrow()))
+        .thenReturn(SekretessStatus.FALSE);
 
-        when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(UNITS);
-        when(listPaginationHelper.paginate(anyList(), any())).thenReturn(EXPECTED_LIST);
-        when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
-        when(certificateForPatientService.get(any(), any(), anyList())).thenReturn(
-            TestIntygFactory.createListWithIntygItems());
+    when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(UNITS);
+    when(listPaginationHelper.paginate(anyList(), any())).thenReturn(EXPECTED_LIST);
+    when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
+    when(certificateForPatientService.get(any(), any(), anyList()))
+        .thenReturn(TestIntygFactory.createListWithIntygItems());
 
-        when(listCertificatesAggregator.listCertificatesForPatient("19121212-1212"))
-            .thenReturn(LIST_FROM_CERTIFICATE_SERVICE);
-    }
+    when(listCertificatesAggregator.listCertificatesForPatient("19121212-1212"))
+        .thenReturn(LIST_FROM_CERTIFICATE_SERVICE);
+  }
 
-    @Test
-    void shouldReturnListInfoWithPaginatedList() throws IOException, ModuleNotFoundException {
-        final var actualResult = listPreviousCertificatesFacadeService.get(LIST_FILTER);
+  @Test
+  void shouldReturnListInfoWithPaginatedList() throws IOException, ModuleNotFoundException {
+    final var actualResult = listPreviousCertificatesFacadeService.get(LIST_FILTER);
 
-        assertEquals(EXPECTED_LIST, actualResult.getList());
-    }
+    assertEquals(EXPECTED_LIST, actualResult.getList());
+  }
 
-    @Test
-    void shouldReturnListInfoWithTotalListCountIncludingCertificatesFromCS() throws IOException, ModuleNotFoundException {
-        final var actualResult = listPreviousCertificatesFacadeService.get(LIST_FILTER);
+  @Test
+  void shouldReturnListInfoWithTotalListCountIncludingCertificatesFromCS()
+      throws IOException, ModuleNotFoundException {
+    final var actualResult = listPreviousCertificatesFacadeService.get(LIST_FILTER);
 
-        assertEquals(EXPECTED_LIST.size() + LIST_FROM_CERTIFICATE_SERVICE.size(), actualResult.getTotalCount());
-    }
+    assertEquals(
+        EXPECTED_LIST.size() + LIST_FROM_CERTIFICATE_SERVICE.size(), actualResult.getTotalCount());
+  }
 
-    private static ListFilter getTestListFilter() {
-        final var listFilter = new ListFilter();
-        listFilter.addValue(new ListFilterPersonIdValue("19121212-1212"), "PATIENT_ID");
-        listFilter.addValue(new ListFilterTextValue(CERTIFICATE_TYPE_NAME.getName()), "ORDER_BY");
-        listFilter.addValue(new ListFilterBooleanValue(false), "ASCENDING");
-        return listFilter;
-    }
+  private static ListFilter getTestListFilter() {
+    final var listFilter = new ListFilter();
+    listFilter.addValue(new ListFilterPersonIdValue("19121212-1212"), "PATIENT_ID");
+    listFilter.addValue(new ListFilterTextValue(CERTIFICATE_TYPE_NAME.getName()), "ORDER_BY");
+    listFilter.addValue(new ListFilterBooleanValue(false), "ASCENDING");
+    return listFilter;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,183 +46,204 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 @Component
 public class SupportedCertificateTypesUtil {
 
-    private final CSTestabilityIntegrationService csTestabilityIntegrationService;
+  private final CSTestabilityIntegrationService csTestabilityIntegrationService;
 
-    public SupportedCertificateTypesUtil(CSTestabilityIntegrationService csTestabilityIntegrationService) {
-        this.csTestabilityIntegrationService = csTestabilityIntegrationService;
+  public SupportedCertificateTypesUtil(
+      CSTestabilityIntegrationService csTestabilityIntegrationService) {
+    this.csTestabilityIntegrationService = csTestabilityIntegrationService;
+  }
+
+  public List<CertificateType> get() {
+    final var wcCertificateTypes = getWebcertCertificateTypes();
+    final var csCertificateTypes = csTestabilityIntegrationService.getSupportedTypes();
+
+    return mergeCertificateTypes(wcCertificateTypes, csCertificateTypes);
+  }
+
+  private List<CertificateType> getWebcertCertificateTypes() {
+    final var certificateTypes = new ArrayList<CertificateType>();
+    certificateTypes.add(
+        new CertificateType(
+            Af00213EntryPoint.ISSUER_TYPE_ID,
+            Af00213EntryPoint.MODULE_ID,
+            Af00213EntryPoint.MODULE_ID,
+            Af00213EntryPoint.MODULE_NAME,
+            Collections.singletonList("1.0"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            LisjpEntryPoint.ISSUER_TYPE_ID,
+            LisjpEntryPoint.MODULE_ID,
+            "fk7804",
+            LisjpEntryPoint.MODULE_NAME,
+            Arrays.asList("1.0", "1.1", "1.2", "1.3"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            Ag7804EntryPoint.ISSUER_TYPE_ID,
+            Ag7804EntryPoint.MODULE_ID,
+            Ag7804EntryPoint.MODULE_ID,
+            Ag7804EntryPoint.MODULE_NAME,
+            Arrays.asList("1.0", "1.1", "1.2"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            DbModuleEntryPoint.ISSUER_TYPE_ID,
+            DbModuleEntryPoint.MODULE_ID,
+            DbModuleEntryPoint.MODULE_ID,
+            DbModuleEntryPoint.MODULE_NAME,
+            Collections.singletonList("1.0"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            DoiModuleEntryPoint.ISSUER_TYPE_ID,
+            DoiModuleEntryPoint.MODULE_ID,
+            DoiModuleEntryPoint.MODULE_ID,
+            DoiModuleEntryPoint.MODULE_NAME,
+            Collections.singletonList("1.0"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            LuaenaEntryPoint.ISSUER_TYPE_ID,
+            LuaenaEntryPoint.MODULE_ID,
+            LuaenaEntryPoint.MODULE_ID,
+            LuaenaEntryPoint.MODULE_NAME,
+            Collections.singletonList("1.2"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            LuaefsEntryPoint.ISSUER_TYPE_ID,
+            LuaefsEntryPoint.MODULE_ID,
+            LuaefsEntryPoint.MODULE_ID,
+            LuaefsEntryPoint.MODULE_NAME,
+            Collections.singletonList("1.1"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            TsBasEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
+            TsBasEntryPoint.MODULE_ID,
+            TsBasEntryPoint.MODULE_ID,
+            TsBasEntryPoint.MODULE_NAME,
+            Arrays.asList("6.8", "7.0"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            LuseEntryPoint.ISSUER_TYPE_ID,
+            LuseEntryPoint.MODULE_ID,
+            LuseEntryPoint.MODULE_ID,
+            LuseEntryPoint.MODULE_NAME,
+            Collections.singletonList("1.3"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            Fk7263EntryPoint.ISSUER_TYPE_ID,
+            Fk7263EntryPoint.MODULE_ID,
+            Fk7263EntryPoint.MODULE_ID,
+            Fk7263EntryPoint.MODULE_NAME,
+            Collections.singletonList("1.0"),
+            Arrays.asList(CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            TsDiabetesEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
+            TsDiabetesEntryPoint.MODULE_ID,
+            TsDiabetesEntryPoint.MODULE_ID,
+            TsDiabetesEntryPoint.MODULE_NAME,
+            Arrays.asList("2.6", "2.8", "3.0", "4.0", "4.1", "4.2"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+    certificateTypes.add(
+        new CertificateType(
+            Ag114EntryPoint.ISSUER_TYPE_ID,
+            Ag114EntryPoint.MODULE_ID,
+            "ag114",
+            Ag114EntryPoint.MODULE_NAME,
+            Collections.singletonList("1.0"),
+            Arrays.asList(
+                CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
+            Arrays.asList(
+                CreateCertificateFillType.EMPTY,
+                CreateCertificateFillType.MINIMAL,
+                CreateCertificateFillType.MAXIMAL)));
+
+    return certificateTypes;
+  }
+
+  private List<CertificateType> mergeCertificateTypes(
+      List<CertificateType> wcTypes, List<CertificateType> csTypes) {
+    final var mergedTypes = new ArrayList<>(wcTypes);
+
+    for (CertificateType csType : csTypes) {
+      wcTypes.stream()
+          .filter(wcType -> wcType.getCertificateServiceTypeId().equalsIgnoreCase(csType.getType()))
+          .findFirst()
+          .ifPresentOrElse(wcType -> mergeVersions(wcType, csType), () -> mergedTypes.add(csType));
     }
 
-    public List<CertificateType> get() {
-        final var wcCertificateTypes = getWebcertCertificateTypes();
-        final var csCertificateTypes = csTestabilityIntegrationService.getSupportedTypes();
+    return mergedTypes.stream()
+        .sorted(Comparator.comparing(CertificateType::getName, String.CASE_INSENSITIVE_ORDER))
+        .toList();
+  }
 
-        return mergeCertificateTypes(wcCertificateTypes, csCertificateTypes);
-    }
-
-    private List<CertificateType> getWebcertCertificateTypes() {
-        final var certificateTypes = new ArrayList<CertificateType>();
-        certificateTypes.add(
-            new CertificateType(
-                Af00213EntryPoint.ISSUER_TYPE_ID,
-                Af00213EntryPoint.MODULE_ID,
-                Af00213EntryPoint.MODULE_ID,
-                Af00213EntryPoint.MODULE_NAME,
-                Collections.singletonList("1.0"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                LisjpEntryPoint.ISSUER_TYPE_ID,
-                LisjpEntryPoint.MODULE_ID,
-                "fk7804",
-                LisjpEntryPoint.MODULE_NAME,
-                Arrays.asList("1.0", "1.1", "1.2", "1.3"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                Ag7804EntryPoint.ISSUER_TYPE_ID,
-                Ag7804EntryPoint.MODULE_ID,
-                Ag7804EntryPoint.MODULE_ID,
-                Ag7804EntryPoint.MODULE_NAME,
-                Arrays.asList("1.0", "1.1", "1.2"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                DbModuleEntryPoint.ISSUER_TYPE_ID,
-                DbModuleEntryPoint.MODULE_ID,
-                DbModuleEntryPoint.MODULE_ID,
-                DbModuleEntryPoint.MODULE_NAME,
-                Collections.singletonList("1.0"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                DoiModuleEntryPoint.ISSUER_TYPE_ID,
-                DoiModuleEntryPoint.MODULE_ID,
-                DoiModuleEntryPoint.MODULE_ID,
-                DoiModuleEntryPoint.MODULE_NAME,
-                Collections.singletonList("1.0"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                LuaenaEntryPoint.ISSUER_TYPE_ID,
-                LuaenaEntryPoint.MODULE_ID,
-                LuaenaEntryPoint.MODULE_ID,
-                LuaenaEntryPoint.MODULE_NAME,
-                Collections.singletonList("1.2"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                LuaefsEntryPoint.ISSUER_TYPE_ID,
-                LuaefsEntryPoint.MODULE_ID,
-                LuaefsEntryPoint.MODULE_ID,
-                LuaefsEntryPoint.MODULE_NAME,
-                Collections.singletonList("1.1"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                TsBasEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
-                TsBasEntryPoint.MODULE_ID,
-                TsBasEntryPoint.MODULE_ID,
-                TsBasEntryPoint.MODULE_NAME,
-                Arrays.asList("6.8", "7.0"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                LuseEntryPoint.ISSUER_TYPE_ID,
-                LuseEntryPoint.MODULE_ID,
-                LuseEntryPoint.MODULE_ID,
-                LuseEntryPoint.MODULE_NAME,
-                Collections.singletonList("1.3"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                Fk7263EntryPoint.ISSUER_TYPE_ID,
-                Fk7263EntryPoint.MODULE_ID,
-                Fk7263EntryPoint.MODULE_ID,
-                Fk7263EntryPoint.MODULE_NAME,
-                Collections.singletonList("1.0"),
-                Arrays.asList(CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                TsDiabetesEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
-                TsDiabetesEntryPoint.MODULE_ID,
-                TsDiabetesEntryPoint.MODULE_ID,
-                TsDiabetesEntryPoint.MODULE_NAME,
-                Arrays.asList("2.6", "2.8", "3.0", "4.0", "4.1", "4.2"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-        certificateTypes.add(
-            new CertificateType(
-                Ag114EntryPoint.ISSUER_TYPE_ID,
-                Ag114EntryPoint.MODULE_ID,
-                "ag114",
-                Ag114EntryPoint.MODULE_NAME,
-                Collections.singletonList("1.0"),
-                Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-            )
-        );
-
-        return certificateTypes;
-    }
-
-    private List<CertificateType> mergeCertificateTypes(List<CertificateType> wcTypes, List<CertificateType> csTypes) {
-        final var mergedTypes = new ArrayList<>(wcTypes);
-
-        for (CertificateType csType : csTypes) {
-            wcTypes.stream()
-                .filter(wcType -> wcType.getCertificateServiceTypeId().equalsIgnoreCase(csType.getType()))
-                .findFirst()
-                .ifPresentOrElse(
-                    wcType -> mergeVersions(wcType, csType),
-                    () -> mergedTypes.add(csType)
-                );
-        }
-
-        return mergedTypes.stream()
-            .sorted(Comparator.comparing(CertificateType::getName, String.CASE_INSENSITIVE_ORDER))
-            .toList();
-    }
-
-    private void mergeVersions(CertificateType wcType, CertificateType csType) {
-        final var mergedVersions = Stream.concat(
-                wcType.getVersions().stream(),
-                csType.getVersions().stream())
+  private void mergeVersions(CertificateType wcType, CertificateType csType) {
+    final var mergedVersions =
+        Stream.concat(wcType.getVersions().stream(), csType.getVersions().stream())
             .filter(Objects::nonNull)
             .distinct()
             .toList();
 
-        wcType.setVersions(mergedVersions);
-    }
+    wcType.setVersions(mergedVersions);
+  }
 }

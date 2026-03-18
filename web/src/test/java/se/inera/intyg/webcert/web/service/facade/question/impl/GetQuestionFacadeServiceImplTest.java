@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -59,304 +59,283 @@ import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter
 @ExtendWith(MockitoExtension.class)
 class GetQuestionFacadeServiceImplTest {
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @Mock
-    private ArendeDraftService arendeDraftService;
+  @Mock private ArendeDraftService arendeDraftService;
 
-    @Mock
-    private QuestionConverter questionConverter;
+  @Mock private QuestionConverter questionConverter;
 
-    @Mock
-    private ComplementConverter complementConverter;
+  @Mock private ComplementConverter complementConverter;
 
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
 
-    @InjectMocks
-    private GetQuestionFacadeServiceImpl getQuestionFacadeService;
+  @InjectMocks private GetQuestionFacadeServiceImpl getQuestionFacadeService;
 
-    private String certificateId = "certificateId";
-    private String questionId = "questionId";
-    private Arende arende;
-    private Arende arendeSvar;
-    private Arende arendePaminnelse;
-    private List<Arende> relatedArenden;
-    private List<MedicinsktArende> kompletteringar = new ArrayList<>();
+  private String certificateId = "certificateId";
+  private String questionId = "questionId";
+  private Arende arende;
+  private Arende arendeSvar;
+  private Arende arendePaminnelse;
+  private List<Arende> relatedArenden;
+  private List<MedicinsktArende> kompletteringar = new ArrayList<>();
+
+  @BeforeEach
+  void setUp() {
+    arende = new Arende();
+    arende.setMeddelandeId(questionId);
+    arende.setIntygsId(certificateId);
+    arende.setKomplettering(kompletteringar);
+    arende.setSkickatTidpunkt(LocalDateTime.now());
+
+    arendeSvar = new Arende();
+    arendeSvar.setMeddelandeId("arendeSvarId");
+    arendeSvar.setSvarPaId(arende.getMeddelandeId());
+
+    arendePaminnelse = new Arende();
+    arendePaminnelse.setMeddelandeId("arendePaminnelseId");
+    arendePaminnelse.setPaminnelseMeddelandeId(arende.getMeddelandeId());
+
+    relatedArenden = new ArrayList<>();
+
+    doReturn(arende).when(arendeService).getArende(questionId);
+
+    doReturn(relatedArenden).when(arendeService).getRelatedArenden(questionId);
+  }
+
+  @Test
+  void shallReturnQuestion() {
+    doReturn(Question.builder().answer(Answer.builder().build()).build())
+        .when(questionConverter)
+        .convert(eq(arende), any(Complement[].class), any(), any(List.class));
+
+    final var actualQuestion = getQuestionFacadeService.get(questionId);
+    assertNotNull(actualQuestion, "Shall return a question");
+  }
+
+  @Test
+  void shallReturnQuestionWithReminder() {
+    relatedArenden.add(arendePaminnelse);
+    final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
+    doReturn(Question.builder().reminders(new Reminder[] {Reminder.builder().build()}).build())
+        .when(questionConverter)
+        .convert(eq(arende), any(Complement[].class), any(), remindersArgCaptor.capture());
+
+    final var actualQuestion = getQuestionFacadeService.get(questionId);
+    assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
+    assertEquals(arendePaminnelse, remindersArgCaptor.getValue().get(0));
+  }
+
+  @Test
+  void shallReturnQuestionWithAnswer() {
+    relatedArenden.add(arendeSvar);
+    doReturn(Question.builder().answer(Answer.builder().build()).build())
+        .when(questionConverter)
+        .convert(eq(arende), any(Complement[].class), any(), eq(arendeSvar), any(List.class));
+
+    final var actualQuestion = getQuestionFacadeService.get(questionId);
+    assertNotNull(actualQuestion.getAnswer(), "Shall return a question with answer");
+  }
+
+  @Test
+  void shallReturnQuestionWithAnswerWithReminder() {
+    relatedArenden.add(arendeSvar);
+    relatedArenden.add(arendePaminnelse);
+    final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
+    doReturn(
+            Question.builder()
+                .answer(Answer.builder().build())
+                .reminders(new Reminder[] {Reminder.builder().build()})
+                .build())
+        .when(questionConverter)
+        .convert(
+            eq(arende),
+            any(Complement[].class),
+            any(),
+            eq(arendeSvar),
+            remindersArgCaptor.capture());
+
+    final var actualQuestion = getQuestionFacadeService.get(questionId);
+    assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
+    assertEquals(arendePaminnelse, remindersArgCaptor.getValue().get(0));
+  }
+
+  @Test
+  void shallReturnQuestionWithAnswerDraft() {
+    final var answerDraft = new ArendeDraft();
+    doReturn(answerDraft).when(arendeDraftService).getAnswerDraft(certificateId, questionId);
+
+    doReturn(Question.builder().answer(Answer.builder().build()).build())
+        .when(questionConverter)
+        .convert(eq(arende), any(Complement[].class), any(), eq(answerDraft), any(List.class));
+
+    final var actualQuestion = getQuestionFacadeService.get(questionId);
+    assertNotNull(actualQuestion.getAnswer(), "Shall return a question with answer");
+  }
+
+  @Test
+  void shallReturnQuestionWithAnswerDraftWithReminder() {
+    final var answerDraft = new ArendeDraft();
+    doReturn(answerDraft).when(arendeDraftService).getAnswerDraft(certificateId, questionId);
+    relatedArenden.add(arendePaminnelse);
+    final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
+    doReturn(
+            Question.builder()
+                .answer(Answer.builder().build())
+                .reminders(new Reminder[] {Reminder.builder().build()})
+                .build())
+        .when(questionConverter)
+        .convert(
+            eq(arende),
+            any(Complement[].class),
+            any(),
+            eq(answerDraft),
+            remindersArgCaptor.capture());
+
+    final var actualQuestion = getQuestionFacadeService.get(questionId);
+    assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
+    assertEquals(arendePaminnelse, remindersArgCaptor.getValue().get(0));
+  }
+
+  @Test
+  void shallReturnQuestionWithComplements() {
+    final var complements = new Complement[] {Complement.builder().build()};
+    kompletteringar.add(new MedicinsktArende());
+    arende.setAmne(ArendeAmne.KOMPLT);
+
+    doReturn(complements).when(complementConverter).convert(arende);
+
+    final var certificate = new Certificate();
+    certificate.setMetadata(CertificateMetadata.builder().build());
+
+    doReturn(certificate)
+        .when(getCertificateFacadeService)
+        .getCertificate(certificateId, false, true);
+
+    doReturn(Question.builder().answer(Answer.builder().build()).complements(complements).build())
+        .when(questionConverter)
+        .convert(eq(arende), eq(complements), any(), any(List.class));
+
+    final var actualQuestion = getQuestionFacadeService.get(questionId);
+    assertNotNull(actualQuestion, "Shall return a question");
+    assertEquals(complements, actualQuestion.getComplements());
+  }
+
+  @Nested
+  class AnsweredByCertificate {
+
+    private Certificate certificate;
+    private ArgumentCaptor<CertificateRelation> answeredByCertificateCaptor;
 
     @BeforeEach
     void setUp() {
-        arende = new Arende();
-        arende.setMeddelandeId(questionId);
-        arende.setIntygsId(certificateId);
-        arende.setKomplettering(kompletteringar);
-        arende.setSkickatTidpunkt(LocalDateTime.now());
+      final var complements = new Complement[] {Complement.builder().build()};
+      kompletteringar.add(new MedicinsktArende());
+      arende.setAmne(ArendeAmne.KOMPLT);
 
-        arendeSvar = new Arende();
-        arendeSvar.setMeddelandeId("arendeSvarId");
-        arendeSvar.setSvarPaId(arende.getMeddelandeId());
+      doReturn(complements).when(complementConverter).convert(arende);
 
-        arendePaminnelse = new Arende();
-        arendePaminnelse.setMeddelandeId("arendePaminnelseId");
-        arendePaminnelse.setPaminnelseMeddelandeId(arende.getMeddelandeId());
+      certificate = new Certificate();
 
-        relatedArenden = new ArrayList<>();
+      doReturn(certificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(certificateId, false, true);
 
-        doReturn(arende)
-            .when(arendeService)
-            .getArende(questionId);
-
-        doReturn(relatedArenden)
-            .when(arendeService)
-            .getRelatedArenden(questionId);
+      answeredByCertificateCaptor = ArgumentCaptor.forClass(CertificateRelation.class);
+      doReturn(
+              Question.builder()
+                  .answeredByCertificate(CertificateRelation.builder().build())
+                  .complements(complements)
+                  .build())
+          .when(questionConverter)
+          .convert(
+              eq(arende), eq(complements), answeredByCertificateCaptor.capture(), any(List.class));
     }
 
     @Test
-    void shallReturnQuestion() {
-        doReturn(
-            Question.builder()
-                .answer(Answer.builder().build())
-                .build())
-            .when(questionConverter)
-            .convert(eq(arende), any(Complement[].class), any(), any(List.class));
+    void shallReturnQuestionWithAnsweredByCertificate() {
+      final var answeredByCertificate =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COMPLEMENTED)
+              .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+              .build();
 
-        final var actualQuestion = getQuestionFacadeService.get(questionId);
-        assertNotNull(actualQuestion, "Shall return a question");
+      setCertificateRelations(new CertificateRelation[] {answeredByCertificate});
+
+      final var actualQuestion = getQuestionFacadeService.get(questionId);
+      assertNotNull(actualQuestion, "Shall return a question");
+      assertEquals(answeredByCertificate, answeredByCertificateCaptor.getValue());
     }
 
     @Test
-    void shallReturnQuestionWithReminder() {
-        relatedArenden.add(arendePaminnelse);
-        final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
-        doReturn(
-            Question.builder()
-                .reminders(new Reminder[]{Reminder.builder().build()})
-                .build())
-            .when(questionConverter)
-            .convert(eq(arende), any(Complement[].class), any(), remindersArgCaptor.capture());
+    void shallReturnQuestionWithAnsweredByCertificateAfterQuestionSent() {
+      final var answeredByCertificateBeforeQuestion =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COMPLEMENTED)
+              .created(LocalDateTime.now().minus(1, ChronoUnit.DAYS))
+              .build();
 
-        final var actualQuestion = getQuestionFacadeService.get(questionId);
-        assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
-        assertEquals(arendePaminnelse, remindersArgCaptor.getValue().get(0));
+      final var answeredByCertificate =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COMPLEMENTED)
+              .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+              .build();
+
+      setCertificateRelations(
+          new CertificateRelation[] {answeredByCertificateBeforeQuestion, answeredByCertificate});
+
+      final var actualQuestion = getQuestionFacadeService.get(questionId);
+      assertNotNull(actualQuestion, "Shall return a question");
+      assertEquals(answeredByCertificate, answeredByCertificateCaptor.getValue());
     }
 
     @Test
-    void shallReturnQuestionWithAnswer() {
-        relatedArenden.add(arendeSvar);
-        doReturn(
-            Question.builder()
-                .answer(Answer.builder().build())
-                .build())
-            .when(questionConverter)
-            .convert(eq(arende), any(Complement[].class), any(), eq(arendeSvar), any(List.class));
+    void shallReturnQuestionWithFirstAnsweredByCertificateAfterQuestionSent() {
+      final var answeredByCertificateFirst =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COMPLEMENTED)
+              .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+              .build();
 
-        final var actualQuestion = getQuestionFacadeService.get(questionId);
-        assertNotNull(actualQuestion.getAnswer(), "Shall return a question with answer");
+      final var answeredByCertificateSecond =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COMPLEMENTED)
+              .created(LocalDateTime.now().plus(2, ChronoUnit.DAYS))
+              .build();
+
+      setCertificateRelations(
+          new CertificateRelation[] {answeredByCertificateFirst, answeredByCertificateSecond});
+
+      final var actualQuestion = getQuestionFacadeService.get(questionId);
+      assertNotNull(actualQuestion, "Shall return a question");
+      assertEquals(answeredByCertificateFirst, answeredByCertificateCaptor.getValue());
     }
 
     @Test
-    void shallReturnQuestionWithAnswerWithReminder() {
-        relatedArenden.add(arendeSvar);
-        relatedArenden.add(arendePaminnelse);
-        final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
-        doReturn(
-            Question.builder()
-                .answer(Answer.builder().build())
-                .reminders(new Reminder[]{Reminder.builder().build()})
-                .build())
-            .when(questionConverter)
-            .convert(eq(arende), any(Complement[].class), any(), eq(arendeSvar), remindersArgCaptor.capture());
+    void shallNotReturnQuestionWithAnsweredByCertificateIfNoRelationFound() {
+      final var copiedRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COPIED)
+              .created(LocalDateTime.now().minus(1, ChronoUnit.DAYS))
+              .build();
 
-        final var actualQuestion = getQuestionFacadeService.get(questionId);
-        assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
-        assertEquals(arendePaminnelse, remindersArgCaptor.getValue().get(0));
+      final var replacedRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.REPLACED)
+              .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+              .build();
+
+      setCertificateRelations(new CertificateRelation[] {copiedRelation, replacedRelation});
+
+      final var actualQuestion = getQuestionFacadeService.get(questionId);
+      assertNotNull(actualQuestion, "Shall return a question");
+      assertNull(answeredByCertificateCaptor.getValue());
     }
 
-    @Test
-    void shallReturnQuestionWithAnswerDraft() {
-        final var answerDraft = new ArendeDraft();
-        doReturn(answerDraft)
-            .when(arendeDraftService)
-            .getAnswerDraft(certificateId, questionId);
-
-        doReturn(
-            Question.builder()
-                .answer(Answer.builder().build())
-                .build())
-            .when(questionConverter)
-            .convert(eq(arende), any(Complement[].class), any(), eq(answerDraft), any(List.class));
-
-        final var actualQuestion = getQuestionFacadeService.get(questionId);
-        assertNotNull(actualQuestion.getAnswer(), "Shall return a question with answer");
+    private void setCertificateRelations(CertificateRelation[] childrenRelations) {
+      certificate.setMetadata(
+          CertificateMetadata.builder()
+              .relations(CertificateRelations.builder().children(childrenRelations).build())
+              .build());
     }
-
-    @Test
-    void shallReturnQuestionWithAnswerDraftWithReminder() {
-        final var answerDraft = new ArendeDraft();
-        doReturn(answerDraft)
-            .when(arendeDraftService)
-            .getAnswerDraft(certificateId, questionId);
-        relatedArenden.add(arendePaminnelse);
-        final var remindersArgCaptor = ArgumentCaptor.forClass(List.class);
-        doReturn(
-            Question.builder()
-                .answer(Answer.builder().build())
-                .reminders(new Reminder[]{Reminder.builder().build()})
-                .build())
-            .when(questionConverter)
-            .convert(eq(arende), any(Complement[].class), any(), eq(answerDraft), remindersArgCaptor.capture());
-
-        final var actualQuestion = getQuestionFacadeService.get(questionId);
-        assertNotNull(actualQuestion.getReminders()[0], "Shall return a question with reminder");
-        assertEquals(arendePaminnelse, remindersArgCaptor.getValue().get(0));
-    }
-
-    @Test
-    void shallReturnQuestionWithComplements() {
-        final var complements = new Complement[]{Complement.builder().build()};
-        kompletteringar.add(new MedicinsktArende());
-        arende.setAmne(ArendeAmne.KOMPLT);
-
-        doReturn(complements)
-            .when(complementConverter)
-            .convert(arende);
-
-        final var certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder().build()
-        );
-
-        doReturn(certificate)
-            .when(getCertificateFacadeService)
-            .getCertificate(certificateId, false, true);
-
-        doReturn(
-            Question.builder()
-                .answer(Answer.builder().build())
-                .complements(complements)
-                .build())
-            .when(questionConverter)
-            .convert(eq(arende), eq(complements), any(), any(List.class));
-
-        final var actualQuestion = getQuestionFacadeService.get(questionId);
-        assertNotNull(actualQuestion, "Shall return a question");
-        assertEquals(complements, actualQuestion.getComplements());
-    }
-
-    @Nested
-    class AnsweredByCertificate {
-
-        private Certificate certificate;
-        private ArgumentCaptor<CertificateRelation> answeredByCertificateCaptor;
-
-        @BeforeEach
-        void setUp() {
-            final var complements = new Complement[]{Complement.builder().build()};
-            kompletteringar.add(new MedicinsktArende());
-            arende.setAmne(ArendeAmne.KOMPLT);
-
-            doReturn(complements)
-                .when(complementConverter)
-                .convert(arende);
-
-            certificate = new Certificate();
-
-            doReturn(certificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(certificateId, false, true);
-
-            answeredByCertificateCaptor = ArgumentCaptor.forClass(CertificateRelation.class);
-            doReturn(
-                Question.builder()
-                    .answeredByCertificate(CertificateRelation.builder().build())
-                    .complements(complements)
-                    .build())
-                .when(questionConverter)
-                .convert(eq(arende), eq(complements), answeredByCertificateCaptor.capture(), any(List.class));
-        }
-
-        @Test
-        void shallReturnQuestionWithAnsweredByCertificate() {
-            final var answeredByCertificate = CertificateRelation.builder()
-                .type(CertificateRelationType.COMPLEMENTED)
-                .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
-                .build();
-
-            setCertificateRelations(new CertificateRelation[]{answeredByCertificate});
-
-            final var actualQuestion = getQuestionFacadeService.get(questionId);
-            assertNotNull(actualQuestion, "Shall return a question");
-            assertEquals(answeredByCertificate, answeredByCertificateCaptor.getValue());
-        }
-
-        @Test
-        void shallReturnQuestionWithAnsweredByCertificateAfterQuestionSent() {
-            final var answeredByCertificateBeforeQuestion = CertificateRelation.builder()
-                .type(CertificateRelationType.COMPLEMENTED)
-                .created(LocalDateTime.now().minus(1, ChronoUnit.DAYS))
-                .build();
-
-            final var answeredByCertificate = CertificateRelation.builder()
-                .type(CertificateRelationType.COMPLEMENTED)
-                .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
-                .build();
-
-            setCertificateRelations(new CertificateRelation[]{answeredByCertificateBeforeQuestion, answeredByCertificate});
-
-            final var actualQuestion = getQuestionFacadeService.get(questionId);
-            assertNotNull(actualQuestion, "Shall return a question");
-            assertEquals(answeredByCertificate, answeredByCertificateCaptor.getValue());
-        }
-
-        @Test
-        void shallReturnQuestionWithFirstAnsweredByCertificateAfterQuestionSent() {
-            final var answeredByCertificateFirst = CertificateRelation.builder()
-                .type(CertificateRelationType.COMPLEMENTED)
-                .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
-                .build();
-
-            final var answeredByCertificateSecond = CertificateRelation.builder()
-                .type(CertificateRelationType.COMPLEMENTED)
-                .created(LocalDateTime.now().plus(2, ChronoUnit.DAYS))
-                .build();
-
-            setCertificateRelations(new CertificateRelation[]{answeredByCertificateFirst, answeredByCertificateSecond});
-
-            final var actualQuestion = getQuestionFacadeService.get(questionId);
-            assertNotNull(actualQuestion, "Shall return a question");
-            assertEquals(answeredByCertificateFirst, answeredByCertificateCaptor.getValue());
-        }
-
-        @Test
-        void shallNotReturnQuestionWithAnsweredByCertificateIfNoRelationFound() {
-            final var copiedRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.COPIED)
-                .created(LocalDateTime.now().minus(1, ChronoUnit.DAYS))
-                .build();
-
-            final var replacedRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.REPLACED)
-                .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
-                .build();
-
-            setCertificateRelations(new CertificateRelation[]{copiedRelation, replacedRelation});
-
-            final var actualQuestion = getQuestionFacadeService.get(questionId);
-            assertNotNull(actualQuestion, "Shall return a question");
-            assertNull(answeredByCertificateCaptor.getValue());
-        }
-
-        private void setCertificateRelations(CertificateRelation[] childrenRelations) {
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .relations(
-                        CertificateRelations.builder()
-                            .children(childrenRelations)
-                            .build()
-                    )
-                    .build()
-            );
-        }
-    }
+  }
 }

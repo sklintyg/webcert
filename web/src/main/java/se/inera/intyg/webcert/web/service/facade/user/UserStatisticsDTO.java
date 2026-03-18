@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,67 +23,73 @@ import java.util.Map;
 
 public class UserStatisticsDTO {
 
-    private long nbrOfDraftsOnSelectedUnit;
+  private long nbrOfDraftsOnSelectedUnit;
 
-    private long nbrOfUnhandledQuestionsOnSelectedUnit;
+  private long nbrOfUnhandledQuestionsOnSelectedUnit;
 
-    private long totalDraftsAndUnhandledQuestionsOnOtherUnits;
+  private long totalDraftsAndUnhandledQuestionsOnOtherUnits;
 
-    private Map<String, UnitStatisticsDTO> unitStatistics = new HashMap<>();
+  private Map<String, UnitStatisticsDTO> unitStatistics = new HashMap<>();
 
-    public UserStatisticsDTO() {
-    }
+  public UserStatisticsDTO() {}
 
-    public long getNbrOfDraftsOnSelectedUnit() {
-        return nbrOfDraftsOnSelectedUnit;
-    }
+  public long getNbrOfDraftsOnSelectedUnit() {
+    return nbrOfDraftsOnSelectedUnit;
+  }
 
-    public void setNbrOfDraftsOnSelectedUnit(long nbrOfDraftsOnSelectedUnit) {
-        this.nbrOfDraftsOnSelectedUnit = nbrOfDraftsOnSelectedUnit;
-    }
+  public void setNbrOfDraftsOnSelectedUnit(long nbrOfDraftsOnSelectedUnit) {
+    this.nbrOfDraftsOnSelectedUnit = nbrOfDraftsOnSelectedUnit;
+  }
 
-    public long getNbrOfUnhandledQuestionsOnSelectedUnit() {
-        return nbrOfUnhandledQuestionsOnSelectedUnit;
-    }
+  public long getNbrOfUnhandledQuestionsOnSelectedUnit() {
+    return nbrOfUnhandledQuestionsOnSelectedUnit;
+  }
 
-    public void setNbrOfUnhandledQuestionsOnSelectedUnit(long nbrOfUnhandledQuestionsOnSelectedUnit) {
-        this.nbrOfUnhandledQuestionsOnSelectedUnit = nbrOfUnhandledQuestionsOnSelectedUnit;
-    }
+  public void setNbrOfUnhandledQuestionsOnSelectedUnit(long nbrOfUnhandledQuestionsOnSelectedUnit) {
+    this.nbrOfUnhandledQuestionsOnSelectedUnit = nbrOfUnhandledQuestionsOnSelectedUnit;
+  }
 
-    public long getTotalDraftsAndUnhandledQuestionsOnOtherUnits() {
-        return totalDraftsAndUnhandledQuestionsOnOtherUnits;
-    }
+  public long getTotalDraftsAndUnhandledQuestionsOnOtherUnits() {
+    return totalDraftsAndUnhandledQuestionsOnOtherUnits;
+  }
 
-    public void setTotalDraftsAndUnhandledQuestionsOnOtherUnits(long totalDraftsAndUnhandledQuestionsOnOtherUnits) {
-        this.totalDraftsAndUnhandledQuestionsOnOtherUnits = totalDraftsAndUnhandledQuestionsOnOtherUnits;
-    }
+  public void setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
+      long totalDraftsAndUnhandledQuestionsOnOtherUnits) {
+    this.totalDraftsAndUnhandledQuestionsOnOtherUnits =
+        totalDraftsAndUnhandledQuestionsOnOtherUnits;
+  }
 
-    public Map<String, UnitStatisticsDTO> getUnitStatistics() {
-        return unitStatistics;
-    }
+  public Map<String, UnitStatisticsDTO> getUnitStatistics() {
+    return unitStatistics;
+  }
 
-    public void addUnitStatistics(String unitId, UnitStatisticsDTO statistics) {
-        unitStatistics.put(unitId, statistics);
-    }
+  public void addUnitStatistics(String unitId, UnitStatisticsDTO statistics) {
+    unitStatistics.put(unitId, statistics);
+  }
 
-    public void mergeUnitStatistics(Map<String, UnitStatisticsDTO> unitStatistics) {
-        unitStatistics.forEach((key, value) ->
-            this.unitStatistics.merge(key, value, (unitStatistics1, unitStatistics2) -> {
-                unitStatistics1.merge(unitStatistics2);
-                return unitStatistics1;
-            })
-        );
-    }
+  public void mergeUnitStatistics(Map<String, UnitStatisticsDTO> unitStatistics) {
+    unitStatistics.forEach(
+        (key, value) ->
+            this.unitStatistics.merge(
+                key,
+                value,
+                (unitStatistics1, unitStatistics2) -> {
+                  unitStatistics1.merge(unitStatistics2);
+                  return unitStatistics1;
+                }));
+  }
 
-    public void addNbrOfDraftsOnSelectedUnit(long nbrOfDraftsOnSelectedUnit) {
-        this.nbrOfDraftsOnSelectedUnit += nbrOfDraftsOnSelectedUnit;
-    }
+  public void addNbrOfDraftsOnSelectedUnit(long nbrOfDraftsOnSelectedUnit) {
+    this.nbrOfDraftsOnSelectedUnit += nbrOfDraftsOnSelectedUnit;
+  }
 
-    public void addNbrOfUnhandledQuestionsOnSelectedUnit(long nbrOfUnhandledQuestionsOnSelectedUnit) {
-        this.nbrOfUnhandledQuestionsOnSelectedUnit += nbrOfUnhandledQuestionsOnSelectedUnit;
-    }
+  public void addNbrOfUnhandledQuestionsOnSelectedUnit(long nbrOfUnhandledQuestionsOnSelectedUnit) {
+    this.nbrOfUnhandledQuestionsOnSelectedUnit += nbrOfUnhandledQuestionsOnSelectedUnit;
+  }
 
-    public void addTotalDraftsAndUnhandledQuestionsOnOtherUnits(long totalDraftsAndUnhandledQuestionsOnOtherUnits) {
-        this.totalDraftsAndUnhandledQuestionsOnOtherUnits += totalDraftsAndUnhandledQuestionsOnOtherUnits;
-    }
+  public void addTotalDraftsAndUnhandledQuestionsOnOtherUnits(
+      long totalDraftsAndUnhandledQuestionsOnOtherUnits) {
+    this.totalDraftsAndUnhandledQuestionsOnOtherUnits +=
+        totalDraftsAndUnhandledQuestionsOnOtherUnits;
+  }
 }

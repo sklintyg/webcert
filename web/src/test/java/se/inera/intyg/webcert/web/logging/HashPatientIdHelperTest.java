@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.logging;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -29,35 +28,33 @@ import org.junit.jupiter.api.Test;
 
 class HashPatientIdHelperTest {
 
-    @Test
-    void testHashPatientIdAtEnd() {
-        final var url = "api/test/191212121212";
-        final var hashedUrl = HashPatientIdHelper.fromUrl(url);
+  @Test
+  void testHashPatientIdAtEnd() {
+    final var url = "api/test/191212121212";
+    final var hashedUrl = HashPatientIdHelper.fromUrl(url);
 
-        assertAll(
-            () -> assertNotEquals(url, hashedUrl),
-            () -> assertTrue(hashedUrl.startsWith("api/test/")),
-            () -> assertFalse(hashedUrl.contains("191212121212"))
-        );
-    }
+    assertAll(
+        () -> assertNotEquals(url, hashedUrl),
+        () -> assertTrue(hashedUrl.startsWith("api/test/")),
+        () -> assertFalse(hashedUrl.contains("191212121212")));
+  }
 
-    @Test
-    void testHashPatientIdInMiddle() {
-        final var url = "api/191212121212/api";
-        final var hashedUrl = HashPatientIdHelper.fromUrl(url);
+  @Test
+  void testHashPatientIdInMiddle() {
+    final var url = "api/191212121212/api";
+    final var hashedUrl = HashPatientIdHelper.fromUrl(url);
 
-        assertAll(
-            () -> assertNotEquals(url, hashedUrl),
-            () -> assertTrue(hashedUrl.startsWith("api/")),
-            () -> assertTrue(hashedUrl.endsWith("/api")),
-            () -> assertFalse(hashedUrl.contains("191212121212"))
-        );
-    }
+    assertAll(
+        () -> assertNotEquals(url, hashedUrl),
+        () -> assertTrue(hashedUrl.startsWith("api/")),
+        () -> assertTrue(hashedUrl.endsWith("/api")),
+        () -> assertFalse(hashedUrl.contains("191212121212")));
+  }
 
-    @Test
-    void testHashPatientIdNotFound() {
-        final var url = "api/test/noidhere";
-        final var hashedUrl = HashPatientIdHelper.fromUrl(url);
-        assertEquals(url, hashedUrl);
-    }
+  @Test
+  void testHashPatientIdNotFound() {
+    final var url = "api/test/noidhere";
+    final var hashedUrl = HashPatientIdHelper.fromUrl(url);
+    assertEquals(url, hashedUrl);
+  }
 }

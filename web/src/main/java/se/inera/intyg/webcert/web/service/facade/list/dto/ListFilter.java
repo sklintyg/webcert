@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,39 +18,38 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterValue;
-
 import java.util.HashMap;
 import java.util.Map;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterValue;
 
 public class ListFilter {
 
-    private Map<String, ListFilterValue> values;
+  private Map<String, ListFilterValue> values;
 
-    public ListFilter() {
-        values = new HashMap<>();
-    }
+  public ListFilter() {
+    values = new HashMap<>();
+  }
 
-    public ListFilter(Map<String, ListFilterValue> values) {
-        this.values = values;
-    }
+  public ListFilter(Map<String, ListFilterValue> values) {
+    this.values = values;
+  }
 
-    public Map<String, ListFilterValue> getValues() {
-        return values;
-    }
+  public Map<String, ListFilterValue> getValues() {
+    return values;
+  }
 
-    public void setValues(Map<String, ListFilterValue> values) {
-        this.values = values;
-    }
+  public void setValues(Map<String, ListFilterValue> values) {
+    this.values = values;
+  }
 
-    public void addValue(ListFilterValue value, String key) {
-        values.put(key, value);
-    }
+  public void addValue(ListFilterValue value, String key) {
+    values.put(key, value);
+  }
 
-    public ListFilterValue getValue(String id) {
-        if (values.containsKey(id)) {
-            return values.get(id);
-        }
-        return null;
+  public ListFilterValue getValue(String id) {
+    if (values.containsKey(id)) {
+      return values.get(id);
     }
+    return null;
+  }
 }

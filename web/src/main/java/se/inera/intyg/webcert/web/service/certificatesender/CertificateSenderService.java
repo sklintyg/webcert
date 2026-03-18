@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,28 +20,30 @@ package se.inera.intyg.webcert.web.service.certificatesender;
 
 import se.inera.intyg.schemas.contract.Personnummer;
 
-/**
- * Created by eriklupander on 2015-05-20.
- */
+/** Created by eriklupander on 2015-05-20. */
 public interface CertificateSenderService {
 
-    void storeCertificate(String intygsId, String intygsTyp, String jsonBody) throws CertificateSenderException;
+  void storeCertificate(String intygsId, String intygsTyp, String jsonBody)
+      throws CertificateSenderException;
 
-    void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) throws CertificateSenderException;
+  void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId)
+      throws CertificateSenderException;
 
-    /**
-     * See {@link CertificateSenderService#sendCertificate(String, Personnummer, String, String)}
-     *
-     * This version adds the possiblity to specify that the processing of the message shall be delayed by the externally
-     * configured number of milliseconds. This is very useful when we're first calling storeCertificate and then
-     * sendCertificate in the same operation.
-     */
-    void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId, boolean delay)
-        throws CertificateSenderException;
+  /**
+   * See {@link CertificateSenderService#sendCertificate(String, Personnummer, String, String)}
+   *
+   * <p>This version adds the possiblity to specify that the processing of the message shall be
+   * delayed by the externally configured number of milliseconds. This is very useful when we're
+   * first calling storeCertificate and then sendCertificate in the same operation.
+   */
+  void sendCertificate(
+      String intygsId, Personnummer personId, String jsonBody, String recipientId, boolean delay)
+      throws CertificateSenderException;
 
-    void revokeCertificate(String intygsId, String xmlBody, String intygsTyp, String intygsTypVersion) throws CertificateSenderException;
+  void revokeCertificate(String intygsId, String xmlBody, String intygsTyp, String intygsTypVersion)
+      throws CertificateSenderException;
 
-    void sendMessageToRecipient(String intygsId, String xmlBody) throws CertificateSenderException;
+  void sendMessageToRecipient(String intygsId, String xmlBody) throws CertificateSenderException;
 
-    void sendRegisterApprovedReceivers(String intygsId, String intygsTyp, String jsonBody);
+  void sendRegisterApprovedReceivers(String intygsId, String intygsTyp, String jsonBody);
 }

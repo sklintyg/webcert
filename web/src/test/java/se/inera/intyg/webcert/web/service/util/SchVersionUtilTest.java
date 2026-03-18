@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,15 +24,15 @@ import org.junit.Test;
 
 public class SchVersionUtilTest {
 
-    @Test
-    public void testParseMajorMinor() {
-        String schVersion = SchVersionUtil.formatToSchVersion("2.6");
-        assertEquals("v2", schVersion);
-    }
+  @Test
+  public void testParseMajorMinor() {
+    String schVersion = SchVersionUtil.formatToSchVersion("2.6");
+    assertEquals("v2", schVersion);
+  }
 
-    @Test
-    public void testParseMajor() {
-        String schVersion = SchVersionUtil.formatToSchVersion("2");
-        assertEquals("v2", schVersion);
-    }
+  @Test
+  public void testParseMajor() {
+    String schVersion = SchVersionUtil.formatToSchVersion("2");
+    assertEquals("v2", schVersion);
+  }
 }

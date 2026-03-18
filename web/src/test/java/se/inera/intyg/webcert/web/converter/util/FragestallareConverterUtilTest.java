@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,25 +27,27 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 public class FragestallareConverterUtilTest {
 
-    private static final String PARTCODE_FKASSA = "FKASSA";
-    private static final String PARTCODE_HSVARD = "HSVARD";
+  private static final String PARTCODE_FKASSA = "FKASSA";
+  private static final String PARTCODE_HSVARD = "HSVARD";
 
-    @Test
-    public void testPartCodeToFrageStallareKod() {
-        assertEquals(FrageStallare.FORSAKRINGSKASSAN.getKod(), FragestallareConverterUtil
-            .partToFrageStallarKod(PARTCODE_FKASSA));
-        assertEquals(FrageStallare.WEBCERT.getKod(), FragestallareConverterUtil
-            .partToFrageStallarKod(PARTCODE_HSVARD));
-    }
+  @Test
+  public void testPartCodeToFrageStallareKod() {
+    assertEquals(
+        FrageStallare.FORSAKRINGSKASSAN.getKod(),
+        FragestallareConverterUtil.partToFrageStallarKod(PARTCODE_FKASSA));
+    assertEquals(
+        FrageStallare.WEBCERT.getKod(),
+        FragestallareConverterUtil.partToFrageStallarKod(PARTCODE_HSVARD));
+  }
 
-    @Test
-    public void testPartNameToFrageStallareNamn() {
-        assertTrue(FrageStallare.FORSAKRINGSKASSAN.isNameEqual("Försäkringskassan"));
-        assertTrue(FrageStallare.WEBCERT.isNameEqual("Webcert"));
-    }
+  @Test
+  public void testPartNameToFrageStallareNamn() {
+    assertTrue(FrageStallare.FORSAKRINGSKASSAN.isNameEqual("Försäkringskassan"));
+    assertTrue(FrageStallare.WEBCERT.isNameEqual("Webcert"));
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testInvalidPartKod() {
-        FragestallareConverterUtil.partToFrageStallarKod("INVALID");
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testInvalidPartKod() {
+    FragestallareConverterUtil.partToFrageStallarKod("INVALID");
+  }
 }

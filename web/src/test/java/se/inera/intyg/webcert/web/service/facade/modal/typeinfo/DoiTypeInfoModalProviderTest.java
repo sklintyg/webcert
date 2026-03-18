@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,17 +28,18 @@ import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.web.service.facade.impl.PreviousCertificateInfo;
 
 class DoiTypeInfoModalProviderTest {
-    
-    private DoiTypeInfoModalProvider provider;
 
-    @BeforeEach
-    void setUp() {
-        provider = new DoiTypeInfoModalProvider();
-    }
+  private DoiTypeInfoModalProvider provider;
 
-    @Test
-    void shouldReturnEmptyWhenSameCareProviderAndSameUnit() {
-        final var previousCertificateInfo = PreviousCertificateInfo.builder()
+  @BeforeEach
+  void setUp() {
+    provider = new DoiTypeInfoModalProvider();
+  }
+
+  @Test
+  void shouldReturnEmptyWhenSameCareProviderAndSameUnit() {
+    final var previousCertificateInfo =
+        PreviousCertificateInfo.builder()
             .careUnitName("Test Unit")
             .careUnitHsaId("HSA-123")
             .careProviderName("Test Provider")
@@ -47,18 +48,19 @@ class DoiTypeInfoModalProviderTest {
             .isSameUnit(true)
             .build();
 
-        final var result = provider.create(previousCertificateInfo);
+    final var result = provider.create(previousCertificateInfo);
 
-        assertFalse(result.isPresent());
-    }
+    assertFalse(result.isPresent());
+  }
 
-    @Test
-    void shouldReturnModalForDraftOnDifferentUnitButSameCareProvider() {
-        final var careProviderName = "Vårdgivare AB";
-        final var careUnitName = "Vårdenhet 1";
-        final var careUnitHsaId = "HSA-VE-001";
+  @Test
+  void shouldReturnModalForDraftOnDifferentUnitButSameCareProvider() {
+    final var careProviderName = "Vårdgivare AB";
+    final var careUnitName = "Vårdenhet 1";
+    final var careUnitHsaId = "HSA-VE-001";
 
-        final var previousCertificateInfo = PreviousCertificateInfo.builder()
+    final var previousCertificateInfo =
+        PreviousCertificateInfo.builder()
             .careUnitName(careUnitName)
             .careUnitHsaId(careUnitHsaId)
             .careProviderName(careProviderName)
@@ -67,25 +69,25 @@ class DoiTypeInfoModalProviderTest {
             .isSameUnit(false)
             .build();
 
-        final var result = provider.create(previousCertificateInfo);
+    final var result = provider.create(previousCertificateInfo);
 
-        assertAll(
-            () -> assertTrue(result.isPresent()),
-            () -> assertEquals("Utkast på dödsorsaksintyg på annan vårdenhet", result.get().getTitle()),
-            () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()),
-            () -> assertTrue(result.get().getDescription().contains(careProviderName)),
-            () -> assertTrue(result.get().getDescription().contains(careUnitName)),
-            () -> assertTrue(result.get().getDescription().contains(careUnitHsaId))
-        );
-    }
+    assertAll(
+        () -> assertTrue(result.isPresent()),
+        () -> assertEquals("Utkast på dödsorsaksintyg på annan vårdenhet", result.get().getTitle()),
+        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()),
+        () -> assertTrue(result.get().getDescription().contains(careProviderName)),
+        () -> assertTrue(result.get().getDescription().contains(careUnitName)),
+        () -> assertTrue(result.get().getDescription().contains(careUnitHsaId)));
+  }
 
-    @Test
-    void shouldReturnModalForSignedCertificateOnDifferentUnitButSameCareProvider() {
-        final var careProviderName = "Vårdgivare CD";
-        final var careUnitName = "Vårdenhet 2";
-        final var careUnitHsaId = "HSA-VE-002";
+  @Test
+  void shouldReturnModalForSignedCertificateOnDifferentUnitButSameCareProvider() {
+    final var careProviderName = "Vårdgivare CD";
+    final var careUnitName = "Vårdenhet 2";
+    final var careUnitHsaId = "HSA-VE-002";
 
-        final var previousCertificateInfo = PreviousCertificateInfo.builder()
+    final var previousCertificateInfo =
+        PreviousCertificateInfo.builder()
             .careUnitName(careUnitName)
             .careUnitHsaId(careUnitHsaId)
             .careProviderName(careProviderName)
@@ -94,25 +96,25 @@ class DoiTypeInfoModalProviderTest {
             .isSameUnit(false)
             .build();
 
-        final var result = provider.create(previousCertificateInfo);
+    final var result = provider.create(previousCertificateInfo);
 
-        assertAll(
-            () -> assertTrue(result.isPresent()),
-            () -> assertEquals("Signerat dödsorsaksintyg på annan vårdenhet", result.get().getTitle()),
-            () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()),
-            () -> assertTrue(result.get().getDescription().contains(careProviderName)),
-            () -> assertTrue(result.get().getDescription().contains(careUnitName)),
-            () -> assertTrue(result.get().getDescription().contains(careUnitHsaId))
-        );
-    }
+    assertAll(
+        () -> assertTrue(result.isPresent()),
+        () -> assertEquals("Signerat dödsorsaksintyg på annan vårdenhet", result.get().getTitle()),
+        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()),
+        () -> assertTrue(result.get().getDescription().contains(careProviderName)),
+        () -> assertTrue(result.get().getDescription().contains(careUnitName)),
+        () -> assertTrue(result.get().getDescription().contains(careUnitHsaId)));
+  }
 
-    @Test
-    void shouldReturnModalForDraftOnDifferentCareProvider() {
-        final var careProviderName = "Vårdgivare EF";
-        final var careUnitName = "Vårdenhet 3";
-        final var careUnitHsaId = "HSA-VE-003";
+  @Test
+  void shouldReturnModalForDraftOnDifferentCareProvider() {
+    final var careProviderName = "Vårdgivare EF";
+    final var careUnitName = "Vårdenhet 3";
+    final var careUnitHsaId = "HSA-VE-003";
 
-        final var previousCertificateInfo = PreviousCertificateInfo.builder()
+    final var previousCertificateInfo =
+        PreviousCertificateInfo.builder()
             .careUnitName(careUnitName)
             .careUnitHsaId(careUnitHsaId)
             .careProviderName(careProviderName)
@@ -121,22 +123,23 @@ class DoiTypeInfoModalProviderTest {
             .isSameUnit(false)
             .build();
 
-        final var result = provider.create(previousCertificateInfo);
+    final var result = provider.create(previousCertificateInfo);
 
-        assertAll(
-            () -> assertTrue(result.isPresent()),
-            () -> assertEquals("Utkast på dödsorsaksintyg hos annan vårdgivare", result.get().getTitle()),
-            () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink())
-        );
-    }
+    assertAll(
+        () -> assertTrue(result.isPresent()),
+        () ->
+            assertEquals("Utkast på dödsorsaksintyg hos annan vårdgivare", result.get().getTitle()),
+        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()));
+  }
 
-    @Test
-    void shouldReturnModalForSignedCertificateOnDifferentCareProvider() {
-        final var careProviderName = "Vårdgivare GH";
-        final var careUnitName = "Vårdenhet 4";
-        final var careUnitHsaId = "HSA-VE-004";
+  @Test
+  void shouldReturnModalForSignedCertificateOnDifferentCareProvider() {
+    final var careProviderName = "Vårdgivare GH";
+    final var careUnitName = "Vårdenhet 4";
+    final var careUnitHsaId = "HSA-VE-004";
 
-        final var previousCertificateInfo = PreviousCertificateInfo.builder()
+    final var previousCertificateInfo =
+        PreviousCertificateInfo.builder()
             .careUnitName(careUnitName)
             .careUnitHsaId(careUnitHsaId)
             .careProviderName(careProviderName)
@@ -145,22 +148,23 @@ class DoiTypeInfoModalProviderTest {
             .isSameUnit(false)
             .build();
 
-        final var result = provider.create(previousCertificateInfo);
+    final var result = provider.create(previousCertificateInfo);
 
-        assertAll(
-            () -> assertTrue(result.isPresent()),
-            () -> assertEquals("Signerat dödsorsaksintyg hos annan vårdgivare", result.get().getTitle()),
-            () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink())
-        );
-    }
+    assertAll(
+        () -> assertTrue(result.isPresent()),
+        () ->
+            assertEquals("Signerat dödsorsaksintyg hos annan vårdgivare", result.get().getTitle()),
+        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()));
+  }
 
-    @Test
-    void shouldIncludeCorrectDescriptionFormat() {
-        final var careProviderName = "Test Vårdgivare";
-        final var careUnitName = "Test Vårdenhet";
-        final var careUnitHsaId = "HSA-TEST-123";
+  @Test
+  void shouldIncludeCorrectDescriptionFormat() {
+    final var careProviderName = "Test Vårdgivare";
+    final var careUnitName = "Test Vårdenhet";
+    final var careUnitHsaId = "HSA-TEST-123";
 
-        final var previousCertificateInfo = PreviousCertificateInfo.builder()
+    final var previousCertificateInfo =
+        PreviousCertificateInfo.builder()
             .careUnitName(careUnitName)
             .careUnitHsaId(careUnitHsaId)
             .careProviderName(careProviderName)
@@ -169,16 +173,21 @@ class DoiTypeInfoModalProviderTest {
             .isSameUnit(false)
             .build();
 
-        final var result = provider.create(previousCertificateInfo);
+    final var result = provider.create(previousCertificateInfo);
 
-        final var expectedDescription = "<p><strong>Vårdgivare</strong><br/>" + careProviderName + "</p>"
-            + "<p><strong>Vårdenhet</strong><br/>" + careUnitName + "</p>"
-            + "<p><strong>Vårdenhetens HSA-id</strong><br/>" + careUnitHsaId + "</p>";
+    final var expectedDescription =
+        "<p><strong>Vårdgivare</strong><br/>"
+            + careProviderName
+            + "</p>"
+            + "<p><strong>Vårdenhet</strong><br/>"
+            + careUnitName
+            + "</p>"
+            + "<p><strong>Vårdenhetens HSA-id</strong><br/>"
+            + careUnitHsaId
+            + "</p>";
 
-        assertAll(
-            () -> assertTrue(result.isPresent()),
-            () -> assertEquals(expectedDescription, result.get().getDescription())
-        );
-    }
+    assertAll(
+        () -> assertTrue(result.isPresent()),
+        () -> assertEquals(expectedDescription, result.get().getDescription()));
+  }
 }
-

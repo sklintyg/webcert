@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,87 +45,79 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @ExtendWith(MockitoExtension.class)
 class CertificateInternalServiceFromWCTest {
 
-    private static final Certificate EXPECTED_CERTIFICATE = new Certificate();
-    private static final List<AvailableFunctionDTO> EXPECTED_AVAILABLE_FUNCTIONS = List.of(
-        AvailableFunctionDTO.create(AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null,
-            null, null, true)
-    );
-    private static final List<CertificateText> EXPECTED_TEXTS = List.of(
-        CertificateText.builder().build()
-    );
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final boolean SHOULD_NOT_PDL_LOG = false;
-    private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
-    private static final String TYPE = "TYPE";
-    private static final String TYPE_VERSION = "TYPE_VERSION";
-    private static final String PERSON_ID = "personId";
-    @Mock
-    private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
+  private static final Certificate EXPECTED_CERTIFICATE = new Certificate();
+  private static final List<AvailableFunctionDTO> EXPECTED_AVAILABLE_FUNCTIONS =
+      List.of(
+          AvailableFunctionDTO.create(
+              AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null, true));
+  private static final List<CertificateText> EXPECTED_TEXTS =
+      List.of(CertificateText.builder().build());
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final boolean SHOULD_NOT_PDL_LOG = false;
+  private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
+  private static final String TYPE = "TYPE";
+  private static final String TYPE_VERSION = "TYPE_VERSION";
+  private static final String PERSON_ID = "personId";
 
-    @Mock
-    private GetTextsForCertificateService getTextsForCertificateService;
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock
+  private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
-    @InjectMocks
-    private GetCertificateInternalServiceFromWC certificateInternalServiceFromWC;
+  @Mock private GetTextsForCertificateService getTextsForCertificateService;
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
 
-    @BeforeEach
-    void setUp() {
-        EXPECTED_CERTIFICATE.setMetadata(CertificateMetadata.builder()
-            .type(TYPE)
-            .typeVersion(TYPE_VERSION)
-            .build()
-        );
-        doReturn(EXPECTED_CERTIFICATE)
-            .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-        doReturn(EXPECTED_AVAILABLE_FUNCTIONS)
-            .when(getAvailableFunctionsForCertificateService).get(EXPECTED_CERTIFICATE);
-    }
+  @InjectMocks private GetCertificateInternalServiceFromWC certificateInternalServiceFromWC;
 
-    @Test
-    void shallReturnCertificate() {
-        final var actualCertificateResponse = certificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID);
-        assertEquals(EXPECTED_CERTIFICATE, actualCertificateResponse.getCertificate());
-    }
+  @BeforeEach
+  void setUp() {
+    EXPECTED_CERTIFICATE.setMetadata(
+        CertificateMetadata.builder().type(TYPE).typeVersion(TYPE_VERSION).build());
+    doReturn(EXPECTED_CERTIFICATE)
+        .when(getCertificateFacadeService)
+        .getCertificate(CERTIFICATE_ID, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
+    doReturn(EXPECTED_AVAILABLE_FUNCTIONS)
+        .when(getAvailableFunctionsForCertificateService)
+        .get(EXPECTED_CERTIFICATE);
+  }
 
-    @Test
-    void shallReturnAvailableFunctions() {
-        final var actualCertificateResponse = certificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID);
-        assertEquals(EXPECTED_AVAILABLE_FUNCTIONS, actualCertificateResponse.getAvailableFunctions());
-    }
-
-    @Test
-    void shallReturnCertificateTexts() {
-        when(getTextsForCertificateService.get(TYPE, TYPE_VERSION))
-            .thenReturn(EXPECTED_TEXTS);
-
-        final var actualCertificateResponse = certificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID);
-
-        assertEquals(EXPECTED_TEXTS, actualCertificateResponse.getTexts());
-    }
-
-    @Test
-    void shallNotPdlLogWhenRetrievingCertificate() {
-        final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
+  @Test
+  void shallReturnCertificate() {
+    final var actualCertificateResponse =
         certificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID);
-        verify(getCertificateFacadeService).getCertificate(
-            anyString(),
-            booleanArgumentCaptor.capture(),
-            anyBoolean()
-        );
-        assertEquals(SHOULD_NOT_PDL_LOG, booleanArgumentCaptor.getValue());
-    }
+    assertEquals(EXPECTED_CERTIFICATE, actualCertificateResponse.getCertificate());
+  }
 
-    @Test
-    void shallNotValidateAccessWhenRetrievingCertificate() {
-        final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
+  @Test
+  void shallReturnAvailableFunctions() {
+    final var actualCertificateResponse =
         certificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID);
-        verify(getCertificateFacadeService).getCertificate(
-            anyString(),
-            anyBoolean(),
-            booleanArgumentCaptor.capture()
-        );
-        assertEquals(SHOULD_NOT_VALIDATE_ACCESS, booleanArgumentCaptor.getValue());
-    }
+    assertEquals(EXPECTED_AVAILABLE_FUNCTIONS, actualCertificateResponse.getAvailableFunctions());
+  }
+
+  @Test
+  void shallReturnCertificateTexts() {
+    when(getTextsForCertificateService.get(TYPE, TYPE_VERSION)).thenReturn(EXPECTED_TEXTS);
+
+    final var actualCertificateResponse =
+        certificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID);
+
+    assertEquals(EXPECTED_TEXTS, actualCertificateResponse.getTexts());
+  }
+
+  @Test
+  void shallNotPdlLogWhenRetrievingCertificate() {
+    final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
+    certificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID);
+    verify(getCertificateFacadeService)
+        .getCertificate(anyString(), booleanArgumentCaptor.capture(), anyBoolean());
+    assertEquals(SHOULD_NOT_PDL_LOG, booleanArgumentCaptor.getValue());
+  }
+
+  @Test
+  void shallNotValidateAccessWhenRetrievingCertificate() {
+    final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
+    certificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID);
+    verify(getCertificateFacadeService)
+        .getCertificate(anyString(), anyBoolean(), booleanArgumentCaptor.capture());
+    assertEquals(SHOULD_NOT_VALIDATE_ACCESS, booleanArgumentCaptor.getValue());
+  }
 }

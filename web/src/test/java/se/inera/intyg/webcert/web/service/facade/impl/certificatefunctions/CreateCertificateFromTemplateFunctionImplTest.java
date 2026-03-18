@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,212 +37,257 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 class CreateCertificateFromTemplateFunctionImplTest {
 
-    private CreateCertificateFromTemplateFunctionImpl createCertificateFromTemplateFunction;
-    private WebCertUser webCertUser;
+  private CreateCertificateFromTemplateFunctionImpl createCertificateFromTemplateFunction;
+  private WebCertUser webCertUser;
 
-    @BeforeEach
-    void setUp() {
-        createCertificateFromTemplateFunction = new CreateCertificateFromTemplateFunctionImpl();
-        webCertUser = new WebCertUser();
-        webCertUser.setOrigin(UserOriginType.NORMAL.name());
+  @BeforeEach
+  void setUp() {
+    createCertificateFromTemplateFunction = new CreateCertificateFromTemplateFunctionImpl();
+    webCertUser = new WebCertUser();
+    webCertUser.setOrigin(UserOriginType.NORMAL.name());
+  }
+
+  @Nested
+  class CreateAg7804FromFk7804 {
+
+    @Test
+    void shallIncludeCreateCertificateFromTemplate() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isPresent());
     }
 
-    @Nested
-    class CreateAg7804FromFk7804 {
-
-        @Test
-        void shallIncludeCreateCertificateFromTemplate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isPresent());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfDraft() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfOriginDjupintegrerad() {
-            webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfNotLisjp() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(Ag7804EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfRevoked() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfReplacedBySignedCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
-                LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
-                    .status(CertificateStatus.SIGNED)
-                    .type(CertificateRelationType.REPLACED)
-                    .build()
-            );
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfComplementedBySignedCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
-                LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
-                    .status(CertificateStatus.SIGNED)
-                    .type(CertificateRelationType.COMPLEMENTED)
-                    .build()
-            );
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallIncludeCreateCertificateFromTemplateIfComplementedByUnignedCertificate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithChildRelation(
-                LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED, CertificateRelation.builder()
-                    .status(CertificateStatus.UNSIGNED)
-                    .type(CertificateRelationType.COMPLEMENTED)
-                    .build()
-            );
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isPresent());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOType() {
-            final var expectedType = ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE;
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedType, actualLink.get().getType());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOName() {
-            final var expectedName = "Skapa AG7804";
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedName, actualLink.get().getName());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTODescription() {
-            final var expectedDescription = "Skapar ett intyg till arbetsgivaren utifrån Försäkringskassans intyg.";
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedDescription, actualLink.get().getDescription());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOBody() {
-            final var expectedBody = "<div><div class=\"ic-alert ic-alert--status ic-alert--info\">\n"
-                + "<i class=\"ic-alert__icon ic-info-icon\"></i>\n"
-                + "Kom ihåg att stämma av med patienten om hen vill att du skickar Läkarintyget för sjukpenning till Försäkringskassan. "
-                + "Gör detta i så fall först.</div>"
-                + "<p class='iu-pt-400'>Skapa ett Läkarintyg om arbetsförmåga - arbetsgivaren (AG7804)"
-                + " utifrån ett Läkarintyg för sjukpenning innebär att "
-                + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
-                + "</p></div>";
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedBody, actualLink.get().getBody());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOEnabled() {
-            final var expectedEnabled = true;
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedEnabled, actualLink.get().isEnabled());
-        }
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfDraft() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
     }
 
-    @Nested
-    class CreateDoiFromDb {
-
-        @Test
-        void shallIncludeCreateCertificateFromTemplate() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isPresent());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfDraft() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfOriginDjupintegrerad() {
-            webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallExcludeCreateCertificateFromTemplateIfRevoked() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOType() {
-            final var expectedType = ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE;
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedType, actualLink.get().getType());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOName() {
-            final var expectedName = "Skapa dödsorsaksintyg";
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedName, actualLink.get().getName());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTODescription() {
-            final var expectedDescription = "Skapar ett dödsorsaksintyg utifrån dödsbeviset.";
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedDescription, actualLink.get().getDescription());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOBody() {
-            final var expectedBody =
-                "Skapa ett dödsorsaksintyg utifrån ett dödsbevis innebär att informationsmängder som är gemensamma för "
-                    + "båda intygen, automatiskt förifylls.";
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedBody, actualLink.get().getBody());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOEnabled() {
-            final var expectedEnabled = true;
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
-            assertEquals(expectedEnabled, actualLink.get().isEnabled());
-        }
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfOriginDjupintegrerad() {
+      webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
     }
 
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfNotLisjp() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              Ag7804EntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfRevoked() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfReplacedBySignedCertificate() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificateWithChildRelation(
+              LisjpEntryPoint.MODULE_ID,
+              CertificateStatus.SIGNED,
+              CertificateRelation.builder()
+                  .status(CertificateStatus.SIGNED)
+                  .type(CertificateRelationType.REPLACED)
+                  .build());
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfComplementedBySignedCertificate() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificateWithChildRelation(
+              LisjpEntryPoint.MODULE_ID,
+              CertificateStatus.SIGNED,
+              CertificateRelation.builder()
+                  .status(CertificateStatus.SIGNED)
+                  .type(CertificateRelationType.COMPLEMENTED)
+                  .build());
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallIncludeCreateCertificateFromTemplateIfComplementedByUnignedCertificate() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificateWithChildRelation(
+              LisjpEntryPoint.MODULE_ID,
+              CertificateStatus.SIGNED,
+              CertificateRelation.builder()
+                  .status(CertificateStatus.UNSIGNED)
+                  .type(CertificateRelationType.COMPLEMENTED)
+                  .build());
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isPresent());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOType() {
+      final var expectedType = ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE;
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedType, actualLink.get().getType());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOName() {
+      final var expectedName = "Skapa AG7804";
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedName, actualLink.get().getName());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTODescription() {
+      final var expectedDescription =
+          "Skapar ett intyg till arbetsgivaren utifrån Försäkringskassans intyg.";
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedDescription, actualLink.get().getDescription());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOBody() {
+      final var expectedBody =
+          "<div><div class=\"ic-alert ic-alert--status ic-alert--info\">\n"
+              + "<i class=\"ic-alert__icon ic-info-icon\"></i>\n"
+              + "Kom ihåg att stämma av med patienten om hen vill att du skickar Läkarintyget för sjukpenning till Försäkringskassan. "
+              + "Gör detta i så fall först.</div>"
+              + "<p class='iu-pt-400'>Skapa ett Läkarintyg om arbetsförmåga - arbetsgivaren (AG7804)"
+              + " utifrån ett Läkarintyg för sjukpenning innebär att "
+              + "informationsmängder som är gemensamma för båda intygen automatiskt förifylls.\n"
+              + "</p></div>";
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedBody, actualLink.get().getBody());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOEnabled() {
+      final var expectedEnabled = true;
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedEnabled, actualLink.get().isEnabled());
+    }
+  }
+
+  @Nested
+  class CreateDoiFromDb {
+
+    @Test
+    void shallIncludeCreateCertificateFromTemplate() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isPresent());
+    }
+
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfDraft() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfOriginDjupintegrerad() {
+      webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallExcludeCreateCertificateFromTemplateIfRevoked() {
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.REVOKED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOType() {
+      final var expectedType = ResourceLinkTypeDTO.CREATE_CERTIFICATE_FROM_TEMPLATE;
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedType, actualLink.get().getType());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOName() {
+      final var expectedName = "Skapa dödsorsaksintyg";
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedName, actualLink.get().getName());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTODescription() {
+      final var expectedDescription = "Skapar ett dödsorsaksintyg utifrån dödsbeviset.";
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedDescription, actualLink.get().getDescription());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOBody() {
+      final var expectedBody =
+          "Skapa ett dödsorsaksintyg utifrån ett dödsbevis innebär att informationsmängder som är gemensamma för "
+              + "båda intygen, automatiskt förifylls.";
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedBody, actualLink.get().getBody());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOEnabled() {
+      final var expectedEnabled = true;
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = createCertificateFromTemplateFunction.get(certificate, webCertUser);
+      assertEquals(expectedEnabled, actualLink.get().isEnabled());
+    }
+  }
 }

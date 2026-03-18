@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,119 +48,128 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 @ExtendWith(MockitoExtension.class)
 class UpdateCertificateFromCandidateFacadeServiceImplTest {
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private DraftAccessServiceHelper draftAccessServiceHelper;
+  @Mock private DraftAccessServiceHelper draftAccessServiceHelper;
 
-    @Mock
-    private MonitoringLogService monitoringLogService;
+  @Mock private MonitoringLogService monitoringLogService;
 
-    @Mock
-    private CandidateDataHelper candidateDataHelper;
+  @Mock private CandidateDataHelper candidateDataHelper;
 
-    @InjectMocks
-    private UpdateCertificateFromCandidateFacadeServiceImpl createCertificateFromCandidateFacadeService;
+  @InjectMocks
+  private UpdateCertificateFromCandidateFacadeServiceImpl
+      createCertificateFromCandidateFacadeService;
 
-    private final static String CERTIFICATE_ID = "certificateId";
-    private final static String CANDIDATE_ID = "candidateId";
-    private final static String CERTIFICATE_TYPE = "ag7804";
-    private final static String CANDIDATE_TYPE = "lisjp";
-    private final static String PATIENT_ID = "191212121212";
-    private final static String LATEST_VERSION = "2.0";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CANDIDATE_ID = "candidateId";
+  private static final String CERTIFICATE_TYPE = "ag7804";
+  private static final String CANDIDATE_TYPE = "lisjp";
+  private static final String PATIENT_ID = "191212121212";
+  private static final String LATEST_VERSION = "2.0";
 
-    @BeforeEach
-    void setup() {
-        doReturn(createCertificate())
-            .when(utkastService)
-            .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
+  @BeforeEach
+  void setup() {
+    doReturn(createCertificate())
+        .when(utkastService)
+        .getDraft(eq(CERTIFICATE_ID), eq(Boolean.FALSE));
 
-        when(candidateDataHelper.getCandidateMetadata(anyString(), anyString(), any(Personnummer.class)))
-            .thenReturn(Optional.of(createCandidateMetaData(CANDIDATE_ID, CANDIDATE_TYPE, LATEST_VERSION)));
+    when(candidateDataHelper.getCandidateMetadata(
+            anyString(), anyString(), any(Personnummer.class)))
+        .thenReturn(
+            Optional.of(createCandidateMetaData(CANDIDATE_ID, CANDIDATE_TYPE, LATEST_VERSION)));
+  }
+
+  @Nested
+  class CreateCertificateFromCandidate {
+
+    @Test
+    void shallIncludeCertificateId() {
+
+      createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
+
+      final var certificateIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+      verify(utkastService)
+          .updateDraftFromCandidate(
+              certificateIdArgumentCaptor.capture(), anyString(), any(Utkast.class));
+
+      assertEquals(CANDIDATE_ID, certificateIdArgumentCaptor.getValue());
     }
 
-    @Nested
-    class CreateCertificateFromCandidate {
+    @Test
+    void shallIncludeNewCertificateType() {
 
-        @Test
-        void shallIncludeCertificateId() {
+      createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
 
-            createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
+      final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-            final var certificateIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
+      verify(utkastService)
+          .updateDraftFromCandidate(
+              anyString(), certificateTypeArgumentCaptor.capture(), any(Utkast.class));
 
-            verify(utkastService).updateDraftFromCandidate(certificateIdArgumentCaptor.capture(), anyString(), any(Utkast.class));
-
-            assertEquals(CANDIDATE_ID, certificateIdArgumentCaptor.getValue());
-        }
-
-        @Test
-        void shallIncludeNewCertificateType() {
-
-            createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
-
-            final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-            verify(utkastService).updateDraftFromCandidate(anyString(), certificateTypeArgumentCaptor.capture(), any(Utkast.class));
-
-            assertEquals(CANDIDATE_TYPE, certificateTypeArgumentCaptor.getValue());
-        }
-
-        @Test
-        void shallIncludePatientId() {
-
-            createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
-
-            final var certificateArgumentCaptor = ArgumentCaptor.forClass(Utkast.class);
-
-            verify(utkastService).updateDraftFromCandidate(anyString(), anyString(), certificateArgumentCaptor.capture());
-
-            assertEquals(PATIENT_ID, certificateArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
-        }
-
-        @Test
-        void shallReturnDraftId() {
-
-            final var actualCertificateId = createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
-
-            assertEquals(CERTIFICATE_ID, actualCertificateId);
-        }
+      assertEquals(CANDIDATE_TYPE, certificateTypeArgumentCaptor.getValue());
     }
 
-    private Utkast createCertificate() {
-        final var draft = new Utkast();
-        draft.setIntygsId(CERTIFICATE_ID);
-        draft.setIntygsTyp(CERTIFICATE_TYPE);
-        draft.setIntygTypeVersion("certificateTypeVersion");
-        draft.setModel("draftJson");
-        draft.setStatus(UtkastStatus.SIGNED);
-        draft.setSkapad(LocalDateTime.now());
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
-        draft.setEnhetsId("enhetsId");
-        return draft;
+    @Test
+    void shallIncludePatientId() {
+
+      createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
+
+      final var certificateArgumentCaptor = ArgumentCaptor.forClass(Utkast.class);
+
+      verify(utkastService)
+          .updateDraftFromCandidate(anyString(), anyString(), certificateArgumentCaptor.capture());
+
+      assertEquals(
+          PATIENT_ID,
+          certificateArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
     }
 
-    private Utkast createCandidateCertificate() {
-        final var draft = new Utkast();
-        draft.setIntygsId(CANDIDATE_ID);
-        draft.setIntygsTyp(CANDIDATE_TYPE);
-        draft.setIntygTypeVersion("certificateTypeVersion");
-        draft.setModel("draftJson");
-        draft.setStatus(UtkastStatus.SIGNED);
-        draft.setSkapad(LocalDateTime.now());
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
-        draft.setEnhetsId("enhetsId");
-        return draft;
-    }
+    @Test
+    void shallReturnDraftId() {
 
-    private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
-        return new UtkastCandidateMetaData.Builder()
-            .with(builder -> {
-                builder.intygId = intygId;
-                builder.intygType = intygType;
-                builder.intygTypeVersion = intygTypeVersion;
+      final var actualCertificateId =
+          createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
+
+      assertEquals(CERTIFICATE_ID, actualCertificateId);
+    }
+  }
+
+  private Utkast createCertificate() {
+    final var draft = new Utkast();
+    draft.setIntygsId(CERTIFICATE_ID);
+    draft.setIntygsTyp(CERTIFICATE_TYPE);
+    draft.setIntygTypeVersion("certificateTypeVersion");
+    draft.setModel("draftJson");
+    draft.setStatus(UtkastStatus.SIGNED);
+    draft.setSkapad(LocalDateTime.now());
+    draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
+    draft.setEnhetsId("enhetsId");
+    return draft;
+  }
+
+  private Utkast createCandidateCertificate() {
+    final var draft = new Utkast();
+    draft.setIntygsId(CANDIDATE_ID);
+    draft.setIntygsTyp(CANDIDATE_TYPE);
+    draft.setIntygTypeVersion("certificateTypeVersion");
+    draft.setModel("draftJson");
+    draft.setStatus(UtkastStatus.SIGNED);
+    draft.setSkapad(LocalDateTime.now());
+    draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
+    draft.setEnhetsId("enhetsId");
+    return draft;
+  }
+
+  private UtkastCandidateMetaData createCandidateMetaData(
+      String intygId, String intygType, String intygTypeVersion) {
+    return new UtkastCandidateMetaData.Builder()
+        .with(
+            builder -> {
+              builder.intygId = intygId;
+              builder.intygType = intygType;
+              builder.intygTypeVersion = intygTypeVersion;
             })
-            .create();
-    }
+        .create();
+  }
 }

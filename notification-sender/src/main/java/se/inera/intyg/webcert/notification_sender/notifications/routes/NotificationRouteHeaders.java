@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,15 +20,14 @@ package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
 public final class NotificationRouteHeaders {
 
-    public static final String LOGISK_ADRESS = "logiskAdress";
-    public static final String INTYGS_ID = "intygsId";
-    public static final String INTYGS_TYP = "intygsTyp";
-    public static final String INTYG_TYPE_VERSION = "intygTypeVersion";
-    public static final String HANDELSE = "handelse";
-    public static final String VERSION = "version";
-    public static final String USER_ID = "userId";
-    public static final String CORRELATION_ID = "correlationId";
+  public static final String LOGISK_ADRESS = "logiskAdress";
+  public static final String INTYGS_ID = "intygsId";
+  public static final String INTYGS_TYP = "intygsTyp";
+  public static final String INTYG_TYPE_VERSION = "intygTypeVersion";
+  public static final String HANDELSE = "handelse";
+  public static final String VERSION = "version";
+  public static final String USER_ID = "userId";
+  public static final String CORRELATION_ID = "correlationId";
 
-    private NotificationRouteHeaders() {
-    }
+  private NotificationRouteHeaders() {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.logging;
 
 import java.time.Duration;
@@ -32,45 +31,50 @@ import org.springframework.stereotype.Component;
 @Component
 public class PerformanceLoggingAdvice {
 
-    @Around("@annotation(performanceLogging)")
-    public Object logPerformance(ProceedingJoinPoint joinPoint, PerformanceLogging performanceLogging) throws Throwable {
+  @Around("@annotation(performanceLogging)")
+  public Object logPerformance(ProceedingJoinPoint joinPoint, PerformanceLogging performanceLogging)
+      throws Throwable {
 
-        if (performanceLogging.isActive()) {
-            final var start = LocalDateTime.now();
-            var success = true;
-            try {
-                return joinPoint.proceed();
-
-            } catch (final Throwable throwable) {
-                success = false;
-                throw throwable;
-
-            } finally {
-                final var end = LocalDateTime.now();
-                final var duration = Duration.between(start, end).toMillis();
-                final var className = joinPoint.getSignature().getDeclaringTypeName();
-                final var methodName = joinPoint.getSignature().getName();
-                try (final var ignored = MdcCloseableMap.builder()
-                    .put(MdcLogConstants.EVENT_START, start.toString())
-                    .put(MdcLogConstants.EVENT_END, end.toString())
-                    .put(MdcLogConstants.EVENT_DURATION, Long.toString(duration))
-                    .put(MdcLogConstants.EVENT_ACTION, performanceLogging.eventAction())
-                    .put(MdcLogConstants.EVENT_TYPE, performanceLogging.eventType())
-                    .put(MdcLogConstants.EVENT_CATEGORY, performanceLogging.eventCategory())
-                    .put(MdcLogConstants.EVENT_CLASS, className)
-                    .put(MdcLogConstants.EVENT_METHOD, methodName)
-                    .put(MdcLogConstants.EVENT_OUTCOME, success ? MdcLogConstants.EVENT_OUTCOME_SUCCESS
-                        : MdcLogConstants.EVENT_OUTCOME_FAILURE)
-                    .build()
-                ) {
-                    log.info(LogMarkers.PERFORMANCE, "Class: {} Method: {} Duration: {} ms",
-                        className,
-                        methodName,
-                        duration
-                    );
-                }
-            }
-        }
+    if (performanceLogging.isActive()) {
+      final var start = LocalDateTime.now();
+      var success = true;
+      try {
         return joinPoint.proceed();
+
+      } catch (final Throwable throwable) {
+        success = false;
+        throw throwable;
+
+      } finally {
+        final var end = LocalDateTime.now();
+        final var duration = Duration.between(start, end).toMillis();
+        final var className = joinPoint.getSignature().getDeclaringTypeName();
+        final var methodName = joinPoint.getSignature().getName();
+        try (final var ignored =
+            MdcCloseableMap.builder()
+                .put(MdcLogConstants.EVENT_START, start.toString())
+                .put(MdcLogConstants.EVENT_END, end.toString())
+                .put(MdcLogConstants.EVENT_DURATION, Long.toString(duration))
+                .put(MdcLogConstants.EVENT_ACTION, performanceLogging.eventAction())
+                .put(MdcLogConstants.EVENT_TYPE, performanceLogging.eventType())
+                .put(MdcLogConstants.EVENT_CATEGORY, performanceLogging.eventCategory())
+                .put(MdcLogConstants.EVENT_CLASS, className)
+                .put(MdcLogConstants.EVENT_METHOD, methodName)
+                .put(
+                    MdcLogConstants.EVENT_OUTCOME,
+                    success
+                        ? MdcLogConstants.EVENT_OUTCOME_SUCCESS
+                        : MdcLogConstants.EVENT_OUTCOME_FAILURE)
+                .build()) {
+          log.info(
+              LogMarkers.PERFORMANCE,
+              "Class: {} Method: {} Duration: {} ms",
+              className,
+              methodName,
+              duration);
+        }
+      }
     }
+    return joinPoint.proceed();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,22 +22,22 @@ import se.inera.intyg.common.support.facade.model.PersonId;
 
 public class NewCertificateRequestDTO {
 
-    private PersonId patientId;
-    private String certificateType;
+  private PersonId patientId;
+  private String certificateType;
 
-    public PersonId getPatientId() {
-        return patientId;
-    }
+  public PersonId getPatientId() {
+    return patientId;
+  }
 
-    public void setPatientId(PersonId patientId) {
-        this.patientId = patientId;
-    }
+  public void setPatientId(PersonId patientId) {
+    this.patientId = patientId;
+  }
 
-    public String getCertificateType() {
-        return certificateType;
-    }
+  public String getCertificateType() {
+    return certificateType;
+  }
 
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
-    }
+  public void setCertificateType(String certificateType) {
+    this.certificateType = certificateType;
+  }
 }

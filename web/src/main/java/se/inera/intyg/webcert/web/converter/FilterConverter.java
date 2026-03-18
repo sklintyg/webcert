@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,44 +27,44 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 
 public final class FilterConverter {
 
-    public static final Integer DEFAULT_PAGE_SIZE = 10;
+  public static final Integer DEFAULT_PAGE_SIZE = 10;
 
-    private FilterConverter() {
+  private FilterConverter() {}
+
+  public static Filter convert(
+      QueryFragaSvarParameter source, List<String> unitIds, Set<String> intygsTyper) {
+    Filter filter = new Filter();
+
+    filter.getEnhetsIds().addAll(unitIds);
+
+    if (!Strings.isNullOrEmpty(source.getVantarPa())) {
+      filter.setVantarPa(VantarPa.valueOf(source.getVantarPa()));
     }
 
-    public static Filter convert(QueryFragaSvarParameter source, List<String> unitIds, Set<String> intygsTyper) {
-        Filter filter = new Filter();
+    filter.setChangedFrom(source.getChangedFrom());
+    if (source.getChangedTo() != null) {
+      filter.setChangedTo(source.getChangedTo().plusDays(1));
+    }
+    filter.setHsaId(source.getHsaId());
+    filter.setQuestionFromFK(getSafeBooleanValue(source.getQuestionFromFK()));
+    filter.setQuestionFromWC(getSafeBooleanValue(source.getQuestionFromWC()));
+    filter.setReplyLatest(source.getReplyLatest());
+    filter.setVidarebefordrad(source.getVidarebefordrad());
 
-        filter.getEnhetsIds().addAll(unitIds);
+    filter.setPageSize((source.getPageSize() == null) ? DEFAULT_PAGE_SIZE : source.getPageSize());
+    filter.setStartFrom(
+        (source.getStartFrom() == null) ? Integer.valueOf(0) : source.getStartFrom());
 
-        if (!Strings.isNullOrEmpty(source.getVantarPa())) {
-            filter.setVantarPa(VantarPa.valueOf(source.getVantarPa()));
-        }
+    filter.setIntygsTyper(intygsTyper);
 
-        filter.setChangedFrom(source.getChangedFrom());
-        if (source.getChangedTo() != null) {
-            filter.setChangedTo(source.getChangedTo().plusDays(1));
-        }
-        filter.setHsaId(source.getHsaId());
-        filter.setQuestionFromFK(getSafeBooleanValue(source.getQuestionFromFK()));
-        filter.setQuestionFromWC(getSafeBooleanValue(source.getQuestionFromWC()));
-        filter.setReplyLatest(source.getReplyLatest());
-        filter.setVidarebefordrad(source.getVidarebefordrad());
-
-        filter.setPageSize((source.getPageSize() == null) ? DEFAULT_PAGE_SIZE : source.getPageSize());
-        filter.setStartFrom((source.getStartFrom() == null) ? Integer.valueOf(0) : source.getStartFrom());
-
-        filter.setIntygsTyper(intygsTyper);
-
-        if (source.getPatientPersonId() != null) {
-            filter.setPatientPersonId(source.getPatientPersonId());
-        }
-
-        return filter;
+    if (source.getPatientPersonId() != null) {
+      filter.setPatientPersonId(source.getPatientPersonId());
     }
 
-    private static boolean getSafeBooleanValue(Boolean booleanObj) {
-        return booleanObj != null && booleanObj;
-    }
+    return filter;
+  }
 
+  private static boolean getSafeBooleanValue(Boolean booleanObj) {
+    return booleanObj != null && booleanObj;
+  }
 }

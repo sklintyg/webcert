@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,44 +24,44 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 
 public class DraftValidation {
 
-    private ValidationStatus status = ValidationStatus.VALID;
+  private ValidationStatus status = ValidationStatus.VALID;
 
-    private List<DraftValidationMessage> messages = new ArrayList<>();
-    private List<DraftValidationMessage> warnings = new ArrayList<>();
+  private List<DraftValidationMessage> messages = new ArrayList<>();
+  private List<DraftValidationMessage> warnings = new ArrayList<>();
 
-    public ValidationStatus getStatus() {
-        return status;
-    }
+  public ValidationStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(ValidationStatus status) {
-        this.status = status;
-    }
+  public void setStatus(ValidationStatus status) {
+    this.status = status;
+  }
 
-    public void addMessage(DraftValidationMessage message) {
-        this.messages.add(message);
-    }
+  public void addMessage(DraftValidationMessage message) {
+    this.messages.add(message);
+  }
 
-    public void addWarning(DraftValidationMessage warning) {
-        this.warnings.add(warning);
-    }
+  public void addWarning(DraftValidationMessage warning) {
+    this.warnings.add(warning);
+  }
 
-    public List<DraftValidationMessage> getMessages() {
-        return messages;
-    }
+  public List<DraftValidationMessage> getMessages() {
+    return messages;
+  }
 
-    public void setMessages(List<DraftValidationMessage> messages) {
-        this.messages = messages;
-    }
+  public void setMessages(List<DraftValidationMessage> messages) {
+    this.messages = messages;
+  }
 
-    public boolean isDraftValid() {
-        return ValidationStatus.VALID.equals(this.status);
-    }
+  public boolean isDraftValid() {
+    return ValidationStatus.VALID.equals(this.status);
+  }
 
-    public void setWarnings(List<DraftValidationMessage> warnings) {
-        this.warnings = warnings;
-    }
+  public void setWarnings(List<DraftValidationMessage> warnings) {
+    this.warnings = warnings;
+  }
 
-    public List<DraftValidationMessage> getWarnings() {
-        return warnings;
-    }
+  public List<DraftValidationMessage> getWarnings() {
+    return warnings;
+  }
 }

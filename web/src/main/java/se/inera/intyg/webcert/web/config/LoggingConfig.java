@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.config;
 
 import io.prometheus.client.hotspot.DefaultExports;
@@ -34,18 +33,17 @@ import se.inera.intyg.infra.monitoring.logging.LogMDCHelper;
 @ComponentScan("se.inera.intyg.webcert.logging")
 public class LoggingConfig {
 
-    public LoggingConfig() {
-        DefaultExports.initialize();
-    }
+  public LoggingConfig() {
+    DefaultExports.initialize();
+  }
 
-    @Bean
-    public MetricsServlet metricsServlet() {
-        return new MetricsServlet();
-    }
+  @Bean
+  public MetricsServlet metricsServlet() {
+    return new MetricsServlet();
+  }
 
-    @Bean
-    public LogMDCHelper logMDCHelper() {
-        return new LogMDCHelper();
-    }
-
+  @Bean
+  public LogMDCHelper logMDCHelper() {
+    return new LogMDCHelper();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import lombok.RequiredArgsConstructor;
@@ -32,19 +31,17 @@ import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFaca
 @Service("saveAnswerFromCS")
 public class SaveAnswerFromCertificateService implements SaveQuestionAnswerFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Override
-    public Question save(String questionId, String message) {
-        if (Boolean.FALSE.equals(csIntegrationService.messageExists(questionId))) {
-            log.debug("Message '{}' does not exist in certificate service", questionId);
-            return null;
-        }
-
-        return csIntegrationService.saveAnswer(
-            csIntegrationRequestFactory.saveAnswerRequest(message),
-            questionId
-        );
+  @Override
+  public Question save(String questionId, String message) {
+    if (Boolean.FALSE.equals(csIntegrationService.messageExists(questionId))) {
+      log.debug("Message '{}' does not exist in certificate service", questionId);
+      return null;
     }
+
+    return csIntegrationService.saveAnswer(
+        csIntegrationRequestFactory.saveAnswerRequest(message), questionId);
+  }
 }

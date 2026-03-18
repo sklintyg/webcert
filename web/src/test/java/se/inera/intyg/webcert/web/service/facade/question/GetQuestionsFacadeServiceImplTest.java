@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,89 +40,85 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 @ExtendWith(MockitoExtension.class)
 public class GetQuestionsFacadeServiceImplTest {
 
-    @Mock
-    private IntygService intygService;
-    private GetQuestionsFacadeService arendeToQuestionFacadeService;
-    private GetQuestionsFacadeService fragaSvarToQuestionFacadeService;
-    private GetQuestionsFacadeServiceImpl getQuestionsFacadeServiceImpl;
+  @Mock private IntygService intygService;
+  private GetQuestionsFacadeService arendeToQuestionFacadeService;
+  private GetQuestionsFacadeService fragaSvarToQuestionFacadeService;
+  private GetQuestionsFacadeServiceImpl getQuestionsFacadeServiceImpl;
 
-    private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_ID = "certificateId";
+
+  @BeforeEach
+  void setUp() {
+    arendeToQuestionFacadeService = mock(GetQuestionsFacadeService.class);
+    fragaSvarToQuestionFacadeService = mock(GetQuestionsFacadeService.class);
+    getQuestionsFacadeServiceImpl =
+        new GetQuestionsFacadeServiceImpl(
+            intygService, arendeToQuestionFacadeService, fragaSvarToQuestionFacadeService);
+  }
+
+  @Nested
+  class GetQuestionsFromFragaSvar {
 
     @BeforeEach
     void setUp() {
-        arendeToQuestionFacadeService = mock(GetQuestionsFacadeService.class);
-        fragaSvarToQuestionFacadeService = mock(GetQuestionsFacadeService.class);
-        getQuestionsFacadeServiceImpl = new GetQuestionsFacadeServiceImpl(intygService, arendeToQuestionFacadeService,
-            fragaSvarToQuestionFacadeService);
+      doReturn(new IntygTypeInfo(CERTIFICATE_ID, Fk7263EntryPoint.MODULE_ID, "1.0"))
+          .when(intygService)
+          .getIntygTypeInfo(CERTIFICATE_ID);
     }
 
-    @Nested
-    class GetQuestionsFromFragaSvar {
+    @Test
+    void shallGetQuestionsFromFragaSvar() {
+      final var expectedResult = List.of(Question.builder().build());
 
-        @BeforeEach
-        void setUp() {
-            doReturn(new IntygTypeInfo(CERTIFICATE_ID, Fk7263EntryPoint.MODULE_ID, "1.0"))
-                .when(intygService)
-                .getIntygTypeInfo(CERTIFICATE_ID);
-        }
+      doReturn(expectedResult).when(fragaSvarToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
 
-        @Test
-        void shallGetQuestionsFromFragaSvar() {
-            final var expectedResult = List.of(Question.builder().build());
-
-            doReturn(expectedResult)
-                .when(fragaSvarToQuestionFacadeService)
-                .getQuestions(CERTIFICATE_ID);
-
-            final var actualResult = getQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
-            assertIterableEquals(expectedResult, actualResult);
-        }
-
-        @Test
-        void shallGetComplementQuestionsFromFragaSvarToQuestionFacadeService() {
-            final var expectedResult = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
-
-            doReturn(expectedResult)
-                .when(fragaSvarToQuestionFacadeService)
-                .getComplementQuestions(CERTIFICATE_ID);
-
-            final var actualResult = getQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
-            assertIterableEquals(expectedResult, actualResult);
-        }
+      final var actualResult = getQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+      assertIterableEquals(expectedResult, actualResult);
     }
 
-    @Nested
-    class GetQuestionsFromArende {
+    @Test
+    void shallGetComplementQuestionsFromFragaSvarToQuestionFacadeService() {
+      final var expectedResult = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
 
-        @BeforeEach
-        void setUp() {
-            doReturn(new IntygTypeInfo(CERTIFICATE_ID, LisjpEntryPoint.MODULE_ID, "1.0"))
-                .when(intygService)
-                .getIntygTypeInfo(CERTIFICATE_ID);
-        }
+      doReturn(expectedResult)
+          .when(fragaSvarToQuestionFacadeService)
+          .getComplementQuestions(CERTIFICATE_ID);
 
-        @Test
-        void shallGetQuestionsFromFragaSvarToQuestionFacadeService() {
-            final var expectedResult = List.of(Question.builder().build());
-
-            doReturn(expectedResult)
-                .when(arendeToQuestionFacadeService)
-                .getQuestions(CERTIFICATE_ID);
-
-            final var actualResult = getQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
-            assertIterableEquals(expectedResult, actualResult);
-        }
-
-        @Test
-        void shallGetComplementQuestionsFromForArendeToQuestionFacadeService() {
-            final var expectedResult = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
-
-            doReturn(expectedResult)
-                .when(arendeToQuestionFacadeService)
-                .getComplementQuestions(CERTIFICATE_ID);
-
-            final var actualResult = getQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
-            assertIterableEquals(expectedResult, actualResult);
-        }
+      final var actualResult = getQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
+      assertIterableEquals(expectedResult, actualResult);
     }
+  }
+
+  @Nested
+  class GetQuestionsFromArende {
+
+    @BeforeEach
+    void setUp() {
+      doReturn(new IntygTypeInfo(CERTIFICATE_ID, LisjpEntryPoint.MODULE_ID, "1.0"))
+          .when(intygService)
+          .getIntygTypeInfo(CERTIFICATE_ID);
+    }
+
+    @Test
+    void shallGetQuestionsFromFragaSvarToQuestionFacadeService() {
+      final var expectedResult = List.of(Question.builder().build());
+
+      doReturn(expectedResult).when(arendeToQuestionFacadeService).getQuestions(CERTIFICATE_ID);
+
+      final var actualResult = getQuestionsFacadeServiceImpl.getQuestions(CERTIFICATE_ID);
+      assertIterableEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void shallGetComplementQuestionsFromForArendeToQuestionFacadeService() {
+      final var expectedResult = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
+
+      doReturn(expectedResult)
+          .when(arendeToQuestionFacadeService)
+          .getComplementQuestions(CERTIFICATE_ID);
+
+      final var actualResult = getQuestionsFacadeServiceImpl.getComplementQuestions(CERTIFICATE_ID);
+      assertIterableEquals(expectedResult, actualResult);
+    }
+  }
 }

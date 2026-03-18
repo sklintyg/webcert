@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,22 +20,20 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public class ListFilterBooleanConfig extends ListFilterConfig {
 
-    private boolean defaultValue;
+  private boolean defaultValue;
 
-    public ListFilterBooleanConfig(String id, String title, boolean defaultValue) {
-        super(ListFilterType.BOOLEAN, id, title);
-        this.defaultValue = defaultValue;
-    }
+  public ListFilterBooleanConfig(String id, String title, boolean defaultValue) {
+    super(ListFilterType.BOOLEAN, id, title);
+    this.defaultValue = defaultValue;
+  }
 
-    public ListFilterBooleanConfig() {
+  public ListFilterBooleanConfig() {}
 
-    }
+  public boolean getDefaultValue() {
+    return defaultValue;
+  }
 
-    public boolean getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(boolean defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+  public void setDefaultValue(boolean defaultValue) {
+    this.defaultValue = defaultValue;
+  }
 }

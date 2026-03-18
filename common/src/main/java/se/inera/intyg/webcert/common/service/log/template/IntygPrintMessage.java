@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,13 +23,12 @@ import se.inera.intyg.infra.logmessages.PdlLogMessage;
 
 public abstract class IntygPrintMessage {
 
-    private static final long serialVersionUID = 6590364960205870820L;
+  private static final long serialVersionUID = 6590364960205870820L;
 
-    public static PdlLogMessage build(String intygId, String printMethod) {
-        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.PRINT);
-        pdlLogMessage.setActivityLevel(intygId);
-        pdlLogMessage.setActivityArgs(printMethod);
-        return pdlLogMessage;
-    }
-
+  public static PdlLogMessage build(String intygId, String printMethod) {
+    PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.PRINT);
+    pdlLogMessage.setActivityLevel(intygId);
+    pdlLogMessage.setActivityArgs(printMethod);
+    return pdlLogMessage;
+  }
 }

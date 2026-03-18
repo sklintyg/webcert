@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
@@ -40,40 +39,43 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 @Api(value = "/internalapi/certificate", produces = MediaType.APPLICATION_JSON)
 public class CertificateInternalApiController {
 
-    private final GetCertificateInteralApi getCertificateInternalAggregator;
-    private final GetCertificatePdfService getCertificateInternalPdfAggregator;
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private final GetCertificateInteralApi getCertificateInternalAggregator;
+  private final GetCertificatePdfService getCertificateInternalPdfAggregator;
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    public CertificateInternalApiController(
-        @Qualifier("getCertificateInternalAggregator") GetCertificateInteralApi getCertificateInternalAggregator,
-        @Qualifier("getCertificateInternalPdfAggregator") GetCertificatePdfService getCertificateInternalPdfAggregator) {
-        this.getCertificateInternalAggregator = getCertificateInternalAggregator;
-        this.getCertificateInternalPdfAggregator = getCertificateInternalPdfAggregator;
-    }
+  public CertificateInternalApiController(
+      @Qualifier("getCertificateInternalAggregator") GetCertificateInteralApi getCertificateInternalAggregator,
+      @Qualifier("getCertificateInternalPdfAggregator") GetCertificatePdfService getCertificateInternalPdfAggregator) {
+    this.getCertificateInternalAggregator = getCertificateInternalAggregator;
+    this.getCertificateInternalPdfAggregator = getCertificateInternalPdfAggregator;
+  }
 
-    @POST
-    @Path("/{certificateId}")
-    @PrometheusTimeMethod
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PerformanceLogging(eventAction = "certificate-internal-get-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public GetCertificateResponse getCertificate(@RequestBody GetCertificateIntegrationRequestDTO request,
-        @PathParam("certificateId") String certificateId) {
-        return getCertificateInternalAggregator.get(certificateId, request.getPersonId());
-    }
+  @POST
+  @Path("/{certificateId}")
+  @PrometheusTimeMethod
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PerformanceLogging(
+      eventAction = "certificate-internal-get-certificate",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public GetCertificateResponse getCertificate(
+      @RequestBody GetCertificateIntegrationRequestDTO request,
+      @PathParam("certificateId") String certificateId) {
+    return getCertificateInternalAggregator.get(certificateId, request.getPersonId());
+  }
 
-    @POST
-    @Path("/{certificateId}/pdf")
-    @PrometheusTimeMethod
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PerformanceLogging(eventAction = "certificate-internal-get-pdf-data", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public CertificatePdfResponseDTO getPdfData(@RequestBody CertificatePdfRequestDTO request,
-        @PathParam("certificateId") String certificateId) {
-        return getCertificateInternalPdfAggregator.get(
-            request.getCustomizationId(),
-            certificateId,
-            request.getPersonId()
-        );
-    }
+  @POST
+  @Path("/{certificateId}/pdf")
+  @PrometheusTimeMethod
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PerformanceLogging(
+      eventAction = "certificate-internal-get-pdf-data",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public CertificatePdfResponseDTO getPdfData(
+      @RequestBody CertificatePdfRequestDTO request,
+      @PathParam("certificateId") String certificateId) {
+    return getCertificateInternalPdfAggregator.get(
+        request.getCustomizationId(), certificateId, request.getPersonId());
+  }
 }

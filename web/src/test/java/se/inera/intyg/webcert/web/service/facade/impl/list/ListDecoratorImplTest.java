@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -51,203 +51,201 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 @ExtendWith(MockitoExtension.class)
 class ListDecoratorImplTest {
 
-    @Mock
-    private IntygDraftDecorator intygDraftDecorator;
-    @Mock
-    private EmployeeNameService employeeNameService;
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private IntygDraftDecorator intygDraftDecorator;
+  @Mock private EmployeeNameService employeeNameService;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    private ListDecoratorImpl listDecorator;
+  @InjectMocks private ListDecoratorImpl listDecorator;
 
-    @Nested
-    class CertificateTypeName {
+  @Nested
+  class CertificateTypeName {
 
-        final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-            List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
-        );
+    final List<ListIntygEntry> list =
+        new ArrayList<ListIntygEntry>(
+            List.of(ListTestHelper.createListIntygEntry("STATUS", true, true)));
 
-        @Test
-        public void shouldDecorateWithCertificateTypeName() {
-            listDecorator.decorateWithCertificateTypeName(list);
-            assertEquals(1, list.size());
-        }
+    @Test
+    public void shouldDecorateWithCertificateTypeName() {
+      listDecorator.decorateWithCertificateTypeName(list);
+      assertEquals(1, list.size());
+    }
+  }
+
+  @Nested
+  class StaffName {
+
+    public void setupStaffWithOnlyLastName() {
+      when(employeeNameService.getEmployeeHsaName(any())).thenReturn("EXAMPLE_NAME");
     }
 
-    @Nested
-    class StaffName {
-
-        public void setupStaffWithOnlyLastName() {
-            when(employeeNameService.getEmployeeHsaName(any()))
-                .thenReturn("EXAMPLE_NAME");
-        }
-
-        public void setupStaffWithCompleteName() {
-            when(employeeNameService.getEmployeeHsaName(any()))
-                .thenReturn("FIRST MIDDLE LAST");
-        }
-
-        public void setupStaffWithNoLastName() {
-            when(employeeNameService.getEmployeeHsaName(any()))
-                .thenReturn(null);
-        }
-
-        @Test
-        public void shouldDecorateWithStaffLastName() {
-            setupStaffWithOnlyLastName();
-            final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
-            );
-
-            listDecorator.decorateWithStaffName(list);
-            assertEquals(1, list.size());
-            assertEquals("EXAMPLE_NAME", list.get(0).getUpdatedSignedBy());
-        }
-
-        @Test
-        public void shouldDecorateWithStaffFullName() {
-            setupStaffWithCompleteName();
-            final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
-            );
-
-            listDecorator.decorateWithStaffName(list);
-            assertEquals(1, list.size());
-            assertEquals("FIRST MIDDLE LAST", list.get(0).getUpdatedSignedBy());
-        }
-
-        @Test
-        public void shouldNotDecorateIfStaffHasNoLastName() {
-            setupStaffWithNoLastName();
-            final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
-            );
-
-            listDecorator.decorateWithStaffName(list);
-            assertEquals(1, list.size());
-            assertNull(list.get(0).getUpdatedSignedBy());
-        }
+    public void setupStaffWithCompleteName() {
+      when(employeeNameService.getEmployeeHsaName(any())).thenReturn("FIRST MIDDLE LAST");
     }
 
-    @Nested
-    class ProtectedPersonStatus {
-
-        final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-            List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
-        );
-
-        public void setupPatientStatus(SekretessStatus status, boolean flag) {
-            final var statusMap = mock(Map.class);
-            PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
-            response.setTestIndicator(flag);
-            response.setDeceased(flag);
-            response.setProtectedPerson(status);
-            when(statusMap.get(any(Personnummer.class))).thenReturn(response);
-            Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
-        }
-
-        public void setupHandleProtectedPatientPrivilege() {
-            ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        }
-
-        @Test
-        public void shouldIncludeNotProtectedPerson() {
-            setupPatientStatus(SekretessStatus.FALSE, false);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertEquals(1, result.size());
-        }
-
-        @Test
-        public void shouldSetFalseForDeceasedPatient() {
-            setupPatientStatus(SekretessStatus.FALSE, false);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertFalse(result.get(0).isAvliden());
-        }
-
-        @Test
-        public void shouldSetFalseForTestIndicatedPatient() {
-            setupPatientStatus(SekretessStatus.FALSE, false);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertFalse(result.get(0).isTestIntyg());
-        }
-
-        @Test
-        public void shouldSetFalseForProtectedPatient() {
-            setupPatientStatus(SekretessStatus.FALSE, false);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertFalse(result.get(0).isSekretessmarkering());
-        }
-
-        @Test
-        public void shouldIncludeProtectedPerson() {
-            setupHandleProtectedPatientPrivilege();
-            setupPatientStatus(SekretessStatus.TRUE, true);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertEquals(1, result.size());
-        }
-
-        @Test
-        public void shouldSetTrueForDeceasedPatient() {
-            setupHandleProtectedPatientPrivilege();
-            setupPatientStatus(SekretessStatus.TRUE, true);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertTrue(result.get(0).isAvliden());
-        }
-
-        @Test
-        public void shouldSetTrueForTestIndicatedPatient() {
-            setupHandleProtectedPatientPrivilege();
-            setupPatientStatus(SekretessStatus.TRUE, true);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertTrue(result.get(0).isTestIntyg());
-        }
-
-        @Test
-        public void shouldSetTrueForProtectedPatient() {
-            setupHandleProtectedPatientPrivilege();
-            setupPatientStatus(SekretessStatus.TRUE, true);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertTrue(result.get(0).isSekretessmarkering());
-        }
-
-        @Test
-        public void shouldNotIncludeProtectedPersonIfUserHasNoAccess() {
-            setupPatientStatus(SekretessStatus.TRUE, true);
-            ListTestHelper.setupUser(webCertUserService, LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertEquals(0, result.size());
-        }
-
-        @Test
-        public void shouldNotIncludePatientWithUndefinedProtectedStatus() {
-            setupPatientStatus(SekretessStatus.UNDEFINED, true);
-            setupHandleProtectedPatientPrivilege();
-
-            final var result = listDecorator.decorateAndFilterProtectedPerson(list);
-
-            assertEquals(0, result.size());
-        }
+    public void setupStaffWithNoLastName() {
+      when(employeeNameService.getEmployeeHsaName(any())).thenReturn(null);
     }
+
+    @Test
+    public void shouldDecorateWithStaffLastName() {
+      setupStaffWithOnlyLastName();
+      final List<ListIntygEntry> list =
+          new ArrayList<ListIntygEntry>(
+              List.of(ListTestHelper.createListIntygEntry("STATUS", true, true)));
+
+      listDecorator.decorateWithStaffName(list);
+      assertEquals(1, list.size());
+      assertEquals("EXAMPLE_NAME", list.get(0).getUpdatedSignedBy());
+    }
+
+    @Test
+    public void shouldDecorateWithStaffFullName() {
+      setupStaffWithCompleteName();
+      final List<ListIntygEntry> list =
+          new ArrayList<ListIntygEntry>(
+              List.of(ListTestHelper.createListIntygEntry("STATUS", true, true)));
+
+      listDecorator.decorateWithStaffName(list);
+      assertEquals(1, list.size());
+      assertEquals("FIRST MIDDLE LAST", list.get(0).getUpdatedSignedBy());
+    }
+
+    @Test
+    public void shouldNotDecorateIfStaffHasNoLastName() {
+      setupStaffWithNoLastName();
+      final List<ListIntygEntry> list =
+          new ArrayList<ListIntygEntry>(
+              List.of(ListTestHelper.createListIntygEntry("STATUS", true, true)));
+
+      listDecorator.decorateWithStaffName(list);
+      assertEquals(1, list.size());
+      assertNull(list.get(0).getUpdatedSignedBy());
+    }
+  }
+
+  @Nested
+  class ProtectedPersonStatus {
+
+    final List<ListIntygEntry> list =
+        new ArrayList<ListIntygEntry>(
+            List.of(ListTestHelper.createListIntygEntry("STATUS", true, true)));
+
+    public void setupPatientStatus(SekretessStatus status, boolean flag) {
+      final var statusMap = mock(Map.class);
+      PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
+      response.setTestIndicator(flag);
+      response.setDeceased(flag);
+      response.setProtectedPerson(status);
+      when(statusMap.get(any(Personnummer.class))).thenReturn(response);
+      Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
+    }
+
+    public void setupHandleProtectedPatientPrivilege() {
+      ListTestHelper.setupUser(
+          webCertUserService,
+          AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+          LuseEntryPoint.MODULE_ID,
+          AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+    }
+
+    @Test
+    public void shouldIncludeNotProtectedPerson() {
+      setupPatientStatus(SekretessStatus.FALSE, false);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldSetFalseForDeceasedPatient() {
+      setupPatientStatus(SekretessStatus.FALSE, false);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertFalse(result.get(0).isAvliden());
+    }
+
+    @Test
+    public void shouldSetFalseForTestIndicatedPatient() {
+      setupPatientStatus(SekretessStatus.FALSE, false);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertFalse(result.get(0).isTestIntyg());
+    }
+
+    @Test
+    public void shouldSetFalseForProtectedPatient() {
+      setupPatientStatus(SekretessStatus.FALSE, false);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertFalse(result.get(0).isSekretessmarkering());
+    }
+
+    @Test
+    public void shouldIncludeProtectedPerson() {
+      setupHandleProtectedPatientPrivilege();
+      setupPatientStatus(SekretessStatus.TRUE, true);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldSetTrueForDeceasedPatient() {
+      setupHandleProtectedPatientPrivilege();
+      setupPatientStatus(SekretessStatus.TRUE, true);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertTrue(result.get(0).isAvliden());
+    }
+
+    @Test
+    public void shouldSetTrueForTestIndicatedPatient() {
+      setupHandleProtectedPatientPrivilege();
+      setupPatientStatus(SekretessStatus.TRUE, true);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertTrue(result.get(0).isTestIntyg());
+    }
+
+    @Test
+    public void shouldSetTrueForProtectedPatient() {
+      setupHandleProtectedPatientPrivilege();
+      setupPatientStatus(SekretessStatus.TRUE, true);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertTrue(result.get(0).isSekretessmarkering());
+    }
+
+    @Test
+    public void shouldNotIncludeProtectedPersonIfUserHasNoAccess() {
+      setupPatientStatus(SekretessStatus.TRUE, true);
+      ListTestHelper.setupUser(
+          webCertUserService,
+          LuseEntryPoint.MODULE_ID,
+          AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertEquals(0, result.size());
+    }
+
+    @Test
+    public void shouldNotIncludePatientWithUndefinedProtectedStatus() {
+      setupPatientStatus(SekretessStatus.UNDEFINED, true);
+      setupHandleProtectedPatientPrivilege();
+
+      final var result = listDecorator.decorateAndFilterProtectedPerson(list);
+
+      assertEquals(0, result.size());
+    }
+  }
 }

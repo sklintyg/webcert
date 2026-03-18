@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,43 +47,41 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 @RunWith(MockitoJUnitRunner.class)
 public class MonitoringLogServiceTest {
 
-    @Mock
-    private Appender<ILoggingEvent> mockAppender;
+  @Mock private Appender<ILoggingEvent> mockAppender;
 
-    @Captor
-    private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
+  @Captor private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
 
-    private final MonitoringLogService monitoringLogService = new MonitoringLogServiceImpl();
+  private final MonitoringLogService monitoringLogService = new MonitoringLogServiceImpl();
 
-    @Before
-    public void setup() {
-        final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        logger.addAppender(mockAppender);
-    }
+  @Before
+  public void setup() {
+    final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    logger.addAppender(mockAppender);
+  }
 
-    @After
-    public void teardown() {
-        final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        logger.detachAppender(mockAppender);
-    }
+  @After
+  public void teardown() {
+    final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    logger.detachAppender(mockAppender);
+  }
 
-    @Test
-    public void testThatMonitoringLogProducesLogMessage() {
-        monitoringLogService.logUserLogin("ABC123", "user-role", "role-type-name", "test-scheme", UserOriginType.NORMAL.name());
+  @Test
+  public void testThatMonitoringLogProducesLogMessage() {
+    monitoringLogService.logUserLogin(
+        "ABC123", "user-role", "role-type-name", "test-scheme", UserOriginType.NORMAL.name());
 
-        verify(mockAppender).doAppend(captorLoggingEvent.capture());
+    verify(mockAppender).doAppend(captorLoggingEvent.capture());
 
-        final LoggingEvent loggingEvent = captorLoggingEvent.getValue();
+    final LoggingEvent loggingEvent = captorLoggingEvent.getValue();
 
-        assertThat(loggingEvent.getLevel(), equalTo(Level.INFO));
+    assertThat(loggingEvent.getLevel(), equalTo(Level.INFO));
 
-        // assert that messages contains log event message and args
-        assertThat(loggingEvent.getFormattedMessage(), containsString("USER_LOGIN"));
-        assertThat(loggingEvent.getFormattedMessage(), containsString("ABC123"));
-        assertThat(loggingEvent.getFormattedMessage(), containsString("test-scheme"));
-        assertThat(loggingEvent.getFormattedMessage(), containsString("user-role"));
-        assertThat(loggingEvent.getFormattedMessage(), containsString("role-type-name"));
-        assertThat(loggingEvent.getFormattedMessage(), containsString(UserOriginType.NORMAL.name()));
-    }
-
+    // assert that messages contains log event message and args
+    assertThat(loggingEvent.getFormattedMessage(), containsString("USER_LOGIN"));
+    assertThat(loggingEvent.getFormattedMessage(), containsString("ABC123"));
+    assertThat(loggingEvent.getFormattedMessage(), containsString("test-scheme"));
+    assertThat(loggingEvent.getFormattedMessage(), containsString("user-role"));
+    assertThat(loggingEvent.getFormattedMessage(), containsString("role-type-name"));
+    assertThat(loggingEvent.getFormattedMessage(), containsString(UserOriginType.NORMAL.name()));
+  }
 }

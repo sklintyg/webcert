@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,292 +39,244 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @RequiredArgsConstructor
 public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
-    @Nullable
-    private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+  @Nullable private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
 
-    @Override
-    public ResourceLinkDTO[] get(WebCertUser user) {
-        final var availableFunctions = new ArrayList<>(getAvailableFunctionsForUser(user));
-        return availableFunctions.toArray(ResourceLinkDTO[]::new);
+  @Override
+  public ResourceLinkDTO[] get(WebCertUser user) {
+    final var availableFunctions = new ArrayList<>(getAvailableFunctionsForUser(user));
+    return availableFunctions.toArray(ResourceLinkDTO[]::new);
+  }
+
+  private ArrayList<ResourceLinkDTO> getAvailableFunctionsForUser(WebCertUser user) {
+    final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+
+    if (hasAccessToSearchCreatePage(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE, "Sök / skriv intyg", "", true));
     }
 
-    private ArrayList<ResourceLinkDTO> getAvailableFunctionsForUser(WebCertUser user) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
-
-        if (hasAccessToSearchCreatePage(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE,
-                    "Sök / skriv intyg",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (hasAccessToDraftList(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.ACCESS_DRAFT_LIST,
-                    "Ej signerade utkast",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (hasAccessToQuestionList(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.ACCESS_QUESTION_LIST,
-                    "Ej hanterade ärenden",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (hasAccessToSignedCertificatesList(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST,
-                    "Signerade intyg",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (isLogOutAvailable(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.LOG_OUT,
-                    "Logga ut",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (isChooseUnitAvailable(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.CHOOSE_UNIT,
-                    "Välj vårdenhet",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (isChangeUnitAvailable(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.CHANGE_UNIT,
-                    "Byt vårdenhet",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (hasNavigateBackButton(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.NAVIGATE_BACK_BUTTON,
-                    "Tillbaka",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (hasNormalOriginWarning(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN,
-                    "Felaktig inloggningsmetod",
-                    "",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (shouldWarnForMissingSubscription(user)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SUBSCRIPTION_WARNING,
-                    "Saknar avtal",
-                    "",
-                    true
-                )
-            );
-        }
-
-        addAvailableFunctionsForPrivatePractitioner(user, resourceLinks);
-
-        return resourceLinks;
+    if (hasAccessToDraftList(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.ACCESS_DRAFT_LIST, "Ej signerade utkast", "", true));
     }
 
-    private void addAvailableFunctionsForPrivatePractitioner(WebCertUser user, ArrayList<ResourceLinkDTO> resourceLinks) {
-        final var resultCode = privatePractitionerValidationResultCode(user);
-        if (hasAccessToRegisterPrivatePractitioner(user, resultCode)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER,
-                    "Skapa konto i Webcert",
-                    "",
-                    true
-                )
-            );
+    if (hasAccessToQuestionList(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.ACCESS_QUESTION_LIST, "Ej hanterade ärenden", "", true));
+    }
+
+    if (hasAccessToSignedCertificatesList(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST, "Signerade intyg", "", true));
+    }
+
+    if (isLogOutAvailable(user)) {
+      resourceLinks.add(ResourceLinkDTO.create(ResourceLinkTypeDTO.LOG_OUT, "Logga ut", "", true));
+    }
+
+    if (isChooseUnitAvailable(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(ResourceLinkTypeDTO.CHOOSE_UNIT, "Välj vårdenhet", "", true));
+    }
+
+    if (isChangeUnitAvailable(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(ResourceLinkTypeDTO.CHANGE_UNIT, "Byt vårdenhet", "", true));
+    }
+
+    if (hasNavigateBackButton(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(ResourceLinkTypeDTO.NAVIGATE_BACK_BUTTON, "Tillbaka", "", true));
+    }
+
+    if (hasNormalOriginWarning(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN,
+              "Felaktig inloggningsmetod",
+              "",
+              "",
+              true));
+    }
+
+    if (shouldWarnForMissingSubscription(user)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.SUBSCRIPTION_WARNING, "Saknar avtal", "", true));
+    }
+
+    addAvailableFunctionsForPrivatePractitioner(user, resourceLinks);
+
+    return resourceLinks;
+  }
+
+  private void addAvailableFunctionsForPrivatePractitioner(
+      WebCertUser user, ArrayList<ResourceLinkDTO> resourceLinks) {
+    final var resultCode = privatePractitionerValidationResultCode(user);
+    if (hasAccessToRegisterPrivatePractitioner(user, resultCode)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER,
+              "Skapa konto i Webcert",
+              "",
+              true));
+    }
+
+    if (hasAccessToEditPrivatePractitioner(user, resultCode)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER, "Ändra uppgifter", "", true));
+    }
+
+    if (notAuthorizedPrivatePractitioner(user, resultCode)) {
+      resourceLinks.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.NOT_AUTHORIZED_PRIVATE_PRACTITIONER,
+              "Du är inte behörig att använda Webcert",
+              "",
+              true));
+    }
+  }
+
+  private boolean hasNormalOriginWarning(WebCertUser user) {
+    if (user.isUnauthorizedPrivatePractitioner()) {
+      return false;
+    }
+    return isOriginNormal(user.getOrigin())
+        && user.isFeatureActive("VARNING_FRISTAENDE")
+        && hasUserChosenUnit(user);
+  }
+
+  private boolean hasUserChosenUnit(WebCertUser user) {
+    return user.getValdVardenhet() != null;
+  }
+
+  private boolean isChooseUnitAvailable(WebCertUser user) {
+    if (user.isUnauthorizedPrivatePractitioner()) {
+      return false;
+    }
+    return isOriginNormal(user.getOrigin()) && !hasUserChosenUnit(user);
+  }
+
+  private boolean isChangeUnitAvailable(WebCertUser user) {
+    return hasMoreThanOneUnitOrSubUnit(user)
+        && (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin()));
+  }
+
+  private boolean hasMoreThanOneUnitOrSubUnit(WebCertUser user) {
+    if (user.getVardgivare().size() > 1) {
+      return true;
+    }
+    for (Vardgivare vg : user.getVardgivare()) {
+      if (vg.getVardenheter().size() > 1) {
+        return true;
+      }
+      for (Vardenhet ve : vg.getVardenheter()) {
+        if (ve.getMottagningar().size() > 1) {
+          return true;
         }
-
-        if (hasAccessToEditPrivatePractitioner(user, resultCode)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER,
-                    "Ändra uppgifter",
-                    "",
-                    true
-                )
-            );
-        }
-
-        if (notAuthorizedPrivatePractitioner(user, resultCode)) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.NOT_AUTHORIZED_PRIVATE_PRACTITIONER,
-                    "Du är inte behörig att använda Webcert",
-                    "",
-                    true
-                )
-            );
-        }
+      }
     }
+    return false;
+  }
 
-    private boolean hasNormalOriginWarning(WebCertUser user) {
-        if (user.isUnauthorizedPrivatePractitioner()) {
-            return false;
-        }
-        return isOriginNormal(user.getOrigin()) && user.isFeatureActive("VARNING_FRISTAENDE") && hasUserChosenUnit(user);
+  private boolean hasAccessToSearchCreatePage(WebCertUser user) {
+    if (user.isUnauthorizedPrivatePractitioner()) {
+      return false;
     }
+    return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
+  }
 
-    private boolean hasUserChosenUnit(WebCertUser user) {
-        return user.getValdVardenhet() != null;
+  private boolean hasAccessToDraftList(WebCertUser user) {
+    if (user.isUnauthorizedPrivatePractitioner()) {
+      return false;
     }
+    return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
+  }
 
-    private boolean isChooseUnitAvailable(WebCertUser user) {
-        if (user.isUnauthorizedPrivatePractitioner()) {
-            return false;
-        }
-        return isOriginNormal(user.getOrigin()) && !hasUserChosenUnit(user);
+  private boolean hasAccessToQuestionList(WebCertUser user) {
+    if (user.isUnauthorizedPrivatePractitioner()) {
+      return false;
     }
+    return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
+  }
 
-    private boolean isChangeUnitAvailable(WebCertUser user) {
-        return hasMoreThanOneUnitOrSubUnit(user) && (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin()));
+  private boolean hasNavigateBackButton(WebCertUser user) {
+    if (user.isUnauthorizedPrivatePractitioner()) {
+      return false;
     }
+    return isOriginNormal(user.getOrigin());
+  }
 
-    private boolean hasMoreThanOneUnitOrSubUnit(WebCertUser user) {
-        if (user.getVardgivare().size() > 1) {
-            return true;
-        }
-        for (Vardgivare vg : user.getVardgivare()) {
-            if (vg.getVardenheter().size() > 1) {
-                return true;
-            }
-            for (Vardenhet ve : vg.getVardenheter()) {
-                if (ve.getMottagningar().size() > 1) {
-                    return true;
-                }
-            }
-        }
-        return false;
+  private boolean hasAccessToSignedCertificatesList(WebCertUser user) {
+    if (user.isUnauthorizedPrivatePractitioner()) {
+      return false;
     }
+    return (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin()))
+        && !isUserCareAdmin(user);
+  }
 
-    private boolean hasAccessToSearchCreatePage(WebCertUser user) {
-        if (user.isUnauthorizedPrivatePractitioner()) {
-            return false;
-        }
-        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
-    }
+  private boolean isLogOutAvailable(WebCertUser user) {
+    return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
+  }
 
-    private boolean hasAccessToDraftList(WebCertUser user) {
-        if (user.isUnauthorizedPrivatePractitioner()) {
-            return false;
-        }
-        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
-    }
+  private boolean isOriginNormal(String origin) {
+    return "NORMAL".equals(origin);
+  }
 
-    private boolean hasAccessToQuestionList(WebCertUser user) {
-        if (user.isUnauthorizedPrivatePractitioner()) {
-            return false;
-        }
-        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
-    }
+  private boolean isOriginUthopp(String origin) {
+    return "UTHOPP".equals(origin);
+  }
 
-    private boolean hasNavigateBackButton(WebCertUser user) {
-        if (user.isUnauthorizedPrivatePractitioner()) {
-            return false;
-        }
-        return isOriginNormal(user.getOrigin());
-    }
+  private boolean isUserCareAdmin(WebCertUser user) {
+    return user.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN);
+  }
 
-    private boolean hasAccessToSignedCertificatesList(WebCertUser user) {
-        if (user.isUnauthorizedPrivatePractitioner()) {
-            return false;
-        }
-        return (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin())) && !isUserCareAdmin(user);
+  private boolean shouldWarnForMissingSubscription(WebCertUser user) {
+    if (user.isUnauthorizedPrivatePractitioner()) {
+      return false;
     }
+    return isOriginNormal(user.getOrigin()) && isLoggedInCareProviderMissingSubscription(user);
+  }
 
-    private boolean isLogOutAvailable(WebCertUser user) {
-        return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
-    }
+  private boolean isLoggedInCareProviderMissingSubscription(WebCertUser user) {
+    return user.getValdVardgivare() != null
+        && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal() != null
+        && user.getSubscriptionInfo()
+            .getCareProvidersForSubscriptionModal()
+            .contains(user.getValdVardgivare().getId());
+  }
 
-    private boolean isOriginNormal(String origin) {
-        return "NORMAL".equals(origin);
+  private PrivatePractitionerValidationResultCode privatePractitionerValidationResultCode(
+      WebCertUser user) {
+    if (privatePractitionerIntegrationService == null) {
+      return null;
     }
+    if (user.isUnauthorizedPrivatePractitioner() || user.isPrivatLakare()) {
+      return privatePractitionerIntegrationService
+          .validatePrivatePractitioner(user.getPersonId())
+          .resultCode();
+    }
+    return null;
+  }
 
-    private boolean isOriginUthopp(String origin) {
-        return "UTHOPP".equals(origin);
-    }
+  private boolean hasAccessToEditPrivatePractitioner(
+      WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
+    return user.isUnauthorizedPrivatePractitioner() && resultCode == NOT_AUTHORIZED_IN_HOSP
+        || user.isPrivatLakare();
+  }
 
-    private boolean isUserCareAdmin(WebCertUser user) {
-        return user.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN);
-    }
+  private boolean hasAccessToRegisterPrivatePractitioner(
+      WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
+    return user.isUnauthorizedPrivatePractitioner() && resultCode == NO_ACCOUNT;
+  }
 
-    private boolean shouldWarnForMissingSubscription(WebCertUser user) {
-        if (user.isUnauthorizedPrivatePractitioner()) {
-            return false;
-        }
-        return isOriginNormal(user.getOrigin()) && isLoggedInCareProviderMissingSubscription(user);
-    }
-
-    private boolean isLoggedInCareProviderMissingSubscription(WebCertUser user) {
-        return user.getValdVardgivare() != null
-            && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal() != null
-            && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal().contains(user.getValdVardgivare().getId());
-    }
-
-    private PrivatePractitionerValidationResultCode privatePractitionerValidationResultCode(WebCertUser user) {
-        if (privatePractitionerIntegrationService == null) {
-            return null;
-        }
-        if (user.isUnauthorizedPrivatePractitioner() || user.isPrivatLakare()) {
-            return privatePractitionerIntegrationService.validatePrivatePractitioner(user.getPersonId()).resultCode();
-        }
-        return null;
-    }
-
-    private boolean hasAccessToEditPrivatePractitioner(WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
-        return user.isUnauthorizedPrivatePractitioner() && resultCode == NOT_AUTHORIZED_IN_HOSP || user.isPrivatLakare();
-    }
-
-    private boolean hasAccessToRegisterPrivatePractitioner(WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
-        return user.isUnauthorizedPrivatePractitioner() && resultCode == NO_ACCOUNT;
-    }
-
-    private boolean notAuthorizedPrivatePractitioner(WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
-        return user.isUnauthorizedPrivatePractitioner() && resultCode != NO_ACCOUNT;
-    }
+  private boolean notAuthorizedPrivatePractitioner(
+      WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
+    return user.isUnauthorizedPrivatePractitioner() && resultCode != NO_ACCOUNT;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,333 +38,330 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBool
 
 class AvailableFunctionUtilsTest {
 
-    @Nested
-    class IsReplacedOrComplemented {
+  @Nested
+  class IsReplacedOrComplemented {
 
-        @Test
-        void shouldReturnFalseIfRelationsIsNull() {
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(null);
+    @Test
+    void shouldReturnFalseIfRelationsIsNull() {
+      final var response = AvailableFunctionUtils.isReplacedOrComplemented(null);
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasNoChildren() {
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasNoChildren() {
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(CertificateRelations.builder().build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnTrueIfRelationsHasComplementedChildThatIsSigned() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.COMPLEMENTED)
-                    .status(CertificateStatus.SIGNED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnTrueIfRelationsHasComplementedChildThatIsSigned() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .status(CertificateStatus.SIGNED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertTrue(response);
-        }
+      assertTrue(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasComplementedChildThatIsUnsigned() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.COMPLEMENTED)
-                    .status(CertificateStatus.UNSIGNED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasComplementedChildThatIsUnsigned() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .status(CertificateStatus.UNSIGNED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasComplementedChildThatIsLocked() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.COMPLEMENTED)
-                    .status(CertificateStatus.LOCKED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasComplementedChildThatIsLocked() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .status(CertificateStatus.LOCKED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasComplementedChildThatIsLockedRevoked() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.COMPLEMENTED)
-                    .status(CertificateStatus.LOCKED_REVOKED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasComplementedChildThatIsLockedRevoked() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .status(CertificateStatus.LOCKED_REVOKED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasComplementedChildThatIsRevoked() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.COMPLEMENTED)
-                    .status(CertificateStatus.REVOKED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasComplementedChildThatIsRevoked() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.COMPLEMENTED)
+            .status(CertificateStatus.REVOKED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnTrueIfRelationsHasReplacedChildThatIsSigned() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.REPLACED)
-                    .status(CertificateStatus.SIGNED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnTrueIfRelationsHasReplacedChildThatIsSigned() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.REPLACED)
+            .status(CertificateStatus.SIGNED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertTrue(response);
-        }
+      assertTrue(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasReplacedChildThatIsUnsigned() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.REPLACED)
-                    .status(CertificateStatus.UNSIGNED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasReplacedChildThatIsUnsigned() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.REPLACED)
+            .status(CertificateStatus.UNSIGNED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasReplacedChildThatIsLocked() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.REPLACED)
-                    .status(CertificateStatus.LOCKED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasReplacedChildThatIsLocked() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.REPLACED)
+            .status(CertificateStatus.LOCKED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasReplacedChildThatIsLockedRevoked() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.REPLACED)
-                    .status(CertificateStatus.LOCKED_REVOKED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasReplacedChildThatIsLockedRevoked() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.REPLACED)
+            .status(CertificateStatus.LOCKED_REVOKED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasReplacedChildThatIsRevoked() {
-            CertificateRelation[] children = {
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.REPLACED)
-                    .status(CertificateStatus.REVOKED)
-                    .build()
-            };
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasReplacedChildThatIsRevoked() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder()
+            .type(CertificateRelationType.REPLACED)
+            .status(CertificateStatus.REVOKED)
+            .build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
 
-        @Test
-        void shouldReturnFalseIfRelationsHasCopiedChild() {
-            CertificateRelation[] children = {CertificateRelation.builder().type(CertificateRelationType.COPIED).build()};
-            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
-                CertificateRelations.builder().children(children).build()
-            );
+    @Test
+    void shouldReturnFalseIfRelationsHasCopiedChild() {
+      CertificateRelation[] children = {
+        CertificateRelation.builder().type(CertificateRelationType.COPIED).build()
+      };
+      final var response =
+          AvailableFunctionUtils.isReplacedOrComplemented(
+              CertificateRelations.builder().children(children).build());
 
-            assertFalse(response);
-        }
+      assertFalse(response);
+    }
+  }
+
+  @Nested
+  class IsCertificateOfType {
+
+    @Test
+    void shouldReturnFalseIfNotType() {
+      final var certificate = new Certificate();
+      certificate.setMetadata(CertificateMetadata.builder().type("TYPE").build());
+
+      final var response =
+          AvailableFunctionUtils.isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID);
+
+      assertFalse(response);
+    }
+
+    @Test
+    void shouldReturnTrueIfType() {
+      final var certificate = new Certificate();
+      certificate.setMetadata(
+          CertificateMetadata.builder().type(Ag7804EntryPoint.MODULE_ID).build());
+
+      final var response =
+          AvailableFunctionUtils.isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID);
+
+      assertTrue(response);
+    }
+  }
+
+  @Nested
+  class QuestionUtils {
+
+    private Certificate certificate;
+    private CertificateDataElement element;
+
+    @BeforeEach
+    void setup() {
+      element =
+          CertificateDataElement.builder()
+              .value(CertificateDataValueBoolean.builder().build())
+              .build();
+      final var data = new HashMap<String, CertificateDataElement>();
+      data.put("ID", element);
+      certificate = new Certificate();
+      certificate.setData(data);
     }
 
     @Nested
-    class IsCertificateOfType {
+    class HasQuestion {
 
-        @Test
-        void shouldReturnFalseIfNotType() {
-            final var certificate = new Certificate();
-            certificate.setMetadata(CertificateMetadata.builder()
-                .type("TYPE")
-                .build()
-            );
+      @Test
+      void shouldReturnTrueIfCertificateIncludesQuestion() {
+        final var response = AvailableFunctionUtils.hasQuestion(certificate, "ID");
 
-            final var response = AvailableFunctionUtils.isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID);
+        assertTrue(response);
+      }
 
-            assertFalse(response);
-        }
+      @Test
+      void shouldReturnFalseIfCertificateNotIncludesQuestion() {
+        final var response = AvailableFunctionUtils.hasQuestion(certificate, "NOT_ID");
 
-        @Test
-        void shouldReturnTrueIfType() {
-            final var certificate = new Certificate();
-            certificate.setMetadata(CertificateMetadata.builder()
-                .type(Ag7804EntryPoint.MODULE_ID)
-                .build()
-            );
-
-            final var response = AvailableFunctionUtils.isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID);
-
-            assertTrue(response);
-        }
+        assertFalse(response);
+      }
     }
 
-    @Nested
-    class QuestionUtils {
+    @Test
+    void shouldReturnValueForQuestionMatchingId() {
+      final var response = AvailableFunctionUtils.getQuestionValue(certificate, "ID");
 
-        private Certificate certificate;
-        private CertificateDataElement element;
+      assertEquals(element.getValue(), response);
+    }
+  }
 
-        @BeforeEach
-        void setup() {
-            element = CertificateDataElement.builder()
-                .value(CertificateDataValueBoolean.builder().build())
-                .build();
-            final var data = new HashMap<String, CertificateDataElement>();
-            data.put("ID", element);
-            certificate = new Certificate();
-            certificate.setData(data);
-        }
+  @Nested
+  class IsBooleanValueTrue {
 
-        @Nested
-        class HasQuestion {
+    @Test
+    void shouldReturnFalseIfNull() {
+      final var response = AvailableFunctionUtils.isBooleanValueTrue(null);
 
-            @Test
-            void shouldReturnTrueIfCertificateIncludesQuestion() {
-                final var response = AvailableFunctionUtils.hasQuestion(certificate, "ID");
-
-                assertTrue(response);
-            }
-
-            @Test
-            void shouldReturnFalseIfCertificateNotIncludesQuestion() {
-                final var response = AvailableFunctionUtils.hasQuestion(certificate, "NOT_ID");
-
-                assertFalse(response);
-            }
-
-        }
-
-        @Test
-        void shouldReturnValueForQuestionMatchingId() {
-            final var response = AvailableFunctionUtils.getQuestionValue(certificate, "ID");
-
-            assertEquals(element.getValue(), response);
-        }
+      assertFalse(response);
     }
 
-    @Nested
-    class IsBooleanValueTrue {
+    @Test
+    void shouldReturnFalseIfSelectedIsNull() {
+      final var response =
+          AvailableFunctionUtils.isBooleanValueTrue(CertificateDataValueBoolean.builder().build());
 
-        @Test
-        void shouldReturnFalseIfNull() {
-            final var response = AvailableFunctionUtils.isBooleanValueTrue(null);
-
-            assertFalse(response);
-        }
-
-        @Test
-        void shouldReturnFalseIfSelectedIsNull() {
-            final var response = AvailableFunctionUtils.isBooleanValueTrue(
-                CertificateDataValueBoolean.builder().build()
-            );
-
-            assertFalse(response);
-        }
-
-        @Test
-        void shouldReturnFalseIfSelectedIsFalse() {
-            final var response = AvailableFunctionUtils.isBooleanValueTrue(
-                CertificateDataValueBoolean.builder().selected(false).build()
-            );
-
-            assertFalse(response);
-        }
-
-        @Test
-        void shouldReturnTrueIfSelectedIsTrue() {
-            final var response = AvailableFunctionUtils.isBooleanValueTrue(
-                CertificateDataValueBoolean.builder().selected(true).build()
-            );
-
-            assertTrue(response);
-        }
+      assertFalse(response);
     }
 
-    @Nested
-    class IsBooleanValueNullOrFalse {
+    @Test
+    void shouldReturnFalseIfSelectedIsFalse() {
+      final var response =
+          AvailableFunctionUtils.isBooleanValueTrue(
+              CertificateDataValueBoolean.builder().selected(false).build());
 
-        @Test
-        void shouldReturnTrueIfNull() {
-            final var response = AvailableFunctionUtils.isBooleanValueNullOrFalse(null);
-
-            assertTrue(response);
-        }
-
-        @Test
-        void shouldReturnTrueIfSelectedIsNull() {
-            final var response = AvailableFunctionUtils.isBooleanValueNullOrFalse(
-                CertificateDataValueBoolean.builder().build()
-            );
-
-            assertTrue(response);
-        }
-
-        @Test
-        void shouldReturnTrueIfSelectedIsFalse() {
-            final var response = AvailableFunctionUtils.isBooleanValueNullOrFalse(
-                CertificateDataValueBoolean.builder().selected(false).build()
-            );
-
-            assertTrue(response);
-        }
-
-        @Test
-        void shouldReturnFalseIfSelectedIsTrue() {
-            final var response = AvailableFunctionUtils.isBooleanValueNullOrFalse(
-                CertificateDataValueBoolean.builder().selected(true).build()
-            );
-
-            assertFalse(response);
-        }
+      assertFalse(response);
     }
+
+    @Test
+    void shouldReturnTrueIfSelectedIsTrue() {
+      final var response =
+          AvailableFunctionUtils.isBooleanValueTrue(
+              CertificateDataValueBoolean.builder().selected(true).build());
+
+      assertTrue(response);
+    }
+  }
+
+  @Nested
+  class IsBooleanValueNullOrFalse {
+
+    @Test
+    void shouldReturnTrueIfNull() {
+      final var response = AvailableFunctionUtils.isBooleanValueNullOrFalse(null);
+
+      assertTrue(response);
+    }
+
+    @Test
+    void shouldReturnTrueIfSelectedIsNull() {
+      final var response =
+          AvailableFunctionUtils.isBooleanValueNullOrFalse(
+              CertificateDataValueBoolean.builder().build());
+
+      assertTrue(response);
+    }
+
+    @Test
+    void shouldReturnTrueIfSelectedIsFalse() {
+      final var response =
+          AvailableFunctionUtils.isBooleanValueNullOrFalse(
+              CertificateDataValueBoolean.builder().selected(false).build());
+
+      assertTrue(response);
+    }
+
+    @Test
+    void shouldReturnFalseIfSelectedIsTrue() {
+      final var response =
+          AvailableFunctionUtils.isBooleanValueNullOrFalse(
+              CertificateDataValueBoolean.builder().selected(true).build());
+
+      assertFalse(response);
+    }
+  }
 }

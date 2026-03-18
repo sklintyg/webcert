@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,25 +31,21 @@ import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter
 @Service("createQuestionFromWC")
 public class CreateQuestionFacadeServiceImpl implements CreateQuestionFacadeService {
 
-    private final ArendeDraftService arendeDraftService;
-    private final QuestionConverter questionConverter;
+  private final ArendeDraftService arendeDraftService;
+  private final QuestionConverter questionConverter;
 
-    @Autowired
-    public CreateQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService,
-        QuestionConverter questionConverter) {
-        this.arendeDraftService = arendeDraftService;
-        this.questionConverter = questionConverter;
-    }
+  @Autowired
+  public CreateQuestionFacadeServiceImpl(
+      ArendeDraftService arendeDraftService, QuestionConverter questionConverter) {
+    this.arendeDraftService = arendeDraftService;
+    this.questionConverter = questionConverter;
+  }
 
-    @Override
-    public Question create(String certificateId, QuestionType type, String message) {
-        final var questionDraft = arendeDraftService.create(
-            certificateId,
-            getSubjectAsString(type),
-            message,
-            null
-        );
+  @Override
+  public Question create(String certificateId, QuestionType type, String message) {
+    final var questionDraft =
+        arendeDraftService.create(certificateId, getSubjectAsString(type), message, null);
 
-        return questionConverter.convert(questionDraft);
-    }
+    return questionConverter.convert(questionDraft);
+  }
 }

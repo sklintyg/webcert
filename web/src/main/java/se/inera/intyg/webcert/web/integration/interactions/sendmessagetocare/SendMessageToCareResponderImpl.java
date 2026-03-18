@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,91 +39,97 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 @RequiredArgsConstructor
 public class SendMessageToCareResponderImpl implements SendMessageToCareResponderInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SendMessageToCareResponderImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SendMessageToCareResponderImpl.class);
 
-    private final ProcessIncomingMessageAggregator processIncomingMessage;
+  private final ProcessIncomingMessageAggregator processIncomingMessage;
 
-    @Override
-    @PerformanceLogging(eventAction = "send-message-to-care", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public SendMessageToCareResponseType sendMessageToCare(String logicalAddress, SendMessageToCareType request) {
-        LOG.debug("Received new message to care");
+  @Override
+  @PerformanceLogging(
+      eventAction = "send-message-to-care",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public SendMessageToCareResponseType sendMessageToCare(
+      String logicalAddress, SendMessageToCareType request) {
+    LOG.debug("Received new message to care");
 
-        final var response = new SendMessageToCareResponseType();
-        final var result = new ResultType();
+    final var response = new SendMessageToCareResponseType();
+    final var result = new ResultType();
 
-        try {
-            return processIncomingMessage.process(request);
-        } catch (WebCertServiceException ex) {
-            switch (ex.getErrorCode()) {
-                case MESSAGE_ALREADY_EXISTS:
-                    result.setResultCode(ResultCodeType.INFO);
-                    result.setResultText(ex.getMessage());
-                    LOG.info(
-                        "Could not process incoming message to care. Message already exists. Question id {}. Certificate id {}. {} {}",
-                        request.getMeddelandeId(),
-                        request.getIntygsId().getExtension(),
-                        ex.getErrorCode(),
-                        ex.getMessage()
-                    );
-                    break;
-                case INVALID_STATE, DATA_NOT_FOUND, EXTERNAL_SYSTEM_PROBLEM:
-                    result.setResultCode(ResultCodeType.ERROR);
-                    result.setErrorId(ErrorIdType.VALIDATION_ERROR);
-                    result.setResultText(ex.getMessage());
-                    LOG.error(
-                        String.format(
-                            "Could not process incoming message to care. Validation error. Question id %s. Certificate id %s. %s %s",
-                            request.getMeddelandeId(), request.getIntygsId().getExtension(),
-                            ex.getErrorCode(), ex.getMessage()
-                        ),
-                        ex
-                    );
-                    break;
-                default:
-                    result.setResultCode(ResultCodeType.ERROR);
-                    result.setErrorId(ErrorIdType.APPLICATION_ERROR);
-                    result.setResultText(ex.getMessage());
-                    LOG.error(
-                        String.format(
-                            "Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s %s",
-                            request.getMeddelandeId(), request.getIntygsId().getExtension(),
-                            ex.getErrorCode(), ex.getMessage()
-                        ),
-                        ex
-                    );
-                    break;
-            }
-        } catch (HttpClientErrorException exception) {
-            result.setResultCode(ResultCodeType.ERROR);
+    try {
+      return processIncomingMessage.process(request);
+    } catch (WebCertServiceException ex) {
+      switch (ex.getErrorCode()) {
+        case MESSAGE_ALREADY_EXISTS:
+          result.setResultCode(ResultCodeType.INFO);
+          result.setResultText(ex.getMessage());
+          LOG.info(
+              "Could not process incoming message to care. Message already exists. Question id {}. Certificate id {}. {} {}",
+              request.getMeddelandeId(),
+              request.getIntygsId().getExtension(),
+              ex.getErrorCode(),
+              ex.getMessage());
+          break;
+        case INVALID_STATE, DATA_NOT_FOUND, EXTERNAL_SYSTEM_PROBLEM:
+          result.setResultCode(ResultCodeType.ERROR);
+          result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+          result.setResultText(ex.getMessage());
+          LOG.error(
+              String.format(
+                  "Could not process incoming message to care. Validation error. Question id %s. Certificate id %s. %s %s",
+                  request.getMeddelandeId(),
+                  request.getIntygsId().getExtension(),
+                  ex.getErrorCode(),
+                  ex.getMessage()),
+              ex);
+          break;
+        default:
+          result.setResultCode(ResultCodeType.ERROR);
+          result.setErrorId(ErrorIdType.APPLICATION_ERROR);
+          result.setResultText(ex.getMessage());
+          LOG.error(
+              String.format(
+                  "Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s %s",
+                  request.getMeddelandeId(),
+                  request.getIntygsId().getExtension(),
+                  ex.getErrorCode(),
+                  ex.getMessage()),
+              ex);
+          break;
+      }
+    } catch (HttpClientErrorException exception) {
+      result.setResultCode(ResultCodeType.ERROR);
 
-            if (exception.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                result.setErrorId(ErrorIdType.VALIDATION_ERROR);
-                LOG.error(
-                    String.format("Could not process incoming message to care. Bad request returned. Question id %s. Certificate id %s. %s",
-                        request.getMeddelandeId(), request.getIntygsId().getExtension(), exception.getMessage()),
-                    exception
-                );
-            } else {
-                result.setErrorId(ErrorIdType.APPLICATION_ERROR);
-                LOG.error(
-                    String.format("Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s",
-                        request.getMeddelandeId(), request.getIntygsId().getExtension(), exception.getMessage()),
-                    exception
-                );
-            }
-            result.setResultText(exception.getMessage());
-        } catch (Exception ex) {
-            result.setResultCode(ResultCodeType.ERROR);
-            result.setErrorId(ErrorIdType.APPLICATION_ERROR);
-            result.setResultText(ex.getMessage());
-            LOG.error(
-                String.format("Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s",
-                    request.getMeddelandeId(), request.getIntygsId().getExtension(), ex.getMessage()),
-                ex
-            );
-        }
-
-        response.setResult(result);
-        return response;
+      if (exception.getStatusCode() == HttpStatus.BAD_REQUEST) {
+        result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+        LOG.error(
+            String.format(
+                "Could not process incoming message to care. Bad request returned. Question id %s. Certificate id %s. %s",
+                request.getMeddelandeId(),
+                request.getIntygsId().getExtension(),
+                exception.getMessage()),
+            exception);
+      } else {
+        result.setErrorId(ErrorIdType.APPLICATION_ERROR);
+        LOG.error(
+            String.format(
+                "Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s",
+                request.getMeddelandeId(),
+                request.getIntygsId().getExtension(),
+                exception.getMessage()),
+            exception);
+      }
+      result.setResultText(exception.getMessage());
+    } catch (Exception ex) {
+      result.setResultCode(ResultCodeType.ERROR);
+      result.setErrorId(ErrorIdType.APPLICATION_ERROR);
+      result.setResultText(ex.getMessage());
+      LOG.error(
+          String.format(
+              "Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s",
+              request.getMeddelandeId(), request.getIntygsId().getExtension(), ex.getMessage()),
+          ex);
     }
+
+    response.setResult(result);
+    return response;
+  }
 }

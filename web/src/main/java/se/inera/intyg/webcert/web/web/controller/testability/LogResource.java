@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,69 +42,70 @@ import se.inera.intyg.infra.logmessages.PdlLogMessage;
 @Path("/logMessages")
 public class LogResource {
 
-    private static final int DEFAULT_TIMEOUT = 1000;
+  private static final int DEFAULT_TIMEOUT = 1000;
 
-    private final long timeOut = DEFAULT_TIMEOUT;
+  private final long timeOut = DEFAULT_TIMEOUT;
 
-    private final ObjectMapper objectMapper = new CustomObjectMapper();
+  private final ObjectMapper objectMapper = new CustomObjectMapper();
 
-    @Autowired
-    @Qualifier("jmsPDLLogTemplateNoTx")
-    private JmsTemplate jmsTemplate;
+  @Autowired
+  @Qualifier("jmsPDLLogTemplateNoTx") private JmsTemplate jmsTemplate;
 
-    @DELETE
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteLogMessages() {
-        int count = countMessages();
-        long originalTimeout = jmsTemplate.getReceiveTimeout();
-        try {
-            jmsTemplate.setReceiveTimeout(timeOut);
-            while (count > 0) {
-                for (int i = 0; i < count; i++) {
-                    jmsTemplate.receive();
-                }
-                count = countMessages();
-            }
-        } finally {
-            jmsTemplate.setReceiveTimeout(originalTimeout);
+  @DELETE
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteLogMessages() {
+    int count = countMessages();
+    long originalTimeout = jmsTemplate.getReceiveTimeout();
+    try {
+      jmsTemplate.setReceiveTimeout(timeOut);
+      while (count > 0) {
+        for (int i = 0; i < count; i++) {
+          jmsTemplate.receive();
         }
-        return Response.ok().build();
+        count = countMessages();
+      }
+    } finally {
+      jmsTemplate.setReceiveTimeout(originalTimeout);
     }
+    return Response.ok().build();
+  }
 
-    @GET
-    @Path("/count")
-    @Produces(MediaType.APPLICATION_JSON)
-    public int countMessages() {
-        final var count = jmsTemplate.browse((session, browser) -> {
-            Enumeration<?> messages = browser.getEnumeration();
-            int total = 0;
-            while (messages.hasMoreElements()) {
+  @GET
+  @Path("/count")
+  @Produces(MediaType.APPLICATION_JSON)
+  public int countMessages() {
+    final var count =
+        jmsTemplate.browse(
+            (session, browser) -> {
+              Enumeration<?> messages = browser.getEnumeration();
+              int total = 0;
+              while (messages.hasMoreElements()) {
                 messages.nextElement();
                 total++;
-            }
-            return total;
-        });
-        return count != null ? count : 0;
-    }
+              }
+              return total;
+            });
+    return count != null ? count : 0;
+  }
 
-    @GET
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public PdlLogMessage getLogMessage() {
-        long originalTimeout = jmsTemplate.getReceiveTimeout();
-        try {
-            jmsTemplate.setReceiveTimeout(timeOut);
-            Message message = jmsTemplate.receive();
-            String body = ((TextMessage) Objects.requireNonNull(message)).getText();
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  public PdlLogMessage getLogMessage() {
+    long originalTimeout = jmsTemplate.getReceiveTimeout();
+    try {
+      jmsTemplate.setReceiveTimeout(timeOut);
+      Message message = jmsTemplate.receive();
+      String body = ((TextMessage) Objects.requireNonNull(message)).getText();
 
-            return objectMapper.readValue(body, PdlLogMessage.class);
-        } catch (JMSException e) {
-            throw new RuntimeException("Could not retreive log message: " + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not parse log message: " + e.getMessage(), e);
-        } finally {
-            jmsTemplate.setReceiveTimeout(originalTimeout);
-        }
+      return objectMapper.readValue(body, PdlLogMessage.class);
+    } catch (JMSException e) {
+      throw new RuntimeException("Could not retreive log message: " + e.getMessage(), e);
+    } catch (IOException e) {
+      throw new RuntimeException("Could not parse log message: " + e.getMessage(), e);
+    } finally {
+      jmsTemplate.setReceiveTimeout(originalTimeout);
     }
+  }
 }

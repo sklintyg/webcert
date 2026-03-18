@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,61 +41,59 @@ import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 @Transactional
 public class CertificateEventRepositoryTest {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
 
-    @Autowired
-    private CertificateEventRepository certificateEventRepository;
+  @Autowired private CertificateEventRepository certificateEventRepository;
 
-    @After
-    public void cleanup() {
-        certificateEventRepository.deleteAll();
-    }
+  @After
+  public void cleanup() {
+    certificateEventRepository.deleteAll();
+  }
 
-    @Test
-    public void testFindOneByCertificateId() {
-        CertificateEvent savedCertificateEvent = certificateEventRepository
-            .save(CertificateEventTestUtil.buildCertificateEvent(CertificateEventTestUtil.CERTIFICATE_ID_1));
-        List<CertificateEvent> foundCertificateEvent = certificateEventRepository
-            .findByCertificateId(savedCertificateEvent.getCertificateId());
+  @Test
+  public void testFindOneByCertificateId() {
+    CertificateEvent savedCertificateEvent =
+        certificateEventRepository.save(
+            CertificateEventTestUtil.buildCertificateEvent(
+                CertificateEventTestUtil.CERTIFICATE_ID_1));
+    List<CertificateEvent> foundCertificateEvent =
+        certificateEventRepository.findByCertificateId(savedCertificateEvent.getCertificateId());
 
-        assertFalse(foundCertificateEvent.isEmpty());
-        assertEquals(1, foundCertificateEvent.size());
-        assertEquals(savedCertificateEvent, foundCertificateEvent.get(0));
-    }
+    assertFalse(foundCertificateEvent.isEmpty());
+    assertEquals(1, foundCertificateEvent.size());
+    assertEquals(savedCertificateEvent, foundCertificateEvent.get(0));
+  }
 
-    @Test
-    public void testFindAllByCertificateId() {
-        certificateEventRepository
-            .save(
-                CertificateEventTestUtil
-                    .buildCertificateEvent(CertificateEventTestUtil.CERTIFICATE_ID_1, CertificateEventTestUtil.EVENT_CODE_SKAPAT));
-        certificateEventRepository
-            .save(
-                CertificateEventTestUtil
-                    .buildCertificateEvent(CertificateEventTestUtil.CERTIFICATE_ID_1, CertificateEventTestUtil.EVENT_CODE_SIGNAT));
-        certificateEventRepository
-            .save(
-                CertificateEventTestUtil
-                    .buildCertificateEvent(CertificateEventTestUtil.CERTIFICATE_ID_2, CertificateEventTestUtil.EVENT_CODE_SKAPAT));
+  @Test
+  public void testFindAllByCertificateId() {
+    certificateEventRepository.save(
+        CertificateEventTestUtil.buildCertificateEvent(
+            CertificateEventTestUtil.CERTIFICATE_ID_1, CertificateEventTestUtil.EVENT_CODE_SKAPAT));
+    certificateEventRepository.save(
+        CertificateEventTestUtil.buildCertificateEvent(
+            CertificateEventTestUtil.CERTIFICATE_ID_1, CertificateEventTestUtil.EVENT_CODE_SIGNAT));
+    certificateEventRepository.save(
+        CertificateEventTestUtil.buildCertificateEvent(
+            CertificateEventTestUtil.CERTIFICATE_ID_2, CertificateEventTestUtil.EVENT_CODE_SKAPAT));
 
-        List<CertificateEvent> foundCertificateEvent1 = certificateEventRepository
-            .findByCertificateId(CertificateEventTestUtil.CERTIFICATE_ID_1);
-        List<CertificateEvent> foundCertificateEvent2 = certificateEventRepository
-            .findByCertificateId(CertificateEventTestUtil.CERTIFICATE_ID_2);
-        assertFalse(foundCertificateEvent2.isEmpty());
-        assertEquals(1, foundCertificateEvent2.size());
+    List<CertificateEvent> foundCertificateEvent1 =
+        certificateEventRepository.findByCertificateId(CertificateEventTestUtil.CERTIFICATE_ID_1);
+    List<CertificateEvent> foundCertificateEvent2 =
+        certificateEventRepository.findByCertificateId(CertificateEventTestUtil.CERTIFICATE_ID_2);
+    assertFalse(foundCertificateEvent2.isEmpty());
+    assertEquals(1, foundCertificateEvent2.size());
+  }
 
-    }
+  @Test
+  public void testDeleteCertificateEventByCertificateId() {
+    CertificateEvent event1 =
+        certificateEventRepository.save(
+            CertificateEventTestUtil.buildCertificateEvent(
+                CertificateEventTestUtil.CERTIFICATE_ID_1));
 
-    @Test
-    public void testDeleteCertificateEventByCertificateId() {
-        CertificateEvent event1 = certificateEventRepository
-            .save(CertificateEventTestUtil.buildCertificateEvent(CertificateEventTestUtil.CERTIFICATE_ID_1));
-
-        certificateEventRepository.delete(event1);
-        List<CertificateEvent> found = certificateEventRepository.findByCertificateId(CertificateEventTestUtil.CERTIFICATE_ID_1);
-        assertTrue(found.isEmpty());
-    }
-
+    certificateEventRepository.delete(event1);
+    List<CertificateEvent> found =
+        certificateEventRepository.findByCertificateId(CertificateEventTestUtil.CERTIFICATE_ID_1);
+    assertTrue(found.isEmpty());
+  }
 }

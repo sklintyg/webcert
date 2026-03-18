@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,16 +26,16 @@ import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeSe
 @Service("deleteQuestionFromWC")
 public class DeleteQuestionFacadeServiceImpl implements DeleteQuestionFacadeService {
 
-    private final ArendeDraftService arendeDraftService;
+  private final ArendeDraftService arendeDraftService;
 
-    @Autowired
-    public DeleteQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService) {
-        this.arendeDraftService = arendeDraftService;
-    }
+  @Autowired
+  public DeleteQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService) {
+    this.arendeDraftService = arendeDraftService;
+  }
 
-    @Override
-    public void delete(String questionId) {
-        final var questionDraft = arendeDraftService.getQuestionDraftById(Long.parseLong(questionId));
-        arendeDraftService.delete(questionDraft.getIntygId(), null);
-    }
+  @Override
+  public void delete(String questionId) {
+    final var questionDraft = arendeDraftService.getQuestionDraftById(Long.parseLong(questionId));
+    arendeDraftService.delete(questionDraft.getIntygId(), null);
+  }
 }

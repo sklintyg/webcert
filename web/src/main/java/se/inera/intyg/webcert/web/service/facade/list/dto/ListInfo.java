@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,30 +22,29 @@ import java.util.List;
 
 public class ListInfo {
 
-    private int totalCount;
-    private List<CertificateListItem> list;
+  private int totalCount;
+  private List<CertificateListItem> list;
 
-    public ListInfo() {
-    }
+  public ListInfo() {}
 
-    public ListInfo(int totalCount, List<CertificateListItem> list) {
-        this.totalCount = totalCount;
-        this.list = list;
-    }
+  public ListInfo(int totalCount, List<CertificateListItem> list) {
+    this.totalCount = totalCount;
+    this.list = list;
+  }
 
-    public int getTotalCount() {
-        return totalCount;
-    }
+  public int getTotalCount() {
+    return totalCount;
+  }
 
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
-    }
+  public void setTotalCount(int totalCount) {
+    this.totalCount = totalCount;
+  }
 
-    public List<CertificateListItem> getList() {
-        return list;
-    }
+  public List<CertificateListItem> getList() {
+    return list;
+  }
 
-    public void setList(List<CertificateListItem> list) {
-        this.list = list;
-    }
+  public void setList(List<CertificateListItem> list) {
+    this.list = list;
+  }
 }

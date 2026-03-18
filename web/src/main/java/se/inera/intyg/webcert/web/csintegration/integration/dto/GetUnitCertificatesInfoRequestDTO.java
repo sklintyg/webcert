@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,13 +31,11 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 @Builder
 public class GetUnitCertificatesInfoRequestDTO {
 
-    CertificateServiceUserDTO user;
-    CertificateServiceUnitDTO unit;
-    CertificateServiceUnitDTO careUnit;
-    CertificateServiceUnitDTO careProvider;
+  CertificateServiceUserDTO user;
+  CertificateServiceUnitDTO unit;
+  CertificateServiceUnitDTO careUnit;
+  CertificateServiceUnitDTO careProvider;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class GetUnitCertificatesInfoRequestDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class GetUnitCertificatesInfoRequestDTOBuilder {}
 }

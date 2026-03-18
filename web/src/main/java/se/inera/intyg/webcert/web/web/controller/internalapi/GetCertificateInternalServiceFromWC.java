@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,35 +28,33 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 @Service("getCertificateInternalServiceFromWC")
 public class GetCertificateInternalServiceFromWC implements GetCertificateInteralApi {
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
-    private final GetTextsForCertificateService getTextsForCertificateService;
-    private final GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
+  private final GetTextsForCertificateService getTextsForCertificateService;
+  private final GetAvailableFunctionsForCertificateService
+      getAvailableFunctionsForCertificateService;
 
-    private static final boolean SHOULD_NOT_PDL_LOG = false;
-    private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
+  private static final boolean SHOULD_NOT_PDL_LOG = false;
+  private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
 
-    public GetCertificateInternalServiceFromWC(
-        @Qualifier("getCertificateFromWC") GetCertificateFacadeService getCertificateFacadeService,
-        GetTextsForCertificateService getTextsForCertificateService,
-        GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService) {
-        this.getCertificateFacadeService = getCertificateFacadeService;
-        this.getTextsForCertificateService = getTextsForCertificateService;
-        this.getAvailableFunctionsForCertificateService = getAvailableFunctionsForCertificateService;
-    }
+  public GetCertificateInternalServiceFromWC(
+      @Qualifier("getCertificateFromWC") GetCertificateFacadeService getCertificateFacadeService,
+      GetTextsForCertificateService getTextsForCertificateService,
+      GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService) {
+    this.getCertificateFacadeService = getCertificateFacadeService;
+    this.getTextsForCertificateService = getTextsForCertificateService;
+    this.getAvailableFunctionsForCertificateService = getAvailableFunctionsForCertificateService;
+  }
 
-    @Override
-    public GetCertificateResponse get(String certificateId, String personId) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-        final var availableFunction = getAvailableFunctionsForCertificateService.get(certificate);
-        final var texts = getTextsForCertificateService.get(
-            certificate.getMetadata().getType(),
-            certificate.getMetadata().getTypeVersion()
-        );
+  @Override
+  public GetCertificateResponse get(String certificateId, String personId) {
+    final var certificate =
+        getCertificateFacadeService.getCertificate(
+            certificateId, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
+    final var availableFunction = getAvailableFunctionsForCertificateService.get(certificate);
+    final var texts =
+        getTextsForCertificateService.get(
+            certificate.getMetadata().getType(), certificate.getMetadata().getTypeVersion());
 
-        return GetCertificateResponse.create(
-            certificate,
-            availableFunction,
-            texts
-        );
-    }
+    return GetCertificateResponse.create(certificate, availableFunction, texts);
+  }
 }

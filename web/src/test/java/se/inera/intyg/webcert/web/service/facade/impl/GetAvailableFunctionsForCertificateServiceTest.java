@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,37 +38,32 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @ExtendWith(MockitoExtension.class)
 class GetAvailableFunctionsForCertificateServiceTest {
 
-    @Mock
-    private CertificatePrintFunction certificatePrintFunction;
-    private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
+  @Mock private CertificatePrintFunction certificatePrintFunction;
+  private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
-    private static final Certificate CERTIFICATE = new Certificate();
+  private static final Certificate CERTIFICATE = new Certificate();
 
-    @BeforeEach
-    void setUp() {
-        getAvailableFunctionsForCertificateService = new GetAvailableFunctionsForCertificateService(
-            List.of(certificatePrintFunction)
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    getAvailableFunctionsForCertificateService =
+        new GetAvailableFunctionsForCertificateService(List.of(certificatePrintFunction));
+  }
 
-    @Test
-    void shouldReturnListOfAvailableFunctions() {
-        final var expectedAvailableFunction = List.of(AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null, true));
-        when(certificatePrintFunction.get(CERTIFICATE))
-            .thenReturn(
-                expectedAvailableFunction
-            );
-        final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
-        assertEquals(expectedAvailableFunction, result);
-    }
+  @Test
+  void shouldReturnListOfAvailableFunctions() {
+    final var expectedAvailableFunction =
+        List.of(
+            AvailableFunctionDTO.create(
+                AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null, true));
+    when(certificatePrintFunction.get(CERTIFICATE)).thenReturn(expectedAvailableFunction);
+    final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
+    assertEquals(expectedAvailableFunction, result);
+  }
 
-    @Test
-    void shouldNotIncludeCertificateCustomizeResourceLink() {
-        when(certificatePrintFunction.get(CERTIFICATE)).thenReturn(
-            Collections.emptyList()
-        );
-        final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
-        assertTrue(result.isEmpty());
-    }
+  @Test
+  void shouldNotIncludeCertificateCustomizeResourceLink() {
+    when(certificatePrintFunction.get(CERTIFICATE)).thenReturn(Collections.emptyList());
+    final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
+    assertTrue(result.isEmpty());
+  }
 }

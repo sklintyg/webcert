@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,30 +20,28 @@ package se.inera.intyg.webcert.notificationstub.v3.stat;
 
 import java.time.LocalDateTime;
 
-/**
- * Created by eriklupander on 2016-07-05.
- */
+/** Created by eriklupander on 2016-07-05. */
 public class NotificationStubEntry {
 
-    public String intygsId;
-    public String handelseKod;
-    public LocalDateTime handelseTid;
+  public String intygsId;
+  public String handelseKod;
+  public LocalDateTime handelseTid;
 
-    public NotificationStubEntry(String intygsId, String handelseKod, LocalDateTime handelseTid) {
-        this.intygsId = intygsId;
-        this.handelseKod = handelseKod;
-        this.handelseTid = handelseTid;
-    }
+  public NotificationStubEntry(String intygsId, String handelseKod, LocalDateTime handelseTid) {
+    this.intygsId = intygsId;
+    this.handelseKod = handelseKod;
+    this.handelseTid = handelseTid;
+  }
 
-    public String getIntygsId() {
-        return intygsId;
-    }
+  public String getIntygsId() {
+    return intygsId;
+  }
 
-    public String getHandelseKod() {
-        return handelseKod;
-    }
+  public String getHandelseKod() {
+    return handelseKod;
+  }
 
-    public LocalDateTime getHandelseTid() {
-        return handelseTid;
-    }
+  public LocalDateTime getHandelseTid() {
+    return handelseTid;
+  }
 }

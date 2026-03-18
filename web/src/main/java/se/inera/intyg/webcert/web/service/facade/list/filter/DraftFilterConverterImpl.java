@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,40 +20,40 @@ package se.inera.intyg.webcert.web.service.facade.list.filter;
 
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
-import se.inera.intyg.webcert.web.service.facade.list.dto.*;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
 public class DraftFilterConverterImpl implements DraftFilterConverter {
 
-    private final WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-    public DraftFilterConverterImpl(WebCertUserService webCertUserService) {
-        this.webCertUserService = webCertUserService;
-    }
+  public DraftFilterConverterImpl(WebCertUserService webCertUserService) {
+    this.webCertUserService = webCertUserService;
+  }
 
-    @Override
-    public UtkastFilter convert(ListFilter filter) {
-        return convertFilter(filter);
-    }
+  @Override
+  public UtkastFilter convert(ListFilter filter) {
+    return convertFilter(filter);
+  }
 
-    private UtkastFilter convertFilter(ListFilter filter) {
-        final var convertedFilter = initializeFilter();
+  private UtkastFilter convertFilter(ListFilter filter) {
+    final var convertedFilter = initializeFilter();
 
-        convertedFilter.setSavedFrom(ListFilterHelper.getSavedFrom(filter));
-        convertedFilter.setSavedTo(ListFilterHelper.getSavedTo(filter));
-        convertedFilter.setSavedByHsaId(ListFilterHelper.getSavedBy(filter));
-        convertedFilter.setPatientId(ListFilterHelper.getPatientId(filter));
-        convertedFilter.setNotified(ListFilterHelper.getForwarded(filter));
-        convertedFilter.setOrderBy(ListFilterHelper.getOrderBy(filter));
-        convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
-        convertedFilter.setStatusList(ListFilterHelper.getDraftStatus(filter));
-        return convertedFilter;
-    }
+    convertedFilter.setSavedFrom(ListFilterHelper.getSavedFrom(filter));
+    convertedFilter.setSavedTo(ListFilterHelper.getSavedTo(filter));
+    convertedFilter.setSavedByHsaId(ListFilterHelper.getSavedBy(filter));
+    convertedFilter.setPatientId(ListFilterHelper.getPatientId(filter));
+    convertedFilter.setNotified(ListFilterHelper.getForwarded(filter));
+    convertedFilter.setOrderBy(ListFilterHelper.getOrderBy(filter));
+    convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
+    convertedFilter.setStatusList(ListFilterHelper.getDraftStatus(filter));
+    return convertedFilter;
+  }
 
-    private UtkastFilter initializeFilter() {
-        final var user = webCertUserService.getUser();
-        final var selectedUnitHsaId = user.getValdVardenhet().getId();
-        return new UtkastFilter(selectedUnitHsaId);
-    }
+  private UtkastFilter initializeFilter() {
+    final var user = webCertUserService.getUser();
+    final var selectedUnitHsaId = user.getValdVardenhet().getId();
+    return new UtkastFilter(selectedUnitHsaId);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -63,132 +63,143 @@ import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSet
 @ExtendWith(MockitoExtension.class)
 class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final String ELEG_AUTH_SCHEME = "http://id.elegnamnden.se/loa/1.0/loa3";
-    private static final AuthenticationMethod AUTH_METHOD = AuthenticationMethod.MOBILT_BANK_ID;
-    private final Map<String, String> expectedPreferences = new HashMap<>();
+  private static final String ELEG_AUTH_SCHEME = "http://id.elegnamnden.se/loa/1.0/loa3";
+  private static final AuthenticationMethod AUTH_METHOD = AuthenticationMethod.MOBILT_BANK_ID;
+  private final Map<String, String> expectedPreferences = new HashMap<>();
 
-    @Mock
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
-    @Mock
-    private PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    @Mock
-    private PUService puService;
-    @Mock
-    private AnvandarPreferenceRepository anvandarPreferenceRepository;
-    @Mock
-    private HashUtility hashUtility;
-    @InjectMocks
-    private AuthorizedPrivatePractitionerService authorizedPrivatePractitionerService;
+  @Mock private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  @Mock private PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+  @Mock private PUService puService;
+  @Mock private AnvandarPreferenceRepository anvandarPreferenceRepository;
+  @Mock private HashUtility hashUtility;
+  @InjectMocks private AuthorizedPrivatePractitionerService authorizedPrivatePractitionerService;
 
-    @BeforeEach
-    void setupForSuccess() {
-        final var request = mock(HttpServletRequest.class);
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+  @BeforeEach
+  void setupForSuccess() {
+    final var request = mock(HttpServletRequest.class);
+    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        lenient().when(commonAuthoritiesResolver.getRole(ROLE_PRIVATLAKARE)).thenReturn(authorizedPrivatePractitioner());
+    lenient()
+        .when(commonAuthoritiesResolver.getRole(ROLE_PRIVATLAKARE))
+        .thenReturn(authorizedPrivatePractitioner());
 
-        lenient().when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
-        expectedPreferences.put("some", "setting");
-        lenient().when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
+    lenient()
+        .when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(DR_KRANSTEGE);
+    expectedPreferences.put("some", "setting");
+    lenient()
+        .when(anvandarPreferenceRepository.getAnvandarPreference(anyString()))
+        .thenReturn(expectedPreferences);
 
-        lenient().when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
-    }
+    lenient().when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
+  }
 
-    @Test
-    void testSuccessfulLogin() {
-        final var user = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-            ELEG_AUTH_SCHEME,
-            AUTH_METHOD);
-        assertNotNull(user);
-        assertFalse(user.isSekretessMarkerad());
-        assertEquals(expectedPreferences, user.getAnvandarPreference());
-    }
+  @Test
+  void testSuccessfulLogin() {
+    final var user =
+        authorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD);
+    assertNotNull(user);
+    assertFalse(user.isSekretessMarkerad());
+    assertEquals(expectedPreferences, user.getAnvandarPreference());
+  }
 
-    @Test
-    void shallSetFirstnameAndLastnameFromFullstandigtName() {
-        final var user = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-            ELEG_AUTH_SCHEME,
-            AUTH_METHOD);
-        assertEquals(DR_KRANSTEGE_FIRST_NAME, user.getFornamn());
-        assertEquals(DR_KRANSTEGE_FAMILY_NAME, user.getEfternamn());
-    }
+  @Test
+  void shallSetFirstnameAndLastnameFromFullstandigtName() {
+    final var user =
+        authorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD);
+    assertEquals(DR_KRANSTEGE_FIRST_NAME, user.getFornamn());
+    assertEquals(DR_KRANSTEGE_FAMILY_NAME, user.getEfternamn());
+  }
 
-    @Test
-    void testSuccessfulLoginSekretessMarkerad() {
-        reset(puService);
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
+  @Test
+  void testSuccessfulLoginSekretessMarkerad() {
+    reset(puService);
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
 
-        final var user = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-            ELEG_AUTH_SCHEME,
-            AUTH_METHOD);
-        assertNotNull(user);
-        assertTrue(user.isSekretessMarkerad());
-    }
+    final var user =
+        authorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD);
+    assertNotNull(user);
+    assertTrue(user.isSekretessMarkerad());
+  }
 
-    @Test
-    void testLoginPUErrorThrowsException() {
-        reset(puService);
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
+  @Test
+  void testLoginPUErrorThrowsException() {
+    reset(puService);
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
 
-        assertThrows(WebCertServiceException.class,
-            () -> authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-                ELEG_AUTH_SCHEME,
-                AUTH_METHOD)
-        );
-    }
+    assertThrows(
+        WebCertServiceException.class,
+        () ->
+            authorizedPrivatePractitionerService.create(
+                DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD));
+  }
 
-    @Test
-    void testLoginPUNotFoundThrowsException() {
-        reset(puService);
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
+  @Test
+  void testLoginPUNotFoundThrowsException() {
+    reset(puService);
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
-        assertThrows(WebCertServiceException.class,
-            () -> authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-                ELEG_AUTH_SCHEME,
-                AUTH_METHOD)
-        );
-    }
+    assertThrows(
+        WebCertServiceException.class,
+        () ->
+            authorizedPrivatePractitionerService.create(
+                DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD));
+  }
 
-    @Test
-    void testNotFoundInHSAThrowsException() {
-        reset(privatePractitionerIntegrationService);
-        when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(null);
+  @Test
+  void testNotFoundInHSAThrowsException() {
+    reset(privatePractitionerIntegrationService);
+    when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(null);
 
-        assertThrows(IllegalArgumentException.class,
-            () -> authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-                ELEG_AUTH_SCHEME,
-                AUTH_METHOD)
-        );
-    }
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            authorizedPrivatePractitionerService.create(
+                DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD));
+  }
 
-    @Test
-    void shouldAdmitUserWhenHasSubscriptionAndAuthorizedInHosp() {
-        final var webcertUser = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-            ELEG_AUTH_SCHEME,
-            AUTH_METHOD);
-        assertNotNull(webcertUser);
-    }
+  @Test
+  void shouldAdmitUserWhenHasSubscriptionAndAuthorizedInHosp() {
+    final var webcertUser =
+        authorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD);
+    assertNotNull(webcertUser);
+  }
 
-    @Test
-    void shouldAdmitUserWhenMissingSubscriptionAndAuthorizedInHosp() {
-        final var webcertUser = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-            ELEG_AUTH_SCHEME,
-            AUTH_METHOD);
-        assertNotNull(webcertUser);
-    }
+  @Test
+  void shouldAdmitUserWhenMissingSubscriptionAndAuthorizedInHosp() {
+    final var webcertUser =
+        authorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, "origin", ELEG_AUTH_SCHEME, AUTH_METHOD);
+    assertNotNull(webcertUser);
+  }
 
-    private PersonSvar buildPersonSvar(boolean sekretessMarkerad) {
-        final var personnummer = Personnummer.createPersonnummer(DR_KRANSTEGE_PERSON_ID).orElseThrow();
-        final var person = new Person(personnummer, sekretessMarkerad, false, DR_KRANSTEGE_FIRST_NAME, "",
-            DR_KRANSTEGE_FAMILY_NAME, "gatan", "12345", "postort", false);
-        return PersonSvar.found(person);
-    }
+  private PersonSvar buildPersonSvar(boolean sekretessMarkerad) {
+    final var personnummer = Personnummer.createPersonnummer(DR_KRANSTEGE_PERSON_ID).orElseThrow();
+    final var person =
+        new Person(
+            personnummer,
+            sekretessMarkerad,
+            false,
+            DR_KRANSTEGE_FIRST_NAME,
+            "",
+            DR_KRANSTEGE_FAMILY_NAME,
+            "gatan",
+            "12345",
+            "postort",
+            false);
+    return PersonSvar.found(person);
+  }
 
-    private static Role authorizedPrivatePractitioner() {
-        final var expected = new Role();
-        expected.setName(ROLE_PRIVATLAKARE);
-        expected.setDesc("Privatläkare");
-        expected.setPrivileges(List.of());
-        return expected;
-    }
+  private static Role authorizedPrivatePractitioner() {
+    final var expected = new Role();
+    expected.setName(ROLE_PRIVATLAKARE);
+    expected.setDesc("Privatläkare");
+    expected.setPrivileges(List.of());
+    return expected;
+  }
 }

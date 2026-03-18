@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,46 +26,47 @@ import se.inera.intyg.schemas.contract.Personnummer;
 
 public class PersonnummerChecksumValidatorTest {
 
-    @Test
-    public void testValidateValid() {
-        // personnummer
-        parameterizedValidateTest("191212121212", false);
-        parameterizedValidateTest("19121212-1212", false);
-        parameterizedValidateTest("1212121212", false);
-        parameterizedValidateTest("121212-1212", false);
-        parameterizedValidateTest("19800131-0005", false);
-        // samordningsnummer
-        parameterizedValidateTest("198001910002", false);
-        parameterizedValidateTest("19800191-0002", false);
-        parameterizedValidateTest("8001910002", false);
-        parameterizedValidateTest("800191-0002", false);
-    }
+  @Test
+  public void testValidateValid() {
+    // personnummer
+    parameterizedValidateTest("191212121212", false);
+    parameterizedValidateTest("19121212-1212", false);
+    parameterizedValidateTest("1212121212", false);
+    parameterizedValidateTest("121212-1212", false);
+    parameterizedValidateTest("19800131-0005", false);
+    // samordningsnummer
+    parameterizedValidateTest("198001910002", false);
+    parameterizedValidateTest("19800191-0002", false);
+    parameterizedValidateTest("8001910002", false);
+    parameterizedValidateTest("800191-0002", false);
+  }
 
-    @Test
-    public void testValidateInvalid() {
-        parameterizedValidateTest("190101010101", true);
-        parameterizedValidateTest("19800131-000x", true);
-        parameterizedValidateTest("18400505+0002", true);
-        parameterizedValidateTest("30130823-0000", true);
-        parameterizedValidateTest("19800131-0001", true);
-        parameterizedValidateTest("19800131-0002", true);
-        parameterizedValidateTest("8001310003", true);
-        parameterizedValidateTest("19800131-0004", true);
-        parameterizedValidateTest("198001310006", true);
-        parameterizedValidateTest("19800131-0007", true);
-        parameterizedValidateTest("19800131-0008", true);
-        parameterizedValidateTest("19800131-0009", true);
-        parameterizedValidateTest("19800131-A009", true);
-        parameterizedValidateTest("invalid", true);
-    }
+  @Test
+  public void testValidateInvalid() {
+    parameterizedValidateTest("190101010101", true);
+    parameterizedValidateTest("19800131-000x", true);
+    parameterizedValidateTest("18400505+0002", true);
+    parameterizedValidateTest("30130823-0000", true);
+    parameterizedValidateTest("19800131-0001", true);
+    parameterizedValidateTest("19800131-0002", true);
+    parameterizedValidateTest("8001310003", true);
+    parameterizedValidateTest("19800131-0004", true);
+    parameterizedValidateTest("198001310006", true);
+    parameterizedValidateTest("19800131-0007", true);
+    parameterizedValidateTest("19800131-0008", true);
+    parameterizedValidateTest("19800131-0009", true);
+    parameterizedValidateTest("19800131-A009", true);
+    parameterizedValidateTest("invalid", true);
+  }
 
-    private void parameterizedValidateTest(String pnr, boolean errorExpected) {
-        ResultValidator errors = ResultValidator.newInstance();
-        PersonnummerChecksumValidator.validate(Personnummer.createPersonnummer(pnr).orElse(null), errors);
-        if (errorExpected) {
-            assertTrue(errors.hasErrors());
-        } else {
-            assertFalse(errors.hasErrors());
-        }
+  private void parameterizedValidateTest(String pnr, boolean errorExpected) {
+    ResultValidator errors = ResultValidator.newInstance();
+    PersonnummerChecksumValidator.validate(
+        Personnummer.createPersonnummer(pnr).orElse(null), errors);
+    if (errorExpected) {
+      assertTrue(errors.hasErrors());
+    } else {
+      assertFalse(errors.hasErrors());
     }
+  }
 }

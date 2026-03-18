@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,84 +47,97 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @Service
 public class NotificationRedeliveryService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryService.class);
 
-    @Autowired
-    private NotificationRedeliveryRepository notificationRedeliveryRepo;
+  @Autowired private NotificationRedeliveryRepository notificationRedeliveryRepo;
 
-    @Autowired
-    private NotificationResultMessageCreator notificationResultMessageCreator;
+  @Autowired private NotificationResultMessageCreator notificationResultMessageCreator;
 
-    @Autowired
-    private NotificationResultMessageSender notificationResultMessageSender;
+  @Autowired private NotificationResultMessageSender notificationResultMessageSender;
 
-    @Autowired
-    @Qualifier("jmsTemplateNotificationWSSender")
-    private JmsTemplate jmsTemplate;
+  @Autowired
+  @Qualifier("jmsTemplateNotificationWSSender") private JmsTemplate jmsTemplate;
 
-    @Transactional
-    public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {
-        final var notificationRedeliveryList = getNotificationsForRedelivery(LocalDateTime.now(), batchSize);
+  @Transactional
+  public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {
+    final var notificationRedeliveryList =
+        getNotificationsForRedelivery(LocalDateTime.now(), batchSize);
 
-        notificationRedeliveryList.forEach(this::addCorrelationIdIfMissing);
+    notificationRedeliveryList.forEach(this::addCorrelationIdIfMissing);
 
-        clearRedeliveryTime(notificationRedeliveryList);
+    clearRedeliveryTime(notificationRedeliveryList);
 
-        return notificationRedeliveryList;
+    return notificationRedeliveryList;
+  }
+
+  private List<NotificationRedelivery> getNotificationsForRedelivery(
+      LocalDateTime timeLess, int batchSize) {
+    if (batchSize < 1) {
+      return Collections.emptyList();
+    }
+    return notificationRedeliveryRepo.findRedeliveryUpForDelivery(timeLess, batchSize);
+  }
+
+  @Transactional
+  public void resend(
+      NotificationRedelivery notificationRedelivery, Handelse event, byte[] message) {
+    LOG.info(
+        "Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
+            + ", correlationId: {}]",
+        event.getId(),
+        event.getCode(),
+        event.getEnhetsId(),
+        notificationRedelivery.getCorrelationId());
+
+    try {
+      jmsTemplate.convertAndSend(
+          message,
+          jmsMessage -> {
+            jmsMessage.setStringProperty(CORRELATION_ID, notificationRedelivery.getCorrelationId());
+            jmsMessage.setStringProperty(INTYGS_ID, event.getIntygsId());
+            jmsMessage.setStringProperty(LOGISK_ADRESS, event.getEnhetsId());
+            jmsMessage.setStringProperty(USER_ID, event.getHanteratAv());
+            jmsMessage.setLongProperty(JMS_TIMESTAMP, Instant.now().getEpochSecond());
+            return jmsMessage;
+          });
+    } catch (JmsException e) {
+      final var errorMessage =
+          String.format(
+              "Failure resending message [notificationId: %s, event: %s, "
+                  + "logicalAddress: %s, correlationId: %s]. Exception occurred setting JMs message headers.",
+              event.getId(),
+              event.getCode(),
+              event.getEnhetsId(),
+              notificationRedelivery.getCorrelationId());
+      LOG.error(errorMessage, e);
+      throw new RuntimeException(errorMessage, e);
+    }
+  }
+
+  @Transactional
+  public void clearRedeliveryTime(List<NotificationRedelivery> notificationRedeliveryList) {
+    if (notificationRedeliveryList.size() == 0) {
+      return;
     }
 
-    private List<NotificationRedelivery> getNotificationsForRedelivery(LocalDateTime timeLess, int batchSize) {
-        if (batchSize < 1) {
-            return Collections.emptyList();
-        }
-        return notificationRedeliveryRepo.findRedeliveryUpForDelivery(timeLess, batchSize);
-    }
-
-    @Transactional
-    public void resend(NotificationRedelivery notificationRedelivery, Handelse event, byte[] message) {
-        LOG.info("Initiating redelivery of status update for care [notificationId: {}, event: {}, logicalAddress: {}"
-            + ", correlationId: {}]", event.getId(), event.getCode(), event.getEnhetsId(), notificationRedelivery.getCorrelationId());
-
-        try {
-            jmsTemplate.convertAndSend(message, jmsMessage -> {
-                jmsMessage.setStringProperty(CORRELATION_ID, notificationRedelivery.getCorrelationId());
-                jmsMessage.setStringProperty(INTYGS_ID, event.getIntygsId());
-                jmsMessage.setStringProperty(LOGISK_ADRESS, event.getEnhetsId());
-                jmsMessage.setStringProperty(USER_ID, event.getHanteratAv());
-                jmsMessage.setLongProperty(JMS_TIMESTAMP, Instant.now().getEpochSecond());
-                return jmsMessage;
-            });
-        } catch (JmsException e) {
-            final var errorMessage = String.format("Failure resending message [notificationId: %s, event: %s, "
-                    + "logicalAddress: %s, correlationId: %s]. Exception occurred setting JMs message headers.", event.getId(),
-                event.getCode(), event.getEnhetsId(), notificationRedelivery.getCorrelationId());
-            LOG.error(errorMessage, e);
-            throw new RuntimeException(errorMessage, e);
-        }
-    }
-
-    @Transactional
-    public void clearRedeliveryTime(List<NotificationRedelivery> notificationRedeliveryList) {
-        if (notificationRedeliveryList.size() == 0) {
-            return;
-        }
-
-        final var eventIds = notificationRedeliveryList.stream()
+    final var eventIds =
+        notificationRedeliveryList.stream()
             .map(notificationRedelivery -> notificationRedelivery.getEventId())
             .collect(Collectors.toList());
 
-        notificationRedeliveryRepo.clearRedeliveryTime(eventIds);
-    }
+    notificationRedeliveryRepo.clearRedeliveryTime(eventIds);
+  }
 
-    private void addCorrelationIdIfMissing(NotificationRedelivery notificationRedelivery) {
-        if (notificationRedelivery.getCorrelationId() == null) {
-            notificationRedelivery.setCorrelationId(UUID.randomUUID().toString());
-        }
+  private void addCorrelationIdIfMissing(NotificationRedelivery notificationRedelivery) {
+    if (notificationRedelivery.getCorrelationId() == null) {
+      notificationRedelivery.setCorrelationId(UUID.randomUUID().toString());
     }
+  }
 
-    @Transactional
-    public void handleErrors(NotificationRedelivery redelivery, Handelse event, Exception exception) {
-        final var resultMessage = notificationResultMessageCreator.createFailureMessage(event, redelivery, exception);
-        notificationResultMessageSender.sendResultMessage(resultMessage);
-    }
+  @Transactional
+  public void handleErrors(NotificationRedelivery redelivery, Handelse event, Exception exception) {
+    final var resultMessage =
+        notificationResultMessageCreator.createFailureMessage(event, redelivery, exception);
+    notificationResultMessageSender.sendResultMessage(resultMessage);
+  }
 }

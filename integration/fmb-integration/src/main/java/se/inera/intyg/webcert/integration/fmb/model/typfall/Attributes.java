@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,93 +30,96 @@ import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "fmbtillstand",
-    "id",
-    "metadata",
-    "rekommenderadsjukskrivning",
-    "typfallsmening"
+  "fmbtillstand",
+  "id",
+  "metadata",
+  "rekommenderadsjukskrivning",
+  "typfallsmening"
 })
 public class Attributes {
 
-    @JsonProperty("fmbtillstand")
-    private Fmbtillstand fmbtillstand;
-    @JsonProperty("id")
-    private String id;
-    @JsonProperty("metadata")
-    private Metadata metadata;
-    @JsonProperty("rekommenderadsjukskrivning")
-    private Rekommenderadsjukskrivning rekommenderadsjukskrivning;
-    @JsonProperty("typfallsmening")
-    private String typfallsmening;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("fmbtillstand")
+  private Fmbtillstand fmbtillstand;
 
-    @JsonProperty("fmbtillstand")
-    public Fmbtillstand getFmbtillstand() {
-        return fmbtillstand;
-    }
+  @JsonProperty("id")
+  private String id;
 
-    public Optional<Fmbtillstand> getOptionalFmbtillstand() {
-        return Optional.ofNullable(fmbtillstand);
-    }
+  @JsonProperty("metadata")
+  private Metadata metadata;
 
-    @JsonProperty("fmbtillstand")
-    public void setFmbtillstand(Fmbtillstand fmbtillstand) {
-        this.fmbtillstand = fmbtillstand;
-    }
+  @JsonProperty("rekommenderadsjukskrivning")
+  private Rekommenderadsjukskrivning rekommenderadsjukskrivning;
 
-    @JsonProperty("id")
-    public String getId() {
-        return id;
-    }
+  @JsonProperty("typfallsmening")
+  private String typfallsmening;
 
-    @JsonProperty("id")
-    public void setId(String id) {
-        this.id = id;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("metadata")
-    public Metadata getMetadata() {
-        return metadata;
-    }
+  @JsonProperty("fmbtillstand")
+  public Fmbtillstand getFmbtillstand() {
+    return fmbtillstand;
+  }
 
-    @JsonProperty("metadata")
-    public void setMetadata(Metadata metadata) {
-        this.metadata = metadata;
-    }
+  public Optional<Fmbtillstand> getOptionalFmbtillstand() {
+    return Optional.ofNullable(fmbtillstand);
+  }
 
-    @JsonProperty("rekommenderadsjukskrivning")
-    public Rekommenderadsjukskrivning getRekommenderadsjukskrivning() {
-        return rekommenderadsjukskrivning;
-    }
+  @JsonProperty("fmbtillstand")
+  public void setFmbtillstand(Fmbtillstand fmbtillstand) {
+    this.fmbtillstand = fmbtillstand;
+  }
 
-    public Optional<Rekommenderadsjukskrivning> getOptionalRekommenderadsjukskrivning() {
-        return Optional.ofNullable(rekommenderadsjukskrivning);
-    }
+  @JsonProperty("id")
+  public String getId() {
+    return id;
+  }
 
-    @JsonProperty("rekommenderadsjukskrivning")
-    public void setRekommenderadsjukskrivning(Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
-        this.rekommenderadsjukskrivning = rekommenderadsjukskrivning;
-    }
+  @JsonProperty("id")
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    @JsonProperty("typfallsmening")
-    public String getTypfallsmening() {
-        return typfallsmening;
-    }
+  @JsonProperty("metadata")
+  public Metadata getMetadata() {
+    return metadata;
+  }
 
-    @JsonProperty("typfallsmening")
-    public void setTypfallsmening(String typfallsmening) {
-        this.typfallsmening = typfallsmening;
-    }
+  @JsonProperty("metadata")
+  public void setMetadata(Metadata metadata) {
+    this.metadata = metadata;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("rekommenderadsjukskrivning")
+  public Rekommenderadsjukskrivning getRekommenderadsjukskrivning() {
+    return rekommenderadsjukskrivning;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  public Optional<Rekommenderadsjukskrivning> getOptionalRekommenderadsjukskrivning() {
+    return Optional.ofNullable(rekommenderadsjukskrivning);
+  }
 
+  @JsonProperty("rekommenderadsjukskrivning")
+  public void setRekommenderadsjukskrivning(Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
+    this.rekommenderadsjukskrivning = rekommenderadsjukskrivning;
+  }
+
+  @JsonProperty("typfallsmening")
+  public String getTypfallsmening() {
+    return typfallsmening;
+  }
+
+  @JsonProperty("typfallsmening")
+  public void setTypfallsmening(String typfallsmening) {
+    this.typfallsmening = typfallsmening;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

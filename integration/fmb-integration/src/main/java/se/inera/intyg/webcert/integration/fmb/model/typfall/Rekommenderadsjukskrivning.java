@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,72 +30,75 @@ import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "maximalsjukskrivningsenhet",
-    "maximalsjukskrivningsgrad",
-    "maximalsjukskrivningstid",
-    "typfalletsrekommenderadesjukskrivning"
+  "maximalsjukskrivningsenhet",
+  "maximalsjukskrivningsgrad",
+  "maximalsjukskrivningstid",
+  "typfalletsrekommenderadesjukskrivning"
 })
 public class Rekommenderadsjukskrivning {
 
-    @JsonProperty("maximalsjukskrivningsenhet")
-    private String maximalsjukskrivningsenhet;
-    @JsonProperty("maximalsjukskrivningsgrad")
-    private Kod maximalsjukskrivningsgrad;
-    @JsonProperty("maximalsjukskrivningstid")
-    private String maximalsjukskrivningstid;
-    @JsonProperty("typfalletsrekommenderadesjukskrivning")
-    private String typfalletsrekommenderadesjukskrivning;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("maximalsjukskrivningsenhet")
+  private String maximalsjukskrivningsenhet;
 
-    @JsonProperty("maximalsjukskrivningsenhet")
-    public String getMaximalsjukskrivningsenhet() {
-        return maximalsjukskrivningsenhet;
-    }
+  @JsonProperty("maximalsjukskrivningsgrad")
+  private Kod maximalsjukskrivningsgrad;
 
-    @JsonProperty("maximalsjukskrivningsenhet")
-    public void setMaximalsjukskrivningsenhet(String maximalsjukskrivningsenhet) {
-        this.maximalsjukskrivningsenhet = maximalsjukskrivningsenhet;
-    }
+  @JsonProperty("maximalsjukskrivningstid")
+  private String maximalsjukskrivningstid;
 
-    @JsonProperty("maximalsjukskrivningsgrad")
-    public Kod getMaximalsjukskrivningsgrad() {
-        return maximalsjukskrivningsgrad;
-    }
+  @JsonProperty("typfalletsrekommenderadesjukskrivning")
+  private String typfalletsrekommenderadesjukskrivning;
 
-    @JsonProperty("maximalsjukskrivningsgrad")
-    public void setMaximalsjukskrivningsgrad(Kod maximalsjukskrivningsgrad) {
-        this.maximalsjukskrivningsgrad = maximalsjukskrivningsgrad;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("maximalsjukskrivningstid")
-    public String getMaximalsjukskrivningstid() {
-        return maximalsjukskrivningstid;
-    }
+  @JsonProperty("maximalsjukskrivningsenhet")
+  public String getMaximalsjukskrivningsenhet() {
+    return maximalsjukskrivningsenhet;
+  }
 
-    @JsonProperty("maximalsjukskrivningstid")
-    public void setMaximalsjukskrivningstid(String maximalsjukskrivningstid) {
-        this.maximalsjukskrivningstid = maximalsjukskrivningstid;
-    }
+  @JsonProperty("maximalsjukskrivningsenhet")
+  public void setMaximalsjukskrivningsenhet(String maximalsjukskrivningsenhet) {
+    this.maximalsjukskrivningsenhet = maximalsjukskrivningsenhet;
+  }
 
-    @JsonProperty("typfalletsrekommenderadesjukskrivning")
-    public String getTypfalletsrekommenderadesjukskrivning() {
-        return typfalletsrekommenderadesjukskrivning;
-    }
+  @JsonProperty("maximalsjukskrivningsgrad")
+  public Kod getMaximalsjukskrivningsgrad() {
+    return maximalsjukskrivningsgrad;
+  }
 
-    @JsonProperty("typfalletsrekommenderadesjukskrivning")
-    public void setTypfalletsrekommenderadesjukskrivning(String typfalletsrekommenderadesjukskrivning) {
-        this.typfalletsrekommenderadesjukskrivning = typfalletsrekommenderadesjukskrivning;
-    }
+  @JsonProperty("maximalsjukskrivningsgrad")
+  public void setMaximalsjukskrivningsgrad(Kod maximalsjukskrivningsgrad) {
+    this.maximalsjukskrivningsgrad = maximalsjukskrivningsgrad;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("maximalsjukskrivningstid")
+  public String getMaximalsjukskrivningstid() {
+    return maximalsjukskrivningstid;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("maximalsjukskrivningstid")
+  public void setMaximalsjukskrivningstid(String maximalsjukskrivningstid) {
+    this.maximalsjukskrivningstid = maximalsjukskrivningstid;
+  }
 
+  @JsonProperty("typfalletsrekommenderadesjukskrivning")
+  public String getTypfalletsrekommenderadesjukskrivning() {
+    return typfalletsrekommenderadesjukskrivning;
+  }
+
+  @JsonProperty("typfalletsrekommenderadesjukskrivning")
+  public void setTypfalletsrekommenderadesjukskrivning(
+      String typfalletsrekommenderadesjukskrivning) {
+    this.typfalletsrekommenderadesjukskrivning = typfalletsrekommenderadesjukskrivning;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

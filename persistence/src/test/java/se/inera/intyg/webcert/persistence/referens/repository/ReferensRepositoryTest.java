@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,28 +37,27 @@ import se.inera.intyg.webcert.persistence.referens.model.Referens;
 @Transactional
 public class ReferensRepositoryTest {
 
-    private Referens ref;
-    private String intygId = "intygId";
+  private Referens ref;
+  private String intygId = "intygId";
 
-    @Autowired
-    private ReferensRepository repo;
+  @Autowired private ReferensRepository repo;
 
-    @After
-    public void clean() {
-        repo.deleteAll();
-    }
+  @After
+  public void clean() {
+    repo.deleteAll();
+  }
 
-    @Before
-    public void setup() {
-        ref = new Referens();
-        ref.setIntygsId(intygId);
-        ref.setReferens("referens");
-        repo.save(ref);
-    }
+  @Before
+  public void setup() {
+    ref = new Referens();
+    ref.setIntygsId(intygId);
+    ref.setReferens("referens");
+    repo.save(ref);
+  }
 
-    @Test
-    public void testFindByIntygId() {
-        Referens read = repo.findByIntygId(intygId);
-        assertEquals(ref, read);
-    }
+  @Test
+  public void testFindByIntygId() {
+    Referens read = repo.findByIntygId(intygId);
+    assertEquals(ref, read);
+  }
 }

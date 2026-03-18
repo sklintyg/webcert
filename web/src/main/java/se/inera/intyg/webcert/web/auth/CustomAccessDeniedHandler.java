@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.auth;
 
 import jakarta.servlet.ServletException;
@@ -32,11 +31,17 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-    @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
-        throws IOException, ServletException {
+  @Override
+  public void handle(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AccessDeniedException accessDeniedException)
+      throws IOException, ServletException {
 
-        log.warn("Unauthenticated user was denied access to secured location '{}'", request.getRequestURI(), accessDeniedException);
-        response.sendRedirect("/error?reason=auth-exception-resource");
-    }
+    log.warn(
+        "Unauthenticated user was denied access to secured location '{}'",
+        request.getRequestURI(),
+        accessDeniedException);
+    response.sendRedirect("/error?reason=auth-exception-resource");
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,171 +53,145 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class ReplaceCertificateFromCertificateServiceTest {
 
-    private static final ReplaceCertificateRequestDTO REQUEST = ReplaceCertificateRequestDTO.builder().build();
-    private static final String PATIENT_ID = "PATIENT_ID";
-    private static final Patient PATIENT = Patient.builder()
-        .personId(
-            PersonId.builder()
-                .id(PATIENT_ID)
-                .build()
-        )
-        .build();
-    private static final String ID = "ID";
-    private static final String NEW_ID = "NEW_ID";
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final Certificate REPLACED_CERTIFICATE = new Certificate();
-    private static final String TYPE = "TYPE";
+  private static final ReplaceCertificateRequestDTO REQUEST =
+      ReplaceCertificateRequestDTO.builder().build();
+  private static final String PATIENT_ID = "PATIENT_ID";
+  private static final Patient PATIENT =
+      Patient.builder().personId(PersonId.builder().id(PATIENT_ID).build()).build();
+  private static final String ID = "ID";
+  private static final String NEW_ID = "NEW_ID";
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final Certificate REPLACED_CERTIFICATE = new Certificate();
+  private static final String TYPE = "TYPE";
 
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationService csIntegrationService;
 
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Mock
-    PDLLogService pdlLogService;
+  @Mock PDLLogService pdlLogService;
 
-    @Mock
-    IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
+  @Mock IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
 
-    @Mock
-    MonitoringLogService monitoringLogService;
+  @Mock MonitoringLogService monitoringLogService;
 
-    @Mock
-    WebCertUserService webCertUserService;
+  @Mock WebCertUserService webCertUserService;
 
-    @Mock
-    IntegrationParameters parameters;
+  @Mock IntegrationParameters parameters;
 
-    @Mock
-    WebCertUser user;
+  @Mock WebCertUser user;
 
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    ReplaceCertificateFromCertificateService replaceCertificateFromCertificateService;
+  @InjectMocks ReplaceCertificateFromCertificateService replaceCertificateFromCertificateService;
 
-    @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        final var response = replaceCertificateFromCertificateService.replaceCertificate(ID);
+  @Test
+  void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    final var response = replaceCertificateFromCertificateService.replaceCertificate(ID);
 
-        assertNull(response);
+    assertNull(response);
+  }
+
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+      CERTIFICATE.setMetadata(
+          CertificateMetadata.builder().id(ID).type(TYPE).patient(PATIENT).build());
+
+      REPLACED_CERTIFICATE.setMetadata(
+          CertificateMetadata.builder().id(NEW_ID).type(TYPE).patient(PATIENT).build());
+
+      when(csIntegrationService.certificateExists(anyString())).thenReturn(true);
+
+      when(csIntegrationService.getCertificate(anyString(), any())).thenReturn(CERTIFICATE);
+
+      when(csIntegrationRequestFactory.replaceCertificateRequest(any(), any())).thenReturn(REQUEST);
     }
 
     @Nested
-    class CertificateExistsInCS {
+    class CertificateIsReplacedFromCS {
 
-        @BeforeEach
-        void setup() {
-            CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .patient(PATIENT)
-                .build());
+      @BeforeEach
+      void setup() {
+        when(csIntegrationService.replaceCertificate(ID, REQUEST)).thenReturn(REPLACED_CERTIFICATE);
 
-            REPLACED_CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(NEW_ID)
-                .type(TYPE)
-                .patient(PATIENT)
-                .build());
+        when(user.getParameters()).thenReturn(parameters);
 
-            when(csIntegrationService.certificateExists(anyString()))
-                .thenReturn(true);
+        when(webCertUserService.getUser()).thenReturn(user);
+      }
 
-            when(csIntegrationService.getCertificate(anyString(), any()))
-                .thenReturn(CERTIFICATE);
+      @Test
+      void shouldReturnNullIfCertificateIdIfExistInCS() {
+        final var response = replaceCertificateFromCertificateService.replaceCertificate(ID);
 
-            when(csIntegrationRequestFactory.replaceCertificateRequest(any(), any()))
-                .thenReturn(REQUEST);
-        }
+        assertEquals(NEW_ID, response);
+      }
 
-        @Nested
-        class CertificateIsReplacedFromCS {
+      @Test
+      void shouldCallRequestFactory() {
+        replaceCertificateFromCertificateService.replaceCertificate(ID);
+        verify(csIntegrationRequestFactory).replaceCertificateRequest(PATIENT, parameters);
+      }
 
-            @BeforeEach
-            void setup() {
-                when(csIntegrationService.replaceCertificate(ID, REQUEST))
-                    .thenReturn(REPLACED_CERTIFICATE);
+      @Test
+      void shouldCallReplaceWithId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        replaceCertificateFromCertificateService.replaceCertificate(ID);
 
-                when(user.getParameters())
-                    .thenReturn(parameters);
+        verify(csIntegrationService)
+            .replaceCertificate(captor.capture(), any(ReplaceCertificateRequestDTO.class));
+        assertEquals(ID, captor.getValue());
+      }
 
-                when(webCertUserService.getUser())
-                    .thenReturn(user);
-            }
+      @Test
+      void shouldCallReplaceWithRequest() {
+        final var captor = ArgumentCaptor.forClass(ReplaceCertificateRequestDTO.class);
+        replaceCertificateFromCertificateService.replaceCertificate(ID);
 
-            @Test
-            void shouldReturnNullIfCertificateIdIfExistInCS() {
-                final var response = replaceCertificateFromCertificateService.replaceCertificate(ID);
+        verify(csIntegrationService).replaceCertificate(anyString(), captor.capture());
+        assertEquals(REQUEST, captor.getValue());
+      }
 
-                assertEquals(NEW_ID, response);
-            }
+      @Test
+      void shouldPdlLogCreated() {
+        replaceCertificateFromCertificateService.replaceCertificate(ID);
+        verify(pdlLogService).logCreated(REPLACED_CERTIFICATE);
+      }
 
-            @Test
-            void shouldCallRequestFactory() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(csIntegrationRequestFactory).replaceCertificateRequest(PATIENT, parameters);
-            }
+      @Test
+      void shouldPublishCreated() {
+        replaceCertificateFromCertificateService.replaceCertificate(ID);
+        verify(publishCertificateStatusUpdateService)
+            .publish(REPLACED_CERTIFICATE, HandelsekodEnum.SKAPAT);
+      }
 
-            @Test
-            void shouldCallReplaceWithId() {
-                final var captor = ArgumentCaptor.forClass(String.class);
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
+      @Test
+      void shouldMonitorLogReplace() {
+        replaceCertificateFromCertificateService.replaceCertificate(ID);
+        verify(monitoringLogService).logIntygCopiedReplacement(NEW_ID, ID);
+      }
 
-                verify(csIntegrationService).replaceCertificate(captor.capture(), any(ReplaceCertificateRequestDTO.class));
-                assertEquals(ID, captor.getValue());
-            }
+      @Test
+      void shouldRegisterUnit() {
+        replaceCertificateFromCertificateService.replaceCertificate(ID);
+        verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, REPLACED_CERTIFICATE);
+      }
 
-            @Test
-            void shouldCallReplaceWithRequest() {
-                final var captor = ArgumentCaptor.forClass(ReplaceCertificateRequestDTO.class);
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
+      @Test
+      void shouldPublishAnalyticsMessageWhenCertificateIsReplaced() {
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateReplace(REPLACED_CERTIFICATE))
+            .thenReturn(analyticsMessage);
 
-                verify(csIntegrationService).replaceCertificate(anyString(), captor.capture());
-                assertEquals(REQUEST, captor.getValue());
-            }
+        replaceCertificateFromCertificateService.replaceCertificate(ID);
 
-            @Test
-            void shouldPdlLogCreated() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(pdlLogService).logCreated(REPLACED_CERTIFICATE);
-
-            }
-
-            @Test
-            void shouldPublishCreated() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(publishCertificateStatusUpdateService).publish(REPLACED_CERTIFICATE, HandelsekodEnum.SKAPAT);
-            }
-
-            @Test
-            void shouldMonitorLogReplace() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(monitoringLogService).logIntygCopiedReplacement(NEW_ID, ID);
-            }
-
-            @Test
-            void shouldRegisterUnit() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, REPLACED_CERTIFICATE);
-            }
-
-            @Test
-            void shouldPublishAnalyticsMessageWhenCertificateIsReplaced() {
-                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.certificateReplace(REPLACED_CERTIFICATE)).thenReturn(analyticsMessage);
-
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-
-                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-            }
-        }
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+      }
     }
+  }
 }

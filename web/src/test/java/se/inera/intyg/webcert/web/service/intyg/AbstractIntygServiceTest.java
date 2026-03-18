@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -70,123 +70,105 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
-    protected static final String INTYG_ID = "intyg-1";
+  protected static final String INTYG_ID = "intyg-1";
 
-    protected static final String INTYG_TYP_FK = "fk7263";
+  protected static final String INTYG_TYP_FK = "fk7263";
 
-    @Mock
-    protected CSIntegrationService csIntegrationService;
+  @Mock protected CSIntegrationService csIntegrationService;
 
-    @Mock
-    protected IntygModuleFacade moduleFacade;
+  @Mock protected IntygModuleFacade moduleFacade;
 
-    @Mock
-    protected UtkastRepository intygRepository;
+  @Mock protected UtkastRepository intygRepository;
 
-    @Mock
-    protected WebCertUserService webCertUserService;
+  @Mock protected WebCertUserService webCertUserService;
 
-    @Mock
-    protected LogService logService;
+  @Mock protected LogService logService;
 
-    @Mock
-    private CertificateEventService certificateEventService;
+  @Mock private CertificateEventService certificateEventService;
 
-    @Mock
-    protected LogRequestFactory logRequestFactory;
+  @Mock protected LogRequestFactory logRequestFactory;
 
-    @Mock
-    protected NotificationService notificationService;
+  @Mock protected NotificationService notificationService;
 
-    @Mock
-    protected ArendeService arendeService;
+  @Mock protected ArendeService arendeService;
 
-    @Mock
-    protected UtkastIntygDecorator utkastIntygDecorator;
+  @Mock protected UtkastIntygDecorator utkastIntygDecorator;
 
-    @Mock
-    protected MonitoringLogService monitoringService;
+  @Mock protected MonitoringLogService monitoringService;
 
-    @Mock
-    protected CertificateRelationService certificateRelationService;
+  @Mock protected CertificateRelationService certificateRelationService;
 
-    @Mock
-    protected CertificateSenderService certificateSenderService;
+  @Mock protected CertificateSenderService certificateSenderService;
 
-    @Mock
-    protected IntygRelationHelper intygRelationHelper;
+  @Mock protected IntygRelationHelper intygRelationHelper;
 
-    @Mock
-    protected PatientDetailsResolver patientDetailsResolver;
+  @Mock protected PatientDetailsResolver patientDetailsResolver;
 
-    @Mock
-    protected ModuleApi moduleApi;
+  @Mock protected ModuleApi moduleApi;
 
-    @Mock
-    protected IntygModuleRegistry moduleRegistry;
+  @Mock protected IntygModuleRegistry moduleRegistry;
 
-    @Spy
-    protected ObjectMapper objectMapper = new CustomObjectMapper();
+  @Spy protected ObjectMapper objectMapper = new CustomObjectMapper();
 
-    @Mock
-    protected CertificateAccessServiceHelper certificateAccessServiceHelper;
+  @Mock protected CertificateAccessServiceHelper certificateAccessServiceHelper;
 
-    @Mock
-    protected IntygTextsService intygTextsService;
+  @Mock protected IntygTextsService intygTextsService;
 
-    @Mock
-    protected PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock protected PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-    @Mock
-    protected CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock protected CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    protected IntygServiceImpl intygService = new IntygServiceImpl();
+  @InjectMocks protected IntygServiceImpl intygService = new IntygServiceImpl();
 
-    protected String json;
-    protected Fk7263Utlatande utlatande;
-    protected CertificateResponse certificateResponse;
+  protected String json;
+  protected Fk7263Utlatande utlatande;
+  protected CertificateResponse certificateResponse;
 
-    @Before
-    public void setupMocks() throws Exception {
-        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
-        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
-        CertificateMetaData metaData = buildCertificateMetaData();
-        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
-        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class)))
-            .thenReturn(Optional.empty());
-        when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
+  @Before
+  public void setupMocks() throws Exception {
+    json =
+        Files.readString(
+            Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
+    utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+    CertificateMetaData metaData = buildCertificateMetaData();
+    certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+    when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString()))
+        .thenReturn(certificateResponse);
+    when(certificateRelationService.getNewestRelationOfType(
+            anyString(), any(RelationKod.class), any(List.class)))
+        .thenReturn(Optional.empty());
+    when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
 
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
-            .thenReturn(buildPatient(false, false));
-        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class), any())).thenReturn("MODEL");
+    when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+        .thenReturn(buildPatient(false, false));
+    when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
+    when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+    when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class), any())).thenReturn("MODEL");
 
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyString())).thenReturn(LogRequest.builder().build());
-        when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(true);
-    }
+    when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyString()))
+        .thenReturn(LogRequest.builder().build());
+    when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class)))
+        .thenReturn(true);
+  }
 
-    protected CertificateMetaData buildCertificateMetaData() {
-        CertificateMetaData metaData = new CertificateMetaData();
-        metaData.setStatus(new ArrayList<>());
-        Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
-        metaData.getStatus().add(statusSigned);
-        metaData.setSignDate(LocalDateTime.now());
-        return metaData;
-    }
+  protected CertificateMetaData buildCertificateMetaData() {
+    CertificateMetaData metaData = new CertificateMetaData();
+    metaData.setStatus(new ArrayList<>());
+    Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
+    metaData.getStatus().add(statusSigned);
+    metaData.setSignDate(LocalDateTime.now());
+    return metaData;
+  }
 
-    protected Patient buildPatient(boolean sekretessMarkering, boolean avliden) {
-        Patient patient = new Patient();
-        patient.setPersonId(Personnummer.createPersonnummer("19121212-1212").get());
-        patient.setFornamn("fornamn");
-        patient.setMellannamn("mellannamn");
-        patient.setEfternamn("efternamn");
-        patient.setSekretessmarkering(sekretessMarkering);
-        patient.setAvliden(avliden);
+  protected Patient buildPatient(boolean sekretessMarkering, boolean avliden) {
+    Patient patient = new Patient();
+    patient.setPersonId(Personnummer.createPersonnummer("19121212-1212").get());
+    patient.setFornamn("fornamn");
+    patient.setMellannamn("mellannamn");
+    patient.setEfternamn("efternamn");
+    patient.setSekretessmarkering(sekretessMarkering);
+    patient.setAvliden(avliden);
 
-        return patient;
-
-    }
+    return patient;
+  }
 }

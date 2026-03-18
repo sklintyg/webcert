@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -36,55 +35,54 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @RequiredArgsConstructor
 public class PrintCertificateFromCertificateService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final MonitoringLogService monitoringLogService;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PDLLogService pdlLogService;
+  private final MonitoringLogService monitoringLogService;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    public IntygPdf print(String certificateId, String certificateType, boolean isEmployerCopy) {
-        final var exists = csIntegrationService.certificateExists(certificateId);
-        if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
+  public IntygPdf print(String certificateId, String certificateType, boolean isEmployerCopy) {
+    final var exists = csIntegrationService.certificateExists(certificateId);
+    if (Boolean.FALSE.equals(exists)) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
+    }
 
-        final var certificate = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
+    final var certificate =
+        csIntegrationService.getCertificate(
+            certificateId, csIntegrationRequestFactory.getCertificateRequest());
 
-        log.debug("Getting pdf of certificate '{}', stored in certificate service", certificateId);
-        final var response = csIntegrationService.printCertificate(
+    log.debug("Getting pdf of certificate '{}', stored in certificate service", certificateId);
+    final var response =
+        csIntegrationService.printCertificate(
             certificateId,
             csIntegrationRequestFactory.getPrintCertificateRequest(
                 "Intyget är utskrivet från Webcert.",
-                certificate.getMetadata().getPatient().getActualPersonId().getId()
-            )
-        );
+                certificate.getMetadata().getPatient().getActualPersonId().getId()));
 
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.certificatePrinted(certificate)
-        );
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.certificatePrinted(certificate));
 
-        pdlLogService.logPrinted(certificate);
-        logMonitoring(certificate.getMetadata().getStatus(), certificateId, certificateType, isEmployerCopy);
+    pdlLogService.logPrinted(certificate);
+    logMonitoring(
+        certificate.getMetadata().getStatus(), certificateId, certificateType, isEmployerCopy);
 
-        return response;
+    return response;
+  }
+
+  private void logMonitoring(
+      CertificateStatus status, String id, String type, boolean isEmployerCopy) {
+    if (status == CertificateStatus.UNSIGNED || status == CertificateStatus.LOCKED) {
+      monitoringLogService.logUtkastPrint(id, type);
     }
 
-    private void logMonitoring(CertificateStatus status, String id, String type, boolean isEmployerCopy) {
-        if (status == CertificateStatus.UNSIGNED || status == CertificateStatus.LOCKED) {
-            monitoringLogService.logUtkastPrint(id, type);
-        }
-
-        if (status == CertificateStatus.REVOKED) {
-            monitoringLogService.logRevokedPrint(id, type);
-        }
-
-        if (status == CertificateStatus.SIGNED) {
-            monitoringLogService.logIntygPrintPdf(id, type, isEmployerCopy);
-        }
+    if (status == CertificateStatus.REVOKED) {
+      monitoringLogService.logRevokedPrint(id, type);
     }
+
+    if (status == CertificateStatus.SIGNED) {
+      monitoringLogService.logIntygPrintPdf(id, type, isEmployerCopy);
+    }
+  }
 }

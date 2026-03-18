@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,54 +25,53 @@ import org.springframework.util.Assert;
 /**
  * Basic concrete implementation of a {@link org.springframework.security.core.GrantedAuthority}.
  *
- * <p>
- * Stores a {@code String} representation of an authority granted to the
- * {@link org.springframework.security.core.Authentication Authentication} object.
+ * <p>Stores a {@code String} representation of an authority granted to the {@link
+ * org.springframework.security.core.Authentication Authentication} object.
  *
  * @author Magnus kstrand
  */
 public final class SimpleGrantedAuthority implements GrantedAuthority {
 
-    private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+  private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
-    private final String authority;
-    private final String description;
+  private final String authority;
+  private final String description;
 
-    public SimpleGrantedAuthority(String authority, String description) {
-        Assert.hasText(authority, "A granted authority textual representation is required");
-        this.authority = authority;
-        this.description = description;
+  public SimpleGrantedAuthority(String authority, String description) {
+    Assert.hasText(authority, "A granted authority textual representation is required");
+    this.authority = authority;
+    this.description = description;
+  }
+
+  @Override
+  public String getAuthority() {
+    return authority;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
 
-    @Override
-    public String getAuthority() {
-        return authority;
+    if (obj instanceof SimpleGrantedAuthority) {
+      return authority.equals(((SimpleGrantedAuthority) obj).authority);
     }
 
-    public String getDescription() {
-        return description;
-    }
+    return false;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
+  @Override
+  public int hashCode() {
+    return this.authority.hashCode();
+  }
 
-        if (obj instanceof SimpleGrantedAuthority) {
-            return authority.equals(((SimpleGrantedAuthority) obj).authority);
-        }
-
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return this.authority.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return this.authority;
-    }
+  @Override
+  public String toString() {
+    return this.authority;
+  }
 }

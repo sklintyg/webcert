@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,14 +21,15 @@ package se.inera.intyg.webcert.web.auth.exceptions;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * Throw when an authenticated user does not pass the authorization check in private-practioner-service. (E.g. not registered or
- * does not have the necessary roles in HSA etc.)
+ * Throw when an authenticated user does not pass the authorization check in
+ * private-practioner-service. (E.g. not registered or does not have the necessary roles in HSA
+ * etc.)
  */
 public class PrivatePractitionerAuthorizationException extends AuthenticationException {
 
-    private static final long serialVersionUID = -6776225248097482781L;
+  private static final long serialVersionUID = -6776225248097482781L;
 
-    public PrivatePractitionerAuthorizationException(String message) {
-        super(message);
-    }
+  public PrivatePractitionerAuthorizationException(String message) {
+    super(message);
+  }
 }

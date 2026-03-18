@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -56,120 +56,127 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationResultMessageSenderTest {
 
-    @Mock
-    @Qualifier("jmsTemplateNotificationPostProcessing")
-    private JmsTemplate jmsTemplate;
+  @Mock
+  @Qualifier("jmsTemplateNotificationPostProcessing") private JmsTemplate jmsTemplate;
 
-    @Mock
-    private Session session;
+  @Mock private Session session;
 
-    @Spy
-    private ObjectMapper objectMapper;
+  @Spy private ObjectMapper objectMapper;
 
-    @InjectMocks
-    private NotificationResultMessageSender notificationResultMessageSender;
+  @InjectMocks private NotificationResultMessageSender notificationResultMessageSender;
 
-    private static final String CORRELATION_ID = "CORRELATION_ID";
-    private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
+  private static final String CORRELATION_ID = "CORRELATION_ID";
+  private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
 
-    private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
-    private static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
-    private static final HandelsekodEnum EVENT_ENUM = HandelsekodEnum.SKAPAT;
+  private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+  private static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
+  private static final HandelsekodEnum EVENT_ENUM = HandelsekodEnum.SKAPAT;
 
-    private static final NotificationResultTypeEnum RESULT_TYPE_ENUM = OK;
+  private static final NotificationResultTypeEnum RESULT_TYPE_ENUM = OK;
 
-    @Test
-    public void shouldSetProperHeadersOnJmsMessage() throws JMSException {
-        final var notificationResultMessage = createNotificationResultMessage();
+  @Test
+  public void shouldSetProperHeadersOnJmsMessage() throws JMSException {
+    final var notificationResultMessage = createNotificationResultMessage();
 
-        ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
+    ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        doAnswer(i -> createTextMessage(i.getArgument(0))).when(session).createTextMessage(any(String.class));
+    doAnswer(i -> createTextMessage(i.getArgument(0)))
+        .when(session)
+        .createTextMessage(any(String.class));
 
-        final var success = notificationResultMessageSender.sendResultMessage(notificationResultMessage);
-
-        verify(jmsTemplate).send(messageCaptor.capture());
-        assertTrue(success);
-
-        final var message = messageCaptor.getValue().createMessage(session);
-        assertEquals(CERTIFICATE_ID, message.getStringProperty(NotificationRouteHeaders.INTYGS_ID));
-        assertEquals(CORRELATION_ID, message.getStringProperty(NotificationRouteHeaders.CORRELATION_ID));
-        assertEquals(LOGICAL_ADDRESS, message.getStringProperty(NotificationRouteHeaders.LOGISK_ADRESS));
-        assertEquals(EVENT_ENUM.name(), message.getStringProperty(NotificationRouteHeaders.HANDELSE));
-        assertNotNull(((TextMessage) message).getText());
-    }
-
-    @Test
-    public void shouldSetProperTextMessageOnJmsMessage() throws JMSException, JsonProcessingException {
-        final var notificationResultMessage = createNotificationResultMessage();
-
-        ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
-
-        doAnswer(i -> createTextMessage(i.getArgument(0))).when(session).createTextMessage(any(String.class));
-
+    final var success =
         notificationResultMessageSender.sendResultMessage(notificationResultMessage);
 
-        verify(jmsTemplate).send(messageCaptor.capture());
+    verify(jmsTemplate).send(messageCaptor.capture());
+    assertTrue(success);
 
-        final var message = messageCaptor.getValue().createMessage(session);
-        final var capturedTextMessage = objectMapper.readValue(((TextMessage) message).getText(), NotificationResultMessage.class);
-        assertNull(capturedTextMessage.getEvent().getId());
-        assertNotNull(capturedTextMessage.getStatusUpdateXml());
-        assertEquals(CORRELATION_ID, capturedTextMessage.getCorrelationId());
-        assertEquals(CERTIFICATE_ID, capturedTextMessage.getEvent().getIntygsId());
-        assertEquals(LOGICAL_ADDRESS, capturedTextMessage.getEvent().getEnhetsId());
-        assertEquals(EVENT_ENUM, capturedTextMessage.getEvent().getCode());
-        assertEquals(RESULT_TYPE_ENUM, capturedTextMessage.getResultType().getNotificationResult());
-    }
+    final var message = messageCaptor.getValue().createMessage(session);
+    assertEquals(CERTIFICATE_ID, message.getStringProperty(NotificationRouteHeaders.INTYGS_ID));
+    assertEquals(
+        CORRELATION_ID, message.getStringProperty(NotificationRouteHeaders.CORRELATION_ID));
+    assertEquals(
+        LOGICAL_ADDRESS, message.getStringProperty(NotificationRouteHeaders.LOGISK_ADRESS));
+    assertEquals(EVENT_ENUM.name(), message.getStringProperty(NotificationRouteHeaders.HANDELSE));
+    assertNotNull(((TextMessage) message).getText());
+  }
 
-    @Test
-    public void shouldReturnTrueOnSuccessfulJmsDelivery() {
-        final var notificationResultMessage = createNotificationResultMessage();
+  @Test
+  public void shouldSetProperTextMessageOnJmsMessage()
+      throws JMSException, JsonProcessingException {
+    final var notificationResultMessage = createNotificationResultMessage();
 
-        final var isSuccess = notificationResultMessageSender.sendResultMessage(notificationResultMessage);
+    ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        verify(jmsTemplate).send(any(MessageCreator.class));
-        assertTrue(isSuccess);
-    }
+    doAnswer(i -> createTextMessage(i.getArgument(0)))
+        .when(session)
+        .createTextMessage(any(String.class));
 
-    @Test
-    public void shouldReturnFalseOnException() {
-        final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessageSender.sendResultMessage(notificationResultMessage);
 
-        doThrow(RuntimeException.class).when(jmsTemplate).send(any(MessageCreator.class));
+    verify(jmsTemplate).send(messageCaptor.capture());
 
-        final var isSuccess = notificationResultMessageSender.sendResultMessage(notificationResultMessage);
-        verify(jmsTemplate).send(any(MessageCreator.class));
-        assertFalse(isSuccess);
-    }
+    final var message = messageCaptor.getValue().createMessage(session);
+    final var capturedTextMessage =
+        objectMapper.readValue(((TextMessage) message).getText(), NotificationResultMessage.class);
+    assertNull(capturedTextMessage.getEvent().getId());
+    assertNotNull(capturedTextMessage.getStatusUpdateXml());
+    assertEquals(CORRELATION_ID, capturedTextMessage.getCorrelationId());
+    assertEquals(CERTIFICATE_ID, capturedTextMessage.getEvent().getIntygsId());
+    assertEquals(LOGICAL_ADDRESS, capturedTextMessage.getEvent().getEnhetsId());
+    assertEquals(EVENT_ENUM, capturedTextMessage.getEvent().getCode());
+    assertEquals(RESULT_TYPE_ENUM, capturedTextMessage.getResultType().getNotificationResult());
+  }
 
-    private NotificationResultMessage createNotificationResultMessage() {
-        final var notificationResultMessage = new NotificationResultMessage();
-        notificationResultMessage.setEvent(createEvent());
-        notificationResultMessage.setCorrelationId(CORRELATION_ID);
-        notificationResultMessage.setResultType(createNotificationResultType());
-        notificationResultMessage.setStatusUpdateXml(STATUS_UPDATE_XML);
-        return notificationResultMessage;
-    }
+  @Test
+  public void shouldReturnTrueOnSuccessfulJmsDelivery() {
+    final var notificationResultMessage = createNotificationResultMessage();
 
-    private Handelse createEvent() {
-        final var event = new Handelse();
-        event.setCode(EVENT_ENUM);
-        event.setIntygsId(CERTIFICATE_ID);
-        event.setEnhetsId(LOGICAL_ADDRESS);
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
-        return event;
-    }
+    final var isSuccess =
+        notificationResultMessageSender.sendResultMessage(notificationResultMessage);
 
-    private NotificationResultType createNotificationResultType() {
-        final var notificationResultType = new NotificationResultType();
-        notificationResultType.setNotificationResult(RESULT_TYPE_ENUM);
-        return notificationResultType;
-    }
+    verify(jmsTemplate).send(any(MessageCreator.class));
+    assertTrue(isSuccess);
+  }
 
-    private TextMessage createTextMessage(String s) throws JMSException {
-        ActiveMQTextMessage message = new ActiveMQTextMessage();
-        message.setText(s);
-        return message;
-    }
+  @Test
+  public void shouldReturnFalseOnException() {
+    final var notificationResultMessage = createNotificationResultMessage();
+
+    doThrow(RuntimeException.class).when(jmsTemplate).send(any(MessageCreator.class));
+
+    final var isSuccess =
+        notificationResultMessageSender.sendResultMessage(notificationResultMessage);
+    verify(jmsTemplate).send(any(MessageCreator.class));
+    assertFalse(isSuccess);
+  }
+
+  private NotificationResultMessage createNotificationResultMessage() {
+    final var notificationResultMessage = new NotificationResultMessage();
+    notificationResultMessage.setEvent(createEvent());
+    notificationResultMessage.setCorrelationId(CORRELATION_ID);
+    notificationResultMessage.setResultType(createNotificationResultType());
+    notificationResultMessage.setStatusUpdateXml(STATUS_UPDATE_XML);
+    return notificationResultMessage;
+  }
+
+  private Handelse createEvent() {
+    final var event = new Handelse();
+    event.setCode(EVENT_ENUM);
+    event.setIntygsId(CERTIFICATE_ID);
+    event.setEnhetsId(LOGICAL_ADDRESS);
+    event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
+    return event;
+  }
+
+  private NotificationResultType createNotificationResultType() {
+    final var notificationResultType = new NotificationResultType();
+    notificationResultType.setNotificationResult(RESULT_TYPE_ENUM);
+    return notificationResultType;
+  }
+
+  private TextMessage createTextMessage(String s) throws JMSException {
+    ActiveMQTextMessage message = new ActiveMQTextMessage();
+    message.setText(s);
+    return message;
+  }
 }

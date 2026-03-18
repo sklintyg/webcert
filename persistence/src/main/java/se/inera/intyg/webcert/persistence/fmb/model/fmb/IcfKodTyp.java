@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,6 @@
 package se.inera.intyg.webcert.persistence.fmb.model.fmb;
 
 public enum IcfKodTyp {
-    CENTRAL,
-    KOMPLETTERANDE
+  CENTRAL,
+  KOMPLETTERANDE
 }

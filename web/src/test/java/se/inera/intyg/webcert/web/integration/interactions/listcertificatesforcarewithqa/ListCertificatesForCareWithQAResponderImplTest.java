@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -53,181 +53,254 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 @RunWith(MockitoJUnitRunner.class)
 public class ListCertificatesForCareWithQAResponderImplTest {
 
-    private static final String CERTIFICATE_ID_FROM_CS = "certificateIdFromCS";
-    private static final String CERTIFICATE_ID_FROM_WC = "certificateIdFromWC";
-    private static final String REFERENCE = "reference";
+  private static final String CERTIFICATE_ID_FROM_CS = "certificateIdFromCS";
+  private static final String CERTIFICATE_ID_FROM_WC = "certificateIdFromWC";
+  private static final String REFERENCE = "reference";
 
-    @Mock
-    private NotificationService notificationService;
-    @Mock
-    private GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService;
-    @Mock
-    private IntygService intygService;
-    @Mock
-    private HashUtility hashUtility;
+  @Mock private NotificationService notificationService;
 
-    @InjectMocks
-    private ListCertificatesForCareWithQAResponderImpl responder;
+  @Mock
+  private GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService;
 
-    @Test
-    public void testListCertificatesForCareWithQA() {
-        final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final var deadline = LocalDate.of(2017, 1, 1);
-        Handelse handelse = new Handelse();
-        handelse.setCode(HandelsekodEnum.SKAPAT);
-        handelse.setTimestamp(LocalDateTime.now());
-        handelse.setAmne(ArendeAmne.AVSTMN);
-        handelse.setSistaDatumForSvar(deadline);
-        handelse.setIntygsId(CERTIFICATE_ID_FROM_WC);
-        final var notifications = List.of(handelse);
+  @Mock private IntygService intygService;
+  @Mock private HashUtility hashUtility;
 
-        doReturn(notifications).when(notificationService).findNotifications(any(IntygWithNotificationsRequest.class));
-        doReturn(
+  @InjectMocks private ListCertificatesForCareWithQAResponderImpl responder;
+
+  @Test
+  public void testListCertificatesForCareWithQA() {
+    final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final var deadline = LocalDate.of(2017, 1, 1);
+    Handelse handelse = new Handelse();
+    handelse.setCode(HandelsekodEnum.SKAPAT);
+    handelse.setTimestamp(LocalDateTime.now());
+    handelse.setAmne(ArendeAmne.AVSTMN);
+    handelse.setSistaDatumForSvar(deadline);
+    handelse.setIntygsId(CERTIFICATE_ID_FROM_WC);
+    final var notifications = List.of(handelse);
+
+    doReturn(notifications)
+        .when(notificationService)
+        .findNotifications(any(IntygWithNotificationsRequest.class));
+    doReturn(
             List.of(
-                new IntygWithNotificationsResponse(null, List.of(handelse), new ArendeCount(1, 1, 1, 1),
-                    new ArendeCount(2, 2, 2, 2), REFERENCE)))
-            .when(intygService).listCertificatesForCareWithQA(notifications);
+                new IntygWithNotificationsResponse(
+                    null,
+                    List.of(handelse),
+                    new ArendeCount(1, 1, 1, 1),
+                    new ArendeCount(2, 2, 2, 2),
+                    REFERENCE)))
+        .when(intygService)
+        .listCertificatesForCareWithQA(notifications);
 
-        final var request = getListCertificatesForCareWithQATypeRequest(personnummer);
+    final var request = getListCertificatesForCareWithQATypeRequest(personnummer);
 
-        final var response = responder.listCertificatesForCareWithQA("logicalAdress", request);
+    final var response = responder.listCertificatesForCareWithQA("logicalAdress", request);
 
-        assertNotNull(response);
-        assertNotNull(response.getList());
-        assertNotNull(response.getList().getItem());
-        assertEquals(1, response.getList().getItem().size());
-        assertEquals(1, response.getList().getItem().getFirst().getHandelser().getHandelse().size());
+    assertNotNull(response);
+    assertNotNull(response.getList());
+    assertNotNull(response.getList().getItem());
+    assertEquals(1, response.getList().getItem().size());
+    assertEquals(1, response.getList().getItem().getFirst().getHandelser().getHandelse().size());
 
-        assertEquals(REFERENCE, response.getList().getItem().getFirst().getRef());
-        assertEquals(deadline, response.getList().getItem().getFirst().getHandelser().getHandelse().getFirst().getSistaDatumForSvar());
-        assertEquals(HandelsekodEnum.SKAPAT.name(),
-            response.getList().getItem().getFirst().getHandelser().getHandelse().getFirst().getHandelsekod().getCode());
-        assertEquals(ArendeAmne.AVSTMN.name(), response.getList().getItem().getFirst().getHandelser().getHandelse().getFirst()
-            .getAmne().getCode());
-    }
+    assertEquals(REFERENCE, response.getList().getItem().getFirst().getRef());
+    assertEquals(
+        deadline,
+        response
+            .getList()
+            .getItem()
+            .getFirst()
+            .getHandelser()
+            .getHandelse()
+            .getFirst()
+            .getSistaDatumForSvar());
+    assertEquals(
+        HandelsekodEnum.SKAPAT.name(),
+        response
+            .getList()
+            .getItem()
+            .getFirst()
+            .getHandelser()
+            .getHandelse()
+            .getFirst()
+            .getHandelsekod()
+            .getCode());
+    assertEquals(
+        ArendeAmne.AVSTMN.name(),
+        response
+            .getList()
+            .getItem()
+            .getFirst()
+            .getHandelser()
+            .getHandelse()
+            .getFirst()
+            .getAmne()
+            .getCode());
+  }
 
-    @Test
-    public void testListCertificatesForCareWithQAFromCertificateService() {
-        final var expectedListItem = new ListItem();
-        final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final var deadline = LocalDate.of(2017, 1, 1);
-        Handelse handelse = new Handelse();
-        handelse.setCode(HandelsekodEnum.SKAPAT);
-        handelse.setTimestamp(LocalDateTime.now());
-        handelse.setAmne(ArendeAmne.AVSTMN);
-        handelse.setSistaDatumForSvar(deadline);
-        handelse.setIntygsId(CERTIFICATE_ID_FROM_WC);
-        final var notifications = List.of(handelse);
+  @Test
+  public void testListCertificatesForCareWithQAFromCertificateService() {
+    final var expectedListItem = new ListItem();
+    final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final var deadline = LocalDate.of(2017, 1, 1);
+    Handelse handelse = new Handelse();
+    handelse.setCode(HandelsekodEnum.SKAPAT);
+    handelse.setTimestamp(LocalDateTime.now());
+    handelse.setAmne(ArendeAmne.AVSTMN);
+    handelse.setSistaDatumForSvar(deadline);
+    handelse.setIntygsId(CERTIFICATE_ID_FROM_WC);
+    final var notifications = List.of(handelse);
 
-        final var intyg = new Intyg();
-        final var intygsId = new IntygId();
-        intygsId.setExtension(CERTIFICATE_ID_FROM_CS);
-        intyg.setIntygsId(intygsId);
+    final var intyg = new Intyg();
+    final var intygsId = new IntygId();
+    intygsId.setExtension(CERTIFICATE_ID_FROM_CS);
+    intyg.setIntygsId(intygsId);
 
-        expectedListItem.setIntyg(intyg);
+    expectedListItem.setIntyg(intyg);
 
-        doReturn(notifications).when(notificationService).findNotifications(any(IntygWithNotificationsRequest.class));
-        doReturn(List.of(expectedListItem)).when(getCertificatesWithQAFromCertificateService).get(notifications);
+    doReturn(notifications)
+        .when(notificationService)
+        .findNotifications(any(IntygWithNotificationsRequest.class));
+    doReturn(List.of(expectedListItem))
+        .when(getCertificatesWithQAFromCertificateService)
+        .get(notifications);
 
-        final var request = getListCertificatesForCareWithQATypeRequest(personnummer);
+    final var request = getListCertificatesForCareWithQATypeRequest(personnummer);
 
-        final var response = responder.listCertificatesForCareWithQA("logicalAdress", request);
+    final var response = responder.listCertificatesForCareWithQA("logicalAdress", request);
 
-        assertEquals(expectedListItem, response.getList().getItem().getFirst());
-    }
+    assertEquals(expectedListItem, response.getList().getItem().getFirst());
+  }
 
-    @Test
-    public void testListCertificatesForCareWithQAWithMergedResult() {
-        final var expectedListItem = new ListItem();
-        final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
-        final var deadline = LocalDate.of(2017, 1, 1);
-        Handelse handelse = new Handelse();
-        handelse.setCode(HandelsekodEnum.SKAPAT);
-        handelse.setTimestamp(LocalDateTime.now());
-        handelse.setAmne(ArendeAmne.AVSTMN);
-        handelse.setSistaDatumForSvar(deadline);
-        handelse.setIntygsId(CERTIFICATE_ID_FROM_WC);
-        final var notifications = List.of(handelse);
+  @Test
+  public void testListCertificatesForCareWithQAWithMergedResult() {
+    final var expectedListItem = new ListItem();
+    final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    final var deadline = LocalDate.of(2017, 1, 1);
+    Handelse handelse = new Handelse();
+    handelse.setCode(HandelsekodEnum.SKAPAT);
+    handelse.setTimestamp(LocalDateTime.now());
+    handelse.setAmne(ArendeAmne.AVSTMN);
+    handelse.setSistaDatumForSvar(deadline);
+    handelse.setIntygsId(CERTIFICATE_ID_FROM_WC);
+    final var notifications = List.of(handelse);
 
-        final var intyg = new Intyg();
-        final var intygsId = new IntygId();
-        intygsId.setExtension(CERTIFICATE_ID_FROM_CS);
-        intyg.setIntygsId(intygsId);
+    final var intyg = new Intyg();
+    final var intygsId = new IntygId();
+    intygsId.setExtension(CERTIFICATE_ID_FROM_CS);
+    intyg.setIntygsId(intygsId);
 
-        expectedListItem.setIntyg(intyg);
+    expectedListItem.setIntyg(intyg);
 
-        doReturn(notifications).when(notificationService).findNotifications(any(IntygWithNotificationsRequest.class));
-        doReturn(List.of(expectedListItem)).when(getCertificatesWithQAFromCertificateService).get(notifications);
-        doReturn(
+    doReturn(notifications)
+        .when(notificationService)
+        .findNotifications(any(IntygWithNotificationsRequest.class));
+    doReturn(List.of(expectedListItem))
+        .when(getCertificatesWithQAFromCertificateService)
+        .get(notifications);
+    doReturn(
             List.of(
-                new IntygWithNotificationsResponse(null, List.of(handelse), new ArendeCount(1, 1, 1, 1),
-                    new ArendeCount(2, 2, 2, 2), REFERENCE)))
-            .when(intygService).listCertificatesForCareWithQA(notifications);
+                new IntygWithNotificationsResponse(
+                    null,
+                    List.of(handelse),
+                    new ArendeCount(1, 1, 1, 1),
+                    new ArendeCount(2, 2, 2, 2),
+                    REFERENCE)))
+        .when(intygService)
+        .listCertificatesForCareWithQA(notifications);
 
-        final var request = getListCertificatesForCareWithQATypeRequest(personnummer);
+    final var request = getListCertificatesForCareWithQATypeRequest(personnummer);
 
-        final var response = responder.listCertificatesForCareWithQA("logicalAdress", request);
+    final var response = responder.listCertificatesForCareWithQA("logicalAdress", request);
 
-        assertNotNull(response);
-        assertNotNull(response.getList());
-        assertNotNull(response.getList().getItem());
-        assertEquals(2, response.getList().getItem().size());
-        assertEquals(1, response.getList().getItem().getFirst().getHandelser().getHandelse().size());
-        assertEquals(REFERENCE, response.getList().getItem().getFirst().getRef());
-        assertEquals(deadline, response.getList().getItem().getFirst().getHandelser().getHandelse().getFirst().getSistaDatumForSvar());
-        assertEquals(HandelsekodEnum.SKAPAT.name(),
-            response.getList().getItem().getFirst().getHandelser().getHandelse().getFirst().getHandelsekod().getCode());
-        assertEquals(ArendeAmne.AVSTMN.name(), response.getList().getItem().getFirst().getHandelser().getHandelse().getFirst()
-            .getAmne().getCode());
-    }
+    assertNotNull(response);
+    assertNotNull(response.getList());
+    assertNotNull(response.getList().getItem());
+    assertEquals(2, response.getList().getItem().size());
+    assertEquals(1, response.getList().getItem().getFirst().getHandelser().getHandelse().size());
+    assertEquals(REFERENCE, response.getList().getItem().getFirst().getRef());
+    assertEquals(
+        deadline,
+        response
+            .getList()
+            .getItem()
+            .getFirst()
+            .getHandelser()
+            .getHandelse()
+            .getFirst()
+            .getSistaDatumForSvar());
+    assertEquals(
+        HandelsekodEnum.SKAPAT.name(),
+        response
+            .getList()
+            .getItem()
+            .getFirst()
+            .getHandelser()
+            .getHandelse()
+            .getFirst()
+            .getHandelsekod()
+            .getCode());
+    assertEquals(
+        ArendeAmne.AVSTMN.name(),
+        response
+            .getList()
+            .getItem()
+            .getFirst()
+            .getHandelser()
+            .getHandelse()
+            .getFirst()
+            .getAmne()
+            .getCode());
+  }
 
-    private static ListCertificatesForCareWithQAType getListCertificatesForCareWithQATypeRequest(Personnummer personnummer) {
-        ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-        PersonId personId = new PersonId();
-        personId.setExtension(personnummer.getPersonnummer());
-        request.setPersonId(personId);
-        HsaId hsaId = new HsaId();
-        hsaId.setExtension("enhetHsaId");
-        request.getEnhetsId().add(hsaId);
-        return request;
-    }
+  private static ListCertificatesForCareWithQAType getListCertificatesForCareWithQATypeRequest(
+      Personnummer personnummer) {
+    ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+    PersonId personId = new PersonId();
+    personId.setExtension(personnummer.getPersonnummer());
+    request.setPersonId(personId);
+    HsaId hsaId = new HsaId();
+    hsaId.setExtension("enhetHsaId");
+    request.getEnhetsId().add(hsaId);
+    return request;
+  }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void missingBothEnhetAndVardgivareShouldThrow() {
-        ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-        PersonId personId = new PersonId();
-        personId.setExtension("191212121212");
-        request.setPersonId(personId);
+  @Test(expected = IllegalArgumentException.class)
+  public void missingBothEnhetAndVardgivareShouldThrow() {
+    ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+    PersonId personId = new PersonId();
+    personId.setExtension("191212121212");
+    request.setPersonId(personId);
 
-        responder.listCertificatesForCareWithQA("logicalAdress", request);
-    }
+    responder.listCertificatesForCareWithQA("logicalAdress", request);
+  }
 
-    @Test
-    public void bothEnhetAndVardgivareExistingShouldNotThrow() {
-        ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-        PersonId personId = new PersonId();
-        personId.setExtension("191212121212");
-        request.setPersonId(personId);
-        HsaId hsaId = new HsaId();
-        hsaId.setExtension("enhetId");
-        request.getEnhetsId().add(hsaId);
-        HsaId vardgivarId = new HsaId();
-        hsaId.setExtension("vardgivarId");
-        request.setVardgivarId(vardgivarId);
+  @Test
+  public void bothEnhetAndVardgivareExistingShouldNotThrow() {
+    ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+    PersonId personId = new PersonId();
+    personId.setExtension("191212121212");
+    request.setPersonId(personId);
+    HsaId hsaId = new HsaId();
+    hsaId.setExtension("enhetId");
+    request.getEnhetsId().add(hsaId);
+    HsaId vardgivarId = new HsaId();
+    hsaId.setExtension("vardgivarId");
+    request.setVardgivarId(vardgivarId);
 
-        assertDoesNotThrow(() -> responder.listCertificatesForCareWithQA("logicalAdress", request));
-    }
+    assertDoesNotThrow(() -> responder.listCertificatesForCareWithQA("logicalAdress", request));
+  }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void missingPersonnummerShouldThrow() {
-        ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-        HsaId hsaId = new HsaId();
-        hsaId.setExtension("enhetId");
-        request.getEnhetsId().add(hsaId);
-        HsaId vardgivarId = new HsaId();
-        hsaId.setExtension("vardgivarId");
-        request.setVardgivarId(vardgivarId);
+  @Test(expected = IllegalArgumentException.class)
+  public void missingPersonnummerShouldThrow() {
+    ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+    HsaId hsaId = new HsaId();
+    hsaId.setExtension("enhetId");
+    request.getEnhetsId().add(hsaId);
+    HsaId vardgivarId = new HsaId();
+    hsaId.setExtension("vardgivarId");
+    request.setVardgivarId(vardgivarId);
 
-        responder.listCertificatesForCareWithQA("logicalAdress", request);
-    }
+    responder.listCertificatesForCareWithQA("logicalAdress", request);
+  }
 }

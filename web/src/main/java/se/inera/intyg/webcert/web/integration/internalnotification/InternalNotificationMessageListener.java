@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,80 +46,96 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 @Service
 public class InternalNotificationMessageListener implements MessageListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InternalNotificationMessageListener.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(InternalNotificationMessageListener.class);
 
-    static final String CERTIFICATE_ID = "certificate-id";
-    static final String CERTIFICATE_TYPE = "certificate-type";
-    static final String CERTIFICATE_TYPE_VERSION = "certificate-type-version";
-    static final String CARE_UNIT_ID = "care-unit-id";
+  static final String CERTIFICATE_ID = "certificate-id";
+  static final String CERTIFICATE_TYPE = "certificate-type";
+  static final String CERTIFICATE_TYPE_VERSION = "certificate-type-version";
+  static final String CARE_UNIT_ID = "care-unit-id";
 
-    @Value("${internal.notification.queueName}")
-    private String queueName;
+  @Value("${internal.notification.queueName}")
+  private String queueName;
 
-    @Autowired
-    private IntygModuleRegistry intygModuleRegistry;
+  @Autowired private IntygModuleRegistry intygModuleRegistry;
 
-    @Autowired
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    @Autowired
-    private NotificationService notificationService;
+  @Autowired private NotificationService notificationService;
 
-    @Value("${intygstjanst.logicaladdress}")
-    private String logicalAddress;
+  @Value("${intygstjanst.logicaladdress}")
+  private String logicalAddress;
 
-    @Autowired
-    private CSIntegrationService csIntegrationService;
+  @Autowired private CSIntegrationService csIntegrationService;
 
-    @Autowired
-    private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Autowired private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    @Override
-    @JmsListener(destination = "${internal.notification.queueName}")
-    public void onMessage(Message message) {
-        if (message instanceof TextMessage) {
-            TextMessage textMessage = (TextMessage) message;
-            try {
-                String intygsId = textMessage.getStringProperty(CERTIFICATE_ID);
-                String intygsTyp = textMessage.getStringProperty(CERTIFICATE_TYPE);
-                String intygsTypVersion = textMessage.getStringProperty(CERTIFICATE_TYPE_VERSION);
-                String enhetsId = textMessage.getStringProperty(CARE_UNIT_ID);
+  @Override
+  @JmsListener(destination = "${internal.notification.queueName}")
+  public void onMessage(Message message) {
+    if (message instanceof TextMessage) {
+      TextMessage textMessage = (TextMessage) message;
+      try {
+        String intygsId = textMessage.getStringProperty(CERTIFICATE_ID);
+        String intygsTyp = textMessage.getStringProperty(CERTIFICATE_TYPE);
+        String intygsTypVersion = textMessage.getStringProperty(CERTIFICATE_TYPE_VERSION);
+        String enhetsId = textMessage.getStringProperty(CARE_UNIT_ID);
 
-                checkArgument(StringUtils.isNotEmpty(intygsId), "Message on queue %s does not have a %s header.",
-                    queueName, CERTIFICATE_ID);
-                checkArgument(StringUtils.isNotEmpty(intygsTyp), "Message on queue %s does not have a %s header.",
-                    queueName, CERTIFICATE_TYPE);
-                checkArgument(StringUtils.isNotEmpty(intygsTypVersion), "Message on queue %s does not have a %s header.",
-                    queueName, CERTIFICATE_TYPE_VERSION);
-                checkArgument(StringUtils.isNotEmpty(enhetsId), "Message on queue %s does not have a %s header.",
-                    queueName, CARE_UNIT_ID);
+        checkArgument(
+            StringUtils.isNotEmpty(intygsId),
+            "Message on queue %s does not have a %s header.",
+            queueName,
+            CERTIFICATE_ID);
+        checkArgument(
+            StringUtils.isNotEmpty(intygsTyp),
+            "Message on queue %s does not have a %s header.",
+            queueName,
+            CERTIFICATE_TYPE);
+        checkArgument(
+            StringUtils.isNotEmpty(intygsTypVersion),
+            "Message on queue %s does not have a %s header.",
+            queueName,
+            CERTIFICATE_TYPE_VERSION);
+        checkArgument(
+            StringUtils.isNotEmpty(enhetsId),
+            "Message on queue %s does not have a %s header.",
+            queueName,
+            CARE_UNIT_ID);
 
-                if (!integreradeEnheterRegistry.isEnhetIntegrerad(enhetsId, intygsTyp)) {
-                    LOG.debug("Not forwarding internal notification to care system, care unit '{}' is not integrated.", enhetsId);
-                    return;
-                }
-
-                if (certificateExistsInCertificateService(intygsId)) {
-                    final var certificate = csIntegrationService.getInternalCertificate(intygsId);
-                    publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKICKA);
-                    return;
-                }
-
-                ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp, intygsTypVersion);
-                CertificateResponse certificateResponse = moduleApi.getCertificate(intygsId, logicalAddress, "HSVARD");
-
-                Utlatande utlatande = certificateResponse.getUtlatande();
-                notificationService.forwardInternalNotification(utlatande.getId(), utlatande.getTyp(), utlatande, HandelsekodEnum.SKICKA);
-
-            } catch (IllegalArgumentException e) {
-                LOG.error("Could not process internal notification, message is missing required header: {}", e.getMessage());
-            } catch (JMSException | ModuleNotFoundException | ModuleException e) {
-                LOG.error("Caught {} transforming internal notification to external notification. Message: {}", e.getMessage());
-            }
+        if (!integreradeEnheterRegistry.isEnhetIntegrerad(enhetsId, intygsTyp)) {
+          LOG.debug(
+              "Not forwarding internal notification to care system, care unit '{}' is not integrated.",
+              enhetsId);
+          return;
         }
-    }
 
-    private boolean certificateExistsInCertificateService(String intygsId) {
-        return Boolean.TRUE.equals(csIntegrationService.certificateExists(intygsId));
+        if (certificateExistsInCertificateService(intygsId)) {
+          final var certificate = csIntegrationService.getInternalCertificate(intygsId);
+          publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKICKA);
+          return;
+        }
+
+        ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp, intygsTypVersion);
+        CertificateResponse certificateResponse =
+            moduleApi.getCertificate(intygsId, logicalAddress, "HSVARD");
+
+        Utlatande utlatande = certificateResponse.getUtlatande();
+        notificationService.forwardInternalNotification(
+            utlatande.getId(), utlatande.getTyp(), utlatande, HandelsekodEnum.SKICKA);
+
+      } catch (IllegalArgumentException e) {
+        LOG.error(
+            "Could not process internal notification, message is missing required header: {}",
+            e.getMessage());
+      } catch (JMSException | ModuleNotFoundException | ModuleException e) {
+        LOG.error(
+            "Caught {} transforming internal notification to external notification. Message: {}",
+            e.getMessage());
+      }
     }
+  }
+
+  private boolean certificateExistsInCertificateService(String intygsId) {
+    return Boolean.TRUE.equals(csIntegrationService.certificateExists(intygsId));
+  }
 }

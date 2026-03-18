@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,79 +22,89 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageTy
 
 public class DraftValidationMessage {
 
-    private String category;
+  private String category;
 
-    private String field;
+  private String field;
 
-    private ValidationMessageType type;
+  private ValidationMessageType type;
 
-    private String message;
+  private String message;
 
-    private String dynamicKey;
+  private String dynamicKey;
 
-    private String questionId;
+  private String questionId;
 
-    public DraftValidationMessage(String category, String field, ValidationMessageType type, String message, String dynamicKey) {
-        super();
-        this.category = category;
-        this.field = field;
-        this.type = type;
-        this.message = message;
-        this.dynamicKey = dynamicKey;
-    }
+  public DraftValidationMessage(
+      String category,
+      String field,
+      ValidationMessageType type,
+      String message,
+      String dynamicKey) {
+    super();
+    this.category = category;
+    this.field = field;
+    this.type = type;
+    this.message = message;
+    this.dynamicKey = dynamicKey;
+  }
 
-    public DraftValidationMessage(String category, String field, ValidationMessageType type, String message, String dynamicKey,
-        String questionId) {
-        super();
-        this.category = category;
-        this.field = field;
-        this.type = type;
-        this.message = message;
-        this.dynamicKey = dynamicKey;
-        this.questionId = questionId;
-    }
+  public DraftValidationMessage(
+      String category,
+      String field,
+      ValidationMessageType type,
+      String message,
+      String dynamicKey,
+      String questionId) {
+    super();
+    this.category = category;
+    this.field = field;
+    this.type = type;
+    this.message = message;
+    this.dynamicKey = dynamicKey;
+    this.questionId = questionId;
+  }
 
-    public String getCategory() {
-        return category;
-    }
+  public String getCategory() {
+    return category;
+  }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+  public void setCategory(String category) {
+    this.category = category;
+  }
 
-    public String getField() {
-        return field;
-    }
+  public String getField() {
+    return field;
+  }
 
-    public void setField(String field) {
-        this.field = field;
-    }
+  public void setField(String field) {
+    this.field = field;
+  }
 
-    public ValidationMessageType getType() {
-        return type;
-    }
+  public ValidationMessageType getType() {
+    return type;
+  }
 
-    public void setType(ValidationMessageType type) {
-        this.type = type;
-    }
+  public void setType(ValidationMessageType type) {
+    this.type = type;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public String getDynamicKey() {
-        return dynamicKey;
-    }
+  public String getDynamicKey() {
+    return dynamicKey;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public String getQuestionId() {
-        return questionId;
-    }
+  public String getQuestionId() {
+    return questionId;
+  }
 
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
-    }
+  public void setQuestionId(String questionId) {
+    this.questionId = questionId;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,123 +39,119 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 
-/**
- * Created by pehr on 10/2/13.
- */
+/** Created by pehr on 10/2/13. */
 public final class ConvertToFKTypes {
 
-    private ConvertToFKTypes() {
+  private ConvertToFKTypes() {}
+
+  public static II toII(String root, String ext) {
+    if (root == null || ext == null) {
+      return null;
+    }
+    II ii = new II();
+    ii.setRoot(root);
+    ii.setExtension(ext);
+    return ii;
+  }
+
+  public static Amnetyp toAmneTyp(Amne amne) {
+    switch (amne) {
+      case ARBETSTIDSFORLAGGNING:
+        return Amnetyp.ARBETSTIDSFORLAGGNING;
+      case AVSTAMNINGSMOTE:
+        return Amnetyp.AVSTAMNINGSMOTE;
+      case KOMPLETTERING_AV_LAKARINTYG:
+        return Amnetyp.KOMPLETTERING_AV_LAKARINTYG;
+      case KONTAKT:
+        return Amnetyp.KONTAKT;
+      case MAKULERING_AV_LAKARINTYG:
+        return Amnetyp.MAKULERING_AV_LAKARINTYG;
+      case OVRIGT:
+        return Amnetyp.OVRIGT;
+      case PAMINNELSE:
+        return Amnetyp.PAMINNELSE;
+    }
+    return null;
+  }
+
+  public static InnehallType toInnehallType(String text, LocalDateTime singeringsDatum) {
+    InnehallType iht = new InnehallType();
+    iht.setMeddelandeText(text);
+    iht.setSigneringsTidpunkt(singeringsDatum);
+    return iht;
+  }
+
+  public static LakarutlatandeEnkelType toLakarUtlatande(IntygsReferens ir) {
+    if (ir == null) {
+      return null;
     }
 
-    public static II toII(String root, String ext) {
-        if (root == null || ext == null) {
-            return null;
-        }
-        II ii = new II();
-        ii.setRoot(root);
-        ii.setExtension(ext);
-        return ii;
+    LakarutlatandeEnkelType lu = new LakarutlatandeEnkelType();
+    lu.setLakarutlatandeId(ir.getIntygsId());
+
+    PatientType pt = new PatientType();
+
+    String root = PERSON_ID_OID;
+    if (SamordningsnummerValidator.isSamordningsNummer(Optional.ofNullable(ir.getPatientId()))) {
+      root = SAMORDNING_ID_OID;
     }
 
-    public static Amnetyp toAmneTyp(Amne amne) {
-        switch (amne) {
-            case ARBETSTIDSFORLAGGNING:
-                return Amnetyp.ARBETSTIDSFORLAGGNING;
-            case AVSTAMNINGSMOTE:
-                return Amnetyp.AVSTAMNINGSMOTE;
-            case KOMPLETTERING_AV_LAKARINTYG:
-                return Amnetyp.KOMPLETTERING_AV_LAKARINTYG;
-            case KONTAKT:
-                return Amnetyp.KONTAKT;
-            case MAKULERING_AV_LAKARINTYG:
-                return Amnetyp.MAKULERING_AV_LAKARINTYG;
-            case OVRIGT:
-                return Amnetyp.OVRIGT;
-            case PAMINNELSE:
-                return Amnetyp.PAMINNELSE;
-        }
-        return null;
+    pt.setPersonId(toII(root, ir.getPatientId().getPersonnummerWithDash()));
+
+    lu.setPatient(pt);
+    lu.setSigneringsTidpunkt(ir.getSigneringsDatum());
+
+    return lu;
+  }
+
+  public static VardAdresseringsType toVardAdresseringsType(Vardperson vp) {
+    if (vp == null) {
+      return null;
     }
 
-    public static InnehallType toInnehallType(String text, LocalDateTime singeringsDatum) {
-        InnehallType iht = new InnehallType();
-        iht.setMeddelandeText(text);
-        iht.setSigneringsTidpunkt(singeringsDatum);
-        return iht;
+    VardAdresseringsType vat = new VardAdresseringsType();
+
+    HosPersonalType hos = new HosPersonalType();
+    hos.setForskrivarkod(vp.getForskrivarKod());
+    hos.setFullstandigtNamn(vp.getNamn());
+    hos.setPersonalId(toII(HSA_ID_OID, vp.getHsaId()));
+
+    hos.setEnhet(toEnhetType(vp));
+
+    vat.setHosPersonal(hos);
+
+    return vat;
+  }
+
+  public static EnhetType toEnhetType(Vardperson vp) {
+    if (vp == null) {
+      return null;
+    }
+    EnhetType et = new EnhetType();
+    if (vp.getEnhetsId() != null) {
+      et.setEnhetsId(toII(HSA_ID_OID, vp.getEnhetsId()));
     }
 
-    public static LakarutlatandeEnkelType toLakarUtlatande(IntygsReferens ir) {
-        if (ir == null) {
-            return null;
-        }
+    et.setEnhetsnamn(vp.getEnhetsnamn());
+    et.setEpost(vp.getEpost());
+    et.setPostadress(vp.getPostadress());
+    et.setPostnummer(vp.getPostnummer());
+    et.setPostort(vp.getPostort());
+    et.setTelefonnummer(vp.getTelefonnummer());
 
-        LakarutlatandeEnkelType lu = new LakarutlatandeEnkelType();
-        lu.setLakarutlatandeId(ir.getIntygsId());
-
-        PatientType pt = new PatientType();
-
-        String root = PERSON_ID_OID;
-        if (SamordningsnummerValidator.isSamordningsNummer(Optional.ofNullable(ir.getPatientId()))) {
-            root = SAMORDNING_ID_OID;
-        }
-
-        pt.setPersonId(toII(root, ir.getPatientId().getPersonnummerWithDash()));
-
-        lu.setPatient(pt);
-        lu.setSigneringsTidpunkt(ir.getSigneringsDatum());
-
-        return lu;
+    if (vp.getArbetsplatsKod() != null) {
+      et.setArbetsplatskod(toII(ARBETSPLATS_KOD_OID, vp.getArbetsplatsKod()));
     }
 
-    public static VardAdresseringsType toVardAdresseringsType(Vardperson vp) {
-        if (vp == null) {
-            return null;
-        }
+    VardgivareType vgt = new VardgivareType();
+    vgt.setVardgivarnamn(vp.getVardgivarnamn());
 
-        VardAdresseringsType vat = new VardAdresseringsType();
-
-        HosPersonalType hos = new HosPersonalType();
-        hos.setForskrivarkod(vp.getForskrivarKod());
-        hos.setFullstandigtNamn(vp.getNamn());
-        hos.setPersonalId(toII(HSA_ID_OID, vp.getHsaId()));
-
-        hos.setEnhet(toEnhetType(vp));
-
-        vat.setHosPersonal(hos);
-
-        return vat;
+    if (vp.getVardgivarId() != null) {
+      vgt.setVardgivareId(toII(HSA_ID_OID, vp.getVardgivarId()));
     }
 
-    public static EnhetType toEnhetType(Vardperson vp) {
-        if (vp == null) {
-            return null;
-        }
-        EnhetType et = new EnhetType();
-        if (vp.getEnhetsId() != null) {
-            et.setEnhetsId(toII(HSA_ID_OID, vp.getEnhetsId()));
-        }
+    et.setVardgivare(vgt);
 
-        et.setEnhetsnamn(vp.getEnhetsnamn());
-        et.setEpost(vp.getEpost());
-        et.setPostadress(vp.getPostadress());
-        et.setPostnummer(vp.getPostnummer());
-        et.setPostort(vp.getPostort());
-        et.setTelefonnummer(vp.getTelefonnummer());
-
-        if (vp.getArbetsplatsKod() != null) {
-            et.setArbetsplatskod(toII(ARBETSPLATS_KOD_OID, vp.getArbetsplatsKod()));
-        }
-
-        VardgivareType vgt = new VardgivareType();
-        vgt.setVardgivarnamn(vp.getVardgivarnamn());
-
-        if (vp.getVardgivarId() != null) {
-            vgt.setVardgivareId(toII(HSA_ID_OID, vp.getVardgivarId()));
-        }
-
-        et.setVardgivare(vgt);
-
-        return et;
-    }
-
+    return et;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,30 +35,29 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageReque
 @ExtendWith(MockitoExtension.class)
 class SaveMessageFromCertificateServiceTest {
 
-    private static final String MESSAGE_ID = "messageId";
-    private static final Question QUESTION = Question.builder().id(MESSAGE_ID).build();
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    SaveMessageFromCertificateService saveMessageFromCertificateService;
+  private static final String MESSAGE_ID = "messageId";
+  private static final Question QUESTION = Question.builder().id(MESSAGE_ID).build();
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks SaveMessageFromCertificateService saveMessageFromCertificateService;
 
-    @Test
-    void shallReturnNullIfCertificateDontExistInCertificateService() {
-        doReturn(false).when(csIntegrationService).messageExists(MESSAGE_ID);
-        assertNull(saveMessageFromCertificateService.save(QUESTION));
-    }
+  @Test
+  void shallReturnNullIfCertificateDontExistInCertificateService() {
+    doReturn(false).when(csIntegrationService).messageExists(MESSAGE_ID);
+    assertNull(saveMessageFromCertificateService.save(QUESTION));
+  }
 
-    @Test
-    void shallReturnSavedQuestionFromCertificateService() {
-        final var expectedQuestion = Question.builder().build();
-        final var saveMessageRequestDTO = SaveMessageRequestDTO.builder().build();
+  @Test
+  void shallReturnSavedQuestionFromCertificateService() {
+    final var expectedQuestion = Question.builder().build();
+    final var saveMessageRequestDTO = SaveMessageRequestDTO.builder().build();
 
-        doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
-        doReturn(saveMessageRequestDTO).when(csIntegrationRequestFactory).saveMessageRequest(QUESTION);
-        doReturn(expectedQuestion).when(csIntegrationService).saveMessage(saveMessageRequestDTO, MESSAGE_ID);
+    doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
+    doReturn(saveMessageRequestDTO).when(csIntegrationRequestFactory).saveMessageRequest(QUESTION);
+    doReturn(expectedQuestion)
+        .when(csIntegrationService)
+        .saveMessage(saveMessageRequestDTO, MESSAGE_ID);
 
-        assertEquals(expectedQuestion, saveMessageFromCertificateService.save(QUESTION));
-    }
+    assertEquals(expectedQuestion, saveMessageFromCertificateService.save(QUESTION));
+  }
 }

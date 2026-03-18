@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
@@ -25,43 +24,50 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class ConfirmationModalProviderResolver {
 
-    private ConfirmationModalProviderResolver() {
-        throw new IllegalStateException("Utility class");
+  private ConfirmationModalProviderResolver() {
+    throw new IllegalStateException("Utility class");
+  }
+
+  public static ConfirmationModalProvider getConfirmation(
+      String type,
+      CertificateStatus status,
+      WebCertUser user,
+      boolean isCreatedFromList,
+      boolean isAllowedToEdit) {
+    final var isIntegratedOrigin = user.getOrigin().equals("DJUPINTEGRATION");
+    final var isValid =
+        isIntegratedOrigin
+            ? isValidForIntegratedOrigin(isAllowedToEdit)
+            : isValidForNormalOrigin(isCreatedFromList);
+
+    if (!isValid) {
+      return null;
     }
 
-    public static ConfirmationModalProvider getConfirmation(String type, CertificateStatus status, WebCertUser user,
-        boolean isCreatedFromList, boolean isAllowedToEdit) {
-        final var isIntegratedOrigin = user.getOrigin().equals("DJUPINTEGRATION");
-        final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin(isAllowedToEdit) : isValidForNormalOrigin(isCreatedFromList);
-
-        if (!isValid) {
-            return null;
-        }
-
-        if (status != CertificateStatus.UNSIGNED) {
-            return null;
-        }
-
-        if (type.equals(DbModuleEntryPoint.MODULE_ID)) {
-            return new DbConfirmationModalProvider();
-        }
-
-        return null;
+    if (status != CertificateStatus.UNSIGNED) {
+      return null;
     }
 
-    public static ConfirmationModalProvider getSignConfirmation(String type) {
-        if (type.equals(DbModuleEntryPoint.MODULE_ID)) {
-            return new DbSignConfirmationModalProvider();
-        }
-
-        return null;
+    if (type.equals(DbModuleEntryPoint.MODULE_ID)) {
+      return new DbConfirmationModalProvider();
     }
 
-    private static boolean isValidForIntegratedOrigin(boolean isAllowedToEdit) {
-        return isAllowedToEdit;
+    return null;
+  }
+
+  public static ConfirmationModalProvider getSignConfirmation(String type) {
+    if (type.equals(DbModuleEntryPoint.MODULE_ID)) {
+      return new DbSignConfirmationModalProvider();
     }
 
-    private static boolean isValidForNormalOrigin(boolean isCreatedFromList) {
-        return isCreatedFromList;
-    }
+    return null;
+  }
+
+  private static boolean isValidForIntegratedOrigin(boolean isAllowedToEdit) {
+    return isAllowedToEdit;
+  }
+
+  private static boolean isValidForNormalOrigin(boolean isCreatedFromList) {
+    return isCreatedFromList;
+  }
 }

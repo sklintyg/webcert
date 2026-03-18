@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,43 +18,43 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
-import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-
 import java.util.Collections;
 import java.util.List;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterNumberValue;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 
 @Service
 public class ListPaginationHelperImpl implements ListPaginationHelper {
 
-    private static final int DEFAULT_PAGE_SIZE = 10;
+  private static final int DEFAULT_PAGE_SIZE = 10;
 
-    @Override
-    public List<CertificateListItem> paginate(List<CertificateListItem> list, ListFilter filter) {
-        return paginateList(list, getStartFrom(filter), getPageSize(filter));
-    }
+  @Override
+  public List<CertificateListItem> paginate(List<CertificateListItem> list, ListFilter filter) {
+    return paginateList(list, getStartFrom(filter), getPageSize(filter));
+  }
 
-    private List<CertificateListItem> paginateList(List<CertificateListItem> list, int startFrom, int pageSize) {
-        if (startFrom < list.size()) {
-            int toIndex = startFrom + pageSize;
-            if (toIndex > list.size()) {
-                toIndex = list.size();
-            }
-            return list.subList(startFrom, toIndex);
-        } else {
-            return Collections.emptyList();
-        }
+  private List<CertificateListItem> paginateList(
+      List<CertificateListItem> list, int startFrom, int pageSize) {
+    if (startFrom < list.size()) {
+      int toIndex = startFrom + pageSize;
+      if (toIndex > list.size()) {
+        toIndex = list.size();
+      }
+      return list.subList(startFrom, toIndex);
+    } else {
+      return Collections.emptyList();
     }
+  }
 
-    private int getPageSize(ListFilter filter) {
-        ListFilterNumberValue pageSize = (ListFilterNumberValue) filter.getValue("PAGESIZE");
-        return pageSize == null ? DEFAULT_PAGE_SIZE : pageSize.getValue();
-    }
+  private int getPageSize(ListFilter filter) {
+    ListFilterNumberValue pageSize = (ListFilterNumberValue) filter.getValue("PAGESIZE");
+    return pageSize == null ? DEFAULT_PAGE_SIZE : pageSize.getValue();
+  }
 
-    private int getStartFrom(ListFilter filter) {
-        ListFilterNumberValue startFrom = (ListFilterNumberValue) filter.getValue("START_FROM");
-        return startFrom == null ? 0 : startFrom.getValue();
-    }
+  private int getStartFrom(ListFilter filter) {
+    ListFilterNumberValue startFrom = (ListFilterNumberValue) filter.getValue("START_FROM");
+    return startFrom == null ? 0 : startFrom.getValue();
+  }
 }

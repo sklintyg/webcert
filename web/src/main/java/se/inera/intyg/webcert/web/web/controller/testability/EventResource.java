@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,83 +35,89 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @Path("event")
 public class EventResource {
 
-    @Autowired
-    HandelseRepository handelseRepository;
+  @Autowired HandelseRepository handelseRepository;
 
-    @Autowired
-    NotificationRedeliveryRepository redeliveryRepository;
+  @Autowired NotificationRedeliveryRepository redeliveryRepository;
 
-    @Autowired
-    CertificateEventRepository certificateEventRepository;
+  @Autowired CertificateEventRepository certificateEventRepository;
 
+  @GET
+  @Path("/eventCount")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Long getEventCountForCertificateIds(List<String> certificateIds) {
+    final var events = handelseRepository.findAll();
+    return events.stream().filter(event -> certificateIds.contains(event.getIntygsId())).count();
+  }
 
-    @GET
-    @Path("/eventCount")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Long getEventCountForCertificateIds(List<String> certificateIds) {
-        final var events = handelseRepository.findAll();
-        return events.stream().filter(event -> certificateIds.contains(event.getIntygsId())).count();
-    }
-
-    @DELETE
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteEventsByCertificateIds(List<String> certificateIds) {
-        final var events = handelseRepository.findAll();
-        final var eventsForDeletion = events.stream()
+  @DELETE
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteEventsByCertificateIds(List<String> certificateIds) {
+    final var events = handelseRepository.findAll();
+    final var eventsForDeletion =
+        events.stream()
             .filter(event -> certificateIds.contains(event.getIntygsId()))
             .collect(Collectors.toList());
-        handelseRepository.deleteAll(eventsForDeletion);
+    handelseRepository.deleteAll(eventsForDeletion);
 
-        return Response.ok().build();
-    }
+    return Response.ok().build();
+  }
 
-    @GET
-    @Path("/redeliveryCount")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Long getRedeliveryCountForCertificateIds(List<String> certificateIds) {
-        final List<Long> eventIds = getEventIds(certificateIds);
-        final var redeliveries = redeliveryRepository.findAll();
-        return redeliveries.stream().filter(redelivery -> eventIds.contains(redelivery.getEventId())).count();
-    }
+  @GET
+  @Path("/redeliveryCount")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Long getRedeliveryCountForCertificateIds(List<String> certificateIds) {
+    final List<Long> eventIds = getEventIds(certificateIds);
+    final var redeliveries = redeliveryRepository.findAll();
+    return redeliveries.stream()
+        .filter(redelivery -> eventIds.contains(redelivery.getEventId()))
+        .count();
+  }
 
-    @DELETE
-    @Path("/redelivery")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteRedeliveriesByCertificateIds(List<String> certificateIds) {
-        final List<Long> eventIds = getEventIds(certificateIds);
-        final var redeliveries = redeliveryRepository.findAll();
-        final var redeliveriesForDeletion = redeliveries.stream().filter(redelivery -> eventIds.contains(redelivery.getEventId()))
+  @DELETE
+  @Path("/redelivery")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteRedeliveriesByCertificateIds(List<String> certificateIds) {
+    final List<Long> eventIds = getEventIds(certificateIds);
+    final var redeliveries = redeliveryRepository.findAll();
+    final var redeliveriesForDeletion =
+        redeliveries.stream()
+            .filter(redelivery -> eventIds.contains(redelivery.getEventId()))
             .collect(Collectors.toList());
-        redeliveryRepository.deleteAll(redeliveriesForDeletion);
+    redeliveryRepository.deleteAll(redeliveriesForDeletion);
 
-        return Response.ok().build();
-    }
+    return Response.ok().build();
+  }
 
-    @GET
-    @Path("/certificateEventCount")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Long getCertificateEventCountForCertificateIds(List<String> certificateIds) {
-        final var certificateEvents = certificateEventRepository.findAll();
-        return certificateEvents.stream().filter(event -> certificateIds.contains(event.getCertificateId())).count();
-    }
+  @GET
+  @Path("/certificateEventCount")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Long getCertificateEventCountForCertificateIds(List<String> certificateIds) {
+    final var certificateEvents = certificateEventRepository.findAll();
+    return certificateEvents.stream()
+        .filter(event -> certificateIds.contains(event.getCertificateId()))
+        .count();
+  }
 
-    @DELETE
-    @Path("/certificateEvent")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteCertificateEventsByCertificateIds(List<String> certificateIds) {
-        final var certificateEvents = certificateEventRepository.findAll();
-        final var certificateEventsForDeletion = certificateEvents.stream()
+  @DELETE
+  @Path("/certificateEvent")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteCertificateEventsByCertificateIds(List<String> certificateIds) {
+    final var certificateEvents = certificateEventRepository.findAll();
+    final var certificateEventsForDeletion =
+        certificateEvents.stream()
             .filter(event -> certificateIds.contains(event.getCertificateId()))
             .collect(Collectors.toList());
-        certificateEventRepository.deleteAll(certificateEventsForDeletion);
+    certificateEventRepository.deleteAll(certificateEventsForDeletion);
 
-        return Response.ok().build();
-    }
+    return Response.ok().build();
+  }
 
-    private List<Long> getEventIds(List<String> certificateIds) {
-        final var events = handelseRepository.findAll();
-        return events.stream().filter(event -> certificateIds.contains(event.getIntygsId())).map(Handelse::getId)
-            .collect(Collectors.toList());
-    }
+  private List<Long> getEventIds(List<String> certificateIds) {
+    final var events = handelseRepository.findAll();
+    return events.stream()
+        .filter(event -> certificateIds.contains(event.getIntygsId()))
+        .map(Handelse::getId)
+        .collect(Collectors.toList());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,172 +27,171 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 public class ArendeListItem {
 
-    private String meddelandeId;
-    private String intygId;
-    private String intygTyp;
-    private String signeratAvNamn;
-    @JsonIgnore
-    private String signeratAv;
-    private Status status;
-    private String patientId;
-    private LocalDateTime receivedDate;
-    private boolean vidarebefordrad;
-    private boolean paminnelse;
-    private String fragestallare;
-    private String amne;
-    private String enhetsnamn;
-    private String vardgivarnamn;
-    private boolean sekretessmarkering;
-    private boolean avliden;
-    private boolean testIntyg;
+  private String meddelandeId;
+  private String intygId;
+  private String intygTyp;
+  private String signeratAvNamn;
+  @JsonIgnore private String signeratAv;
+  private Status status;
+  private String patientId;
+  private LocalDateTime receivedDate;
+  private boolean vidarebefordrad;
+  private boolean paminnelse;
+  private String fragestallare;
+  private String amne;
+  private String enhetsnamn;
+  private String vardgivarnamn;
+  private boolean sekretessmarkering;
+  private boolean avliden;
+  private boolean testIntyg;
 
-    private List<ActionLink> links = new ArrayList<>();
+  private List<ActionLink> links = new ArrayList<>();
 
-    public String getMeddelandeId() {
-        return meddelandeId;
-    }
+  public String getMeddelandeId() {
+    return meddelandeId;
+  }
 
-    public void setMeddelandeId(String meddelandeId) {
-        this.meddelandeId = meddelandeId;
-    }
+  public void setMeddelandeId(String meddelandeId) {
+    this.meddelandeId = meddelandeId;
+  }
 
-    public String getIntygId() {
-        return intygId;
-    }
+  public String getIntygId() {
+    return intygId;
+  }
 
-    public void setIntygId(String intygId) {
-        this.intygId = intygId;
-    }
+  public void setIntygId(String intygId) {
+    this.intygId = intygId;
+  }
 
-    public String getIntygTyp() {
-        return intygTyp;
-    }
+  public String getIntygTyp() {
+    return intygTyp;
+  }
 
-    public void setIntygTyp(String intygTyp) {
-        this.intygTyp = intygTyp;
-    }
+  public void setIntygTyp(String intygTyp) {
+    this.intygTyp = intygTyp;
+  }
 
-    public String getSigneratAvNamn() {
-        return signeratAvNamn;
-    }
+  public String getSigneratAvNamn() {
+    return signeratAvNamn;
+  }
 
-    public void setSigneratAvNamn(String signeratAvNamn) {
-        this.signeratAvNamn = signeratAvNamn;
-    }
+  public void setSigneratAvNamn(String signeratAvNamn) {
+    this.signeratAvNamn = signeratAvNamn;
+  }
 
-    public String getSigneratAv() {
-        return signeratAv;
-    }
+  public String getSigneratAv() {
+    return signeratAv;
+  }
 
-    public void setSigneratAv(String signeratAv) {
-        this.signeratAv = signeratAv;
-    }
+  public void setSigneratAv(String signeratAv) {
+    this.signeratAv = signeratAv;
+  }
 
-    public Status getStatus() {
-        return status;
-    }
+  public Status getStatus() {
+    return status;
+  }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+  public void setStatus(Status status) {
+    this.status = status;
+  }
 
-    public String getPatientId() {
-        return patientId;
-    }
+  public String getPatientId() {
+    return patientId;
+  }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
+  public void setPatientId(String patientId) {
+    this.patientId = patientId;
+  }
 
-    public LocalDateTime getReceivedDate() {
-        return receivedDate;
-    }
+  public LocalDateTime getReceivedDate() {
+    return receivedDate;
+  }
 
-    public void setReceivedDate(LocalDateTime localDateTime) {
-        this.receivedDate = localDateTime;
-    }
+  public void setReceivedDate(LocalDateTime localDateTime) {
+    this.receivedDate = localDateTime;
+  }
 
-    public boolean isVidarebefordrad() {
-        return vidarebefordrad;
-    }
+  public boolean isVidarebefordrad() {
+    return vidarebefordrad;
+  }
 
-    public void setVidarebefordrad(boolean vidarebefordrad) {
-        this.vidarebefordrad = vidarebefordrad;
-    }
+  public void setVidarebefordrad(boolean vidarebefordrad) {
+    this.vidarebefordrad = vidarebefordrad;
+  }
 
-    public String getFragestallare() {
-        return fragestallare;
-    }
+  public String getFragestallare() {
+    return fragestallare;
+  }
 
-    public void setFragestallare(String fragestallare) {
-        this.fragestallare = fragestallare;
-    }
+  public void setFragestallare(String fragestallare) {
+    this.fragestallare = fragestallare;
+  }
 
-    public String getAmne() {
-        return amne;
-    }
+  public String getAmne() {
+    return amne;
+  }
 
-    public void setAmne(String amne) {
-        this.amne = amne;
-    }
+  public void setAmne(String amne) {
+    this.amne = amne;
+  }
 
-    public String getEnhetsnamn() {
-        return enhetsnamn;
-    }
+  public String getEnhetsnamn() {
+    return enhetsnamn;
+  }
 
-    public void setEnhetsnamn(String enhetsnamn) {
-        this.enhetsnamn = enhetsnamn;
-    }
+  public void setEnhetsnamn(String enhetsnamn) {
+    this.enhetsnamn = enhetsnamn;
+  }
 
-    public String getVardgivarnamn() {
-        return vardgivarnamn;
-    }
+  public String getVardgivarnamn() {
+    return vardgivarnamn;
+  }
 
-    public void setVardgivarnamn(String vardgivarnamn) {
-        this.vardgivarnamn = vardgivarnamn;
-    }
+  public void setVardgivarnamn(String vardgivarnamn) {
+    this.vardgivarnamn = vardgivarnamn;
+  }
 
-    public boolean isPaminnelse() {
-        return paminnelse;
-    }
+  public boolean isPaminnelse() {
+    return paminnelse;
+  }
 
-    public void setPaminnelse(boolean paminnelse) {
-        this.paminnelse = paminnelse;
-    }
+  public void setPaminnelse(boolean paminnelse) {
+    this.paminnelse = paminnelse;
+  }
 
-    public boolean isSekretessmarkering() {
-        return sekretessmarkering;
-    }
+  public boolean isSekretessmarkering() {
+    return sekretessmarkering;
+  }
 
-    public void setSekretessmarkering(boolean sekretessmarkering) {
-        this.sekretessmarkering = sekretessmarkering;
-    }
+  public void setSekretessmarkering(boolean sekretessmarkering) {
+    this.sekretessmarkering = sekretessmarkering;
+  }
 
-    public boolean isAvliden() {
-        return avliden;
-    }
+  public boolean isAvliden() {
+    return avliden;
+  }
 
-    public void setAvliden(boolean avliden) {
-        this.avliden = avliden;
-    }
+  public void setAvliden(boolean avliden) {
+    this.avliden = avliden;
+  }
 
-    public List<ActionLink> getLinks() {
-        return links;
-    }
+  public List<ActionLink> getLinks() {
+    return links;
+  }
 
-    public void addLink(ActionLink link) {
-        this.links.add(link);
-    }
+  public void addLink(ActionLink link) {
+    this.links.add(link);
+  }
 
-    public void setLinks(List<ActionLink> links) {
-        this.links = links;
-    }
+  public void setLinks(List<ActionLink> links) {
+    this.links = links;
+  }
 
-    public void setTestIntyg(boolean isTestIntyg) {
-        this.testIntyg = isTestIntyg;
-    }
+  public void setTestIntyg(boolean isTestIntyg) {
+    this.testIntyg = isTestIntyg;
+  }
 
-    public boolean isTestIntyg() {
-        return testIntyg;
-    }
+  public boolean isTestIntyg() {
+    return testIntyg;
+  }
 }

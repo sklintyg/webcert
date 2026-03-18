@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,85 +38,89 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 @RunWith(MockitoJUnitRunner.class)
 public class WebcertModuleServiceImplTest {
 
-    @Mock
-    private DiagnosService diagnosService;
+  @Mock private DiagnosService diagnosService;
 
-    @InjectMocks
-    private WebcertModuleServiceImpl service;
+  @InjectMocks private WebcertModuleServiceImpl service;
 
-    @Test
-    public void testValidateDiagnosisCode() {
-        final String codeFragment = "code";
-        final String codeSystem = "codesystem";
-        when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem)).thenReturn(DiagnosResponse.ok(new ArrayList<>(), true));
-        boolean res = service.validateDiagnosisCode(codeFragment, codeSystem);
+  @Test
+  public void testValidateDiagnosisCode() {
+    final String codeFragment = "code";
+    final String codeSystem = "codesystem";
+    when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem))
+        .thenReturn(DiagnosResponse.ok(new ArrayList<>(), true));
+    boolean res = service.validateDiagnosisCode(codeFragment, codeSystem);
 
-        assertTrue(res);
-    }
+    assertTrue(res);
+  }
 
-    @Test
-    public void testValidateDiagnosisCodeFalse() {
-        final String codeFragment = "code";
-        final String codeSystem = "codesystem";
-        when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem)).thenReturn(DiagnosResponse.notFound());
-        boolean res = service.validateDiagnosisCode(codeFragment, codeSystem);
+  @Test
+  public void testValidateDiagnosisCodeFalse() {
+    final String codeFragment = "code";
+    final String codeSystem = "codesystem";
+    when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem))
+        .thenReturn(DiagnosResponse.notFound());
+    boolean res = service.validateDiagnosisCode(codeFragment, codeSystem);
 
-        assertFalse(res);
-    }
+    assertFalse(res);
+  }
 
-    @Test
-    public void testValidateDiagnosisCodeDiagnoskodverk() {
-        final String codeFragment = "code";
-        final Diagnoskodverk codeSystem = Diagnoskodverk.ICD_10_SE;
-        when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem)).thenReturn(DiagnosResponse.ok(new ArrayList<>(), true));
-        boolean res = service.validateDiagnosisCode(codeFragment, codeSystem);
+  @Test
+  public void testValidateDiagnosisCodeDiagnoskodverk() {
+    final String codeFragment = "code";
+    final Diagnoskodverk codeSystem = Diagnoskodverk.ICD_10_SE;
+    when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem))
+        .thenReturn(DiagnosResponse.ok(new ArrayList<>(), true));
+    boolean res = service.validateDiagnosisCode(codeFragment, codeSystem);
 
-        assertTrue(res);
-    }
+    assertTrue(res);
+  }
 
-    @Test
-    public void testValidateDiagnosisCodeDiagnoskodverkFalse() {
-        final String codeFragment = "code";
-        final Diagnoskodverk codeSystem = Diagnoskodverk.ICD_10_SE;
-        when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem)).thenReturn(DiagnosResponse.notFound());
-        boolean res = service.validateDiagnosisCode(codeFragment, codeSystem);
+  @Test
+  public void testValidateDiagnosisCodeDiagnoskodverkFalse() {
+    final String codeFragment = "code";
+    final Diagnoskodverk codeSystem = Diagnoskodverk.ICD_10_SE;
+    when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem))
+        .thenReturn(DiagnosResponse.notFound());
+    boolean res = service.validateDiagnosisCode(codeFragment, codeSystem);
 
-        assertFalse(res);
-    }
+    assertFalse(res);
+  }
 
-    @Test
-    public void testGetDescriptionFromDiagnosKodNull() {
-        final String code = "code";
-        final String codeSystemStr = "codesystem";
-        when(diagnosService.getDiagnosisByCode(code, codeSystemStr)).thenReturn(DiagnosResponse.notFound());
-        String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
+  @Test
+  public void testGetDescriptionFromDiagnosKodNull() {
+    final String code = "code";
+    final String codeSystemStr = "codesystem";
+    when(diagnosService.getDiagnosisByCode(code, codeSystemStr))
+        .thenReturn(DiagnosResponse.notFound());
+    String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
 
-        assertEquals("", res);
-    }
+    assertEquals("", res);
+  }
 
-    @Test
-    public void testGetDescriptionFromDiagnosKod() {
-        final String code = "code";
-        final String codeSystemStr = "codesystem";
-        final String description = "description";
-        Diagnos diagnos = new Diagnos();
-        diagnos.setBeskrivning(description);
+  @Test
+  public void testGetDescriptionFromDiagnosKod() {
+    final String code = "code";
+    final String codeSystemStr = "codesystem";
+    final String description = "description";
+    Diagnos diagnos = new Diagnos();
+    diagnos.setBeskrivning(description);
 
-        when(diagnosService.getDiagnosisByCode(code, codeSystemStr)).thenReturn(DiagnosResponse.ok(Arrays.asList(diagnos), false));
-        String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
+    when(diagnosService.getDiagnosisByCode(code, codeSystemStr))
+        .thenReturn(DiagnosResponse.ok(Arrays.asList(diagnos), false));
+    String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
 
-        assertEquals(description, res);
-    }
+    assertEquals(description, res);
+  }
 
-    @Test
-    public void testGetDescriptionFromDiagnosKodMoreThanOneResult() {
-        final String code = "code";
-        final String codeSystemStr = "codesystem";
+  @Test
+  public void testGetDescriptionFromDiagnosKodMoreThanOneResult() {
+    final String code = "code";
+    final String codeSystemStr = "codesystem";
 
-        when(diagnosService.getDiagnosisByCode(code, codeSystemStr))
-            .thenReturn(DiagnosResponse.ok(Arrays.asList(new Diagnos(), new Diagnos()), false));
-        String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
+    when(diagnosService.getDiagnosisByCode(code, codeSystemStr))
+        .thenReturn(DiagnosResponse.ok(Arrays.asList(new Diagnos(), new Diagnos()), false));
+    String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
 
-        assertEquals("", res);
-    }
+    assertEquals("", res);
+  }
 }

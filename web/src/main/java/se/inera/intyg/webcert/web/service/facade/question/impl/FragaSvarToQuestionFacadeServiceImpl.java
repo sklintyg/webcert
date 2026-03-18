@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,28 +31,31 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 @Service(value = "FragaSvarToQuestionFacadeService")
 public class FragaSvarToQuestionFacadeServiceImpl implements GetQuestionsFacadeService {
 
-    private final FragaSvarService fragaSvarService;
+  private final FragaSvarService fragaSvarService;
 
-    private final FragaSvarToQuestionConverter fragaSvarToQuestionConverter;
+  private final FragaSvarToQuestionConverter fragaSvarToQuestionConverter;
 
-    @Autowired
-    public FragaSvarToQuestionFacadeServiceImpl(FragaSvarService fragaSvarService,
-        FragaSvarToQuestionConverter fragaSvarToQuestionConverter) {
-        this.fragaSvarService = fragaSvarService;
-        this.fragaSvarToQuestionConverter = fragaSvarToQuestionConverter;
-    }
+  @Autowired
+  public FragaSvarToQuestionFacadeServiceImpl(
+      FragaSvarService fragaSvarService,
+      FragaSvarToQuestionConverter fragaSvarToQuestionConverter) {
+    this.fragaSvarService = fragaSvarService;
+    this.fragaSvarToQuestionConverter = fragaSvarToQuestionConverter;
+  }
 
-    @Override
-    public List<Question> getComplementQuestions(String certificateId) {
-        return getQuestions(certificateId).stream()
-            .filter(question -> question.getType() == QuestionType.COMPLEMENT)
-            .collect(Collectors.toList());
-    }
+  @Override
+  public List<Question> getComplementQuestions(String certificateId) {
+    return getQuestions(certificateId).stream()
+        .filter(question -> question.getType() == QuestionType.COMPLEMENT)
+        .collect(Collectors.toList());
+  }
 
-    @Override
-    public List<Question> getQuestions(String certificateId) {
-        return fragaSvarService.getFragaSvar(certificateId).stream()
-            .map(fragaSvarViewElem -> fragaSvarToQuestionConverter.convert(fragaSvarViewElem.getFragaSvar()))
-            .collect(Collectors.toList());
-    }
+  @Override
+  public List<Question> getQuestions(String certificateId) {
+    return fragaSvarService.getFragaSvar(certificateId).stream()
+        .map(
+            fragaSvarViewElem ->
+                fragaSvarToQuestionConverter.convert(fragaSvarViewElem.getFragaSvar()))
+        .collect(Collectors.toList());
+  }
 }

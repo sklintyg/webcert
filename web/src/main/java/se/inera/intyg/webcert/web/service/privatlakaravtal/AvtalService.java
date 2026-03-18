@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,28 +21,18 @@ package se.inera.intyg.webcert.web.service.privatlakaravtal;
 import java.util.Optional;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 public interface AvtalService {
 
-    /**
-     * Returns true if the specified user has approved the latest avtal in the database.
-     */
-    boolean userHasApprovedLatestAvtal(String userId);
+  /** Returns true if the specified user has approved the latest avtal in the database. */
+  boolean userHasApprovedLatestAvtal(String userId);
 
-    /**
-     * Returns the latest avtal stored in the database.
-     */
-    Optional<Avtal> getLatestAvtal();
+  /** Returns the latest avtal stored in the database. */
+  Optional<Avtal> getLatestAvtal();
 
-    /**
-     * Stores approval for the specicfied user for the currently latest avtal.
-     */
-    void approveLatestAvtal(String userId, String personId);
+  /** Stores approval for the specicfied user for the currently latest avtal. */
+  void approveLatestAvtal(String userId, String personId);
 
-    /**
-     * Removes all approvals of terms for the specified user.
-     */
-    void removeApproval(String userId);
+  /** Removes all approvals of terms for the specified user. */
+  void removeApproval(String userId);
 }

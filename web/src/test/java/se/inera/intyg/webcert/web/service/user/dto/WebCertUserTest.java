@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.user.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,95 +35,97 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class WebCertUserTest {
 
-    @Nested
-    class SjfTest {
+  @Nested
+  class SjfTest {
 
-        @Test
-        void shallReturnTrueIfParameterIsNotNullAndSjfIsTrue() {
-            final var integrationParameters = mock(IntegrationParameters.class);
-            final var webCertUser = new WebCertUser();
-            webCertUser.setParameters(integrationParameters);
+    @Test
+    void shallReturnTrueIfParameterIsNotNullAndSjfIsTrue() {
+      final var integrationParameters = mock(IntegrationParameters.class);
+      final var webCertUser = new WebCertUser();
+      webCertUser.setParameters(integrationParameters);
 
-            doReturn(true).when(integrationParameters).isSjf();
-            assertTrue(webCertUser.isSjfActive());
-        }
-
-        @Test
-        void shallReturnFalseIfParameterIsNotNullAndSjfIsFalse() {
-            final var integrationParameters = mock(IntegrationParameters.class);
-            final var webCertUser = new WebCertUser();
-            webCertUser.setParameters(integrationParameters);
-
-            doReturn(false).when(integrationParameters).isSjf();
-            assertFalse(webCertUser.isSjfActive());
-        }
-
-        @Test
-        void shallReturnFalseIfParameterIsNull() {
-            final var webCertUser = new WebCertUser();
-            assertFalse(webCertUser.isSjfActive());
-        }
+      doReturn(true).when(integrationParameters).isSjf();
+      assertTrue(webCertUser.isSjfActive());
     }
 
-    @Nested
-    class IsInactiveUnitTest {
+    @Test
+    void shallReturnFalseIfParameterIsNotNullAndSjfIsFalse() {
+      final var integrationParameters = mock(IntegrationParameters.class);
+      final var webCertUser = new WebCertUser();
+      webCertUser.setParameters(integrationParameters);
 
-        @Test
-        void shallReturnTrueIfParameterIsNotNullAndInactiveUnitTrue() {
-            final var integrationParameters = mock(IntegrationParameters.class);
-            final var webCertUser = new WebCertUser();
-            webCertUser.setParameters(integrationParameters);
-
-            doReturn(true).when(integrationParameters).isInactiveUnit();
-            assertTrue(webCertUser.isUnitInactive());
-        }
-
-        @Test
-        void shallReturnFalseIfParameterIsNotNullAndInactiveUnitIsFalse() {
-            final var integrationParameters = mock(IntegrationParameters.class);
-            final var webCertUser = new WebCertUser();
-            webCertUser.setParameters(integrationParameters);
-
-            doReturn(false).when(integrationParameters).isInactiveUnit();
-            assertFalse(webCertUser.isUnitInactive());
-        }
-
-        @Test
-        void shallReturnFalseIfParameterIsNull() {
-            final var webCertUser = new WebCertUser();
-            assertFalse(webCertUser.isUnitInactive());
-        }
+      doReturn(false).when(integrationParameters).isSjf();
+      assertFalse(webCertUser.isSjfActive());
     }
 
-    @Nested
-    class RelyingPartyRegistrationId {
-
-        @Test
-        void shouldReturnRegistrationIdElegForAuthMethodBankId() {
-            final var webCertUser = new WebCertUser();
-            webCertUser.setAuthenticationMethod(AuthenticationMethod.BANK_ID);
-            assertEquals(AuthConstants.REGISTRATION_ID_ELEG, webCertUser.getRelyingPartyRegistrationId());
-        }
-
-        @Test
-        void shouldReturnRegistrationIdElegForAuthMethodMobiltBankId() {
-            final var webCertUser = new WebCertUser();
-            webCertUser.setAuthenticationMethod(AuthenticationMethod.MOBILT_BANK_ID);
-            assertEquals(AuthConstants.REGISTRATION_ID_ELEG, webCertUser.getRelyingPartyRegistrationId());
-        }
-
-        @Test
-        void shouldReturnRegistrationIdSithsNormalForAuthMethodSiths() {
-            final var webCertUser = new WebCertUser();
-            webCertUser.setAuthenticationMethod(AuthenticationMethod.SITHS);
-            assertEquals(AuthConstants.REGISTRATION_ID_SITHS_NORMAL, webCertUser.getRelyingPartyRegistrationId());
-        }
-
-        @Test
-        void shouldReturnRegistrationIdSithsNormalForAuthMethodNetId() {
-            final var webCertUser = new WebCertUser();
-            webCertUser.setAuthenticationMethod(AuthenticationMethod.NET_ID);
-            assertEquals(AuthConstants.REGISTRATION_ID_SITHS_NORMAL, webCertUser.getRelyingPartyRegistrationId());
-        }
+    @Test
+    void shallReturnFalseIfParameterIsNull() {
+      final var webCertUser = new WebCertUser();
+      assertFalse(webCertUser.isSjfActive());
     }
+  }
+
+  @Nested
+  class IsInactiveUnitTest {
+
+    @Test
+    void shallReturnTrueIfParameterIsNotNullAndInactiveUnitTrue() {
+      final var integrationParameters = mock(IntegrationParameters.class);
+      final var webCertUser = new WebCertUser();
+      webCertUser.setParameters(integrationParameters);
+
+      doReturn(true).when(integrationParameters).isInactiveUnit();
+      assertTrue(webCertUser.isUnitInactive());
+    }
+
+    @Test
+    void shallReturnFalseIfParameterIsNotNullAndInactiveUnitIsFalse() {
+      final var integrationParameters = mock(IntegrationParameters.class);
+      final var webCertUser = new WebCertUser();
+      webCertUser.setParameters(integrationParameters);
+
+      doReturn(false).when(integrationParameters).isInactiveUnit();
+      assertFalse(webCertUser.isUnitInactive());
+    }
+
+    @Test
+    void shallReturnFalseIfParameterIsNull() {
+      final var webCertUser = new WebCertUser();
+      assertFalse(webCertUser.isUnitInactive());
+    }
+  }
+
+  @Nested
+  class RelyingPartyRegistrationId {
+
+    @Test
+    void shouldReturnRegistrationIdElegForAuthMethodBankId() {
+      final var webCertUser = new WebCertUser();
+      webCertUser.setAuthenticationMethod(AuthenticationMethod.BANK_ID);
+      assertEquals(AuthConstants.REGISTRATION_ID_ELEG, webCertUser.getRelyingPartyRegistrationId());
+    }
+
+    @Test
+    void shouldReturnRegistrationIdElegForAuthMethodMobiltBankId() {
+      final var webCertUser = new WebCertUser();
+      webCertUser.setAuthenticationMethod(AuthenticationMethod.MOBILT_BANK_ID);
+      assertEquals(AuthConstants.REGISTRATION_ID_ELEG, webCertUser.getRelyingPartyRegistrationId());
+    }
+
+    @Test
+    void shouldReturnRegistrationIdSithsNormalForAuthMethodSiths() {
+      final var webCertUser = new WebCertUser();
+      webCertUser.setAuthenticationMethod(AuthenticationMethod.SITHS);
+      assertEquals(
+          AuthConstants.REGISTRATION_ID_SITHS_NORMAL, webCertUser.getRelyingPartyRegistrationId());
+    }
+
+    @Test
+    void shouldReturnRegistrationIdSithsNormalForAuthMethodNetId() {
+      final var webCertUser = new WebCertUser();
+      webCertUser.setAuthenticationMethod(AuthenticationMethod.NET_ID);
+      assertEquals(
+          AuthConstants.REGISTRATION_ID_SITHS_NORMAL, webCertUser.getRelyingPartyRegistrationId());
+    }
+  }
 }

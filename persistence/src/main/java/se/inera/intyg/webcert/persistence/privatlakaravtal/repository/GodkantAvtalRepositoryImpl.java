@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,90 +18,102 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.PersistenceContext;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 @Transactional(readOnly = true)
 public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GodkantAvtalRepositoryImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(GodkantAvtalRepositoryImpl.class);
 
-    @PersistenceContext
-    private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
 
-    @Override
-    @Transactional
-    public void approveAvtal(String hsaId, Integer avtalVersion) {
+  @Override
+  @Transactional
+  public void approveAvtal(String hsaId, Integer avtalVersion) {
 
-        if (userHasApprovedAvtal(hsaId, avtalVersion)) {
-            LOG.info("User with hsaId '" + hsaId + "' has already approved privatlakaravtal version '" + avtalVersion + "'");
-            return;
-        }
-
-        GodkantAvtal godkantAvtal = new GodkantAvtal();
-        godkantAvtal.setHsaId(hsaId);
-        godkantAvtal.setAvtalVersion(avtalVersion);
-        godkantAvtal.setGodkandDatum(LocalDateTime.now());
-        entityManager.persist(godkantAvtal);
+    if (userHasApprovedAvtal(hsaId, avtalVersion)) {
+      LOG.info(
+          "User with hsaId '"
+              + hsaId
+              + "' has already approved privatlakaravtal version '"
+              + avtalVersion
+              + "'");
+      return;
     }
 
-    @Override
-    public boolean userHasApprovedAvtal(String hsaId, Integer avtalVersion) {
-        try {
-            GodkantAvtal godkantAvtal = entityManager
-                .createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion",
-                    GodkantAvtal.class)
-                .setParameter("hsaId", hsaId)
-                .setParameter("avtalVersion", avtalVersion)
-                .getSingleResult();
-            return godkantAvtal != null;
-        } catch (NoResultException e) {
-            return false;
-        } catch (NonUniqueResultException e) {
-            // This should never occur if we set up our constraints correctly.
-            return true;
-        }
+    GodkantAvtal godkantAvtal = new GodkantAvtal();
+    godkantAvtal.setHsaId(hsaId);
+    godkantAvtal.setAvtalVersion(avtalVersion);
+    godkantAvtal.setGodkandDatum(LocalDateTime.now());
+    entityManager.persist(godkantAvtal);
+  }
+
+  @Override
+  public boolean userHasApprovedAvtal(String hsaId, Integer avtalVersion) {
+    try {
+      GodkantAvtal godkantAvtal =
+          entityManager
+              .createQuery(
+                  "SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion",
+                  GodkantAvtal.class)
+              .setParameter("hsaId", hsaId)
+              .setParameter("avtalVersion", avtalVersion)
+              .getSingleResult();
+      return godkantAvtal != null;
+    } catch (NoResultException e) {
+      return false;
+    } catch (NonUniqueResultException e) {
+      // This should never occur if we set up our constraints correctly.
+      return true;
     }
+  }
 
-    @Override
-    public void removeUserApprovement(String hsaId, Integer avtalVersion) {
-        try {
-            GodkantAvtal godkantAvtal = entityManager
-                .createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion",
-                    GodkantAvtal.class)
-                .setParameter("hsaId", hsaId)
-                .setParameter("avtalVersion", avtalVersion)
-                .getSingleResult();
+  @Override
+  public void removeUserApprovement(String hsaId, Integer avtalVersion) {
+    try {
+      GodkantAvtal godkantAvtal =
+          entityManager
+              .createQuery(
+                  "SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion",
+                  GodkantAvtal.class)
+              .setParameter("hsaId", hsaId)
+              .setParameter("avtalVersion", avtalVersion)
+              .getSingleResult();
 
-            if (godkantAvtal != null) {
-                entityManager.remove(godkantAvtal);
-            }
-        } catch (NoResultException e) {
-            LOG.warn("Could not remove GodkantAvtal for user with hsaId '" + hsaId + "', avtal version '" + avtalVersion
-                + "'. No approval found.");
-        }
+      if (godkantAvtal != null) {
+        entityManager.remove(godkantAvtal);
+      }
+    } catch (NoResultException e) {
+      LOG.warn(
+          "Could not remove GodkantAvtal for user with hsaId '"
+              + hsaId
+              + "', avtal version '"
+              + avtalVersion
+              + "'. No approval found.");
     }
+  }
 
-    @Override
-    public void removeAllUserApprovments(String hsaId) {
-        List<GodkantAvtal> godkandaAvtal = entityManager
-            .createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId", GodkantAvtal.class)
+  @Override
+  public void removeAllUserApprovments(String hsaId) {
+    List<GodkantAvtal> godkandaAvtal =
+        entityManager
+            .createQuery(
+                "SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId", GodkantAvtal.class)
             .setParameter("hsaId", hsaId)
             .getResultList();
 
-        for (GodkantAvtal godkantAvtal : godkandaAvtal) {
-            entityManager.remove(godkantAvtal);
-        }
+    for (GodkantAvtal godkantAvtal : godkandaAvtal) {
+      entityManager.remove(godkantAvtal);
     }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,63 +36,70 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class WebcertUserDetailsService extends BaseUserDetailsService {
 
-    private final AnvandarPreferenceRepository anvandarMetadataRepository;
-    private final SubscriptionService subscriptionService;
+  private final AnvandarPreferenceRepository anvandarMetadataRepository;
+  private final SubscriptionService subscriptionService;
 
-    public WebCertUser buildFakeUserPrincipal(String hsaId) {
-        return buildUserPrincipal(hsaId, AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF, "fake_signature_provider");
+  public WebCertUser buildFakeUserPrincipal(String hsaId) {
+    return buildUserPrincipal(
+        hsaId, AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF, "fake_signature_provider");
+  }
+
+  public WebCertUser buildUserPrincipal(
+      String employeeHsaId, String authenticationScheme, String identityProviderForSign) {
+    final var webCertUser = buildUserPrincipal(employeeHsaId, authenticationScheme);
+    webCertUser.setIdentityProviderForSign(identityProviderForSign);
+    return webCertUser;
+  }
+
+  @Override
+  public WebCertUser buildUserPrincipal(String employeeHsaId, String authenticationScheme) {
+    final var user = super.buildUserPrincipal(employeeHsaId, authenticationScheme);
+    final var webCertUser = new WebCertUser(user);
+    webCertUser.setAnvandarPreference(
+        anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
+    subscriptionService.checkSubscriptions(webCertUser);
+    return webCertUser;
+  }
+
+  /**
+   * Makes sure that the default "fallback" role of Webcert is {@link
+   * AuthoritiesConstants#ROLE_ADMIN}.
+   *
+   * @return AuthoritiesConstants.ROLE_ADMIN as String.
+   */
+  @Override
+  protected String getDefaultRole() {
+    return AuthoritiesConstants.ROLE_ADMIN;
+  }
+
+  /**
+   * Webcert overrides the default (i.e. fallback) behaviour from the base class which specifies a
+   * pre-selected Vårdenhet during the authorization process:
+   *
+   * <p>For users with origin {@link UserOriginType#NORMAL} users will be redirected to the
+   * Vårdenhet selection page if they have more than one (1) possible vårdenhet they have the
+   * requisite medarbetaruppdrag to select. (INTYG-3211)
+   *
+   * @param intygUser User principal.
+   */
+  @Override
+  protected void decorateIntygUserWithDefaultVardenhet(IntygUser intygUser) {
+    if (!UserOriginType.NORMAL.name().equals(intygUser.getOrigin())) {
+      super.decorateIntygUserWithDefaultVardenhet(intygUser);
+      return;
     }
 
-    public WebCertUser buildUserPrincipal(String employeeHsaId, String authenticationScheme, String identityProviderForSign) {
-        final var webCertUser = buildUserPrincipal(employeeHsaId, authenticationScheme);
-        webCertUser.setIdentityProviderForSign(identityProviderForSign);
-        return webCertUser;
+    final var nrUnitsToSelectFrom =
+        intygUser.getVardgivare().stream().mapToLong(vg -> vg.getVardenheter().size()).sum();
+
+    if (nrUnitsToSelectFrom == 1) {
+      super.decorateIntygUserWithDefaultVardenhet(intygUser);
     }
+  }
 
-    @Override
-    public WebCertUser buildUserPrincipal(String employeeHsaId, String authenticationScheme) {
-        final var user = super.buildUserPrincipal(employeeHsaId, authenticationScheme);
-        final var  webCertUser = new WebCertUser(user);
-        webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
-        subscriptionService.checkSubscriptions(webCertUser);
-        return webCertUser;
-    }
-
-    /**
-     * Makes sure that the default "fallback" role of Webcert is {@link AuthoritiesConstants#ROLE_ADMIN}.
-     *
-     * @return AuthoritiesConstants.ROLE_ADMIN as String.
-     */
-    @Override
-    protected String getDefaultRole() {
-        return AuthoritiesConstants.ROLE_ADMIN;
-    }
-
-    /**
-     * Webcert overrides the default (i.e. fallback) behaviour from the base class which specifies a pre-selected
-     * Vårdenhet during the authorization process:
-     * <p>
-     * For users with origin {@link UserOriginType#NORMAL} users will be redirected to the Vårdenhet selection page if
-     * they have more than one (1) possible vårdenhet they have the requisite medarbetaruppdrag to select. (INTYG-3211)
-     *
-     * @param intygUser User principal.
-     */
-    @Override
-    protected void decorateIntygUserWithDefaultVardenhet(IntygUser intygUser) {
-        if (!UserOriginType.NORMAL.name().equals(intygUser.getOrigin())) {
-            super.decorateIntygUserWithDefaultVardenhet(intygUser);
-            return;
-        }
-
-        final var  nrUnitsToSelectFrom = intygUser.getVardgivare().stream().mapToLong(vg -> vg.getVardenheter().size()).sum();
-
-        if (nrUnitsToSelectFrom == 1) {
-            super.decorateIntygUserWithDefaultVardenhet(intygUser);
-        }
-    }
-
-    @Override
-    protected HttpServletRequest getCurrentRequest() {
-        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-    }
+  @Override
+  protected HttpServletRequest getCurrentRequest() {
+    return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+        .getRequest();
+  }
 }

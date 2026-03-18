@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,26 +30,33 @@ import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 
 @Component
-public class CreateRenewalCopyUtkastBuilder extends AbstractUtkastBuilder<CreateRenewalCopyRequest> {
+public class CreateRenewalCopyUtkastBuilder
+    extends AbstractUtkastBuilder<CreateRenewalCopyRequest> {
 
-    @Override
-    public Relation createRelation(CreateRenewalCopyRequest copyRequest) {
-        return createRelation(copyRequest, RelationKod.FRLANG);
-    }
+  @Override
+  public Relation createRelation(CreateRenewalCopyRequest copyRequest) {
+    return createRelation(copyRequest, RelationKod.FRLANG);
+  }
 
-    private Relation createRelation(CreateRenewalCopyRequest request, RelationKod relationKod) {
-        Relation relation = new Relation();
-        relation.setRelationIntygsId(request.getOriginalIntygId());
-        relation.setRelationKod(relationKod);
-        return relation;
-    }
+  private Relation createRelation(CreateRenewalCopyRequest request, RelationKod relationKod) {
+    Relation relation = new Relation();
+    relation.setRelationIntygsId(request.getOriginalIntygId());
+    relation.setRelationKod(relationKod);
+    return relation;
+  }
 
-    @Override
-    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
-        Person person, Relation relation, String newDraftCopyId) throws ModuleException {
-        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
+  @Override
+  protected String getInternalModel(
+      Utlatande template,
+      ModuleApi moduleApi,
+      AbstractCreateCopyRequest copyRequest,
+      Person person,
+      Relation relation,
+      String newDraftCopyId)
+      throws ModuleException {
+    CreateDraftCopyHolder draftCopyHolder =
+        createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
 
-        return moduleApi.createRenewalFromTemplate(draftCopyHolder, template);
-    }
-
+    return moduleApi.createRenewalFromTemplate(draftCopyHolder, template);
+  }
 }

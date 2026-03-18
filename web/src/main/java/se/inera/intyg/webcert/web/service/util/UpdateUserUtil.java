@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,22 +24,20 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public final class UpdateUserUtil {
 
-    private UpdateUserUtil() {
-    }
+  private UpdateUserUtil() {}
 
-    public static VardpersonReferens createVardpersonFromWebCertUser(WebCertUser user) {
-        VardpersonReferens vardPerson = new VardpersonReferens();
-        vardPerson.setNamn(user.getNamn());
-        vardPerson.setHsaId(user.getHsaId());
+  public static VardpersonReferens createVardpersonFromWebCertUser(WebCertUser user) {
+    VardpersonReferens vardPerson = new VardpersonReferens();
+    vardPerson.setNamn(user.getNamn());
+    vardPerson.setHsaId(user.getHsaId());
 
-        return vardPerson;
-    }
+    return vardPerson;
+  }
 
-    public static VardpersonReferens createVardpersonFromHosPerson(HoSPersonal hosPerson) {
-        VardpersonReferens vardPerson = new VardpersonReferens();
-        vardPerson.setNamn(hosPerson.getFullstandigtNamn());
-        vardPerson.setHsaId(hosPerson.getPersonId());
-        return vardPerson;
-    }
-
+  public static VardpersonReferens createVardpersonFromHosPerson(HoSPersonal hosPerson) {
+    VardpersonReferens vardPerson = new VardpersonReferens();
+    vardPerson.setNamn(hosPerson.getFullstandigtNamn());
+    vardPerson.setHsaId(hosPerson.getPersonId());
+    return vardPerson;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -73,165 +73,223 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RunWith(MockitoJUnitRunner.class)
 public class XmlUnderskriftServiceImplTest {
 
-    private static final String INTYG_ID = "intyg-1";
-    private static final String INTYG_TYP = "luse";
-    private static final String ENHET_ID = "enhet-1";
-    private static final String PERSON_ID = "19121212-1212";
-    private static final String TICKET_ID = "ticket-1";
-    private static final Long VERSION = 1L;
-    private static final String USER_IP_ADDRESS = "127.0.0.1";
+  private static final String INTYG_ID = "intyg-1";
+  private static final String INTYG_TYP = "luse";
+  private static final String ENHET_ID = "enhet-1";
+  private static final String PERSON_ID = "19121212-1212";
+  private static final String TICKET_ID = "ticket-1";
+  private static final Long VERSION = 1L;
+  private static final String USER_IP_ADDRESS = "127.0.0.1";
 
-    private static final ValidationResponse okValidationResult = ValidationResponse.ValidationResponseBuilder.aValidationResponse()
-        .withSignatureValid(ValidationResult.OK).withReferencesValid(ValidationResult.OK).build();
+  private static final ValidationResponse okValidationResult =
+      ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+          .withSignatureValid(ValidationResult.OK)
+          .withReferencesValid(ValidationResult.OK)
+          .build();
 
-    private static final ValidationResponse failedValidationResult = ValidationResponse.ValidationResponseBuilder.aValidationResponse()
-        .withSignatureValid(ValidationResult.INVALID).withReferencesValid(ValidationResult.NOT_CHCEKED).build();
-    private static final byte[] SIGNATUR_BYTES = "signatur".getBytes(StandardCharsets.UTF_8);
+  private static final ValidationResponse failedValidationResult =
+      ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+          .withSignatureValid(ValidationResult.INVALID)
+          .withReferencesValid(ValidationResult.NOT_CHCEKED)
+          .build();
+  private static final byte[] SIGNATUR_BYTES = "signatur".getBytes(StandardCharsets.UTF_8);
 
-    @Mock
-    private UtkastModelToXMLConverter utkastModelToXMLConverter;
+  @Mock private UtkastModelToXMLConverter utkastModelToXMLConverter;
 
-    @Mock
-    private PrepareSignatureService prepareSignatureService;
+  @Mock private PrepareSignatureService prepareSignatureService;
 
-    @Mock
-    private MonitoringLogService monitoringLogService;
+  @Mock private MonitoringLogService monitoringLogService;
 
-    @Mock
-    private RedisTicketTracker redisTicketTracker;
+  @Mock private RedisTicketTracker redisTicketTracker;
 
-    @Mock
-    private XMLDSigServiceImpl xmldSigService;
+  @Mock private XMLDSigServiceImpl xmldSigService;
 
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
+  @Mock private IntygModuleRegistry moduleRegistry;
 
-    @Mock
-    private UtkastRepository utkastRepository;
-    @Mock
-    private SignCertificateService signCertificateService;
+  @Mock private UtkastRepository utkastRepository;
+  @Mock private SignCertificateService signCertificateService;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @InjectMocks
-    private XmlUnderskriftServiceImpl testee;
+  @InjectMocks private XmlUnderskriftServiceImpl testee;
 
-    @Before
-    public void init() throws ModuleNotFoundException, ModuleException {
-        ModuleApi moduleApi = mock(ModuleApi.class);
-        when(moduleApi.updateAfterSigning(anyString(), anyString())).thenReturn("json");
+  @Before
+  public void init() throws ModuleNotFoundException, ModuleException {
+    ModuleApi moduleApi = mock(ModuleApi.class);
+    when(moduleApi.updateAfterSigning(anyString(), anyString())).thenReturn("json");
 
-        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
-    }
+    when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
+  }
 
-    @Test
-    public void testSigneringsBiljettMedDigest() {
-        when(prepareSignatureService.prepareSignature(anyString(), anyString(), anyString())).thenReturn(buildIntygXMLSignature());
+  @Test
+  public void testSigneringsBiljettMedDigest() {
+    when(prepareSignatureService.prepareSignature(anyString(), anyString(), anyString()))
+        .thenReturn(buildIntygXMLSignature());
 
-        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, Optional.of("json"),
+    SignaturBiljett signaturBiljett =
+        testee.skapaSigneringsBiljettMedDigest(
+            INTYG_ID,
+            INTYG_TYP,
+            VERSION,
+            Optional.of("json"),
             SignMethod.FAKE,
-            TICKET_ID, USER_IP_ADDRESS, "<xml/>");
-        assertNotNull(signaturBiljett);
-        verify(redisTicketTracker, times(1)).trackBiljett(any(SignaturBiljett.class));
-    }
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            "<xml/>");
+    assertNotNull(signaturBiljett);
+    verify(redisTicketTracker, times(1)).trackBiljett(any(SignaturBiljett.class));
+  }
 
-    @Test
-    public void testFinalizeSignatureWithValidSignature() {
-        when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
-        when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-        when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
-            .thenReturn(new TransformAndDigestResponse(null,
-                Base64.getEncoder().encode(
-                    UnderskriftTestUtil.buildIntygXMLSignature().getSignatureType().getSignedInfo().getReference().get(0)
-                        .getDigestValue())));
-        when(utkastRepository.save(any(Utkast.class)))
-            .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED, "model", createVardperson(),
-                ENHET_ID, PERSON_ID));
-        when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
-            .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
+  @Test
+  public void testFinalizeSignatureWithValidSignature() {
+    when(xmldSigService.buildKeyInfoForCertificate(anyString()))
+        .thenReturn(new ObjectFactory().createKeyInfoType());
+    when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
+    when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
+    when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
+        .thenReturn(
+            new TransformAndDigestResponse(
+                null,
+                Base64.getEncoder()
+                    .encode(
+                        UnderskriftTestUtil.buildIntygXMLSignature()
+                            .getSignatureType()
+                            .getSignedInfo()
+                            .getReference()
+                            .get(0)
+                            .getDigestValue())));
+    when(utkastRepository.save(any(Utkast.class)))
+        .thenReturn(
+            createUtkast(
+                INTYG_ID,
+                2L,
+                INTYG_TYP,
+                UtkastStatus.SIGNED,
+                "model",
+                createVardperson(),
+                ENHET_ID,
+                PERSON_ID));
+    when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
+        .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
 
-        WebCertUser user = mock(WebCertUser.class);
-        when(user.getAuthenticationScheme()).thenReturn("scheme");
-        when(user.getHsaId()).thenReturn("user-1");
-        SignaturBiljett signaturBiljett = testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
+    WebCertUser user = mock(WebCertUser.class);
+    when(user.getAuthenticationScheme()).thenReturn("scheme");
+    when(user.getHsaId()).thenReturn("user-1");
+    SignaturBiljett signaturBiljett =
+        testee.finalizeSignature(
+            createSignaturBiljett(SignaturStatus.BEARBETAR),
             "signatur".getBytes(Charset.forName("UTF-8")),
-            "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
-                ENHET_ID, PERSON_ID),
+            "certifikat",
+            createUtkast(
+                INTYG_ID,
+                1L,
+                INTYG_TYP,
+                UtkastStatus.DRAFT_COMPLETE,
+                "model",
+                createVardperson(),
+                ENHET_ID,
+                PERSON_ID),
             user);
-        assertNotNull(signaturBiljett);
-        verify(monitoringLogService, times(1)).logIntygSigned(anyString(), anyString(), eq("user-1"), eq("scheme"),
-            ArgumentMatchers.isNull());
-        verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.SIGNERAD));
-        verify(intygService, times(1)).storeIntyg(any(Utkast.class));
-    }
+    assertNotNull(signaturBiljett);
+    verify(monitoringLogService, times(1))
+        .logIntygSigned(
+            anyString(), anyString(), eq("user-1"), eq("scheme"), ArgumentMatchers.isNull());
+    verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.SIGNERAD));
+    verify(intygService, times(1)).storeIntyg(any(Utkast.class));
+  }
 
-    @Test
-    public void testFinalizeSignatureWithValidSignatureForCs() {
-        final var certificate = new Certificate();
-        final var ticket = createSignaturBiljett(SignaturStatus.BEARBETAR);
-        final var expectedResponse = FinalizedCertificateSignature.builder()
+  @Test
+  public void testFinalizeSignatureWithValidSignatureForCs() {
+    final var certificate = new Certificate();
+    final var ticket = createSignaturBiljett(SignaturStatus.BEARBETAR);
+    final var expectedResponse =
+        FinalizedCertificateSignature.builder()
             .certificate(certificate)
             .signaturBiljett(ticket)
             .build();
 
-        when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
-        when(signCertificateService.sign(eq(ticket.getIntygsId()), anyString(), eq(ticket.getVersion()))).thenReturn(certificate);
-        when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
-            .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
+    when(xmldSigService.buildKeyInfoForCertificate(anyString()))
+        .thenReturn(new ObjectFactory().createKeyInfoType());
+    when(signCertificateService.sign(
+            eq(ticket.getIntygsId()), anyString(), eq(ticket.getVersion())))
+        .thenReturn(certificate);
+    when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
+        .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
 
-        final var actualResult = testee.finalizeSignatureForCS(
-            ticket,
-            SIGNATUR_BYTES,
-            "certifikat"
-        );
-        assertEquals(expectedResponse, actualResult);
-        verify(redisTicketTracker, times(1)).updateStatus(ticket.getTicketId(), SignaturStatus.SIGNERAD);
+    final var actualResult = testee.finalizeSignatureForCS(ticket, SIGNATUR_BYTES, "certifikat");
+    assertEquals(expectedResponse, actualResult);
+    verify(redisTicketTracker, times(1))
+        .updateStatus(ticket.getTicketId(), SignaturStatus.SIGNERAD);
+  }
+
+  @Test(expected = WebCertServiceException.class)
+  public void testFinalizeSignatureFailsWithDifferentVersions() {
+    when(xmldSigService.buildKeyInfoForCertificate(anyString()))
+        .thenReturn(new ObjectFactory().createKeyInfoType());
+    when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
+    when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
+    when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
+        .thenReturn(
+            new TransformAndDigestResponse(
+                null,
+                Base64.getEncoder()
+                    .encode(
+                        UnderskriftTestUtil.buildIntygXMLSignature()
+                            .getSignatureType()
+                            .getSignedInfo()
+                            .getReference()
+                            .get(0)
+                            .getDigestValue())));
+
+    try {
+      testee.finalizeSignature(
+          createSignaturBiljett(SignaturStatus.BEARBETAR),
+          "signatur".getBytes(Charset.forName("UTF-8")),
+          "certifikat",
+          createUtkast(
+              INTYG_ID,
+              1111L,
+              INTYG_TYP,
+              UtkastStatus.DRAFT_COMPLETE,
+              "model",
+              createVardperson(),
+              ENHET_ID,
+              PERSON_ID),
+          buildUser());
+    } finally {
+      verifyNoInteractions(monitoringLogService);
+      verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
+      verify(intygService, times(0)).storeIntyg(any(Utkast.class));
     }
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testFinalizeSignatureFailsWithDifferentVersions() {
-        when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
-        when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-        when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
-            .thenReturn(new TransformAndDigestResponse(null,
-                Base64.getEncoder().encode(
-                    UnderskriftTestUtil.buildIntygXMLSignature().getSignatureType().getSignedInfo().getReference().get(0)
-                        .getDigestValue())));
+  private WebCertUser buildUser() {
+    return new WebCertUser();
+  }
 
-        try {
-            testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
-                "signatur".getBytes(Charset.forName("UTF-8")),
-                "certifikat", createUtkast(INTYG_ID, 1111L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
-                    ENHET_ID, PERSON_ID),
-                buildUser());
-        } finally {
-            verifyNoInteractions(monitoringLogService);
-            verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
-            verify(intygService, times(0)).storeIntyg(any(Utkast.class));
-        }
+  @Test(expected = WebCertServiceException.class)
+  public void testFinalizeSignatureFailsWithDifferentIntygsId() {
+    when(xmldSigService.buildKeyInfoForCertificate(anyString()))
+        .thenReturn(new ObjectFactory().createKeyInfoType());
+    try {
+      testee.finalizeSignature(
+          createSignaturBiljett(SignaturStatus.BEARBETAR),
+          "signatur".getBytes(Charset.forName("UTF-8")),
+          "certifikat",
+          createUtkast(
+              INTYG_ID + "-difference",
+              1L,
+              INTYG_TYP,
+              UtkastStatus.DRAFT_COMPLETE,
+              "model",
+              createVardperson(),
+              ENHET_ID,
+              PERSON_ID),
+          buildUser());
+    } finally {
+      verifyNoInteractions(monitoringLogService);
+      verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
+      verify(intygService, times(0)).storeIntyg(any(Utkast.class));
     }
-
-    private WebCertUser buildUser() {
-        return new WebCertUser();
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testFinalizeSignatureFailsWithDifferentIntygsId() {
-        when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
-        try {
-            testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
-                "signatur".getBytes(Charset.forName("UTF-8")),
-                "certifikat",
-                createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
-                    ENHET_ID, PERSON_ID),
-                buildUser());
-        } finally {
-            verifyNoInteractions(monitoringLogService);
-            verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
-            verify(intygService, times(0)).storeIntyg(any(Utkast.class));
-        }
-    }
+  }
 }

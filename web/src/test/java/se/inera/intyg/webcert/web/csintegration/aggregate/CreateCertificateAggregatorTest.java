@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,47 +34,42 @@ import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateAggregatorTest {
 
-    private static final String ORIGINAL_PATIENT_ID = "191212121212";
-    private static final String TYPE = "TYPE";
-    private static final String ID_FROM_CS = "ID_FROM_CS";
-    private static final String ID_FROM_WC = "ID_FROM_WC";
+  private static final String ORIGINAL_PATIENT_ID = "191212121212";
+  private static final String TYPE = "TYPE";
+  private static final String ID_FROM_CS = "ID_FROM_CS";
+  private static final String ID_FROM_WC = "ID_FROM_WC";
 
-    CreateCertificateFacadeService createCertificateFromWC;
-    CreateCertificateFacadeService createCertificateFromCS;
-    CreateCertificateFacadeService aggregator;
+  CreateCertificateFacadeService createCertificateFromWC;
+  CreateCertificateFacadeService createCertificateFromCS;
+  CreateCertificateFacadeService aggregator;
 
-    @BeforeEach
-    void setup() {
-        createCertificateFromWC = mock(CreateCertificateFacadeService.class);
-        createCertificateFromCS = mock(CreateCertificateFacadeService.class);
+  @BeforeEach
+  void setup() {
+    createCertificateFromWC = mock(CreateCertificateFacadeService.class);
+    createCertificateFromCS = mock(CreateCertificateFacadeService.class);
 
-        aggregator = new CreateCertificateAggregator(
-            createCertificateFromWC,
-            createCertificateFromCS
-        );
-    }
+    aggregator = new CreateCertificateAggregator(createCertificateFromWC, createCertificateFromCS);
+  }
 
-    @Test
-    void shouldReturnCertificateIdFromCSIfExists() throws CreateCertificateException {
-        when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
-            .thenReturn(ID_FROM_CS);
+  @Test
+  void shouldReturnCertificateIdFromCSIfExists() throws CreateCertificateException {
+    when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID)).thenReturn(ID_FROM_CS);
 
-        final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
-        verify(createCertificateFromCS, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
+    final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
+    verify(createCertificateFromCS, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
 
-        assertEquals(ID_FROM_CS, response);
-    }
+    assertEquals(ID_FROM_CS, response);
+  }
 
-    @Test
-    void shouldReturnCertificateIdFromWCIfCertificateDoesNotExistInCS() throws CreateCertificateException {
-        when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
-            .thenReturn(null);
-        when(createCertificateFromWC.create(TYPE, ORIGINAL_PATIENT_ID))
-            .thenReturn(ID_FROM_WC);
+  @Test
+  void shouldReturnCertificateIdFromWCIfCertificateDoesNotExistInCS()
+      throws CreateCertificateException {
+    when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID)).thenReturn(null);
+    when(createCertificateFromWC.create(TYPE, ORIGINAL_PATIENT_ID)).thenReturn(ID_FROM_WC);
 
-        final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
-        verify(createCertificateFromCS, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
+    final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
+    verify(createCertificateFromCS, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
 
-        assertEquals(ID_FROM_WC, response);
-    }
+    assertEquals(ID_FROM_WC, response);
+  }
 }

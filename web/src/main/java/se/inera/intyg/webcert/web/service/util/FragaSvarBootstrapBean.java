@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,38 +33,37 @@ import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarReposito
 
 public class FragaSvarBootstrapBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FragaSvarBootstrapBean.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FragaSvarBootstrapBean.class);
 
-    @Autowired
-    private FragaSvarRepository fragaSvarRepository;
+  @Autowired private FragaSvarRepository fragaSvarRepository;
 
-    @PostConstruct
-    public void initData() {
+  @PostConstruct
+  public void initData() {
 
-        List<Resource> files = getResourceListing("bootstrap-fragasvar/*.json");
-        for (Resource res : files) {
-            LOG.debug("Loading resource " + res.getFilename());
-            addFragaSvar(res);
-        }
+    List<Resource> files = getResourceListing("bootstrap-fragasvar/*.json");
+    for (Resource res : files) {
+      LOG.debug("Loading resource " + res.getFilename());
+      addFragaSvar(res);
     }
+  }
 
-    private void addFragaSvar(Resource res) {
+  private void addFragaSvar(Resource res) {
 
-        try {
-            FragaSvar fragaSvar = new CustomObjectMapper().readValue(res.getInputStream(), FragaSvar.class);
-            fragaSvarRepository.save(fragaSvar);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+    try {
+      FragaSvar fragaSvar =
+          new CustomObjectMapper().readValue(res.getInputStream(), FragaSvar.class);
+      fragaSvarRepository.save(fragaSvar);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    private List<Resource> getResourceListing(String classpathResourcePath) {
-        try {
-            PathMatchingResourcePatternResolver r = new PathMatchingResourcePatternResolver();
-            return Arrays.asList(r.getResources(classpathResourcePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+  private List<Resource> getResourceListing(String classpathResourcePath) {
+    try {
+      PathMatchingResourcePatternResolver r = new PathMatchingResourcePatternResolver();
+      return Arrays.asList(r.getResources(classpathResourcePath));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 }

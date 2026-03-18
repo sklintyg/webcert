@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,47 +28,44 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "text",
-    "uri"
-})
+@JsonPropertyOrder({"text", "uri"})
 public class Referen {
 
-    @JsonProperty("text")
-    private String text;
-    @JsonProperty("uri")
-    private String uri;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("text")
+  private String text;
 
-    @JsonProperty("text")
-    public String getText() {
-        return text;
-    }
+  @JsonProperty("uri")
+  private String uri;
 
-    @JsonProperty("text")
-    public void setText(String text) {
-        this.text = text;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("uri")
-    public String getUri() {
-        return uri;
-    }
+  @JsonProperty("text")
+  public String getText() {
+    return text;
+  }
 
-    @JsonProperty("uri")
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
+  @JsonProperty("text")
+  public void setText(String text) {
+    this.text = text;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("uri")
+  public String getUri() {
+    return uri;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("uri")
+  public void setUri(String uri) {
+    this.uri = uri;
+  }
 
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

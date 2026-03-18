@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,57 +41,59 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 @ExtendWith(MockitoExtension.class)
 public class SendCertificateFacadeServiceImplTest {
 
-    @Mock
-    private IntygService intygService;
-    @Mock
-    private CertificateReceiverService certificateReceiverService;
+  @Mock private IntygService intygService;
+  @Mock private CertificateReceiverService certificateReceiverService;
 
-    @InjectMocks
-    private SendCertificateFacadeServiceImpl sendCertificateFacadeService;
+  @InjectMocks private SendCertificateFacadeServiceImpl sendCertificateFacadeService;
 
-    private final static String CERTIFICATE_ID = "certificateId";
-    private final static String CERTIFICATE_TYPE = "lisjp";
-    private final static String MAIN_RECEIVER_ID = "FKASSA";
-    private final static String ORDINARY_RECEIVER_ID = "RECEIVER";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "lisjp";
+  private static final String MAIN_RECEIVER_ID = "FKASSA";
+  private static final String ORDINARY_RECEIVER_ID = "RECEIVER";
 
-    @BeforeEach
-    void setup() {
-        doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, "certificateTypeVersion"))
-            .when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
-        when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), eq(MAIN_RECEIVER_ID), eq(false)))
-            .thenReturn(IntygServiceResult.OK);
-    }
+  @BeforeEach
+  void setup() {
+    doReturn(new IntygTypeInfo(CERTIFICATE_ID, CERTIFICATE_TYPE, "certificateTypeVersion"))
+        .when(intygService)
+        .getIntygTypeInfo(CERTIFICATE_ID);
+    when(intygService.sendIntyg(
+            eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), eq(MAIN_RECEIVER_ID), eq(false)))
+        .thenReturn(IntygServiceResult.OK);
+  }
 
-    @Test
-    void shallSendCertificate() {
-        List<IntygReceiver> receivers = new ArrayList<>();
-        IntygReceiver receiver = new IntygReceiver();
-        receiver.setId(MAIN_RECEIVER_ID);
-        receiver.setLocked(true);
-        receivers.add(receiver);
+  @Test
+  void shallSendCertificate() {
+    List<IntygReceiver> receivers = new ArrayList<>();
+    IntygReceiver receiver = new IntygReceiver();
+    receiver.setId(MAIN_RECEIVER_ID);
+    receiver.setLocked(true);
+    receivers.add(receiver);
 
-        when(certificateReceiverService.listPossibleReceivers(eq(CERTIFICATE_TYPE))).thenReturn(receivers);
+    when(certificateReceiverService.listPossibleReceivers(eq(CERTIFICATE_TYPE)))
+        .thenReturn(receivers);
 
-        sendCertificateFacadeService.sendCertificate(CERTIFICATE_ID);
-        verify(intygService).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, MAIN_RECEIVER_ID, false);
-    }
+    sendCertificateFacadeService.sendCertificate(CERTIFICATE_ID);
+    verify(intygService).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, MAIN_RECEIVER_ID, false);
+  }
 
-    @Test
-    void onlySendsCertificateToMainReceivers() {
-        List<IntygReceiver> receivers = new ArrayList<>();
-        IntygReceiver mainReceiver = new IntygReceiver();
-        mainReceiver.setId(MAIN_RECEIVER_ID);
-        mainReceiver.setLocked(true);
-        receivers.add(mainReceiver);
-        IntygReceiver receiver = new IntygReceiver();
-        receiver.setId(ORDINARY_RECEIVER_ID);
-        receiver.setLocked(false);
-        receivers.add(receiver);
+  @Test
+  void onlySendsCertificateToMainReceivers() {
+    List<IntygReceiver> receivers = new ArrayList<>();
+    IntygReceiver mainReceiver = new IntygReceiver();
+    mainReceiver.setId(MAIN_RECEIVER_ID);
+    mainReceiver.setLocked(true);
+    receivers.add(mainReceiver);
+    IntygReceiver receiver = new IntygReceiver();
+    receiver.setId(ORDINARY_RECEIVER_ID);
+    receiver.setLocked(false);
+    receivers.add(receiver);
 
-        when(certificateReceiverService.listPossibleReceivers(eq(CERTIFICATE_TYPE))).thenReturn(receivers);
+    when(certificateReceiverService.listPossibleReceivers(eq(CERTIFICATE_TYPE)))
+        .thenReturn(receivers);
 
-        sendCertificateFacadeService.sendCertificate(CERTIFICATE_ID);
-        verify(intygService).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, MAIN_RECEIVER_ID, false);
-        verify(intygService, never()).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, ORDINARY_RECEIVER_ID, false);
-    }
+    sendCertificateFacadeService.sendCertificate(CERTIFICATE_ID);
+    verify(intygService).sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, MAIN_RECEIVER_ID, false);
+    verify(intygService, never())
+        .sendIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE, ORDINARY_RECEIVER_ID, false);
+  }
 }

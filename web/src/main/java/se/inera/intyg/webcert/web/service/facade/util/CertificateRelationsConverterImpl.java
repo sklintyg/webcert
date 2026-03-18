@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,101 +37,112 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 @Component
 public class CertificateRelationsConverterImpl implements CertificateRelationsConverter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CertificateRelationsConverterImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(CertificateRelationsConverterImpl.class);
 
-    private final CertificateRelationService certificateRelationService;
+  private final CertificateRelationService certificateRelationService;
 
-    private final CertificateRelationsParentHelper certificateRelationsParentHelper;
+  private final CertificateRelationsParentHelper certificateRelationsParentHelper;
 
-    @Autowired
-    public CertificateRelationsConverterImpl(CertificateRelationService certificateRelationService,
-        CertificateRelationsParentHelper certificateRelationsParentHelper) {
-        this.certificateRelationService = certificateRelationService;
-        this.certificateRelationsParentHelper = certificateRelationsParentHelper;
+  @Autowired
+  public CertificateRelationsConverterImpl(
+      CertificateRelationService certificateRelationService,
+      CertificateRelationsParentHelper certificateRelationsParentHelper) {
+    this.certificateRelationService = certificateRelationService;
+    this.certificateRelationsParentHelper = certificateRelationsParentHelper;
+  }
+
+  @Override
+  public CertificateRelations convert(String certificateId) {
+    LOG.debug("Retrieving relations for certificate");
+    final var relations = certificateRelationService.getRelations(certificateId);
+
+    if (relations.getParent() == null) {
+      relations.setParent(certificateRelationsParentHelper.getParentFromITIfExists(certificateId));
     }
 
-    @Override
-    public CertificateRelations convert(String certificateId) {
-        LOG.debug("Retrieving relations for certificate");
-        final var relations = certificateRelationService.getRelations(certificateId);
+    return convert(relations);
+  }
 
-        if (relations.getParent() == null) {
-            relations.setParent(
-                certificateRelationsParentHelper.getParentFromITIfExists(certificateId)
-            );
-        }
+  @Override
+  public CertificateRelations convert(Relations relations) {
+    LOG.debug("Converting relations for certificate");
+    return CertificateRelations.builder()
+        .parent(getRelation(relations.getParent()))
+        .children(getChildRelations(relations.getLatestChildRelations()))
+        .build();
+  }
 
-        return convert(relations);
+  private CertificateRelation[] getChildRelations(
+      Relations.FrontendRelations latestChildRelations) {
+    final List<CertificateRelation> childRelations = new ArrayList<>();
+
+    addRelationToListIfExists(
+        childRelations,
+        latestChildRelations.getReplacedByIntyg(),
+        CertificateRelationType.REPLACED);
+    addRelationToListIfExists(
+        childRelations,
+        latestChildRelations.getReplacedByUtkast(),
+        CertificateRelationType.REPLACED);
+    addRelationToListIfExists(
+        childRelations,
+        latestChildRelations.getComplementedByIntyg(),
+        CertificateRelationType.COMPLEMENTED);
+    addRelationToListIfExists(
+        childRelations,
+        latestChildRelations.getComplementedByUtkast(),
+        CertificateRelationType.COMPLEMENTED);
+    addRelationToListIfExists(
+        childRelations, latestChildRelations.getUtkastCopy(), CertificateRelationType.COPIED);
+
+    return childRelations.toArray(new CertificateRelation[0]);
+  }
+
+  private void addRelationToListIfExists(
+      List<CertificateRelation> childRelations,
+      WebcertCertificateRelation relation,
+      CertificateRelationType relationType) {
+    final var childRelation = getRelation(relation, relationType);
+
+    if (childRelation != null) {
+      childRelations.add(childRelation);
+    }
+  }
+
+  private CertificateRelation getRelation(WebcertCertificateRelation relation) {
+    if (relation == null) {
+      return null;
+    }
+    return getRelation(relation, getType(relation.getRelationKod()));
+  }
+
+  private CertificateRelation getRelation(
+      WebcertCertificateRelation relation, CertificateRelationType type) {
+    if (relation == null) {
+      return null;
     }
 
-    @Override
-    public CertificateRelations convert(Relations relations) {
-        LOG.debug("Converting relations for certificate");
-        return CertificateRelations.builder()
-            .parent(
-                getRelation(relations.getParent())
-            )
-            .children(
-                getChildRelations(relations.getLatestChildRelations())
-            )
-            .build();
+    return CertificateRelation.builder()
+        .certificateId(relation.getIntygsId())
+        .created(relation.getSkapad())
+        .status(getStatus(relation.isMakulerat(), relation.getStatus()))
+        .type(type)
+        .build();
+  }
+
+  private CertificateRelationType getType(RelationKod relationCode) {
+    switch (relationCode) {
+      case ERSATT:
+        return CertificateRelationType.REPLACED;
+      case KOPIA:
+        return CertificateRelationType.COPIED;
+      case KOMPLT:
+        return CertificateRelationType.COMPLEMENTED;
+      case FRLANG:
+        return CertificateRelationType.EXTENDED;
+      default:
+        throw new IllegalArgumentException("Cannot map the relation code: " + relationCode);
     }
-
-    private CertificateRelation[] getChildRelations(Relations.FrontendRelations latestChildRelations) {
-        final List<CertificateRelation> childRelations = new ArrayList<>();
-
-        addRelationToListIfExists(childRelations, latestChildRelations.getReplacedByIntyg(), CertificateRelationType.REPLACED);
-        addRelationToListIfExists(childRelations, latestChildRelations.getReplacedByUtkast(), CertificateRelationType.REPLACED);
-        addRelationToListIfExists(childRelations, latestChildRelations.getComplementedByIntyg(), CertificateRelationType.COMPLEMENTED);
-        addRelationToListIfExists(childRelations, latestChildRelations.getComplementedByUtkast(), CertificateRelationType.COMPLEMENTED);
-        addRelationToListIfExists(childRelations, latestChildRelations.getUtkastCopy(), CertificateRelationType.COPIED);
-
-        return childRelations.toArray(new CertificateRelation[0]);
-    }
-
-    private void addRelationToListIfExists(List<CertificateRelation> childRelations, WebcertCertificateRelation relation,
-        CertificateRelationType relationType) {
-        final var childRelation = getRelation(relation, relationType);
-
-        if (childRelation != null) {
-            childRelations.add(childRelation);
-        }
-    }
-
-    private CertificateRelation getRelation(WebcertCertificateRelation relation) {
-        if (relation == null) {
-            return null;
-        }
-        return getRelation(relation, getType(relation.getRelationKod()));
-    }
-
-    private CertificateRelation getRelation(WebcertCertificateRelation relation, CertificateRelationType type) {
-        if (relation == null) {
-            return null;
-        }
-
-        return CertificateRelation.builder()
-            .certificateId(relation.getIntygsId())
-            .created(relation.getSkapad())
-            .status(
-                getStatus(relation.isMakulerat(), relation.getStatus())
-            )
-            .type(type)
-            .build();
-    }
-
-    private CertificateRelationType getType(RelationKod relationCode) {
-        switch (relationCode) {
-            case ERSATT:
-                return CertificateRelationType.REPLACED;
-            case KOPIA:
-                return CertificateRelationType.COPIED;
-            case KOMPLT:
-                return CertificateRelationType.COMPLEMENTED;
-            case FRLANG:
-                return CertificateRelationType.EXTENDED;
-            default:
-                throw new IllegalArgumentException("Cannot map the relation code: " + relationCode);
-        }
-    }
+  }
 }

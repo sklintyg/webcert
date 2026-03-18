@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,23 +30,22 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
 
-    private static final String PDF_API_IDENTIFIER = "/pdf";
-    private static final String DENY = "DENY";
+  private static final String PDF_API_IDENTIFIER = "/pdf";
+  private static final String DENY = "DENY";
 
-    @Override
-    public void writeHeaders(HttpServletRequest request, HttpServletResponse response) {
+  @Override
+  public void writeHeaders(HttpServletRequest request, HttpServletResponse response) {
 
-        final var requestUri = request.getRequestURI();
+    final var requestUri = request.getRequestURI();
 
-        if (shouldSkipHeader(requestUri)) {
-            log.debug("Skipping {} header for request to {}", XFRAME_OPTIONS_HEADER, requestUri);
-        } else {
-            response.addHeader(XFRAME_OPTIONS_HEADER, DENY);
-        }
+    if (shouldSkipHeader(requestUri)) {
+      log.debug("Skipping {} header for request to {}", XFRAME_OPTIONS_HEADER, requestUri);
+    } else {
+      response.addHeader(XFRAME_OPTIONS_HEADER, DENY);
     }
+  }
 
-    private boolean shouldSkipHeader(String requestUri) {
-        return requestUri.contains(PDF_API_IDENTIFIER);
-    }
-
+  private boolean shouldSkipHeader(String requestUri) {
+    return requestUri.contains(PDF_API_IDENTIFIER);
+  }
 }

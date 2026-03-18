@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,9 +23,9 @@ import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 public interface FmxBeskrivning {
 
-    String getBeskrivning();
+  String getBeskrivning();
 
-    List<Kod> getCentralkod();
+  List<Kod> getCentralkod();
 
-    List<Kod> getKompletterandekod();
+  List<Kod> getKompletterandekod();
 }

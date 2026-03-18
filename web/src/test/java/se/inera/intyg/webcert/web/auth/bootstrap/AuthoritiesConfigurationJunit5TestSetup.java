@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,18 +24,21 @@ import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfiguration
 
 public abstract class AuthoritiesConfigurationJunit5TestSetup {
 
-    public static final String AUTH_CONFIG_LOCATION = "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
-    public static final String FEATURES_CONFIG_LOCATION = "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
-    public static final Integer MAX_ALIASES_FOR_COLLECTIONS = 300;
+  public static final String AUTH_CONFIG_LOCATION =
+      "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
+  public static final String FEATURES_CONFIG_LOCATION =
+      "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
+  public static final Integer MAX_ALIASES_FOR_COLLECTIONS = 300;
 
-    protected static final SecurityConfigurationLoader CONFIGURATION_LOADER = new SecurityConfigurationLoader(
-        AUTH_CONFIG_LOCATION, FEATURES_CONFIG_LOCATION, MAX_ALIASES_FOR_COLLECTIONS);
-    public static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver();
+  protected static final SecurityConfigurationLoader CONFIGURATION_LOADER =
+      new SecurityConfigurationLoader(
+          AUTH_CONFIG_LOCATION, FEATURES_CONFIG_LOCATION, MAX_ALIASES_FOR_COLLECTIONS);
+  public static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER =
+      new CommonAuthoritiesResolver();
 
-    @BeforeAll
-    public static void setupAuthoritiesConfiguration() {
-        CONFIGURATION_LOADER.afterPropertiesSet();
-        AUTHORITIES_RESOLVER.setConfigurationLoader(CONFIGURATION_LOADER);
-    }
-
+  @BeforeAll
+  public static void setupAuthoritiesConfiguration() {
+    CONFIGURATION_LOADER.afterPropertiesSet();
+    AUTHORITIES_RESOLVER.setConfigurationLoader(CONFIGURATION_LOADER);
+  }
 }

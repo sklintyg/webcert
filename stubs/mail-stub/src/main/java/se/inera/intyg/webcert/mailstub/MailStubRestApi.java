@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,19 +32,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Path("/mails")
 public class MailStubRestApi {
 
-    @Autowired
-    private MailStore mailStore;
+  @Autowired private MailStore mailStore;
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public java.util.List<OutgoingMail> mails() {
-        return mailStore.getMails();
-    }
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public java.util.List<OutgoingMail> mails() {
+    return mailStore.getMails();
+  }
 
-    @DELETE
-    public Response deleteMailbox() {
-        mailStore.getMails().clear();
-        return Response.ok().build();
-    }
-
+  @DELETE
+  public Response deleteMailbox() {
+    mailStore.getMails().clear();
+    return Response.ok().build();
+  }
 }

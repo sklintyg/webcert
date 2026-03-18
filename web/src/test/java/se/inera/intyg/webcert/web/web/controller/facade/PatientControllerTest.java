@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,106 +35,96 @@ import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseStatusDTO;
 
 @ExtendWith(MockitoExtension.class)
 public class PatientControllerTest {
 
-    @Mock
-    private GetPatientFacadeService getPatientFacadeService;
-    @InjectMocks
-    private PatientController patientController;
+  @Mock private GetPatientFacadeService getPatientFacadeService;
+  @InjectMocks private PatientController patientController;
 
-    final String PATIENT_ID = "patientId";
+  final String PATIENT_ID = "patientId";
 
-    private Patient createPatient() {
-        return Patient.builder()
-            .personId(
-                PersonId.builder()
-                    .id(PATIENT_ID)
-                    .build()
-            )
-            .build();
+  private Patient createPatient() {
+    return Patient.builder().personId(PersonId.builder().id(PATIENT_ID).build()).build();
+  }
+
+  @Nested
+  class GetPatient {
+
+    void setup() {
+      try {
+        doReturn(null).when(getPatientFacadeService).getPatient(anyString());
+      } catch (InvalidPatientIdException | PatientSearchErrorException | PatientNoNameException e) {
+        e.printStackTrace();
+      }
     }
 
-    @Nested
-    class GetPatient {
-
-        void setup() {
-            try {
-                doReturn(null)
-                    .when(getPatientFacadeService)
-                    .getPatient(anyString());
-            } catch (InvalidPatientIdException | PatientSearchErrorException | PatientNoNameException e) {
-                e.printStackTrace();
-            }
-        }
-
-        void setup(Patient patient) {
-            try {
-                doReturn(patient)
-                    .when(getPatientFacadeService)
-                    .getPatient(anyString());
-            } catch (InvalidPatientIdException | PatientSearchErrorException | PatientNoNameException e) {
-                e.printStackTrace();
-            }
-        }
-
-        void setup(Exception e) throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
-            doThrow(e)
-                .when(getPatientFacadeService)
-                .getPatient(anyString());
-        }
-
-        @Test
-        void shallIncludePatientInResponse() {
-            final var patient = createPatient();
-            setup(patient);
-            final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
-            assertEquals(response.getPatient(), patient);
-        }
-
-        @Test
-        void shallSetStatusToFoundIfPatientExists() {
-            final var patient = createPatient();
-            setup(patient);
-            final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
-            assertEquals(response.getStatus(), PatientResponseStatusDTO.FOUND);
-        }
-
-        @Test
-        void shallSetStatusToNotFoundIfPatientIsNull() {
-            setup();
-            final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
-            assertEquals(response.getStatus(), PatientResponseStatusDTO.NOT_FOUND);
-        }
-
-        @Test
-        void shallSetStatusToErrorIfExceptionIsThrown()
-            throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
-            setup(new PatientSearchErrorException());
-            final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
-            assertEquals(response.getStatus(), PatientResponseStatusDTO.ERROR);
-        }
-
-        @Test
-        void shallSetStatusToInvalidPatientIdIfExceptionIsThrown()
-            throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
-            setup(new InvalidPatientIdException());
-            final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
-            assertEquals(response.getStatus(), PatientResponseStatusDTO.INVALID_PATIENT_ID);
-        }
-
-        @Test
-        void shallSetStatusNoNameIfExceptionIsThrown()
-            throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
-            setup(new PatientNoNameException());
-            final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
-            assertEquals(response.getStatus(), PatientResponseStatusDTO.NO_NAME);
-        }
+    void setup(Patient patient) {
+      try {
+        doReturn(patient).when(getPatientFacadeService).getPatient(anyString());
+      } catch (InvalidPatientIdException | PatientSearchErrorException | PatientNoNameException e) {
+        e.printStackTrace();
+      }
     }
+
+    void setup(Exception e)
+        throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+      doThrow(e).when(getPatientFacadeService).getPatient(anyString());
+    }
+
+    @Test
+    void shallIncludePatientInResponse() {
+      final var patient = createPatient();
+      setup(patient);
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
+      assertEquals(response.getPatient(), patient);
+    }
+
+    @Test
+    void shallSetStatusToFoundIfPatientExists() {
+      final var patient = createPatient();
+      setup(patient);
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
+      assertEquals(response.getStatus(), PatientResponseStatusDTO.FOUND);
+    }
+
+    @Test
+    void shallSetStatusToNotFoundIfPatientIsNull() {
+      setup();
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
+      assertEquals(response.getStatus(), PatientResponseStatusDTO.NOT_FOUND);
+    }
+
+    @Test
+    void shallSetStatusToErrorIfExceptionIsThrown()
+        throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+      setup(new PatientSearchErrorException());
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
+      assertEquals(response.getStatus(), PatientResponseStatusDTO.ERROR);
+    }
+
+    @Test
+    void shallSetStatusToInvalidPatientIdIfExceptionIsThrown()
+        throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+      setup(new InvalidPatientIdException());
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
+      assertEquals(response.getStatus(), PatientResponseStatusDTO.INVALID_PATIENT_ID);
+    }
+
+    @Test
+    void shallSetStatusNoNameIfExceptionIsThrown()
+        throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+      setup(new PatientNoNameException());
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
+      assertEquals(response.getStatus(), PatientResponseStatusDTO.NO_NAME);
+    }
+  }
 }

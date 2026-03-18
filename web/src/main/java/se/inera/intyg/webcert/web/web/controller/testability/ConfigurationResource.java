@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,48 +37,52 @@ import se.inera.intyg.infra.security.common.model.Feature;
 @Path("/config")
 public class ConfigurationResource {
 
-    @Autowired
-    private SecurityConfigurationLoader configLoader;
+  @Autowired private SecurityConfigurationLoader configLoader;
 
-    private final HashMap<String, Feature> replacedFeatures = new HashMap<>();
+  private final HashMap<String, Feature> replacedFeatures = new HashMap<>();
 
-    @POST
-    @Path("/setfeatures")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response setFeatures(List<Feature> features) {
-        final var currentFeatures = getCurrentFeatures();
-        for (var feature : features) {
-            try {
-                final var replacedFeature = switchFeature(feature, currentFeatures);
-                replacedFeatures.putIfAbsent(replacedFeature.getName(), replacedFeature);
-            } catch (NoSuchElementException e) {
-                return Response.status(Status.BAD_REQUEST.getStatusCode(), "Feature " + feature.getName() + " does not exist.")
-                    .build();
-            }
-        }
-        return Response.status(Status.OK).build();
+  @POST
+  @Path("/setfeatures")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response setFeatures(List<Feature> features) {
+    final var currentFeatures = getCurrentFeatures();
+    for (var feature : features) {
+      try {
+        final var replacedFeature = switchFeature(feature, currentFeatures);
+        replacedFeatures.putIfAbsent(replacedFeature.getName(), replacedFeature);
+      } catch (NoSuchElementException e) {
+        return Response.status(
+                Status.BAD_REQUEST.getStatusCode(),
+                "Feature " + feature.getName() + " does not exist.")
+            .build();
+      }
     }
+    return Response.status(Status.OK).build();
+  }
 
-    @GET
-    @Path("/resetfeatures")
-    public Response resetFeatures() {
-        final var currentFeatures = getCurrentFeatures();
-        for (var feature : replacedFeatures.entrySet()) {
-            switchFeature(feature.getValue(), currentFeatures);
-        }
-        replacedFeatures.clear();
-        return Response.status(Status.OK).build();
+  @GET
+  @Path("/resetfeatures")
+  public Response resetFeatures() {
+    final var currentFeatures = getCurrentFeatures();
+    for (var feature : replacedFeatures.entrySet()) {
+      switchFeature(feature.getValue(), currentFeatures);
     }
+    replacedFeatures.clear();
+    return Response.status(Status.OK).build();
+  }
 
-    private Feature switchFeature(Feature feature, List<Feature> currentFeatures) {
-        final var featureToSwitch = currentFeatures.stream().filter(f -> f.getName().equals(feature.getName()))
-            .findFirst().orElseThrow();
-        final var indexToSwitch = currentFeatures.indexOf(featureToSwitch);
-        currentFeatures.set(indexToSwitch, feature);
-        return featureToSwitch;
-    }
+  private Feature switchFeature(Feature feature, List<Feature> currentFeatures) {
+    final var featureToSwitch =
+        currentFeatures.stream()
+            .filter(f -> f.getName().equals(feature.getName()))
+            .findFirst()
+            .orElseThrow();
+    final var indexToSwitch = currentFeatures.indexOf(featureToSwitch);
+    currentFeatures.set(indexToSwitch, feature);
+    return featureToSwitch;
+  }
 
-    private List<Feature> getCurrentFeatures() {
-        return configLoader.getFeaturesConfiguration().getFeatures();
-    }
+  private List<Feature> getCurrentFeatures() {
+    return configLoader.getFeaturesConfiguration().getFeatures();
+  }
 }
