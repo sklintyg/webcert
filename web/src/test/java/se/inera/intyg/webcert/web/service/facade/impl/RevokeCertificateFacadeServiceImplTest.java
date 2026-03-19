@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,65 +39,65 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @ExtendWith(MockitoExtension.class)
 class RevokeCertificateFacadeServiceImplTest {
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
 
-    @InjectMocks
-    private RevokeCertificateFacadeServiceImpl revokeCertificateFacadeService;
+  @InjectMocks private RevokeCertificateFacadeServiceImpl revokeCertificateFacadeService;
 
-    private final static String CERTIFICATE_ID = "certificateId";
-    private final static String CERTIFICATE_TYPE = "certificateType";
-    private final static String REASON = "revokeReason";
-    private final static String MESSAGE = "revokeMessage";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String REASON = "revokeReason";
+  private static final String MESSAGE = "revokeMessage";
 
-    private Certificate certificate;
+  private Certificate certificate;
 
-    @BeforeEach
-    void setup() {
-        certificate = CertificateBuilder.create()
+  @BeforeEach
+  void setup() {
+    certificate =
+        CertificateBuilder.create()
             .metadata(
-                CertificateMetadata.builder()
-                    .id(CERTIFICATE_ID)
-                    .type(CERTIFICATE_TYPE)
-                    .build()
-            )
+                CertificateMetadata.builder().id(CERTIFICATE_ID).type(CERTIFICATE_TYPE).build())
             .build();
 
-        doReturn(certificate)
-            .when(getCertificateFacadeService)
-            .getCertificate(CERTIFICATE_ID, false, true);
-    }
+    doReturn(certificate)
+        .when(getCertificateFacadeService)
+        .getCertificate(CERTIFICATE_ID, false, true);
+  }
 
-    @Test
-    void shallRevokeLockedDraft() {
-        certificate.getMetadata().setStatus(CertificateStatus.LOCKED);
+  @Test
+  void shallRevokeLockedDraft() {
+    certificate.getMetadata().setStatus(CertificateStatus.LOCKED);
 
-        final var actualCertificate = revokeCertificateFacadeService.revokeCertificate(CERTIFICATE_ID, REASON, MESSAGE);
+    final var actualCertificate =
+        revokeCertificateFacadeService.revokeCertificate(CERTIFICATE_ID, REASON, MESSAGE);
 
-        verify(utkastService)
-            .revokeLockedDraft(
-                certificate.getMetadata().getId(), certificate.getMetadata().getType(), MESSAGE, REASON
-            );
+    verify(utkastService)
+        .revokeLockedDraft(
+            certificate.getMetadata().getId(),
+            certificate.getMetadata().getType(),
+            MESSAGE,
+            REASON);
 
-        assertNotNull(actualCertificate);
-    }
+    assertNotNull(actualCertificate);
+  }
 
-    @Test
-    void shallRevokeCertificate() {
-        certificate.getMetadata().setStatus(CertificateStatus.SIGNED);
+  @Test
+  void shallRevokeCertificate() {
+    certificate.getMetadata().setStatus(CertificateStatus.SIGNED);
 
-        final var actualCertificate = revokeCertificateFacadeService.revokeCertificate(CERTIFICATE_ID, REASON, MESSAGE);
+    final var actualCertificate =
+        revokeCertificateFacadeService.revokeCertificate(CERTIFICATE_ID, REASON, MESSAGE);
 
-        verify(intygService)
-            .revokeIntyg(certificate.getMetadata().getId(), certificate.getMetadata().getType(), MESSAGE, REASON
-            );
+    verify(intygService)
+        .revokeIntyg(
+            certificate.getMetadata().getId(),
+            certificate.getMetadata().getType(),
+            MESSAGE,
+            REASON);
 
-        assertNotNull(actualCertificate);
-    }
+    assertNotNull(actualCertificate);
+  }
 }

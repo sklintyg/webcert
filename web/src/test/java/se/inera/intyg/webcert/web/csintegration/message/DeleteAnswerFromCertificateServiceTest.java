@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,32 +35,28 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequ
 @ExtendWith(MockitoExtension.class)
 class DeleteAnswerFromCertificateServiceTest {
 
+  private static final String QUESTION_ID = "questionId";
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks DeleteAnswerFromCertificateService deleteAnswerFromCertificateService;
 
-    private static final String QUESTION_ID = "questionId";
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    DeleteAnswerFromCertificateService deleteAnswerFromCertificateService;
+  @Test
+  void shallReturnNullIfMessageDontExistInCertificateService() {
+    doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
+    final var actualQuestion = deleteAnswerFromCertificateService.delete(QUESTION_ID);
+    assertNull(actualQuestion);
+  }
 
-    @Test
-    void shallReturnNullIfMessageDontExistInCertificateService() {
-        doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
-        final var actualQuestion = deleteAnswerFromCertificateService.delete(QUESTION_ID);
-        assertNull(actualQuestion);
-    }
+  @Test
+  void shallReturnDeletedQuestionFromCSIntegrationService() {
+    final var expectedQuestion = Question.builder().build();
+    final var request = DeleteAnswerRequestDTO.builder().build();
 
-    @Test
-    void shallReturnDeletedQuestionFromCSIntegrationService() {
-        final var expectedQuestion = Question.builder().build();
-        final var request = DeleteAnswerRequestDTO.builder().build();
+    doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
+    doReturn(request).when(csIntegrationRequestFactory).deleteAnswerRequest();
+    doReturn(expectedQuestion).when(csIntegrationService).deleteAnswer(QUESTION_ID, request);
 
-        doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
-        doReturn(request).when(csIntegrationRequestFactory).deleteAnswerRequest();
-        doReturn(expectedQuestion).when(csIntegrationService).deleteAnswer(QUESTION_ID, request);
-
-        final var actualQuestion = deleteAnswerFromCertificateService.delete(QUESTION_ID);
-        assertEquals(expectedQuestion, actualQuestion);
-    }
+    final var actualQuestion = deleteAnswerFromCertificateService.delete(QUESTION_ID);
+    assertEquals(expectedQuestion, actualQuestion);
+  }
 }

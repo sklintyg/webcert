@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,110 +45,142 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Area;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
 
 @Path("/config")
-@Api(value = "config", description = "REST API för konfigurationsparametrar", produces = MediaType.APPLICATION_JSON)
+@Api(
+    value = "config",
+    description = "REST API för konfigurationsparametrar",
+    produces = MediaType.APPLICATION_JSON)
 public class ConfigApiController extends AbstractApiController {
 
-    @Value("${project.version}")
-    private String version;
+  @Value("${project.version}")
+  private String version;
 
-    @Value("${buildNumber}")
-    private String build;
+  @Value("${buildNumber}")
+  private String build;
 
-    @Value("${privatepractitioner.portal.registration.url}")
-    private String ppHost;
+  @Value("${privatepractitioner.portal.registration.url}")
+  private String ppHost;
 
-    @Value("${certificate.view.url.base}")
-    private String dashboardUrl;
+  @Value("${certificate.view.url.base}")
+  private String dashboardUrl;
 
-    @Autowired
-    private Environment environment;
+  @Autowired private Environment environment;
 
-    @Value("${sakerhetstjanst.saml.idp.metadata.url}")
-    private String sakerhetstjanstIdpUrl;
+  @Value("${sakerhetstjanst.saml.idp.metadata.url}")
+  private String sakerhetstjanstIdpUrl;
 
-    @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
-    private String cgiFunktionstjansterIdpUrl;
+  @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
+  private String cgiFunktionstjansterIdpUrl;
 
-    @Value("${webcert.user.survey.url:}")
-    private String webcertUserSurveyUrl;
+  @Value("${webcert.user.survey.url:}")
+  private String webcertUserSurveyUrl;
 
-    @Value("${webcert.user.survey.date.to:}")
-    private String webcertUserSurveyDateTo;
+  @Value("${webcert.user.survey.date.to:}")
+  private String webcertUserSurveyDateTo;
 
-    @Value("${webcert.user.survey.date.from:}")
-    private String webcertUserSurveyDateFrom;
+  @Value("${webcert.user.survey.date.from:}")
+  private String webcertUserSurveyDateFrom;
 
-    @Value("${webcert.user.survey.version:}")
-    private String webcertUserSurveyVersion;
+  @Value("${webcert.user.survey.version:}")
+  private String webcertUserSurveyVersion;
 
-    @Autowired
-    private DynamicLinkService dynamicLinkService;
+  @Autowired private DynamicLinkService dynamicLinkService;
 
-    @Autowired
-    private PostnummerService postnummerService;
+  @Autowired private PostnummerService postnummerService;
 
-    @Autowired
-    private IABannerService iaBannerService;
+  @Autowired private IABannerService iaBannerService;
 
-    @GET
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get module configuration for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "config-get-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getConfig() {
-        Boolean useMinifiedJavaScript = Boolean.parseBoolean(environment.getProperty("useMinifiedJavaScript", "true"));
-        ConfigResponse configResponse = new ConfigResponse(version, build, ppHost, dashboardUrl, useMinifiedJavaScript,
-            sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl, webcertUserSurveyUrl, iaBannerService.getCurrentBanners(),
-            webcertUserSurveyDateTo, webcertUserSurveyDateFrom, webcertUserSurveyVersion);
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @ApiOperation(
+      value = "Get module configuration for Webcert",
+      httpMethod = "GET",
+      produces = MediaType.APPLICATION_JSON)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "config-get-config",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getConfig() {
+    Boolean useMinifiedJavaScript =
+        Boolean.parseBoolean(environment.getProperty("useMinifiedJavaScript", "true"));
+    ConfigResponse configResponse =
+        new ConfigResponse(
+            version,
+            build,
+            ppHost,
+            dashboardUrl,
+            useMinifiedJavaScript,
+            sakerhetstjanstIdpUrl,
+            cgiFunktionstjansterIdpUrl,
+            webcertUserSurveyUrl,
+            iaBannerService.getCurrentBanners(),
+            webcertUserSurveyDateTo,
+            webcertUserSurveyDateFrom,
+            webcertUserSurveyVersion);
 
-        return Response.ok(configResponse).build();
+    return Response.ok(configResponse).build();
+  }
+
+  @GET
+  @Path("/links")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @ApiOperation(
+      value = "Get dynamic links for Webcert",
+      httpMethod = "GET",
+      produces = MediaType.APPLICATION_JSON)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "config-get-dynamic-links",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Map<String, DynamicLink> getDynamicLinks() {
+    return dynamicLinkService.getAllAsMap();
+  }
+
+  @GET
+  @Path("/kommuner")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @ApiOperation(
+      value = "Get list of kommuner from postnummerservice",
+      httpMethod = "GET",
+      produces = MediaType.APPLICATION_JSON)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "config-get-kommun-list",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public List<String> getKommunList() {
+    return postnummerService.getKommunList();
+  }
+
+  @GET
+  @Path("area/{zipcode}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @ApiOperation(
+      value = "Get area for a given area from postnummerservice",
+      httpMethod = "GET",
+      produces = MediaType.APPLICATION_JSON)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "config-get-area-by-zid-code",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public List<Area> getAreaByZipCode(@PathParam("zipcode") String zipCode) {
+    final var result = postnummerService.getOmradeByPostnummer(zipCode);
+    if (result == null || result.isEmpty()) {
+      return List.of();
     }
+    return result.stream()
+        .map(
+            o ->
+                Area.builder()
+                    .zipCode(o.getPostnummer())
+                    .city(o.getPostort())
+                    .municipality(o.getKommun())
+                    .county(o.getLan())
+                    .build())
+        .toList();
+  }
 
-    @GET
-    @Path("/links")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get dynamic links for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "config-get-dynamic-links", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Map<String, DynamicLink> getDynamicLinks() {
-        return dynamicLinkService.getAllAsMap();
-    }
-
-    @GET
-    @Path("/kommuner")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get list of kommuner from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "config-get-kommun-list", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public List<String> getKommunList() {
-        return postnummerService.getKommunList();
-    }
-
-    @GET
-    @Path("area/{zipcode}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get area for a given area from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "config-get-area-by-zid-code", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public List<Area> getAreaByZipCode(@PathParam("zipcode") String zipCode) {
-        final var result = postnummerService.getOmradeByPostnummer(zipCode);
-        if (result == null || result.isEmpty()) {
-            return List.of();
-        }
-        return result.stream()
-            .map(o -> Area
-                .builder()
-                .zipCode(o.getPostnummer())
-                .city(o.getPostort())
-                .municipality(o.getKommun())
-                .county(o.getLan())
-                .build())
-            .toList();
-    }
-
-    @PostConstruct
-    public void init() {
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-    }
+  @PostConstruct
+  public void init() {
+    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+  }
 }

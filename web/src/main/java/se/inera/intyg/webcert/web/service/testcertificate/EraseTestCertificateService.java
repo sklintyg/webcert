@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,29 +30,26 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 @Service
 public class EraseTestCertificateService {
 
-    @Autowired
-    private UtkastRepository utkastRepository;
+  @Autowired private UtkastRepository utkastRepository;
 
-    @Autowired
-    private ReferensRepository referensRepository;
+  @Autowired private ReferensRepository referensRepository;
 
-    @Autowired
-    private HandelseRepository handelseRepository;
+  @Autowired private HandelseRepository handelseRepository;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void eraseTestCertificates(List<String> testCertificateIds) {
-        for (var testCertificateId : testCertificateIds) {
-            utkastRepository.deleteById(testCertificateId);
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void eraseTestCertificates(List<String> testCertificateIds) {
+    for (var testCertificateId : testCertificateIds) {
+      utkastRepository.deleteById(testCertificateId);
 
-            final var reference = referensRepository.findByIntygId(testCertificateId);
-            if (reference != null) {
-                referensRepository.delete(reference);
-            }
+      final var reference = referensRepository.findByIntygId(testCertificateId);
+      if (reference != null) {
+        referensRepository.delete(reference);
+      }
 
-            final var eventList = handelseRepository.findByIntygsId(testCertificateId);
-            if (eventList.size() > 0) {
-                handelseRepository.deleteAll(eventList);
-            }
-        }
+      final var eventList = handelseRepository.findByIntygsId(testCertificateId);
+      if (eventList.size() > 0) {
+        handelseRepository.deleteAll(eventList);
+      }
     }
+  }
 }

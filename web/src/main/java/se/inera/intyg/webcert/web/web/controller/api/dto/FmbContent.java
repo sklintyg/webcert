@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,30 +24,29 @@ import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 
 public class FmbContent {
 
-    private FmbType heading;
-    private String text;
-    private List<String> list;
+  private FmbType heading;
+  private String text;
+  private List<String> list;
 
-    public FmbContent(FmbType heading, String text) {
-        this.heading = heading;
-        this.text = text;
-    }
+  public FmbContent(FmbType heading, String text) {
+    this.heading = heading;
+    this.text = text;
+  }
 
-    public FmbContent(FmbType heading, List<String> list) {
-        this.heading = heading;
-        this.list = Collections.unmodifiableList(list);
-    }
+  public FmbContent(FmbType heading, List<String> list) {
+    this.heading = heading;
+    this.list = Collections.unmodifiableList(list);
+  }
 
-    public FmbType getHeading() {
-        return heading;
-    }
+  public FmbType getHeading() {
+    return heading;
+  }
 
-    public String getText() {
-        return text;
-    }
+  public String getText() {
+    return text;
+  }
 
-    public List<String> getList() {
-        return list;
-    }
-
+  public List<String> getList() {
+    return list;
+  }
 }

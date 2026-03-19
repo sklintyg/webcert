@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,19 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.util;
 
-/**
- * Takes a MAJOR.MINOR version string and converts it into "v[major]".
- */
+/** Takes a MAJOR.MINOR version string and converts it into "v[major]". */
 public final class SchVersionUtil {
 
-    private SchVersionUtil() {
-    }
+  private SchVersionUtil() {}
 
-    public static String formatToSchVersion(String version) {
-        if (version.contains(".")) {
-            return "v" + version.substring(0, version.indexOf("."));
-        } else {
-            return "v" + version;
-        }
+  public static String formatToSchVersion(String version) {
+    if (version.contains(".")) {
+      return "v" + version.substring(0, version.indexOf("."));
+    } else {
+      return "v" + version;
     }
+  }
 }

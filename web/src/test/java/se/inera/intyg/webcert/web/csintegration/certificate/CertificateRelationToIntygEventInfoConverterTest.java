@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,190 +38,204 @@ import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
 @ExtendWith(MockitoExtension.class)
 class CertificateRelationToIntygEventInfoConverterTest {
 
-    private static final String STAFF_NAME = "Dr. John Doe";
-    private static final String STAFF_ID = "1234567890";
-    private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+  private static final String STAFF_NAME = "Dr. John Doe";
+  private static final String STAFF_ID = "1234567890";
+  private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
 
-    @InjectMocks
-    private CertificateRelationToIntygEventInfoConverter certificateRelationToIntygEventInfoConverter;
+  @InjectMocks
+  private CertificateRelationToIntygEventInfoConverter certificateRelationToIntygEventInfoConverter;
 
-    @Nested
-    class ParentRelation {
+  @Nested
+  class ParentRelation {
 
-        @Test
-        void shouldConvertExtendedRelation() {
-            final var certificateRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.EXTENDED)
-                .created(LocalDateTime.now())
-                .certificateId(CERTIFICATE_ID)
-                .build();
-            final var relatedCertificate = createRelatedCertificate();
-            final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS019);
-            expected.addData("intygsId", CERTIFICATE_ID);
-            expected.addData("name", STAFF_NAME);
-            expected.addData("hsaId", STAFF_ID);
+    @Test
+    void shouldConvertExtendedRelation() {
+      final var certificateRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.EXTENDED)
+              .created(LocalDateTime.now())
+              .certificateId(CERTIFICATE_ID)
+              .build();
+      final var relatedCertificate = createRelatedCertificate();
+      final var expected =
+          new IntygInfoEvent(
+              Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS019);
+      expected.addData("intygsId", CERTIFICATE_ID);
+      expected.addData("name", STAFF_NAME);
+      expected.addData("hsaId", STAFF_ID);
 
-            final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, relatedCertificate, false);
+      final var result =
+          certificateRelationToIntygEventInfoConverter.convert(
+              certificateRelation, relatedCertificate, false);
 
-            assertEquals(
-                expected,
-                result
-            );
-        }
-
-        @Test
-        void shouldConvertComplementedEvent() {
-            final var certificateRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.COMPLEMENTED)
-                .created(LocalDateTime.now())
-                .certificateId(CERTIFICATE_ID)
-                .build();
-            final var relatedCertificate = createRelatedCertificate();
-            final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS021);
-            expected.addData("intygsId", CERTIFICATE_ID);
-            expected.addData("name", STAFF_NAME);
-            expected.addData("hsaId", STAFF_ID);
-
-            final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, relatedCertificate, false);
-
-            assertEquals(
-                expected,
-                result
-            );
-        }
-
-        @Test
-        void shouldConvertReplacedEvent() {
-            final var certificateRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.REPLACED)
-                .created(LocalDateTime.now())
-                .certificateId(CERTIFICATE_ID)
-                .build();
-            final var relatedCertificate = createRelatedCertificate();
-            final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS020);
-            expected.addData("intygsId", CERTIFICATE_ID);
-            expected.addData("name", STAFF_NAME);
-            expected.addData("hsaId", STAFF_ID);
-
-            final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, relatedCertificate, false);
-
-            assertEquals(
-                expected,
-                result
-            );
-        }
-
-        @Test
-        void shouldConvertCopiedEvent() {
-            final var certificateRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.COPIED)
-                .created(LocalDateTime.now())
-                .certificateId(CERTIFICATE_ID)
-                .build();
-            final var relatedCertificate = createRelatedCertificate();
-            final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS022);
-            expected.addData("intygsId", CERTIFICATE_ID);
-            expected.addData("name", STAFF_NAME);
-            expected.addData("hsaId", STAFF_ID);
-
-            final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, relatedCertificate, false);
-
-            assertEquals(
-                expected,
-                result
-            );
-        }
+      assertEquals(expected, result);
     }
 
-    @Nested
-    class NoRelatedCertificate {
+    @Test
+    void shouldConvertComplementedEvent() {
+      final var certificateRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COMPLEMENTED)
+              .created(LocalDateTime.now())
+              .certificateId(CERTIFICATE_ID)
+              .build();
+      final var relatedCertificate = createRelatedCertificate();
+      final var expected =
+          new IntygInfoEvent(
+              Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS021);
+      expected.addData("intygsId", CERTIFICATE_ID);
+      expected.addData("name", STAFF_NAME);
+      expected.addData("hsaId", STAFF_ID);
 
-        @Test
-        void shouldConvertExtendedRelation() {
-            final var certificateRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.EXTENDED)
-                .created(LocalDateTime.now())
-                .build();
-            final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS007);
-            expected.addData("name", STAFF_NAME);
-            expected.addData("hsaId", STAFF_ID);
+      final var result =
+          certificateRelationToIntygEventInfoConverter.convert(
+              certificateRelation, relatedCertificate, false);
 
-            final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, createRelatedCertificate(), true);
-
-            assertEquals(
-                expected,
-                result
-            );
-        }
-
-        @Test
-        void shouldConvertComplementedEvent() {
-            final var certificateRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.COMPLEMENTED)
-                .created(LocalDateTime.now())
-                .build();
-            final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS014);
-            expected.addData("name", STAFF_NAME);
-            expected.addData("hsaId", STAFF_ID);
-
-            final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, createRelatedCertificate(), true);
-
-            assertEquals(
-                expected,
-                result
-            );
-        }
-
-        @Test
-        void shouldConvertReplacedEvent() {
-            final var certificateRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.REPLACED)
-                .created(LocalDateTime.now())
-                .certificateId(CERTIFICATE_ID)
-                .build();
-            final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS008);
-            expected.addData("intygsId", CERTIFICATE_ID);
-            expected.addData("name", STAFF_NAME);
-            expected.addData("hsaId", STAFF_ID);
-
-            final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, createRelatedCertificate(), true);
-
-            assertEquals(
-                expected,
-                result
-            );
-        }
-
-        @Test
-        void shouldConvertCopiedEvent() {
-            final var certificateRelation = CertificateRelation.builder()
-                .type(CertificateRelationType.COPIED)
-                .created(LocalDateTime.now())
-                .certificateId(CERTIFICATE_ID)
-                .build();
-            final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS026);
-            expected.addData("intygsId", CERTIFICATE_ID);
-            expected.addData("name", STAFF_NAME);
-            expected.addData("hsaId", STAFF_ID);
-
-            final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, createRelatedCertificate(), true);
-
-            assertEquals(
-                expected,
-                result
-            );
-        }
+      assertEquals(expected, result);
     }
 
-    private Certificate createRelatedCertificate() {
-        final var certificate = new Certificate();
-        final var metadata = CertificateMetadata.builder()
-            .issuedBy(Staff.builder()
-                .fullName(STAFF_NAME)
-                .personId(STAFF_ID)
-                .build())
+    @Test
+    void shouldConvertReplacedEvent() {
+      final var certificateRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.REPLACED)
+              .created(LocalDateTime.now())
+              .certificateId(CERTIFICATE_ID)
+              .build();
+      final var relatedCertificate = createRelatedCertificate();
+      final var expected =
+          new IntygInfoEvent(
+              Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS020);
+      expected.addData("intygsId", CERTIFICATE_ID);
+      expected.addData("name", STAFF_NAME);
+      expected.addData("hsaId", STAFF_ID);
+
+      final var result =
+          certificateRelationToIntygEventInfoConverter.convert(
+              certificateRelation, relatedCertificate, false);
+
+      assertEquals(expected, result);
+    }
+
+    @Test
+    void shouldConvertCopiedEvent() {
+      final var certificateRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COPIED)
+              .created(LocalDateTime.now())
+              .certificateId(CERTIFICATE_ID)
+              .build();
+      final var relatedCertificate = createRelatedCertificate();
+      final var expected =
+          new IntygInfoEvent(
+              Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS022);
+      expected.addData("intygsId", CERTIFICATE_ID);
+      expected.addData("name", STAFF_NAME);
+      expected.addData("hsaId", STAFF_ID);
+
+      final var result =
+          certificateRelationToIntygEventInfoConverter.convert(
+              certificateRelation, relatedCertificate, false);
+
+      assertEquals(expected, result);
+    }
+  }
+
+  @Nested
+  class NoRelatedCertificate {
+
+    @Test
+    void shouldConvertExtendedRelation() {
+      final var certificateRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.EXTENDED)
+              .created(LocalDateTime.now())
+              .build();
+      final var expected =
+          new IntygInfoEvent(
+              Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS007);
+      expected.addData("name", STAFF_NAME);
+      expected.addData("hsaId", STAFF_ID);
+
+      final var result =
+          certificateRelationToIntygEventInfoConverter.convert(
+              certificateRelation, createRelatedCertificate(), true);
+
+      assertEquals(expected, result);
+    }
+
+    @Test
+    void shouldConvertComplementedEvent() {
+      final var certificateRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COMPLEMENTED)
+              .created(LocalDateTime.now())
+              .build();
+      final var expected =
+          new IntygInfoEvent(
+              Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS014);
+      expected.addData("name", STAFF_NAME);
+      expected.addData("hsaId", STAFF_ID);
+
+      final var result =
+          certificateRelationToIntygEventInfoConverter.convert(
+              certificateRelation, createRelatedCertificate(), true);
+
+      assertEquals(expected, result);
+    }
+
+    @Test
+    void shouldConvertReplacedEvent() {
+      final var certificateRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.REPLACED)
+              .created(LocalDateTime.now())
+              .certificateId(CERTIFICATE_ID)
+              .build();
+      final var expected =
+          new IntygInfoEvent(
+              Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS008);
+      expected.addData("intygsId", CERTIFICATE_ID);
+      expected.addData("name", STAFF_NAME);
+      expected.addData("hsaId", STAFF_ID);
+
+      final var result =
+          certificateRelationToIntygEventInfoConverter.convert(
+              certificateRelation, createRelatedCertificate(), true);
+
+      assertEquals(expected, result);
+    }
+
+    @Test
+    void shouldConvertCopiedEvent() {
+      final var certificateRelation =
+          CertificateRelation.builder()
+              .type(CertificateRelationType.COPIED)
+              .created(LocalDateTime.now())
+              .certificateId(CERTIFICATE_ID)
+              .build();
+      final var expected =
+          new IntygInfoEvent(
+              Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS026);
+      expected.addData("intygsId", CERTIFICATE_ID);
+      expected.addData("name", STAFF_NAME);
+      expected.addData("hsaId", STAFF_ID);
+
+      final var result =
+          certificateRelationToIntygEventInfoConverter.convert(
+              certificateRelation, createRelatedCertificate(), true);
+
+      assertEquals(expected, result);
+    }
+  }
+
+  private Certificate createRelatedCertificate() {
+    final var certificate = new Certificate();
+    final var metadata =
+        CertificateMetadata.builder()
+            .issuedBy(Staff.builder().fullName(STAFF_NAME).personId(STAFF_ID).build())
             .build();
-        certificate.setMetadata(metadata);
-        return certificate;
-    }
+    certificate.setMetadata(metadata);
+    return certificate;
+  }
 }

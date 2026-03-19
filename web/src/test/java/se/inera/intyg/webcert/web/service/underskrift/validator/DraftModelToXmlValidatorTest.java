@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,64 +45,64 @@ import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLCo
 @RunWith(MockitoJUnitRunner.class)
 public class DraftModelToXmlValidatorTest {
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
 
-    @Mock
-    private UtkastModelToXMLConverter draftModelToXMLConverter;
+  @Mock private UtkastModelToXMLConverter draftModelToXMLConverter;
 
-    @InjectMocks
-    private DraftModelToXmlValidator draftModelToXmlValidator;
+  @InjectMocks private DraftModelToXmlValidator draftModelToXmlValidator;
 
-    public DraftModelToXmlValidatorTest() {
-        MockitoAnnotations.initMocks(this);
+  public DraftModelToXmlValidatorTest() {
+    MockitoAnnotations.initMocks(this);
+  }
+
+  @Test
+  public void validateDraftModelAsXmlValid()
+      throws ModuleNotFoundException, IOException, ModuleException {
+    String xml = toString("DraftModelToXmlValidatorTest/db_valid.xml");
+    Utkast draft = createDraft();
+    DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
+
+    when(draftModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn(xml);
+    when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApiV1);
+
+    ValidateXmlResponse validateXmlResponse =
+        draftModelToXmlValidator.validateDraftModelAsXml(draft);
+    assertNotNull(validateXmlResponse);
+    draftModelToXmlValidator.assertResponse(draft.getIntygsId(), validateXmlResponse);
+  }
+
+  @Test
+  public void validateDraftModelAsXmlInvalid()
+      throws ModuleNotFoundException, IOException, ModuleException {
+    String xml = toString("DraftModelToXmlValidatorTest/db_invalid.xml");
+    Utkast draft = createDraft();
+    DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
+
+    when(draftModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn(xml);
+    when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApiV1);
+
+    ValidateXmlResponse validateXmlResponse =
+        draftModelToXmlValidator.validateDraftModelAsXml(draft);
+    assertNotNull(validateXmlResponse);
+    try {
+      draftModelToXmlValidator.assertResponse(draft.getIntygsId(), validateXmlResponse);
+      fail("Call to assertResponse did not throw exception as expected.");
+    } catch (ModuleValidationException e) {
+      assertNotNull(e);
     }
+  }
 
-    @Test
-    public void validateDraftModelAsXmlValid() throws ModuleNotFoundException, IOException, ModuleException {
-        String xml = toString("DraftModelToXmlValidatorTest/db_valid.xml");
-        Utkast draft = createDraft();
-        DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
+  private String toString(String file) throws IOException {
+    ClassPathResource classPathResource = new ClassPathResource(file);
+    return IOUtils.toString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
+  }
 
-        when(draftModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn(xml);
-        when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApiV1);
-
-        ValidateXmlResponse validateXmlResponse = draftModelToXmlValidator.validateDraftModelAsXml(draft);
-        assertNotNull(validateXmlResponse);
-        draftModelToXmlValidator.assertResponse(draft.getIntygsId(), validateXmlResponse);
-    }
-
-    @Test
-    public void validateDraftModelAsXmlInvalid() throws ModuleNotFoundException, IOException, ModuleException {
-        String xml = toString("DraftModelToXmlValidatorTest/db_invalid.xml");
-        Utkast draft = createDraft();
-        DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
-
-        when(draftModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn(xml);
-        when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApiV1);
-
-        ValidateXmlResponse validateXmlResponse = draftModelToXmlValidator.validateDraftModelAsXml(draft);
-        assertNotNull(validateXmlResponse);
-        try {
-            draftModelToXmlValidator.assertResponse(draft.getIntygsId(), validateXmlResponse);
-            fail("Call to assertResponse did not throw exception as expected.");
-        } catch (ModuleValidationException e) {
-            assertNotNull(e);
-        }
-    }
-
-    private String toString(String file) throws IOException {
-        ClassPathResource classPathResource = new ClassPathResource(file);
-        return IOUtils.toString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
-    }
-
-    private Utkast createDraft() {
-        Utkast draft = new Utkast();
-        draft.setIntygsId("id");
-        draft.setIntygsTyp("db");
-        draft.setIntygTypeVersion("1.0");
-        draft.setModel("model");
-        return draft;
-    }
-
+  private Utkast createDraft() {
+    Utkast draft = new Utkast();
+    draft.setIntygsId("id");
+    draft.setIntygsTyp("db");
+    draft.setIntygTypeVersion("1.0");
+    draft.setModel("model");
+    return draft;
+  }
 }

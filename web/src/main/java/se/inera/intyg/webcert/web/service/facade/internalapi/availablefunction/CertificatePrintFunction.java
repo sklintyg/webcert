@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.getQuestionValue;
@@ -42,68 +41,74 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @Component
 public class CertificatePrintFunction implements AvailableFunctions {
 
-    private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "27";
+  private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "27";
 
-    private final AuthoritiesHelper authoritiesHelper;
+  private final AuthoritiesHelper authoritiesHelper;
 
-    public CertificatePrintFunction(AuthoritiesHelper authoritiesHelper) {
-        this.authoritiesHelper = authoritiesHelper;
+  public CertificatePrintFunction(AuthoritiesHelper authoritiesHelper) {
+    this.authoritiesHelper = authoritiesHelper;
+  }
+
+  @Override
+  public List<AvailableFunctionDTO> get(Certificate certificate) {
+    final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
+    if (!isPrintFeatureActive(certificate)
+        || isReplacedOrComplemented(certificate.getMetadata().getRelations())) {
+      return Collections.emptyList();
     }
 
-    @Override
-    public List<AvailableFunctionDTO> get(Certificate certificate) {
-        final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
-        if (!isPrintFeatureActive(certificate)
-            || isReplacedOrComplemented(certificate.getMetadata().getRelations())) {
-            return Collections.emptyList();
-        }
-
-        if (isCustomizedPrintAvailable(certificate)) {
-            availableFunctions.add(AvailableFunctionFactory.customizePrint(true, getFileName(certificate)));
-        } else {
-            availableFunctions.add(AvailableFunctionFactory.print(true, getFileName(certificate)));
-        }
-
-        if (isCustomizedPrintInfoAvailable(certificate)) {
-            availableFunctions.add(AvailableFunctionFactory.avstangningSmittskydd(true));
-        }
-
-        return availableFunctions;
+    if (isCustomizedPrintAvailable(certificate)) {
+      availableFunctions.add(
+          AvailableFunctionFactory.customizePrint(true, getFileName(certificate)));
+    } else {
+      availableFunctions.add(AvailableFunctionFactory.print(true, getFileName(certificate)));
     }
 
-    private static CertificateDataValueBoolean getQuestionAvstagningSmittskyddValue(Certificate certificate) {
-        return (CertificateDataValueBoolean) getQuestionValue(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID);
+    if (isCustomizedPrintInfoAvailable(certificate)) {
+      availableFunctions.add(AvailableFunctionFactory.avstangningSmittskydd(true));
     }
 
-    private static boolean isCustomizedPrintAvailable(Certificate certificate) {
+    return availableFunctions;
+  }
 
-        if (isCertificateOfType(certificate, Ag114EntryPoint.MODULE_ID)) {
-            return true;
-        }
+  private static CertificateDataValueBoolean getQuestionAvstagningSmittskyddValue(
+      Certificate certificate) {
+    return (CertificateDataValueBoolean)
+        getQuestionValue(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID);
+  }
 
-        return isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID)
-            && hasQuestion(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID)
-            && isBooleanValueNullOrFalse(getQuestionAvstagningSmittskyddValue(certificate));
+  private static boolean isCustomizedPrintAvailable(Certificate certificate) {
+
+    if (isCertificateOfType(certificate, Ag114EntryPoint.MODULE_ID)) {
+      return true;
     }
 
-    private static boolean isCustomizedPrintInfoAvailable(Certificate certificate) {
-        return isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID)
-            && hasQuestion(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID)
-            && isBooleanValueTrue(getQuestionAvstagningSmittskyddValue(certificate));
-    }
+    return isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID)
+        && hasQuestion(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID)
+        && isBooleanValueNullOrFalse(getQuestionAvstagningSmittskyddValue(certificate));
+  }
 
-    private boolean isPrintFeatureActive(Certificate certificate) {
-        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UTSKRIFT, certificate.getMetadata().getType());
-    }
+  private static boolean isCustomizedPrintInfoAvailable(Certificate certificate) {
+    return isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID)
+        && hasQuestion(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID)
+        && isBooleanValueTrue(getQuestionAvstagningSmittskyddValue(certificate));
+  }
 
-    private static String getFileName(Certificate certificate) {
-        return certificate.getMetadata().getName()
-            .replace("å", "a")
-            .replace("ä", "a")
-            .replace("ö", "o")
-            .replace(" ", "_")
-            .replace("–", "")
-            .replace("__", "_")
-            .toLowerCase();
-    }
+  private boolean isPrintFeatureActive(Certificate certificate) {
+    return authoritiesHelper.isFeatureActive(
+        AuthoritiesConstants.FEATURE_UTSKRIFT, certificate.getMetadata().getType());
+  }
+
+  private static String getFileName(Certificate certificate) {
+    return certificate
+        .getMetadata()
+        .getName()
+        .replace("å", "a")
+        .replace("ä", "a")
+        .replace("ö", "o")
+        .replace(" ", "_")
+        .replace("–", "")
+        .replace("__", "_")
+        .toLowerCase();
+  }
 }

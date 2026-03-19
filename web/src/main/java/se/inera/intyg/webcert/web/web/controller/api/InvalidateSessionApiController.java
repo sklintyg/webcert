@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,32 +33,34 @@ import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
 @Path(InvalidateSessionApiController.SESSION_STATUS_REQUEST_MAPPING)
-@Api(value = "invalidateSession",
-    produces = MediaType.APPLICATION_JSON)
+@Api(value = "invalidateSession", produces = MediaType.APPLICATION_JSON)
 public class InvalidateSessionApiController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InvalidateSessionApiController.class);
-    public static final String SESSION_STATUS_REQUEST_MAPPING = "/v1/session";
-    public static final String INVALIDATE_ENDPOINT = "/invalidate";
-    protected static final String UTF_8_CHARSET = ";charset=utf-8";
-    @Autowired
-    private InvalidateSessionService invalidateSessionService;
+  private static final Logger LOG = LoggerFactory.getLogger(InvalidateSessionApiController.class);
+  public static final String SESSION_STATUS_REQUEST_MAPPING = "/v1/session";
+  public static final String INVALIDATE_ENDPOINT = "/invalidate";
+  protected static final String UTF_8_CHARSET = ";charset=utf-8";
+  @Autowired private InvalidateSessionService invalidateSessionService;
 
-    @POST
-    @Path(INVALIDATE_ENDPOINT)
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PerformanceLogging(eventAction = "invalidate-session-invalidate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response invalidateSession(InvalidateRequest invalidateRequest) {
-        if (invalidateRequest.formatIsWrong()) {
-            LOG.info(String.format("launchId: %s OR userHsaId: %s - is wrong format. request will not be handled any further",
-                invalidateRequest.getLaunchId(), invalidateRequest.getUserHsaId()));
-            return Response.noContent().build();
-        }
-        try {
-            invalidateSessionService.invalidateSessionIfActive(invalidateRequest);
-        } catch (Exception exception) {
-            LOG.error("Invalidate session failed. launchId: %s - userHsaId: %s", exception);
-        }
-        return Response.noContent().build();
+  @POST
+  @Path(INVALIDATE_ENDPOINT)
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PerformanceLogging(
+      eventAction = "invalidate-session-invalidate",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public Response invalidateSession(InvalidateRequest invalidateRequest) {
+    if (invalidateRequest.formatIsWrong()) {
+      LOG.info(
+          String.format(
+              "launchId: %s OR userHsaId: %s - is wrong format. request will not be handled any further",
+              invalidateRequest.getLaunchId(), invalidateRequest.getUserHsaId()));
+      return Response.noContent().build();
     }
+    try {
+      invalidateSessionService.invalidateSessionIfActive(invalidateRequest);
+    } catch (Exception exception) {
+      LOG.error("Invalidate session failed. launchId: %s - userHsaId: %s", exception);
+    }
+    return Response.noContent().build();
+  }
 }

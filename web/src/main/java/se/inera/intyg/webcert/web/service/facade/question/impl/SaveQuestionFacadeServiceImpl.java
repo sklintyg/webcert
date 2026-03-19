@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,24 +30,25 @@ import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter
 @Service("saveQuestionFromWC")
 public class SaveQuestionFacadeServiceImpl implements SaveQuestionFacadeService {
 
-    private final ArendeDraftService arendeDraftService;
-    private final QuestionConverter questionConverter;
+  private final ArendeDraftService arendeDraftService;
+  private final QuestionConverter questionConverter;
 
-    @Autowired
-    public SaveQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService,
-        QuestionConverter questionConverter) {
-        this.arendeDraftService = arendeDraftService;
-        this.questionConverter = questionConverter;
-    }
+  @Autowired
+  public SaveQuestionFacadeServiceImpl(
+      ArendeDraftService arendeDraftService, QuestionConverter questionConverter) {
+    this.arendeDraftService = arendeDraftService;
+    this.questionConverter = questionConverter;
+  }
 
-    @Override
-    public Question save(Question question) {
-        final var questionDraft = arendeDraftService.getQuestionDraftById(Long.parseLong(question.getId()));
-        questionDraft.setText(question.getMessage());
-        questionDraft.setAmne(getSubjectAsString(question.getType()));
+  @Override
+  public Question save(Question question) {
+    final var questionDraft =
+        arendeDraftService.getQuestionDraftById(Long.parseLong(question.getId()));
+    questionDraft.setText(question.getMessage());
+    questionDraft.setAmne(getSubjectAsString(question.getType()));
 
-        final var savedQuestionDraft = arendeDraftService.save(questionDraft);
+    final var savedQuestionDraft = arendeDraftService.save(questionDraft);
 
-        return questionConverter.convert(savedQuestionDraft);
-    }
+    return questionConverter.convert(savedQuestionDraft);
+  }
 }

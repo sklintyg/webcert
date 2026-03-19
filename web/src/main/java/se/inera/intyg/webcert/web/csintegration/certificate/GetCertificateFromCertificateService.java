@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -34,41 +33,42 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 @RequiredArgsConstructor
 public class GetCertificateFromCertificateService implements GetCertificateFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PDLLogService pdlLogService;
+  private final DecorateCertificateFromCSWithInformationFromWC
+      decorateCertificateFromCSWithInformationFromWC;
 
-    @Override
-    public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
-        final var exists = csIntegrationService.certificateExists(certificateId);
-        if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
-
-        log.debug("Getting certificate from certificate service with id '{}'", certificateId);
-        final var response = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
-        log.debug("Certificate with id '{}' was retrieved from certificate service", certificateId);
-
-        decorateCertificateFromCSWithInformationFromWC.decorate(response);
-
-        if (pdlLog) {
-            pdlLogService.logRead(response);
-
-            if (containsCandidateCertificateInformation(response)) {
-                pdlLogService.logReadLevelTwo(response);
-            }
-        }
-
-        return response;
+  @Override
+  public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
+    final var exists = csIntegrationService.certificateExists(certificateId);
+    if (Boolean.FALSE.equals(exists)) {
+      log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
+      return null;
     }
 
-    private boolean containsCandidateCertificateInformation(Certificate response) {
-        return response.getLinks().stream()
-            .anyMatch(link -> ResourceLinkTypeEnum.CREATE_CERTIFICATE_FROM_CANDIDATE.equals(link.getType()));
+    log.debug("Getting certificate from certificate service with id '{}'", certificateId);
+    final var response =
+        csIntegrationService.getCertificate(
+            certificateId, csIntegrationRequestFactory.getCertificateRequest());
+    log.debug("Certificate with id '{}' was retrieved from certificate service", certificateId);
+
+    decorateCertificateFromCSWithInformationFromWC.decorate(response);
+
+    if (pdlLog) {
+      pdlLogService.logRead(response);
+
+      if (containsCandidateCertificateInformation(response)) {
+        pdlLogService.logReadLevelTwo(response);
+      }
     }
+
+    return response;
+  }
+
+  private boolean containsCandidateCertificateInformation(Certificate response) {
+    return response.getLinks().stream()
+        .anyMatch(
+            link -> ResourceLinkTypeEnum.CREATE_CERTIFICATE_FROM_CANDIDATE.equals(link.getType()));
+  }
 }

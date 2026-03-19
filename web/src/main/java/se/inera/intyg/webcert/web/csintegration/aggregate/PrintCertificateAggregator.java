@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import lombok.RequiredArgsConstructor;
@@ -28,14 +27,16 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 @Service
 @RequiredArgsConstructor
 public class PrintCertificateAggregator {
-    private final IntygService intygService;
-    private final PrintCertificateFromCertificateService printCertificateFromCertificateService;
+  private final IntygService intygService;
+  private final PrintCertificateFromCertificateService printCertificateFromCertificateService;
 
-    public IntygPdf get(String certificateId, String certificateType, boolean isEmployerCopy) {
-        final var response = printCertificateFromCertificateService.print(certificateId, certificateType, isEmployerCopy);
+  public IntygPdf get(String certificateId, String certificateType, boolean isEmployerCopy) {
+    final var response =
+        printCertificateFromCertificateService.print(
+            certificateId, certificateType, isEmployerCopy);
 
-        return response != null
-            ? response
-            : intygService.fetchIntygAsPdf(certificateId, certificateType, isEmployerCopy);
-    }
+    return response != null
+        ? response
+        : intygService.fetchIntygAsPdf(certificateId, certificateType, isEmployerCopy);
+  }
 }

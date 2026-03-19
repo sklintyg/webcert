@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,29 +20,29 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class GetCandidateMessageForCertificateDTO {
 
-    private String message;
-    private String title;
+  private String message;
+  private String title;
 
-    public static GetCandidateMessageForCertificateDTO create(String message, String title) {
-        final var candidateMessageForCertificateDTO = new GetCandidateMessageForCertificateDTO();
-        candidateMessageForCertificateDTO.setMessage(message);
-        candidateMessageForCertificateDTO.setTitle(title);
-        return candidateMessageForCertificateDTO;
-    }
+  public static GetCandidateMessageForCertificateDTO create(String message, String title) {
+    final var candidateMessageForCertificateDTO = new GetCandidateMessageForCertificateDTO();
+    candidateMessageForCertificateDTO.setMessage(message);
+    candidateMessageForCertificateDTO.setTitle(title);
+    return candidateMessageForCertificateDTO;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String certificateId) {
-        this.message = certificateId;
-    }
+  public void setMessage(String certificateId) {
+    this.message = certificateId;
+  }
 }

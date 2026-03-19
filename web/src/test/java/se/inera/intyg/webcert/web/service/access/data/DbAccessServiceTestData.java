@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,36 +25,38 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 public class DbAccessServiceTestData implements AccessServiceTestData {
 
-    private static List<String> FEATURES = Arrays.asList(
-        AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-        AuthoritiesConstants.FEATURE_FORNYA_INTYG,
-        AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
-        AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA,
-        // TODO verifiera hurvida det skall gå att skicka intygstypen eller inte
-        // AuthoritiesConstants.FEATURE_SKICKA_INTYG,
-        AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT,
-        AuthoritiesConstants.FEATURE_UTSKRIFT,
-        AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN,
-        AuthoritiesConstants.FEATURE_TAK_KONTROLL,
-        AuthoritiesConstants.FEATURE_UNIKT_INTYG,
-        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG);
-    private static List<String> PRIVILEGES = Arrays.asList(
-        AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-        AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG,
-        AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
-        AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST,
-        AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
-        AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
-        AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG,
-        AuthoritiesConstants.PRIVILEGE_KOPIERA_LAST_UTKAST);
+  private static List<String> FEATURES =
+      Arrays.asList(
+          AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+          AuthoritiesConstants.FEATURE_FORNYA_INTYG,
+          AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
+          AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA,
+          // TODO verifiera hurvida det skall gå att skicka intygstypen eller inte
+          // AuthoritiesConstants.FEATURE_SKICKA_INTYG,
+          AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT,
+          AuthoritiesConstants.FEATURE_UTSKRIFT,
+          AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN,
+          AuthoritiesConstants.FEATURE_TAK_KONTROLL,
+          AuthoritiesConstants.FEATURE_UNIKT_INTYG,
+          AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG);
+  private static List<String> PRIVILEGES =
+      Arrays.asList(
+          AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+          AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG,
+          AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+          AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST,
+          AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
+          AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
+          AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG,
+          AuthoritiesConstants.PRIVILEGE_KOPIERA_LAST_UTKAST);
 
-    @Override
-    public List<String> getFeatures() {
-        return Collections.unmodifiableList(FEATURES);
-    }
+  @Override
+  public List<String> getFeatures() {
+    return Collections.unmodifiableList(FEATURES);
+  }
 
-    @Override
-    public List<String> getPrivileges() {
-        return Collections.unmodifiableList(PRIVILEGES);
-    }
+  @Override
+  public List<String> getPrivileges() {
+    return Collections.unmodifiableList(PRIVILEGES);
+  }
 }

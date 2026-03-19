@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,9 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
-
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -28,20 +26,22 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 @Service("getCertificateInternalAggregator")
 public class GetCertificateInternalAggregator implements GetCertificateInteralApi {
 
-    private final GetCertificateInteralApi certificateInternalServiceFromWC;
-    private final GetCertificateInteralApi certificateInternalServiceFromCS;
+  private final GetCertificateInteralApi certificateInternalServiceFromWC;
+  private final GetCertificateInteralApi certificateInternalServiceFromCS;
 
-    public GetCertificateInternalAggregator(
-        @Qualifier("getCertificateInternalServiceFromWC") GetCertificateInteralApi getCertificateInteralServiceFromWC,
-        @Qualifier("getCertificateInternalServiceFromCS") GetCertificateInteralApi getCertificateInternalServiceFromCS) {
-        this.certificateInternalServiceFromWC = getCertificateInteralServiceFromWC;
-        this.certificateInternalServiceFromCS = getCertificateInternalServiceFromCS;
-    }
+  public GetCertificateInternalAggregator(
+      @Qualifier("getCertificateInternalServiceFromWC") GetCertificateInteralApi getCertificateInteralServiceFromWC,
+      @Qualifier("getCertificateInternalServiceFromCS") GetCertificateInteralApi getCertificateInternalServiceFromCS) {
+    this.certificateInternalServiceFromWC = getCertificateInteralServiceFromWC;
+    this.certificateInternalServiceFromCS = getCertificateInternalServiceFromCS;
+  }
 
-    @Override
-    public GetCertificateResponse get(String certificateId, String personId) {
-        final var responseFromCS = certificateInternalServiceFromCS.get(certificateId, personId);
+  @Override
+  public GetCertificateResponse get(String certificateId, String personId) {
+    final var responseFromCS = certificateInternalServiceFromCS.get(certificateId, personId);
 
-        return responseFromCS != null ? responseFromCS : certificateInternalServiceFromWC.get(certificateId, personId);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : certificateInternalServiceFromWC.get(certificateId, personId);
+  }
 }

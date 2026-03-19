@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,16 +23,15 @@ import lombok.Value;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
- * Wrapper class for adding some extra data to the FragaSvar database entities, before sending them to frontend. Due to
- * the legacy status of FragaSvar code, it is not done in the same manner as with the Arende entities, but instead
- * quicker solution.
+ * Wrapper class for adding some extra data to the FragaSvar database entities, before sending them
+ * to frontend. Due to the legacy status of FragaSvar code, it is not done in the same manner as
+ * with the Arende entities, but instead quicker solution.
  */
 @Value
 @Builder
 public class FragaSvarView {
 
-    FragaSvar fragaSvar;
-    AnsweredWithIntyg answeredWithIntyg;
-    String answerDraft;
-
+  FragaSvar fragaSvar;
+  AnsweredWithIntyg answeredWithIntyg;
+  String answerDraft;
 }

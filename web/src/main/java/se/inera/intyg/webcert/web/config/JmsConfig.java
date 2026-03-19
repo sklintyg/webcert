@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,108 +33,106 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-/**
- * Configures JMS.
- */
+/** Configures JMS. */
 @Configuration
 @EnableJms
 public class JmsConfig {
 
-    @Value("${activemq.broker.url}")
-    private String activeMqBrokerUrl;
+  @Value("${activemq.broker.url}")
+  private String activeMqBrokerUrl;
 
-    @Value("${activemq.broker.username}")
-    private String activeMqBrokerUsername;
+  @Value("${activemq.broker.username}")
+  private String activeMqBrokerUsername;
 
-    @Value("${activemq.broker.password}")
-    private String activeMqBrokerPassword;
+  @Value("${activemq.broker.password}")
+  private String activeMqBrokerPassword;
 
-    @Value("${log.queueName}")
-    private String logQueueName;
+  @Value("${log.queueName}")
+  private String logQueueName;
 
-    @Value("${certificate.sender.queueName}")
-    private String certificateSenderQueueName;
+  @Value("${certificate.sender.queueName}")
+  private String certificateSenderQueueName;
 
-    @Value("${notification.ws.queueName}")
-    private String notificationWSQueueName;
+  @Value("${notification.ws.queueName}")
+  private String notificationWSQueueName;
 
-    @Value("${notification.postProcessing.queueName}")
-    private String notificationPostProcessingQueueName;
+  @Value("${notification.postProcessing.queueName}")
+  private String notificationPostProcessingQueueName;
 
-    @Value("${notification.aggregation.queueName}")
-    private String notificationAggregationQueueName;
+  @Value("${notification.aggregation.queueName}")
+  private String notificationAggregationQueueName;
 
-    @Value("${jms.connection.factory.cache.level.name}")
-    private String jmsConnectionFactoryCacheLevelName;
+  @Value("${jms.connection.factory.cache.level.name}")
+  private String jmsConnectionFactoryCacheLevelName;
 
-    @Bean
-    public JmsListenerContainerFactory jmsListenerContainerFactory(JmsTransactionManager jmsTransactionManager) {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(jmsTransactionManager.getConnectionFactory());
-        factory.setDestinationResolver(jmsDestinationResolver());
-        factory.setSessionTransacted(true);
-        factory.setTransactionManager(jmsTransactionManager);
-        factory.setCacheLevelName(jmsConnectionFactoryCacheLevelName);
-        factory.setConcurrency("1-10");
-        return factory;
-    }
+  @Bean
+  public JmsListenerContainerFactory jmsListenerContainerFactory(
+      JmsTransactionManager jmsTransactionManager) {
+    DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+    factory.setConnectionFactory(jmsTransactionManager.getConnectionFactory());
+    factory.setDestinationResolver(jmsDestinationResolver());
+    factory.setSessionTransacted(true);
+    factory.setTransactionManager(jmsTransactionManager);
+    factory.setCacheLevelName(jmsConnectionFactoryCacheLevelName);
+    factory.setConcurrency("1-10");
+    return factory;
+  }
 
-    @Bean
-    public DestinationResolver jmsDestinationResolver() {
-        return new DynamicDestinationResolver();
-    }
+  @Bean
+  public DestinationResolver jmsDestinationResolver() {
+    return new DynamicDestinationResolver();
+  }
 
-    @Bean
-    public JmsTransactionManager jmsTransactionManager(ConnectionFactory jmsConnectionFactory) {
-        return new JmsTransactionManager(jmsConnectionFactory);
-    }
+  @Bean
+  public JmsTransactionManager jmsTransactionManager(ConnectionFactory jmsConnectionFactory) {
+    return new JmsTransactionManager(jmsConnectionFactory);
+  }
 
-    @Bean
-    public ConnectionFactory jmsConnectionFactory() {
-        return new CachingConnectionFactory(
-            new ActiveMQConnectionFactory(activeMqBrokerUsername, activeMqBrokerPassword, activeMqBrokerUrl)
-        );
-    }
+  @Bean
+  public ConnectionFactory jmsConnectionFactory() {
+    return new CachingConnectionFactory(
+        new ActiveMQConnectionFactory(
+            activeMqBrokerUsername, activeMqBrokerPassword, activeMqBrokerUrl));
+  }
 
-    @Bean
-    @Profile({"dev", "testability-api"})
-    public JmsTemplate jmsPDLLogTemplateNoTx(ConnectionFactory jmsConnectionFactory) {
-        final JmsTemplate t = jmsPDLLogTemplate(jmsConnectionFactory);
-        t.setSessionTransacted(false);
-        return t;
-    }
+  @Bean
+  @Profile({"dev", "testability-api"})
+  public JmsTemplate jmsPDLLogTemplateNoTx(ConnectionFactory jmsConnectionFactory) {
+    final JmsTemplate t = jmsPDLLogTemplate(jmsConnectionFactory);
+    t.setSessionTransacted(false);
+    return t;
+  }
 
-    @Bean
-    public JmsTemplate jmsPDLLogTemplate(ConnectionFactory jmsConnectionFactory) {
-        return template(jmsConnectionFactory, logQueueName);
-    }
+  @Bean
+  public JmsTemplate jmsPDLLogTemplate(ConnectionFactory jmsConnectionFactory) {
+    return template(jmsConnectionFactory, logQueueName);
+  }
 
-    @Bean
-    public JmsTemplate jmsNotificationTemplateForAggregation(ConnectionFactory jmsConnectionFactory) {
-        return template(jmsConnectionFactory, notificationAggregationQueueName);
-    }
+  @Bean
+  public JmsTemplate jmsNotificationTemplateForAggregation(ConnectionFactory jmsConnectionFactory) {
+    return template(jmsConnectionFactory, notificationAggregationQueueName);
+  }
 
-    @Bean
-    public JmsTemplate jmsTemplateNotificationPostProcessing(ConnectionFactory jmsConnectionFactory) {
-        return template(jmsConnectionFactory, notificationPostProcessingQueueName);
-    }
+  @Bean
+  public JmsTemplate jmsTemplateNotificationPostProcessing(ConnectionFactory jmsConnectionFactory) {
+    return template(jmsConnectionFactory, notificationPostProcessingQueueName);
+  }
 
-    @Bean
-    public JmsTemplate jmsTemplateNotificationWSSender(ConnectionFactory jmsConnectionFactory) {
-        return template(jmsConnectionFactory, notificationWSQueueName);
-    }
+  @Bean
+  public JmsTemplate jmsTemplateNotificationWSSender(ConnectionFactory jmsConnectionFactory) {
+    return template(jmsConnectionFactory, notificationWSQueueName);
+  }
 
-    @Bean
-    public JmsTemplate jmsCertificateSenderTemplate(ConnectionFactory jmsConnectionFactory) {
-        return template(jmsConnectionFactory, certificateSenderQueueName);
-    }
+  @Bean
+  public JmsTemplate jmsCertificateSenderTemplate(ConnectionFactory jmsConnectionFactory) {
+    return template(jmsConnectionFactory, certificateSenderQueueName);
+  }
 
-    JmsTemplate template(final ConnectionFactory connectionFactory, final String queueName) {
-        final JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestinationName(queueName);
-        jmsTemplate.setConnectionFactory(connectionFactory);
-        jmsTemplate.setSessionTransacted(true);
-        return jmsTemplate;
-    }
-
+  JmsTemplate template(final ConnectionFactory connectionFactory, final String queueName) {
+    final JmsTemplate jmsTemplate = new JmsTemplate();
+    jmsTemplate.setDefaultDestinationName(queueName);
+    jmsTemplate.setConnectionFactory(connectionFactory);
+    jmsTemplate.setSessionTransacted(true);
+    return jmsTemplate;
+  }
 }

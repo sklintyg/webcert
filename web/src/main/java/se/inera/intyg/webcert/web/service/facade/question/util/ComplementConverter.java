@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,7 +25,7 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
 public interface ComplementConverter {
 
-    Complement[] convert(Arende complementQuestion);
+  Complement[] convert(Arende complementQuestion);
 
-    Map<String, Complement[]> convert(List<Arende> complementQuestions);
+  Map<String, Complement[]> convert(List<Arende> complementQuestions);
 }

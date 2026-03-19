@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import lombok.RequiredArgsConstructor;
@@ -36,28 +35,28 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 @RequiredArgsConstructor
 public class ProcessIncomingMessageAggregator {
 
-    private final ArendeService arendeService;
-    private final CSIntegrationService csIntegrationService;
-    private final ProcessIncomingMessageService processIncomingMessageService;
+  private final ArendeService arendeService;
+  private final CSIntegrationService csIntegrationService;
+  private final ProcessIncomingMessageService processIncomingMessageService;
 
-
-    public SendMessageToCareResponseType process(SendMessageToCareType sendMessageToCareType) {
-        final var certificateId = sendMessageToCareType.getIntygsId().getExtension();
-        final var exists = csIntegrationService.certificateExists(certificateId);
-        if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return processMessageForWebcert(sendMessageToCareType);
-        }
-
-        return processIncomingMessageService.process(sendMessageToCareType);
+  public SendMessageToCareResponseType process(SendMessageToCareType sendMessageToCareType) {
+    final var certificateId = sendMessageToCareType.getIntygsId().getExtension();
+    final var exists = csIntegrationService.certificateExists(certificateId);
+    if (Boolean.FALSE.equals(exists)) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return processMessageForWebcert(sendMessageToCareType);
     }
 
-    private SendMessageToCareResponseType processMessageForWebcert(SendMessageToCareType sendMessageToCareType) {
-        final var response = new SendMessageToCareResponseType();
-        final var result = new ResultType();
-        arendeService.processIncomingMessage(ArendeConverter.convert(sendMessageToCareType));
-        result.setResultCode(ResultCodeType.OK);
-        response.setResult(result);
-        return response;
-    }
+    return processIncomingMessageService.process(sendMessageToCareType);
+  }
+
+  private SendMessageToCareResponseType processMessageForWebcert(
+      SendMessageToCareType sendMessageToCareType) {
+    final var response = new SendMessageToCareResponseType();
+    final var result = new ResultType();
+    arendeService.processIncomingMessage(ArendeConverter.convert(sendMessageToCareType));
+    result.setResultCode(ResultCodeType.OK);
+    response.setResult(result);
+    return response;
+  }
 }

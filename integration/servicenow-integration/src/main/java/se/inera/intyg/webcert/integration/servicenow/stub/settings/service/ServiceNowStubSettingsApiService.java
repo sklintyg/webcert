@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,50 +29,50 @@ import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.Service
 @RequiredArgsConstructor
 public class ServiceNowStubSettingsApiService {
 
-    private final ServiceNowStubState stubState;
+  private final ServiceNowStubState stubState;
 
-    public void setSubscriptionReturnValue(Boolean returnValue) {
-        stubState.setSubscriptionReturnValue(returnValue);
-        clearActiveSubscriptions();
-    }
+  public void setSubscriptionReturnValue(Boolean returnValue) {
+    stubState.setSubscriptionReturnValue(returnValue);
+    clearActiveSubscriptions();
+  }
 
-    public Boolean getSubscriptionReturnValue() {
-        return stubState.getSubscriptionReturnValue();
-    }
+  public Boolean getSubscriptionReturnValue() {
+    return stubState.getSubscriptionReturnValue();
+  }
 
-    public void setActiveSubscription(String orgNumber, String serviceCode) {
-        final var activeSubscriptions = stubState.getActiveSubscriptions();
-        if (activeSubscriptions.containsKey(orgNumber)) {
-            final var serviceCodes = activeSubscriptions.get(orgNumber);
-            if (!serviceCodes.contains(serviceCode)) {
-                serviceCodes.add(serviceCode);
-            }
-        } else {
-            final var serviceCodeList = new ArrayList<String>();
-            serviceCodeList.add(serviceCode);
-            activeSubscriptions.put(orgNumber, serviceCodeList);
-        }
-        stubState.setActiveSubscriptions(activeSubscriptions);
+  public void setActiveSubscription(String orgNumber, String serviceCode) {
+    final var activeSubscriptions = stubState.getActiveSubscriptions();
+    if (activeSubscriptions.containsKey(orgNumber)) {
+      final var serviceCodes = activeSubscriptions.get(orgNumber);
+      if (!serviceCodes.contains(serviceCode)) {
+        serviceCodes.add(serviceCode);
+      }
+    } else {
+      final var serviceCodeList = new ArrayList<String>();
+      serviceCodeList.add(serviceCode);
+      activeSubscriptions.put(orgNumber, serviceCodeList);
     }
+    stubState.setActiveSubscriptions(activeSubscriptions);
+  }
 
-    public void removeActiveSubscriptions(String orgNumber) {
-        final var activeSubscriptions = stubState.getActiveSubscriptions();
-        activeSubscriptions.remove(orgNumber);
-    }
+  public void removeActiveSubscriptions(String orgNumber) {
+    final var activeSubscriptions = stubState.getActiveSubscriptions();
+    activeSubscriptions.remove(orgNumber);
+  }
 
-    public void clearActiveSubscriptions() {
-        stubState.clearActiveSubscriptions();
-    }
+  public void clearActiveSubscriptions() {
+    stubState.clearActiveSubscriptions();
+  }
 
-    public Map<String, List<String>> getActiveSubscriptions() {
-        return stubState.getActiveSubscriptions();
-    }
+  public Map<String, List<String>> getActiveSubscriptions() {
+    return stubState.getActiveSubscriptions();
+  }
 
-    public void setHttpError(int errorCode) {
-        stubState.setHttpErrorCode(errorCode);
-    }
+  public void setHttpError(int errorCode) {
+    stubState.setHttpErrorCode(errorCode);
+  }
 
-    public void clearHttpError() {
-        stubState.setHttpErrorCode(0);
-    }
+  public void clearHttpError() {
+    stubState.setHttpErrorCode(0);
+  }
 }

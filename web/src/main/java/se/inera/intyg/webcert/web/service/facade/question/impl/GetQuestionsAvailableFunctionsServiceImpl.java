@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,104 +28,93 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
-public class GetQuestionsAvailableFunctionsServiceImpl implements GetQuestionsAvailableFunctionsService {
+public class GetQuestionsAvailableFunctionsServiceImpl
+    implements GetQuestionsAvailableFunctionsService {
 
-    private static final String FORWARD_DESCRIPTION_CERTIFICATE =
-        "Skapar ett e-postmeddelande med länk till intyget.";
+  private static final String FORWARD_DESCRIPTION_CERTIFICATE =
+      "Skapar ett e-postmeddelande med länk till intyget.";
 
-    @Override
-    public List<ResourceLinkDTO> get(Question question) {
-        final var availableFunctions = new ArrayList<ResourceLinkDTO>();
+  @Override
+  public List<ResourceLinkDTO> get(Question question) {
+    final var availableFunctions = new ArrayList<ResourceLinkDTO>();
 
-        if (isQuestionRecieved(question) && isAdministrativeQuestion(question) && isQuestionUnanswered(question)
-            && isQuestionUnhandled(question)) {
-            availableFunctions.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.ANSWER_QUESTION,
-                    "Svara",
-                    "Svara på fråga",
-                    true
-                )
-            );
-        }
-
-        if ((isQuestionSent(question) || isQuestionUnanswered(question))
-            && (isQuestionUnhandled(question) || isAdministrativeQuestion(question))) {
-            availableFunctions.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.HANDLE_QUESTION,
-                    "Hantera",
-                    "Hantera fråga",
-                    true
-                )
-            );
-        }
-
-        if (isComplementQuestion(question) && isQuestionUnhandled(question) && isNotAnsweredByCertificate(question)) {
-            availableFunctions.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE,
-                    "Komplettera",
-                    "Öppnar ett nytt intygsutkast.",
-                    true
-                )
-            );
-
-            availableFunctions.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE,
-                    "Kan ej komplettera",
-                    "Öppnar en dialogruta med mer information.",
-                    true
-                )
-            );
-        }
-
-        if (isUnhandled(question)) {
-            availableFunctions.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.FORWARD_QUESTION,
-                    "Vidarebefordra",
-                    FORWARD_DESCRIPTION_CERTIFICATE,
-                    true
-                )
-            );
-        }
-        return availableFunctions;
+    if (isQuestionRecieved(question)
+        && isAdministrativeQuestion(question)
+        && isQuestionUnanswered(question)
+        && isQuestionUnhandled(question)) {
+      availableFunctions.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.ANSWER_QUESTION, "Svara", "Svara på fråga", true));
     }
 
-    private boolean isNotAnsweredByCertificate(Question question) {
-        return question.getAnsweredByCertificate() == null;
+    if ((isQuestionSent(question) || isQuestionUnanswered(question))
+        && (isQuestionUnhandled(question) || isAdministrativeQuestion(question))) {
+      availableFunctions.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.HANDLE_QUESTION, "Hantera", "Hantera fråga", true));
     }
 
-    private boolean isAdministrativeQuestion(Question question) {
-        return question.getType() != QuestionType.COMPLEMENT;
+    if (isComplementQuestion(question)
+        && isQuestionUnhandled(question)
+        && isNotAnsweredByCertificate(question)) {
+      availableFunctions.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE,
+              "Komplettera",
+              "Öppnar ett nytt intygsutkast.",
+              true));
+
+      availableFunctions.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE,
+              "Kan ej komplettera",
+              "Öppnar en dialogruta med mer information.",
+              true));
     }
 
-    private boolean isComplementQuestion(Question question) {
-        return question.getType() == QuestionType.COMPLEMENT;
+    if (isUnhandled(question)) {
+      availableFunctions.add(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.FORWARD_QUESTION,
+              "Vidarebefordra",
+              FORWARD_DESCRIPTION_CERTIFICATE,
+              true));
     }
+    return availableFunctions;
+  }
 
-    private boolean isQuestionUnhandled(Question question) {
-        return !question.isHandled();
-    }
+  private boolean isNotAnsweredByCertificate(Question question) {
+    return question.getAnsweredByCertificate() == null;
+  }
 
-    private boolean isQuestionUnanswered(Question question) {
-        return question.getAnswer() == null || question.getAnswer().getSent() == null;
-    }
+  private boolean isAdministrativeQuestion(Question question) {
+    return question.getType() != QuestionType.COMPLEMENT;
+  }
 
-    private boolean isQuestionRecieved(Question question) {
-        return question.getAuthor().equalsIgnoreCase("Försäkringskassan");
-    }
+  private boolean isComplementQuestion(Question question) {
+    return question.getType() == QuestionType.COMPLEMENT;
+  }
 
-    private boolean isQuestionSent(Question question) {
-        return !isQuestionRecieved(question);
-    }
+  private boolean isQuestionUnhandled(Question question) {
+    return !question.isHandled();
+  }
 
-    private boolean isUnhandled(Question question) {
-        if (question != null) {
-            return !question.isHandled();
-        }
-        return false;
+  private boolean isQuestionUnanswered(Question question) {
+    return question.getAnswer() == null || question.getAnswer().getSent() == null;
+  }
+
+  private boolean isQuestionRecieved(Question question) {
+    return question.getAuthor().equalsIgnoreCase("Försäkringskassan");
+  }
+
+  private boolean isQuestionSent(Question question) {
+    return !isQuestionRecieved(question);
+  }
+
+  private boolean isUnhandled(Question question) {
+    if (question != null) {
+      return !question.isHandled();
     }
+    return false;
+  }
 }

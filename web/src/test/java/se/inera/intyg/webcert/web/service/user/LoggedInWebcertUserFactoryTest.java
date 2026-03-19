@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,118 +42,117 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class LoggedInWebcertUserFactoryTest {
 
-    @InjectMocks
-    private LoggedInWebcertUserFactory factory;
+  @InjectMocks private LoggedInWebcertUserFactory factory;
 
-    @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class CreateFromIntygUser {
+  @Nested
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  class CreateFromIntygUser {
 
-        private IntygUser intygUser;
+    private IntygUser intygUser;
 
-        @BeforeEach
-        void setUp() {
-            intygUser = mock(IntygUser.class);
-        }
-
-        @Test
-        void shallIncludeStaffId() {
-            final var expected = "staffId";
-            when(intygUser.getHsaId()).thenReturn(expected);
-
-            final var actual = factory.create(intygUser);
-            assertEquals(expected, actual.getStaffId());
-        }
-
-        @Test
-        void shallIncludeUnitId() {
-            final var expected = "unitId";
-            when(intygUser.getValdVardenhet()).thenReturn(new Mottagning(expected, "testenhet"));
-
-            final var actual = factory.create(intygUser);
-            assertEquals(expected, actual.getUnitId());
-        }
-
-        @Test
-        void shallIncludeCareProviderId() {
-            final var expected = "careProviderId";
-            when(intygUser.getValdVardgivare()).thenReturn(new Vardgivare(expected, "testvårdgivare"));
-
-            final var actual = factory.create(intygUser);
-            assertEquals(expected, actual.getCareProviderId());
-        }
-
-        @Test
-        void shallIncludeRoleWhenSingleRole() {
-            final var expected = "role";
-            when(intygUser.getRoles()).thenReturn(Map.of(expected, new Role()));
-
-            final var actual = factory.create(intygUser);
-            assertEquals(expected, actual.getRole());
-        }
-
-        @Test
-        void shallNotIncludeOrigin() {
-            final var actual = factory.create(intygUser);
-            assertNull(actual.getOrigin(), "Origin shall not be included when creating from IntygUser");
-            verify(intygUser, never()).getOrigin();
-        }
+    @BeforeEach
+    void setUp() {
+      intygUser = mock(IntygUser.class);
     }
 
-    @Nested
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class CreateFromWebCertUser {
+    @Test
+    void shallIncludeStaffId() {
+      final var expected = "staffId";
+      when(intygUser.getHsaId()).thenReturn(expected);
 
-        private WebCertUser webCertUser;
-
-        @BeforeEach
-        void setUp() {
-            webCertUser = mock(WebCertUser.class);
-        }
-
-        @Test
-        void shallIncludeStaffId() {
-            final var expected = "staffId";
-            when(webCertUser.getHsaId()).thenReturn(expected);
-
-            final var actual = factory.create(webCertUser);
-            assertEquals(expected, actual.getStaffId());
-        }
-
-        @Test
-        void shallIncludeUnitId() {
-            final var expected = "unitId";
-            when(webCertUser.getValdVardenhet()).thenReturn(new Mottagning(expected, "testenhet"));
-
-            final var actual = factory.create(webCertUser);
-            assertEquals(expected, actual.getUnitId());
-        }
-
-        @Test
-        void shallIncludeCareProviderId() {
-            final var expected = "careProviderId";
-            when(webCertUser.getValdVardgivare()).thenReturn(new Vardgivare(expected, "testvårdgivare"));
-
-            final var actual = factory.create(webCertUser);
-            assertEquals(expected, actual.getCareProviderId());
-        }
-
-        @Test
-        void shallIncludeRoleWhenSingleRole() {
-            final var expected = "role";
-            when(webCertUser.getRoles()).thenReturn(Map.of(expected, new Role()));
-
-            final var actual = factory.create(webCertUser);
-            assertEquals(expected, actual.getRole());
-        }
-
-        @Test
-        void shallIncludeOrigin() {
-            final var expected = "origin";
-            when(webCertUser.getOrigin()).thenReturn(expected);
-
-            final var actual = factory.create(webCertUser);
-            assertEquals(expected, actual.getOrigin());
-        }
+      final var actual = factory.create(intygUser);
+      assertEquals(expected, actual.getStaffId());
     }
+
+    @Test
+    void shallIncludeUnitId() {
+      final var expected = "unitId";
+      when(intygUser.getValdVardenhet()).thenReturn(new Mottagning(expected, "testenhet"));
+
+      final var actual = factory.create(intygUser);
+      assertEquals(expected, actual.getUnitId());
+    }
+
+    @Test
+    void shallIncludeCareProviderId() {
+      final var expected = "careProviderId";
+      when(intygUser.getValdVardgivare()).thenReturn(new Vardgivare(expected, "testvårdgivare"));
+
+      final var actual = factory.create(intygUser);
+      assertEquals(expected, actual.getCareProviderId());
+    }
+
+    @Test
+    void shallIncludeRoleWhenSingleRole() {
+      final var expected = "role";
+      when(intygUser.getRoles()).thenReturn(Map.of(expected, new Role()));
+
+      final var actual = factory.create(intygUser);
+      assertEquals(expected, actual.getRole());
+    }
+
+    @Test
+    void shallNotIncludeOrigin() {
+      final var actual = factory.create(intygUser);
+      assertNull(actual.getOrigin(), "Origin shall not be included when creating from IntygUser");
+      verify(intygUser, never()).getOrigin();
+    }
+  }
+
+  @Nested
+  @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+  class CreateFromWebCertUser {
+
+    private WebCertUser webCertUser;
+
+    @BeforeEach
+    void setUp() {
+      webCertUser = mock(WebCertUser.class);
+    }
+
+    @Test
+    void shallIncludeStaffId() {
+      final var expected = "staffId";
+      when(webCertUser.getHsaId()).thenReturn(expected);
+
+      final var actual = factory.create(webCertUser);
+      assertEquals(expected, actual.getStaffId());
+    }
+
+    @Test
+    void shallIncludeUnitId() {
+      final var expected = "unitId";
+      when(webCertUser.getValdVardenhet()).thenReturn(new Mottagning(expected, "testenhet"));
+
+      final var actual = factory.create(webCertUser);
+      assertEquals(expected, actual.getUnitId());
+    }
+
+    @Test
+    void shallIncludeCareProviderId() {
+      final var expected = "careProviderId";
+      when(webCertUser.getValdVardgivare()).thenReturn(new Vardgivare(expected, "testvårdgivare"));
+
+      final var actual = factory.create(webCertUser);
+      assertEquals(expected, actual.getCareProviderId());
+    }
+
+    @Test
+    void shallIncludeRoleWhenSingleRole() {
+      final var expected = "role";
+      when(webCertUser.getRoles()).thenReturn(Map.of(expected, new Role()));
+
+      final var actual = factory.create(webCertUser);
+      assertEquals(expected, actual.getRole());
+    }
+
+    @Test
+    void shallIncludeOrigin() {
+      final var expected = "origin";
+      when(webCertUser.getOrigin()).thenReturn(expected);
+
+      final var actual = factory.create(webCertUser);
+      assertEquals(expected, actual.getOrigin());
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,9 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import java.util.HashMap;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,120 +35,142 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommu
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredQAs;
 
-import java.util.HashMap;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-
 @ExtendWith(MockitoExtension.class)
 class GetUnansweredCommunicationAggregatorTest {
 
-    private static final List<String> PATIENT_IDS = List.of("patientId1", "patientId2");
-    public static final int MAX_DAYS_OF_UNANSWERED_COMMUNICATION = 90;
+  private static final List<String> PATIENT_IDS = List.of("patientId1", "patientId2");
+  public static final int MAX_DAYS_OF_UNANSWERED_COMMUNICATION = 90;
 
-    @Mock
-    private UnansweredCommunicationService getUnansweredCommunicationFromWC;
-    @Mock
-    private UnansweredCommunicationService getUnansweredCommunicationFromCS;
+  @Mock private UnansweredCommunicationService getUnansweredCommunicationFromWC;
+  @Mock private UnansweredCommunicationService getUnansweredCommunicationFromCS;
 
-    private GetUnansweredCommunicationAggregator getUnansweredCommunicationAggregator;
+  private GetUnansweredCommunicationAggregator getUnansweredCommunicationAggregator;
 
-    @BeforeEach
-    void setUp() {
-        getUnansweredCommunicationAggregator = new GetUnansweredCommunicationAggregator(
-            getUnansweredCommunicationFromWC, getUnansweredCommunicationFromCS
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    getUnansweredCommunicationAggregator =
+        new GetUnansweredCommunicationAggregator(
+            getUnansweredCommunicationFromWC, getUnansweredCommunicationFromCS);
+  }
 
-    @Test
-    void shallCombineResponsesFromCSAndWC() {
-        final var csMap = new HashMap<String, UnansweredQAs>();
-        csMap.put("certificate1", new UnansweredQAs());
-        final var csResponse = new UnansweredCommunicationResponse(csMap);
+  @Test
+  void shallCombineResponsesFromCSAndWC() {
+    final var csMap = new HashMap<String, UnansweredQAs>();
+    csMap.put("certificate1", new UnansweredQAs());
+    final var csResponse = new UnansweredCommunicationResponse(csMap);
 
-        final var wcMap = new HashMap<String, UnansweredQAs>();
-        wcMap.put("certificate2", new UnansweredQAs());
-        final var wcResponse = new UnansweredCommunicationResponse(wcMap);
+    final var wcMap = new HashMap<String, UnansweredQAs>();
+    wcMap.put("certificate2", new UnansweredQAs());
+    final var wcResponse = new UnansweredCommunicationResponse(wcMap);
 
-        doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
-        doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
+    doReturn(csResponse)
+        .when(getUnansweredCommunicationFromCS)
+        .get(any(UnansweredCommunicationRequest.class));
+    doReturn(wcResponse)
+        .when(getUnansweredCommunicationFromWC)
+        .get(any(UnansweredCommunicationRequest.class));
 
-        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
-
-        assertEquals(2, actualResult.getUnansweredQAsMap().size());
-        assertEquals(csResponse.getUnansweredQAsMap().get("certificate1"), actualResult.getUnansweredQAsMap().get("certificate1"));
-        assertEquals(wcResponse.getUnansweredQAsMap().get("certificate2"), actualResult.getUnansweredQAsMap().get("certificate2"));
-    }
-
-    @Test
-    void shallOverwriteCSResponseWithWCResponseWhenKeysMatch() {
-        final var csMap = new HashMap<String, UnansweredQAs>();
-        final var csQAs = new UnansweredQAs();
-        csMap.put("certificate1", csQAs);
-        final var csResponse = new UnansweredCommunicationResponse(csMap);
-
-        final var wcMap = new HashMap<String, UnansweredQAs>();
-        final var wcQAs = new UnansweredQAs();
-        wcMap.put("certificate1", wcQAs);
-        final var wcResponse = new UnansweredCommunicationResponse(wcMap);
-
-        doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
-        doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
-
-        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
-
-        assertEquals(1, actualResult.getUnansweredQAsMap().size());
-        assertEquals(wcQAs, actualResult.getUnansweredQAsMap().get("certificate1"));
-    }
-
-    @Test
-    void shallReturnOnlyCSResponseWhenWCResponseIsEmpty() {
-        final var csMap = new HashMap<String, UnansweredQAs>();
-        csMap.put("certificate1", new UnansweredQAs());
-        final var csResponse = new UnansweredCommunicationResponse(csMap);
-
-        final var wcResponse = new UnansweredCommunicationResponse(new HashMap<>());
-
-        doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
-        doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
-
-        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
-
-        assertEquals(1, actualResult.getUnansweredQAsMap().size());
-        assertEquals(csResponse.getUnansweredQAsMap().get("certificate1"), actualResult.getUnansweredQAsMap().get("certificate1"));
-    }
-
-    @Test
-    void shallReturnOnlyWCResponseWhenCSResponseIsEmpty() {
-        final var csResponse = new UnansweredCommunicationResponse(new HashMap<>());
-
-        final var wcMap = new HashMap<String, UnansweredQAs>();
-        wcMap.put("certificate2", new UnansweredQAs());
-        final var wcResponse = new UnansweredCommunicationResponse(wcMap);
-
-        doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
-        doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
-
-        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
-
-        assertEquals(1, actualResult.getUnansweredQAsMap().size());
-        assertEquals(wcResponse.getUnansweredQAsMap().get("certificate2"), actualResult.getUnansweredQAsMap().get("certificate2"));
-    }
-
-    @Test
-    void shallCallBothServicesWithCorrectRequest() {
-        final var csResponse = new UnansweredCommunicationResponse(new HashMap<>());
-        final var wcResponse = new UnansweredCommunicationResponse(new HashMap<>());
-
-        doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
-        doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
-
+    final var actualResult =
         getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
 
-        verify(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
-        verify(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
-    }
+    assertEquals(2, actualResult.getUnansweredQAsMap().size());
+    assertEquals(
+        csResponse.getUnansweredQAsMap().get("certificate1"),
+        actualResult.getUnansweredQAsMap().get("certificate1"));
+    assertEquals(
+        wcResponse.getUnansweredQAsMap().get("certificate2"),
+        actualResult.getUnansweredQAsMap().get("certificate2"));
+  }
+
+  @Test
+  void shallOverwriteCSResponseWithWCResponseWhenKeysMatch() {
+    final var csMap = new HashMap<String, UnansweredQAs>();
+    final var csQAs = new UnansweredQAs();
+    csMap.put("certificate1", csQAs);
+    final var csResponse = new UnansweredCommunicationResponse(csMap);
+
+    final var wcMap = new HashMap<String, UnansweredQAs>();
+    final var wcQAs = new UnansweredQAs();
+    wcMap.put("certificate1", wcQAs);
+    final var wcResponse = new UnansweredCommunicationResponse(wcMap);
+
+    doReturn(csResponse)
+        .when(getUnansweredCommunicationFromCS)
+        .get(any(UnansweredCommunicationRequest.class));
+    doReturn(wcResponse)
+        .when(getUnansweredCommunicationFromWC)
+        .get(any(UnansweredCommunicationRequest.class));
+
+    final var actualResult =
+        getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
+
+    assertEquals(1, actualResult.getUnansweredQAsMap().size());
+    assertEquals(wcQAs, actualResult.getUnansweredQAsMap().get("certificate1"));
+  }
+
+  @Test
+  void shallReturnOnlyCSResponseWhenWCResponseIsEmpty() {
+    final var csMap = new HashMap<String, UnansweredQAs>();
+    csMap.put("certificate1", new UnansweredQAs());
+    final var csResponse = new UnansweredCommunicationResponse(csMap);
+
+    final var wcResponse = new UnansweredCommunicationResponse(new HashMap<>());
+
+    doReturn(csResponse)
+        .when(getUnansweredCommunicationFromCS)
+        .get(any(UnansweredCommunicationRequest.class));
+    doReturn(wcResponse)
+        .when(getUnansweredCommunicationFromWC)
+        .get(any(UnansweredCommunicationRequest.class));
+
+    final var actualResult =
+        getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
+
+    assertEquals(1, actualResult.getUnansweredQAsMap().size());
+    assertEquals(
+        csResponse.getUnansweredQAsMap().get("certificate1"),
+        actualResult.getUnansweredQAsMap().get("certificate1"));
+  }
+
+  @Test
+  void shallReturnOnlyWCResponseWhenCSResponseIsEmpty() {
+    final var csResponse = new UnansweredCommunicationResponse(new HashMap<>());
+
+    final var wcMap = new HashMap<String, UnansweredQAs>();
+    wcMap.put("certificate2", new UnansweredQAs());
+    final var wcResponse = new UnansweredCommunicationResponse(wcMap);
+
+    doReturn(csResponse)
+        .when(getUnansweredCommunicationFromCS)
+        .get(any(UnansweredCommunicationRequest.class));
+    doReturn(wcResponse)
+        .when(getUnansweredCommunicationFromWC)
+        .get(any(UnansweredCommunicationRequest.class));
+
+    final var actualResult =
+        getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
+
+    assertEquals(1, actualResult.getUnansweredQAsMap().size());
+    assertEquals(
+        wcResponse.getUnansweredQAsMap().get("certificate2"),
+        actualResult.getUnansweredQAsMap().get("certificate2"));
+  }
+
+  @Test
+  void shallCallBothServicesWithCorrectRequest() {
+    final var csResponse = new UnansweredCommunicationResponse(new HashMap<>());
+    final var wcResponse = new UnansweredCommunicationResponse(new HashMap<>());
+
+    doReturn(csResponse)
+        .when(getUnansweredCommunicationFromCS)
+        .get(any(UnansweredCommunicationRequest.class));
+    doReturn(wcResponse)
+        .when(getUnansweredCommunicationFromWC)
+        .get(any(UnansweredCommunicationRequest.class));
+
+    getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
+
+    verify(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
+    verify(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
+  }
 }

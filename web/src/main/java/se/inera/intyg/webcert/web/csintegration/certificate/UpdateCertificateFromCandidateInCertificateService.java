@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -35,58 +34,55 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @Slf4j
 @Service("updateCertificateFromCandidateFromCS")
 @RequiredArgsConstructor
-public class UpdateCertificateFromCandidateInCertificateService implements UpdateCertificateFromCandidateFacadeService {
+public class UpdateCertificateFromCandidateInCertificateService
+    implements UpdateCertificateFromCandidateFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final WebCertUserService webCertUserService;
-    private final PDLLogService pdlLogService;
-    private final MonitoringLogService monitoringLogService;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final WebCertUserService webCertUserService;
+  private final PDLLogService pdlLogService;
+  private final MonitoringLogService monitoringLogService;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Override
-    public String update(String certificateId) {
-        final var exists = csIntegrationService.certificateExists(certificateId);
-        if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
+  @Override
+  public String update(String certificateId) {
+    final var exists = csIntegrationService.certificateExists(certificateId);
+    if (Boolean.FALSE.equals(exists)) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
+    }
 
-        final var candidateCertificate = csIntegrationService.getCandidateCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCandidateCertificateRequest()
-        );
+    final var candidateCertificate =
+        csIntegrationService.getCandidateCertificate(
+            certificateId, csIntegrationRequestFactory.getCandidateCertificateRequest());
 
-        final var user = webCertUserService.getUser();
-        final var savedCertificate = csIntegrationService.updateWithCandidateCertificate(
+    final var user = webCertUserService.getUser();
+    final var savedCertificate =
+        csIntegrationService.updateWithCandidateCertificate(
             certificateId,
             candidateCertificate.getMetadata().getId(),
             csIntegrationRequestFactory.updateWithCandidateCertificateRequestDTO(
                 candidateCertificate.getMetadata().getPatient().getActualPersonId().getId(),
-                user.getParameters()
-            )
-        );
+                user.getParameters()));
 
-        pdlLogService.logRead(candidateCertificate);
-        pdlLogService.logSaved(savedCertificate);
+    pdlLogService.logRead(candidateCertificate);
+    pdlLogService.logSaved(savedCertificate);
 
-        monitoringLogService.logUtkastCreatedTemplateAuto(
-            certificateId,
-            savedCertificate.getMetadata().getType(),
-            user.getHsaId(),
-            user.getValdVardenhet().getId(),
-            candidateCertificate.getMetadata().getId(),
-            candidateCertificate.getMetadata().getType()
-        );
+    monitoringLogService.logUtkastCreatedTemplateAuto(
+        certificateId,
+        savedCertificate.getMetadata().getType(),
+        user.getHsaId(),
+        user.getValdVardenhet().getId(),
+        candidateCertificate.getMetadata().getId(),
+        candidateCertificate.getMetadata().getType());
 
-        publishCertificateStatusUpdateService.publish(savedCertificate, HandelsekodEnum.ANDRAT);
+    publishCertificateStatusUpdateService.publish(savedCertificate, HandelsekodEnum.ANDRAT);
 
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftUpdatedFromCertificate(savedCertificate)
-        );
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.draftUpdatedFromCertificate(savedCertificate));
 
-        return savedCertificate.getMetadata().getId();
-    }
+    return savedCertificate.getMetadata().getId();
+  }
 }

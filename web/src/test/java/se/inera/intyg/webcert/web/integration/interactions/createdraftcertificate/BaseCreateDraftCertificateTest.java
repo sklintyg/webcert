@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,121 +41,139 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-/**
- * Created by eriklupander on 2017-09-27.
- */
+/** Created by eriklupander on 2017-09-27. */
 public abstract class BaseCreateDraftCertificateTest {
 
-    public static final String FULLSTANDIGT_NAMN = "Abel Baker";
-    public static final String INVARTES_MEDICIN = "Invärtes medicin";
-    public static final String TITLE_CODE = "203010";
-    public static final String TITLE_NAME = "Läkare";
-    public static final String ALLMAN_MEDICIN = "Allmänmedicin";
-    public static final String MEDARBETARUPPDRAG = "Vård och behandling";
-    protected static final String FK7263 = "fk7263";
-    protected static final String TSBAS = "ts-bas";
-    protected static final String LOGICAL_ADDR = "1234567890";
-    protected static final String USER_HSAID = "SE1234567890";
-    protected static final String AUTH_METHOD = "http://id.sambi.se/loa/loa3";
-    protected static final String UNIT_HSAID = "SE0987654321";
-    protected static final String CAREGIVER_HSAID = "SE0000112233";
-    protected static final String UTKAST_ID = "abc123";
-    protected static final String UTKAST_VERSION = "1";
-    protected static final String UTKAST_TYPE = "fk7263";
-    protected static final String UTKAST_JSON = "A bit of text representing json";
-    @Mock
-    protected WebcertUserDetailsService webcertUserDetailsService;
+  public static final String FULLSTANDIGT_NAMN = "Abel Baker";
+  public static final String INVARTES_MEDICIN = "Invärtes medicin";
+  public static final String TITLE_CODE = "203010";
+  public static final String TITLE_NAME = "Läkare";
+  public static final String ALLMAN_MEDICIN = "Allmänmedicin";
+  public static final String MEDARBETARUPPDRAG = "Vård och behandling";
+  protected static final String FK7263 = "fk7263";
+  protected static final String TSBAS = "ts-bas";
+  protected static final String LOGICAL_ADDR = "1234567890";
+  protected static final String USER_HSAID = "SE1234567890";
+  protected static final String AUTH_METHOD = "http://id.sambi.se/loa/loa3";
+  protected static final String UNIT_HSAID = "SE0987654321";
+  protected static final String CAREGIVER_HSAID = "SE0000112233";
+  protected static final String UTKAST_ID = "abc123";
+  protected static final String UTKAST_VERSION = "1";
+  protected static final String UTKAST_TYPE = "fk7263";
+  protected static final String UTKAST_JSON = "A bit of text representing json";
+  @Mock protected WebcertUserDetailsService webcertUserDetailsService;
 
-    public void setup() throws ModuleNotFoundException {
-        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(buildWebCertUser());
-    }
+  public void setup() throws ModuleNotFoundException {
+    when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString()))
+        .thenReturn(buildWebCertUser());
+  }
 
-    protected WebCertUser buildWebCertUser() {
-        WebCertUser user = new WebCertUser();
-        user.setAuthorities(new HashMap<>());
+  protected WebCertUser buildWebCertUser() {
+    WebCertUser user = new WebCertUser();
+    user.setAuthorities(new HashMap<>());
 
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+    user.getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+    user.getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
-        // TODO
-        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_TAK_KONTROLL)
-            .collect(Collectors.toMap(Function.identity(), s -> {
-                Feature feature = new Feature();
-                feature.setName(s);
-                feature.setGlobal(true);
-                feature.setIntygstyper(Arrays.asList(FK7263, TSBAS));
-                return feature;
-            })));
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.setBefattningar(List.of(TITLE_CODE));
-        user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
-        user.setTitel(TITLE_NAME);
-        user.setVardgivare(List.of(createVardgivare()));
-        user.setMiuNamnPerEnhetsId(createMiuNamnPerEnhetsId());
-        return user;
-    }
+    // TODO
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+                AuthoritiesConstants.FEATURE_TAK_KONTROLL)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setGlobal(true);
+                      feature.setIntygstyper(Arrays.asList(FK7263, TSBAS));
+                      return feature;
+                    })));
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+    user.setBefattningar(List.of(TITLE_CODE));
+    user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
+    user.setTitel(TITLE_NAME);
+    user.setVardgivare(List.of(createVardgivare()));
+    user.setMiuNamnPerEnhetsId(createMiuNamnPerEnhetsId());
+    return user;
+  }
 
-    protected IntygUser getIntygUser(String userHsaId) {
-        IntygUser user = new IntygUser(userHsaId);
-        user.setAuthorities(new HashMap<>());
+  protected IntygUser getIntygUser(String userHsaId) {
+    IntygUser user = new IntygUser(userHsaId);
+    user.setAuthorities(new HashMap<>());
 
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+    user.getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+    user.getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
-        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_TAK_KONTROLL)
-            .collect(Collectors.toMap(Function.identity(), s -> {
-                Feature feature = new Feature();
-                feature.setName(s);
-                feature.setGlobal(true);
-                feature.setIntygstyper(Arrays.asList(FK7263, TSBAS));
-                return feature;
-            })));
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.setBefattningar(List.of(TITLE_CODE));
-        user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
-        user.setTitel(TITLE_NAME);
-        user.setVardgivare(List.of(createVardgivare()));
-        user.setMiuNamnPerEnhetsId(createMiuNamnPerEnhetsId());
-        return user;
-    }
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+                AuthoritiesConstants.FEATURE_TAK_KONTROLL)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setGlobal(true);
+                      feature.setIntygstyper(Arrays.asList(FK7263, TSBAS));
+                      return feature;
+                    })));
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+    user.setBefattningar(List.of(TITLE_CODE));
+    user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
+    user.setTitel(TITLE_NAME);
+    user.setVardgivare(List.of(createVardgivare()));
+    user.setMiuNamnPerEnhetsId(createMiuNamnPerEnhetsId());
+    return user;
+  }
 
-    private Map<String, String> createMiuNamnPerEnhetsId() {
-        Map<String, String> map = new HashMap<>();
-        map.put(UNIT_HSAID, MEDARBETARUPPDRAG);
-        return map;
-    }
+  private Map<String, String> createMiuNamnPerEnhetsId() {
+    Map<String, String> map = new HashMap<>();
+    map.put(UNIT_HSAID, MEDARBETARUPPDRAG);
+    return map;
+  }
 
-    private Privilege createPrivilege(String privilege) {
-        Privilege priv = new Privilege();
-        priv.setName(privilege);
-        RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
-        requestOrigin.setIntygstyper(Arrays.asList(FK7263, TSBAS));
-        priv.setRequestOrigins(List.of(requestOrigin));
-        priv.setIntygstyper(Arrays.asList(FK7263, TSBAS));
-        return priv;
-    }
+  private Privilege createPrivilege(String privilege) {
+    Privilege priv = new Privilege();
+    priv.setName(privilege);
+    RequestOrigin requestOrigin = new RequestOrigin();
+    requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
+    requestOrigin.setIntygstyper(Arrays.asList(FK7263, TSBAS));
+    priv.setRequestOrigins(List.of(requestOrigin));
+    priv.setIntygstyper(Arrays.asList(FK7263, TSBAS));
+    return priv;
+  }
 
-    private Vardenhet createVardenhet(Vardgivare vardgivare) {
-        Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setId(UNIT_HSAID);
-        vardenhet.setNamn("Vardenheten");
-        vardenhet.setVardgivareHsaId(vardgivare.getId());
-        vardenhet.setArbetsplatskod("12345");
-        vardenhet.setPostadress("Gatan 1");
-        vardenhet.setPostnummer("54321");
-        vardenhet.setPostort("Vardmåla");
-        vardenhet.setTelefonnummer("123-456789");
-        return vardenhet;
-    }
+  private Vardenhet createVardenhet(Vardgivare vardgivare) {
+    Vardenhet vardenhet = new Vardenhet();
+    vardenhet.setId(UNIT_HSAID);
+    vardenhet.setNamn("Vardenheten");
+    vardenhet.setVardgivareHsaId(vardgivare.getId());
+    vardenhet.setArbetsplatskod("12345");
+    vardenhet.setPostadress("Gatan 1");
+    vardenhet.setPostnummer("54321");
+    vardenhet.setPostort("Vardmåla");
+    vardenhet.setTelefonnummer("123-456789");
+    return vardenhet;
+  }
 
-    private Vardgivare createVardgivare() {
-        Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setId(CAREGIVER_HSAID);
-        vardgivare.setNamn("Vardgivaren");
-        vardgivare.setVardenheter(List.of(createVardenhet(vardgivare)));
-        return vardgivare;
-    }
+  private Vardgivare createVardgivare() {
+    Vardgivare vardgivare = new Vardgivare();
+    vardgivare.setId(CAREGIVER_HSAID);
+    vardgivare.setNamn("Vardgivaren");
+    vardgivare.setVardenheter(List.of(createVardenhet(vardgivare)));
+    return vardgivare;
+  }
 }

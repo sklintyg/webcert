@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,22 +25,23 @@ import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService
 @Service("replaceCertificateAggregator")
 public class ReplaceCertificateAggregator implements ReplaceCertificateFacadeService {
 
-    private final ReplaceCertificateFacadeService replaceCertificateFromWebcert;
-    private final ReplaceCertificateFacadeService replaceCertificateFromCertificateService;
+  private final ReplaceCertificateFacadeService replaceCertificateFromWebcert;
+  private final ReplaceCertificateFacadeService replaceCertificateFromCertificateService;
 
-    public ReplaceCertificateAggregator(
-        @Qualifier("replaceCertificateFromWebcert")
-        ReplaceCertificateFacadeService replaceCertificateFromWebcert,
-        @Qualifier("replaceCertificateFromCertificateService")
-        ReplaceCertificateFacadeService replaceCertificateFromCertificateService) {
-        this.replaceCertificateFromWebcert = replaceCertificateFromWebcert;
-        this.replaceCertificateFromCertificateService = replaceCertificateFromCertificateService;
-    }
+  public ReplaceCertificateAggregator(
+      @Qualifier("replaceCertificateFromWebcert") ReplaceCertificateFacadeService replaceCertificateFromWebcert,
+      @Qualifier("replaceCertificateFromCertificateService") ReplaceCertificateFacadeService replaceCertificateFromCertificateService) {
+    this.replaceCertificateFromWebcert = replaceCertificateFromWebcert;
+    this.replaceCertificateFromCertificateService = replaceCertificateFromCertificateService;
+  }
 
-    @Override
-    public String replaceCertificate(String certificateId) {
-        final var responseFromCS = replaceCertificateFromCertificateService.replaceCertificate(certificateId);
+  @Override
+  public String replaceCertificate(String certificateId) {
+    final var responseFromCS =
+        replaceCertificateFromCertificateService.replaceCertificate(certificateId);
 
-        return responseFromCS != null ? responseFromCS : replaceCertificateFromWebcert.replaceCertificate(certificateId);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : replaceCertificateFromWebcert.replaceCertificate(certificateId);
+  }
 }

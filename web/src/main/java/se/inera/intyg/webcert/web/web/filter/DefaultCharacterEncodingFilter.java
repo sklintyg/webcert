@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,19 +32,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * This filter is used to set the character encoding to UTF-8 when handling uthopp POST requests.
  * {@link se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController}
  */
-
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component(value = "defaultCharacterEncodingFilter")
 public class DefaultCharacterEncodingFilter extends OncePerRequestFilter {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding("UTF-8");
-        }
-
-        filterChain.doFilter(request, response);
+    if (request.getCharacterEncoding() == null) {
+      request.setCharacterEncoding("UTF-8");
     }
+
+    filterChain.doFilter(request, response);
+  }
 }

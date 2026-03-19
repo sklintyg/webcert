@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,17 +22,17 @@ import java.util.List;
 
 public class CertificateTypesResponseDTO {
 
-    private List<CertificateType> certificateTypes;
+  private List<CertificateType> certificateTypes;
 
-    public CertificateTypesResponseDTO(List<CertificateType> certificateTypes) {
-        this.certificateTypes = certificateTypes;
-    }
+  public CertificateTypesResponseDTO(List<CertificateType> certificateTypes) {
+    this.certificateTypes = certificateTypes;
+  }
 
-    public List<CertificateType> getCertificateTypes() {
-        return certificateTypes;
-    }
+  public List<CertificateType> getCertificateTypes() {
+    return certificateTypes;
+  }
 
-    public void setCertificateTypes(List<CertificateType> certificateTypes) {
-        this.certificateTypes = certificateTypes;
-    }
+  public void setCertificateTypes(List<CertificateType> certificateTypes) {
+    this.certificateTypes = certificateTypes;
+  }
 }

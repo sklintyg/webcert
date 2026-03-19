@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,86 +41,92 @@ import se.inera.intyg.infra.security.common.model.Title;
 import se.inera.intyg.infra.security.common.model.TitleCode;
 
 /**
- * The AuthoritiesDataLoader is not very well suited for unit-testing, given that it has a single entry-point and then
- * creates roles, privileges and titleCodes using three different repositories with interdependent data.
- * <p>
- * A future refactoring may be to extract role, privilege and titleCode creation to separate components which then could
- * expose a domain-specific API much more suitable for unit testing than the AuthoritiesDataLoader.
- * <p>
- * Created by eriklupander on 2015-10-19.
+ * The AuthoritiesDataLoader is not very well suited for unit-testing, given that it has a single
+ * entry-point and then creates roles, privileges and titleCodes using three different repositories
+ * with interdependent data.
+ *
+ * <p>A future refactoring may be to extract role, privilege and titleCode creation to separate
+ * components which then could expose a domain-specific API much more suitable for unit testing than
+ * the AuthoritiesDataLoader.
+ *
+ * <p>Created by eriklupander on 2015-10-19.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SecurityConfigurationLoaderTest {
 
-    private static final String authoritiesConfigurationFile = "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
-    private static final String featuresConfigurationFile = "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
-    private static final String authoritiesConfigurationOutputFile = "classpath:AuthoritiesConfigurationLoaderTest/authorities-output.txt";
-    private static final Integer defaultMaxAliasesForCollections = 300;
+  private static final String authoritiesConfigurationFile =
+      "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
+  private static final String featuresConfigurationFile =
+      "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
+  private static final String authoritiesConfigurationOutputFile =
+      "classpath:AuthoritiesConfigurationLoaderTest/authorities-output.txt";
+  private static final Integer defaultMaxAliasesForCollections = 300;
 
-    @InjectMocks
-    private SecurityConfigurationLoader loader = new SecurityConfigurationLoader(authoritiesConfigurationFile, featuresConfigurationFile,
-        defaultMaxAliasesForCollections);
+  @InjectMocks
+  private SecurityConfigurationLoader loader =
+      new SecurityConfigurationLoader(
+          authoritiesConfigurationFile, featuresConfigurationFile, defaultMaxAliasesForCollections);
 
-    @Before
-    public void setupAuthoritiesConfiguration() {
-        // When
-        try {
-            loader.afterPropertiesSet();
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+  @Before
+  public void setupAuthoritiesConfiguration() {
+    // When
+    try {
+      loader.afterPropertiesSet();
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void loadConfigurationAndAssertTypeOfObjects() {
+    AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
+
+    assertEquals(2, configuration.getRequestOrigins().size());
+    assertEquals(8, configuration.getPrivileges().size());
+    assertEquals(4, configuration.getRoles().size());
+    assertEquals(2, configuration.getTitles().size());
+    assertEquals(4, configuration.getTitleCodes().size());
+
+    // Assert that lists are of specific types
+    try {
+      List<RequestOrigin> requestOrigins = (List<RequestOrigin>) configuration.getRequestOrigins();
+      List<Privilege> privileges = (List<Privilege>) configuration.getPrivileges();
+      List<Role> roles = (List<Role>) configuration.getRoles();
+      List<Title> titles = (List<Title>) configuration.getTitles();
+      List<TitleCode> titleCodes = (List<TitleCode>) configuration.getTitleCodes();
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  // @Test    // Temporarily disabling this test, it acts weird on OpenShift.
+  public void loadConfigurationAndAssertString() {
+    AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
+
+    String actual = configuration.toString().replaceAll("\\s", "").trim();
+    String expected = "";
+
+    try {
+      Resource resource = getResource(authoritiesConfigurationOutputFile);
+      expected =
+          new String(Files.readAllBytes(Paths.get(resource.getURI()))).replaceAll("\\s", "").trim();
+    } catch (IOException e) {
+      fail(e.getMessage());
     }
 
-    @Test
-    public void loadConfigurationAndAssertTypeOfObjects() {
-        AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
+    assertEquals(expected, actual);
+  }
 
-        assertEquals(2, configuration.getRequestOrigins().size());
-        assertEquals(8, configuration.getPrivileges().size());
-        assertEquals(4, configuration.getRoles().size());
-        assertEquals(2, configuration.getTitles().size());
-        assertEquals(4, configuration.getTitleCodes().size());
+  @Test(expected = IllegalArgumentException.class)
+  public void loadConfigurationWithBadLocation() {
+    new SecurityConfigurationLoader(null, null, null);
+  }
 
-        // Assert that lists are of specific types
-        try {
-            List<RequestOrigin> requestOrigins = (List<RequestOrigin>) configuration.getRequestOrigins();
-            List<Privilege> privileges = (List<Privilege>) configuration.getPrivileges();
-            List<Role> roles = (List<Role>) configuration.getRoles();
-            List<Title> titles = (List<Title>) configuration.getTitles();
-            List<TitleCode> titleCodes = (List<TitleCode>) configuration.getTitleCodes();
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
+  // ~ Private scope
+  // ======================================================================================================
 
-    // @Test    // Temporarily disabling this test, it acts weird on OpenShift.
-    public void loadConfigurationAndAssertString() {
-        AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
-
-        String actual = configuration.toString().replaceAll("\\s", "").trim();
-        String expected = "";
-
-        try {
-            Resource resource = getResource(authoritiesConfigurationOutputFile);
-            expected = new String(Files.readAllBytes(Paths.get(resource.getURI()))).replaceAll("\\s", "").trim();
-        } catch (IOException e) {
-            fail(e.getMessage());
-        }
-
-        assertEquals(expected, actual);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void loadConfigurationWithBadLocation() {
-        new SecurityConfigurationLoader(null, null, null);
-    }
-
-    // ~ Private scope
-    // ======================================================================================================
-
-    private Resource getResource(String location) {
-        PathMatchingResourcePatternResolver r = new PathMatchingResourcePatternResolver();
-        return r.getResource(location);
-    }
-
+  private Resource getResource(String location) {
+    PathMatchingResourcePatternResolver r = new PathMatchingResourcePatternResolver();
+    return r.getResource(location);
+  }
 }

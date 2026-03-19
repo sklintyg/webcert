@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,212 +48,215 @@ import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 @RunWith(MockitoJUnitRunner.class)
 public class IntegreradeEnheterRegistryImplTest {
 
-    @Mock
-    private IntegreradEnhetRepository integreradEnhetRepository;
+  @Mock private IntegreradEnhetRepository integreradEnhetRepository;
 
-    @InjectMocks
-    private IntegreradeEnheterRegistryImpl registry;
+  @InjectMocks private IntegreradeEnheterRegistryImpl registry;
 
-    @Test
-    public void testPutIntegreradEnhetSetsSchemaVersion() {
-        final String enhetsId = "enhetsId";
-        IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
+  @Test
+  public void testPutIntegreradEnhetSetsSchemaVersion() {
+    final String enhetsId = "enhetsId";
+    IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
 
-        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
-        when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
+    when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
+    when(integreradEnhetRepository.save(any(IntegreradEnhet.class)))
+        .thenReturn(new IntegreradEnhet());
 
-        registry.putIntegreradEnhet(entry, false, true);
+    registry.putIntegreradEnhet(entry, false, true);
 
-        ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
-        verify(integreradEnhetRepository).save(enhetCaptor.capture());
+    ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
+    verify(integreradEnhetRepository).save(enhetCaptor.capture());
 
-        assertTrue(enhetCaptor.getValue().isSchemaVersion3());
-    }
+    assertTrue(enhetCaptor.getValue().isSchemaVersion3());
+  }
 
-    @Test
-    public void testPutIntegreradEnhetAlreadyExists() {
-        final String enhetsId = "enhetsId";
-        IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
-        IntegreradEnhet integreradEnhet = new IntegreradEnhet();
-        integreradEnhet.setSchemaVersion1(false);
-        integreradEnhet.setSchemaVersion3(true);
+  @Test
+  public void testPutIntegreradEnhetAlreadyExists() {
+    final String enhetsId = "enhetsId";
+    IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
+    IntegreradEnhet integreradEnhet = new IntegreradEnhet();
+    integreradEnhet.setSchemaVersion1(false);
+    integreradEnhet.setSchemaVersion3(true);
 
-        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.of(integreradEnhet));
-        when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
+    when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.of(integreradEnhet));
+    when(integreradEnhetRepository.save(any(IntegreradEnhet.class)))
+        .thenReturn(new IntegreradEnhet());
 
-        registry.putIntegreradEnhet(entry, true, false);
+    registry.putIntegreradEnhet(entry, true, false);
 
-        ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
-        verify(integreradEnhetRepository, times(1)).save(enhetCaptor.capture());
+    ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
+    verify(integreradEnhetRepository, times(1)).save(enhetCaptor.capture());
 
-        assertTrue(enhetCaptor.getValue().isSchemaVersion1());
-        assertTrue(enhetCaptor.getValue().isSchemaVersion3());
-    }
+    assertTrue(enhetCaptor.getValue().isSchemaVersion1());
+    assertTrue(enhetCaptor.getValue().isSchemaVersion3());
+  }
 
-    @Test
-    public void testIsEnhetIntegreradTrue() {
-        final String enhetsId = "enhetsId";
+  @Test
+  public void testIsEnhetIntegreradTrue() {
+    final String enhetsId = "enhetsId";
 
-        IntegreradEnhet enhet = new IntegreradEnhet();
-        enhet.setSchemaVersion1(true);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet)); // exists
+    IntegreradEnhet enhet = new IntegreradEnhet();
+    enhet.setSchemaVersion1(true);
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet)); // exists
 
-        boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
-        assertTrue(result);
-    }
+    boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
+    assertTrue(result);
+  }
 
-    @Test
-    public void testIsEnhetIntegreradFalse() {
-        final String enhetsId = "enhetsId";
+  @Test
+  public void testIsEnhetIntegreradFalse() {
+    final String enhetsId = "enhetsId";
 
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.empty());
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.empty());
 
-        boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
-        assertFalse(result);
-    }
+    boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
+    assertFalse(result);
+  }
 
-    @Test
-    public void testGetIntegreradEnhet() {
-        final String enhetsId = "enhetsId";
+  @Test
+  public void testGetIntegreradEnhet() {
+    final String enhetsId = "enhetsId";
 
-        IntegreradEnhet enhet = new IntegreradEnhet();
-        enhet.setEnhetsId(enhetsId);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
+    IntegreradEnhet enhet = new IntegreradEnhet();
+    enhet.setEnhetsId(enhetsId);
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
 
-        IntegreradEnhet integreradEnhet = registry.getIntegreradEnhet(enhetsId);
-        assertEquals(integreradEnhet.getEnhetsId(), enhetsId);
-    }
+    IntegreradEnhet integreradEnhet = registry.getIntegreradEnhet(enhetsId);
+    assertEquals(integreradEnhet.getEnhetsId(), enhetsId);
+  }
 
-    @Test
-    public void testGetAllIntegreradEnhet() {
-        IntegreradEnhet enhet1 = new IntegreradEnhet();
-        enhet1.setEnhetsId("enhetsId1");
-        IntegreradEnhet enhet2 = new IntegreradEnhet();
-        enhet2.setEnhetsId("enhetsId2");
-        List<IntegreradEnhet> list = new ArrayList<>();
-        list.add(enhet1);
-        list.add(enhet2);
-        when(integreradEnhetRepository.findAll()).thenReturn(list);
+  @Test
+  public void testGetAllIntegreradEnhet() {
+    IntegreradEnhet enhet1 = new IntegreradEnhet();
+    enhet1.setEnhetsId("enhetsId1");
+    IntegreradEnhet enhet2 = new IntegreradEnhet();
+    enhet2.setEnhetsId("enhetsId2");
+    List<IntegreradEnhet> list = new ArrayList<>();
+    list.add(enhet1);
+    list.add(enhet2);
+    when(integreradEnhetRepository.findAll()).thenReturn(list);
 
-        List<IntegreradEnhet> result = registry.getAllIntegreradEnhet();
-        assertEquals(result.size(), list.size());
-    }
+    List<IntegreradEnhet> result = registry.getAllIntegreradEnhet();
+    assertEquals(result.size(), list.size());
+  }
 
-    @Test
-    public void testAddIfSameVardgivareButDifferentUnitsCopiesSchemaVersion() {
-        final String enhetsId = "enhetsId";
-        final String vardgivarId = "vardgivarId";
-        IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, vardgivarId);
-        IntegreradEnhet integreradEnhet = new IntegreradEnhet();
-        integreradEnhet.setEnhetsId("another enhetsId");
-        integreradEnhet.setSchemaVersion3(true);
-        integreradEnhet.setVardgivarId(vardgivarId);
+  @Test
+  public void testAddIfSameVardgivareButDifferentUnitsCopiesSchemaVersion() {
+    final String enhetsId = "enhetsId";
+    final String vardgivarId = "vardgivarId";
+    IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, vardgivarId);
+    IntegreradEnhet integreradEnhet = new IntegreradEnhet();
+    integreradEnhet.setEnhetsId("another enhetsId");
+    integreradEnhet.setSchemaVersion3(true);
+    integreradEnhet.setVardgivarId(vardgivarId);
 
-        // already exists
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
-        when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
+    // already exists
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
+    when(integreradEnhetRepository.save(any(IntegreradEnhet.class)))
+        .thenReturn(new IntegreradEnhet());
 
-        registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
+    registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
 
-        ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
-        verify(integreradEnhetRepository, times(3)).save(enhetCaptor.capture());
+    ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
+    verify(integreradEnhetRepository, times(3)).save(enhetCaptor.capture());
 
-        assertNotNull(enhetCaptor.getAllValues().get(0).getSenasteKontrollDatum());
-        assertTrue(enhetCaptor.getAllValues().get(1).isSchemaVersion3());
-    }
+    assertNotNull(enhetCaptor.getAllValues().get(0).getSenasteKontrollDatum());
+    assertTrue(enhetCaptor.getAllValues().get(1).isSchemaVersion3());
+  }
 
-    @Test
-    public void testAddIfSameVardgivareButDifferentUnitsAlreadyExists() {
-        final String enhetsId = "enhetsId";
-        final String vardgivarId = "vardgivarId";
-        IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, vardgivarId);
-        IntegreradEnhet integreradEnhet = new IntegreradEnhet();
-        integreradEnhet.setEnhetsId(enhetsId);
-        integreradEnhet.setSchemaVersion3(true);
-        integreradEnhet.setVardgivarId(vardgivarId);
+  @Test
+  public void testAddIfSameVardgivareButDifferentUnitsAlreadyExists() {
+    final String enhetsId = "enhetsId";
+    final String vardgivarId = "vardgivarId";
+    IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, vardgivarId);
+    IntegreradEnhet integreradEnhet = new IntegreradEnhet();
+    integreradEnhet.setEnhetsId(enhetsId);
+    integreradEnhet.setSchemaVersion3(true);
+    integreradEnhet.setVardgivarId(vardgivarId);
 
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
 
-        registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
+    registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
 
-        ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
-        verify(integreradEnhetRepository, times(2)).save(enhetCaptor.capture());
+    ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
+    verify(integreradEnhetRepository, times(2)).save(enhetCaptor.capture());
 
-        assertNotNull(enhetCaptor.getValue().getSenasteKontrollDatum());
-    }
+    assertNotNull(enhetCaptor.getValue().getSenasteKontrollDatum());
+  }
 
-    @Test
-    public void testDeleteIntegreradEnhet() {
-        final String enhetsId = "enhetsId";
-        IntegreradEnhet integreradEnhet = new IntegreradEnhet();
+  @Test
+  public void testDeleteIntegreradEnhet() {
+    final String enhetsId = "enhetsId";
+    IntegreradEnhet integreradEnhet = new IntegreradEnhet();
 
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
-        registry.deleteIntegreradEnhet(enhetsId);
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
+    registry.deleteIntegreradEnhet(enhetsId);
 
-        verify(integreradEnhetRepository).delete(integreradEnhet);
-    }
+    verify(integreradEnhetRepository).delete(integreradEnhet);
+  }
 
-    @Test
-    public void testDeleteIntegreradEnhetNotFound() {
-        final String enhetsId = "enhetsId";
+  @Test
+  public void testDeleteIntegreradEnhetNotFound() {
+    final String enhetsId = "enhetsId";
 
-        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
-        registry.deleteIntegreradEnhet(enhetsId);
+    when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
+    registry.deleteIntegreradEnhet(enhetsId);
 
-        verify(integreradEnhetRepository, never()).delete(any(IntegreradEnhet.class));
-    }
+    verify(integreradEnhetRepository, never()).delete(any(IntegreradEnhet.class));
+  }
 
-    @Test
-    public void testGetSchemaVersionOldV1Found() {
-        final String enhetsId = "enhetsid";
+  @Test
+  public void testGetSchemaVersionOldV1Found() {
+    final String enhetsId = "enhetsid";
 
-        IntegreradEnhet enhet = new IntegreradEnhet();
-        enhet.setSchemaVersion1(true);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
+    IntegreradEnhet enhet = new IntegreradEnhet();
+    enhet.setSchemaVersion1(true);
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
 
-        Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
-        assertTrue(result.isPresent());
-        assertEquals(SchemaVersion.VERSION_1, result.get());
-    }
+    Optional<SchemaVersion> result =
+        registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
+    assertTrue(result.isPresent());
+    assertEquals(SchemaVersion.VERSION_1, result.get());
+  }
 
-    @Test
-    public void testGetSchemaVersionOldV3Found() {
-        final String enhetsId = "enhetsid";
+  @Test
+  public void testGetSchemaVersionOldV3Found() {
+    final String enhetsId = "enhetsid";
 
-        IntegreradEnhet enhet = new IntegreradEnhet();
-        enhet.setSchemaVersion1(true);
-        enhet.setSchemaVersion3(true);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
+    IntegreradEnhet enhet = new IntegreradEnhet();
+    enhet.setSchemaVersion1(true);
+    enhet.setSchemaVersion3(true);
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
 
-        Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
-        assertTrue(result.isPresent());
-        assertEquals(SchemaVersion.VERSION_3, result.get());
-    }
+    Optional<SchemaVersion> result =
+        registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
+    assertTrue(result.isPresent());
+    assertEquals(SchemaVersion.VERSION_3, result.get());
+  }
 
-    @Test
-    public void testGetSchemaVersionNotFound() {
-        final String enhetsId = "enhetsid";
+  @Test
+  public void testGetSchemaVersionNotFound() {
+    final String enhetsId = "enhetsid";
 
-        IntegreradEnhet enhet = new IntegreradEnhet();
-        enhet.setSchemaVersion1(false);
-        enhet.setSchemaVersion3(false);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
+    IntegreradEnhet enhet = new IntegreradEnhet();
+    enhet.setSchemaVersion1(false);
+    enhet.setSchemaVersion3(false);
+    when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
 
-        assertFalse(registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID).isPresent());
-        assertFalse(registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID).isPresent());
-    }
+    assertFalse(registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID).isPresent());
+    assertFalse(registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID).isPresent());
+  }
 
-    @Test
-    public void testGetSchemaVersionNewFound() {
-        final String enhetsId = "enhetsid";
+  @Test
+  public void testGetSchemaVersionNewFound() {
+    final String enhetsId = "enhetsid";
 
-        IntegreradEnhet enhet = new IntegreradEnhet();
-        enhet.setSchemaVersion1(false);
-        enhet.setSchemaVersion3(true);
-        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.of(enhet));
+    IntegreradEnhet enhet = new IntegreradEnhet();
+    enhet.setSchemaVersion1(false);
+    enhet.setSchemaVersion3(true);
+    when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.of(enhet));
 
-        Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID);
-        assertTrue(result.isPresent());
-        assertEquals(SchemaVersion.VERSION_3, result.get());
-    }
+    Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID);
+    assertTrue(result.isPresent());
+    assertEquals(SchemaVersion.VERSION_3, result.get());
+  }
 }

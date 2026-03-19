@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,35 +36,32 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 @ExtendWith(MockitoExtension.class)
 class GetTextsForCertificateServiceTest {
 
-    private static final CertificateText TEXT = CertificateText.builder().build();
-    public static final String TYPE = "type";
-    public static final String TYPE_VERSION = "typeVersion";
+  private static final CertificateText TEXT = CertificateText.builder().build();
+  public static final String TYPE = "type";
+  public static final String TYPE_VERSION = "typeVersion";
 
-    @Mock
-    IntygModuleRegistry intygModuleRegistry;
+  @Mock IntygModuleRegistry intygModuleRegistry;
 
-    @Mock
-    ModuleApi moduleApi;
+  @Mock ModuleApi moduleApi;
 
-    @InjectMocks
-    GetTextsForCertificateService getTextsForCertificateService;
+  @InjectMocks GetTextsForCertificateService getTextsForCertificateService;
 
-    @Test
-    void shouldSetPreambleText() throws ModuleNotFoundException {
-        when(intygModuleRegistry.getModuleApi(TYPE, TYPE_VERSION))
-            .thenReturn(moduleApi);
-        when(moduleApi.getPreambleForCitizens()).thenReturn(TEXT);
+  @Test
+  void shouldSetPreambleText() throws ModuleNotFoundException {
+    when(intygModuleRegistry.getModuleApi(TYPE, TYPE_VERSION)).thenReturn(moduleApi);
+    when(moduleApi.getPreambleForCitizens()).thenReturn(TEXT);
 
-        final var response = getTextsForCertificateService.get(TYPE, TYPE_VERSION);
+    final var response = getTextsForCertificateService.get(TYPE, TYPE_VERSION);
 
-        assertEquals(TEXT, response.get(0));
-    }
+    assertEquals(TEXT, response.get(0));
+  }
 
-    @Test
-    void shouldThrowErrorIfProblemGettingModuleApi() throws ModuleNotFoundException {
-        when(intygModuleRegistry.getModuleApi(anyString(), anyString()))
-            .thenThrow(new ModuleNotFoundException());
+  @Test
+  void shouldThrowErrorIfProblemGettingModuleApi() throws ModuleNotFoundException {
+    when(intygModuleRegistry.getModuleApi(anyString(), anyString()))
+        .thenThrow(new ModuleNotFoundException());
 
-        assertThrows(RuntimeException.class, () -> getTextsForCertificateService.get(TYPE, TYPE_VERSION));
-    }
+    assertThrows(
+        RuntimeException.class, () -> getTextsForCertificateService.get(TYPE, TYPE_VERSION));
+  }
 }

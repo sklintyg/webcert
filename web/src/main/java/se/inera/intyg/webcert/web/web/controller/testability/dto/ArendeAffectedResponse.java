@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,23 +18,20 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.dto;
 
-/**
- * Created by bennysce on 2016-08-25.
- */
+/** Created by bennysce on 2016-08-25. */
 public class ArendeAffectedResponse {
 
-    private int arendenAffected;
+  private int arendenAffected;
 
-    public ArendeAffectedResponse(int arendenAffected) {
-        this.arendenAffected = arendenAffected;
-    }
+  public ArendeAffectedResponse(int arendenAffected) {
+    this.arendenAffected = arendenAffected;
+  }
 
-    public int getArendenAffected() {
-        return arendenAffected;
-    }
+  public int getArendenAffected() {
+    return arendenAffected;
+  }
 
-    public void setArendenAffected(int arendenAffected) {
-        this.arendenAffected = arendenAffected;
-    }
-
+  public void setArendenAffected(int arendenAffected) {
+    this.arendenAffected = arendenAffected;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,15 +24,15 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 public interface DiagnosRepository {
 
-    String CODE = "code";
+  String CODE = "code";
 
-    String DESC = "description";
+  String DESC = "description";
 
-    List<Diagnos> getDiagnosesByCode(String code);
+  List<Diagnos> getDiagnosesByCode(String code);
 
-    List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults);
+  List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults);
 
-    void openLuceneIndexReader() throws IOException;
+  void openLuceneIndexReader() throws IOException;
 
-    List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults);
+  List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults);
 }

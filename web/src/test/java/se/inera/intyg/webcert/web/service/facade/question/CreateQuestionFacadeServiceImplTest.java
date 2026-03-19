@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,45 +38,40 @@ import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter
 @ExtendWith(MockitoExtension.class)
 class CreateQuestionFacadeServiceImplTest {
 
-    public static final String CERTIFICATE_ID = "certificateId";
-    public static final QuestionType QUESTION_TYPE = QuestionType.COORDINATION;
-    public static final String MESSAGE = "message";
+  public static final String CERTIFICATE_ID = "certificateId";
+  public static final QuestionType QUESTION_TYPE = QuestionType.COORDINATION;
+  public static final String MESSAGE = "message";
 
-    @Mock
-    private ArendeDraftService arendeDraftService;
+  @Mock private ArendeDraftService arendeDraftService;
 
-    @Mock
-    private QuestionConverter questionConverter;
+  @Mock private QuestionConverter questionConverter;
 
-    @InjectMocks
-    private CreateQuestionFacadeServiceImpl createQuestionFacadeService;
+  @InjectMocks private CreateQuestionFacadeServiceImpl createQuestionFacadeService;
 
-    private ArendeDraft arendeDraft = new ArendeDraft();
+  private ArendeDraft arendeDraft = new ArendeDraft();
 
-    @BeforeEach
-    void setUp() {
-        doReturn(Question.builder().build())
-            .when(questionConverter)
-            .convert(arendeDraft);
-    }
+  @BeforeEach
+  void setUp() {
+    doReturn(Question.builder().build()).when(questionConverter).convert(arendeDraft);
+  }
 
-    @Test
-    void shallReturnCreatedQuestion() {
-        doReturn(arendeDraft)
-            .when(arendeDraftService)
-            .create(CERTIFICATE_ID, ArendeAmne.AVSTMN.toString(), MESSAGE, null);
+  @Test
+  void shallReturnCreatedQuestion() {
+    doReturn(arendeDraft)
+        .when(arendeDraftService)
+        .create(CERTIFICATE_ID, ArendeAmne.AVSTMN.toString(), MESSAGE, null);
 
-        final var actualQuestion = createQuestionFacadeService.create(CERTIFICATE_ID, QUESTION_TYPE, MESSAGE);
-        assertNotNull(actualQuestion, "Should return created question");
-    }
+    final var actualQuestion =
+        createQuestionFacadeService.create(CERTIFICATE_ID, QUESTION_TYPE, MESSAGE);
+    assertNotNull(actualQuestion, "Should return created question");
+  }
 
-    @Test
-    void shallAllowToCreateQuestionWithoutQuestionType() {
-        doReturn(arendeDraft)
-            .when(arendeDraftService)
-            .create(CERTIFICATE_ID, "", MESSAGE, null);
+  @Test
+  void shallAllowToCreateQuestionWithoutQuestionType() {
+    doReturn(arendeDraft).when(arendeDraftService).create(CERTIFICATE_ID, "", MESSAGE, null);
 
-        final var actualQuestion = createQuestionFacadeService.create(CERTIFICATE_ID, QuestionType.MISSING, MESSAGE);
-        assertNotNull(actualQuestion, "Should return created question");
-    }
+    final var actualQuestion =
+        createQuestionFacadeService.create(CERTIFICATE_ID, QuestionType.MISSING, MESSAGE);
+    assertNotNull(actualQuestion, "Should return created question");
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,43 +24,44 @@ import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 
 public class CertificateEventTestUtil {
 
-    private CertificateEventTestUtil() {
-    }
+  private CertificateEventTestUtil() {}
 
-    public static final String CERTIFICATE_ID_1 = "id1";
-    public static final String CERTIFICATE_ID_2 = "id2";
+  public static final String CERTIFICATE_ID_1 = "id1";
+  public static final String CERTIFICATE_ID_2 = "id2";
 
-    public static final String USER = "SE123344332";
+  public static final String USER = "SE123344332";
 
-    public static final EventCode EVENT_CODE_SKAPAT = EventCode.SKAPAT;
-    public static final EventCode EVENT_CODE_SIGNAT = EventCode.SIGNAT;
+  public static final EventCode EVENT_CODE_SKAPAT = EventCode.SKAPAT;
+  public static final EventCode EVENT_CODE_SIGNAT = EventCode.SIGNAT;
 
-    public static final String MESSAGE = "Really important event.";
+  public static final String MESSAGE = "Really important event.";
 
-    public static CertificateEvent buildCertificateEvent(String certificateId) {
-        return buildCertificateEvent(certificateId, USER, EVENT_CODE_SKAPAT, MESSAGE);
-    }
+  public static CertificateEvent buildCertificateEvent(String certificateId) {
+    return buildCertificateEvent(certificateId, USER, EVENT_CODE_SKAPAT, MESSAGE);
+  }
 
-    public static CertificateEvent buildCertificateEvent(String certificateId, String user) {
-        return buildCertificateEvent(certificateId, user, EVENT_CODE_SKAPAT, MESSAGE);
-    }
+  public static CertificateEvent buildCertificateEvent(String certificateId, String user) {
+    return buildCertificateEvent(certificateId, user, EVENT_CODE_SKAPAT, MESSAGE);
+  }
 
-    public static CertificateEvent buildCertificateEvent(String certificateId, EventCode eventCode) {
-        return buildCertificateEvent(certificateId, USER, eventCode, MESSAGE);
-    }
+  public static CertificateEvent buildCertificateEvent(String certificateId, EventCode eventCode) {
+    return buildCertificateEvent(certificateId, USER, eventCode, MESSAGE);
+  }
 
-    public static CertificateEvent buildCertificateEvent(String certificateId, String user, EventCode eventCode) {
-        return buildCertificateEvent(certificateId, user, eventCode, MESSAGE);
-    }
+  public static CertificateEvent buildCertificateEvent(
+      String certificateId, String user, EventCode eventCode) {
+    return buildCertificateEvent(certificateId, user, eventCode, MESSAGE);
+  }
 
-    public static CertificateEvent buildCertificateEvent(String certificateId, String user, EventCode eventCode, String message) {
-        CertificateEvent certificateEvent = new CertificateEvent();
-        certificateEvent.setCertificateId(certificateId);
-        certificateEvent.setUser(user);
-        certificateEvent.setEventCode(eventCode);
-        certificateEvent.setTimestamp(LocalDateTime.now());
-        certificateEvent.setMessage(message);
+  public static CertificateEvent buildCertificateEvent(
+      String certificateId, String user, EventCode eventCode, String message) {
+    CertificateEvent certificateEvent = new CertificateEvent();
+    certificateEvent.setCertificateId(certificateId);
+    certificateEvent.setUser(user);
+    certificateEvent.setEventCode(eventCode);
+    certificateEvent.setTimestamp(LocalDateTime.now());
+    certificateEvent.setMessage(message);
 
-        return certificateEvent;
-    }
+    return certificateEvent;
+  }
 }

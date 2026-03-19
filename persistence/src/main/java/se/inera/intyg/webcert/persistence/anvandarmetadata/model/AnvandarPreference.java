@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,95 +28,95 @@ import jakarta.persistence.Table;
 /**
  * Created by eriklupander on 2016-06-22.
  *
- * Note that unique constraint is handled by liquibase DB setup.
+ * <p>Note that unique constraint is handled by liquibase DB setup.
  */
 @Entity
 @Table(name = "ANVANDARE_PREFERENCE")
 public class AnvandarPreference {
 
-    public static final int INT = 31;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long internReferens;
+  public static final int INT = 31;
 
-    @Column(name = "HSA_ID", nullable = false)
-    private String hsaId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long internReferens;
 
-    @Column(name = "PREF_KEY", nullable = false)
-    private String key;
+  @Column(name = "HSA_ID", nullable = false)
+  private String hsaId;
 
-    @Column(name = "PREF_VALUE", nullable = true)
-    private String value;
+  @Column(name = "PREF_KEY", nullable = false)
+  private String key;
 
-    public AnvandarPreference() {
-        // default constructor for hibernate
+  @Column(name = "PREF_VALUE", nullable = true)
+  private String value;
+
+  public AnvandarPreference() {
+    // default constructor for hibernate
+  }
+
+  public AnvandarPreference(String hsaId, String key, String value) {
+    this.hsaId = hsaId;
+    this.key = key;
+    this.value = value;
+  }
+
+  public Long getInternReferens() {
+    return internReferens;
+  }
+
+  public void setInternReferens(Long internReferens) {
+    this.internReferens = internReferens;
+  }
+
+  public String getHsaId() {
+    return hsaId;
+  }
+
+  public void setHsaId(String hsaId) {
+    this.hsaId = hsaId;
+  }
+
+  public String getKey() {
+    return key;
+  }
+
+  public void setKey(String key) {
+    this.key = key;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
 
-    public AnvandarPreference(String hsaId, String key, String value) {
-        this.hsaId = hsaId;
-        this.key = key;
-        this.value = value;
+    if (!(o instanceof AnvandarPreference)) {
+      return false;
     }
 
-    public Long getInternReferens() {
-        return internReferens;
+    AnvandarPreference that = (AnvandarPreference) o;
+
+    if (!hsaId.equals(that.hsaId)) {
+      return false;
     }
-
-    public void setInternReferens(Long internReferens) {
-        this.internReferens = internReferens;
+    if (!key.equals(that.key)) {
+      return false;
     }
+    return value != null ? value.equals(that.value) : that.value == null;
+  }
 
-    public String getHsaId() {
-        return hsaId;
-    }
-
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof AnvandarPreference)) {
-            return false;
-        }
-
-        AnvandarPreference that = (AnvandarPreference) o;
-
-        if (!hsaId.equals(that.hsaId)) {
-            return false;
-        }
-        if (!key.equals(that.key)) {
-            return false;
-        }
-        return value != null ? value.equals(that.value) : that.value == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = hsaId.hashCode();
-        result = INT * result + key.hashCode();
-        result = INT * result + (value != null ? value.hashCode() : 0);
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = hsaId.hashCode();
+    result = INT * result + key.hashCode();
+    result = INT * result + (value != null ? value.hashCode() : 0);
+    return result;
+  }
 }

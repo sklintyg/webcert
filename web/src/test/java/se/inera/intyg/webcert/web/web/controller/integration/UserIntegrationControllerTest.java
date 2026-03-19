@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,76 +45,80 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RunWith(MockitoJUnitRunner.class)
 public class UserIntegrationControllerTest {
 
-    private static final String GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION.name();
-    private static final String NON_GRANTED_ORIGIN = UserOriginType.NORMAL.name();
-    private static final String GRANTED_ROLE = AuthoritiesConstants.ROLE_LAKARE;
+  private static final String GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION.name();
+  private static final String NON_GRANTED_ORIGIN = UserOriginType.NORMAL.name();
+  private static final String GRANTED_ROLE = AuthoritiesConstants.ROLE_LAKARE;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    UserIntegrationController userIntegrationController = new UserIntegrationController();
+  @InjectMocks
+  UserIntegrationController userIntegrationController = new UserIntegrationController();
+
+  @Test
+  public void testLogoutNowWithDjupintegration() {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    HttpSession session = mock(HttpSession.class);
+
+    WebCertUser webCertUser = new WebCertUser();
+    webCertUser.setOrigin(GRANTED_ORIGIN);
+    webCertUser.setRoles(ImmutableMap.of(GRANTED_ROLE, new Role()));
+
+    when(request.getSession()).thenReturn(session);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+
+    Response res = userIntegrationController.logoutUserNow(request);
+
+    assertEquals(Status.OK.getStatusCode(), res.getStatus());
+    verify(webCertUserService).removeSessionNow(session);
+  }
+
+  @Test
+  public void testLogoutNowWithoutDjupintegration() {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+
+    WebCertUser webCertUser = new WebCertUser();
+    webCertUser.setOrigin(NON_GRANTED_ORIGIN);
+    webCertUser.setRoles(ImmutableMap.of(GRANTED_ROLE, new Role()));
+
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+
+    Exception e =
+        assertThrows(
+            AuthoritiesException.class, () -> userIntegrationController.logoutUserNow(request));
+
+    assertEquals(AuthoritiesException.class, e.getClass());
+  }
+
+  @Nested
+  public class GrantedRoleTest {
 
     @Test
-    public void testLogoutNowWithDjupintegration() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpSession session = mock(HttpSession.class);
-
-        WebCertUser webCertUser = new WebCertUser();
-        webCertUser.setOrigin(GRANTED_ORIGIN);
-        webCertUser.setRoles(ImmutableMap.of(GRANTED_ROLE, new Role()));
-
-        when(request.getSession()).thenReturn(session);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-
-        Response res = userIntegrationController.logoutUserNow(request);
-
-        assertEquals(Status.OK.getStatusCode(), res.getStatus());
-        verify(webCertUserService).removeSessionNow(session);
+    public void shouldReturnLakare() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_LAKARE, userIntegrationController.getGrantedRoles()[0]);
     }
 
     @Test
-    public void testLogoutNowWithoutDjupintegration() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        WebCertUser webCertUser = new WebCertUser();
-        webCertUser.setOrigin(NON_GRANTED_ORIGIN);
-        webCertUser.setRoles(ImmutableMap.of(GRANTED_ROLE, new Role()));
-
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-
-        Exception e = assertThrows(AuthoritiesException.class,
-            () -> userIntegrationController.logoutUserNow(request));
-
-        assertEquals(AuthoritiesException.class, e.getClass());
+    public void shouldReturnAdmin() {
+      assertEquals(AuthoritiesConstants.ROLE_ADMIN, userIntegrationController.getGrantedRoles()[1]);
     }
 
-    @Nested
-    public class GrantedRoleTest {
-
-        @Test
-        public void shouldReturnLakare() {
-            assertEquals(AuthoritiesConstants.ROLE_LAKARE, userIntegrationController.getGrantedRoles()[0]);
-        }
-
-        @Test
-        public void shouldReturnAdmin() {
-            assertEquals(AuthoritiesConstants.ROLE_ADMIN, userIntegrationController.getGrantedRoles()[1]);
-        }
-
-        @Test
-        public void shouldReturnTandlakare() {
-            assertEquals(AuthoritiesConstants.ROLE_TANDLAKARE, userIntegrationController.getGrantedRoles()[2]);
-        }
-
-        @Test
-        public void shouldReturnBarnmorska() {
-            assertEquals(AuthoritiesConstants.ROLE_BARNMORSKA, userIntegrationController.getGrantedRoles()[3]);
-        }
-
-        @Test
-        public void shouldReturnSjukskoterska() {
-            assertEquals(AuthoritiesConstants.ROLE_SJUKSKOTERSKA, userIntegrationController.getGrantedRoles()[4]);
-        }
+    @Test
+    public void shouldReturnTandlakare() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_TANDLAKARE, userIntegrationController.getGrantedRoles()[2]);
     }
+
+    @Test
+    public void shouldReturnBarnmorska() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_BARNMORSKA, userIntegrationController.getGrantedRoles()[3]);
+    }
+
+    @Test
+    public void shouldReturnSjukskoterska() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_SJUKSKOTERSKA, userIntegrationController.getGrantedRoles()[4]);
+    }
+  }
 }

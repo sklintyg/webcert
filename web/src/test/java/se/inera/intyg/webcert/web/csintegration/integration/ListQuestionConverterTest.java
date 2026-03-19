@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,227 +53,229 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 @ExtendWith(MockitoExtension.class)
 class ListQuestionConverterTest {
 
-    @InjectMocks
-    ListQuestionConverter listQuestionConverter;
+  @InjectMocks ListQuestionConverter listQuestionConverter;
 
-    private static final Optional<CertificateDTO> CERTIFICATE = Optional.of(CertificateDTO.create(CertificateFacadeTestHelper
-            .createCertificateTypeWithVersion(
-                "type", CertificateStatus.UNSIGNED, true, "typeVersion"),
-        Collections.emptyList().toArray(ResourceLinkDTO[]::new)
-    ));
+  private static final Optional<CertificateDTO> CERTIFICATE =
+      Optional.of(
+          CertificateDTO.create(
+              CertificateFacadeTestHelper.createCertificateTypeWithVersion(
+                  "type", CertificateStatus.UNSIGNED, true, "typeVersion"),
+              Collections.emptyList().toArray(ResourceLinkDTO[]::new)));
 
-    private static Question QUESTION;
+  private static Question QUESTION;
 
-    @BeforeEach
-    void setUp() {
-        QUESTION = buildQuestion(QuestionType.COMPLEMENT);
+  @BeforeEach
+  void setUp() {
+    QUESTION = buildQuestion(QuestionType.COMPLEMENT);
+  }
+
+  @Test
+  void shouldConvertCertificateId() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertEquals(CERTIFICATE.get().getMetadata().getId(), response.getIntygId());
+  }
+
+  @Test
+  void shouldConvertCertificateTestIndicated() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertEquals(CERTIFICATE.get().getMetadata().isTestCertificate(), response.isTestIntyg());
+  }
+
+  @Test
+  void shouldConvertPatientId() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertEquals(
+        CERTIFICATE.get().getMetadata().getPatient().getPersonId().getId(),
+        response.getPatientId());
+  }
+
+  @Test
+  void shouldConvertIsDeceased() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertEquals(CERTIFICATE.get().getMetadata().getPatient().isDeceased(), response.isAvliden());
+  }
+
+  @Test
+  void shouldConvertSignedBy() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertEquals(
+        CERTIFICATE.get().getMetadata().getIssuedBy().getPersonId(), response.getSigneratAv());
+  }
+
+  @Test
+  void shouldConvertSignedByName() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertEquals(
+        CERTIFICATE.get().getMetadata().getIssuedBy().getFullName(), response.getSigneratAvNamn());
+  }
+
+  @Test
+  void shouldConvertIsReminder() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertTrue(response.isPaminnelse());
+  }
+
+  @Test
+  void shouldConvertProtectedPerson() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertFalse(response.isSekretessmarkering());
+  }
+
+  @Test
+  void shouldConvertAuthor() {
+    final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+    assertEquals(QuestionSenderType.FK.toString(), response.getFragestallare());
+  }
+
+  @Nested
+  class ConvertStatus {
+
+    @Test
+    void shouldConvertStatusClosedIfHandled() {
+      final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(true));
+      assertEquals(Status.CLOSED, response.getStatus());
     }
 
     @Test
-    void shouldConvertCertificateId() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertEquals(CERTIFICATE.get().getMetadata().getId(), response.getIntygId());
-    }
-
-
-    @Test
-    void shouldConvertCertificateTestIndicated() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertEquals(CERTIFICATE.get().getMetadata().isTestCertificate(), response.isTestIntyg());
+    void shouldConvertStatusAnsweredIfAnswered() {
+      final var answer =
+          Answer.builder().sent(LocalDateTime.now()).author("FKASSA").message("message").build();
+      final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(answer));
+      assertEquals(Status.ANSWERED, response.getStatus());
     }
 
     @Test
-    void shouldConvertPatientId() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertEquals(CERTIFICATE.get().getMetadata().getPatient().getPersonId().getId(), response.getPatientId());
+    void shouldConvertStatusPendingInternalActionIfAuthorIsForsakringskassan() {
+      final var response =
+          listQuestionConverter.convert(CERTIFICATE, buildQuestion("Försäkringskassan"));
+      assertEquals(Status.PENDING_INTERNAL_ACTION, response.getStatus());
     }
 
     @Test
-    void shouldConvertIsDeceased() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertEquals(CERTIFICATE.get().getMetadata().getPatient().isDeceased(), response.isAvliden());
+    void shouldConvertStatusPendingExternalActionIfAuthorIsNotForskakringskassan() {
+      final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("WC"));
+      assertEquals(Status.PENDING_EXTERNAL_ACTION, response.getStatus());
+    }
+  }
+
+  @Nested
+  class ConvertLinks {
+
+    @Test
+    void shouldConvertReadCertificateToLasaFraga() {
+      final var link = ResourceLink.builder().type(ResourceLinkTypeEnum.READ_CERTIFICATE).build();
+      final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(List.of(link)));
+      assertEquals(ActionLinkType.LASA_FRAGA, response.getLinks().get(0).getType());
     }
 
     @Test
-    void shouldConvertSignedBy() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertEquals(CERTIFICATE.get().getMetadata().getIssuedBy().getPersonId(), response.getSigneratAv());
+    void shouldConvertForwardQuestionToVidarebefordraFraga() {
+      final var link = ResourceLink.builder().type(ResourceLinkTypeEnum.FORWARD_QUESTION).build();
+      final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(List.of(link)));
+      assertEquals(ActionLinkType.VIDAREBEFODRA_FRAGA, response.getLinks().get(1).getType());
     }
 
     @Test
-    void shouldConvertSignedByName() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertEquals(CERTIFICATE.get().getMetadata().getIssuedBy().getFullName(), response.getSigneratAvNamn());
+    void shouldNotConvertUnknownResourceLink() {
+      final var link =
+          ResourceLink.builder().type(ResourceLinkTypeEnum.COMPLEMENT_CERTIFICATE).build();
+      final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(List.of(link)));
+      assertEquals(List.of(new ActionLink(ActionLinkType.LASA_FRAGA)), response.getLinks());
+    }
+  }
+
+  @Nested
+  class ConvertSubject {
+
+    @Test
+    void shouldConvertSubjectCoordination() {
+      final Question questionDto = buildQuestion(QuestionType.COORDINATION);
+      final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
+      assertEquals("AVSTMN", response.getAmne());
     }
 
     @Test
-    void shouldConvertIsReminder() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertTrue(response.isPaminnelse());
+    void shouldConvertSubjectContact() {
+      final Question questionDto = buildQuestion(QuestionType.CONTACT);
+      final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
+      assertEquals("KONTKT", response.getAmne());
     }
 
     @Test
-    void shouldConvertProtectedPerson() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertFalse(response.isSekretessmarkering());
+    void shouldConvertSubjectMissing() {
+      final Question questionDto = buildQuestion(QuestionType.MISSING);
+      final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
+      assertEquals("OVRIGT", response.getAmne());
     }
 
     @Test
-    void shouldConvertAuthor() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertEquals(QuestionSenderType.FK.toString(), response.getFragestallare());
+    void shouldConvertSubjectOther() {
+      final Question questionDto = buildQuestion(QuestionType.OTHER);
+      final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
+      assertEquals("OVRIGT", response.getAmne());
     }
 
-    @Nested
-    class ConvertStatus {
-
-        @Test
-        void shouldConvertStatusClosedIfHandled() {
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(true));
-            assertEquals(Status.CLOSED, response.getStatus());
-        }
-
-        @Test
-        void shouldConvertStatusAnsweredIfAnswered() {
-            final var answer = Answer.builder()
-                .sent(LocalDateTime.now())
-                .author("FKASSA")
-                .message("message")
-                .build();
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(answer));
-            assertEquals(Status.ANSWERED, response.getStatus());
-        }
-
-        @Test
-        void shouldConvertStatusPendingInternalActionIfAuthorIsForsakringskassan() {
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("Försäkringskassan"));
-            assertEquals(Status.PENDING_INTERNAL_ACTION, response.getStatus());
-        }
-
-        @Test
-        void shouldConvertStatusPendingExternalActionIfAuthorIsNotForskakringskassan() {
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("WC"));
-            assertEquals(Status.PENDING_EXTERNAL_ACTION, response.getStatus());
-        }
+    @Test
+    void shouldConvertSubjectComplement() {
+      final Question questionDto = buildQuestion(QuestionType.COMPLEMENT);
+      final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
+      assertEquals("KOMPLT", response.getAmne());
     }
+  }
 
-    @Nested
-    class ConvertLinks {
+  private Question buildQuestion(List<ResourceLink> links) {
+    return buildQuestion(QuestionType.COMPLEMENT, false, null, null, links);
+  }
 
-        @Test
-        void shouldConvertReadCertificateToLasaFraga() {
-            final var link = ResourceLink.builder()
-                .type(ResourceLinkTypeEnum.READ_CERTIFICATE)
-                .build();
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(List.of(link)));
-            assertEquals(ActionLinkType.LASA_FRAGA, response.getLinks().get(0).getType());
-        }
+  private Question buildQuestion(String author) {
+    return buildQuestion(QuestionType.COMPLEMENT, false, null, author, Collections.emptyList());
+  }
 
-        @Test
-        void shouldConvertForwardQuestionToVidarebefordraFraga() {
-            final var link = ResourceLink.builder()
-                .type(ResourceLinkTypeEnum.FORWARD_QUESTION)
-                .build();
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(List.of(link)));
-            assertEquals(ActionLinkType.VIDAREBEFODRA_FRAGA, response.getLinks().get(1).getType());
-        }
+  private Question buildQuestion(Answer answer) {
+    return buildQuestion(QuestionType.COMPLEMENT, false, answer, null, Collections.emptyList());
+  }
 
-        @Test
-        void shouldNotConvertUnknownResourceLink() {
-            final var link = ResourceLink.builder()
-                .type(ResourceLinkTypeEnum.COMPLEMENT_CERTIFICATE)
-                .build();
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(List.of(link)));
-            assertEquals(List.of(new ActionLink(ActionLinkType.LASA_FRAGA)), response.getLinks());
-        }
-    }
+  private Question buildQuestion(Boolean isHandled) {
+    return buildQuestion(QuestionType.COMPLEMENT, isHandled, null, null, Collections.emptyList());
+  }
 
-    @Nested
-    class ConvertSubject {
+  private Question buildQuestion(QuestionType questionType) {
+    return buildQuestion(questionType, false, null, null, Collections.emptyList());
+  }
 
-        @Test
-        void shouldConvertSubjectCoordination() {
-            final Question questionDto = buildQuestion(QuestionType.COORDINATION);
-            final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-            assertEquals("AVSTMN", response.getAmne());
-        }
-
-        @Test
-        void shouldConvertSubjectContact() {
-            final Question questionDto = buildQuestion(QuestionType.CONTACT);
-            final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-            assertEquals("KONTKT", response.getAmne());
-        }
-
-        @Test
-        void shouldConvertSubjectMissing() {
-            final Question questionDto = buildQuestion(QuestionType.MISSING);
-            final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-            assertEquals("OVRIGT", response.getAmne());
-        }
-
-        @Test
-        void shouldConvertSubjectOther() {
-            final Question questionDto = buildQuestion(QuestionType.OTHER);
-            final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-            assertEquals("OVRIGT", response.getAmne());
-        }
-
-        @Test
-        void shouldConvertSubjectComplement() {
-            final Question questionDto = buildQuestion(QuestionType.COMPLEMENT);
-            final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-            assertEquals("KOMPLT", response.getAmne());
-        }
-    }
-
-    private Question buildQuestion(List<ResourceLink> links) {
-        return buildQuestion(QuestionType.COMPLEMENT, false, null, null, links);
-    }
-
-    private Question buildQuestion(String author) {
-        return buildQuestion(QuestionType.COMPLEMENT, false, null, author, Collections.emptyList());
-    }
-
-    private Question buildQuestion(Answer answer) {
-        return buildQuestion(QuestionType.COMPLEMENT, false, answer, null, Collections.emptyList());
-    }
-
-    private Question buildQuestion(Boolean isHandled) {
-        return buildQuestion(QuestionType.COMPLEMENT, isHandled, null, null, Collections.emptyList());
-    }
-
-    private Question buildQuestion(QuestionType questionType) {
-        return buildQuestion(questionType, false, null, null, Collections.emptyList());
-    }
-
-    private Question buildQuestion(QuestionType questionType, Boolean isHandled, Answer answer, String author, List<ResourceLink> links) {
-        return Question.builder()
-            .id("id")
-            .type(questionType)
-            .isForwarded(true)
-            .answeredByCertificate(CertificateRelation.builder().build())
-            .links(Collections.emptyList())
-            .sent(LocalDateTime.now())
-            .isHandled(isHandled)
-            .lastDateToReply(LocalDate.now())
-            .lastUpdate(LocalDateTime.now())
-            .message("message")
-            .reminders(List.of(
-                Reminder.builder()
-                    .author("author")
-                    .id("id")
-                    .message("message")
-                    .sent(LocalDateTime.now())
-                    .build()).toArray(Reminder[]::new))
-            .subject("subject")
-            .certificateId("certificateId")
-            .complements(List.of(Complement.builder().build()).toArray(Complement[]::new))
-            .contactInfo(List.of("contactinfo1", "contactinfo2").toArray(String[]::new))
-            .answer(answer)
-            .author(author != null ? author : "Försäkringskassan")
-            .links(links)
-            .build();
-    }
-
+  private Question buildQuestion(
+      QuestionType questionType,
+      Boolean isHandled,
+      Answer answer,
+      String author,
+      List<ResourceLink> links) {
+    return Question.builder()
+        .id("id")
+        .type(questionType)
+        .isForwarded(true)
+        .answeredByCertificate(CertificateRelation.builder().build())
+        .links(Collections.emptyList())
+        .sent(LocalDateTime.now())
+        .isHandled(isHandled)
+        .lastDateToReply(LocalDate.now())
+        .lastUpdate(LocalDateTime.now())
+        .message("message")
+        .reminders(
+            List.of(
+                    Reminder.builder()
+                        .author("author")
+                        .id("id")
+                        .message("message")
+                        .sent(LocalDateTime.now())
+                        .build())
+                .toArray(Reminder[]::new))
+        .subject("subject")
+        .certificateId("certificateId")
+        .complements(List.of(Complement.builder().build()).toArray(Complement[]::new))
+        .contactInfo(List.of("contactinfo1", "contactinfo2").toArray(String[]::new))
+        .answer(answer)
+        .author(author != null ? author : "Försäkringskassan")
+        .links(links)
+        .build();
+  }
 }

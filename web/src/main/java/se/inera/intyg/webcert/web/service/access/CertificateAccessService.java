@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,33 +20,36 @@ package se.inera.intyg.webcert.web.service.access;
 
 public interface CertificateAccessService {
 
-    AccessResult allowToRead(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToRead(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToReplace(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToReplace(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToRenew(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToRenew(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToPrint(AccessEvaluationParameters accessEvaluationParameters, boolean isEmployer);
+  AccessResult allowToPrint(
+      AccessEvaluationParameters accessEvaluationParameters, boolean isEmployer);
 
-    AccessResult allowToInvalidate(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToInvalidate(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToSend(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToSend(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToApproveReceivers(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToApproveReceivers(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToCreateQuestion(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToCreateQuestion(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToAnswerComplementQuestion(AccessEvaluationParameters accessEvaluationParameters, boolean newCertificate);
+  AccessResult allowToAnswerComplementQuestion(
+      AccessEvaluationParameters accessEvaluationParameters, boolean newCertificate);
 
-    AccessResult allowToCreateDraftFromSignedTemplate(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToCreateDraftFromSignedTemplate(
+      AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToAnswerAdminQuestion(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToAnswerAdminQuestion(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToReadQuestions(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToReadQuestions(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToForwardQuestions(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToForwardQuestions(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToSetComplementAsHandled(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToSetComplementAsHandled(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToSetQuestionAsHandled(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToSetQuestionAsHandled(AccessEvaluationParameters accessEvaluationParameters);
 }

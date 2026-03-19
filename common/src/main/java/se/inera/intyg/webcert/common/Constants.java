@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,37 +19,35 @@
 package se.inera.intyg.webcert.common;
 
 /**
- * Defines a number of global constants in Webcert, e.g. constants that may be used across several subprojects.
+ * Defines a number of global constants in Webcert, e.g. constants that may be used across several
+ * subprojects.
  *
- * Created by eriklupander on 2015-05-22.
+ * <p>Created by eriklupander on 2015-05-22.
  */
 public final class Constants {
 
-    /**
-     * Messaging.
-     */
-    public static final String STORE_MESSAGE = "STORE";
-    public static final String SEND_MESSAGE = "SEND";
-    public static final String REVOKE_MESSAGE = "REVOKE";
-    public static final String SEND_MESSAGE_TO_RECIPIENT = "SEND_MESSAGE_TO_RECIPIENT";
-    public static final String REGISTER_APPROVED_RECEIVERS_MESSAGE = "REGISTER_APPROVED_RECEIVERS";
-    public static final String MESSAGE_TYPE = "MESSAGE_TYPE";
+  /** Messaging. */
+  public static final String STORE_MESSAGE = "STORE";
 
-    public static final String INTYGS_ID = "INTYGS_ID";
-    public static final String INTYGS_TYP = "INTYGS_TYP";
-    public static final String INTYGS_TYP_VERSION = "INTYGS_TYP_VERSION";
-    public static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
-    public static final String PERSON_ID = "PERSON_ID";
-    public static final String RECIPIENT = "RECIPIENT";
+  public static final String SEND_MESSAGE = "SEND";
+  public static final String REVOKE_MESSAGE = "REVOKE";
+  public static final String SEND_MESSAGE_TO_RECIPIENT = "SEND_MESSAGE_TO_RECIPIENT";
+  public static final String REGISTER_APPROVED_RECEIVERS_MESSAGE = "REGISTER_APPROVED_RECEIVERS";
+  public static final String MESSAGE_TYPE = "MESSAGE_TYPE";
 
-    public static final String JMSX_GROUP_ID = "JMSXGroupID";
-    public static final String JMSX_GROUP_SEQ = "JMSXGroupSeq";
-    public static final String JMS_REDELIVERED = "JMSRedelivered";
-    public static final String JMS_TIMESTAMP = "JMSTimestamp";
+  public static final String INTYGS_ID = "INTYGS_ID";
+  public static final String INTYGS_TYP = "INTYGS_TYP";
+  public static final String INTYGS_TYP_VERSION = "INTYGS_TYP_VERSION";
+  public static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
+  public static final String PERSON_ID = "PERSON_ID";
+  public static final String RECIPIENT = "RECIPIENT";
 
-    public static final String DELAY_MESSAGE = "DELAY_MESSAGE";
+  public static final String JMSX_GROUP_ID = "JMSXGroupID";
+  public static final String JMSX_GROUP_SEQ = "JMSXGroupSeq";
+  public static final String JMS_REDELIVERED = "JMSRedelivered";
+  public static final String JMS_TIMESTAMP = "JMSTimestamp";
 
-    private Constants() {
-    }
+  public static final String DELAY_MESSAGE = "DELAY_MESSAGE";
 
+  private Constants() {}
 }

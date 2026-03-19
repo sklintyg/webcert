@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,27 +23,27 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 
 @Service("createCertificateFromTemplateAggregator")
-public class CreateCertificateFromTemplateAggregator implements CreateCertificateFromTemplateFacadeService {
+public class CreateCertificateFromTemplateAggregator
+    implements CreateCertificateFromTemplateFacadeService {
 
-    private final CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC;
-    private final CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS;
+  private final CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC;
+  private final CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS;
 
   public CreateCertificateFromTemplateAggregator(
-      @Qualifier("createCertificateFromTemplateFromWC")
-      CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC,
-      @Qualifier("createCertificateFromTemplateFromCS")
-      CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS) {
+      @Qualifier("createCertificateFromTemplateFromWC") CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC,
+      @Qualifier("createCertificateFromTemplateFromCS") CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS) {
     this.createCertificateFromTemplateFromWC = createCertificateFromTemplateFromWC;
     this.createCertificateFromTemplateFromCS = createCertificateFromTemplateFromCS;
   }
 
   @Override
-    public String createCertificateFromTemplate(String certificateId) {
+  public String createCertificateFromTemplate(String certificateId) {
 
-        final var responseFromCS = createCertificateFromTemplateFromCS.createCertificateFromTemplate(certificateId);
+    final var responseFromCS =
+        createCertificateFromTemplateFromCS.createCertificateFromTemplate(certificateId);
 
-        return responseFromCS != null
-            ? responseFromCS
-            : createCertificateFromTemplateFromWC.createCertificateFromTemplate(certificateId);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : createCertificateFromTemplateFromWC.createCertificateFromTemplate(certificateId);
+  }
 }

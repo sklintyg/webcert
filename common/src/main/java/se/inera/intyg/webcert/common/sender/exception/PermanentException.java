@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,18 +20,17 @@ package se.inera.intyg.webcert.common.sender.exception;
 
 public class PermanentException extends Exception {
 
-    private static final long serialVersionUID = -8184379033317261358L;
+  private static final long serialVersionUID = -8184379033317261358L;
 
-    public PermanentException(String message) {
-        super(message);
-    }
+  public PermanentException(String message) {
+    super(message);
+  }
 
-    public PermanentException(Throwable cause) {
-        super(cause);
-    }
+  public PermanentException(Throwable cause) {
+    super(cause);
+  }
 
-    public PermanentException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
+  public PermanentException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

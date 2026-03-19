@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,97 +36,104 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.Certific
 @Service
 public class CSTestabilityIntegrationService {
 
-    private static final String TESTABILITY_CERTIFICATE_ENDPOINT_URL = "/testability/certificate";
-    private static final String SUPPORTED_TYPES = "/types";
-    private final RestTemplate restTemplate;
-    private final IntygModuleRegistry intygModuleRegistry;
+  private static final String TESTABILITY_CERTIFICATE_ENDPOINT_URL = "/testability/certificate";
+  private static final String SUPPORTED_TYPES = "/types";
+  private final RestTemplate restTemplate;
+  private final IntygModuleRegistry intygModuleRegistry;
 
-    public CSTestabilityIntegrationService(@Qualifier("csRestTemplate") RestTemplate restTemplate,
-        IntygModuleRegistry intygModuleRegistry) {
-        this.restTemplate = restTemplate;
-        this.intygModuleRegistry = intygModuleRegistry;
+  public CSTestabilityIntegrationService(
+      @Qualifier("csRestTemplate") RestTemplate restTemplate,
+      IntygModuleRegistry intygModuleRegistry) {
+    this.restTemplate = restTemplate;
+    this.intygModuleRegistry = intygModuleRegistry;
+  }
+
+  @Value("${certificateservice.base.url}")
+  private String baseUrl;
+
+  public Certificate createCertificate(CreateCertificateRequestDTO request) {
+    final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL;
+
+    final var convertedRequest = convertCertificateType(request);
+
+    final var response =
+        restTemplate.postForObject(
+            url, convertedRequest, CertificateServiceCreateCertificateResponseDTO.class);
+
+    if (response == null) {
+      return null;
     }
 
-    @Value("${certificateservice.base.url}")
-    private String baseUrl;
+    return response.getCertificate();
+  }
 
-    public Certificate createCertificate(CreateCertificateRequestDTO request) {
-        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL;
-
-        final var convertedRequest = convertCertificateType(request);
-
-        final var response = restTemplate.postForObject(url, convertedRequest,
-            CertificateServiceCreateCertificateResponseDTO.class);
-
-        if (response == null) {
-            return null;
-        }
-
-        return response.getCertificate();
+  private CreateCertificateRequestDTO convertCertificateType(CreateCertificateRequestDTO request) {
+    if (request.getCertificateModelId() == null) {
+      return request;
     }
 
-    private CreateCertificateRequestDTO convertCertificateType(CreateCertificateRequestDTO request) {
-        if (request.getCertificateModelId() == null) {
-            return request;
-        }
+    final var originalType = request.getCertificateModelId().getType();
+    final var convertedType = getCertificateServiceTypeId(originalType);
 
-        final var originalType = request.getCertificateModelId().getType();
-        final var convertedType = getCertificateServiceTypeId(originalType);
+    if (originalType.equals(convertedType)) {
+      return request;
+    }
 
-        if (originalType.equals(convertedType)) {
-            return request;
-        }
-
-        final var convertedModelId = CertificateModelIdDTO.builder()
+    final var convertedModelId =
+        CertificateModelIdDTO.builder()
             .type(convertedType)
             .version(request.getCertificateModelId().getVersion())
             .build();
 
-        return CreateCertificateRequestDTO.builder()
-            .user(request.getUser())
-            .patient(request.getPatient())
-            .careUnit(request.getCareUnit())
-            .unit(request.getUnit())
-            .careProvider(request.getCareProvider())
-            .certificateModelId(convertedModelId)
-            .fillType(request.getFillType())
-            .status(request.getStatus())
-            .externalReference(request.getExternalReference())
-            .prefillXml(request.getPrefillXml())
-            .build();
-    }
+    return CreateCertificateRequestDTO.builder()
+        .user(request.getUser())
+        .patient(request.getPatient())
+        .careUnit(request.getCareUnit())
+        .unit(request.getUnit())
+        .careProvider(request.getCareProvider())
+        .certificateModelId(convertedModelId)
+        .fillType(request.getFillType())
+        .status(request.getStatus())
+        .externalReference(request.getExternalReference())
+        .prefillXml(request.getPrefillXml())
+        .build();
+  }
 
-    public List<CertificateType> getSupportedTypes() {
-        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES;
+  public List<CertificateType> getSupportedTypes() {
+    final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES;
 
-        final var response = restTemplate.getForEntity(url, CertificateType[].class);
+    final var response = restTemplate.getForEntity(url, CertificateType[].class);
 
-        return Arrays.asList(Objects.requireNonNull(response.getBody()));
-    }
+    return Arrays.asList(Objects.requireNonNull(response.getBody()));
+  }
 
-    public List<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
-        final var certificateServiceTypeId = getCertificateServiceTypeId(certificateType);
-        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES + "/"
+  public List<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
+    final var certificateServiceTypeId = getCertificateServiceTypeId(certificateType);
+    final var url =
+        baseUrl
+            + TESTABILITY_CERTIFICATE_ENDPOINT_URL
+            + SUPPORTED_TYPES
+            + "/"
             + certificateServiceTypeId;
 
-        final var response = restTemplate.getForEntity(url, GetCertificateTypeVersionsResponse.class);
+    final var response = restTemplate.getForEntity(url, GetCertificateTypeVersionsResponse.class);
 
-        if (response.getBody() == null) {
-            return List.of();
-        }
-
-        return response.getBody().getCertificateModelIds();
+    if (response.getBody() == null) {
+      return List.of();
     }
 
-    private String getCertificateServiceTypeId(String type) {
-        if (intygModuleRegistry.moduleExists(type)) {
-            try {
-                final var moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(type);
-                return moduleEntryPoint.certificateServiceTypeId();
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
-        }
-        return type;
+    return response.getBody().getCertificateModelIds();
+  }
+
+  private String getCertificateServiceTypeId(String type) {
+    if (intygModuleRegistry.moduleExists(type)) {
+      try {
+        final var moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(type);
+        return moduleEntryPoint.certificateServiceTypeId();
+      } catch (Exception e) {
+        throw new IllegalStateException(e);
+      }
     }
+    return type;
+  }
 }

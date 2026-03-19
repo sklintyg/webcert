@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.auth;
 
 import java.util.Objects;
@@ -25,53 +24,54 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 
 public class Saml2AuthenticationToken extends AbstractAuthenticationToken {
 
-    private final Object principal;
-    private final Saml2Authentication saml2Authentication;
-    private final String name;
+  private final Object principal;
+  private final Saml2Authentication saml2Authentication;
+  private final String name;
 
-    public Saml2AuthenticationToken(Object principal, Saml2Authentication authentication) {
-        super(authentication.getAuthorities());
-        this.principal = principal;
-        this.saml2Authentication = authentication;
-        this.name = authentication.getName();
-    }
+  public Saml2AuthenticationToken(Object principal, Saml2Authentication authentication) {
+    super(authentication.getAuthorities());
+    this.principal = principal;
+    this.saml2Authentication = authentication;
+    this.name = authentication.getName();
+  }
 
-    @Override
-    public Object getCredentials() {
-        return saml2Authentication.getCredentials();
-    }
+  @Override
+  public Object getCredentials() {
+    return saml2Authentication.getCredentials();
+  }
 
-    @Override
-    public Object getPrincipal() {
-        return principal;
-    }
+  @Override
+  public Object getPrincipal() {
+    return principal;
+  }
 
-    @Override
-    public String getName() {
-        return name;
-    }
+  @Override
+  public String getName() {
+    return name;
+  }
 
-    public Saml2Authentication getSaml2Authentication() {
-        return saml2Authentication;
-    }
+  public Saml2Authentication getSaml2Authentication() {
+    return saml2Authentication;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        Saml2AuthenticationToken token = (Saml2AuthenticationToken) o;
-        return Objects.equals(saml2Authentication, token.saml2Authentication) && Objects.equals(name, token.name);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Saml2AuthenticationToken token = (Saml2AuthenticationToken) o;
+    return Objects.equals(saml2Authentication, token.saml2Authentication)
+        && Objects.equals(name, token.name);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), principal, saml2Authentication, name);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), principal, saml2Authentication, name);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,20 +22,19 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 
 public class ListRequestDTO {
 
-    private ListFilter filter;
+  private ListFilter filter;
 
-    public ListRequestDTO() {
-    }
+  public ListRequestDTO() {}
 
-    public ListRequestDTO(ListFilter filter) {
-        this.filter = filter;
-    }
+  public ListRequestDTO(ListFilter filter) {
+    this.filter = filter;
+  }
 
-    public ListFilter getFilter() {
-        return filter;
-    }
+  public ListFilter getFilter() {
+    return filter;
+  }
 
-    public void setFilter(ListFilter filter) {
-        this.filter = filter;
-    }
+  public void setFilter(ListFilter filter) {
+    this.filter = filter;
+  }
 }

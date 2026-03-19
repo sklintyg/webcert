@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,22 +26,22 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeServi
 @Service("getCertificateEventsAggregator")
 public class GetCertificateEventsAggregator implements GetCertificateEventsFacadeService {
 
-    private final GetCertificateEventsFacadeService getCertificateEventsFromWC;
-    private final GetCertificateEventsFacadeService getCertificateEventsFromCS;
+  private final GetCertificateEventsFacadeService getCertificateEventsFromWC;
+  private final GetCertificateEventsFacadeService getCertificateEventsFromCS;
 
-    public GetCertificateEventsAggregator(
-        @Qualifier("getCertificateEventsFromWebcert")
-        GetCertificateEventsFacadeService getCertificateEventsFromWC,
-        @Qualifier("getCertificateEventsFromCertificateService")
-        GetCertificateEventsFacadeService replaceCertificateFromCertificateService) {
-        this.getCertificateEventsFromWC = getCertificateEventsFromWC;
-        this.getCertificateEventsFromCS = replaceCertificateFromCertificateService;
-    }
+  public GetCertificateEventsAggregator(
+      @Qualifier("getCertificateEventsFromWebcert") GetCertificateEventsFacadeService getCertificateEventsFromWC,
+      @Qualifier("getCertificateEventsFromCertificateService") GetCertificateEventsFacadeService replaceCertificateFromCertificateService) {
+    this.getCertificateEventsFromWC = getCertificateEventsFromWC;
+    this.getCertificateEventsFromCS = replaceCertificateFromCertificateService;
+  }
 
-    @Override
-    public CertificateEventDTO[] getCertificateEvents(String certificateId) {
-        final var responseFromCS = getCertificateEventsFromCS.getCertificateEvents(certificateId);
+  @Override
+  public CertificateEventDTO[] getCertificateEvents(String certificateId) {
+    final var responseFromCS = getCertificateEventsFromCS.getCertificateEvents(certificateId);
 
-        return responseFromCS != null ? responseFromCS : getCertificateEventsFromWC.getCertificateEvents(certificateId);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : getCertificateEventsFromWC.getCertificateEvents(certificateId);
+  }
 }

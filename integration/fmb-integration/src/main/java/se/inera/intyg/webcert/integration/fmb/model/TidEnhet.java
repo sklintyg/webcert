@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,40 +25,41 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public enum TidEnhet {
-    DAG("d", 1, "dag", "dagar"),
-    VECKA("wk", 7, "vecka", "veckor"),
-    MANAD("mo", 31, "månad", "månader");
+  DAG("d", 1, "dag", "dagar"),
+  VECKA("wk", 7, "vecka", "veckor"),
+  MANAD("mo", 31, "månad", "månader");
 
-    private final String code;
-    private final int inDays;
-    private final String singleName;
-    private final String pluralisName;
+  private final String code;
+  private final int inDays;
+  private final String singleName;
+  private final String pluralisName;
 
-    TidEnhet(final String code, final int inDays, final String singleName, final String pluralisName) {
-        this.code = code;
-        this.inDays = inDays;
-        this.singleName = singleName;
-        this.pluralisName = pluralisName;
+  TidEnhet(
+      final String code, final int inDays, final String singleName, final String pluralisName) {
+    this.code = code;
+    this.inDays = inDays;
+    this.singleName = singleName;
+    this.pluralisName = pluralisName;
+  }
+
+  public static Optional<TidEnhet> of(final String text) {
+    return Stream.of(TidEnhet.values())
+        .filter(code -> equalsIgnoreCase(text, code.getCode()))
+        .collect(toOptional());
+  }
+
+  public String getUnitDisplayValue(Integer value) {
+    if (value == null) {
+      return "";
     }
+    return value + " " + (value > 1 ? pluralisName : singleName);
+  }
 
-    public static Optional<TidEnhet> of(final String text) {
-        return Stream.of(TidEnhet.values())
-            .filter(code -> equalsIgnoreCase(text, code.getCode()))
-            .collect(toOptional());
-    }
+  public String getCode() {
+    return code;
+  }
 
-    public String getUnitDisplayValue(Integer value) {
-        if (value == null) {
-            return "";
-        }
-        return value + " " + (value > 1 ? pluralisName : singleName);
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public int getInDays() {
-        return inDays;
-    }
+  public int getInDays() {
+    return inDays;
+  }
 }

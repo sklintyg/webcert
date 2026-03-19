@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,55 +26,53 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 @Table(name = "GODKANT_AVTAL_PRIVATLAKARE")
 @Entity
 public class GodkantAvtal {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long internReferens;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long internReferens;
 
-    @Column(name = "AVTAL_VERSION")
-    private Integer avtalVersion;
+  @Column(name = "AVTAL_VERSION")
+  private Integer avtalVersion;
 
-    @Column(name = "HSA_ID")
-    private String hsaId;
+  @Column(name = "HSA_ID")
+  private String hsaId;
 
-    @Column(name = "GODKAND_DATUM")
-    private LocalDateTime godkandDatum;
+  @Column(name = "GODKAND_DATUM")
+  private LocalDateTime godkandDatum;
 
-    public Long getInternReferens() {
-        return internReferens;
-    }
+  public Long getInternReferens() {
+    return internReferens;
+  }
 
-    public void setInternReferens(Long internReferens) {
-        this.internReferens = internReferens;
-    }
+  public void setInternReferens(Long internReferens) {
+    this.internReferens = internReferens;
+  }
 
-    public Integer getAvtalVersion() {
-        return avtalVersion;
-    }
+  public Integer getAvtalVersion() {
+    return avtalVersion;
+  }
 
-    public void setAvtalVersion(Integer avtalVersion) {
-        this.avtalVersion = avtalVersion;
-    }
+  public void setAvtalVersion(Integer avtalVersion) {
+    this.avtalVersion = avtalVersion;
+  }
 
-    public String getHsaId() {
-        return hsaId;
-    }
+  public String getHsaId() {
+    return hsaId;
+  }
 
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
+  public void setHsaId(String hsaId) {
+    this.hsaId = hsaId;
+  }
 
-    public LocalDateTime getGodkandDatum() {
-        return godkandDatum;
-    }
+  public LocalDateTime getGodkandDatum() {
+    return godkandDatum;
+  }
 
-    public void setGodkandDatum(LocalDateTime goodkandDatum) {
-        this.godkandDatum = goodkandDatum;
-    }
+  public void setGodkandDatum(LocalDateTime goodkandDatum) {
+    this.godkandDatum = goodkandDatum;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,44 +35,39 @@ import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeServic
 @ExtendWith(MockitoExtension.class)
 class ValidateCertificateAggregatorTest {
 
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final ValidationErrorDTO[] VALIDATION_ERRORS_WC = {new ValidationErrorDTO()};
-    private static final ValidationErrorDTO[] VALIDATION_ERRORS_CS = {new ValidationErrorDTO()};
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final ValidationErrorDTO[] VALIDATION_ERRORS_WC = {new ValidationErrorDTO()};
+  private static final ValidationErrorDTO[] VALIDATION_ERRORS_CS = {new ValidationErrorDTO()};
 
-    ValidateCertificateFacadeService fromWC;
-    ValidateCertificateFacadeService fromCS;
-    ValidateCertificateFacadeService aggregator;
+  ValidateCertificateFacadeService fromWC;
+  ValidateCertificateFacadeService fromCS;
+  ValidateCertificateFacadeService aggregator;
 
-    @BeforeEach
-    void setup() {
-        fromWC = mock(ValidateCertificateFacadeService.class);
-        fromCS = mock(ValidateCertificateFacadeService.class);
+  @BeforeEach
+  void setup() {
+    fromWC = mock(ValidateCertificateFacadeService.class);
+    fromCS = mock(ValidateCertificateFacadeService.class);
 
-        aggregator = new ValidateCertificateAggregator(
-            fromWC,
-            fromCS
-        );
-    }
+    aggregator = new ValidateCertificateAggregator(fromWC, fromCS);
+  }
 
-    @Test
-    void shouldReturnValidationErrorsFromCSIfExists() {
-        when(fromCS.validate(CERTIFICATE))
-            .thenReturn(VALIDATION_ERRORS_CS);
+  @Test
+  void shouldReturnValidationErrorsFromCSIfExists() {
+    when(fromCS.validate(CERTIFICATE)).thenReturn(VALIDATION_ERRORS_CS);
 
-        final var response = aggregator.validate(CERTIFICATE);
-        verify(fromCS, times(1)).validate(CERTIFICATE);
+    final var response = aggregator.validate(CERTIFICATE);
+    verify(fromCS, times(1)).validate(CERTIFICATE);
 
-        assertEquals(VALIDATION_ERRORS_CS, response);
-    }
+    assertEquals(VALIDATION_ERRORS_CS, response);
+  }
 
-    @Test
-    void shouldReturnValidationErrorsFromWCIfCertificateDoesNotExistInCS() {
-        when(fromWC.validate(CERTIFICATE))
-            .thenReturn(VALIDATION_ERRORS_WC);
+  @Test
+  void shouldReturnValidationErrorsFromWCIfCertificateDoesNotExistInCS() {
+    when(fromWC.validate(CERTIFICATE)).thenReturn(VALIDATION_ERRORS_WC);
 
-        final var response = aggregator.validate(CERTIFICATE);
-        verify(fromWC, times(1)).validate(CERTIFICATE);
+    final var response = aggregator.validate(CERTIFICATE);
+    verify(fromWC, times(1)).validate(CERTIFICATE);
 
-        assertEquals(VALIDATION_ERRORS_WC, response);
-    }
+    assertEquals(VALIDATION_ERRORS_WC, response);
+  }
 }

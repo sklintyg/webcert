@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,102 +24,103 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class IcfKod {
 
-    private String kod;
-    private String benamning;
-    private String beskrivning;
-    private String innefattar;
+  private String kod;
+  private String benamning;
+  private String beskrivning;
+  private String innefattar;
 
-    public IcfKod() {
+  public IcfKod() {}
+
+  public IcfKod(
+      final String kod, final String benamning, final String beskrivning, final String innefattar) {
+    this.kod = kod;
+    this.benamning = benamning;
+    this.beskrivning = beskrivning;
+    this.innefattar = innefattar;
+  }
+
+  public String getKod() {
+    return kod;
+  }
+
+  public void setKod(final String kod) {
+    this.kod = kod;
+  }
+
+  public String getBeskrivning() {
+    return beskrivning;
+  }
+
+  public void setBeskrivning(final String beskrivning) {
+    this.beskrivning = beskrivning;
+  }
+
+  public String getBenamning() {
+    return benamning;
+  }
+
+  public void setBenamning(final String benamning) {
+    this.benamning = benamning;
+  }
+
+  public static IcfKod of(
+      final String kod, final String benamning, final String beskrivning, final String innefattar) {
+    return new IcfKod(kod, benamning, beskrivning, innefattar);
+  }
+
+  public String getInnefattar() {
+    return innefattar;
+  }
+
+  public void setInnefattar(final String innefattar) {
+    this.innefattar = innefattar;
+  }
+
+  // CHECKSTYLE:OFF NeedBraces
+  // CHECKSTYLE:OFF MagicNumber
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
     }
 
-    public IcfKod(final String kod, final String benamning, final String beskrivning, final String innefattar) {
-        this.kod = kod;
-        this.benamning = benamning;
-        this.beskrivning = beskrivning;
-        this.innefattar = innefattar;
+    if (o == null) {
+      return false;
     }
 
-    public String getKod() {
-        return kod;
+    if (!(o instanceof IcfKod)) {
+      return false;
     }
 
-    public void setKod(final String kod) {
-        this.kod = kod;
-    }
+    final IcfKod icfKod = (IcfKod) o;
 
-    public String getBeskrivning() {
-        return beskrivning;
-    }
+    return new EqualsBuilder()
+        .append(kod, icfKod.kod)
+        .append(benamning, icfKod.benamning)
+        .append(beskrivning, icfKod.beskrivning)
+        .append(innefattar, icfKod.innefattar)
+        .isEquals();
+  }
 
-    public void setBeskrivning(final String beskrivning) {
-        this.beskrivning = beskrivning;
-    }
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 37)
+        .append(kod)
+        .append(benamning)
+        .append(beskrivning)
+        .append(innefattar)
+        .toHashCode();
+  }
 
-    public String getBenamning() {
-        return benamning;
-    }
-
-    public void setBenamning(final String benamning) {
-        this.benamning = benamning;
-    }
-
-    public static IcfKod of(final String kod, final String benamning, final String beskrivning, final String innefattar) {
-        return new IcfKod(kod, benamning, beskrivning, innefattar);
-    }
-
-    public String getInnefattar() {
-        return innefattar;
-    }
-
-    public void setInnefattar(final String innefattar) {
-        this.innefattar = innefattar;
-    }
-
-    // CHECKSTYLE:OFF NeedBraces
-    // CHECKSTYLE:OFF MagicNumber
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null) {
-            return false;
-        }
-
-        if (!(o instanceof IcfKod)) {
-            return false;
-        }
-
-        final IcfKod icfKod = (IcfKod) o;
-
-        return new EqualsBuilder()
-            .append(kod, icfKod.kod)
-            .append(benamning, icfKod.benamning)
-            .append(beskrivning, icfKod.beskrivning)
-            .append(innefattar, icfKod.innefattar)
-            .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-            .append(kod)
-            .append(benamning)
-            .append(beskrivning)
-            .append(innefattar)
-            .toHashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("kod", kod)
-            .append("benamning", benamning)
-            .append("beskrivning", beskrivning)
-            .append("innefattar", innefattar)
-            .toString();
-    }
-    // CHECKSTYLE:ON NeedBraces
-    // CHECKSTYLE:ON MagicNumber
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("kod", kod)
+        .append("benamning", benamning)
+        .append("beskrivning", beskrivning)
+        .append("innefattar", innefattar)
+        .toString();
+  }
+  // CHECKSTYLE:ON NeedBraces
+  // CHECKSTYLE:ON MagicNumber
 }

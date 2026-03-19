@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,19 +34,19 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLogi
 @Slf4j
 public class FakeLoginTestabilityController {
 
-    private final FakeLoginService fakeLoginService;
-    private final ObjectMapper objectMapper;
+  private final FakeLoginService fakeLoginService;
+  private final ObjectMapper objectMapper;
 
-    @POST
-    @Path(value = "/fake")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void login(@Context HttpServletRequest request, FakeLoginDTO fakeLoginDTO) {
-        fakeLoginService.login(fakeLoginDTO, request);
-    }
+  @POST
+  @Path(value = "/fake")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public void login(@Context HttpServletRequest request, FakeLoginDTO fakeLoginDTO) {
+    fakeLoginService.login(fakeLoginDTO, request);
+  }
 
-    @POST
-    @Path("/logout")
-    public void logout(@Context HttpServletRequest request) {
-        fakeLoginService.logout(request.getSession(false));
-    }
+  @POST
+  @Path("/logout")
+  public void logout(@Context HttpServletRequest request) {
+    fakeLoginService.logout(request.getSession(false));
+  }
 }

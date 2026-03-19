@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,144 +23,143 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 
 public class QueryIntygParameter {
 
-    private Integer startFrom;
+  private Integer startFrom;
 
-    private Integer pageSize;
+  private Integer pageSize;
 
-    private String savedBy;
+  private String savedBy;
 
-    private Boolean notified;
+  private Boolean notified;
 
-    private UtkastStatus status;
+  private UtkastStatus status;
 
-    private LocalDateTime savedFrom;
+  private LocalDateTime savedFrom;
 
-    private LocalDateTime savedTo;
+  private LocalDateTime savedTo;
 
-    private LocalDateTime signedFrom;
+  private LocalDateTime signedFrom;
 
-    private LocalDateTime signedTo;
+  private LocalDateTime signedTo;
 
-    private String orderBy;
+  private String orderBy;
 
-    private Boolean orderAscending;
+  private Boolean orderAscending;
 
-    private String patientId;
+  private String patientId;
 
-    private String hsaId;
+  private String hsaId;
 
-    private String[] unitIds;
+  private String[] unitIds;
 
-    public String getPatientId() {
-        return patientId;
-    }
+  public String getPatientId() {
+    return patientId;
+  }
 
-    public void setPatientId(String pnr) {
-        patientId = pnr;
-    }
+  public void setPatientId(String pnr) {
+    patientId = pnr;
+  }
 
-    public Integer getStartFrom() {
-        return startFrom;
-    }
+  public Integer getStartFrom() {
+    return startFrom;
+  }
 
-    public void setStartFrom(Integer startFrom) {
-        this.startFrom = startFrom;
-    }
+  public void setStartFrom(Integer startFrom) {
+    this.startFrom = startFrom;
+  }
 
-    public Integer getPageSize() {
-        return pageSize;
-    }
+  public Integer getPageSize() {
+    return pageSize;
+  }
 
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
+  public void setPageSize(Integer pageSize) {
+    this.pageSize = pageSize;
+  }
 
-    public String getSavedBy() {
-        return savedBy;
-    }
+  public String getSavedBy() {
+    return savedBy;
+  }
 
-    public void setSavedBy(String savedBy) {
-        this.savedBy = savedBy;
-    }
+  public void setSavedBy(String savedBy) {
+    this.savedBy = savedBy;
+  }
 
-    public Boolean getNotified() {
-        return notified;
-    }
+  public Boolean getNotified() {
+    return notified;
+  }
 
-    public void setNotified(Boolean notified) {
-        this.notified = notified;
-    }
+  public void setNotified(Boolean notified) {
+    this.notified = notified;
+  }
 
-    public UtkastStatus getStatus() {
-        return status;
-    }
+  public UtkastStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(UtkastStatus status) {
-        this.status = status;
-    }
+  public void setStatus(UtkastStatus status) {
+    this.status = status;
+  }
 
-    public LocalDateTime getSavedFrom() {
-        return savedFrom;
-    }
+  public LocalDateTime getSavedFrom() {
+    return savedFrom;
+  }
 
-    public void setSavedFrom(LocalDateTime savedFrom) {
-        this.savedFrom = savedFrom;
-    }
+  public void setSavedFrom(LocalDateTime savedFrom) {
+    this.savedFrom = savedFrom;
+  }
 
-    public LocalDateTime getSavedTo() {
-        return savedTo;
-    }
+  public LocalDateTime getSavedTo() {
+    return savedTo;
+  }
 
-    public void setSavedTo(LocalDateTime savedTo) {
-        this.savedTo = savedTo;
-    }
+  public void setSavedTo(LocalDateTime savedTo) {
+    this.savedTo = savedTo;
+  }
 
-    public LocalDateTime getSignedFrom() {
-        return signedFrom;
-    }
+  public LocalDateTime getSignedFrom() {
+    return signedFrom;
+  }
 
-    public void setSignedFrom(LocalDateTime signedFrom) {
-        this.signedFrom = signedFrom;
-    }
+  public void setSignedFrom(LocalDateTime signedFrom) {
+    this.signedFrom = signedFrom;
+  }
 
-    public LocalDateTime getSignedTo() {
-        return signedTo;
-    }
+  public LocalDateTime getSignedTo() {
+    return signedTo;
+  }
 
-    public void setSignedTo(LocalDateTime signedTo) {
-        this.signedTo = signedTo;
-    }
+  public void setSignedTo(LocalDateTime signedTo) {
+    this.signedTo = signedTo;
+  }
 
-    public String getOrderBy() {
-        return orderBy;
-    }
+  public String getOrderBy() {
+    return orderBy;
+  }
 
-    public void setOrderBy(String orderBy) {
-        this.orderBy = orderBy;
-    }
+  public void setOrderBy(String orderBy) {
+    this.orderBy = orderBy;
+  }
 
-    public Boolean getOrderAscending() {
-        return orderAscending;
-    }
+  public Boolean getOrderAscending() {
+    return orderAscending;
+  }
 
-    public void setOrderAscending(Boolean orderAscending) {
-        this.orderAscending = orderAscending;
-    }
+  public void setOrderAscending(Boolean orderAscending) {
+    this.orderAscending = orderAscending;
+  }
 
-    public String getHsaId() {
-        return hsaId;
-    }
+  public String getHsaId() {
+    return hsaId;
+  }
 
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
+  public void setHsaId(String hsaId) {
+    this.hsaId = hsaId;
+  }
 
-    public void setUnitIds(String[] unitIds) {
-        this.unitIds = unitIds;
-    }
+  public void setUnitIds(String[] unitIds) {
+    this.unitIds = unitIds;
+  }
 
-    public String[] getUnitIds() {
-        return unitIds;
-    }
-
+  public String[] getUnitIds() {
+    return unitIds;
+  }
 }

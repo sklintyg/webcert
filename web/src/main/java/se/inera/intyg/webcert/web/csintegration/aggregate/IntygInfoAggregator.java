@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import java.util.Optional;
@@ -28,23 +27,22 @@ import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 @Service("intygInfoAggregator")
 public class IntygInfoAggregator implements IntygInfoServiceInterface {
 
-    private final IntygInfoServiceInterface getIntygInfoFromWC;
-    private final IntygInfoServiceInterface getIntygInfoFromCS;
+  private final IntygInfoServiceInterface getIntygInfoFromWC;
+  private final IntygInfoServiceInterface getIntygInfoFromCS;
 
-    public IntygInfoAggregator(
-        @Qualifier("getIntygInfoFromWC")
-        IntygInfoServiceInterface getIntygInfoFromWC,
-        @Qualifier("getIntygInfoFromCS")
-        IntygInfoServiceInterface getCertificateInfoFromCertificateService) {
-        this.getIntygInfoFromWC = getIntygInfoFromWC;
-        this.getIntygInfoFromCS = getCertificateInfoFromCertificateService;
-    }
+  public IntygInfoAggregator(
+      @Qualifier("getIntygInfoFromWC") IntygInfoServiceInterface getIntygInfoFromWC,
+      @Qualifier("getIntygInfoFromCS") IntygInfoServiceInterface getCertificateInfoFromCertificateService) {
+    this.getIntygInfoFromWC = getIntygInfoFromWC;
+    this.getIntygInfoFromCS = getCertificateInfoFromCertificateService;
+  }
 
-    @Override
-    public Optional<WcIntygInfo> getIntygInfo(String intygId) {
-        final var certificateFromCertificateService = getIntygInfoFromCS.getIntygInfo(intygId);
+  @Override
+  public Optional<WcIntygInfo> getIntygInfo(String intygId) {
+    final var certificateFromCertificateService = getIntygInfoFromCS.getIntygInfo(intygId);
 
-        return certificateFromCertificateService.isEmpty() ? getIntygInfoFromWC.getIntygInfo(intygId)
-            : certificateFromCertificateService;
-    }
+    return certificateFromCertificateService.isEmpty()
+        ? getIntygInfoFromWC.getIntygInfo(intygId)
+        : certificateFromCertificateService;
+  }
 }

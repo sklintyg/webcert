@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.doReturn;
@@ -34,42 +33,39 @@ import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeSe
 @ExtendWith(MockitoExtension.class)
 class DeleteQuestionAggregatorTest {
 
-    private static final String QUESTION_ID = "questionId";
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    DeleteQuestionFacadeService deleteQuestionFromWC;
-    @Mock
-    DeleteQuestionFacadeService deleteQuestionFromCS;
+  private static final String QUESTION_ID = "questionId";
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock DeleteQuestionFacadeService deleteQuestionFromWC;
+  @Mock DeleteQuestionFacadeService deleteQuestionFromCS;
 
-    DeleteQuestionFacadeService deleteQuestionAggregator;
+  DeleteQuestionFacadeService deleteQuestionAggregator;
 
-    @BeforeEach
-    void setUp() {
-        deleteQuestionAggregator = new DeleteQuestionAggregator(
-            deleteQuestionFromWC, deleteQuestionFromCS, csIntegrationService
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    deleteQuestionAggregator =
+        new DeleteQuestionAggregator(
+            deleteQuestionFromWC, deleteQuestionFromCS, csIntegrationService);
+  }
 
-    @Test
-    void shallCallDeleteQuestionsFromWCIfMessageDontExistInCertificateService() {
-        doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
+  @Test
+  void shallCallDeleteQuestionsFromWCIfMessageDontExistInCertificateService() {
+    doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
 
-        deleteQuestionAggregator.delete(QUESTION_ID);
+    deleteQuestionAggregator.delete(QUESTION_ID);
 
-        verify(deleteQuestionFromWC).delete(QUESTION_ID);
+    verify(deleteQuestionFromWC).delete(QUESTION_ID);
 
-        verifyNoInteractions(deleteQuestionFromCS);
-    }
+    verifyNoInteractions(deleteQuestionFromCS);
+  }
 
-    @Test
-    void shallCallDeleteQuestionsFromCSIfMessageExistInCertificateService() {
-        doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
+  @Test
+  void shallCallDeleteQuestionsFromCSIfMessageExistInCertificateService() {
+    doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
 
-        deleteQuestionAggregator.delete(QUESTION_ID);
+    deleteQuestionAggregator.delete(QUESTION_ID);
 
-        verify(deleteQuestionFromCS).delete(QUESTION_ID);
+    verify(deleteQuestionFromCS).delete(QUESTION_ID);
 
-        verifyNoInteractions(deleteQuestionFromWC);
-    }
+    verifyNoInteractions(deleteQuestionFromWC);
+  }
 }

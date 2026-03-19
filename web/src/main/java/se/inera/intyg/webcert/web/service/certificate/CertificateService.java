@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,16 +21,14 @@ package se.inera.intyg.webcert.web.service.certificate;
 import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
-/**
- * Service that retrieves certificates.
- */
+/** Service that retrieves certificates. */
 public interface CertificateService {
 
-    /**
-     * Retrieves certificates for a doctor on the logged in unit.
-     *
-     * @param queryParameter Parameters that certificates should be filtered according on.
-     * @return response including a list of certificates and the total amount of certificates.
-     */
-    CertificateListResponse listCertificatesForDoctor(QueryIntygParameter queryParameter);
+  /**
+   * Retrieves certificates for a doctor on the logged in unit.
+   *
+   * @param queryParameter Parameters that certificates should be filtered according on.
+   * @return response including a list of certificates and the total amount of certificates.
+   */
+  CertificateListResponse listCertificatesForDoctor(QueryIntygParameter queryParameter);
 }

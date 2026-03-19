@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,44 +25,44 @@ package se.inera.intyg.webcert.common.service.exception;
  */
 public final class WebCertServiceException extends RuntimeException {
 
-    private static final long serialVersionUID = -5060049906425434207L;
+  private static final long serialVersionUID = -5060049906425434207L;
 
-    private final WebCertServiceErrorCodeEnum errorCode;
+  private final WebCertServiceErrorCodeEnum errorCode;
 
-    /**
-     * @param errorCode error code
-     * @param message - Custom error message
-     */
-    public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
+  /**
+   * @param errorCode error code
+   * @param message - Custom error message
+   */
+  public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, String message) {
+    super(message);
+    this.errorCode = errorCode;
+  }
 
-    /**
-     * Constructor with original exception.
-     *
-     * @param errorCode error code
-     * @param cause cause
-     */
-    public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, Exception cause) {
-        super(cause);
-        this.errorCode = errorCode;
-    }
+  /**
+   * Constructor with original exception.
+   *
+   * @param errorCode error code
+   * @param cause cause
+   */
+  public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, Exception cause) {
+    super(cause);
+    this.errorCode = errorCode;
+  }
 
-    /**
-     * Constructor with message and original exception.
-     *
-     * @param errorCode error code
-     * @param message message
-     * @param cause cause
-     */
-    public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, String message, Exception cause) {
-        super(message, cause);
-        this.errorCode = errorCode;
-    }
+  /**
+   * Constructor with message and original exception.
+   *
+   * @param errorCode error code
+   * @param message message
+   * @param cause cause
+   */
+  public WebCertServiceException(
+      WebCertServiceErrorCodeEnum errorCode, String message, Exception cause) {
+    super(message, cause);
+    this.errorCode = errorCode;
+  }
 
-    public WebCertServiceErrorCodeEnum getErrorCode() {
-        return errorCode;
-    }
-
+  public WebCertServiceErrorCodeEnum getErrorCode() {
+    return errorCode;
+  }
 }

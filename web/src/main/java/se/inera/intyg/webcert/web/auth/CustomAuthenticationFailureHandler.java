@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,54 +38,56 @@ import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizati
 
 @Service
 @Slf4j
-public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenticationFailureHandler {
+public class CustomAuthenticationFailureHandler
+    extends ExceptionMappingAuthenticationFailureHandler {
 
-    private static final String WC_DEFAULT_FAILURE_URL = "/error?reason=login.failed";
-    private final String privatePractitionerPortalRegistrationUrl;
-    private Map<String, String> failureUrlMap = new HashMap<>();
+  private static final String WC_DEFAULT_FAILURE_URL = "/error?reason=login.failed";
+  private final String privatePractitionerPortalRegistrationUrl;
+  private Map<String, String> failureUrlMap = new HashMap<>();
 
-    public CustomAuthenticationFailureHandler(
-        @Value("${privatepractitioner.portal.registration.url}") String privatePractitionerPortalRegistrationUrl) {
-        this.privatePractitionerPortalRegistrationUrl = privatePractitionerPortalRegistrationUrl;
+  public CustomAuthenticationFailureHandler(
+      @Value("${privatepractitioner.portal.registration.url}")
+          String privatePractitionerPortalRegistrationUrl) {
+    this.privatePractitionerPortalRegistrationUrl = privatePractitionerPortalRegistrationUrl;
+  }
+
+  @PostConstruct
+  public void init() {
+    failureUrlMap = getFalureUrlMap();
+  }
+
+  @Override
+  public void onAuthenticationFailure(
+      HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
+      throws IOException {
+    final var exceptionName = getCauseExceptionName(exception);
+    log.error("Failure on authentication.", exception);
+
+    String url;
+    if (failureUrlMap.containsKey(exceptionName)) {
+      url = failureUrlMap.get(exceptionName);
+    } else {
+      saveException(request, exception);
+      url = WC_DEFAULT_FAILURE_URL;
     }
 
-    @PostConstruct
-    public void init() {
-        failureUrlMap = getFalureUrlMap();
+    getRedirectStrategy().sendRedirect(request, response, url);
+  }
+
+  private static @NonNull String getCauseExceptionName(AuthenticationException exception) {
+    if (exception.getCause() != null) {
+      return exception.getCause().getClass().getName();
     }
+    return exception.getClass().getName();
+  }
 
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
-        throws IOException {
-        final var exceptionName = getCauseExceptionName(exception);
-        log.error("Failure on authentication.", exception);
-
-        String url;
-        if (failureUrlMap.containsKey(exceptionName)) {
-            url = failureUrlMap.get(exceptionName);
-        } else {
-            saveException(request, exception);
-            url = WC_DEFAULT_FAILURE_URL;
-        }
-
-        getRedirectStrategy().sendRedirect(request, response, url);
-    }
-
-    private static @NonNull String getCauseExceptionName(AuthenticationException exception) {
-        if (exception.getCause() != null) {
-            return exception.getCause().getClass().getName();
-        }
-        return exception.getClass().getName();
-    }
-
-    private Map<String, String> getFalureUrlMap() {
-        return Map.of(
-            BadCredentialsException.class.getName(), WC_DEFAULT_FAILURE_URL,
-            HsaServiceException.class.getName(), "/error?reason=login.hsaerror",
-            MissingMedarbetaruppdragException.class.getName(), "/error?reason=login.medarbetaruppdrag",
-            MissingSubscriptionException.class.getName(), "/error?reason=auth-exception-subscription",
-            PrivatePractitionerAuthorizationException.class.getName(), privatePractitionerPortalRegistrationUrl
-        );
-    }
-
+  private Map<String, String> getFalureUrlMap() {
+    return Map.of(
+        BadCredentialsException.class.getName(), WC_DEFAULT_FAILURE_URL,
+        HsaServiceException.class.getName(), "/error?reason=login.hsaerror",
+        MissingMedarbetaruppdragException.class.getName(), "/error?reason=login.medarbetaruppdrag",
+        MissingSubscriptionException.class.getName(), "/error?reason=auth-exception-subscription",
+        PrivatePractitionerAuthorizationException.class.getName(),
+            privatePractitionerPortalRegistrationUrl);
+  }
 }

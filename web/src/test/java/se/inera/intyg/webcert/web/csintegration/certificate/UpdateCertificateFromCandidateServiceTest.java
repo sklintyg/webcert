@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,156 +54,140 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class UpdateCertificateFromCandidateServiceTest {
 
-    private static final GetCandidateCertificateRequestDTO GET_CANDIDATE_CERTIFICATE_REQUEST = GetCandidateCertificateRequestDTO.builder()
-        .build();
-    private static final UpdateWithCandidateCertificateRequestDTO UPDATE_WITH_CANDIDATE_CERTIFICATE_REQUEST = UpdateWithCandidateCertificateRequestDTO.builder()
-        .build();
-    private static final String PATIENT_ID = "patientId";
-    private static final Patient PATIENT = Patient.builder()
-        .personId(
-            PersonId.builder()
-                .id(PATIENT_ID)
-                .build()
-        )
-        .build();
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CANDIDATE_CERTIFICATE_ID = "candidateCertificateId";
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final Certificate CANDIDATE_CERTIFICATE = new Certificate();
-    private static final String TYPE = "type";
-    private static final String CANDIDATE_TYPE = "candidateType";
+  private static final GetCandidateCertificateRequestDTO GET_CANDIDATE_CERTIFICATE_REQUEST =
+      GetCandidateCertificateRequestDTO.builder().build();
+  private static final UpdateWithCandidateCertificateRequestDTO
+      UPDATE_WITH_CANDIDATE_CERTIFICATE_REQUEST =
+          UpdateWithCandidateCertificateRequestDTO.builder().build();
+  private static final String PATIENT_ID = "patientId";
+  private static final Patient PATIENT =
+      Patient.builder().personId(PersonId.builder().id(PATIENT_ID).build()).build();
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CANDIDATE_CERTIFICATE_ID = "candidateCertificateId";
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final Certificate CANDIDATE_CERTIFICATE = new Certificate();
+  private static final String TYPE = "type";
+  private static final String CANDIDATE_TYPE = "candidateType";
 
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationService csIntegrationService;
 
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Mock
-    PDLLogService pdlLogService;
+  @Mock PDLLogService pdlLogService;
 
-    @Mock
-    MonitoringLogService monitoringLogService;
+  @Mock MonitoringLogService monitoringLogService;
 
-    @Mock
-    WebCertUserService webCertUserService;
+  @Mock WebCertUserService webCertUserService;
 
-    @Mock
-    IntegrationParameters parameters;
+  @Mock IntegrationParameters parameters;
 
-    @Mock
-    WebCertUser user;
+  @Mock WebCertUser user;
 
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    UpdateCertificateFromCandidateInCertificateService updateCertificateFromCandidateInCertificateService;
+  @InjectMocks
+  UpdateCertificateFromCandidateInCertificateService
+      updateCertificateFromCandidateInCertificateService;
+
+  @Test
+  void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    final var response = updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
+
+    assertNull(response);
+  }
+
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+      CANDIDATE_CERTIFICATE.setMetadata(
+          CertificateMetadata.builder()
+              .id(CANDIDATE_CERTIFICATE_ID)
+              .type(CANDIDATE_TYPE)
+              .patient(PATIENT)
+              .build());
+
+      CERTIFICATE.setMetadata(
+          CertificateMetadata.builder().id(CERTIFICATE_ID).type(TYPE).patient(PATIENT).build());
+
+      when(csIntegrationService.certificateExists(anyString())).thenReturn(true);
+
+      when(csIntegrationRequestFactory.getCandidateCertificateRequest())
+          .thenReturn(GET_CANDIDATE_CERTIFICATE_REQUEST);
+
+      when(csIntegrationService.getCandidateCertificate(anyString(), any()))
+          .thenReturn(CANDIDATE_CERTIFICATE);
+
+      when(csIntegrationRequestFactory.updateWithCandidateCertificateRequestDTO(
+              PATIENT_ID, parameters))
+          .thenReturn(UPDATE_WITH_CANDIDATE_CERTIFICATE_REQUEST);
+
+      when(csIntegrationService.updateWithCandidateCertificate(
+              CERTIFICATE_ID, CANDIDATE_CERTIFICATE_ID, UPDATE_WITH_CANDIDATE_CERTIFICATE_REQUEST))
+          .thenReturn(CERTIFICATE);
+
+      when(user.getParameters()).thenReturn(parameters);
+
+      when(webCertUserService.getUser()).thenReturn(user);
+
+      final var valdVardenhet = new Vardenhet();
+      valdVardenhet.setId("vardenhetId");
+      when(user.getValdVardenhet()).thenReturn(valdVardenhet);
+      when(user.getHsaId()).thenReturn("hsaId");
+    }
 
     @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        final var response = updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
-
-        assertNull(response);
+    void shouldReturnUpdatedCertificateId() {
+      final var response =
+          updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
+      assertEquals(CERTIFICATE_ID, response);
     }
 
-    @Nested
-    class CertificateExistsInCS {
-
-        @BeforeEach
-        void setup() {
-            CANDIDATE_CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(CANDIDATE_CERTIFICATE_ID)
-                .type(CANDIDATE_TYPE)
-                .patient(PATIENT)
-                .build());
-
-            CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(CERTIFICATE_ID)
-                .type(TYPE)
-                .patient(PATIENT)
-                .build());
-
-            when(csIntegrationService.certificateExists(anyString()))
-                .thenReturn(true);
-
-            when(csIntegrationRequestFactory.getCandidateCertificateRequest())
-                .thenReturn(GET_CANDIDATE_CERTIFICATE_REQUEST);
-
-            when(csIntegrationService.getCandidateCertificate(anyString(), any()))
-                .thenReturn(CANDIDATE_CERTIFICATE);
-
-            when(csIntegrationRequestFactory.updateWithCandidateCertificateRequestDTO(PATIENT_ID, parameters))
-                .thenReturn(UPDATE_WITH_CANDIDATE_CERTIFICATE_REQUEST);
-
-            when(csIntegrationService.updateWithCandidateCertificate(CERTIFICATE_ID, CANDIDATE_CERTIFICATE_ID,
-                UPDATE_WITH_CANDIDATE_CERTIFICATE_REQUEST)).thenReturn(CERTIFICATE);
-
-            when(user.getParameters())
-                .thenReturn(parameters);
-
-            when(webCertUserService.getUser())
-                .thenReturn(user);
-
-            final var valdVardenhet = new Vardenhet();
-            valdVardenhet.setId("vardenhetId");
-            when(user.getValdVardenhet())
-                .thenReturn(valdVardenhet);
-            when(user.getHsaId())
-                .thenReturn("hsaId");
-        }
-
-        @Test
-        void shouldReturnUpdatedCertificateId() {
-            final var response = updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
-            assertEquals(CERTIFICATE_ID, response);
-        }
-
-        @Test
-        void shouldPdlLogReadForCandidateCertificate() {
-            updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
-            verify(pdlLogService).logRead(CANDIDATE_CERTIFICATE);
-        }
-
-        @Test
-        void shouldPdlLogSavedForCertificate() {
-            updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
-            verify(pdlLogService).logSaved(CERTIFICATE);
-        }
-
-        @Test
-        void shouldPublishCreated() {
-            updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
-            verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.ANDRAT);
-        }
-
-        @Test
-        void shouldMonitorLogUtkastCreatedTemplateAuto() {
-            updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
-            verify(monitoringLogService).logUtkastCreatedTemplateAuto(
-                CERTIFICATE_ID,
-                TYPE,
-                user.getHsaId(),
-                user.getValdVardenhet().getId(),
-                CANDIDATE_CERTIFICATE_ID,
-                CANDIDATE_TYPE
-            );
-        }
-
-        @Test
-        void shouldPublishAnalyticsMessageWhenCertificateIsReplaced() {
-            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-            when(certificateAnalyticsMessageFactory.draftUpdatedFromCertificate(CERTIFICATE)).thenReturn(analyticsMessage);
-
-            updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
-
-            verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-        }
+    @Test
+    void shouldPdlLogReadForCandidateCertificate() {
+      updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
+      verify(pdlLogService).logRead(CANDIDATE_CERTIFICATE);
     }
+
+    @Test
+    void shouldPdlLogSavedForCertificate() {
+      updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
+      verify(pdlLogService).logSaved(CERTIFICATE);
+    }
+
+    @Test
+    void shouldPublishCreated() {
+      updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
+      verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.ANDRAT);
+    }
+
+    @Test
+    void shouldMonitorLogUtkastCreatedTemplateAuto() {
+      updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
+      verify(monitoringLogService)
+          .logUtkastCreatedTemplateAuto(
+              CERTIFICATE_ID,
+              TYPE,
+              user.getHsaId(),
+              user.getValdVardenhet().getId(),
+              CANDIDATE_CERTIFICATE_ID,
+              CANDIDATE_TYPE);
+    }
+
+    @Test
+    void shouldPublishAnalyticsMessageWhenCertificateIsReplaced() {
+      final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+      when(certificateAnalyticsMessageFactory.draftUpdatedFromCertificate(CERTIFICATE))
+          .thenReturn(analyticsMessage);
+
+      updateCertificateFromCandidateInCertificateService.update(CERTIFICATE_ID);
+
+      verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+    }
+  }
 }

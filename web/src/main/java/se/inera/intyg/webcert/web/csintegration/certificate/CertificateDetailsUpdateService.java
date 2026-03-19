@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -34,49 +33,49 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class CertificateDetailsUpdateService {
 
-    private final AlternateSsnEvaluator alternateSsnEvaluator;
-    private final MonitoringLogService monitoringLogService;
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final AlternateSsnEvaluator alternateSsnEvaluator;
+  private final MonitoringLogService monitoringLogService;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    public void update(Certificate certificate, WebCertUser user, Personnummer beforeAlternateSsn) {
-        final var shouldUpdatePatientDetails = alternateSsnEvaluator.shouldUpdate(certificate, user);
-        final var shouldSetExternalReference = shouldSetExternalReference(user, certificate);
+  public void update(Certificate certificate, WebCertUser user, Personnummer beforeAlternateSsn) {
+    final var shouldUpdatePatientDetails = alternateSsnEvaluator.shouldUpdate(certificate, user);
+    final var shouldSetExternalReference = shouldSetExternalReference(user, certificate);
 
-        if ((!shouldSetExternalReference && !shouldUpdatePatientDetails) || isNotDraft(certificate)) {
-            return;
-        }
+    if ((!shouldSetExternalReference && !shouldUpdatePatientDetails) || isNotDraft(certificate)) {
+      return;
+    }
 
-        final var savedCertificate = csIntegrationService.saveCertificate(
+    final var savedCertificate =
+        csIntegrationService.saveCertificate(
             csIntegrationRequestFactory.saveRequest(
                 certificate,
                 shouldUpdatePatientDetails
                     ? user.getParameters().getAlternateSsn()
                     : certificate.getMetadata().getPatient().getActualPersonId().getId(),
-                shouldSetExternalReference
-                    ? user.getParameters().getReference()
-                    : null
-            )
-        );
+                shouldSetExternalReference ? user.getParameters().getReference() : null));
 
-        if (shouldUpdatePatientDetails) {
-            monitoringLogService.logUtkastPatientDetailsUpdated(
-                savedCertificate.getMetadata().getId(),
-                savedCertificate.getMetadata().getType()
-            );
-            publishCertificateStatusUpdateService.publish(savedCertificate, HandelsekodEnum.ANDRAT);
-            user.getParameters().setBeforeAlternateSsn(beforeAlternateSsn != null ? beforeAlternateSsn.getOriginalPnr()
-                : certificate.getMetadata().getPatient().getPersonId().getId());
-        }
+    if (shouldUpdatePatientDetails) {
+      monitoringLogService.logUtkastPatientDetailsUpdated(
+          savedCertificate.getMetadata().getId(), savedCertificate.getMetadata().getType());
+      publishCertificateStatusUpdateService.publish(savedCertificate, HandelsekodEnum.ANDRAT);
+      user.getParameters()
+          .setBeforeAlternateSsn(
+              beforeAlternateSsn != null
+                  ? beforeAlternateSsn.getOriginalPnr()
+                  : certificate.getMetadata().getPatient().getPersonId().getId());
     }
+  }
 
-    private static boolean isNotDraft(Certificate certificate) {
-        return !CertificateStatus.UNSIGNED.equals(certificate.getMetadata().getStatus());
-    }
+  private static boolean isNotDraft(Certificate certificate) {
+    return !CertificateStatus.UNSIGNED.equals(certificate.getMetadata().getStatus());
+  }
 
-    private static boolean shouldSetExternalReference(WebCertUser user, Certificate certificate) {
-        return certificate.getMetadata().getExternalReference() == null && user.getParameters() != null && (
-            user.getParameters().getReference() != null && !user.getParameters().getReference().isBlank());
-    }
+  private static boolean shouldSetExternalReference(WebCertUser user, Certificate certificate) {
+    return certificate.getMetadata().getExternalReference() == null
+        && user.getParameters() != null
+        && (user.getParameters().getReference() != null
+            && !user.getParameters().getReference().isBlank());
+  }
 }

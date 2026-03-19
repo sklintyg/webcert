@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -32,11 +31,9 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 @JsonDeserialize(builder = SendNotificationsForCertificatesRequestDTOBuilder.class)
 public class SendNotificationsForCertificatesRequestDTO {
 
-    List<String> certificateIds;
-    List<NotificationDeliveryStatusEnum> statuses;
+  List<String> certificateIds;
+  List<NotificationDeliveryStatusEnum> statuses;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class SendNotificationsForCertificatesRequestDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class SendNotificationsForCertificatesRequestDTOBuilder {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,154 +41,166 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
-/**
- * Created by eriklupander on 2015-06-23.
- */
+/** Created by eriklupander on 2015-06-23. */
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastIntygDecoratorTest {
 
-    private static final String INTYG_JSON = "A bit of text representing json";
-    private static final String INTYG_TYPE = "fk7263";
+  private static final String INTYG_JSON = "A bit of text representing json";
+  private static final String INTYG_TYPE = "fk7263";
 
-    private static final String INTYG_ID = "123";
+  private static final String INTYG_ID = "123";
 
-    private Utkast signedUtkast;
+  private Utkast signedUtkast;
 
-    @Mock
-    private UtkastRepository utkastRepository;
+  @Mock private UtkastRepository utkastRepository;
 
-    @InjectMocks
-    private UtkastIntygDecoratorImpl testee;
+  @InjectMocks private UtkastIntygDecoratorImpl testee;
 
-    @Before
-    public void setup() {
-        HoSPersonal person = buildHosPerson();
-        VardpersonReferens vardperson = buildVardpersonReferens(person);
+  @Before
+  public void setup() {
+    HoSPersonal person = buildHosPerson();
+    VardpersonReferens vardperson = buildVardpersonReferens(person);
 
-        signedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
-    }
+    signedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+  }
 
-    @Test
-    public void testNotAWebcertIntygDoesNotAddAnyStatuses() {
+  @Test
+  public void testNotAWebcertIntygDoesNotAddAnyStatuses() {
 
-        CertificateResponse response = buildCertificateResponse();
+    CertificateResponse response = buildCertificateResponse();
 
-        testee.decorateWithUtkastStatus(response);
-        assertEquals(1, response.getMetaData().getStatus().size());
-    }
+    testee.decorateWithUtkastStatus(response);
+    assertEquals(1, response.getMetaData().getStatus().size());
+  }
 
-    @Test
-    public void testRevokedStatusOnIntygDoesNotAddAnyStatuses() {
+  @Test
+  public void testRevokedStatusOnIntygDoesNotAddAnyStatuses() {
 
-        CertificateResponse response = buildCertificateResponse();
-        response.getMetaData().getStatus().add(new Status(CertificateState.CANCELLED, "FKASSA", LocalDateTime.now()));
+    CertificateResponse response = buildCertificateResponse();
+    response
+        .getMetaData()
+        .getStatus()
+        .add(new Status(CertificateState.CANCELLED, "FKASSA", LocalDateTime.now()));
 
-        testee.decorateWithUtkastStatus(response);
-        assertEquals(2, response.getMetaData().getStatus().size());
-    }
+    testee.decorateWithUtkastStatus(response);
+    assertEquals(2, response.getMetaData().getStatus().size());
+  }
 
-    @Test
-    public void testRevokedIntygDoesNotAddAnyStatuses() {
+  @Test
+  public void testRevokedIntygDoesNotAddAnyStatuses() {
 
-        CertificateResponse response = buildCertificateResponse();
-        CertificateResponse revokedResponse = new CertificateResponse(response.getInternalModel(), response.getUtlatande(),
-            response.getMetaData(),
-            true);
+    CertificateResponse response = buildCertificateResponse();
+    CertificateResponse revokedResponse =
+        new CertificateResponse(
+            response.getInternalModel(), response.getUtlatande(), response.getMetaData(), true);
 
-        testee.decorateWithUtkastStatus(revokedResponse);
-        assertEquals(1, response.getMetaData().getStatus().size());
-    }
+    testee.decorateWithUtkastStatus(revokedResponse);
+    assertEquals(1, response.getMetaData().getStatus().size());
+  }
 
-    @Test
-    public void testSentIntygDoesNotAddAnySentStatus() {
+  @Test
+  public void testSentIntygDoesNotAddAnySentStatus() {
 
-        CertificateResponse response = buildCertificateResponse();
-        response.getMetaData().getStatus().add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
+    CertificateResponse response = buildCertificateResponse();
+    response
+        .getMetaData()
+        .getStatus()
+        .add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
-        testee.decorateWithUtkastStatus(response);
-        assertEquals(2, response.getMetaData().getStatus().size());
-    }
+    testee.decorateWithUtkastStatus(response);
+    assertEquals(2, response.getMetaData().getStatus().size());
+  }
 
-    @Test
-    public void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
-        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-        signedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findById(nullable(String.class))).thenReturn(Optional.ofNullable(signedUtkast));
+  @Test
+  public void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
+    signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+    signedUtkast.setAterkalladDatum(LocalDateTime.now());
+    when(utkastRepository.findById(nullable(String.class)))
+        .thenReturn(Optional.ofNullable(signedUtkast));
 
-        CertificateResponse response = buildCertificateResponse();
-        response.getMetaData().getStatus().add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
+    CertificateResponse response = buildCertificateResponse();
+    response
+        .getMetaData()
+        .getStatus()
+        .add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
-        testee.decorateWithUtkastStatus(response);
-        assertEquals(3, response.getMetaData().getStatus().size());
-    }
+    testee.decorateWithUtkastStatus(response);
+    assertEquals(3, response.getMetaData().getStatus().size());
+  }
 
-    @Test
-    public void testSentStatusIsAddedFromUtkast() {
-        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-        when(utkastRepository.findById(nullable(String.class))).thenReturn(Optional.ofNullable(signedUtkast));
+  @Test
+  public void testSentStatusIsAddedFromUtkast() {
+    signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+    when(utkastRepository.findById(nullable(String.class)))
+        .thenReturn(Optional.ofNullable(signedUtkast));
 
-        CertificateResponse response = buildCertificateResponse();
+    CertificateResponse response = buildCertificateResponse();
 
-        testee.decorateWithUtkastStatus(response);
+    testee.decorateWithUtkastStatus(response);
 
-        assertEquals(2, response.getMetaData().getStatus().size());
-        assertEquals(CertificateState.RECEIVED, response.getMetaData().getStatus().get(0).getType());
-        assertEquals(CertificateState.SENT, response.getMetaData().getStatus().get(1).getType());
-    }
+    assertEquals(2, response.getMetaData().getStatus().size());
+    assertEquals(CertificateState.RECEIVED, response.getMetaData().getStatus().get(0).getType());
+    assertEquals(CertificateState.SENT, response.getMetaData().getStatus().get(1).getType());
+  }
 
-    @Test
-    public void testRevokedStatusIsAddedFromUtkast() {
-        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-        signedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findById(nullable(String.class))).thenReturn(Optional.ofNullable(signedUtkast));
+  @Test
+  public void testRevokedStatusIsAddedFromUtkast() {
+    signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+    signedUtkast.setAterkalladDatum(LocalDateTime.now());
+    when(utkastRepository.findById(nullable(String.class)))
+        .thenReturn(Optional.ofNullable(signedUtkast));
 
-        CertificateResponse response = buildCertificateResponse();
+    CertificateResponse response = buildCertificateResponse();
 
-        testee.decorateWithUtkastStatus(response);
+    testee.decorateWithUtkastStatus(response);
 
-        assertEquals(3, response.getMetaData().getStatus().size());
-        assertEquals(CertificateState.RECEIVED, response.getMetaData().getStatus().get(0).getType());
-        assertEquals(CertificateState.SENT, response.getMetaData().getStatus().get(1).getType());
-        assertEquals(CertificateState.CANCELLED, response.getMetaData().getStatus().get(2).getType());
-    }
+    assertEquals(3, response.getMetaData().getStatus().size());
+    assertEquals(CertificateState.RECEIVED, response.getMetaData().getStatus().get(0).getType());
+    assertEquals(CertificateState.SENT, response.getMetaData().getStatus().get(1).getType());
+    assertEquals(CertificateState.CANCELLED, response.getMetaData().getStatus().get(2).getType());
+  }
 
-    private CertificateResponse buildCertificateResponse() {
-        return new CertificateResponse("{}", null, buildCertificateMetaData(), false);
-    }
+  private CertificateResponse buildCertificateResponse() {
+    return new CertificateResponse("{}", null, buildCertificateMetaData(), false);
+  }
 
-    private CertificateMetaData buildCertificateMetaData() {
-        CertificateMetaData metaData = new CertificateMetaData();
-        metaData.setStatus(new ArrayList<>());
-        Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
-        metaData.getStatus().add(statusSigned);
-        return metaData;
-    }
+  private CertificateMetaData buildCertificateMetaData() {
+    CertificateMetaData metaData = new CertificateMetaData();
+    metaData.setStatus(new ArrayList<>());
+    Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
+    metaData.getStatus().add(statusSigned);
+    return metaData;
+  }
 
-    private HoSPersonal buildHosPerson() {
-        HoSPersonal person = new HoSPersonal();
-        person.setPersonId("AAA");
-        person.setFullstandigtNamn("Dr Dengroth");
-        return person;
-    }
+  private HoSPersonal buildHosPerson() {
+    HoSPersonal person = new HoSPersonal();
+    person.setPersonId("AAA");
+    person.setFullstandigtNamn("Dr Dengroth");
+    return person;
+  }
 
-    private Utkast buildUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+  private Utkast buildUtkast(
+      String intygId,
+      String type,
+      UtkastStatus status,
+      String model,
+      VardpersonReferens vardperson) {
 
-        Utkast intyg = new Utkast();
-        intyg.setIntygsId(intygId);
-        intyg.setIntygsTyp(type);
-        intyg.setStatus(status);
-        intyg.setModel(model);
-        intyg.setSkapadAv(vardperson);
-        intyg.setSenastSparadAv(vardperson);
+    Utkast intyg = new Utkast();
+    intyg.setIntygsId(intygId);
+    intyg.setIntygsTyp(type);
+    intyg.setStatus(status);
+    intyg.setModel(model);
+    intyg.setSkapadAv(vardperson);
+    intyg.setSenastSparadAv(vardperson);
 
-        return intyg;
-    }
+    return intyg;
+  }
 
-    private VardpersonReferens buildVardpersonReferens(HoSPersonal person) {
-        VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(person.getPersonId());
-        vardperson.setNamn(person.getFullstandigtNamn());
-        return vardperson;
-    }
-
+  private VardpersonReferens buildVardpersonReferens(HoSPersonal person) {
+    VardpersonReferens vardperson = new VardpersonReferens();
+    vardperson.setHsaId(person.getPersonId());
+    vardperson.setNamn(person.getFullstandigtNamn());
+    return vardperson;
+  }
 }

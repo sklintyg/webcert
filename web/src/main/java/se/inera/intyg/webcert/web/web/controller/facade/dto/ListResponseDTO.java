@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,35 +18,34 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
-
 import java.util.List;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 
 public class ListResponseDTO {
 
-    private List<CertificateListItem> list;
-    private int totalCount;
+  private List<CertificateListItem> list;
+  private int totalCount;
 
-    public static ListResponseDTO create(List<CertificateListItem> list, int totalCount) {
-        final var responseDTO = new ListResponseDTO();
-        responseDTO.setList(list);
-        responseDTO.setTotalCount(totalCount);
-        return responseDTO;
-    }
+  public static ListResponseDTO create(List<CertificateListItem> list, int totalCount) {
+    final var responseDTO = new ListResponseDTO();
+    responseDTO.setList(list);
+    responseDTO.setTotalCount(totalCount);
+    return responseDTO;
+  }
 
-    public List<CertificateListItem> getList() {
-        return list;
-    }
+  public List<CertificateListItem> getList() {
+    return list;
+  }
 
-    public void setList(List<CertificateListItem> list) {
-        this.list = list;
-    }
+  public void setList(List<CertificateListItem> list) {
+    this.list = list;
+  }
 
-    public int getTotalCount() {
-        return totalCount;
-    }
+  public int getTotalCount() {
+    return totalCount;
+  }
 
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
-    }
+  public void setTotalCount(int totalCount) {
+    this.totalCount = totalCount;
+  }
 }

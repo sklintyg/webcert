@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,34 +34,31 @@ import se.inera.intyg.webcert.web.service.facade.question.impl.DeleteQuestionFac
 @ExtendWith(MockitoExtension.class)
 class DeleteQuestionFacadeServiceImplTest {
 
-    private final String CERTIFICATE_ID = "certificateId";
-    private final String ID_AS_STRING = "1000";
-    private final long ID_AS_LONG = 1000L;
+  private final String CERTIFICATE_ID = "certificateId";
+  private final String ID_AS_STRING = "1000";
+  private final long ID_AS_LONG = 1000L;
 
-    @Mock
-    ArendeDraftService arendeDraftService;
+  @Mock ArendeDraftService arendeDraftService;
 
-    @InjectMocks
-    private DeleteQuestionFacadeServiceImpl deleteQuestionDraftFacadeService;
+  @InjectMocks private DeleteQuestionFacadeServiceImpl deleteQuestionDraftFacadeService;
 
-    private ArendeDraft arendeDraft;
+  private ArendeDraft arendeDraft;
 
-    @BeforeEach
-    void setup() {
-        arendeDraft = new ArendeDraft();
-        arendeDraft.setIntygId(CERTIFICATE_ID);
-        arendeDraft.setId(ID_AS_LONG);
+  @BeforeEach
+  void setup() {
+    arendeDraft = new ArendeDraft();
+    arendeDraft.setIntygId(CERTIFICATE_ID);
+    arendeDraft.setId(ID_AS_LONG);
 
-        doReturn(arendeDraft)
-            .when(arendeDraftService)
-            .getQuestionDraftById(ID_AS_LONG);
-    }
+    doReturn(arendeDraft).when(arendeDraftService).getQuestionDraftById(ID_AS_LONG);
+  }
 
-    @Test
-    void shallDeleteDraftForCertificate() {
-        deleteQuestionDraftFacadeService.delete(ID_AS_STRING);
-        // Delete should always be called with questionId as null, because question drafts don't have an id. They will get it at the
-        // time the question is sent
-        verify(arendeDraftService).delete(CERTIFICATE_ID, null);
-    }
+  @Test
+  void shallDeleteDraftForCertificate() {
+    deleteQuestionDraftFacadeService.delete(ID_AS_STRING);
+    // Delete should always be called with questionId as null, because question drafts don't have an
+    // id. They will get it at the
+    // time the question is sent
+    verify(arendeDraftService).delete(CERTIFICATE_ID, null);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,240 +49,247 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class CalculateQuestionsForUnitServiceTest {
 
-    private static final String CARE_UNIT_ID = "CARE_UNIT_ID";
-    private static final String CARE_UNIT_ID_2 = "CARE_UNIT_ID_2";
-    private static final String SUB_UNIT_ID = "SUB_UNIT_ID";
-    private static final String SUB_UNIT_ID_2 = "SUB_UNIT_ID_2";
-    private static final Set<String> CERTIFICATE_TYPES = Set.of("lisjp", "ag7804");
+  private static final String CARE_UNIT_ID = "CARE_UNIT_ID";
+  private static final String CARE_UNIT_ID_2 = "CARE_UNIT_ID_2";
+  private static final String SUB_UNIT_ID = "SUB_UNIT_ID";
+  private static final String SUB_UNIT_ID_2 = "SUB_UNIT_ID_2";
+  private static final Set<String> CERTIFICATE_TYPES = Set.of("lisjp", "ag7804");
 
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
+  @Mock private AuthoritiesHelper authoritiesHelper;
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @Mock
-    private CertificateServiceStatisticService certificateServiceStatisticService;
+  @Mock private CertificateServiceStatisticService certificateServiceStatisticService;
 
-    @InjectMocks
-    private CalculateQuestionsForUnitService calculateQuestionsForUnitService;
+  @InjectMocks private CalculateQuestionsForUnitService calculateQuestionsForUnitService;
 
-    private WebCertUser user;
+  private WebCertUser user;
+
+  @BeforeEach
+  void setUp() {
+    user = mock(WebCertUser.class);
+  }
+
+  @Nested
+  class CalculateUnitStatisticsTests {
 
     @BeforeEach
     void setUp() {
-        user = mock(WebCertUser.class);
+      doReturn(CERTIFICATE_TYPES)
+          .when(authoritiesHelper)
+          .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
     }
 
-    @Nested
-    class CalculateUnitStatisticsTests {
+    @Test
+    void shouldAddUnitStatisticsForCareUnit() {
+      final var questionsMap = Map.of(CARE_UNIT_ID, 5L);
+      doReturn(questionsMap)
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
 
-        @BeforeEach
-        void setUp() {
-            doReturn(CERTIFICATE_TYPES).when(authoritiesHelper)
-                .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-        }
+      final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
+      final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
 
-        @Test
-        void shouldAddUnitStatisticsForCareUnit() {
-            final var questionsMap = Map.of(CARE_UNIT_ID, 5L);
-            doReturn(questionsMap).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
-
-            final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
-            final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
-
-            assertNotNull(result);
-            assertNotNull(result.getUnitStatistics().get(CARE_UNIT_ID));
-            assertEquals(5L, result.getUnitStatistics().get(CARE_UNIT_ID).getQuestionsOnUnit());
-        }
-
-        @Test
-        void shouldCalculateQuestionsOnSubUnits() {
-            final var subUnit = new Mottagning(SUB_UNIT_ID, "Sub Unit");
-            final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
-            careUnit.setMottagningar(List.of(subUnit));
-
-            final var questionsMap = Map.of(
-                CARE_UNIT_ID, 3L,
-                SUB_UNIT_ID, 7L
-            );
-            doReturn(questionsMap).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
-
-            final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
-
-            assertNotNull(result);
-            final var unitStatistics = result.getUnitStatistics().get(CARE_UNIT_ID);
-            assertNotNull(unitStatistics);
-            assertEquals(3L, unitStatistics.getQuestionsOnUnit());
-            assertEquals(7L, unitStatistics.getQuestionsOnSubUnits());
-        }
-
-        @Test
-        void shouldSumQuestionsFromMultipleSubUnits() {
-            final var subUnit1 = new Mottagning(SUB_UNIT_ID, "Sub Unit 1");
-            final var subUnit2 = new Mottagning(SUB_UNIT_ID_2, "Sub Unit 2");
-            final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
-            careUnit.setMottagningar(List.of(subUnit1, subUnit2));
-
-            final var questionsMap = Map.of(
-                CARE_UNIT_ID, 2L,
-                SUB_UNIT_ID, 5L,
-                SUB_UNIT_ID_2, 3L
-            );
-            doReturn(questionsMap).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
-
-            final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
-
-            assertNotNull(result);
-
-            final var unitStatistics = result.getUnitStatistics().get(CARE_UNIT_ID);
-            assertNotNull(unitStatistics);
-            assertEquals(2L, unitStatistics.getQuestionsOnUnit());
-            assertEquals(8L, unitStatistics.getQuestionsOnSubUnits());
-        }
-
-        @Test
-        void shouldHandleMultipleCareUnits() {
-            final var careUnit1 = new Vardenhet(CARE_UNIT_ID, "Care Unit 1");
-            final var careUnit2 = new Vardenhet(CARE_UNIT_ID_2, "Care Unit 2");
-
-            final var questionsMap = Map.of(
-                CARE_UNIT_ID, 4L,
-                CARE_UNIT_ID_2, 6L
-            );
-            doReturn(questionsMap).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
-
-            final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit1, careUnit2));
-
-            assertNotNull(result);
-            assertEquals(4L, result.getUnitStatistics().get(CARE_UNIT_ID).getQuestionsOnUnit());
-            assertEquals(6L, result.getUnitStatistics().get(CARE_UNIT_ID_2).getQuestionsOnUnit());
-        }
-
-        @Test
-        void shouldReturnZeroForUnitNotInQuestionsMap() {
-            final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
-            doReturn(Collections.emptyMap()).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
-
-            final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
-
-            assertNotNull(result);
-            assertEquals(0L, result.getUnitStatistics().get(CARE_UNIT_ID).getQuestionsOnUnit());
-        }
-
-        @Test
-        void shouldSetDraftsToZero() {
-            final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
-            final var questionsMap = Map.of(CARE_UNIT_ID, 10L);
-            doReturn(questionsMap).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
-
-            final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
-
-            assertNotNull(result);
-            assertEquals(0L, result.getUnitStatistics().get(CARE_UNIT_ID).getDraftsOnUnit());
-            assertEquals(0L, result.getUnitStatistics().get(CARE_UNIT_ID).getDraftsOnSubUnits());
-        }
+      assertNotNull(result);
+      assertNotNull(result.getUnitStatistics().get(CARE_UNIT_ID));
+      assertEquals(5L, result.getUnitStatistics().get(CARE_UNIT_ID).getQuestionsOnUnit());
     }
 
-    @Nested
-    class WhenUnitIsNotVardenhet {
+    @Test
+    void shouldCalculateQuestionsOnSubUnits() {
+      final var subUnit = new Mottagning(SUB_UNIT_ID, "Sub Unit");
+      final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
+      careUnit.setMottagningar(List.of(subUnit));
 
-        @BeforeEach
-        void setUp() {
-            doReturn(CERTIFICATE_TYPES).when(authoritiesHelper)
-                .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-        }
+      final var questionsMap =
+          Map.of(
+              CARE_UNIT_ID, 3L,
+              SUB_UNIT_ID, 7L);
+      doReturn(questionsMap)
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
 
-        @Test
-        void shouldHandleMottagningAsUnitWithEmptySubUnits() {
-            final var mottagning = new Mottagning(SUB_UNIT_ID, "Mottagning");
-            final var questionsMap = Map.of(SUB_UNIT_ID, 5L);
-            doReturn(questionsMap).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
+      final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
 
-            final var result = calculateQuestionsForUnitService.calculate(user, List.of(mottagning));
-
-            assertNotNull(result);
-            final var unitStatistics = result.getUnitStatistics().get(SUB_UNIT_ID);
-            assertNotNull(unitStatistics);
-            assertEquals(5L, unitStatistics.getQuestionsOnUnit());
-            assertEquals(0L, unitStatistics.getQuestionsOnSubUnits());
-        }
+      assertNotNull(result);
+      final var unitStatistics = result.getUnitStatistics().get(CARE_UNIT_ID);
+      assertNotNull(unitStatistics);
+      assertEquals(3L, unitStatistics.getQuestionsOnUnit());
+      assertEquals(7L, unitStatistics.getQuestionsOnSubUnits());
     }
 
-    @Nested
-    class CertificateTypesFiltering {
+    @Test
+    void shouldSumQuestionsFromMultipleSubUnits() {
+      final var subUnit1 = new Mottagning(SUB_UNIT_ID, "Sub Unit 1");
+      final var subUnit2 = new Mottagning(SUB_UNIT_ID_2, "Sub Unit 2");
+      final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
+      careUnit.setMottagningar(List.of(subUnit1, subUnit2));
 
-        @Test
-        void shouldUseCertificateTypesFromAuthoritiesHelper() {
-            final var specificCertificateTypes = Set.of("lisjp");
-            doReturn(specificCertificateTypes).when(authoritiesHelper)
-                .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-            doReturn(Collections.emptyMap()).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(specificCertificateTypes));
+      final var questionsMap =
+          Map.of(
+              CARE_UNIT_ID, 2L,
+              SUB_UNIT_ID, 5L,
+              SUB_UNIT_ID_2, 3L);
+      doReturn(questionsMap)
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
 
-            calculateQuestionsForUnitService.calculate(user, Collections.emptyList());
+      final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
 
-            verify(arendeService).getNbrOfUnhandledArendenForCareUnits(anyList(), eq(specificCertificateTypes));
-        }
+      assertNotNull(result);
 
-        @Test
-        void shouldPassCorrectUnitIdsToArendeService() {
-            final var careUnit1 = new Vardenhet(CARE_UNIT_ID, "Care Unit 1");
-            final var careUnit2 = new Vardenhet(CARE_UNIT_ID_2, "Care Unit 2");
-
-            doReturn(CERTIFICATE_TYPES).when(authoritiesHelper)
-                .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-            doReturn(Collections.emptyMap()).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
-
-            calculateQuestionsForUnitService.calculate(user, List.of(careUnit1, careUnit2));
-
-            verify(arendeService).getNbrOfUnhandledArendenForCareUnits(eq(List.of(CARE_UNIT_ID, CARE_UNIT_ID_2)), eq(CERTIFICATE_TYPES));
-        }
+      final var unitStatistics = result.getUnitStatistics().get(CARE_UNIT_ID);
+      assertNotNull(unitStatistics);
+      assertEquals(2L, unitStatistics.getQuestionsOnUnit());
+      assertEquals(8L, unitStatistics.getQuestionsOnSubUnits());
     }
 
-    @Nested
-    class CertificateServiceStatisticServiceIntegration {
+    @Test
+    void shouldHandleMultipleCareUnits() {
+      final var careUnit1 = new Vardenhet(CARE_UNIT_ID, "Care Unit 1");
+      final var careUnit2 = new Vardenhet(CARE_UNIT_ID_2, "Care Unit 2");
 
-        @BeforeEach
-        void setUp() {
-            doReturn(CERTIFICATE_TYPES).when(authoritiesHelper)
-                .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-            doReturn(Collections.emptyMap()).when(arendeService)
-                .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
-        }
+      final var questionsMap =
+          Map.of(
+              CARE_UNIT_ID, 4L,
+              CARE_UNIT_ID_2, 6L);
+      doReturn(questionsMap)
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
 
-        @Test
-        void shouldCallCertificateServiceStatisticServiceWithCorrectParameters() {
-            final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
+      final var result =
+          calculateQuestionsForUnitService.calculate(user, List.of(careUnit1, careUnit2));
 
-            calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
-
-            verify(certificateServiceStatisticService).add(
-                any(UserStatisticsDTO.class),
-                eq(List.of(CARE_UNIT_ID)),
-                eq(user),
-                eq(false)
-            );
-        }
-
-        @Test
-        void shouldCallCertificateServiceStatisticServiceWithEmptyListWhenNoUnits() {
-            calculateQuestionsForUnitService.calculate(user, Collections.emptyList());
-
-            verify(certificateServiceStatisticService).add(
-                any(UserStatisticsDTO.class),
-                eq(Collections.emptyList()),
-                eq(user),
-                eq(false)
-            );
-        }
+      assertNotNull(result);
+      assertEquals(4L, result.getUnitStatistics().get(CARE_UNIT_ID).getQuestionsOnUnit());
+      assertEquals(6L, result.getUnitStatistics().get(CARE_UNIT_ID_2).getQuestionsOnUnit());
     }
+
+    @Test
+    void shouldReturnZeroForUnitNotInQuestionsMap() {
+      final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
+      doReturn(Collections.emptyMap())
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
+
+      final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
+
+      assertNotNull(result);
+      assertEquals(0L, result.getUnitStatistics().get(CARE_UNIT_ID).getQuestionsOnUnit());
+    }
+
+    @Test
+    void shouldSetDraftsToZero() {
+      final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
+      final var questionsMap = Map.of(CARE_UNIT_ID, 10L);
+      doReturn(questionsMap)
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
+
+      final var result = calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
+
+      assertNotNull(result);
+      assertEquals(0L, result.getUnitStatistics().get(CARE_UNIT_ID).getDraftsOnUnit());
+      assertEquals(0L, result.getUnitStatistics().get(CARE_UNIT_ID).getDraftsOnSubUnits());
+    }
+  }
+
+  @Nested
+  class WhenUnitIsNotVardenhet {
+
+    @BeforeEach
+    void setUp() {
+      doReturn(CERTIFICATE_TYPES)
+          .when(authoritiesHelper)
+          .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+    }
+
+    @Test
+    void shouldHandleMottagningAsUnitWithEmptySubUnits() {
+      final var mottagning = new Mottagning(SUB_UNIT_ID, "Mottagning");
+      final var questionsMap = Map.of(SUB_UNIT_ID, 5L);
+      doReturn(questionsMap)
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
+
+      final var result = calculateQuestionsForUnitService.calculate(user, List.of(mottagning));
+
+      assertNotNull(result);
+      final var unitStatistics = result.getUnitStatistics().get(SUB_UNIT_ID);
+      assertNotNull(unitStatistics);
+      assertEquals(5L, unitStatistics.getQuestionsOnUnit());
+      assertEquals(0L, unitStatistics.getQuestionsOnSubUnits());
+    }
+  }
+
+  @Nested
+  class CertificateTypesFiltering {
+
+    @Test
+    void shouldUseCertificateTypesFromAuthoritiesHelper() {
+      final var specificCertificateTypes = Set.of("lisjp");
+      doReturn(specificCertificateTypes)
+          .when(authoritiesHelper)
+          .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+      doReturn(Collections.emptyMap())
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(specificCertificateTypes));
+
+      calculateQuestionsForUnitService.calculate(user, Collections.emptyList());
+
+      verify(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(specificCertificateTypes));
+    }
+
+    @Test
+    void shouldPassCorrectUnitIdsToArendeService() {
+      final var careUnit1 = new Vardenhet(CARE_UNIT_ID, "Care Unit 1");
+      final var careUnit2 = new Vardenhet(CARE_UNIT_ID_2, "Care Unit 2");
+
+      doReturn(CERTIFICATE_TYPES)
+          .when(authoritiesHelper)
+          .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+      doReturn(Collections.emptyMap())
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
+
+      calculateQuestionsForUnitService.calculate(user, List.of(careUnit1, careUnit2));
+
+      verify(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(
+              eq(List.of(CARE_UNIT_ID, CARE_UNIT_ID_2)), eq(CERTIFICATE_TYPES));
+    }
+  }
+
+  @Nested
+  class CertificateServiceStatisticServiceIntegration {
+
+    @BeforeEach
+    void setUp() {
+      doReturn(CERTIFICATE_TYPES)
+          .when(authoritiesHelper)
+          .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+      doReturn(Collections.emptyMap())
+          .when(arendeService)
+          .getNbrOfUnhandledArendenForCareUnits(anyList(), eq(CERTIFICATE_TYPES));
+    }
+
+    @Test
+    void shouldCallCertificateServiceStatisticServiceWithCorrectParameters() {
+      final var careUnit = new Vardenhet(CARE_UNIT_ID, "Care Unit");
+
+      calculateQuestionsForUnitService.calculate(user, List.of(careUnit));
+
+      verify(certificateServiceStatisticService)
+          .add(any(UserStatisticsDTO.class), eq(List.of(CARE_UNIT_ID)), eq(user), eq(false));
+    }
+
+    @Test
+    void shouldCallCertificateServiceStatisticServiceWithEmptyListWhenNoUnits() {
+      calculateQuestionsForUnitService.calculate(user, Collections.emptyList());
+
+      verify(certificateServiceStatisticService)
+          .add(any(UserStatisticsDTO.class), eq(Collections.emptyList()), eq(user), eq(false));
+    }
+  }
 }

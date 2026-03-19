@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,30 +26,34 @@ import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeServ
 @Service("complementCertificateAggregator")
 public class ComplementCertificateAggregator implements ComplementCertificateFacadeService {
 
-    private final ComplementCertificateFacadeService complementCertificateFromWebcert;
-    private final ComplementCertificateFacadeService complementCertificateFromCertificateService;
+  private final ComplementCertificateFacadeService complementCertificateFromWebcert;
+  private final ComplementCertificateFacadeService complementCertificateFromCertificateService;
 
-    public ComplementCertificateAggregator(
-        @Qualifier("complementCertificateFromWebcert")
-        ComplementCertificateFacadeService replaceCertificateFromWebcert,
-        @Qualifier("complementCertificateFromCertificateService")
-        ComplementCertificateFacadeService replaceCertificateFromCertificateService) {
-        this.complementCertificateFromWebcert = replaceCertificateFromWebcert;
-        this.complementCertificateFromCertificateService = replaceCertificateFromCertificateService;
-    }
+  public ComplementCertificateAggregator(
+      @Qualifier("complementCertificateFromWebcert") ComplementCertificateFacadeService replaceCertificateFromWebcert,
+      @Qualifier("complementCertificateFromCertificateService") ComplementCertificateFacadeService replaceCertificateFromCertificateService) {
+    this.complementCertificateFromWebcert = replaceCertificateFromWebcert;
+    this.complementCertificateFromCertificateService = replaceCertificateFromCertificateService;
+  }
 
-    @Override
-    public Certificate complement(String certificateId, String message) {
-        final var responseFromCS = complementCertificateFromCertificateService.complement(certificateId, message);
+  @Override
+  public Certificate complement(String certificateId, String message) {
+    final var responseFromCS =
+        complementCertificateFromCertificateService.complement(certificateId, message);
 
-        return responseFromCS != null ? responseFromCS : complementCertificateFromWebcert.complement(certificateId, message);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : complementCertificateFromWebcert.complement(certificateId, message);
+  }
 
-    @Override
-    public Certificate answerComplement(String certificateId, String message) {
+  @Override
+  public Certificate answerComplement(String certificateId, String message) {
 
-        final var responseFromCS = complementCertificateFromCertificateService.answerComplement(certificateId, message);
+    final var responseFromCS =
+        complementCertificateFromCertificateService.answerComplement(certificateId, message);
 
-        return responseFromCS != null ? responseFromCS : complementCertificateFromWebcert.answerComplement(certificateId, message);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : complementCertificateFromWebcert.answerComplement(certificateId, message);
+  }
 }

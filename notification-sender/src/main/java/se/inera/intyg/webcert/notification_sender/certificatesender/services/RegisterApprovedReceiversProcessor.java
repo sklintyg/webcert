@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,71 +46,82 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 public class RegisterApprovedReceiversProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RegisterApprovedReceiversProcessor.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(RegisterApprovedReceiversProcessor.class);
 
-    @Autowired
-    private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
-    @Autowired
-    private MdcHelper mdcHelper;
+  @Autowired private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
+  @Autowired private MdcHelper mdcHelper;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void process(@Body String jsonBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.INTYGS_TYP) String intygsTyp,
-        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException {
+  public void process(
+      @Body String jsonBody,
+      @Header(Constants.INTYGS_ID) String intygsId,
+      @Header(Constants.INTYGS_TYP) String intygsTyp,
+      @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
+      throws TemporaryException {
 
-        List<ReceiverApprovalStatus> receiverIds = transformMessageBodyToReceiverList(jsonBody);
+    List<ReceiverApprovalStatus> receiverIds = transformMessageBodyToReceiverList(jsonBody);
 
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
-            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
+      MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
 
-            checkArgument(StringUtils.isNotEmpty(intygsId), "Message of type %s does not have a %s header.",
-                Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
-                Constants.INTYGS_ID);
-            checkArgument(StringUtils.isNotEmpty(intygsTyp), "Message of type %s does not have a %s header.",
-                Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
-                Constants.INTYGS_TYP);
+      checkArgument(
+          StringUtils.isNotEmpty(intygsId),
+          "Message of type %s does not have a %s header.",
+          Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
+          Constants.INTYGS_ID);
+      checkArgument(
+          StringUtils.isNotEmpty(intygsTyp),
+          "Message of type %s does not have a %s header.",
+          Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
+          Constants.INTYGS_TYP);
 
-            RegisterApprovedReceiversType req = new RegisterApprovedReceiversType();
-            IntygId intygId = new IntygId();
-            intygId.setExtension(intygsId);
-            req.setIntygId(intygId);
+      RegisterApprovedReceiversType req = new RegisterApprovedReceiversType();
+      IntygId intygId = new IntygId();
+      intygId.setExtension(intygsId);
+      req.setIntygId(intygId);
 
-            TypAvIntyg typAvIntyg = new TypAvIntyg();
-            typAvIntyg.setCode(intygsTyp);
-            req.setTypAvIntyg(typAvIntyg);
+      TypAvIntyg typAvIntyg = new TypAvIntyg();
+      typAvIntyg.setCode(intygsTyp);
+      req.setTypAvIntyg(typAvIntyg);
 
-            req.getApprovedReceivers().addAll(receiverIds);
+      req.getApprovedReceivers().addAll(receiverIds);
 
-            RegisterApprovedReceiversResponseType responseType = registerApprovedReceiversClient.registerApprovedReceivers(logicalAddress,
-                req);
+      RegisterApprovedReceiversResponseType responseType =
+          registerApprovedReceiversClient.registerApprovedReceivers(logicalAddress, req);
 
-            // Any problems on the other end that yields an ERROR result are treated as PermanentExceptions.
-            if (responseType.getResult().getResultCode() == ResultCodeType.ERROR) {
-                throw new TemporaryException(responseType.getResult().getResultText());
-            }
-        } catch (IllegalArgumentException e) {
-            LOG.error("RegisterApprovedReceiversProcessor message processing failed due to IllegalArgumentException, message: {}",
-                e.getMessage());
-            throw new TemporaryException(e.getMessage());
-        } catch (WebServiceException e) {
-            LOG.error("Call to RegisterApprovedReceivers for intyg {} caused an error: {}. Will retry.",
-                intygsId, e.getMessage());
-            throw new TemporaryException(e.getMessage());
-        } finally {
-            MDC.clear();
-        }
+      // Any problems on the other end that yields an ERROR result are treated as
+      // PermanentExceptions.
+      if (responseType.getResult().getResultCode() == ResultCodeType.ERROR) {
+        throw new TemporaryException(responseType.getResult().getResultText());
+      }
+    } catch (IllegalArgumentException e) {
+      LOG.error(
+          "RegisterApprovedReceiversProcessor message processing failed due to IllegalArgumentException, message: {}",
+          e.getMessage());
+      throw new TemporaryException(e.getMessage());
+    } catch (WebServiceException e) {
+      LOG.error(
+          "Call to RegisterApprovedReceivers for intyg {} caused an error: {}. Will retry.",
+          intygsId,
+          e.getMessage());
+      throw new TemporaryException(e.getMessage());
+    } finally {
+      MDC.clear();
     }
+  }
 
-    private List<ReceiverApprovalStatus> transformMessageBodyToReceiverList(@Body String jsonBody) throws TemporaryException {
-        try {
-            return objectMapper.readValue(jsonBody, new TypeReference<>() {
-            });
-        } catch (IOException e) {
-            throw new TemporaryException("Could not parse message body into list of approved receivers.");
-        }
+  private List<ReceiverApprovalStatus> transformMessageBodyToReceiverList(@Body String jsonBody)
+      throws TemporaryException {
+    try {
+      return objectMapper.readValue(jsonBody, new TypeReference<>() {});
+    } catch (IOException e) {
+      throw new TemporaryException("Could not parse message body into list of approved receivers.");
     }
+  }
 }

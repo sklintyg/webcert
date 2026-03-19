@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,70 +42,75 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 @RequiredArgsConstructor
 public class CreateCertificateFacadeServiceImpl implements CreateCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateCertificateFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(CreateCertificateFacadeServiceImpl.class);
 
-    private final DraftAccessServiceHelper draftAccessServiceHelper;
-    private final AccessResultExceptionHelper accessResultExceptionHelper;
-    private final UtkastService utkastService;
-    private final IntygTextsService intygTextsService;
-    private final WebCertUserService webCertUserService;
-    private final PatientDetailsResolver patientDetailsResolver;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final DraftAccessServiceHelper draftAccessServiceHelper;
+  private final AccessResultExceptionHelper accessResultExceptionHelper;
+  private final UtkastService utkastService;
+  private final IntygTextsService intygTextsService;
+  private final WebCertUserService webCertUserService;
+  private final PatientDetailsResolver patientDetailsResolver;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Override
-    public String create(String certificateType, String patientId) throws CreateCertificateException {
-        final var request = convertRequest(certificateType, patientId);
+  @Override
+  public String create(String certificateType, String patientId) throws CreateCertificateException {
+    final var request = convertRequest(certificateType, patientId);
 
-        LOG.debug("Attempting to create certificate of type '{}'", certificateType);
+    LOG.debug("Attempting to create certificate of type '{}'", certificateType);
 
-        final var actionResult = draftAccessServiceHelper.evaluateAllowToCreateUtkast(certificateType, getSSN(patientId));
+    final var actionResult =
+        draftAccessServiceHelper.evaluateAllowToCreateUtkast(certificateType, getSSN(patientId));
 
-        if (actionResult.isDenied()) {
-            if (actionResult.getCode() == AccessResultCode.UNIQUE_DRAFT
-                || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
-                throw new CreateCertificateException("Certificate already exists");
-            } else {
-                accessResultExceptionHelper.throwException(actionResult);
-            }
-        }
-
-        final var draft = utkastService.createNewDraft(request);
-        LOG.debug("Created new certificate of type '{}' with id '{}'", certificateType, draft.getIntygsId());
-
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftCreated(draft)
-        );
-
-        return draft.getIntygsId();
+    if (actionResult.isDenied()) {
+      if (actionResult.getCode() == AccessResultCode.UNIQUE_DRAFT
+          || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
+        throw new CreateCertificateException("Certificate already exists");
+      } else {
+        accessResultExceptionHelper.throwException(actionResult);
+      }
     }
 
-    private CreateNewDraftRequest convertRequest(String certificateType, String patientId) throws CreateCertificateException {
-        final var request = new CreateNewDraftRequest();
-        final var latestVersion = intygTextsService.getLatestVersion(certificateType);
-        final var patient = patientDetailsResolver.resolvePatient(getSSN(patientId), certificateType, latestVersion);
-        final var staff = getStaff();
-        request.setIntygType(certificateType);
-        if (patient == null) {
-            throw (new CreateCertificateException("Patient does not exist"));
-        } else {
-            request.setPatient(patient);
-        }
-        request.setIntygTypeVersion(latestVersion);
-        request.setHosPerson(staff);
-        return request;
-    }
+    final var draft = utkastService.createNewDraft(request);
+    LOG.debug(
+        "Created new certificate of type '{}' with id '{}'", certificateType, draft.getIntygsId());
 
-    private Personnummer getSSN(String patientId) throws CreateCertificateException {
-        return formatPatientId(patientId);
-    }
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.draftCreated(draft));
 
-    private Personnummer formatPatientId(String personId) throws CreateCertificateException {
-        return Personnummer.createPersonnummer(personId).orElseThrow(() -> new CreateCertificateException("Invalid patient id"));
-    }
+    return draft.getIntygsId();
+  }
 
-    private HoSPersonal getStaff() {
-        WebCertUser user = webCertUserService.getUser();
-        return IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
+  private CreateNewDraftRequest convertRequest(String certificateType, String patientId)
+      throws CreateCertificateException {
+    final var request = new CreateNewDraftRequest();
+    final var latestVersion = intygTextsService.getLatestVersion(certificateType);
+    final var patient =
+        patientDetailsResolver.resolvePatient(getSSN(patientId), certificateType, latestVersion);
+    final var staff = getStaff();
+    request.setIntygType(certificateType);
+    if (patient == null) {
+      throw (new CreateCertificateException("Patient does not exist"));
+    } else {
+      request.setPatient(patient);
     }
+    request.setIntygTypeVersion(latestVersion);
+    request.setHosPerson(staff);
+    return request;
+  }
+
+  private Personnummer getSSN(String patientId) throws CreateCertificateException {
+    return formatPatientId(patientId);
+  }
+
+  private Personnummer formatPatientId(String personId) throws CreateCertificateException {
+    return Personnummer.createPersonnummer(personId)
+        .orElseThrow(() -> new CreateCertificateException("Invalid patient id"));
+  }
+
+  private HoSPersonal getStaff() {
+    WebCertUser user = webCertUserService.getUser();
+    return IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
+  }
 }

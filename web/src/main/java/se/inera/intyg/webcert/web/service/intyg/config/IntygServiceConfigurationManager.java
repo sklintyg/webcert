@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.intyg.config;
 
 public interface IntygServiceConfigurationManager {
 
-    <T> T unmarshallConfig(String configAsJson, Class<T> configClazz);
+  <T> T unmarshallConfig(String configAsJson, Class<T> configClazz);
 
-    String marshallConfig(Object config);
+  String marshallConfig(Object config);
 }

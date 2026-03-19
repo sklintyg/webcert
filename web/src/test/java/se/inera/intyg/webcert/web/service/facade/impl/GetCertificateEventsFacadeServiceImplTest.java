@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -62,850 +62,893 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelat
 @ExtendWith(MockitoExtension.class)
 class GetCertificateEventsFacadeServiceImplTest {
 
-    @Mock
-    private CertificateRelationService certificateRelationService;
+  @Mock private CertificateRelationService certificateRelationService;
 
-    @Mock
-    private CertificateEventService certificateEventService;
+  @Mock private CertificateEventService certificateEventService;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @InjectMocks
-    private GetCertificateEventsFacadeServiceImpl getCertificateEventsFacadeService;
+  @InjectMocks private GetCertificateEventsFacadeServiceImpl getCertificateEventsFacadeService;
 
-    private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_ID = "certificateId";
 
-    private CertificateEvent certificateEvent;
-    private Relations relations;
-    private List<CertificateEvent> certificateEvents;
-    private IntygTypeInfo certificateTypeInfo;
+  private CertificateEvent certificateEvent;
+  private Relations relations;
+  private List<CertificateEvent> certificateEvents;
+  private IntygTypeInfo certificateTypeInfo;
+
+  @BeforeEach
+  void setup() {
+    certificateEvent = new CertificateEvent();
+    certificateEvent.setCertificateId(CERTIFICATE_ID);
+    certificateEvent.setId(1000L);
+    certificateEvent.setMessage("Messsage");
+    certificateEvent.setTimestamp(LocalDateTime.now());
+    certificateEvent.setUser("UserId");
+    certificateEvent.setEventCode(EventCode.SKAPAT);
+
+    certificateEvents = new ArrayList<>(List.of(certificateEvent));
+
+    doReturn(certificateEvents).when(certificateEventService).getCertificateEvents(CERTIFICATE_ID);
+
+    relations = new Relations();
+
+    doReturn(relations).when(certificateRelationService).getRelations(CERTIFICATE_ID);
+  }
+
+  @Nested
+  class DbAndDoiTestClass {
+
+    @Test
+    void shallExcludeAvailableForPatientForDoi() {
+      certificateTypeInfo = new IntygTypeInfo("id", "doi", "");
+
+      doReturn(certificateTypeInfo).when(intygService).getIntygTypeInfo(anyString());
+
+      certificateEvent.setEventCode(EventCode.SIGNAT);
+
+      final var actualEvents =
+          getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+      final var optionalCertificateEventDTO =
+          Arrays.stream(actualEvents)
+              .filter(event -> event.getType() == CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT)
+              .findAny();
+
+      assertFalse(optionalCertificateEventDTO.isPresent());
+    }
+
+    @Test
+    void shallExcludeAvailableForPatientForDb() {
+      certificateTypeInfo = new IntygTypeInfo("id", "db", "");
+
+      doReturn(certificateTypeInfo).when(intygService).getIntygTypeInfo(anyString());
+
+      certificateEvent.setEventCode(EventCode.SIGNAT);
+
+      final var actualEvents =
+          getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+      final var optionalCertificateEventDTO =
+          Arrays.stream(actualEvents)
+              .filter(event -> event.getType() == CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT)
+              .findAny();
+
+      assertFalse(optionalCertificateEventDTO.isPresent());
+    }
+  }
+
+  @Nested
+  class GetCertificateEventsTestClass {
 
     @BeforeEach
-    void setup() {
-        certificateEvent = new CertificateEvent();
-        certificateEvent.setCertificateId(CERTIFICATE_ID);
-        certificateEvent.setId(1000L);
-        certificateEvent.setMessage("Messsage");
-        certificateEvent.setTimestamp(LocalDateTime.now());
-        certificateEvent.setUser("UserId");
-        certificateEvent.setEventCode(EventCode.SKAPAT);
+    void setupCertificateTypeInfo() {
+      certificateTypeInfo = new IntygTypeInfo("id", "lisjp", "");
 
-        certificateEvents = new ArrayList<>(List.of(certificateEvent));
+      doReturn(certificateTypeInfo).when(intygService).getIntygTypeInfo(anyString());
+    }
 
-        doReturn(certificateEvents)
-            .when(certificateEventService)
-            .getCertificateEvents(CERTIFICATE_ID);
+    @Test
+    void shallIncludeOneEvent() {
 
-        relations = new Relations();
+      final var actualEvents =
+          getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
 
-        doReturn(relations)
-            .when(certificateRelationService)
-            .getRelations(CERTIFICATE_ID);
+      assertEquals(1, actualEvents.length);
+    }
+
+    @Test
+    void shallIncludeTimestamp() {
+
+      final var actualEvents =
+          getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+      assertEquals(certificateEvent.getTimestamp(), actualEvents[0].getTimestamp());
+    }
+
+    @Test
+    void shallIncludeCertificateId() {
+
+      final var actualEvents =
+          getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+      assertEquals(certificateEvent.getCertificateId(), actualEvents[0].getCertificateId());
+    }
+
+    @Test
+    void shallReturnInSortedOrder() {
+      final var expectedFirst = CertificateEventTypeDTO.CREATED;
+      final var expectedSecond = CertificateEventTypeDTO.LOCKED;
+      final var expectedThird = CertificateEventTypeDTO.REVOKED;
+
+      certificateEvents.clear();
+      certificateEvents.addAll(
+          Arrays.asList(
+              getEvent(2000L, LocalDateTime.now().plus(14, ChronoUnit.DAYS), EventCode.LAST),
+              getEvent(3000L, LocalDateTime.now().plus(15, ChronoUnit.DAYS), EventCode.MAKULERAT),
+              getEvent(1000L, LocalDateTime.now(), EventCode.SKAPAT)));
+
+      final var actualEvents =
+          getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+      assertAll(
+          () -> assertEquals(expectedFirst, actualEvents[0].getType()),
+          () -> assertEquals(expectedSecond, actualEvents[1].getType()),
+          () -> assertEquals(expectedThird, actualEvents[2].getType()));
     }
 
     @Nested
-    class DbAndDoiTestClass {
+    class EventTypesToFilterOutTests {
 
-        @Test
-        void shallExcludeAvailableForPatientForDoi() {
-            certificateTypeInfo = new IntygTypeInfo("id", "doi", "");
+      /**
+       * Event types that should be filtered out because they are currently not relevant for the
+       * user
+       */
+      @ParameterizedTest
+      @ArgumentsSource(EventTypesToFilterOut.class)
+      void shallFilterOutType(EventCode eventCode) {
+        certificateEvent.setEventCode(eventCode);
 
-            doReturn(certificateTypeInfo)
-                .when(intygService)
-                .getIntygTypeInfo(anyString());
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
 
-            certificateEvent.setEventCode(EventCode.SIGNAT);
-
-            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-            final var optionalCertificateEventDTO = Arrays.stream(actualEvents)
-                .filter(event -> event.getType() == CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT)
-                .findAny();
-
-            assertFalse(optionalCertificateEventDTO.isPresent());
-        }
-
-        @Test
-        void shallExcludeAvailableForPatientForDb() {
-            certificateTypeInfo = new IntygTypeInfo("id", "db", "");
-
-            doReturn(certificateTypeInfo)
-                .when(intygService)
-                .getIntygTypeInfo(anyString());
-
-            certificateEvent.setEventCode(EventCode.SIGNAT);
-
-            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-            final var optionalCertificateEventDTO = Arrays.stream(actualEvents)
-                .filter(event -> event.getType() == CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT)
-                .findAny();
-
-            assertFalse(optionalCertificateEventDTO.isPresent());
-        }
+        assertEquals(0, actualEvents.length);
+      }
     }
 
     @Nested
-    class GetCertificateEventsTestClass {
-
-        @BeforeEach
-        void setupCertificateTypeInfo() {
-            certificateTypeInfo = new IntygTypeInfo("id", "lisjp", "");
-
-            doReturn(certificateTypeInfo)
-                .when(intygService)
-                .getIntygTypeInfo(anyString());
-        }
-
-        @Test
-        void shallIncludeOneEvent() {
-
-            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-            assertEquals(1, actualEvents.length);
-        }
-
-        @Test
-        void shallIncludeTimestamp() {
-
-            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-            assertEquals(certificateEvent.getTimestamp(), actualEvents[0].getTimestamp());
-        }
-
-        @Test
-        void shallIncludeCertificateId() {
-
-            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-            assertEquals(certificateEvent.getCertificateId(), actualEvents[0].getCertificateId());
-        }
-
-        @Test
-        void shallReturnInSortedOrder() {
-            final var expectedFirst = CertificateEventTypeDTO.CREATED;
-            final var expectedSecond = CertificateEventTypeDTO.LOCKED;
-            final var expectedThird = CertificateEventTypeDTO.REVOKED;
-
-            certificateEvents.clear();
-            certificateEvents.addAll(Arrays.asList(
-                getEvent(2000L, LocalDateTime.now().plus(14, ChronoUnit.DAYS), EventCode.LAST),
-                getEvent(3000L, LocalDateTime.now().plus(15, ChronoUnit.DAYS), EventCode.MAKULERAT),
-                getEvent(1000L, LocalDateTime.now(), EventCode.SKAPAT)
-            ));
-
-            final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-            assertAll(
-                () -> assertEquals(expectedFirst, actualEvents[0].getType()),
-                () -> assertEquals(expectedSecond, actualEvents[1].getType()),
-                () -> assertEquals(expectedThird, actualEvents[2].getType())
-            );
-        }
-
-        @Nested
-        class EventTypesToFilterOutTests {
-
-            /**
-             * Event types that should be filtered out because they are currently not relevant for the user
-             */
-            @ParameterizedTest
-            @ArgumentsSource(EventTypesToFilterOut.class)
-            void shallFilterOutType(EventCode eventCode) {
-                certificateEvent.setEventCode(eventCode);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(0, actualEvents.length);
-            }
-        }
-
-        @Nested
-        class EventTypeTests {
-
-            @ParameterizedTest
-            @ArgumentsSource(EventTypes.class)
-            void shallIncludeCorrectType(EventCode eventCode, CertificateEventTypeDTO expectedType) {
-                certificateEvent.setEventCode(eventCode);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedType, actualEvents[0].getType());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(EventTypesNotToDecorate.class)
-            void shallNotDecorateWithParentInformation(EventCode eventCode) {
-                certificateEvent.setEventCode(eventCode);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertAll(
-                    () -> assertNull(actualEvents[0].getRelatedCertificateId(), "Should not include related certificate id"),
-                    () -> assertNull(actualEvents[0].getRelatedCertificateStatus(), "Should not include related certificate status")
-                );
-            }
-        }
-
-        @Nested
-        class AvailableForPatient {
-
-            @Test
-            void shallIncludeEventWhenSigned() {
-                certificateEvent.setEventCode(EventCode.SIGNAT);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                final var optionalCertificateEventDTO = Arrays.stream(actualEvents)
-                    .filter(event -> event.getType() == CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT)
-                    .findAny();
-
-                assertTrue(optionalCertificateEventDTO.isPresent());
-            }
-
-            @Test
-            void shallIncludeSameTimestampAsSignedEvent() {
-                certificateEvent.setEventCode(EventCode.SIGNAT);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                final var availableForPatientEvent = getEvent(actualEvents, CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT);
-
-                final var signedEvent = getEvent(actualEvents, CertificateEventTypeDTO.SIGNED);
-
-                assertEquals(signedEvent.getTimestamp(), availableForPatientEvent.getTimestamp());
-            }
-
-            @Test
-            void shallIncludeSameCertificateIdAsSignedEvent() {
-                certificateEvent.setEventCode(EventCode.SIGNAT);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                final var availableForPatientEvent = getEvent(actualEvents, CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT);
-
-                final var signedEvent = getEvent(actualEvents, CertificateEventTypeDTO.SIGNED);
-
-                assertEquals(signedEvent.getCertificateId(), availableForPatientEvent.getCertificateId());
-            }
-        }
-
-        @Nested
-        class ReplacesEventTests {
-
-            private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-
-            @BeforeEach
-            void setup() {
-                certificateEvent.setEventCode(EventCode.ERSATTER);
-
-                WebcertCertificateRelation parentRelation = new WebcertCertificateRelation(
-                    PARENT_CERTIFICATE_ID,
-                    RelationKod.ERSATT,
-                    LocalDateTime.now(),
-                    UtkastStatus.SIGNED,
-                    false);
-
-                relations.setParent(parentRelation);
-            }
-
-            @Test
-            void shallIncludeParentCertificateId() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ParentStatuses.class)
-            void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getParent().setStatus(parentStatus);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ParentRevokedStatuses.class)
-            void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getParent().setStatus(parentStatus);
-                relations.getParent().setMakulerat(true);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-        }
-
-        @Nested
-        class ExtendedEvent {
-
-            private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-
-            @BeforeEach
-            void setup() {
-                certificateEvent.setEventCode(EventCode.FORLANGER);
-
-                WebcertCertificateRelation parentRelation = new WebcertCertificateRelation(
-                    PARENT_CERTIFICATE_ID,
-                    RelationKod.FRLANG,
-                    LocalDateTime.now(),
-                    UtkastStatus.SIGNED,
-                    false);
-
-                relations.setParent(parentRelation);
-            }
-
-            @Test
-            void shallIncludeParentCertificateId() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ParentStatuses.class)
-            void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getParent().setStatus(parentStatus);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ParentRevokedStatuses.class)
-            void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getParent().setStatus(parentStatus);
-                relations.getParent().setMakulerat(true);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-        }
-
-        @Nested
-        class CopiedFromEventTests {
-
-            private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-
-            @BeforeEach
-            void setup() {
-                certificateEvent.setEventCode(EventCode.KOPIERATFRAN);
-
-                WebcertCertificateRelation parentRelation = new WebcertCertificateRelation(
-                    PARENT_CERTIFICATE_ID,
-                    RelationKod.ERSATT,
-                    LocalDateTime.now(),
-                    UtkastStatus.SIGNED,
-                    false);
-
-                relations.setParent(parentRelation);
-            }
-
-            @Test
-            void shallIncludeParentCertificateId() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ParentStatuses.class)
-            void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getParent().setStatus(parentStatus);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ParentRevokedStatuses.class)
-            void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getParent().setStatus(parentStatus);
-                relations.getParent().setMakulerat(true);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-        }
-
-        @Nested
-        class ReplacedByCertificateEventTests {
-
-            private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
-            private WebcertCertificateRelation childRelation;
-
-            @BeforeEach
-            void setup() {
-                certificateEvents.clear();
-
-                childRelation = new WebcertCertificateRelation(
-                    CHILD_CERTIFICATE_ID,
-                    RelationKod.ERSATT,
-                    LocalDateTime.now(),
-                    UtkastStatus.SIGNED,
-                    false);
-
-                final var latestChildRelation = new FrontendRelations();
-                latestChildRelation.setReplacedByIntyg(childRelation);
-
-                relations.setLatestChildRelations(latestChildRelation);
-            }
-
-            @Test
-            void shallIncludeChildCertificateId() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
-            }
-
-            @Test
-            void shallIncludeTimestampFromChild() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
-            }
-
-            @Test
-            void shallIncludeTypeOfReplaced() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(CertificateEventTypeDTO.REPLACED, actualEvents[0].getType());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ChildStatuses.class)
-            void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getLatestChildRelations().getReplacedByIntyg().setStatus(parentStatus);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ChildRevokedStatuses.class)
-            void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getLatestChildRelations().getReplacedByIntyg().setStatus(parentStatus);
-                relations.getLatestChildRelations().getReplacedByIntyg().setMakulerat(true);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-        }
-
-        @Nested
-        class ReplacedByDraftEvent {
-
-            private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
-            private WebcertCertificateRelation childRelation;
-
-            @BeforeEach
-            void setup() {
-                certificateEvents.clear();
-
-                childRelation = new WebcertCertificateRelation(
-                    CHILD_CERTIFICATE_ID,
-                    RelationKod.ERSATT,
-                    LocalDateTime.now(),
-                    UtkastStatus.DRAFT_INCOMPLETE,
-                    false);
-
-                final var latestChildRelation = new FrontendRelations();
-                latestChildRelation.setReplacedByUtkast(childRelation);
-
-                relations.setLatestChildRelations(latestChildRelation);
-            }
-
-            @Test
-            void shallIncludeChildCertificateId() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
-            }
-
-            @Test
-            void shallIncludeTimestampFromChild() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
-            }
-
-            @Test
-            void shallIncludeTypeOfReplaced() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(CertificateEventTypeDTO.REPLACED, actualEvents[0].getType());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ChildStatusesForReplacedByDraftEvent.class)
-            void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getLatestChildRelations().getReplacedByUtkast().setStatus(parentStatus);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ChildRevokedStatusesForReplacedByDraftEvent.class)
-            void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getLatestChildRelations().getReplacedByUtkast().setStatus(parentStatus);
-                relations.getLatestChildRelations().getReplacedByUtkast().setMakulerat(true);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-        }
-
-        @Nested
-        class CopiedByEvent {
-
-            private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
-            private WebcertCertificateRelation childRelation;
-
-            @BeforeEach
-            void setup() {
-                certificateEvents.clear();
-
-                childRelation = new WebcertCertificateRelation(
-                    CHILD_CERTIFICATE_ID,
-                    RelationKod.ERSATT,
-                    LocalDateTime.now(),
-                    UtkastStatus.DRAFT_INCOMPLETE,
-                    false);
-
-                final var latestChildRelation = new FrontendRelations();
-                latestChildRelation.setUtkastCopy(childRelation);
-
-                relations.setLatestChildRelations(latestChildRelation);
-            }
-
-            @Test
-            void shallIncludeChildCertificateId() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
-            }
-
-            @Test
-            void shallIncludeTimestampFromChild() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
-            }
-
-            @Test
-            void shallIncludeTypeOfCopiedBy() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(CertificateEventTypeDTO.COPIED_BY, actualEvents[0].getType());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ChildStatusesForCopiedByEvent.class)
-            void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getLatestChildRelations().getUtkastCopy().setStatus(parentStatus);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ChildRevokedStatusesForCopiedByEvent.class)
-            void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getLatestChildRelations().getUtkastCopy().setStatus(parentStatus);
-                relations.getLatestChildRelations().getUtkastCopy().setMakulerat(true);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-        }
-
-        @Nested
-        class ComplementedCertificateEventTests {
-
-            private static final String CHILD_CERTIFICATE_ID = "ChildCertificateId";
-            private WebcertCertificateRelation childRelation;
-
-            @BeforeEach
-            void setup() {
-                certificateEvents.clear();
-
-                childRelation = new WebcertCertificateRelation(
-                    CHILD_CERTIFICATE_ID,
-                    RelationKod.KOMPLT,
-                    LocalDateTime.now(),
-                    UtkastStatus.SIGNED,
-                    false);
-
-                final var latestChildRelation = new FrontendRelations();
-                latestChildRelation.setComplementedByIntyg(childRelation);
-
-                relations.setLatestChildRelations(latestChildRelation);
-            }
-
-            @Test
-            void shallIncludeChildCertificateId() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
-            }
-
-            @Test
-            void shallIncludeTimestampFromChild() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
-            }
-
-            @Test
-            void shallIncludeTypeOfComplemented() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(CertificateEventTypeDTO.COMPLEMENTED, actualEvents[0].getType());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ChildStatuses.class)
-            void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getLatestChildRelations().getComplementedByIntyg().setStatus(parentStatus);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ChildRevokedStatuses.class)
-            void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getLatestChildRelations().getComplementedByIntyg().setStatus(parentStatus);
-                relations.getLatestChildRelations().getComplementedByIntyg().setMakulerat(true);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-        }
-
-        @Nested
-        class ComplementsEvent {
-
-            private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
-
-            @BeforeEach
-            void setup() {
-                certificateEvent.setEventCode(EventCode.ERSATTER);
-
-                WebcertCertificateRelation parentRelation = new WebcertCertificateRelation(
-                    PARENT_CERTIFICATE_ID,
-                    RelationKod.KOMPLT,
-                    LocalDateTime.now(),
-                    UtkastStatus.SIGNED,
-                    false);
-
-                relations.setParent(parentRelation);
-            }
-
-            @Test
-            void shallIncludeParentCertificateId() {
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ParentStatuses.class)
-            void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getParent().setStatus(parentStatus);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-
-            @ParameterizedTest
-            @ArgumentsSource(ParentRevokedStatuses.class)
-            void shallIncludeParentRevokedStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
-                relations.getParent().setStatus(parentStatus);
-                relations.getParent().setMakulerat(true);
-
-                final var actualEvents = getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
-
-                assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
-            }
-        }
+    class EventTypeTests {
+
+      @ParameterizedTest
+      @ArgumentsSource(EventTypes.class)
+      void shallIncludeCorrectType(EventCode eventCode, CertificateEventTypeDTO expectedType) {
+        certificateEvent.setEventCode(eventCode);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedType, actualEvents[0].getType());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(EventTypesNotToDecorate.class)
+      void shallNotDecorateWithParentInformation(EventCode eventCode) {
+        certificateEvent.setEventCode(eventCode);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertAll(
+            () ->
+                assertNull(
+                    actualEvents[0].getRelatedCertificateId(),
+                    "Should not include related certificate id"),
+            () ->
+                assertNull(
+                    actualEvents[0].getRelatedCertificateStatus(),
+                    "Should not include related certificate status"));
+      }
     }
 
-    private CertificateEventDTO getEvent(CertificateEventDTO[] actualEvents, CertificateEventTypeDTO type) {
-        return Arrays.stream(actualEvents)
-            .filter(event -> event.getType() == type)
-            .findAny()
-            .orElseThrow();
+    @Nested
+    class AvailableForPatient {
+
+      @Test
+      void shallIncludeEventWhenSigned() {
+        certificateEvent.setEventCode(EventCode.SIGNAT);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        final var optionalCertificateEventDTO =
+            Arrays.stream(actualEvents)
+                .filter(event -> event.getType() == CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT)
+                .findAny();
+
+        assertTrue(optionalCertificateEventDTO.isPresent());
+      }
+
+      @Test
+      void shallIncludeSameTimestampAsSignedEvent() {
+        certificateEvent.setEventCode(EventCode.SIGNAT);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        final var availableForPatientEvent =
+            getEvent(actualEvents, CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT);
+
+        final var signedEvent = getEvent(actualEvents, CertificateEventTypeDTO.SIGNED);
+
+        assertEquals(signedEvent.getTimestamp(), availableForPatientEvent.getTimestamp());
+      }
+
+      @Test
+      void shallIncludeSameCertificateIdAsSignedEvent() {
+        certificateEvent.setEventCode(EventCode.SIGNAT);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        final var availableForPatientEvent =
+            getEvent(actualEvents, CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT);
+
+        final var signedEvent = getEvent(actualEvents, CertificateEventTypeDTO.SIGNED);
+
+        assertEquals(signedEvent.getCertificateId(), availableForPatientEvent.getCertificateId());
+      }
     }
 
-    private CertificateEvent getEvent(long id, LocalDateTime timestamp, EventCode eventCode) {
-        final var event = new CertificateEvent();
-        event.setCertificateId(CERTIFICATE_ID);
-        event.setId(id);
-        event.setMessage("Messsage");
-        event.setTimestamp(timestamp);
-        event.setUser("UserId");
-        event.setEventCode(eventCode);
-        return event;
+    @Nested
+    class ReplacesEventTests {
+
+      private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
+
+      @BeforeEach
+      void setup() {
+        certificateEvent.setEventCode(EventCode.ERSATTER);
+
+        WebcertCertificateRelation parentRelation =
+            new WebcertCertificateRelation(
+                PARENT_CERTIFICATE_ID,
+                RelationKod.ERSATT,
+                LocalDateTime.now(),
+                UtkastStatus.SIGNED,
+                false);
+
+        relations.setParent(parentRelation);
+      }
+
+      @Test
+      void shallIncludeParentCertificateId() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ParentStatuses.class)
+      void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getParent().setStatus(parentStatus);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ParentRevokedStatuses.class)
+      void shallIncludeParentRevokedStatus(
+          UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getParent().setStatus(parentStatus);
+        relations.getParent().setMakulerat(true);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
     }
 
-    private static class EventTypes implements ArgumentsProvider {
+    @Nested
+    class ExtendedEvent {
 
-        @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(EventCode.SKAPAT, CertificateEventTypeDTO.CREATED),
-                Arguments.of(EventCode.LAST, CertificateEventTypeDTO.LOCKED),
-                Arguments.of(EventCode.SIGNAT, CertificateEventTypeDTO.SIGNED),
-                Arguments.of(EventCode.SKICKAT, CertificateEventTypeDTO.SENT),
-                Arguments.of(EventCode.MAKULERAT, CertificateEventTypeDTO.REVOKED),
-                Arguments.of(EventCode.ERSATTER, CertificateEventTypeDTO.REPLACES),
-                Arguments.of(EventCode.FORLANGER, CertificateEventTypeDTO.EXTENDED),
-                Arguments.of(EventCode.KOPIERATFRAN, CertificateEventTypeDTO.COPIED_FROM),
-                Arguments.of(EventCode.KOMPLBEGARAN, CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT),
-                Arguments.of(EventCode.KOMPLETTERAR, CertificateEventTypeDTO.COMPLEMENTS),
-                Arguments.of(EventCode.SKAPATFRAN, CertificateEventTypeDTO.CREATED_FROM)
-            );
-        }
+      private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
+
+      @BeforeEach
+      void setup() {
+        certificateEvent.setEventCode(EventCode.FORLANGER);
+
+        WebcertCertificateRelation parentRelation =
+            new WebcertCertificateRelation(
+                PARENT_CERTIFICATE_ID,
+                RelationKod.FRLANG,
+                LocalDateTime.now(),
+                UtkastStatus.SIGNED,
+                false);
+
+        relations.setParent(parentRelation);
+      }
+
+      @Test
+      void shallIncludeParentCertificateId() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ParentStatuses.class)
+      void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getParent().setStatus(parentStatus);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ParentRevokedStatuses.class)
+      void shallIncludeParentRevokedStatus(
+          UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getParent().setStatus(parentStatus);
+        relations.getParent().setMakulerat(true);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
     }
 
-    private static class EventTypesNotToDecorate implements ArgumentsProvider {
+    @Nested
+    class CopiedFromEventTests {
 
-        @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(EventCode.SKAPAT),
-                Arguments.of(EventCode.LAST),
-                Arguments.of(EventCode.SIGNAT),
-                Arguments.of(EventCode.SKICKAT),
-                Arguments.of(EventCode.MAKULERAT),
-                Arguments.of(EventCode.KOMPLBEGARAN),
-                Arguments.of(EventCode.SKAPATFRAN)
-            );
-        }
+      private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
+
+      @BeforeEach
+      void setup() {
+        certificateEvent.setEventCode(EventCode.KOPIERATFRAN);
+
+        WebcertCertificateRelation parentRelation =
+            new WebcertCertificateRelation(
+                PARENT_CERTIFICATE_ID,
+                RelationKod.ERSATT,
+                LocalDateTime.now(),
+                UtkastStatus.SIGNED,
+                false);
+
+        relations.setParent(parentRelation);
+      }
+
+      @Test
+      void shallIncludeParentCertificateId() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ParentStatuses.class)
+      void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getParent().setStatus(parentStatus);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ParentRevokedStatuses.class)
+      void shallIncludeParentRevokedStatus(
+          UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getParent().setStatus(parentStatus);
+        relations.getParent().setMakulerat(true);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
     }
 
-    private static class EventTypesToFilterOut implements ArgumentsProvider {
+    @Nested
+    class ReplacedByCertificateEventTests {
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(EventCode.RELINTYGMAKULE),
-                Arguments.of(EventCode.NYFRFM),
-                Arguments.of(EventCode.NYFRFV),
-                Arguments.of(EventCode.HANFRFV),
-                Arguments.of(EventCode.HANFRFM),
-                Arguments.of(EventCode.NYSVFM),
-                Arguments.of(EventCode.PAMINNELSE),
-                Arguments.of(EventCode.KFSIGN)
-            );
-        }
+      private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
+      private WebcertCertificateRelation childRelation;
+
+      @BeforeEach
+      void setup() {
+        certificateEvents.clear();
+
+        childRelation =
+            new WebcertCertificateRelation(
+                CHILD_CERTIFICATE_ID,
+                RelationKod.ERSATT,
+                LocalDateTime.now(),
+                UtkastStatus.SIGNED,
+                false);
+
+        final var latestChildRelation = new FrontendRelations();
+        latestChildRelation.setReplacedByIntyg(childRelation);
+
+        relations.setLatestChildRelations(latestChildRelation);
+      }
+
+      @Test
+      void shallIncludeChildCertificateId() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+      }
+
+      @Test
+      void shallIncludeTimestampFromChild() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
+      }
+
+      @Test
+      void shallIncludeTypeOfReplaced() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(CertificateEventTypeDTO.REPLACED, actualEvents[0].getType());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ChildStatuses.class)
+      void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getLatestChildRelations().getReplacedByIntyg().setStatus(parentStatus);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ChildRevokedStatuses.class)
+      void shallIncludeParentRevokedStatus(
+          UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getLatestChildRelations().getReplacedByIntyg().setStatus(parentStatus);
+        relations.getLatestChildRelations().getReplacedByIntyg().setMakulerat(true);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
     }
 
-    private static class ParentStatuses implements ArgumentsProvider {
+    @Nested
+    class ReplacedByDraftEvent {
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
+      private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
+      private WebcertCertificateRelation childRelation;
+
+      @BeforeEach
+      void setup() {
+        certificateEvents.clear();
+
+        childRelation =
+            new WebcertCertificateRelation(
+                CHILD_CERTIFICATE_ID,
+                RelationKod.ERSATT,
+                LocalDateTime.now(),
+                UtkastStatus.DRAFT_INCOMPLETE,
+                false);
+
+        final var latestChildRelation = new FrontendRelations();
+        latestChildRelation.setReplacedByUtkast(childRelation);
+
+        relations.setLatestChildRelations(latestChildRelation);
+      }
+
+      @Test
+      void shallIncludeChildCertificateId() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+      }
+
+      @Test
+      void shallIncludeTimestampFromChild() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
+      }
+
+      @Test
+      void shallIncludeTypeOfReplaced() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(CertificateEventTypeDTO.REPLACED, actualEvents[0].getType());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ChildStatusesForReplacedByDraftEvent.class)
+      void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getLatestChildRelations().getReplacedByUtkast().setStatus(parentStatus);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ChildRevokedStatusesForReplacedByDraftEvent.class)
+      void shallIncludeParentRevokedStatus(
+          UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getLatestChildRelations().getReplacedByUtkast().setStatus(parentStatus);
+        relations.getLatestChildRelations().getReplacedByUtkast().setMakulerat(true);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
     }
 
-    private static class ParentRevokedStatuses implements ArgumentsProvider {
+    @Nested
+    class CopiedByEvent {
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
+      private static final String CHILD_CERTIFICATE_ID = "ParentCertificateId";
+      private WebcertCertificateRelation childRelation;
+
+      @BeforeEach
+      void setup() {
+        certificateEvents.clear();
+
+        childRelation =
+            new WebcertCertificateRelation(
+                CHILD_CERTIFICATE_ID,
+                RelationKod.ERSATT,
+                LocalDateTime.now(),
+                UtkastStatus.DRAFT_INCOMPLETE,
+                false);
+
+        final var latestChildRelation = new FrontendRelations();
+        latestChildRelation.setUtkastCopy(childRelation);
+
+        relations.setLatestChildRelations(latestChildRelation);
+      }
+
+      @Test
+      void shallIncludeChildCertificateId() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+      }
+
+      @Test
+      void shallIncludeTimestampFromChild() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
+      }
+
+      @Test
+      void shallIncludeTypeOfCopiedBy() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(CertificateEventTypeDTO.COPIED_BY, actualEvents[0].getType());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ChildStatusesForCopiedByEvent.class)
+      void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getLatestChildRelations().getUtkastCopy().setStatus(parentStatus);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ChildRevokedStatusesForCopiedByEvent.class)
+      void shallIncludeParentRevokedStatus(
+          UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getLatestChildRelations().getUtkastCopy().setStatus(parentStatus);
+        relations.getLatestChildRelations().getUtkastCopy().setMakulerat(true);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
     }
 
-    private static class ChildStatuses implements ArgumentsProvider {
+    @Nested
+    class ComplementedCertificateEventTests {
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED)
-            );
-        }
+      private static final String CHILD_CERTIFICATE_ID = "ChildCertificateId";
+      private WebcertCertificateRelation childRelation;
+
+      @BeforeEach
+      void setup() {
+        certificateEvents.clear();
+
+        childRelation =
+            new WebcertCertificateRelation(
+                CHILD_CERTIFICATE_ID,
+                RelationKod.KOMPLT,
+                LocalDateTime.now(),
+                UtkastStatus.SIGNED,
+                false);
+
+        final var latestChildRelation = new FrontendRelations();
+        latestChildRelation.setComplementedByIntyg(childRelation);
+
+        relations.setLatestChildRelations(latestChildRelation);
+      }
+
+      @Test
+      void shallIncludeChildCertificateId() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(CHILD_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+      }
+
+      @Test
+      void shallIncludeTimestampFromChild() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(childRelation.getSkapad(), actualEvents[0].getTimestamp());
+      }
+
+      @Test
+      void shallIncludeTypeOfComplemented() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(CertificateEventTypeDTO.COMPLEMENTED, actualEvents[0].getType());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ChildStatuses.class)
+      void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getLatestChildRelations().getComplementedByIntyg().setStatus(parentStatus);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ChildRevokedStatuses.class)
+      void shallIncludeParentRevokedStatus(
+          UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getLatestChildRelations().getComplementedByIntyg().setStatus(parentStatus);
+        relations.getLatestChildRelations().getComplementedByIntyg().setMakulerat(true);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
     }
 
-    private static class ChildRevokedStatuses implements ArgumentsProvider {
+    @Nested
+    class ComplementsEvent {
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED)
-            );
-        }
+      private static final String PARENT_CERTIFICATE_ID = "ParentCertificateId";
+
+      @BeforeEach
+      void setup() {
+        certificateEvent.setEventCode(EventCode.ERSATTER);
+
+        WebcertCertificateRelation parentRelation =
+            new WebcertCertificateRelation(
+                PARENT_CERTIFICATE_ID,
+                RelationKod.KOMPLT,
+                LocalDateTime.now(),
+                UtkastStatus.SIGNED,
+                false);
+
+        relations.setParent(parentRelation);
+      }
+
+      @Test
+      void shallIncludeParentCertificateId() {
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(PARENT_CERTIFICATE_ID, actualEvents[0].getRelatedCertificateId());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ParentStatuses.class)
+      void shallIncludeParentStatus(UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getParent().setStatus(parentStatus);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
+
+      @ParameterizedTest
+      @ArgumentsSource(ParentRevokedStatuses.class)
+      void shallIncludeParentRevokedStatus(
+          UtkastStatus parentStatus, CertificateStatus expectedStatus) {
+        relations.getParent().setStatus(parentStatus);
+        relations.getParent().setMakulerat(true);
+
+        final var actualEvents =
+            getCertificateEventsFacadeService.getCertificateEvents(CERTIFICATE_ID);
+
+        assertEquals(expectedStatus, actualEvents[0].getRelatedCertificateStatus());
+      }
     }
+  }
 
-    private static class ChildStatusesForReplacedByDraftEvent implements ArgumentsProvider {
+  private CertificateEventDTO getEvent(
+      CertificateEventDTO[] actualEvents, CertificateEventTypeDTO type) {
+    return Arrays.stream(actualEvents)
+        .filter(event -> event.getType() == type)
+        .findAny()
+        .orElseThrow();
+  }
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
+  private CertificateEvent getEvent(long id, LocalDateTime timestamp, EventCode eventCode) {
+    final var event = new CertificateEvent();
+    event.setCertificateId(CERTIFICATE_ID);
+    event.setId(id);
+    event.setMessage("Messsage");
+    event.setTimestamp(timestamp);
+    event.setUser("UserId");
+    event.setEventCode(eventCode);
+    return event;
+  }
+
+  private static class EventTypes implements ArgumentsProvider {
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(
+          Arguments.of(EventCode.SKAPAT, CertificateEventTypeDTO.CREATED),
+          Arguments.of(EventCode.LAST, CertificateEventTypeDTO.LOCKED),
+          Arguments.of(EventCode.SIGNAT, CertificateEventTypeDTO.SIGNED),
+          Arguments.of(EventCode.SKICKAT, CertificateEventTypeDTO.SENT),
+          Arguments.of(EventCode.MAKULERAT, CertificateEventTypeDTO.REVOKED),
+          Arguments.of(EventCode.ERSATTER, CertificateEventTypeDTO.REPLACES),
+          Arguments.of(EventCode.FORLANGER, CertificateEventTypeDTO.EXTENDED),
+          Arguments.of(EventCode.KOPIERATFRAN, CertificateEventTypeDTO.COPIED_FROM),
+          Arguments.of(EventCode.KOMPLBEGARAN, CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT),
+          Arguments.of(EventCode.KOMPLETTERAR, CertificateEventTypeDTO.COMPLEMENTS),
+          Arguments.of(EventCode.SKAPATFRAN, CertificateEventTypeDTO.CREATED_FROM));
     }
+  }
 
-    private static class ChildRevokedStatusesForReplacedByDraftEvent implements ArgumentsProvider {
+  private static class EventTypesNotToDecorate implements ArgumentsProvider {
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(
+          Arguments.of(EventCode.SKAPAT),
+          Arguments.of(EventCode.LAST),
+          Arguments.of(EventCode.SIGNAT),
+          Arguments.of(EventCode.SKICKAT),
+          Arguments.of(EventCode.MAKULERAT),
+          Arguments.of(EventCode.KOMPLBEGARAN),
+          Arguments.of(EventCode.SKAPATFRAN));
     }
+  }
 
-    private static class ChildStatusesForCopiedByEvent implements ArgumentsProvider {
+  private static class EventTypesToFilterOut implements ArgumentsProvider {
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
-                Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
-                Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED)
-            );
-        }
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(
+          Arguments.of(EventCode.RELINTYGMAKULE),
+          Arguments.of(EventCode.NYFRFM),
+          Arguments.of(EventCode.NYFRFV),
+          Arguments.of(EventCode.HANFRFV),
+          Arguments.of(EventCode.HANFRFM),
+          Arguments.of(EventCode.NYSVFM),
+          Arguments.of(EventCode.PAMINNELSE),
+          Arguments.of(EventCode.KFSIGN));
     }
+  }
 
-    private static class ChildRevokedStatusesForCopiedByEvent implements ArgumentsProvider {
+  private static class ParentStatuses implements ArgumentsProvider {
 
-        @Override
-        public Stream<Arguments> provideArguments(ExtensionContext context) {
-            return Stream.of(
-                Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
-                Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED)
-            );
-        }
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(
+          Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
+          Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
+          Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
+          Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED));
     }
+  }
+
+  private static class ParentRevokedStatuses implements ArgumentsProvider {
+
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(
+          Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
+          Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED));
+    }
+  }
+
+  private static class ChildStatuses implements ArgumentsProvider {
+
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED));
+    }
+  }
+
+  private static class ChildRevokedStatuses implements ArgumentsProvider {
+
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED));
+    }
+  }
+
+  private static class ChildStatusesForReplacedByDraftEvent implements ArgumentsProvider {
+
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(
+          Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
+          Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
+          Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED));
+    }
+  }
+
+  private static class ChildRevokedStatusesForReplacedByDraftEvent implements ArgumentsProvider {
+
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED));
+    }
+  }
+
+  private static class ChildStatusesForCopiedByEvent implements ArgumentsProvider {
+
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(
+          Arguments.of(UtkastStatus.SIGNED, CertificateStatus.SIGNED),
+          Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED),
+          Arguments.of(UtkastStatus.DRAFT_INCOMPLETE, CertificateStatus.UNSIGNED),
+          Arguments.of(UtkastStatus.DRAFT_COMPLETE, CertificateStatus.UNSIGNED));
+    }
+  }
+
+  private static class ChildRevokedStatusesForCopiedByEvent implements ArgumentsProvider {
+
+    @Override
+    public Stream<Arguments> provideArguments(ExtensionContext context) {
+      return Stream.of(
+          Arguments.of(UtkastStatus.SIGNED, CertificateStatus.REVOKED),
+          Arguments.of(UtkastStatus.DRAFT_LOCKED, CertificateStatus.LOCKED_REVOKED));
+    }
+  }
 }

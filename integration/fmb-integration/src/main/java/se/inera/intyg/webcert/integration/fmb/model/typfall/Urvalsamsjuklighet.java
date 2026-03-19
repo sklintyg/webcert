@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,47 +30,44 @@ import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "diagnoskod",
-    "samsjuklighetsrubrik"
-})
+@JsonPropertyOrder({"diagnoskod", "samsjuklighetsrubrik"})
 public class Urvalsamsjuklighet {
 
-    @JsonProperty("diagnoskod")
-    private List<Kod> diagnoskod = null;
-    @JsonProperty("samsjuklighetsrubrik")
-    private String samsjuklighetsrubrik;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("diagnoskod")
+  private List<Kod> diagnoskod = null;
 
-    @JsonProperty("diagnoskod")
-    public List<Kod> getDiagnoskod() {
-        return diagnoskod;
-    }
+  @JsonProperty("samsjuklighetsrubrik")
+  private String samsjuklighetsrubrik;
 
-    @JsonProperty("diagnoskod")
-    public void setDiagnoskod(List<Kod> diagnoskod) {
-        this.diagnoskod = diagnoskod;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("samsjuklighetsrubrik")
-    public String getSamsjuklighetsrubrik() {
-        return samsjuklighetsrubrik;
-    }
+  @JsonProperty("diagnoskod")
+  public List<Kod> getDiagnoskod() {
+    return diagnoskod;
+  }
 
-    @JsonProperty("samsjuklighetsrubrik")
-    public void setSamsjuklighetsrubrik(String samsjuklighetsrubrik) {
-        this.samsjuklighetsrubrik = samsjuklighetsrubrik;
-    }
+  @JsonProperty("diagnoskod")
+  public void setDiagnoskod(List<Kod> diagnoskod) {
+    this.diagnoskod = diagnoskod;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("samsjuklighetsrubrik")
+  public String getSamsjuklighetsrubrik() {
+    return samsjuklighetsrubrik;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("samsjuklighetsrubrik")
+  public void setSamsjuklighetsrubrik(String samsjuklighetsrubrik) {
+    this.samsjuklighetsrubrik = samsjuklighetsrubrik;
+  }
 
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

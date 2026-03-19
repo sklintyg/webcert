@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,307 +71,330 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 @ExtendWith(MockitoExtension.class)
 class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
 
-    private static final String USER_HSAID = "SE1234567890";
-    private static final String UNIT_HSAID = "SE0987654321";
-    private static final String UTKAST_ID = "abc123";
-    private static final String UTKAST_VERSION = "1";
-    private static final String UTKAST_TYPE = "fk7263";
-    private static final String UTKAST_JSON = "A bit of text representing json";
-    private static final String INTYG_TYPE_VERSION = "1.0";
-    private static final String CERTIFICATE_TYPE = "CERTIFICATE_TYPE";
-    private static final String ISSUER_NAME = "ISSUER_NAME";
-    private static final String FACILITY_NAME = "FACILITY_NAME";
-    private static final String PERSON_ID = "191212121212";
+  private static final String USER_HSAID = "SE1234567890";
+  private static final String UNIT_HSAID = "SE0987654321";
+  private static final String UTKAST_ID = "abc123";
+  private static final String UTKAST_VERSION = "1";
+  private static final String UTKAST_TYPE = "fk7263";
+  private static final String UTKAST_JSON = "A bit of text representing json";
+  private static final String INTYG_TYPE_VERSION = "1.0";
+  private static final String CERTIFICATE_TYPE = "CERTIFICATE_TYPE";
+  private static final String ISSUER_NAME = "ISSUER_NAME";
+  private static final String FACILITY_NAME = "FACILITY_NAME";
+  private static final String PERSON_ID = "191212121212";
 
-    @Mock
-    private UtkastService mockUtkastService;
-    @Mock
-    private CreateNewDraftRequestBuilder mockRequestBuilder;
-    @Mock
-    private CreateDraftCertificateValidator mockValidator;
-    @Mock
-    private IntegreradeEnheterRegistry mockIntegreradeEnheterService;
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
-    @Mock
-    private IntygTextsService intygTextsService;
-    @Mock
-    private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
-    @Mock
-    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-    @Mock
-    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @InjectMocks
-    private CreateDraftCertificateFromWC createDraftCertificateFromWC;
+  @Mock private UtkastService mockUtkastService;
+  @Mock private CreateNewDraftRequestBuilder mockRequestBuilder;
+  @Mock private CreateDraftCertificateValidator mockValidator;
+  @Mock private IntegreradeEnheterRegistry mockIntegreradeEnheterService;
+  @Mock private IntygModuleRegistry moduleRegistry;
+  @Mock private IntygTextsService intygTextsService;
+  @Mock private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
+  @Mock private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @InjectMocks private CreateDraftCertificateFromWC createDraftCertificateFromWC;
 
-    @BeforeEach
-    @Override
-    public void setup() throws ModuleNotFoundException {
-        lenient().when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
-        lenient().when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
-            "utkast", ImmutableMap.of(),
-            "intyg", ImmutableMap.of()));
-        lenient().when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
-    }
+  @BeforeEach
+  @Override
+  public void setup() throws ModuleNotFoundException {
+    lenient().when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
+    lenient()
+        .when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any(), any()))
+        .thenReturn(
+            ImmutableMap.of(
+                "utkast", ImmutableMap.of(),
+                "intyg", ImmutableMap.of()));
+    lenient()
+        .when(intygTextsService.getLatestVersion(any(String.class)))
+        .thenReturn(INTYG_TYPE_VERSION);
+  }
 
-    @Test
-    void testCreateDraftCertificateSuccess() throws ModuleNotFoundException {
-        final var vardperson = createVardpersonReferens(
+  @Test
+  void testCreateDraftCertificateSuccess() throws ModuleNotFoundException {
+    final var vardperson =
+        createVardpersonReferens(
             createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
             createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
-        final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
+    final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
 
-        when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
-        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-            .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
-        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
+    when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
+    when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class)))
+        .thenReturn(new ResultValidator());
+    when(mockRequestBuilder.buildCreateNewDraftRequest(
+            any(Intyg.class), any(String.class), any(IntygUser.class)))
+        .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
+    when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
-        final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
+    final var response =
+        createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
 
-        verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
-        verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
+    verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+    verify(mockIntegreradeEnheterService)
+        .putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
 
-        assertNotNull(response);
-        assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
-        assertEquals(UNIT_HSAID, response.getIntygsId().getRoot());
-        assertEquals(UTKAST_ID, response.getIntygsId().getExtension());
-    }
+    assertNotNull(response);
+    assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
+    assertEquals(UNIT_HSAID, response.getIntygsId().getRoot());
+    assertEquals(UTKAST_ID, response.getIntygsId().getExtension());
+  }
 
-    @Test
-    void testCreateDraftCertificateValidationError() {
-        final var resultValidator = mock(ResultValidator.class);
-        when(resultValidator.hasErrors()).thenReturn(true);
-        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(resultValidator);
+  @Test
+  void testCreateDraftCertificateValidationError() {
+    final var resultValidator = mock(ResultValidator.class);
+    when(resultValidator.hasErrors()).thenReturn(true);
+    when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class)))
+        .thenReturn(resultValidator);
 
-        final var response = createDraftCertificateFromWC.create(buildIntyg(), new IntygUser(USER_HSAID));
+    final var response =
+        createDraftCertificateFromWC.create(buildIntyg(), new IntygUser(USER_HSAID));
 
-        assertNotNull(response);
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
-    }
+    assertNotNull(response);
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
+  }
 
-    @Test
-    void testCreateDraftCertificateMultipleMIUs() throws ModuleNotFoundException {
-        final var vardperson = createVardpersonReferens(
-            createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
-            createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
-
-        Utkast utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
-
-        when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
-        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-            .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
-        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-
-        final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
-
-        verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
-        verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
-
-        assertNotNull(response);
-        assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
-        assertEquals(UTKAST_ID, response.getIntygsId().getExtension());
-    }
-
-    @Test
-    void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() throws ModuleNotFoundException {
-        final var vardperson = createVardpersonReferens(
+  @Test
+  void testCreateDraftCertificateMultipleMIUs() throws ModuleNotFoundException {
+    final var vardperson =
+        createVardpersonReferens(
             createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
             createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
 
-        final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
+    Utkast utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
 
-        when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
-        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-            .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
-        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
+    when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
+    when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class)))
+        .thenReturn(new ResultValidator());
+    when(mockRequestBuilder.buildCreateNewDraftRequest(
+            any(Intyg.class), any(String.class), any(IntygUser.class)))
+        .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
+    when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
-        final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
+    final var response =
+        createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
 
-        verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
-        verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
+    verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+    verify(mockIntegreradeEnheterService)
+        .putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
 
-        assertNotNull(response);
-        assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
-        assertEquals(UTKAST_ID, response.getIntygsId().getExtension());
-    }
+    assertNotNull(response);
+    assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
+    assertEquals(UTKAST_ID, response.getIntygsId().getExtension());
+  }
 
-    @Test
-    void shouldReturnErrorIfModuleApiThrows() throws ModuleNotFoundException {
-        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
-        when(moduleRegistry.getModuleApi(any(), any())).thenThrow(ModuleNotFoundException.class);
-        final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
-
-        assertNotNull(response);
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
-        assertEquals("Internal error. Could not get module api.", response.getResult().getResultText());
-    }
-
-    @Test
-    void shouldPublishAnalyticsMessageWhenDraftIsCreated() throws ModuleNotFoundException {
-        final var user = getIntygUser(USER_HSAID);
-        final var vardperson = createVardpersonReferens(
+  @Test
+  void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() throws ModuleNotFoundException {
+    final var vardperson =
+        createVardpersonReferens(
             createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
             createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
-        final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
 
-        when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
-        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-            .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
-        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
+    final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
 
-        final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
-        when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
+    when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
+    when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class)))
+        .thenReturn(new ResultValidator());
+    when(mockRequestBuilder.buildCreateNewDraftRequest(
+            any(Intyg.class), any(String.class), any(IntygUser.class)))
+        .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
+    when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
-        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.draftCreated(utkast, loggedInWebcertUser)).thenReturn(analyticsMessage);
+    final var response =
+        createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
 
-        createDraftCertificateFromWC.create(buildIntyg(), user);
+    verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+    verify(mockIntegreradeEnheterService)
+        .putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
 
-        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-    }
+    assertNotNull(response);
+    assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
+    assertEquals(UTKAST_ID, response.getIntygsId().getExtension());
+  }
 
-    @Test
-    void shouldPublishAnalyticsMessageWhenDraftIsCreatedWithPrefill() throws ModuleNotFoundException {
-        final var certificate = buildIntyg();
-        certificate.setForifyllnad(new Forifyllnad());
-        final var user = getIntygUser(USER_HSAID);
-        final var vardperson = createVardpersonReferens(
+  @Test
+  void shouldReturnErrorIfModuleApiThrows() throws ModuleNotFoundException {
+    when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class)))
+        .thenReturn(new ResultValidator());
+    when(moduleRegistry.getModuleApi(any(), any())).thenThrow(ModuleNotFoundException.class);
+    final var response =
+        createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
+
+    assertNotNull(response);
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
+    assertEquals("Internal error. Could not get module api.", response.getResult().getResultText());
+  }
+
+  @Test
+  void shouldPublishAnalyticsMessageWhenDraftIsCreated() throws ModuleNotFoundException {
+    final var user = getIntygUser(USER_HSAID);
+    final var vardperson =
+        createVardpersonReferens(
             createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
             createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
-        final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
+    final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
 
-        when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
-        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-            .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
-        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
+    when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
+    when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class)))
+        .thenReturn(new ResultValidator());
+    when(mockRequestBuilder.buildCreateNewDraftRequest(
+            any(Intyg.class), any(String.class), any(IntygUser.class)))
+        .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
+    when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
-        final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
-        when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
+    final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
+    when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
 
-        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.draftCreatedWithPrefill(utkast, loggedInWebcertUser)).thenReturn(analyticsMessage);
+    final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+    when(certificateAnalyticsMessageFactory.draftCreated(utkast, loggedInWebcertUser))
+        .thenReturn(analyticsMessage);
 
-        createDraftCertificateFromWC.create(certificate, user);
+    createDraftCertificateFromWC.create(buildIntyg(), user);
 
-        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-    }
+    verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+  }
 
-    private VardpersonReferens createVardpersonReferens(String hsaId, String name) {
-        VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(hsaId);
-        vardperson.setNamn(name);
-        return vardperson;
-    }
+  @Test
+  void shouldPublishAnalyticsMessageWhenDraftIsCreatedWithPrefill() throws ModuleNotFoundException {
+    final var certificate = buildIntyg();
+    certificate.setForifyllnad(new Forifyllnad());
+    final var user = getIntygUser(USER_HSAID);
+    final var vardperson =
+        createVardpersonReferens(
+            createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
+            createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
+    final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
 
-    private CreateNewDraftRequest createCreateNewDraftRequest(Vardenhet vardenhet) {
-        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest(UTKAST_ID, null, INTYG_TYPE_VERSION, null, new HoSPersonal(), null);
-        draftRequest.getHosPerson().setVardenhet(vardenhet);
-        return draftRequest;
-    }
+    when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
+    when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class)))
+        .thenReturn(new ResultValidator());
+    when(mockRequestBuilder.buildCreateNewDraftRequest(
+            any(Intyg.class), any(String.class), any(IntygUser.class)))
+        .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
+    when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
 
-    private Vardenhet createVardenhet(Vardgivare vardgivare) {
-        Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid("SE1234567890-1A01");
-        vardenhet.setEnhetsnamn("Vardenheten");
-        vardenhet.setVardgivare(vardgivare);
-        return vardenhet;
-    }
+    final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
+    when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
 
-    private Vardgivare createVardgivare() {
-        Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid("SE1234567890-2B01");
-        vardgivare.setVardgivarnamn("Vardgivaren");
-        return vardgivare;
-    }
+    final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+    when(certificateAnalyticsMessageFactory.draftCreatedWithPrefill(utkast, loggedInWebcertUser))
+        .thenReturn(analyticsMessage);
 
-    private Intyg buildIntyg() {
-        final var intyg = new Intyg();
-        intyg.setTypAvIntyg(new TypAvIntyg());
-        intyg.getTypAvIntyg().setCode(CERTIFICATE_TYPE);
-        intyg.setSkapadAv(new HosPersonal());
-        intyg.getSkapadAv().setFullstandigtNamn(ISSUER_NAME);
-        intyg.getSkapadAv().setEnhet(new Enhet());
-        intyg.getSkapadAv().getEnhet().setEnhetsnamn(FACILITY_NAME);
-        intyg.getSkapadAv().getEnhet().setEnhetsId(new HsaId());
-        intyg.getSkapadAv().getEnhet().getEnhetsId().setExtension(UNIT_HSAID);
-        intyg.getSkapadAv().setPersonalId(new HsaId());
-        intyg.getSkapadAv().getPersonalId().setExtension(USER_HSAID);
-        intyg.setPatient(new Patient());
-        intyg.getPatient().setPersonId(new PersonId());
-        intyg.getPatient().getPersonId().setExtension(PERSON_ID);
-        return intyg;
-    }
+    createDraftCertificateFromWC.create(certificate, user);
 
-    private CreateDraftCertificateType createCertificateType() {
+    verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+  }
 
-        // Type
-        TypAvIntyg utlTyp = new TypAvIntyg();
-        utlTyp.setCode("fk7263");
+  private VardpersonReferens createVardpersonReferens(String hsaId, String name) {
+    VardpersonReferens vardperson = new VardpersonReferens();
+    vardperson.setHsaId(hsaId);
+    vardperson.setNamn(name);
+    return vardperson;
+  }
 
-        // HoSPerson
-        HsaId userHsaId = new HsaId();
-        userHsaId.setExtension(USER_HSAID);
-        userHsaId.setRoot("USERHSAID");
+  private CreateNewDraftRequest createCreateNewDraftRequest(Vardenhet vardenhet) {
+    CreateNewDraftRequest draftRequest =
+        new CreateNewDraftRequest(
+            UTKAST_ID, null, INTYG_TYPE_VERSION, null, new HoSPersonal(), null);
+    draftRequest.getHosPerson().setVardenhet(vardenhet);
+    return draftRequest;
+  }
 
-        HsaId unitHsaId = new HsaId();
-        unitHsaId.setExtension(UNIT_HSAID);
-        unitHsaId.setRoot("UNITHSAID");
+  private Vardenhet createVardenhet(Vardgivare vardgivare) {
+    Vardenhet vardenhet = new Vardenhet();
+    vardenhet.setEnhetsid("SE1234567890-1A01");
+    vardenhet.setEnhetsnamn("Vardenheten");
+    vardenhet.setVardgivare(vardgivare);
+    return vardenhet;
+  }
 
-        Enhet hosEnhet = new Enhet();
-        hosEnhet.setEnhetsId(unitHsaId);
+  private Vardgivare createVardgivare() {
+    Vardgivare vardgivare = new Vardgivare();
+    vardgivare.setVardgivarid("SE1234567890-2B01");
+    vardgivare.setVardgivarnamn("Vardgivaren");
+    return vardgivare;
+  }
 
-        HosPersonal hosPerson = new HosPersonal();
-        hosPerson.setFullstandigtNamn("Abel Baker");
-        hosPerson.setPersonalId(userHsaId);
-        hosPerson.setEnhet(hosEnhet);
+  private Intyg buildIntyg() {
+    final var intyg = new Intyg();
+    intyg.setTypAvIntyg(new TypAvIntyg());
+    intyg.getTypAvIntyg().setCode(CERTIFICATE_TYPE);
+    intyg.setSkapadAv(new HosPersonal());
+    intyg.getSkapadAv().setFullstandigtNamn(ISSUER_NAME);
+    intyg.getSkapadAv().setEnhet(new Enhet());
+    intyg.getSkapadAv().getEnhet().setEnhetsnamn(FACILITY_NAME);
+    intyg.getSkapadAv().getEnhet().setEnhetsId(new HsaId());
+    intyg.getSkapadAv().getEnhet().getEnhetsId().setExtension(UNIT_HSAID);
+    intyg.getSkapadAv().setPersonalId(new HsaId());
+    intyg.getSkapadAv().getPersonalId().setExtension(USER_HSAID);
+    intyg.setPatient(new Patient());
+    intyg.getPatient().setPersonId(new PersonId());
+    intyg.getPatient().getPersonId().setExtension(PERSON_ID);
+    return intyg;
+  }
 
-        // Patient
-        PersonId personId = new PersonId();
-        personId.setRoot("PERSNR");
-        personId.setExtension("19121212-1212");
+  private CreateDraftCertificateType createCertificateType() {
 
-        Patient patType = new Patient();
-        patType.setPersonId(personId);
-        patType.setFornamn("Adam");
-        patType.setMellannamn("Cesarsson");
-        patType.setEfternamn("Eriksson");
+    // Type
+    TypAvIntyg utlTyp = new TypAvIntyg();
+    utlTyp.setCode("fk7263");
 
-        Intyg utlatande = new Intyg();
-        utlatande.setTypAvIntyg(utlTyp);
-        utlatande.setSkapadAv(hosPerson);
-        utlatande.setPatient(patType);
-        utlatande.setRef("Test-ref");
+    // HoSPerson
+    HsaId userHsaId = new HsaId();
+    userHsaId.setExtension(USER_HSAID);
+    userHsaId.setRoot("USERHSAID");
 
-        CreateDraftCertificateType certificateType = new CreateDraftCertificateType();
-        certificateType.setIntyg(utlatande);
+    HsaId unitHsaId = new HsaId();
+    unitHsaId.setExtension(UNIT_HSAID);
+    unitHsaId.setRoot("UNITHSAID");
 
-        return certificateType;
-    }
+    Enhet hosEnhet = new Enhet();
+    hosEnhet.setEnhetsId(unitHsaId);
 
-    private Utkast createUtkast(long version, VardpersonReferens vardperson) {
-        return createUtkast(version, UTKAST_JSON, vardperson);
-    }
+    HosPersonal hosPerson = new HosPersonal();
+    hosPerson.setFullstandigtNamn("Abel Baker");
+    hosPerson.setPersonalId(userHsaId);
+    hosPerson.setEnhet(hosEnhet);
 
-    private Utkast createUtkast(long version, String model,
-        VardpersonReferens vardperson) {
+    // Patient
+    PersonId personId = new PersonId();
+    personId.setRoot("PERSNR");
+    personId.setExtension("19121212-1212");
 
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(CreateDraftCertificateFromWCTest.UTKAST_ID);
-        utkast.setVersion(version);
-        utkast.setIntygsTyp(CreateDraftCertificateFromWCTest.UTKAST_TYPE);
-        utkast.setIntygTypeVersion(CreateDraftCertificateFromWCTest.INTYG_TYPE_VERSION);
-        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-        utkast.setModel(model);
-        utkast.setSkapadAv(vardperson);
-        utkast.setSenastSparadAv(vardperson);
+    Patient patType = new Patient();
+    patType.setPersonId(personId);
+    patType.setFornamn("Adam");
+    patType.setMellannamn("Cesarsson");
+    patType.setEfternamn("Eriksson");
 
-        return utkast;
-    }
+    Intyg utlatande = new Intyg();
+    utlatande.setTypAvIntyg(utlTyp);
+    utlatande.setSkapadAv(hosPerson);
+    utlatande.setPatient(patType);
+    utlatande.setRef("Test-ref");
+
+    CreateDraftCertificateType certificateType = new CreateDraftCertificateType();
+    certificateType.setIntyg(utlatande);
+
+    return certificateType;
+  }
+
+  private Utkast createUtkast(long version, VardpersonReferens vardperson) {
+    return createUtkast(version, UTKAST_JSON, vardperson);
+  }
+
+  private Utkast createUtkast(long version, String model, VardpersonReferens vardperson) {
+
+    Utkast utkast = new Utkast();
+    utkast.setIntygsId(CreateDraftCertificateFromWCTest.UTKAST_ID);
+    utkast.setVersion(version);
+    utkast.setIntygsTyp(CreateDraftCertificateFromWCTest.UTKAST_TYPE);
+    utkast.setIntygTypeVersion(CreateDraftCertificateFromWCTest.INTYG_TYPE_VERSION);
+    utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+    utkast.setModel(model);
+    utkast.setSkapadAv(vardperson);
+    utkast.setSenastSparadAv(vardperson);
+
+    return utkast;
+  }
 }

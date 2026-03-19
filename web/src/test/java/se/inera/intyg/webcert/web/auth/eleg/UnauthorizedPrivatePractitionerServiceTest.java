@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.auth.eleg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,132 +51,147 @@ import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 @ExtendWith(MockitoExtension.class)
 class UnauthorizedPrivatePractitionerServiceTest {
 
-    @Mock
-    private PUService puService;
-    @Mock
-    private SubscriptionService subscriptionService;
-    @Mock
-    private HashUtility hashUtility;
-    @Mock
-    private CommonAuthoritiesResolver authoritiesResolver;
-    @InjectMocks
-    private UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
+  @Mock private PUService puService;
+  @Mock private SubscriptionService subscriptionService;
+  @Mock private HashUtility hashUtility;
+  @Mock private CommonAuthoritiesResolver authoritiesResolver;
 
-    private final String origin = "origin";
-    private final String authScheme = "authScheme";
-    private final AuthenticationMethod authMethod = AuthenticationMethod.BANK_ID;
+  @InjectMocks
+  private UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
 
-    @Test
-    void shouldReturnUserWithRolePrivatlakareObehorig() {
-        final var expected = unauthorizedPrivatePractitioner();
+  private final String origin = "origin";
+  private final String authScheme = "authScheme";
+  private final AuthenticationMethod authMethod = AuthenticationMethod.BANK_ID;
 
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(expected);
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+  @Test
+  void shouldReturnUserWithRolePrivatlakareObehorig() {
+    final var expected = unauthorizedPrivatePractitioner();
 
-        final var actual = unauthorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
-            authMethod);
-        assertEquals(expected, actual.getRoles().values().stream().findFirst().orElse(null));
-    }
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(expected);
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-    @Test
-    void shouldReturnUserWithPersonId() {
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+    final var actual =
+        unauthorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, origin, authScheme, authMethod);
+    assertEquals(expected, actual.getRoles().values().stream().findFirst().orElse(null));
+  }
 
-        final var actual = unauthorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
-            authMethod);
-        assertEquals(DR_KRANSTEGE_PERSON_ID, actual.getPersonId());
-    }
+  @Test
+  void shouldReturnUserWithPersonId() {
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG))
+        .thenReturn(unauthorizedPrivatePractitioner());
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-    @Test
-    void shouldReturnUserWithOrigin() {
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+    final var actual =
+        unauthorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, origin, authScheme, authMethod);
+    assertEquals(DR_KRANSTEGE_PERSON_ID, actual.getPersonId());
+  }
 
-        final var actual = unauthorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
-            authMethod);
-        assertEquals(origin, actual.getOrigin());
-    }
+  @Test
+  void shouldReturnUserWithOrigin() {
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG))
+        .thenReturn(unauthorizedPrivatePractitioner());
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-    @Test
-    void shouldReturnUserWithAuthScheme() {
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+    final var actual =
+        unauthorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, origin, authScheme, authMethod);
+    assertEquals(origin, actual.getOrigin());
+  }
 
-        final var actual = unauthorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
-            authMethod);
-        assertEquals(authScheme, actual.getAuthenticationScheme());
-    }
+  @Test
+  void shouldReturnUserWithAuthScheme() {
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG))
+        .thenReturn(unauthorizedPrivatePractitioner());
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-    @Test
-    void shouldReturnUserWithAuthMethod() {
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+    final var actual =
+        unauthorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, origin, authScheme, authMethod);
+    assertEquals(authScheme, actual.getAuthenticationScheme());
+  }
 
-        final var actual = unauthorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
-            authMethod);
-        assertEquals(authMethod, actual.getAuthenticationMethod());
-    }
+  @Test
+  void shouldReturnUserWithAuthMethod() {
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG))
+        .thenReturn(unauthorizedPrivatePractitioner());
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-    @Test
-    void shouldReturnUserWithFullNameWhenNoMiddleName() {
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+    final var actual =
+        unauthorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, origin, authScheme, authMethod);
+    assertEquals(authMethod, actual.getAuthenticationMethod());
+  }
 
-        final var actual = unauthorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
-            authMethod);
-        assertEquals(DR_KRANSTEGE_NAME, actual.getNamn());
-    }
+  @Test
+  void shouldReturnUserWithFullNameWhenNoMiddleName() {
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG))
+        .thenReturn(unauthorizedPrivatePractitioner());
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-    @Test
-    void shouldThrowExceptionIfPersonIdIsNotCorrect() {
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
+    final var actual =
+        unauthorizedPrivatePractitionerService.create(
+            DR_KRANSTEGE_PERSON_ID, origin, authScheme, authMethod);
+    assertEquals(DR_KRANSTEGE_NAME, actual.getNamn());
+  }
 
-        assertThrows(WebCertServiceException.class, () -> unauthorizedPrivatePractitionerService.create("ABCD1234",
-            origin, authScheme, authMethod));
-    }
+  @Test
+  void shouldThrowExceptionIfPersonIdIsNotCorrect() {
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG))
+        .thenReturn(unauthorizedPrivatePractitioner());
 
-    @Test
-    void shouldThrowExceptionIfPUNotFound() {
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
+    assertThrows(
+        WebCertServiceException.class,
+        () ->
+            unauthorizedPrivatePractitionerService.create(
+                "ABCD1234", origin, authScheme, authMethod));
+  }
 
-        assertThrows(WebCertServiceException.class,
-            () -> unauthorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
-                authMethod)
-        );
-    }
+  @Test
+  void shouldThrowExceptionIfPUNotFound() {
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG))
+        .thenReturn(unauthorizedPrivatePractitioner());
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
-    @Test
-    void shouldThrowExceptionIfPUError() {
-        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
+    assertThrows(
+        WebCertServiceException.class,
+        () ->
+            unauthorizedPrivatePractitionerService.create(
+                DR_KRANSTEGE_PERSON_ID, origin, authScheme, authMethod));
+  }
 
-        assertThrows(WebCertServiceException.class,
-            () -> unauthorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
-                authMethod)
-        );
-    }
+  @Test
+  void shouldThrowExceptionIfPUError() {
+    when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG))
+        .thenReturn(unauthorizedPrivatePractitioner());
+    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
 
-    private static Person drKranstege() {
-        return new Person(
-            Personnummer.createPersonnummer(DR_KRANSTEGE_PERSON_ID).orElseThrow(),
-            false,
-            false,
-            DR_KRANSTEGE_FIRST_NAME,
-            null,
-            DR_KRANSTEGE_FAMILY_NAME,
-            DR_KRANSTEGE_ADDRESS,
-            DR_KRANSTEGE_ZIP_CODE,
-            DR_KRANSTEGE_CITY
-        );
-    }
+    assertThrows(
+        WebCertServiceException.class,
+        () ->
+            unauthorizedPrivatePractitionerService.create(
+                DR_KRANSTEGE_PERSON_ID, origin, authScheme, authMethod));
+  }
 
-    private static Role unauthorizedPrivatePractitioner() {
-        final var expected = new Role();
-        expected.setName(ROLE_PRIVATLAKARE_OBEHORIG);
-        expected.setDesc("Privatläkare obehörig");
-        expected.setPrivileges(List.of());
-        return expected;
-    }
+  private static Person drKranstege() {
+    return new Person(
+        Personnummer.createPersonnummer(DR_KRANSTEGE_PERSON_ID).orElseThrow(),
+        false,
+        false,
+        DR_KRANSTEGE_FIRST_NAME,
+        null,
+        DR_KRANSTEGE_FAMILY_NAME,
+        DR_KRANSTEGE_ADDRESS,
+        DR_KRANSTEGE_ZIP_CODE,
+        DR_KRANSTEGE_CITY);
+  }
+
+  private static Role unauthorizedPrivatePractitioner() {
+    final var expected = new Role();
+    expected.setName(ROLE_PRIVATLAKARE_OBEHORIG);
+    expected.setDesc("Privatläkare obehörig");
+    expected.setPrivileges(List.of());
+    return expected;
+  }
 }

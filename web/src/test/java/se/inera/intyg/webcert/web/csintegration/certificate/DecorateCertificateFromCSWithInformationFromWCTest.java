@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,516 +49,499 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class DecorateCertificateFromCSWithInformationFromWCTest {
 
-    private static final String ID_TYPE = "PERSON_NUMMER";
-    private static final String PATIENT_ID = "19121212-1212";
-    private static final String ALTERNATE_PATIENT_ID = "19121212-1213";
-    private static final String PATIENT_RESERVE_ID = "19121212-12AB";
-    private static final String FIRST_NAME = "firstName";
-    private static final String LAST_NAME = "lastName";
-    private static final String ALTERNATE_FIRST_NAME = "alternateFirstName";
-    private static final String ALTERNATE_LAST_NAME = "alternateLastName";
-    private static final WebCertUser user = new WebCertUser();
-
-    @Mock
-    DecorateCertificateDataService decorateCertificateDataService;
-    @Mock
-    WebCertUserService webCertUserService;
-    @Mock
-    WebCertUser webCertUser;
-    @InjectMocks
-    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
-
-    @BeforeEach
-    void setUp() {
-        when(webCertUserService.getUser())
-            .thenReturn(webCertUser);
-    }
-
-    @Test
-    void shallNotDecorateCertificateIfUserIsNull() {
-        when(webCertUserService.getUser())
-            .thenReturn(null);
-
-        final var certificate = createCertificate();
-        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-        assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
-        assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        assertFalse(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
-        assertFalse(certificate.getMetadata().getPatient().isReserveId());
-    }
-
-    @Test
-    void shallNotDecorateCertificateIfParametersIsNull() {
-        when(webCertUser.getParameters())
-            .thenReturn(null);
-
-        final var certificate = createCertificate();
-        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-        assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
-        assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        assertFalse(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
-        assertFalse(certificate.getMetadata().getPatient().isReserveId());
-    }
-
-    @Test
-    void shallNotChangeOtherValuesThanPatient() {
-        final var parameters = createIntegrationParameters("", FIRST_NAME, LAST_NAME);
-        user.setParameters(parameters);
-
-        when(webCertUser.getParameters())
-            .thenReturn(parameters);
-
-        final var description = "description";
-
-        final var unit = Unit.builder()
-            .unitId("unitId")
-            .unitName("unitName")
-            .build();
-
-        final var certificate = createCertificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .status(CertificateStatus.SIGNED)
-                .description(description)
-                .patient(Patient.builder()
-                    .personId(PersonId.builder()
-                        .id(PATIENT_ID)
-                        .type(ID_TYPE)
-                        .build())
-                    .firstName(FIRST_NAME)
-                    .lastName(LAST_NAME)
-                    .build()
-                )
-                .unit(unit)
-                .build()
-        );
-
-        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-        assertEquals(unit, certificate.getMetadata().getUnit());
-        assertEquals(description, certificate.getMetadata().getDescription());
-    }
-
-    @Nested
-    class PatientId {
-
-        @Test
-        void shallHaveAlternateSSNAsPatientIdIfPatientIdHasBeenReplaced() {
-            final var parameters = createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
-            parameters.setBeforeAlternateSsn(PATIENT_ID);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(ALTERNATE_PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
-            assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallHaveOriginalIdIfAlternateSSNIsEmpty() {
-            final var parameters = createIntegrationParameters("", FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallHaveOriginalPatientIdIfAlternateSSNIsNull() {
-            final var parameters = createIntegrationParameters(null, FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallHaveAlternateSSNAsPatientIdIfSet() {
-            final var parameters = createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(ALTERNATE_PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
-            assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-    }
-
-    @Nested
-    class PreviousId {
-
-        @Test
-        void shallNotSetPreviousIdIfAlternateSSNIsEmpty() {
-            final var parameters = createIntegrationParameters("", FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallNotSetPreviousIdIfAlternateSSNIsNull() {
-            final var parameters = createIntegrationParameters(null, FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsReplaced() {
-            final var parameters = createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
-            parameters.setBeforeAlternateSsn(PATIENT_ID);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
-            assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsNotReplaced() {
-            final var parameters = createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
-            parameters.setBeforeAlternateSsn(PATIENT_ID);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
-            assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallSetPreviousPersonIdToOriginalIdIfAlternatePatientSSnIsReserveId() {
-            final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
-            parameters.setBeforeAlternateSsn(PATIENT_ID);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsNotAReserveId() {
-            final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
-            parameters.setBeforeAlternateSsn(PATIENT_ID.replace("-", ""));
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsAReserveId() {
-            final var parameters = createIntegrationParameters(PATIENT_ID, FIRST_NAME, LAST_NAME);
-            parameters.setBeforeAlternateSsn(PATIENT_RESERVE_ID);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertEquals(PATIENT_RESERVE_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-    }
-
-    @Nested
-    class PersonIdChanged {
-
-        @Test
-        void shallSetFlagIfAlternateAndBeforeSsnIsSetAndDiffers() {
-            final var parameters = createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
-            parameters.setBeforeAlternateSsn(PATIENT_ID);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallSetFlagIfBeforeSsnIsNotSetButPersonIdAndAlternateSsnDiffers() {
-            final var parameters = createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallNotSetFlagIfPersonIdIsNotValid() {
-            final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
-            parameters.setBeforeAlternateSsn(PATIENT_ID);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-
-        @Test
-        void shallNotSetFlagForPersonIdIfNoParametersAreSent() {
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
-        }
-    }
-
-    @Nested
-    class PatientNameDifferent {
-
-        @Test
-        void shallSetIsPatientNameDifferentIfFirstnameChanges() {
-            final var parameters = createIntegrationParameters(PATIENT_ID, ALTERNATE_FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertTrue(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
-        }
-
-        @Test
-        void shallSetIsPatientNameDifferentIfLastnameChanges() {
-            final var parameters = createIntegrationParameters(PATIENT_ID, FIRST_NAME, ALTERNATE_LAST_NAME);
-            user.setParameters(parameters);
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertTrue(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
-        }
-
-        @Test
-        void shallSetIsPatientNameDifferentIfBothChange() {
-            final var parameters = createIntegrationParameters(PATIENT_ID, ALTERNATE_FIRST_NAME, ALTERNATE_LAST_NAME);
-            user.setParameters(parameters);
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertTrue(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
-        }
-
-        @Test
-        void shallNotSetIsPatientNameDifferentIfNameIsSame() {
-            final var parameters = createIntegrationParameters(PATIENT_ID, FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertFalse(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
-        }
-    }
-
-    @Nested
-    class ReserveId {
-
-        @Test
-        void shallSetReserveIdFlagIfPersonIdIsReserveId() {
-            final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertTrue(certificate.getMetadata().getPatient().isReserveId());
-        }
-
-        @Test
-        void shallNotSetReserveIdFlagIfPersonIdIsValid() {
-            final var parameters = createIntegrationParameters(PATIENT_ID, FIRST_NAME, LAST_NAME);
-            user.setParameters(parameters);
-
-            when(webCertUser.getParameters())
-                .thenReturn(parameters);
-
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-            assertFalse(certificate.getMetadata().getPatient().isReserveId());
-        }
-    }
-
-    @Nested
-    class DecorateRenewedCertificateFromParentTests {
-
-        @Test
-        void shouldNotDecorateIfCertificateIsNotDraft() {
-            final var certificate = createCertificate();
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-            verifyNoInteractions(decorateCertificateDataService);
-        }
-
-        @Test
-        void shouldNotDecorateIfCertificateIsDraftButHasNoParentRelation() {
-            final var certificate = createCertificate();
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .status(CertificateStatus.UNSIGNED)
-                    .relations(
-                        CertificateRelations.builder()
-                            .parent(null)
-                            .build()
-                    )
-                    .build()
-            );
-
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-            verifyNoInteractions(decorateCertificateDataService);
-        }
-
-        @Test
-        void shouldNotDecorateIfCertificateIsDraftButHasNoParentRelationOfTypeExtended() {
-            final var certificate = createCertificate();
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .status(CertificateStatus.UNSIGNED)
-                    .relations(
-                        CertificateRelations.builder()
-                            .parent(
-                                CertificateRelation.builder()
-                                    .type(CertificateRelationType.COMPLEMENTED)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            );
-
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-            verifyNoInteractions(decorateCertificateDataService);
-        }
-
-        @Test
-        void shouldDecorateIfCertificateIsDraftAndHasParentRelationOfTypeExtended() {
-            final var certificate = createCertificate();
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .status(CertificateStatus.UNSIGNED)
-                    .relations(
-                        CertificateRelations.builder()
-                            .parent(
-                                CertificateRelation.builder()
-                                    .type(CertificateRelationType.EXTENDED)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            );
-
-            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-            verify(decorateCertificateDataService).decorateFromParent(certificate);
-        }
-    }
-
-    private IntegrationParameters createIntegrationParameters(String alternateSsn, String firstName, String lastName) {
-        return new IntegrationParameters("reference", "responsible", alternateSsn, firstName, "mellannamn", lastName,
-            "address", "zipcode", "city", true, false, false, true, null);
-    }
-
-    private Certificate createCertificate() {
-        final var certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .status(CertificateStatus.SIGNED)
-                .patient(Patient.builder()
-                    .personId(PersonId.builder()
-                        .id(PATIENT_ID)
-                        .type(ID_TYPE)
-                        .build())
+  private static final String ID_TYPE = "PERSON_NUMMER";
+  private static final String PATIENT_ID = "19121212-1212";
+  private static final String ALTERNATE_PATIENT_ID = "19121212-1213";
+  private static final String PATIENT_RESERVE_ID = "19121212-12AB";
+  private static final String FIRST_NAME = "firstName";
+  private static final String LAST_NAME = "lastName";
+  private static final String ALTERNATE_FIRST_NAME = "alternateFirstName";
+  private static final String ALTERNATE_LAST_NAME = "alternateLastName";
+  private static final WebCertUser user = new WebCertUser();
+
+  @Mock DecorateCertificateDataService decorateCertificateDataService;
+  @Mock WebCertUserService webCertUserService;
+  @Mock WebCertUser webCertUser;
+
+  @InjectMocks
+  DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+
+  @BeforeEach
+  void setUp() {
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+  }
+
+  @Test
+  void shallNotDecorateCertificateIfUserIsNull() {
+    when(webCertUserService.getUser()).thenReturn(null);
+
+    final var certificate = createCertificate();
+    decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+    assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
+    assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    assertFalse(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
+    assertFalse(certificate.getMetadata().getPatient().isReserveId());
+  }
+
+  @Test
+  void shallNotDecorateCertificateIfParametersIsNull() {
+    when(webCertUser.getParameters()).thenReturn(null);
+
+    final var certificate = createCertificate();
+    decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+    assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
+    assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    assertFalse(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
+    assertFalse(certificate.getMetadata().getPatient().isReserveId());
+  }
+
+  @Test
+  void shallNotChangeOtherValuesThanPatient() {
+    final var parameters = createIntegrationParameters("", FIRST_NAME, LAST_NAME);
+    user.setParameters(parameters);
+
+    when(webCertUser.getParameters()).thenReturn(parameters);
+
+    final var description = "description";
+
+    final var unit = Unit.builder().unitId("unitId").unitName("unitName").build();
+
+    final var certificate = createCertificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .status(CertificateStatus.SIGNED)
+            .description(description)
+            .patient(
+                Patient.builder()
+                    .personId(PersonId.builder().id(PATIENT_ID).type(ID_TYPE).build())
                     .firstName(FIRST_NAME)
                     .lastName(LAST_NAME)
                     .build())
-                .build()
-        );
+            .unit(unit)
+            .build());
 
-        return certificate;
+    decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+    assertEquals(unit, certificate.getMetadata().getUnit());
+    assertEquals(description, certificate.getMetadata().getDescription());
+  }
+
+  @Nested
+  class PatientId {
+
+    @Test
+    void shallHaveAlternateSSNAsPatientIdIfPatientIdHasBeenReplaced() {
+      final var parameters =
+          createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
+      parameters.setBeforeAlternateSsn(PATIENT_ID);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(
+          ALTERNATE_PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
+      assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
     }
+
+    @Test
+    void shallHaveOriginalIdIfAlternateSSNIsEmpty() {
+      final var parameters = createIntegrationParameters("", FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallHaveOriginalPatientIdIfAlternateSSNIsNull() {
+      final var parameters = createIntegrationParameters(null, FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallHaveAlternateSSNAsPatientIdIfSet() {
+      final var parameters =
+          createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(
+          ALTERNATE_PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
+      assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+  }
+
+  @Nested
+  class PreviousId {
+
+    @Test
+    void shallNotSetPreviousIdIfAlternateSSNIsEmpty() {
+      final var parameters = createIntegrationParameters("", FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallNotSetPreviousIdIfAlternateSSNIsNull() {
+      final var parameters = createIntegrationParameters(null, FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsReplaced() {
+      final var parameters =
+          createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
+      parameters.setBeforeAlternateSsn(PATIENT_ID);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(
+          PATIENT_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
+      assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsNotReplaced() {
+      final var parameters =
+          createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
+      parameters.setBeforeAlternateSsn(PATIENT_ID);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(
+          PATIENT_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
+      assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallSetPreviousPersonIdToOriginalIdIfAlternatePatientSSnIsReserveId() {
+      final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
+      parameters.setBeforeAlternateSsn(PATIENT_ID);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(
+          PATIENT_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsNotAReserveId() {
+      final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
+      parameters.setBeforeAlternateSsn(PATIENT_ID.replace("-", ""));
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(
+          PATIENT_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsAReserveId() {
+      final var parameters = createIntegrationParameters(PATIENT_ID, FIRST_NAME, LAST_NAME);
+      parameters.setBeforeAlternateSsn(PATIENT_RESERVE_ID);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertEquals(
+          PATIENT_RESERVE_ID, certificate.getMetadata().getPatient().getPreviousPersonId().getId());
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+  }
+
+  @Nested
+  class PersonIdChanged {
+
+    @Test
+    void shallSetFlagIfAlternateAndBeforeSsnIsSetAndDiffers() {
+      final var parameters =
+          createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
+      parameters.setBeforeAlternateSsn(PATIENT_ID);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallSetFlagIfBeforeSsnIsNotSetButPersonIdAndAlternateSsnDiffers() {
+      final var parameters =
+          createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallNotSetFlagIfPersonIdIsNotValid() {
+      final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
+      parameters.setBeforeAlternateSsn(PATIENT_ID);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+
+    @Test
+    void shallNotSetFlagForPersonIdIfNoParametersAreSent() {
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+    }
+  }
+
+  @Nested
+  class PatientNameDifferent {
+
+    @Test
+    void shallSetIsPatientNameDifferentIfFirstnameChanges() {
+      final var parameters =
+          createIntegrationParameters(PATIENT_ID, ALTERNATE_FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertTrue(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
+    }
+
+    @Test
+    void shallSetIsPatientNameDifferentIfLastnameChanges() {
+      final var parameters =
+          createIntegrationParameters(PATIENT_ID, FIRST_NAME, ALTERNATE_LAST_NAME);
+      user.setParameters(parameters);
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertTrue(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
+    }
+
+    @Test
+    void shallSetIsPatientNameDifferentIfBothChange() {
+      final var parameters =
+          createIntegrationParameters(PATIENT_ID, ALTERNATE_FIRST_NAME, ALTERNATE_LAST_NAME);
+      user.setParameters(parameters);
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertTrue(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
+    }
+
+    @Test
+    void shallNotSetIsPatientNameDifferentIfNameIsSame() {
+      final var parameters = createIntegrationParameters(PATIENT_ID, FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertFalse(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
+    }
+  }
+
+  @Nested
+  class ReserveId {
+
+    @Test
+    void shallSetReserveIdFlagIfPersonIdIsReserveId() {
+      final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertTrue(certificate.getMetadata().getPatient().isReserveId());
+    }
+
+    @Test
+    void shallNotSetReserveIdFlagIfPersonIdIsValid() {
+      final var parameters = createIntegrationParameters(PATIENT_ID, FIRST_NAME, LAST_NAME);
+      user.setParameters(parameters);
+
+      when(webCertUser.getParameters()).thenReturn(parameters);
+
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+      assertFalse(certificate.getMetadata().getPatient().isReserveId());
+    }
+  }
+
+  @Nested
+  class DecorateRenewedCertificateFromParentTests {
+
+    @Test
+    void shouldNotDecorateIfCertificateIsNotDraft() {
+      final var certificate = createCertificate();
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+      verifyNoInteractions(decorateCertificateDataService);
+    }
+
+    @Test
+    void shouldNotDecorateIfCertificateIsDraftButHasNoParentRelation() {
+      final var certificate = createCertificate();
+      certificate.setMetadata(
+          CertificateMetadata.builder()
+              .status(CertificateStatus.UNSIGNED)
+              .relations(CertificateRelations.builder().parent(null).build())
+              .build());
+
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+      verifyNoInteractions(decorateCertificateDataService);
+    }
+
+    @Test
+    void shouldNotDecorateIfCertificateIsDraftButHasNoParentRelationOfTypeExtended() {
+      final var certificate = createCertificate();
+      certificate.setMetadata(
+          CertificateMetadata.builder()
+              .status(CertificateStatus.UNSIGNED)
+              .relations(
+                  CertificateRelations.builder()
+                      .parent(
+                          CertificateRelation.builder()
+                              .type(CertificateRelationType.COMPLEMENTED)
+                              .build())
+                      .build())
+              .build());
+
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+      verifyNoInteractions(decorateCertificateDataService);
+    }
+
+    @Test
+    void shouldDecorateIfCertificateIsDraftAndHasParentRelationOfTypeExtended() {
+      final var certificate = createCertificate();
+      certificate.setMetadata(
+          CertificateMetadata.builder()
+              .status(CertificateStatus.UNSIGNED)
+              .relations(
+                  CertificateRelations.builder()
+                      .parent(
+                          CertificateRelation.builder()
+                              .type(CertificateRelationType.EXTENDED)
+                              .build())
+                      .build())
+              .build());
+
+      decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+      verify(decorateCertificateDataService).decorateFromParent(certificate);
+    }
+  }
+
+  private IntegrationParameters createIntegrationParameters(
+      String alternateSsn, String firstName, String lastName) {
+    return new IntegrationParameters(
+        "reference",
+        "responsible",
+        alternateSsn,
+        firstName,
+        "mellannamn",
+        lastName,
+        "address",
+        "zipcode",
+        "city",
+        true,
+        false,
+        false,
+        true,
+        null);
+  }
+
+  private Certificate createCertificate() {
+    final var certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .status(CertificateStatus.SIGNED)
+            .patient(
+                Patient.builder()
+                    .personId(PersonId.builder().id(PATIENT_ID).type(ID_TYPE).build())
+                    .firstName(FIRST_NAME)
+                    .lastName(LAST_NAME)
+                    .build())
+            .build());
+
+    return certificate;
+  }
 }

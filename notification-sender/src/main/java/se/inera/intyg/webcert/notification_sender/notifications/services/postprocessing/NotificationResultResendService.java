@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,158 +42,203 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @Service
 public class NotificationResultResendService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationResultResendService.class);
-    private static final int ONE_ATTEMPTED_DELIVERY = 1;
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationResultResendService.class);
+  private static final int ONE_ATTEMPTED_DELIVERY = 1;
 
-    private final MonitoringLogService logService;
-    private final HandelseRepository handelseRepo;
-    private final NotificationRedeliveryRepository notificationRedeliveryRepo;
-    private final NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory;
+  private final MonitoringLogService logService;
+  private final HandelseRepository handelseRepo;
+  private final NotificationRedeliveryRepository notificationRedeliveryRepo;
+  private final NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory;
 
-    public NotificationResultResendService(
-        MonitoringLogService logService, HandelseRepository handelseRepo, NotificationRedeliveryRepository notificationRedeliveryRepo,
-        NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory) {
-        this.logService = logService;
-        this.handelseRepo = handelseRepo;
-        this.notificationRedeliveryRepo = notificationRedeliveryRepo;
-        this.notificationRedeliveryStrategyFactory = notificationRedeliveryStrategyFactory;
+  public NotificationResultResendService(
+      MonitoringLogService logService,
+      HandelseRepository handelseRepo,
+      NotificationRedeliveryRepository notificationRedeliveryRepo,
+      NotificationRedeliveryStrategyFactory notificationRedeliveryStrategyFactory) {
+    this.logService = logService;
+    this.handelseRepo = handelseRepo;
+    this.notificationRedeliveryRepo = notificationRedeliveryRepo;
+    this.notificationRedeliveryStrategyFactory = notificationRedeliveryStrategyFactory;
+  }
+
+  @Transactional
+  public void process(@NonNull NotificationResultMessage resultMessage) {
+    final var event = resultMessage.getEvent();
+    final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
+
+    if (existingRedelivery.isEmpty()) {
+      createEventAndNotificationRedelivery(event, resultMessage);
+    } else {
+      updateEventAndNotificationRedelivery(event, resultMessage, existingRedelivery.get());
     }
+  }
 
-    @Transactional
-    public void process(@NonNull NotificationResultMessage resultMessage) {
-        final var event = resultMessage.getEvent();
-        final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
+  private void createEventAndNotificationRedelivery(
+      Handelse event, NotificationResultMessage resultMessage) {
+    final var createdEvent = createEvent(event);
+    final var createdRedelivery = createNotificationRedelivery(createdEvent, resultMessage);
+    monitorLogResend(createdEvent, resultMessage, createdRedelivery);
+  }
 
-        if (existingRedelivery.isEmpty()) {
-            createEventAndNotificationRedelivery(event, resultMessage);
-        } else {
-            updateEventAndNotificationRedelivery(event, resultMessage, existingRedelivery.get());
-        }
+  private void updateEventAndNotificationRedelivery(
+      Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {
+    final var strategy = getRedeliveryStrategy(redelivery.getRedeliveryStrategy());
+    final var attemptedDeliveries = attemptedRedeliveries(redelivery) + 1;
+    final var maxTotalDeliveries = strategy.getMaxDeliveries();
+
+    if (attemptedDeliveries < maxTotalDeliveries) {
+      event.setId(redelivery.getEventId());
+      updateDeliveryStatusToResendIfNeeded(attemptedDeliveries, redelivery.getEventId());
+      updateRedelivery(redelivery, strategy, attemptedDeliveries, resultMessage);
+      monitorLogResend(event, resultMessage, redelivery);
+    } else {
+      final var updatedEvent = setDeliveryStatusFailure(redelivery.getEventId());
+      deleteNotificationRedelivery(redelivery);
+      redelivery.setAttemptedDeliveries(attemptedDeliveries);
+      monitorLogFailure(updatedEvent, resultMessage, redelivery);
     }
+  }
 
-    private void createEventAndNotificationRedelivery(Handelse event, NotificationResultMessage resultMessage) {
-        final var createdEvent = createEvent(event);
-        final var createdRedelivery = createNotificationRedelivery(createdEvent, resultMessage);
-        monitorLogResend(createdEvent, resultMessage, createdRedelivery);
+  private void updateDeliveryStatusToResendIfNeeded(int attemptedDeliveries, Long eventId) {
+    if (isFirstAttemptedDeliveryOfManualResend(attemptedDeliveries)) {
+      Optional<Handelse> optionalEvent = handelseRepo.findById(eventId);
+      if (optionalEvent.isPresent() && optionalEvent.get().getDeliveryStatus() != RESEND) {
+        Handelse event = optionalEvent.get();
+        event.setDeliveryStatus(RESEND);
+        handelseRepo.save(event);
+      }
     }
+  }
 
-    private void updateEventAndNotificationRedelivery(Handelse event, NotificationResultMessage resultMessage,
-        NotificationRedelivery redelivery) {
-        final var strategy = getRedeliveryStrategy(redelivery.getRedeliveryStrategy());
-        final var attemptedDeliveries = attemptedRedeliveries(redelivery) + 1;
-        final var maxTotalDeliveries = strategy.getMaxDeliveries();
+  private boolean isFirstAttemptedDeliveryOfManualResend(int attemptedDeliveries) {
+    return attemptedDeliveries == 1;
+  }
 
-        if (attemptedDeliveries < maxTotalDeliveries) {
-            event.setId(redelivery.getEventId());
-            updateDeliveryStatusToResendIfNeeded(attemptedDeliveries, redelivery.getEventId());
-            updateRedelivery(redelivery, strategy, attemptedDeliveries, resultMessage);
-            monitorLogResend(event, resultMessage, redelivery);
-        } else {
-            final var updatedEvent = setDeliveryStatusFailure(redelivery.getEventId());
-            deleteNotificationRedelivery(redelivery);
-            redelivery.setAttemptedDeliveries(attemptedDeliveries);
-            monitorLogFailure(updatedEvent, resultMessage, redelivery);
-        }
-    }
+  private int attemptedRedeliveries(NotificationRedelivery redelivery) {
+    return redelivery.getAttemptedDeliveries() != null ? redelivery.getAttemptedDeliveries() : 0;
+  }
 
-    private void updateDeliveryStatusToResendIfNeeded(int attemptedDeliveries, Long eventId) {
-        if (isFirstAttemptedDeliveryOfManualResend(attemptedDeliveries)) {
-            Optional<Handelse> optionalEvent = handelseRepo.findById(eventId);
-            if (optionalEvent.isPresent() && optionalEvent.get().getDeliveryStatus() != RESEND) {
-                Handelse event = optionalEvent.get();
-                event.setDeliveryStatus(RESEND);
-                handelseRepo.save(event);
-            }
-        }
-    }
+  private Optional<NotificationRedelivery> getExistingRedelivery(String correlationId) {
+    return notificationRedeliveryRepo.findByCorrelationId(correlationId);
+  }
 
-    private boolean isFirstAttemptedDeliveryOfManualResend(int attemptedDeliveries) {
-        return attemptedDeliveries == 1;
-    }
+  private NotificationRedeliveryStrategy getRedeliveryStrategy(
+      NotificationRedeliveryStrategyEnum strategy) {
+    return notificationRedeliveryStrategyFactory.getResendStrategy(strategy);
+  }
 
-    private int attemptedRedeliveries(NotificationRedelivery redelivery) {
-        return redelivery.getAttemptedDeliveries() != null ? redelivery.getAttemptedDeliveries() : 0;
-    }
+  private Handelse createEvent(Handelse event) {
+    final var createdEvent = handelseRepo.save(event);
+    LOG.debug(
+        "Creating Notification Event with id {} and delivery status {}",
+        createdEvent.getId(),
+        createdEvent.getDeliveryStatus());
+    return createdEvent;
+  }
 
-    private Optional<NotificationRedelivery> getExistingRedelivery(String correlationId) {
-        return notificationRedeliveryRepo.findByCorrelationId(correlationId);
-    }
-
-    private NotificationRedeliveryStrategy getRedeliveryStrategy(NotificationRedeliveryStrategyEnum strategy) {
-        return notificationRedeliveryStrategyFactory.getResendStrategy(strategy);
-    }
-
-    private Handelse createEvent(Handelse event) {
-        final var createdEvent = handelseRepo.save(event);
-        LOG.debug("Creating Notification Event with id {} and delivery status {}", createdEvent.getId(), createdEvent.getDeliveryStatus());
-        return createdEvent;
-    }
-
-    private NotificationRedelivery createNotificationRedelivery(Handelse event, NotificationResultMessage resultMessage) {
-        final var strategy = getRedeliveryStrategy(STANDARD);
-        final var redelivery = new NotificationRedelivery(
+  private NotificationRedelivery createNotificationRedelivery(
+      Handelse event, NotificationResultMessage resultMessage) {
+    final var strategy = getRedeliveryStrategy(STANDARD);
+    final var redelivery =
+        new NotificationRedelivery(
             resultMessage.getCorrelationId(),
             event.getId(),
             resultMessage.getStatusUpdateXml(),
             strategy.getName(),
-            getNextRedeliveryTime(strategy, resultMessage.getNotificationSentTime(), ONE_ATTEMPTED_DELIVERY),
-            ONE_ATTEMPTED_DELIVERY
-        );
-        LOG.debug("Creating Notification Redelivery for event with id {} and correlation id {}.", event.getId(),
-            redelivery.getCorrelationId());
-        return notificationRedeliveryRepo.save(redelivery);
+            getNextRedeliveryTime(
+                strategy, resultMessage.getNotificationSentTime(), ONE_ATTEMPTED_DELIVERY),
+            ONE_ATTEMPTED_DELIVERY);
+    LOG.debug(
+        "Creating Notification Redelivery for event with id {} and correlation id {}.",
+        event.getId(),
+        redelivery.getCorrelationId());
+    return notificationRedeliveryRepo.save(redelivery);
+  }
+
+  private void updateRedelivery(
+      NotificationRedelivery redelivery,
+      NotificationRedeliveryStrategy strategy,
+      int attemptedDeliveries,
+      NotificationResultMessage resultMessage) {
+    final var nextRedeliveryTime =
+        getNextRedeliveryTime(
+            strategy, resultMessage.getNotificationSentTime(), attemptedDeliveries);
+    redelivery.setRedeliveryTime(nextRedeliveryTime);
+    redelivery.setAttemptedDeliveries(attemptedDeliveries);
+
+    if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getStatusUpdateXml())) {
+      redelivery.setMessage(resultMessage.getStatusUpdateXml());
     }
 
-    private void updateRedelivery(NotificationRedelivery redelivery, NotificationRedeliveryStrategy strategy, int attemptedDeliveries,
-        NotificationResultMessage resultMessage) {
-        final var nextRedeliveryTime = getNextRedeliveryTime(strategy, resultMessage.getNotificationSentTime(), attemptedDeliveries);
-        redelivery.setRedeliveryTime(nextRedeliveryTime);
-        redelivery.setAttemptedDeliveries(attemptedDeliveries);
+    notificationRedeliveryRepo.save(redelivery);
+    LOG.debug(
+        "Updating Notification Redelivery for event with id {} and correlation id {}",
+        redelivery.getEventId(),
+        redelivery.getCorrelationId());
+  }
 
-        if (needToUpdateMessage(redelivery.getMessage(), resultMessage.getStatusUpdateXml())) {
-            redelivery.setMessage(resultMessage.getStatusUpdateXml());
-        }
+  private boolean needToUpdateMessage(byte[] currentMessage, byte[] newMessage) {
+    return currentMessage == null && newMessage != null;
+  }
 
-        notificationRedeliveryRepo.save(redelivery);
-        LOG.debug("Updating Notification Redelivery for event with id {} and correlation id {}", redelivery.getEventId(),
-            redelivery.getCorrelationId());
-    }
+  private LocalDateTime getNextRedeliveryTime(
+      NotificationRedeliveryStrategy strategy,
+      LocalDateTime notificationSentTime,
+      int attemptedDeliveries) {
+    final var nextTimeValue = strategy.getNextTimeValue(attemptedDeliveries);
+    final var nextTimeUnit = strategy.getNextTimeUnit(attemptedDeliveries);
+    return notificationSentTime.plus(nextTimeValue, nextTimeUnit);
+  }
 
-    private boolean needToUpdateMessage(byte[] currentMessage, byte[] newMessage) {
-        return currentMessage == null && newMessage != null;
-    }
+  private Handelse setDeliveryStatusFailure(Long eventId) {
+    final var event = handelseRepo.findById(eventId).orElseThrow();
+    event.setDeliveryStatus(FAILURE);
+    LOG.debug(
+        "Setting Delivery Status {} for event with id {}.",
+        event.getDeliveryStatus(),
+        event.getId());
+    return handelseRepo.save(event);
+  }
 
-    private LocalDateTime getNextRedeliveryTime(NotificationRedeliveryStrategy strategy, LocalDateTime notificationSentTime,
-        int attemptedDeliveries) {
-        final var nextTimeValue = strategy.getNextTimeValue(attemptedDeliveries);
-        final var nextTimeUnit = strategy.getNextTimeUnit(attemptedDeliveries);
-        return notificationSentTime.plus(nextTimeValue, nextTimeUnit);
-    }
+  private void deleteNotificationRedelivery(NotificationRedelivery redelivery) {
+    LOG.debug("Deleting Notification Redelivery for event with id {}.", redelivery.getEventId());
+    notificationRedeliveryRepo.delete(redelivery);
+  }
 
-    private Handelse setDeliveryStatusFailure(Long eventId) {
-        final var event = handelseRepo.findById(eventId).orElseThrow();
-        event.setDeliveryStatus(FAILURE);
-        LOG.debug("Setting Delivery Status {} for event with id {}.", event.getDeliveryStatus(), event.getId());
-        return handelseRepo.save(event);
-    }
+  private void monitorLogResend(
+      Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {
+    final var resultType = resultMessage.getResultType();
+    final var errorId =
+        resultType.getNotificationErrorType() != null
+            ? resultType.getNotificationErrorType().name()
+            : null;
+    logService.logStatusUpdateForCareStatusResend(
+        event.getId(),
+        event.getCode().name(),
+        event.getEnhetsId(),
+        event.getIntygsId(),
+        resultMessage.getCorrelationId(),
+        errorId,
+        resultType.getNotificationResultText(),
+        redelivery.getAttemptedDeliveries(),
+        redelivery.getRedeliveryTime());
+  }
 
-    private void deleteNotificationRedelivery(NotificationRedelivery redelivery) {
-        LOG.debug("Deleting Notification Redelivery for event with id {}.", redelivery.getEventId());
-        notificationRedeliveryRepo.delete(redelivery);
-    }
-
-    private void monitorLogResend(Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {
-        final var resultType = resultMessage.getResultType();
-        final var errorId = resultType.getNotificationErrorType() != null ? resultType.getNotificationErrorType().name() : null;
-        logService.logStatusUpdateForCareStatusResend(event.getId(), event.getCode().name(), event.getEnhetsId(), event.getIntygsId(),
-            resultMessage.getCorrelationId(), errorId, resultType.getNotificationResultText(), redelivery.getAttemptedDeliveries(),
-            redelivery.getRedeliveryTime());
-    }
-
-    private void monitorLogFailure(Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {
-        final var resultType = resultMessage.getResultType();
-        final var errorId = resultType.getNotificationErrorType() != null ? resultType.getNotificationErrorType().name() : null;
-        logService.logStatusUpdateForCareStatusFailure(event.getId(), event.getCode().name(), event.getEnhetsId(), event.getIntygsId(),
-            resultMessage.getCorrelationId(), errorId, resultType.getNotificationResultText(), redelivery.getAttemptedDeliveries());
-    }
+  private void monitorLogFailure(
+      Handelse event, NotificationResultMessage resultMessage, NotificationRedelivery redelivery) {
+    final var resultType = resultMessage.getResultType();
+    final var errorId =
+        resultType.getNotificationErrorType() != null
+            ? resultType.getNotificationErrorType().name()
+            : null;
+    logService.logStatusUpdateForCareStatusFailure(
+        event.getId(),
+        event.getCode().name(),
+        event.getEnhetsId(),
+        event.getIntygsId(),
+        resultMessage.getCorrelationId(),
+        errorId,
+        resultType.getNotificationResultText(),
+        redelivery.getAttemptedDeliveries());
+  }
 }

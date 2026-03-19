@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,35 +33,33 @@ import se.inera.intyg.webcert.web.service.notification.NotificationRedeliveryJob
 @Component
 public class NotificationRedeliveryJob {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryJob.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryJob.class);
 
-    @Autowired
-    private NotificationRedeliveryJobService notificationRedeliveryJobService;
+  @Autowired private NotificationRedeliveryJobService notificationRedeliveryJobService;
 
-    @Autowired
-    private MdcHelper mdcHelper;
+  @Autowired private MdcHelper mdcHelper;
 
-    private static final String JOB_NAME = "NotificationRedeliveryJob.run";
-    private static final String LOCK_AT_MOST = "PT29S";
-    private static final String LOCK_AT_LEAST = "PT20S";
+  private static final String JOB_NAME = "NotificationRedeliveryJob.run";
+  private static final String LOCK_AT_MOST = "PT29S";
+  private static final String LOCK_AT_LEAST = "PT20S";
 
-    @Value("${job.notification.redelivery.batchsize:1000}")
-    private int batchSize;
+  @Value("${job.notification.redelivery.batchsize:1000}")
+  private int batchSize;
 
-    @Scheduled(cron = "${job.notification.redelivery.cron:-}")
-    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
-    public void run() {
-        LOG.debug("Running notification redelivery job...");
+  @Scheduled(cron = "${job.notification.redelivery.cron:-}")
+  @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
+  public void run() {
+    LOG.debug("Running notification redelivery job...");
 
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
-            notificationRedeliveryJobService.resendScheduledNotifications(batchSize);
-        } catch (Exception ex) {
-            LOG.error("Redelivery job failed due to unexpected error: ", ex);
-        } finally {
-            MDC.clear();
-        }
+      notificationRedeliveryJobService.resendScheduledNotifications(batchSize);
+    } catch (Exception ex) {
+      LOG.error("Redelivery job failed due to unexpected error: ", ex);
+    } finally {
+      MDC.clear();
     }
+  }
 }

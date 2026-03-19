@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,22 +26,23 @@ import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService
 @Service("forwardCertificateAggregator")
 public class ForwardCertificateAggregator implements ForwardCertificateFacadeService {
 
-    private final ForwardCertificateFacadeService forwardCertificateFromWC;
-    private final ForwardCertificateFacadeService forwardCertificateFromCS;
+  private final ForwardCertificateFacadeService forwardCertificateFromWC;
+  private final ForwardCertificateFacadeService forwardCertificateFromCS;
 
-    public ForwardCertificateAggregator(
-        @Qualifier("forwardCertificateFromWC")
-        ForwardCertificateFacadeService forwardCertificateFromWC,
-        @Qualifier("forwardCertificateFromCS")
-        ForwardCertificateFacadeService forwardCertificateFromCS) {
-        this.forwardCertificateFromWC = forwardCertificateFromWC;
-        this.forwardCertificateFromCS = forwardCertificateFromCS;
-    }
+  public ForwardCertificateAggregator(
+      @Qualifier("forwardCertificateFromWC") ForwardCertificateFacadeService forwardCertificateFromWC,
+      @Qualifier("forwardCertificateFromCS") ForwardCertificateFacadeService forwardCertificateFromCS) {
+    this.forwardCertificateFromWC = forwardCertificateFromWC;
+    this.forwardCertificateFromCS = forwardCertificateFromCS;
+  }
 
-    @Override
-    public Certificate forwardCertificate(String certificateId, boolean forwarded) {
-        final var responseFromCS = forwardCertificateFromCS.forwardCertificate(certificateId, forwarded);
+  @Override
+  public Certificate forwardCertificate(String certificateId, boolean forwarded) {
+    final var responseFromCS =
+        forwardCertificateFromCS.forwardCertificate(certificateId, forwarded);
 
-        return responseFromCS != null ? responseFromCS : forwardCertificateFromWC.forwardCertificate(certificateId, forwarded);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : forwardCertificateFromWC.forwardCertificate(certificateId, forwarded);
+  }
 }

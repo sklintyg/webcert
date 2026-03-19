@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.user;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -31,24 +30,22 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO.C
 @Builder
 public class CertificateServiceUserDTO {
 
-    String id;
-    String firstName;
-    String lastName;
-    String middleName;
-    String fullName;
-    CertificateServiceUserRole role;
-    List<PaTitleDTO> paTitles;
-    List<String> specialities;
-    Boolean blocked;
-    Boolean agreement;
-    AccessScopeType accessScope;
-    Boolean allowCopy;
-    List<String> healthCareProfessionalLicence;
-    String responsibleHospName;
-    Boolean srsActive;
+  String id;
+  String firstName;
+  String lastName;
+  String middleName;
+  String fullName;
+  CertificateServiceUserRole role;
+  List<PaTitleDTO> paTitles;
+  List<String> specialities;
+  Boolean blocked;
+  Boolean agreement;
+  AccessScopeType accessScope;
+  Boolean allowCopy;
+  List<String> healthCareProfessionalLicence;
+  String responsibleHospName;
+  Boolean srsActive;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceUserDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class CertificateServiceUserDTOBuilder {}
 }

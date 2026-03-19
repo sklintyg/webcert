@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -36,43 +35,48 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @RequiredArgsConstructor
 public class DeleteCertificateFromCertificateService implements DeleteCertificateFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final MonitoringLogService monitoringLogService;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PDLLogService pdlLogService;
+  private final MonitoringLogService monitoringLogService;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Override
-    public boolean deleteCertificate(String certificateId, long version) {
-        log.debug("Attempting to delete certificate '{}' with version '{}' from Certificate Service", certificateId, version);
+  @Override
+  public boolean deleteCertificate(String certificateId, long version) {
+    log.debug(
+        "Attempting to delete certificate '{}' with version '{}' from Certificate Service",
+        certificateId,
+        version);
 
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return false;
-        }
-
-        final var certificateXml = csIntegrationService.getCertificateXml(
-            csIntegrationRequestFactory.getCertificateXmlRequest(), certificateId
-        );
-
-        final var certificate = csIntegrationService.deleteCertificate(
-            certificateId, version, csIntegrationRequestFactory.deleteCertificateRequest()
-        );
-
-        if (certificate == null) {
-            throw new IllegalStateException("Received null when trying to delete certificate from Certificate Service");
-        }
-
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftDeleted(certificate)
-        );
-        log.debug("Deleted certificate '{}' from Certificate Service", certificateId);
-        monitoringLogService.logUtkastDeleted(certificate.getMetadata().getId(), certificate.getMetadata().getType());
-        pdlLogService.logDeleted(certificate);
-        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.RADERA, certificateXml.getXml());
-
-        return true;
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return false;
     }
+
+    final var certificateXml =
+        csIntegrationService.getCertificateXml(
+            csIntegrationRequestFactory.getCertificateXmlRequest(), certificateId);
+
+    final var certificate =
+        csIntegrationService.deleteCertificate(
+            certificateId, version, csIntegrationRequestFactory.deleteCertificateRequest());
+
+    if (certificate == null) {
+      throw new IllegalStateException(
+          "Received null when trying to delete certificate from Certificate Service");
+    }
+
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.draftDeleted(certificate));
+    log.debug("Deleted certificate '{}' from Certificate Service", certificateId);
+    monitoringLogService.logUtkastDeleted(
+        certificate.getMetadata().getId(), certificate.getMetadata().getType());
+    pdlLogService.logDeleted(certificate);
+    publishCertificateStatusUpdateService.publish(
+        certificate, HandelsekodEnum.RADERA, certificateXml.getXml());
+
+    return true;
+  }
 }

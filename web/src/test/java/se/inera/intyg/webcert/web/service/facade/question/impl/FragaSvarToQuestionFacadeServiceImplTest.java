@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,74 +42,67 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 @ExtendWith(MockitoExtension.class)
 class FragaSvarToQuestionFacadeServiceImplTest {
 
-    @Mock
-    private FragaSvarService fragaSvarService;
-    @Mock
-    private FragaSvarToQuestionConverter fragaSvarToQuestionConverter;
-    private static final String CERTIFICATE_ID = "certificateId";
-    @InjectMocks
-    private FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService;
+  @Mock private FragaSvarService fragaSvarService;
+  @Mock private FragaSvarToQuestionConverter fragaSvarToQuestionConverter;
+  private static final String CERTIFICATE_ID = "certificateId";
+  @InjectMocks private FragaSvarToQuestionFacadeServiceImpl fragaSvarToQuestionFacadeService;
 
-    @Test
-    void shallReturnEmptyListOfQuestionsIfNoQuestionsArePresent() {
-        doReturn(Collections.emptyList())
-            .when(fragaSvarService)
-            .getFragaSvar(CERTIFICATE_ID);
+  @Test
+  void shallReturnEmptyListOfQuestionsIfNoQuestionsArePresent() {
+    doReturn(Collections.emptyList()).when(fragaSvarService).getFragaSvar(CERTIFICATE_ID);
 
-        final var actualQuestions = fragaSvarToQuestionFacadeService.getQuestions(CERTIFICATE_ID);
+    final var actualQuestions = fragaSvarToQuestionFacadeService.getQuestions(CERTIFICATE_ID);
 
-        assertTrue(actualQuestions.isEmpty(), "Don't expect any questions");
-    }
+    assertTrue(actualQuestions.isEmpty(), "Don't expect any questions");
+  }
 
-    @Test
-    void shallReturnListOfQuestionsIfPresent() {
-        setupMockToReturnQuestions();
+  @Test
+  void shallReturnListOfQuestionsIfPresent() {
+    setupMockToReturnQuestions();
 
-        final var actualQuestions = fragaSvarToQuestionFacadeService.getQuestions(CERTIFICATE_ID);
+    final var actualQuestions = fragaSvarToQuestionFacadeService.getQuestions(CERTIFICATE_ID);
 
-        assertEquals(3, actualQuestions.size(), "Expect three question to be returned");
-    }
+    assertEquals(3, actualQuestions.size(), "Expect three question to be returned");
+  }
 
-    @Test
-    void shallReturnListOfComplementQuestionsIfComplementQuestionsArePresent() {
-        final var expectedResult = List.of(
+  @Test
+  void shallReturnListOfComplementQuestionsIfComplementQuestionsArePresent() {
+    final var expectedResult =
+        List.of(
             Question.builder().type(QuestionType.COMPLEMENT).build(),
             Question.builder().type(QuestionType.COMPLEMENT).build());
 
-        final var fragaSvar = new FragaSvar();
-        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+    final var fragaSvar = new FragaSvar();
+    fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
 
-        final var fragaSvarViews = List.of(
+    final var fragaSvarViews =
+        List.of(
             FragaSvarView.builder().fragaSvar(new FragaSvar()).build(),
-            FragaSvarView.builder().fragaSvar(new FragaSvar()).build()
-        );
+            FragaSvarView.builder().fragaSvar(new FragaSvar()).build());
 
-        doReturn(fragaSvarViews)
-            .when(fragaSvarService)
-            .getFragaSvar(CERTIFICATE_ID);
+    doReturn(fragaSvarViews).when(fragaSvarService).getFragaSvar(CERTIFICATE_ID);
 
-        doReturn(Question.builder().type(QuestionType.COMPLEMENT).build())
-            .when(fragaSvarToQuestionConverter)
-            .convert(any(FragaSvar.class));
+    doReturn(Question.builder().type(QuestionType.COMPLEMENT).build())
+        .when(fragaSvarToQuestionConverter)
+        .convert(any(FragaSvar.class));
 
-        final var actualComplementQuestions = fragaSvarToQuestionFacadeService.getComplementQuestions(
-            CERTIFICATE_ID);
+    final var actualComplementQuestions =
+        fragaSvarToQuestionFacadeService.getComplementQuestions(CERTIFICATE_ID);
 
-        assertIterableEquals(expectedResult, actualComplementQuestions);
-    }
+    assertIterableEquals(expectedResult, actualComplementQuestions);
+  }
 
-    private void setupMockToReturnQuestions() {
-        doReturn(
+  private void setupMockToReturnQuestions() {
+    doReturn(
             List.of(
                 FragaSvarView.builder().fragaSvar(new FragaSvar()).build(),
                 FragaSvarView.builder().fragaSvar(new FragaSvar()).build(),
-                FragaSvarView.builder().fragaSvar(new FragaSvar()).build()
-            ))
-            .when(fragaSvarService)
-            .getFragaSvar(CERTIFICATE_ID);
+                FragaSvarView.builder().fragaSvar(new FragaSvar()).build()))
+        .when(fragaSvarService)
+        .getFragaSvar(CERTIFICATE_ID);
 
-        doReturn(Question.builder().build())
-            .when(fragaSvarToQuestionConverter)
-            .convert(any(FragaSvar.class));
-    }
+    doReturn(Question.builder().build())
+        .when(fragaSvarToQuestionConverter)
+        .convert(any(FragaSvar.class));
+  }
 }

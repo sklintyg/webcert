@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -64,162 +64,173 @@ import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 @Service
 public class DssSignMessageService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DssSignMessageService.class);
-    public static final String DEFAULT_SIGN_ALGORITHM = XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;
+  private static final Logger LOG = LoggerFactory.getLogger(DssSignMessageService.class);
+  public static final String DEFAULT_SIGN_ALGORITHM = XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA256;
 
-    @Value("${dss.client.keystore.alias}")
-    private String keystoreAlias;
+  @Value("${dss.client.keystore.alias}")
+  private String keystoreAlias;
 
-    @Value("${dss.client.keystore.password}")
-    private String keystorePassword;
+  @Value("${dss.client.keystore.password}")
+  private String keystorePassword;
 
-    @Value("${dss.client.keystore.file}")
-    private Resource keystoreFile;
+  @Value("${dss.client.keystore.file}")
+  private Resource keystoreFile;
 
-    private DssMetadataService dssMetadataService;
+  private DssMetadataService dssMetadataService;
 
-    private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+  private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-    private KeyStore clientKeyStore;
+  private KeyStore clientKeyStore;
 
-    @Autowired
-    public DssSignMessageService(DssMetadataService dssMetadataService) {
-        this.dssMetadataService = dssMetadataService;
+  @Autowired
+  public DssSignMessageService(DssMetadataService dssMetadataService) {
+    this.dssMetadataService = dssMetadataService;
 
-        String[] packages = {"se.inera.intyg.webcert.dss.xsd"};
-        marshaller.setPackagesToScan(packages);
-        marshaller.setMarshallerProperties(Map.of(
-            jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false,
-            jakarta.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8")
-        );
+    String[] packages = {"se.inera.intyg.webcert.dss.xsd"};
+    marshaller.setPackagesToScan(packages);
+    marshaller.setMarshallerProperties(
+        Map.of(
+            jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT,
+            false,
+            jakarta.xml.bind.Marshaller.JAXB_ENCODING,
+            "UTF-8"));
+  }
+
+  @PostConstruct
+  public void init() {
+    org.apache.xml.security.Init.init();
+
+    try {
+      clientKeyStore = KeyStore.getInstance("JKS");
+      clientKeyStore.load(keystoreFile.getInputStream(), keystorePassword.toCharArray());
+    } catch (KeyStoreException
+        | IOException
+        | NoSuchAlgorithmException
+        | CertificateException exception) {
+      throw new RuntimeException(exception);
     }
+  }
 
-    @PostConstruct
-    public void init() {
-        org.apache.xml.security.Init.init();
+  public String signSignRequest(SignRequest signRequest) {
+    try {
 
-        try {
-            clientKeyStore = KeyStore.getInstance("JKS");
-            clientKeyStore.load(keystoreFile.getInputStream(), keystorePassword.toCharArray());
-        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException exception) {
-            throw new RuntimeException(exception);
-        }
+      PrivateKey privateKey =
+          (PrivateKey) clientKeyStore.getKey(keystoreAlias, keystorePassword.toCharArray());
+      X509Certificate cert = (X509Certificate) clientKeyStore.getCertificate(keystoreAlias);
+
+      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setNamespaceAware(true);
+
+      Document doc =
+          dbf.newDocumentBuilder()
+              .parse(IOUtils.toInputStream(toXmlString(signRequest), StandardCharsets.UTF_8));
+
+      XMLSignature sig =
+          new XMLSignature(
+              doc, "", DEFAULT_SIGN_ALGORITHM, Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+
+      NodeList optionalInputsList =
+          doc.getElementsByTagNameNS("urn:oasis:names:tc:dss:1.0:core:schema", "OptionalInputs");
+      Node optionalItemNode = optionalInputsList.item(0);
+      optionalItemNode.appendChild(sig.getElement());
+
+      Transforms transforms = new Transforms(doc);
+      transforms.addTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE);
+      sig.addDocument("", transforms, MessageDigestAlgorithm.ALGO_ID_DIGEST_SHA256);
+      sig.addKeyInfo(cert);
+      sig.sign(privateKey);
+
+      return documentToString(doc);
+
+    } catch (Exception exception) {
+      throw new RuntimeException(exception);
     }
+  }
 
-    public String signSignRequest(SignRequest signRequest) {
-        try {
+  public ValidationResponse validateDssMessageSignature(String signResponseXmlString) {
+    return verifySignature(signResponseXmlString);
+  }
 
-            PrivateKey privateKey =
-                (PrivateKey) clientKeyStore.getKey(keystoreAlias, keystorePassword.toCharArray());
-            X509Certificate cert =
-                (X509Certificate) clientKeyStore.getCertificate(keystoreAlias);
+  private String toXmlString(SignRequest signRequest) {
+    var stringResult = new StringResult();
+    marshaller.marshal(signRequest, stringResult);
 
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
+    return stringResult.toString();
+  }
 
-            Document doc = dbf.newDocumentBuilder().parse(IOUtils.toInputStream(toXmlString(signRequest), StandardCharsets.UTF_8));
-
-            XMLSignature sig =
-                new XMLSignature(doc, "", DEFAULT_SIGN_ALGORITHM, Canonicalizer.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
-
-            NodeList optionalInputsList = doc.getElementsByTagNameNS("urn:oasis:names:tc:dss:1.0:core:schema", "OptionalInputs");
-            Node optionalItemNode = optionalInputsList.item(0);
-            optionalItemNode.appendChild(sig.getElement());
-
-            Transforms transforms = new Transforms(doc);
-            transforms.addTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE);
-            sig.addDocument("", transforms, MessageDigestAlgorithm.ALGO_ID_DIGEST_SHA256);
-            sig.addKeyInfo(cert);
-            sig.sign(privateKey);
-
-            return documentToString(doc);
-
-        } catch (Exception exception) {
-            throw new RuntimeException(exception);
-        }
+  private String documentToString(Document document) {
+    try {
+      TransformerFactory tf = TransformerFactory.newInstance();
+      Transformer trans = tf.newTransformer();
+      StringWriter sw = new StringWriter();
+      trans.transform(new DOMSource(document), new StreamResult(sw));
+      return sw.toString();
+    } catch (TransformerException tEx) {
+      tEx.printStackTrace();
     }
+    return null;
+  }
 
-    public ValidationResponse validateDssMessageSignature(String signResponseXmlString) {
-        return verifySignature(signResponseXmlString);
+  private ValidationResponse verifySignature(String signedXml) {
+    XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
+
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    dbf.setNamespaceAware(true);
+
+    try {
+      Document doc =
+          dbf.newDocumentBuilder()
+              .parse(IOUtils.toInputStream(signedXml, Charset.forName("UTF-8")));
+      NodeList nl =
+          doc.getElementsByTagNameNS(javax.xml.crypto.dsig.XMLSignature.XMLNS, "Signature");
+      if (nl.getLength() != 1) {
+        throw new Exception("Cannot find exactly one Signature element");
+      }
+      return verifySignature(true, fac, nl.item(0));
+    } catch (Exception e) {
+      LOG.error("Caught {} validating signature. Msg: {}", e.getClass().getName(), e.getMessage());
+      throw new IllegalArgumentException(e);
     }
+  }
 
-    private String toXmlString(SignRequest signRequest) {
-        var stringResult = new StringResult();
-        marshaller.marshal(signRequest, stringResult);
+  private ValidationResponse verifySignature(
+      boolean checkReferences, XMLSignatureFactory fac, Node node)
+      throws MarshalException, XMLSignatureException {
+    // Create a DOMValidateContext and specify a KeySelector
+    // and document context.
+    DOMValidateContext valContext =
+        new DOMValidateContext(dssMetadataService.getDssKeySelector(), node);
 
-        return stringResult.toString();
+    // Unmarshal the XMLSignature.
+    javax.xml.crypto.dsig.XMLSignature sig = fac.unmarshalXMLSignature(valContext);
+
+    try {
+      if (checkReferences) {
+        boolean result = sig.validate(valContext);
+        return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+            .withSignatureValid(result ? ValidationResult.OK : ValidationResult.INVALID)
+            .withReferencesValid(result ? ValidationResult.OK : ValidationResult.INVALID)
+            .build();
+      } else {
+        boolean result = sig.getSignatureValue().validate(valContext);
+        return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+            .withSignatureValid(result ? ValidationResult.OK : ValidationResult.INVALID)
+            .withReferencesValid(ValidationResult.NOT_CHCEKED)
+            .build();
+      }
+    } catch (XMLSignatureException xmlSignatureException) {
+      // Check if keyselectoer failed to find a valid matching certificate
+      // and treat this as an invalid signature
+      var cause = xmlSignatureException.getCause();
+      if (cause instanceof KeySelectorException) {
+        LOG.warn("Invalid signature. Key in XML doesn't match metadata. {}", cause.getMessage());
+        return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+            .withSignatureValid(ValidationResult.INVALID)
+            .withReferencesValid(ValidationResult.INVALID)
+            .build();
+      } else {
+        throw xmlSignatureException;
+      }
     }
-
-    private String documentToString(Document document) {
-        try {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer trans = tf.newTransformer();
-            StringWriter sw = new StringWriter();
-            trans.transform(new DOMSource(document), new StreamResult(sw));
-            return sw.toString();
-        } catch (TransformerException tEx) {
-            tEx.printStackTrace();
-        }
-        return null;
-    }
-
-    private ValidationResponse verifySignature(String signedXml) {
-        XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-
-        try {
-            Document doc = dbf.newDocumentBuilder().parse(IOUtils.toInputStream(signedXml, Charset.forName("UTF-8")));
-            NodeList nl = doc.getElementsByTagNameNS(javax.xml.crypto.dsig.XMLSignature.XMLNS, "Signature");
-            if (nl.getLength() != 1) {
-                throw new Exception("Cannot find exactly one Signature element");
-            }
-            return verifySignature(true, fac, nl.item(0));
-        } catch (Exception e) {
-            LOG.error("Caught {} validating signature. Msg: {}", e.getClass().getName(), e.getMessage());
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    private ValidationResponse verifySignature(boolean checkReferences, XMLSignatureFactory fac, Node node)
-        throws MarshalException, XMLSignatureException {
-        // Create a DOMValidateContext and specify a KeySelector
-        // and document context.
-        DOMValidateContext valContext = new DOMValidateContext(dssMetadataService.getDssKeySelector(), node);
-
-        // Unmarshal the XMLSignature.
-        javax.xml.crypto.dsig.XMLSignature sig = fac.unmarshalXMLSignature(valContext);
-
-        try {
-            if (checkReferences) {
-                boolean result = sig.validate(valContext);
-                return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
-                    .withSignatureValid(result ? ValidationResult.OK : ValidationResult.INVALID)
-                    .withReferencesValid(result ? ValidationResult.OK : ValidationResult.INVALID)
-                    .build();
-            } else {
-                boolean result = sig.getSignatureValue().validate(valContext);
-                return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
-                    .withSignatureValid(result ? ValidationResult.OK : ValidationResult.INVALID)
-                    .withReferencesValid(ValidationResult.NOT_CHCEKED)
-                    .build();
-            }
-        } catch (XMLSignatureException xmlSignatureException) {
-            // Check if keyselectoer failed to find a valid matching certificate
-            // and treat this as an invalid signature
-            var cause = xmlSignatureException.getCause();
-            if (cause instanceof KeySelectorException) {
-                LOG.warn("Invalid signature. Key in XML doesn't match metadata. {}", cause.getMessage());
-                return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
-                    .withSignatureValid(ValidationResult.INVALID)
-                    .withReferencesValid(ValidationResult.INVALID)
-                    .build();
-            } else {
-                throw xmlSignatureException;
-            }
-
-        }
-    }
-
+  }
 }

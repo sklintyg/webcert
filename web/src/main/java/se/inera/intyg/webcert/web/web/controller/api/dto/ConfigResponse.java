@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,118 +27,129 @@ import se.inera.intyg.infra.driftbannerdto.Banner;
 @ApiModel(description = "The global configuration of Webcert")
 public class ConfigResponse {
 
-    @ApiModelProperty(name = "VERSION", dataType = "String")
-    private String version;
+  @ApiModelProperty(name = "VERSION", dataType = "String")
+  private String version;
 
-    @ApiModelProperty(name = "BUILD_NUMBER", dataType = "String")
-    private String buildNumber;
+  @ApiModelProperty(name = "BUILD_NUMBER", dataType = "String")
+  private String buildNumber;
 
-    @ApiModelProperty(name = "PP_HOST", dataType = "String")
-    private String ppHost;
+  @ApiModelProperty(name = "PP_HOST", dataType = "String")
+  private String ppHost;
 
-    @ApiModelProperty(name = "DASHBOARD_URL", dataType = "String")
-    private String dashboardUrl;
+  @ApiModelProperty(name = "DASHBOARD_URL", dataType = "String")
+  private String dashboardUrl;
 
-    @ApiModelProperty(name = "JS_MINIFIED", dataType = "Boolean")
-    private Boolean jsMinified;
+  @ApiModelProperty(name = "JS_MINIFIED", dataType = "Boolean")
+  private Boolean jsMinified;
 
-    @ApiModelProperty(name = "SAKERHETSTJANST_IDP_URL", dataType = "String")
-    private String sakerhetstjanstIdpUrl;
+  @ApiModelProperty(name = "SAKERHETSTJANST_IDP_URL", dataType = "String")
+  private String sakerhetstjanstIdpUrl;
 
-    @ApiModelProperty(name = "CGI_FUNKTIONSTJANSTER_IDP_URL", dataType = "String")
-    private String cgiFunktionstjansterIdpUrl;
+  @ApiModelProperty(name = "CGI_FUNKTIONSTJANSTER_IDP_URL", dataType = "String")
+  private String cgiFunktionstjansterIdpUrl;
 
-    @ApiModelProperty(name = "BANNERS")
-    private List<Banner> banners;
+  @ApiModelProperty(name = "BANNERS")
+  private List<Banner> banners;
 
-    @ApiModelProperty(name = "WEBCERT_USER_SURVEY_URL", dataType = "String")
-    private String webcertUserSurveyUrl;
+  @ApiModelProperty(name = "WEBCERT_USER_SURVEY_URL", dataType = "String")
+  private String webcertUserSurveyUrl;
 
-    @ApiModelProperty(name = "WEBCERT_USER_SURVEY_DATE_TO", dataType = "String")
-    private String webcertUserSurveyDateTo;
+  @ApiModelProperty(name = "WEBCERT_USER_SURVEY_DATE_TO", dataType = "String")
+  private String webcertUserSurveyDateTo;
 
-    @ApiModelProperty(name = "WEBCERT_USER_SURVEY_DATE_FROM", dataType = "String")
-    private String webcertUserSurveyDateFrom;
+  @ApiModelProperty(name = "WEBCERT_USER_SURVEY_DATE_FROM", dataType = "String")
+  private String webcertUserSurveyDateFrom;
 
-    @ApiModelProperty(name = "WEBCERT_USER_SURVEY_VERSION", dataType = "String")
-    private String webcertUserSurveyVersion;
+  @ApiModelProperty(name = "WEBCERT_USER_SURVEY_VERSION", dataType = "String")
+  private String webcertUserSurveyVersion;
 
-    // CHECKSTYLE:OFF ParameterNumber
-    public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl, Boolean jsMinified,
-        String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl, String webcertUserSurveyUrl, List<Banner> banners,
-        String webcertUserSurveyDateTo, String webcertUserSurveyDateFrom, String webcertUserSurveyVersion) {
-        this.version = version;
-        this.buildNumber = buildNumber;
-        this.ppHost = ppHost;
-        this.dashboardUrl = dashboardUrl;
-        this.jsMinified = jsMinified;
-        this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
-        this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
-        this.banners = banners;
-        this.webcertUserSurveyUrl = webcertUserSurveyUrl;
-        this.webcertUserSurveyDateTo = webcertUserSurveyDateTo;
-        this.webcertUserSurveyDateFrom = webcertUserSurveyDateFrom;
-        this.webcertUserSurveyVersion = webcertUserSurveyVersion;
-    }
-    // CHECKSTYLE:ON ParameterNumber
+  // CHECKSTYLE:OFF ParameterNumber
+  public ConfigResponse(
+      String version,
+      String buildNumber,
+      String ppHost,
+      String dashboardUrl,
+      Boolean jsMinified,
+      String sakerhetstjanstIdpUrl,
+      String cgiFunktionstjansterIdpUrl,
+      String webcertUserSurveyUrl,
+      List<Banner> banners,
+      String webcertUserSurveyDateTo,
+      String webcertUserSurveyDateFrom,
+      String webcertUserSurveyVersion) {
+    this.version = version;
+    this.buildNumber = buildNumber;
+    this.ppHost = ppHost;
+    this.dashboardUrl = dashboardUrl;
+    this.jsMinified = jsMinified;
+    this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
+    this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
+    this.banners = banners;
+    this.webcertUserSurveyUrl = webcertUserSurveyUrl;
+    this.webcertUserSurveyDateTo = webcertUserSurveyDateTo;
+    this.webcertUserSurveyDateFrom = webcertUserSurveyDateFrom;
+    this.webcertUserSurveyVersion = webcertUserSurveyVersion;
+  }
 
-    @JsonProperty("VERSION")
-    public String getVersion() {
-        return version;
-    }
+  // CHECKSTYLE:ON ParameterNumber
 
-    @JsonProperty("BUILD_NUMBER")
-    public String getBuildNumber() {
-        return buildNumber;
-    }
+  @JsonProperty("VERSION")
+  public String getVersion() {
+    return version;
+  }
 
-    @JsonProperty("PP_HOST")
-    public String getPpHost() {
-        return ppHost;
-    }
+  @JsonProperty("BUILD_NUMBER")
+  public String getBuildNumber() {
+    return buildNumber;
+  }
 
-    @JsonProperty("DASHBOARD_URL")
-    public String getDashboardUrl() {
-        return dashboardUrl;
-    }
+  @JsonProperty("PP_HOST")
+  public String getPpHost() {
+    return ppHost;
+  }
 
-    @JsonProperty("JS_MINIFIED")
-    public Boolean getJsMinified() {
-        return jsMinified;
-    }
+  @JsonProperty("DASHBOARD_URL")
+  public String getDashboardUrl() {
+    return dashboardUrl;
+  }
 
-    @JsonProperty("SAKERHETSTJANST_IDP_URL")
-    public String getSakerhetstjanstIdpUrl() {
-        return sakerhetstjanstIdpUrl;
-    }
+  @JsonProperty("JS_MINIFIED")
+  public Boolean getJsMinified() {
+    return jsMinified;
+  }
 
-    @JsonProperty("CGI_FUNKTIONSTJANSTER_IDP_URL")
-    public String getCgiFunktionstjansterIdpUrl() {
-        return cgiFunktionstjansterIdpUrl;
-    }
+  @JsonProperty("SAKERHETSTJANST_IDP_URL")
+  public String getSakerhetstjanstIdpUrl() {
+    return sakerhetstjanstIdpUrl;
+  }
 
-    @JsonProperty("BANNERS")
-    public List<Banner> getBanners() {
-        return banners;
-    }
+  @JsonProperty("CGI_FUNKTIONSTJANSTER_IDP_URL")
+  public String getCgiFunktionstjansterIdpUrl() {
+    return cgiFunktionstjansterIdpUrl;
+  }
 
-    @JsonProperty("WEBCERT_USER_SURVEY_URL")
-    public String getWebcertUserSurveyUrl() {
-        return webcertUserSurveyUrl;
-    }
+  @JsonProperty("BANNERS")
+  public List<Banner> getBanners() {
+    return banners;
+  }
 
-    @JsonProperty("WEBCERT_USER_SURVEY_DATE_TO")
-    public String getWebcertUserSurveyDateTo() {
-        return webcertUserSurveyDateTo;
-    }
+  @JsonProperty("WEBCERT_USER_SURVEY_URL")
+  public String getWebcertUserSurveyUrl() {
+    return webcertUserSurveyUrl;
+  }
 
-    @JsonProperty("WEBCERT_USER_SURVEY_DATE_FROM")
-    public String getWebcertUserSurveyDateFrom() {
-        return webcertUserSurveyDateFrom;
-    }
+  @JsonProperty("WEBCERT_USER_SURVEY_DATE_TO")
+  public String getWebcertUserSurveyDateTo() {
+    return webcertUserSurveyDateTo;
+  }
 
-    @JsonProperty("WEBCERT_USER_SURVEY_VERSION")
-    public String getWebcertUserSurveyVersion() {
-        return webcertUserSurveyVersion;
-    }
+  @JsonProperty("WEBCERT_USER_SURVEY_DATE_FROM")
+  public String getWebcertUserSurveyDateFrom() {
+    return webcertUserSurveyDateFrom;
+  }
+
+  @JsonProperty("WEBCERT_USER_SURVEY_VERSION")
+  public String getWebcertUserSurveyVersion() {
+    return webcertUserSurveyVersion;
+  }
 }

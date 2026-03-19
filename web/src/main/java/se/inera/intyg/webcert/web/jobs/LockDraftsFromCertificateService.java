@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.jobs;
 
 import lombok.RequiredArgsConstructor;
@@ -29,20 +28,21 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @RequiredArgsConstructor
 public class LockDraftsFromCertificateService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final MonitoringLogService monitoringService;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final MonitoringLogService monitoringService;
 
-    public int lock(int lockedAfterDay) {
+  public int lock(int lockedAfterDay) {
 
-        final var certificates = csIntegrationService.lockDrafts(
-            csIntegrationRequestFactory.getLockDraftsRequestDTO(lockedAfterDay)
-        );
+    final var certificates =
+        csIntegrationService.lockDrafts(
+            csIntegrationRequestFactory.getLockDraftsRequestDTO(lockedAfterDay));
 
-        certificates.forEach(certificate ->
-            monitoringService.logUtkastLocked(certificate.getMetadata().getId(), certificate.getMetadata().getType())
-        );
+    certificates.forEach(
+        certificate ->
+            monitoringService.logUtkastLocked(
+                certificate.getMetadata().getId(), certificate.getMetadata().getType()));
 
-        return certificates.size();
-    }
+    return certificates.size();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,96 +34,99 @@ import se.inera.intyg.webcert.logging.HashUtility;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-/**
- * For SMI-intyg, use the PU-service to fetch patient details and add them to the Utlatande.
- */
+/** For SMI-intyg, use the PU-service to fetch patient details and add them to the Utlatande. */
 public class NotificationPatientEnricher {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationPatientEnricher.class);
-    private static final String SEKRETESSMARKERING = "Skyddade personuppgifter";
-    private static final String EMPTY_STRING = "";
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationPatientEnricher.class);
+  private static final String SEKRETESSMARKERING = "Skyddade personuppgifter";
+  private static final String EMPTY_STRING = "";
 
-    @Autowired
-    private PUService puService;
-    @Autowired
-    private HashUtility hashUtility;
+  @Autowired private PUService puService;
+  @Autowired private HashUtility hashUtility;
 
-    public void enrichWithPatient(Intyg intyg) {
-        // INTYG-4190, hämta patientens uppgifter från PU-tjänsten och klistra in i utlåtandet.
-        String intygsTyp = intyg.getTyp().getCode();
-        switch (intygsTyp.toLowerCase()) {
-            case "luse":
-            case "luae_na":
-            case "luae_fs":
-            case "lisjp":
-                String personId = intyg.getPatient().getPersonId().getExtension();
-                Personnummer personnummer = Personnummer
-                    .createPersonnummer(personId)
-                    .orElseThrow(() -> new IllegalArgumentException("Cannot create Personummer object from personId: " + personId));
+  public void enrichWithPatient(Intyg intyg) {
+    // INTYG-4190, hämta patientens uppgifter från PU-tjänsten och klistra in i utlåtandet.
+    String intygsTyp = intyg.getTyp().getCode();
+    switch (intygsTyp.toLowerCase()) {
+      case "luse":
+      case "luae_na":
+      case "luae_fs":
+      case "lisjp":
+        String personId = intyg.getPatient().getPersonId().getExtension();
+        Personnummer personnummer =
+            Personnummer.createPersonnummer(personId)
+                .orElseThrow(
+                    () ->
+                        new IllegalArgumentException(
+                            "Cannot create Personummer object from personId: " + personId));
 
-                PersonSvar personSvar = puService.getPerson(personnummer);
-                if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                    if (!personSvar.getPerson().sekretessmarkering()) {
-                        intyg.setPatient(buildPatientFromPersonSvar(personSvar.getPerson()));
-                    } else {
-                        intyg.getPatient().setEfternamn(SEKRETESSMARKERING);
-                        intyg.getPatient().setFornamn(EMPTY_STRING);
-                        intyg.getPatient().setMellannamn(EMPTY_STRING);
-                        intyg.getPatient().setPostadress(EMPTY_STRING);
-                        intyg.getPatient().setPostnummer(EMPTY_STRING);
-                        intyg.getPatient().setPostort(EMPTY_STRING);
-                    }
-                } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
-                    throw new IllegalStateException("Could not query PU-service for enriching notification with patient data.");
-                } else {
-                    LOG.warn("PU-service returned NOT_FOUND for personnummer: {}, not enriching notification.",
-                        hashUtility.hash(personnummer.getPersonnummer()));
-                }
-                break;
-            default:
-                // Do nothing
-                break;
+        PersonSvar personSvar = puService.getPerson(personnummer);
+        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
+          if (!personSvar.getPerson().sekretessmarkering()) {
+            intyg.setPatient(buildPatientFromPersonSvar(personSvar.getPerson()));
+          } else {
+            intyg.getPatient().setEfternamn(SEKRETESSMARKERING);
+            intyg.getPatient().setFornamn(EMPTY_STRING);
+            intyg.getPatient().setMellannamn(EMPTY_STRING);
+            intyg.getPatient().setPostadress(EMPTY_STRING);
+            intyg.getPatient().setPostnummer(EMPTY_STRING);
+            intyg.getPatient().setPostort(EMPTY_STRING);
+          }
+        } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
+          throw new IllegalStateException(
+              "Could not query PU-service for enriching notification with patient data.");
+        } else {
+          LOG.warn(
+              "PU-service returned NOT_FOUND for personnummer: {}, not enriching notification.",
+              hashUtility.hash(personnummer.getPersonnummer()));
         }
+        break;
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+  private se.riv.clinicalprocess.healthcond.certificate.v3.Patient buildPatientFromPersonSvar(
+      Person person) {
+
+    se.riv.clinicalprocess.healthcond.certificate.v3.Patient patient =
+        new se.riv.clinicalprocess.healthcond.certificate.v3.Patient();
+
+    Optional<Personnummer> personnummer = Optional.ofNullable(person.personnummer());
+
+    if (personnummer.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Call to buildPatientFromPersonSvar contained a null personnummer.");
     }
 
-    private se.riv.clinicalprocess.healthcond.certificate.v3.Patient buildPatientFromPersonSvar(Person person) {
+    PersonId personId = new PersonId();
+    personId.setRoot(
+        SamordningsnummerValidator.isSamordningsNummer(personnummer)
+            ? Constants.SAMORDNING_ID_OID
+            : Constants.PERSON_ID_OID);
+    personId.setExtension(personnummer.get().getPersonnummer());
 
-        se.riv.clinicalprocess.healthcond.certificate.v3.Patient patient =
-            new se.riv.clinicalprocess.healthcond.certificate.v3.Patient();
-
-        Optional<Personnummer> personnummer = Optional.ofNullable(person.personnummer());
-
-        if (personnummer.isEmpty()) {
-            throw new IllegalArgumentException("Call to buildPatientFromPersonSvar contained a null personnummer.");
-        }
-
-        PersonId personId = new PersonId();
-        personId.setRoot(
-            SamordningsnummerValidator.isSamordningsNummer(personnummer)
-                ? Constants.SAMORDNING_ID_OID
-                : Constants.PERSON_ID_OID);
-        personId.setExtension(personnummer.get().getPersonnummer());
-
-        patient.setPersonId(personId);
-        patient.setFornamn(nullSafe(person.fornamn()));
-        if (person.mellannamn() != null) {
-            patient.setMellannamn(person.mellannamn());
-        }
-
-        patient.setEfternamn(nullSafe(person.efternamn()));
-        patient.setPostadress(nullSafe(person.postadress()));
-        patient.setPostnummer(nullSafe(person.postnummer()));
-        patient.setPostort(nullSafe(person.postort()));
-
-        return patient;
+    patient.setPersonId(personId);
+    patient.setFornamn(nullSafe(person.fornamn()));
+    if (person.mellannamn() != null) {
+      patient.setMellannamn(person.mellannamn());
     }
 
-    private String nullSafe(String str) {
-        return Objects.requireNonNullElse(str, EMPTY_STRING);
-    }
+    patient.setEfternamn(nullSafe(person.efternamn()));
+    patient.setPostadress(nullSafe(person.postadress()));
+    patient.setPostnummer(nullSafe(person.postnummer()));
+    patient.setPostort(nullSafe(person.postort()));
 
-    @VisibleForTesting
-    public void setPuService(PUService puService) {
-        this.puService = puService;
-    }
+    return patient;
+  }
+
+  private String nullSafe(String str) {
+    return Objects.requireNonNullElse(str, EMPTY_STRING);
+  }
+
+  @VisibleForTesting
+  public void setPuService(PUService puService) {
+    this.puService = puService;
+  }
 }

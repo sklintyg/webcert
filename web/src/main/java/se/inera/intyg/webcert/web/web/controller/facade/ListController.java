@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,64 +39,80 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
 @Path("/list")
 public class ListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ListController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ListController.class);
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final ListDraftsFacadeServiceImpl listDraftsFacadeService;
-    private final ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;
-    private final ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService;
-    private final ListQuestionsFacadeServiceImpl listQuestionsFacadeService;
+  private final ListDraftsFacadeServiceImpl listDraftsFacadeService;
+  private final ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;
+  private final ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService;
+  private final ListQuestionsFacadeServiceImpl listQuestionsFacadeService;
 
-    @Autowired
-    public ListController(ListDraftsFacadeServiceImpl listDraftsFacadeService,
-        ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService,
-        ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService,
-        ListQuestionsFacadeServiceImpl listQuestionsFacadeService) {
-        this.listDraftsFacadeService = listDraftsFacadeService;
-        this.listSignedCertificatesFacadeService = listSignedCertificatesFacadeService;
-        this.listPreviousCertificatesFacadeService = listPreviousCertificatesFacadeService;
-        this.listQuestionsFacadeService = listQuestionsFacadeService;
-    }
+  @Autowired
+  public ListController(
+      ListDraftsFacadeServiceImpl listDraftsFacadeService,
+      ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService,
+      ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService,
+      ListQuestionsFacadeServiceImpl listQuestionsFacadeService) {
+    this.listDraftsFacadeService = listDraftsFacadeService;
+    this.listSignedCertificatesFacadeService = listSignedCertificatesFacadeService;
+    this.listPreviousCertificatesFacadeService = listPreviousCertificatesFacadeService;
+    this.listQuestionsFacadeService = listQuestionsFacadeService;
+  }
 
-    @POST
-    @Path("/draft")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-get-list-of-drafts", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getListOfDrafts(ListRequestDTO request) {
-        LOG.debug("Getting list of drafts");
-        final var listInfo = listDraftsFacadeService.get(request.getFilter());
-        return Response.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
-    }
+  @POST
+  @Path("/draft")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-get-list-of-drafts",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getListOfDrafts(ListRequestDTO request) {
+    LOG.debug("Getting list of drafts");
+    final var listInfo = listDraftsFacadeService.get(request.getFilter());
+    return Response.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()))
+        .build();
+  }
 
-    @POST
-    @Path("/certificate")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-get-list-of-signed-certificates", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getListOfSignedCertificates(ListRequestDTO request) {
-        final var listInfo = listSignedCertificatesFacadeService.get(request.getFilter());
-        return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
-    }
+  @POST
+  @Path("/certificate")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-get-list-of-signed-certificates",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getListOfSignedCertificates(ListRequestDTO request) {
+    final var listInfo = listSignedCertificatesFacadeService.get(request.getFilter());
+    return Response.ok()
+        .entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()))
+        .build();
+  }
 
-    @POST
-    @Path("/previous")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-get-list-of-previous-certificates", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getListOfPreviousCertificates(ListRequestDTO request) {
-        final var listInfo = listPreviousCertificatesFacadeService.get(request.getFilter());
-        return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
-    }
+  @POST
+  @Path("/previous")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-get-list-of-previous-certificates",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getListOfPreviousCertificates(ListRequestDTO request) {
+    final var listInfo = listPreviousCertificatesFacadeService.get(request.getFilter());
+    return Response.ok()
+        .entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()))
+        .build();
+  }
 
-    @POST
-    @Path("/question")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "list-get-list-of-certificates-with-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getListOfCertificatesWithQuestions(ListRequestDTO request) {
-        final var listInfo = listQuestionsFacadeService.get(request.getFilter());
-        return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
-    }
+  @POST
+  @Path("/question")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "list-get-list-of-certificates-with-questions",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getListOfCertificatesWithQuestions(ListRequestDTO request) {
+    final var listInfo = listQuestionsFacadeService.get(request.getFilter());
+    return Response.ok()
+        .entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()))
+        .build();
+  }
 }

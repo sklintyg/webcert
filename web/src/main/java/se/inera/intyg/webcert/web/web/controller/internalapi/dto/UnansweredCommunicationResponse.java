@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,28 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 import java.util.Map;
 
 public class UnansweredCommunicationResponse {
 
-    private Map<String, UnansweredQAs> unansweredQAsMap;
+  private Map<String, UnansweredQAs> unansweredQAsMap;
 
-    public UnansweredCommunicationResponse() {
-    }
+  public UnansweredCommunicationResponse() {}
 
-    public UnansweredCommunicationResponse(Map<String, UnansweredQAs> unansweredQAsMap) {
-        this.unansweredQAsMap = unansweredQAsMap;
-    }
+  public UnansweredCommunicationResponse(Map<String, UnansweredQAs> unansweredQAsMap) {
+    this.unansweredQAsMap = unansweredQAsMap;
+  }
 
-    public Map<String, UnansweredQAs> getUnansweredQAsMap() {
-        return unansweredQAsMap;
-    }
+  public Map<String, UnansweredQAs> getUnansweredQAsMap() {
+    return unansweredQAsMap;
+  }
 
-    public void setUnansweredQAsMap(
-        Map<String, UnansweredQAs> unansweredQAsMap) {
-        this.unansweredQAsMap = unansweredQAsMap;
-    }
+  public void setUnansweredQAsMap(Map<String, UnansweredQAs> unansweredQAsMap) {
+    this.unansweredQAsMap = unansweredQAsMap;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,10 +23,11 @@ import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 
 @Component
-public class CreateUtkastFromTemplateBuilder extends AbstractUtkastBuilder<CreateUtkastFromTemplateRequest> {
+public class CreateUtkastFromTemplateBuilder
+    extends AbstractUtkastBuilder<CreateUtkastFromTemplateRequest> {
 
-    @Override
-    public Relation createRelation(CreateUtkastFromTemplateRequest copyRequest) {
-        return null;
-    }
+  @Override
+  public Relation createRelation(CreateUtkastFromTemplateRequest copyRequest) {
+    return null;
+  }
 }

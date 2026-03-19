@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,31 +25,32 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 
 public class FmbConsumerImpl implements FmbConsumer {
 
-    private static final String TYPFALL_PATH = "/typfall?inlinehtmlmarkup=true";
-    private static final String FMBINFO_PATH = "/forsakringsmedicinskdiagnosinformation?inlinehtmlmarkup=true";
+  private static final String TYPFALL_PATH = "/typfall?inlinehtmlmarkup=true";
+  private static final String FMBINFO_PATH =
+      "/forsakringsmedicinskdiagnosinformation?inlinehtmlmarkup=true";
 
-    private String baseUrl;
-    private RestTemplate restTemplate;
+  private String baseUrl;
+  private RestTemplate restTemplate;
 
-    public FmbConsumerImpl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
+  public FmbConsumerImpl(String baseUrl) {
+    this.baseUrl = baseUrl;
+  }
 
-    @PostConstruct
-    public void init() {
-        restTemplate = new RestTemplate();
-    }
+  @PostConstruct
+  public void init() {
+    restTemplate = new RestTemplate();
+  }
 
-    @Override
-    public Typfall getTypfall() throws FailedToFetchFmbDataException {
-        final String urlString = baseUrl + TYPFALL_PATH;
-        return restTemplate.getForEntity(urlString, Typfall.class).getBody();
-    }
+  @Override
+  public Typfall getTypfall() throws FailedToFetchFmbDataException {
+    final String urlString = baseUrl + TYPFALL_PATH;
+    return restTemplate.getForEntity(urlString, Typfall.class).getBody();
+  }
 
-    @Override
-    public FmdxInformation getForsakringsmedicinskDiagnosinformation() throws FailedToFetchFmbDataException {
-        final String urlString = baseUrl + FMBINFO_PATH;
-        return restTemplate.getForEntity(urlString, FmdxInformation.class).getBody();
-    }
-
+  @Override
+  public FmdxInformation getForsakringsmedicinskDiagnosinformation()
+      throws FailedToFetchFmbDataException {
+    final String urlString = baseUrl + FMBINFO_PATH;
+    return restTemplate.getForEntity(urlString, FmdxInformation.class).getBody();
+  }
 }

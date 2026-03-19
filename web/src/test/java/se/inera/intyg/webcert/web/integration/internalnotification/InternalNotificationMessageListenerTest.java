@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -59,118 +59,116 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 @ExtendWith(MockitoExtension.class)
 public class InternalNotificationMessageListenerTest {
 
-    private static final String INTYG_1 = "intyg-1";
-    private static final String LIJSP = "lijsp";
-    @Mock
-    private CSIntegrationService csIntegrationService;
+  private static final String INTYG_1 = "intyg-1";
+  private static final String LIJSP = "lijsp";
+  @Mock private CSIntegrationService csIntegrationService;
 
-    @Mock
-    private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
 
-    @Mock
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Mock private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    @Mock
-    private NotificationService notificationService;
+  @Mock private NotificationService notificationService;
 
-    @InjectMocks
-    private InternalNotificationMessageListener testee = new InternalNotificationMessageListener();
+  @InjectMocks
+  private InternalNotificationMessageListener testee = new InternalNotificationMessageListener();
 
-    @BeforeEach
-    public void init() {
-        ReflectionTestUtils.setField(testee, "logicalAddress", "logisk-adress");
+  @BeforeEach
+  public void init() {
+    ReflectionTestUtils.setField(testee, "logicalAddress", "logisk-adress");
+  }
+
+  @Nested
+  class CertificateFromWC {
+
+    @Test
+    void testOk() throws ModuleException, ModuleNotFoundException {
+      Utlatande utlatande = mock(Utlatande.class);
+      when(utlatande.getId()).thenReturn(INTYG_1);
+      when(utlatande.getTyp()).thenReturn(LIJSP);
+      CertificateResponse certificateResponse = mock(CertificateResponse.class);
+      when(certificateResponse.getUtlatande()).thenReturn(utlatande);
+
+      ModuleApi moduleApi = mock(ModuleApi.class);
+      when(moduleApi.getCertificate(anyString(), anyString(), anyString()))
+          .thenReturn(certificateResponse);
+
+      when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
+      when(integreradeEnheterRegistry.isEnhetIntegrerad(anyString(), anyString())).thenReturn(true);
+      testee.onMessage(createMessage());
+      verify(notificationService, times(1))
+          .forwardInternalNotification(
+              anyString(), anyString(), any(Utlatande.class), eq(HandelsekodEnum.SKICKA));
     }
 
-    @Nested
-    class CertificateFromWC {
+    @Test
+    void testMissingParameter() throws JMSException {
+      Message textMessage = createMessage();
+      when(textMessage.getStringProperty(CERTIFICATE_ID)).thenReturn(null);
+      testee.onMessage(textMessage);
 
-
-        @Test
-        void testOk() throws ModuleException, ModuleNotFoundException {
-            Utlatande utlatande = mock(Utlatande.class);
-            when(utlatande.getId()).thenReturn(INTYG_1);
-            when(utlatande.getTyp()).thenReturn(LIJSP);
-            CertificateResponse certificateResponse = mock(CertificateResponse.class);
-            when(certificateResponse.getUtlatande()).thenReturn(utlatande);
-
-            ModuleApi moduleApi = mock(ModuleApi.class);
-            when(moduleApi.getCertificate(anyString(), anyString(), anyString())).thenReturn(certificateResponse);
-
-            when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
-            when(integreradeEnheterRegistry.isEnhetIntegrerad(anyString(), anyString())).thenReturn(true);
-            testee.onMessage(createMessage());
-            verify(notificationService, times(1))
-                .forwardInternalNotification(anyString(), anyString(), any(Utlatande.class), eq(HandelsekodEnum.SKICKA));
-        }
-
-        @Test
-        void testMissingParameter() throws JMSException {
-            Message textMessage = createMessage();
-            when(textMessage.getStringProperty(CERTIFICATE_ID)).thenReturn(null);
-            testee.onMessage(textMessage);
-
-            verifyNoInteractions(notificationService);
-        }
-
-        @Test
-        void testDoesNotSendWhenNotDjupintegreradVE() throws ModuleException {
-            when(integreradeEnheterRegistry.isEnhetIntegrerad(anyString(), anyString())).thenReturn(false);
-
-            testee.onMessage(createMessage());
-            verifyNoInteractions(intygModuleRegistry);
-            verifyNoInteractions(notificationService);
-        }
+      verifyNoInteractions(notificationService);
     }
 
-    @Nested
-    class CertificateFromCS {
+    @Test
+    void testDoesNotSendWhenNotDjupintegreradVE() throws ModuleException {
+      when(integreradeEnheterRegistry.isEnhetIntegrerad(anyString(), anyString()))
+          .thenReturn(false);
 
-        @Test
-        void shallNotPublishStatusUpdateIfCertificateDontExistInCertificateService()
-            throws ModuleException, ModuleNotFoundException {
-            Utlatande utlatande = mock(Utlatande.class);
-            ModuleApi moduleApi = mock(ModuleApi.class);
-            CertificateResponse certificateResponse = mock(CertificateResponse.class);
+      testee.onMessage(createMessage());
+      verifyNoInteractions(intygModuleRegistry);
+      verifyNoInteractions(notificationService);
+    }
+  }
 
-            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
-            doReturn(false).when(csIntegrationService).certificateExists(INTYG_1);
+  @Nested
+  class CertificateFromCS {
 
-            doReturn(INTYG_1).when(utlatande).getId();
-            doReturn(LIJSP).when(utlatande).getTyp();
-            doReturn(utlatande).when(certificateResponse).getUtlatande();
-            doReturn(certificateResponse).when(moduleApi).getCertificate(anyString(), anyString(), anyString());
-            doReturn(moduleApi).when(intygModuleRegistry).getModuleApi(anyString(), anyString());
+    @Test
+    void shallNotPublishStatusUpdateIfCertificateDontExistInCertificateService()
+        throws ModuleException, ModuleNotFoundException {
+      Utlatande utlatande = mock(Utlatande.class);
+      ModuleApi moduleApi = mock(ModuleApi.class);
+      CertificateResponse certificateResponse = mock(CertificateResponse.class);
 
-            testee.onMessage(createMessage());
-            verifyNoInteractions(publishCertificateStatusUpdateService);
-        }
+      doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
+      doReturn(false).when(csIntegrationService).certificateExists(INTYG_1);
 
-        @Test
-        void shallPublishStatusUpdateIfCertificateExistInCertificateService() {
-            final var certificate = new Certificate();
-            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
-            doReturn(true).when(csIntegrationService).certificateExists(INTYG_1);
-            doReturn(certificate).when(csIntegrationService).getInternalCertificate(INTYG_1);
+      doReturn(INTYG_1).when(utlatande).getId();
+      doReturn(LIJSP).when(utlatande).getTyp();
+      doReturn(utlatande).when(certificateResponse).getUtlatande();
+      doReturn(certificateResponse)
+          .when(moduleApi)
+          .getCertificate(anyString(), anyString(), anyString());
+      doReturn(moduleApi).when(intygModuleRegistry).getModuleApi(anyString(), anyString());
 
-            testee.onMessage(createMessage());
-            verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.SKICKA);
-        }
+      testee.onMessage(createMessage());
+      verifyNoInteractions(publishCertificateStatusUpdateService);
     }
 
+    @Test
+    void shallPublishStatusUpdateIfCertificateExistInCertificateService() {
+      final var certificate = new Certificate();
+      doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
+      doReturn(true).when(csIntegrationService).certificateExists(INTYG_1);
+      doReturn(certificate).when(csIntegrationService).getInternalCertificate(INTYG_1);
 
-    private Message createMessage() {
-        try {
-            TextMessage tm = mock(TextMessage.class);
-            when(tm.getStringProperty(CERTIFICATE_ID)).thenReturn(INTYG_1);
-            when(tm.getStringProperty(CERTIFICATE_TYPE)).thenReturn("lisjp");
-            when(tm.getStringProperty(CERTIFICATE_TYPE_VERSION)).thenReturn("1.0");
-            when(tm.getStringProperty(CARE_UNIT_ID)).thenReturn("enhet-1");
-            return tm;
-        } catch (JMSException e) {
-            throw new RuntimeException(e);
-        }
+      testee.onMessage(createMessage());
+      verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.SKICKA);
     }
+  }
+
+  private Message createMessage() {
+    try {
+      TextMessage tm = mock(TextMessage.class);
+      when(tm.getStringProperty(CERTIFICATE_ID)).thenReturn(INTYG_1);
+      when(tm.getStringProperty(CERTIFICATE_TYPE)).thenReturn("lisjp");
+      when(tm.getStringProperty(CERTIFICATE_TYPE_VERSION)).thenReturn("1.0");
+      when(tm.getStringProperty(CARE_UNIT_ID)).thenReturn("enhet-1");
+      return tm;
+    } catch (JMSException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,46 +21,54 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 import lombok.Data;
 
 /**
- * Object that represent a link and description to a specific resource. Intended use is for buttons, modals, etc.
+ * Object that represent a link and description to a specific resource. Intended use is for buttons,
+ * modals, etc.
  */
 @Data
 public class ResourceLinkDTO {
 
-    private ResourceLinkTypeDTO type;
-    private String name;
-    private String description;
-    private String body;
-    private boolean enabled;
-    private String title;
+  private ResourceLinkTypeDTO type;
+  private String name;
+  private String description;
+  private String body;
+  private boolean enabled;
+  private String title;
 
-    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String description, String body,
-        boolean enabled) {
-        final var resourceLink = new ResourceLinkDTO();
-        resourceLink.setType(type);
-        resourceLink.setTitle(title);
-        resourceLink.setName(name);
-        resourceLink.setDescription(description);
-        resourceLink.setBody(body);
-        resourceLink.setEnabled(enabled);
-        return resourceLink;
-    }
+  public static ResourceLinkDTO create(
+      ResourceLinkTypeDTO type,
+      String title,
+      String name,
+      String description,
+      String body,
+      boolean enabled) {
+    final var resourceLink = new ResourceLinkDTO();
+    resourceLink.setType(type);
+    resourceLink.setTitle(title);
+    resourceLink.setName(name);
+    resourceLink.setDescription(description);
+    resourceLink.setBody(body);
+    resourceLink.setEnabled(enabled);
+    return resourceLink;
+  }
 
-    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String name, String description, boolean enabled) {
-        final var resourceLink = new ResourceLinkDTO();
-        resourceLink.setType(type);
-        resourceLink.setName(name);
-        resourceLink.setDescription(description);
-        resourceLink.setEnabled(enabled);
-        return resourceLink;
-    }
+  public static ResourceLinkDTO create(
+      ResourceLinkTypeDTO type, String name, String description, boolean enabled) {
+    final var resourceLink = new ResourceLinkDTO();
+    resourceLink.setType(type);
+    resourceLink.setName(name);
+    resourceLink.setDescription(description);
+    resourceLink.setEnabled(enabled);
+    return resourceLink;
+  }
 
-    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String name, String description, String body, boolean enabled) {
-        final var resourceLink = new ResourceLinkDTO();
-        resourceLink.setType(type);
-        resourceLink.setName(name);
-        resourceLink.setDescription(description);
-        resourceLink.setBody(body);
-        resourceLink.setEnabled(enabled);
-        return resourceLink;
-    }
+  public static ResourceLinkDTO create(
+      ResourceLinkTypeDTO type, String name, String description, String body, boolean enabled) {
+    final var resourceLink = new ResourceLinkDTO();
+    resourceLink.setType(type);
+    resourceLink.setName(name);
+    resourceLink.setDescription(description);
+    resourceLink.setBody(body);
+    resourceLink.setEnabled(enabled);
+    return resourceLink;
+  }
 }

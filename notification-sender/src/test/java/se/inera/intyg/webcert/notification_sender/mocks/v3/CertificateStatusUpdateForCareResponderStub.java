@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,138 +36,153 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-public class CertificateStatusUpdateForCareResponderStub implements CertificateStatusUpdateForCareResponderInterface {
+public class CertificateStatusUpdateForCareResponderStub
+    implements CertificateStatusUpdateForCareResponderInterface {
 
-    @Autowired
-    private NotificationStubStateBean notificationStubStateBean;
+  @Autowired private NotificationStubStateBean notificationStubStateBean;
 
-    public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande-";
-    private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
+  public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande-";
+  private static final Logger LOG =
+      LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
 
-    private ConcurrentHashMap<String, AtomicInteger> attemptsPerMessage = new ConcurrentHashMap<>();
-    private List<CertificateStatusUpdateForCareType> store = new CopyOnWriteArrayList<>();
+  private ConcurrentHashMap<String, AtomicInteger> attemptsPerMessage = new ConcurrentHashMap<>();
+  private List<CertificateStatusUpdateForCareType> store = new CopyOnWriteArrayList<>();
 
-    private AtomicInteger counter = new AtomicInteger(0);
+  private AtomicInteger counter = new AtomicInteger(0);
 
-    @Override
-    public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,
-        CertificateStatusUpdateForCareType request) {
+  @Override
+  public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(
+      String logicalAddress, CertificateStatusUpdateForCareType request) {
 
-        counter.incrementAndGet();
+    counter.incrementAndGet();
 
-        String utlatandeId = getUtlatandeId(request);
+    String utlatandeId = getUtlatandeId(request);
 
-        LOG.debug("utlatandeId: " + utlatandeId);
-        LOG.debug("numberOfReceivedMessages: " + getNumberOfReceivedMessages());
+    LOG.debug("utlatandeId: " + utlatandeId);
+    LOG.debug("numberOfReceivedMessages: " + getNumberOfReceivedMessages());
 
-        if (utlatandeId.startsWith(FALLERAT_MEDDELANDE)) {
-            int attempts = increaseAttempts(utlatandeId);
-            int numberOfRequestedFailedAttempts = Integer.parseInt(utlatandeId.substring(utlatandeId.length() - 1));
-            LOG.debug("attempts: " + attempts);
-            LOG.debug("numberOfRequestedFailedAttempts: " + numberOfRequestedFailedAttempts);
-            if (attempts < numberOfRequestedFailedAttempts + 1) {
-                throw new RuntimeException("Something went wrong");
-            }
-        }
-
-        store.add(request);
-
-        CertificateStatusUpdateForCareResponseType response = new CertificateStatusUpdateForCareResponseType();
-
-        ResultType result = new ResultType();
-        result.setResultCode(ResultCodeType.OK);
-        response.setResult(result);
-        LOG.debug("Request set to 'OK'");
-
-        performErrorEmulation(notificationStubStateBean.getErrorCode(), request, response);
-        return response;
+    if (utlatandeId.startsWith(FALLERAT_MEDDELANDE)) {
+      int attempts = increaseAttempts(utlatandeId);
+      int numberOfRequestedFailedAttempts =
+          Integer.parseInt(utlatandeId.substring(utlatandeId.length() - 1));
+      LOG.debug("attempts: " + attempts);
+      LOG.debug("numberOfRequestedFailedAttempts: " + numberOfRequestedFailedAttempts);
+      if (attempts < numberOfRequestedFailedAttempts + 1) {
+        throw new RuntimeException("Something went wrong");
+      }
     }
 
-    private void performErrorEmulation(String errorCode, CertificateStatusUpdateForCareType request,
-        CertificateStatusUpdateForCareResponseType response) {
-        if (errorCode == null) {
-            return;
-        }
+    store.add(request);
 
-        LOG.debug("emulateError: " + errorCode);
-        switch (errorCode) {
-            case "1":
-                if (request.getHandelse().getHandelsekod().getCode().matches("^ANDRAT$")) {
-                    LOG.debug("Stub messing upp response. Fel B. Only for ANDRAT notifications.");
-                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
-                        + "in COSMIC and ref field is missing, cannot store certificate. "
-                        + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
-                        + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
-                }
-                break;
-            case "2":
-                LOG.debug("Stub messing upp response. TechError null.");
-                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
-                break;
-            case "3":
-                LOG.debug("Stub messing upp response. TechError Unspecified Service.");
-                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
-                break;
-            case "4":
-                throw new RuntimeException("This is an emulated error from the stub, should result in a 500 Server Error");
-            case "5":
-                LOG.debug("Stub messing upp response. Fel B. For all notifications.");
-                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
+    CertificateStatusUpdateForCareResponseType response =
+        new CertificateStatusUpdateForCareResponseType();
+
+    ResultType result = new ResultType();
+    result.setResultCode(ResultCodeType.OK);
+    response.setResult(result);
+    LOG.debug("Request set to 'OK'");
+
+    performErrorEmulation(notificationStubStateBean.getErrorCode(), request, response);
+    return response;
+  }
+
+  private void performErrorEmulation(
+      String errorCode,
+      CertificateStatusUpdateForCareType request,
+      CertificateStatusUpdateForCareResponseType response) {
+    if (errorCode == null) {
+      return;
+    }
+
+    LOG.debug("emulateError: " + errorCode);
+    switch (errorCode) {
+      case "1":
+        if (request.getHandelse().getHandelsekod().getCode().matches("^ANDRAT$")) {
+          LOG.debug("Stub messing upp response. Fel B. Only for ANDRAT notifications.");
+          response.setResult(
+              ResultTypeUtil.errorResult(
+                  ErrorIdType.TECHNICAL_ERROR,
+                  "Certificate not found "
+                      + "in COSMIC and ref field is missing, cannot store certificate. "
+                      + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
+                      + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+        }
+        break;
+      case "2":
+        LOG.debug("Stub messing upp response. TechError null.");
+        response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
+        break;
+      case "3":
+        LOG.debug("Stub messing upp response. TechError Unspecified Service.");
+        response.setResult(
+            ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
+        break;
+      case "4":
+        throw new RuntimeException(
+            "This is an emulated error from the stub, should result in a 500 Server Error");
+      case "5":
+        LOG.debug("Stub messing upp response. Fel B. For all notifications.");
+        response.setResult(
+            ResultTypeUtil.errorResult(
+                ErrorIdType.TECHNICAL_ERROR,
+                "Certificate not found "
                     + "in COSMIC and ref field is missing, cannot store certificate. "
                     + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
                     + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
-                break;
-            default:
-                LOG.debug("Stub OK. No error emulated.");
-                break;
-        }
+        break;
+      default:
+        LOG.debug("Stub OK. No error emulated.");
+        break;
     }
+  }
 
-    private int increaseAttempts(String key) {
-        AtomicInteger value = attemptsPerMessage.get(key);
-        if (value == null) {
-            value = attemptsPerMessage.putIfAbsent(key, new AtomicInteger(1));
-        }
-        if (value != null) {
-            value.incrementAndGet();
-        }
-        return attemptsPerMessage.get(key).intValue();
+  private int increaseAttempts(String key) {
+    AtomicInteger value = attemptsPerMessage.get(key);
+    if (value == null) {
+      value = attemptsPerMessage.putIfAbsent(key, new AtomicInteger(1));
     }
+    if (value != null) {
+      value.incrementAndGet();
+    }
+    return attemptsPerMessage.get(key).intValue();
+  }
 
-    private String getUtlatandeId(CertificateStatusUpdateForCareType request) {
-        return request.getIntyg().getIntygsId().getExtension();
-    }
+  private String getUtlatandeId(CertificateStatusUpdateForCareType request) {
+    return request.getIntyg().getIntygsId().getExtension();
+  }
 
-    public int getNumberOfReceivedMessages() {
-        return counter.get();
-    }
+  public int getNumberOfReceivedMessages() {
+    return counter.get();
+  }
 
-    public int getNumberOfSentMessages() {
-        return store.size();
-    }
+  public int getNumberOfSentMessages() {
+    return store.size();
+  }
 
-    public List<String> getIntygsIdsInOrder() {
-        List<String> returnList = new ArrayList<>();
-        for (CertificateStatusUpdateForCareType request : store) {
-            returnList.add(getUtlatandeId(request));
-        }
-        return returnList;
+  public List<String> getIntygsIdsInOrder() {
+    List<String> returnList = new ArrayList<>();
+    for (CertificateStatusUpdateForCareType request : store) {
+      returnList.add(getUtlatandeId(request));
     }
+    return returnList;
+  }
 
-    public void reset() {
-        counter = new AtomicInteger(0);
-        attemptsPerMessage = new ConcurrentHashMap<>();
-        store = new CopyOnWriteArrayList<>();
-    }
+  public void reset() {
+    counter = new AtomicInteger(0);
+    attemptsPerMessage = new ConcurrentHashMap<>();
+    store = new CopyOnWriteArrayList<>();
+  }
 
-    public List<NotificationStubEntry> getNotificationMessages() {
-        List<NotificationStubEntry> returnList = new ArrayList<>();
-        for (CertificateStatusUpdateForCareType request : store) {
-            returnList.add(new NotificationStubEntry(request.getIntyg().getIntygsId().getExtension(),
-                request.getHandelse().getHandelsekod().getCode(),
-                request.getHandelse().getTidpunkt(),
-                request.getHanteratAv()));
-        }
-        return returnList;
+  public List<NotificationStubEntry> getNotificationMessages() {
+    List<NotificationStubEntry> returnList = new ArrayList<>();
+    for (CertificateStatusUpdateForCareType request : store) {
+      returnList.add(
+          new NotificationStubEntry(
+              request.getIntyg().getIntygsId().getExtension(),
+              request.getHandelse().getHandelsekod().getCode(),
+              request.getHandelse().getTidpunkt(),
+              request.getHanteratAv()));
     }
+    return returnList;
+  }
 }

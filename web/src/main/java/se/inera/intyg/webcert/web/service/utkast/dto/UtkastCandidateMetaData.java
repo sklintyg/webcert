@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,84 +26,94 @@ import java.util.function.Consumer;
  */
 public final class UtkastCandidateMetaData {
 
-    private String intygId;
-    private String intygType;
-    private String intygTypeVersion;
-    private String signedByHsaId;
-    private String enhetHsaId;
-    private String enhetName;
+  private String intygId;
+  private String intygType;
+  private String intygTypeVersion;
+  private String signedByHsaId;
+  private String enhetHsaId;
+  private String enhetName;
 
-    private LocalDateTime intygCreated;
-    private Boolean sameVardenhet;
+  private LocalDateTime intygCreated;
+  private Boolean sameVardenhet;
 
+  @SuppressWarnings("CheckStyle")
+  private UtkastCandidateMetaData(
+      String intygId,
+      String intygType,
+      String intygTypeVersion,
+      String signedByHsaId,
+      String enhetHsaId,
+      String enhetName,
+      LocalDateTime intygCreated,
+      Boolean sameVardenhet) {
+    this.intygId = intygId;
+    this.intygType = intygType;
+    this.intygTypeVersion = intygTypeVersion;
+    this.signedByHsaId = signedByHsaId;
+    this.enhetHsaId = enhetHsaId;
+    this.enhetName = enhetName;
+    this.intygCreated = intygCreated;
+    this.sameVardenhet = sameVardenhet;
+  }
 
-    @SuppressWarnings("CheckStyle")
-    private UtkastCandidateMetaData(String intygId, String intygType, String intygTypeVersion,
-        String signedByHsaId, String enhetHsaId, String enhetName, LocalDateTime intygCreated,
-        Boolean sameVardenhet) {
-        this.intygId = intygId;
-        this.intygType = intygType;
-        this.intygTypeVersion = intygTypeVersion;
-        this.signedByHsaId = signedByHsaId;
-        this.enhetHsaId = enhetHsaId;
-        this.enhetName = enhetName;
-        this.intygCreated = intygCreated;
-        this.sameVardenhet = sameVardenhet;
+  public String getIntygId() {
+    return intygId;
+  }
+
+  public String getIntygType() {
+    return intygType;
+  }
+
+  public String getIntygTypeVersion() {
+    return intygTypeVersion;
+  }
+
+  public String getSignedByHsaId() {
+    return signedByHsaId;
+  }
+
+  public String getEnhetHsaId() {
+    return enhetHsaId;
+  }
+
+  public String getEnhetName() {
+    return enhetName;
+  }
+
+  public LocalDateTime getIntygCreated() {
+    return intygCreated;
+  }
+
+  public Boolean getSameVardenhet() {
+    return sameVardenhet;
+  }
+
+  public static class Builder {
+
+    public String intygId;
+    public String intygType;
+    public String intygTypeVersion;
+    public String signedByHsaId;
+    public String enhetHsaId;
+    public String enhetName;
+    public LocalDateTime intygCreated;
+    public Boolean sameVardenhet;
+
+    public Builder with(Consumer<Builder> builderFunction) {
+      builderFunction.accept(this);
+      return this;
     }
 
-    public String getIntygId() {
-        return intygId;
+    public UtkastCandidateMetaData create() {
+      return new UtkastCandidateMetaData(
+          intygId,
+          intygType,
+          intygTypeVersion,
+          signedByHsaId,
+          enhetHsaId,
+          enhetName,
+          intygCreated,
+          sameVardenhet);
     }
-
-    public String getIntygType() {
-        return intygType;
-    }
-
-    public String getIntygTypeVersion() {
-        return intygTypeVersion;
-    }
-
-    public String getSignedByHsaId() {
-        return signedByHsaId;
-    }
-
-    public String getEnhetHsaId() {
-        return enhetHsaId;
-    }
-
-    public String getEnhetName() {
-        return enhetName;
-    }
-
-    public LocalDateTime getIntygCreated() {
-        return intygCreated;
-    }
-
-    public Boolean getSameVardenhet() {
-        return sameVardenhet;
-    }
-
-    public static class Builder {
-
-        public String intygId;
-        public String intygType;
-        public String intygTypeVersion;
-        public String signedByHsaId;
-        public String enhetHsaId;
-        public String enhetName;
-        public LocalDateTime intygCreated;
-        public Boolean sameVardenhet;
-
-        public Builder with(
-            Consumer<Builder> builderFunction) {
-            builderFunction.accept(this);
-            return this;
-        }
-
-        public UtkastCandidateMetaData create() {
-            return new UtkastCandidateMetaData(intygId, intygType, intygTypeVersion,
-                signedByHsaId, enhetHsaId, enhetName, intygCreated, sameVardenhet);
-        }
-    }
-
+  }
 }

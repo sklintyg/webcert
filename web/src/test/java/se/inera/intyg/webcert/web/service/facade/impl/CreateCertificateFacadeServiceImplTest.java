@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -58,158 +58,153 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFacadeServiceImplTest {
 
-    @Mock
-    private DraftAccessServiceHelper draftAccessServiceHelper;
-    @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
-    @Mock
-    private UtkastService utkastService;
-    @Mock
-    private IntygTextsService intygTextsService;
-    @Mock
-    private WebCertUserService webCertUserService;
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
-    @Mock
-    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @Mock
-    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock private DraftAccessServiceHelper draftAccessServiceHelper;
+  @Mock private AccessResultExceptionHelper accessResultExceptionHelper;
+  @Mock private UtkastService utkastService;
+  @Mock private IntygTextsService intygTextsService;
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
+  @Mock private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    private CreateCertificateFacadeServiceImpl serviceUnderTest;
+  @InjectMocks private CreateCertificateFacadeServiceImpl serviceUnderTest;
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "ag7804";
-    private static final String PATIENT_ID = "191212121212";
-    private static final String LATEST_VERSION = "2.0";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "ag7804";
+  private static final String PATIENT_ID = "191212121212";
+  private static final String LATEST_VERSION = "2.0";
+
+  @BeforeEach
+  void setup() {
+    doReturn(LATEST_VERSION).when(intygTextsService).getLatestVersion(CERTIFICATE_TYPE);
+  }
+
+  @Nested
+  class TestsWithUserMock {
 
     @BeforeEach
     void setup() {
-        doReturn(LATEST_VERSION)
-            .when(intygTextsService)
-            .getLatestVersion(CERTIFICATE_TYPE);
+      doReturn(new WebCertUser()).when(webCertUserService).getUser();
     }
 
     @Nested
-    class TestsWithUserMock {
+    class TestsWithPatientMock {
 
-        @BeforeEach
-        void setup() {
-            doReturn(new WebCertUser())
-                .when(webCertUserService)
-                .getUser();
-        }
+      @BeforeEach
+      void setup() {
+        doReturn(new Patient())
+            .when(patientDetailsResolver)
+            .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(LATEST_VERSION));
+      }
 
-        @Nested
-        class TestsWithPatientMock {
+      @Nested
+      class TestsWithOkModule {
 
-            @BeforeEach
-            void setup() {
-                doReturn(new Patient())
-                    .when(patientDetailsResolver)
-                    .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(LATEST_VERSION));
-            }
+        @Test
+        void shallThrowExceptionIfDraftIsNotUnique() {
+          doReturn(AccessResult.create(AccessResultCode.UNIQUE_DRAFT, "message"))
+              .when(draftAccessServiceHelper)
+              .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
 
-            @Nested
-            class TestsWithOkModule {
-
-                @Test
-                void shallThrowExceptionIfDraftIsNotUnique() {
-                    doReturn(AccessResult.create(AccessResultCode.UNIQUE_DRAFT, "message"))
-                        .when(draftAccessServiceHelper)
-                        .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
-
-                    assertThrows(CreateCertificateException.class,
-                        () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID),
-                        "Certificate already exists");
-                }
-
-                @Test
-                void shallThrowExceptionIfCertificateIsNotUnique() {
-                    doReturn(AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE, "message"))
-                        .when(draftAccessServiceHelper)
-                        .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
-
-                    assertThrows(CreateCertificateException.class,
-                        () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID),
-                        "Certificate already exists");
-                }
-
-                @Test
-                void shallThrowExceptionIfCreateDraftIsNotAllowed() {
-                    doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED, "message"))
-                        .when(draftAccessServiceHelper)
-                        .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
-
-                    doThrow(WebCertServiceException.class)
-                        .when(accessResultExceptionHelper)
-                        .throwException(any(AccessResult.class));
-
-                    assertThrows(WebCertServiceException.class, () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID));
-                }
-
-                @Test
-                void shallReturnIdForSuccessfullyCreatedDraft() throws Exception {
-                    doReturn(createCertificate())
-                        .when(utkastService)
-                        .createNewDraft(any(CreateNewDraftRequest.class));
-
-                    doReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, "message"))
-                        .when(draftAccessServiceHelper)
-                        .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
-
-                    assertEquals(CERTIFICATE_ID, serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID));
-                }
-
-                @Test
-                void shallPublishAnalyticsMessageWhenDraftIsCreated() throws Exception {
-                    final var certificate = createCertificate();
-                    doReturn(certificate)
-                        .when(utkastService)
-                        .createNewDraft(any(CreateNewDraftRequest.class));
-
-                    doReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, "message"))
-                        .when(draftAccessServiceHelper)
-                        .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
-
-                    final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                    when(certificateAnalyticsMessageFactory.draftCreated(certificate)).thenReturn(analyticsMessage);
-
-                    serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID);
-
-                    verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
-                }
-            }
+          assertThrows(
+              CreateCertificateException.class,
+              () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID),
+              "Certificate already exists");
         }
 
         @Test
-        void shallThrowExceptionIfPatientDoesntExist() {
-            doReturn(null)
-                .when(patientDetailsResolver)
-                .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(LATEST_VERSION));
+        void shallThrowExceptionIfCertificateIsNotUnique() {
+          doReturn(AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE, "message"))
+              .when(draftAccessServiceHelper)
+              .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
 
-            assertThrows(CreateCertificateException.class, () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID),
-                "Patient does not exist");
+          assertThrows(
+              CreateCertificateException.class,
+              () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID),
+              "Certificate already exists");
         }
-    }
 
+        @Test
+        void shallThrowExceptionIfCreateDraftIsNotAllowed() {
+          doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED, "message"))
+              .when(draftAccessServiceHelper)
+              .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
+
+          doThrow(WebCertServiceException.class)
+              .when(accessResultExceptionHelper)
+              .throwException(any(AccessResult.class));
+
+          assertThrows(
+              WebCertServiceException.class,
+              () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID));
+        }
+
+        @Test
+        void shallReturnIdForSuccessfullyCreatedDraft() throws Exception {
+          doReturn(createCertificate())
+              .when(utkastService)
+              .createNewDraft(any(CreateNewDraftRequest.class));
+
+          doReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, "message"))
+              .when(draftAccessServiceHelper)
+              .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
+
+          assertEquals(CERTIFICATE_ID, serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID));
+        }
+
+        @Test
+        void shallPublishAnalyticsMessageWhenDraftIsCreated() throws Exception {
+          final var certificate = createCertificate();
+          doReturn(certificate)
+              .when(utkastService)
+              .createNewDraft(any(CreateNewDraftRequest.class));
+
+          doReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, "message"))
+              .when(draftAccessServiceHelper)
+              .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
+
+          final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+          when(certificateAnalyticsMessageFactory.draftCreated(certificate))
+              .thenReturn(analyticsMessage);
+
+          serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID);
+
+          verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
+        }
+      }
+    }
 
     @Test
-    void shallThrowExceptionForInvalidPatientId() {
-        assertThrows(CreateCertificateException.class, () -> serviceUnderTest.create(CERTIFICATE_TYPE, "xxx"),
-            "Invalid patient id");
-    }
+    void shallThrowExceptionIfPatientDoesntExist() {
+      doReturn(null)
+          .when(patientDetailsResolver)
+          .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(LATEST_VERSION));
 
-    private Utkast createCertificate() {
-        final var draft = new Utkast();
-        draft.setIntygsId(CERTIFICATE_ID);
-        draft.setIntygsTyp(CERTIFICATE_TYPE);
-        draft.setIntygTypeVersion("certificateTypeVersion");
-        draft.setModel("draftJson");
-        draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
-        draft.setSkapad(LocalDateTime.now());
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
-        draft.setEnhetsId("enhetsId");
-        return draft;
+      assertThrows(
+          CreateCertificateException.class,
+          () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID),
+          "Patient does not exist");
     }
+  }
+
+  @Test
+  void shallThrowExceptionForInvalidPatientId() {
+    assertThrows(
+        CreateCertificateException.class,
+        () -> serviceUnderTest.create(CERTIFICATE_TYPE, "xxx"),
+        "Invalid patient id");
+  }
+
+  private Utkast createCertificate() {
+    final var draft = new Utkast();
+    draft.setIntygsId(CERTIFICATE_ID);
+    draft.setIntygsTyp(CERTIFICATE_TYPE);
+    draft.setIntygTypeVersion("certificateTypeVersion");
+    draft.setModel("draftJson");
+    draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
+    draft.setSkapad(LocalDateTime.now());
+    draft.setPatientPersonnummer(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow());
+    draft.setEnhetsId("enhetsId");
+    return draft;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.testability;
 
 import com.google.common.base.Strings;
@@ -50,130 +49,128 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLogi
 @RequiredArgsConstructor
 public class FakeLoginService {
 
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private final ElegWebCertUserDetailsService elegWebCertUserDetailsService;
-    private final WebcertUserDetailsService webcertUserDetailsService;
-    private final CommonAuthoritiesResolver authoritiesResolver;
+  private final ApplicationEventPublisher applicationEventPublisher;
+  private final ElegWebCertUserDetailsService elegWebCertUserDetailsService;
+  private final WebcertUserDetailsService webcertUserDetailsService;
+  private final CommonAuthoritiesResolver authoritiesResolver;
 
-    public void login(FakeLoginDTO fakeProps, HttpServletRequest request) {
-        final var oldSession = request.getSession(false);
-        Optional.ofNullable(oldSession).ifPresent(HttpSession::invalidate);
+  public void login(FakeLoginDTO fakeProps, HttpServletRequest request) {
+    final var oldSession = request.getSession(false);
+    Optional.ofNullable(oldSession).ifPresent(HttpSession::invalidate);
 
-        WebCertUser webCertUser;
-        final var personId = Personnummer.createPersonnummer(fakeProps.getHsaId());
+    WebCertUser webCertUser;
+    final var personId = Personnummer.createPersonnummer(fakeProps.getHsaId());
 
-        if (personId.isPresent()) {
-            webCertUser = elegWebCertUserDetailsService.buildFakeUserPrincipal(personId.get().getPersonnummer());
-        } else {
-            webCertUser = webcertUserDetailsService.buildFakeUserPrincipal(fakeProps.getHsaId());
-        }
-
-        updateUserWithFakeloginProperties(webCertUser, fakeProps);
-
-        final var fakeAuthenticationToken = new FakeAuthenticationToken(webCertUser);
-        final var context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(fakeAuthenticationToken);
-        SecurityContextHolder.setContext(context);
-
-        final var newSession = request.getSession(true);
-        newSession.setAttribute(
-            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context
-        );
-
-        applicationEventPublisher.publishEvent(
-            new InteractiveAuthenticationSuccessEvent(
-                fakeAuthenticationToken, this.getClass()
-            )
-        );
+    if (personId.isPresent()) {
+      webCertUser =
+          elegWebCertUserDetailsService.buildFakeUserPrincipal(personId.get().getPersonnummer());
+    } else {
+      webCertUser = webcertUserDetailsService.buildFakeUserPrincipal(fakeProps.getHsaId());
     }
 
-    public void logout(HttpSession session) {
-        if (session == null) {
-            return;
-        }
+    updateUserWithFakeloginProperties(webCertUser, fakeProps);
 
-        session.invalidate();
+    final var fakeAuthenticationToken = new FakeAuthenticationToken(webCertUser);
+    final var context = SecurityContextHolder.createEmptyContext();
+    context.setAuthentication(fakeAuthenticationToken);
+    SecurityContextHolder.setContext(context);
 
-        final var authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityContextHolder.getContext().setAuthentication(null);
-        SecurityContextHolder.clearContext();
+    final var newSession = request.getSession(true);
+    newSession.setAttribute(
+        HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
-        if (authentication != null) {
-            applicationEventPublisher.publishEvent(new LogoutSuccessEvent(authentication));
-        }
+    applicationEventPublisher.publishEvent(
+        new InteractiveAuthenticationSuccessEvent(fakeAuthenticationToken, this.getClass()));
+  }
+
+  public void logout(HttpSession session) {
+    if (session == null) {
+      return;
     }
 
-    private void updateUserWithFakeloginProperties(WebCertUser user, FakeLoginDTO fakeProps) {
-        setUnit(user, fakeProps.getEnhetId());
-        setProtectedPerson(user, fakeProps.getSekretessMarkerad());
-        setOrigin(user, fakeProps.getOrigin());
-        setFeatures(user);
-    }
+    session.invalidate();
 
-    private void setUnit(WebCertUser user, String enhetId) {
-        if (Strings.isNullOrEmpty(enhetId)) {
-            return;
-        }
-        setVardenhetById(enhetId, user);
-        setVardgivareByVardenhetId(enhetId, user);
-    }
+    final var authentication = SecurityContextHolder.getContext().getAuthentication();
+    SecurityContextHolder.getContext().setAuthentication(null);
+    SecurityContextHolder.clearContext();
 
-    private void setProtectedPerson(WebCertUser user, Boolean protectedPerson) {
-        if (protectedPerson == null) {
-            return;
-        }
-        user.setSekretessMarkerad(protectedPerson);
+    if (authentication != null) {
+      applicationEventPublisher.publishEvent(new LogoutSuccessEvent(authentication));
     }
+  }
 
-    private void setFeatures(WebCertUser user) {
-        if (user.getValdVardenhet() == null || user.getValdVardgivare() == null) {
-            return;
-        }
-        final var unitList = List.of(user.getValdVardenhet().getId(), user.getValdVardgivare().getId());
-        final var features = authoritiesResolver.getFeatures(unitList);
-        user.setFeatures(features);
+  private void updateUserWithFakeloginProperties(WebCertUser user, FakeLoginDTO fakeProps) {
+    setUnit(user, fakeProps.getEnhetId());
+    setProtectedPerson(user, fakeProps.getSekretessMarkerad());
+    setOrigin(user, fakeProps.getOrigin());
+    setFeatures(user);
+  }
+
+  private void setUnit(WebCertUser user, String enhetId) {
+    if (Strings.isNullOrEmpty(enhetId)) {
+      return;
     }
+    setVardenhetById(enhetId, user);
+    setVardgivareByVardenhetId(enhetId, user);
+  }
 
-    private void setOrigin(WebCertUser user, String origin) {
-        user.setOrigin(origin);
+  private void setProtectedPerson(WebCertUser user, Boolean protectedPerson) {
+    if (protectedPerson == null) {
+      return;
     }
+    user.setSekretessMarkerad(protectedPerson);
+  }
 
-    private void setVardgivareByVardenhetId(String enhetId, IntygUser intygUser) {
-        for (Vardgivare vg : intygUser.getVardgivare()) {
-            for (Vardenhet ve : vg.getVardenheter()) {
-                if (ve.getId().equals(enhetId)) {
-                    intygUser.setValdVardgivare(vg);
-                    return;
-                } else if (ve.getMottagningar() != null) {
-                    for (Mottagning m : ve.getMottagningar()) {
-                        if (m.getId().equals(enhetId)) {
-                            intygUser.setValdVardgivare(vg);
-                            return;
-                        }
-                    }
-                }
+  private void setFeatures(WebCertUser user) {
+    if (user.getValdVardenhet() == null || user.getValdVardgivare() == null) {
+      return;
+    }
+    final var unitList = List.of(user.getValdVardenhet().getId(), user.getValdVardgivare().getId());
+    final var features = authoritiesResolver.getFeatures(unitList);
+    user.setFeatures(features);
+  }
+
+  private void setOrigin(WebCertUser user, String origin) {
+    user.setOrigin(origin);
+  }
+
+  private void setVardgivareByVardenhetId(String enhetId, IntygUser intygUser) {
+    for (Vardgivare vg : intygUser.getVardgivare()) {
+      for (Vardenhet ve : vg.getVardenheter()) {
+        if (ve.getId().equals(enhetId)) {
+          intygUser.setValdVardgivare(vg);
+          return;
+        } else if (ve.getMottagningar() != null) {
+          for (Mottagning m : ve.getMottagningar()) {
+            if (m.getId().equals(enhetId)) {
+              intygUser.setValdVardgivare(vg);
+              return;
             }
+          }
         }
-        throw new AuthoritiesException("Could not select a Vårdgivare given the fake credentials, not logging in.");
+      }
     }
+    throw new AuthoritiesException(
+        "Could not select a Vårdgivare given the fake credentials, not logging in.");
+  }
 
-    private void setVardenhetById(String enhetId, IntygUser intygUser) {
-        for (Vardgivare vg : intygUser.getVardgivare()) {
-            for (Vardenhet ve : vg.getVardenheter()) {
-                if (ve.getId().equals(enhetId)) {
-                    intygUser.setValdVardenhet(ve);
-                    return;
-                } else if (ve.getMottagningar() != null) {
-                    for (Mottagning m : ve.getMottagningar()) {
-                        if (m.getId().equals(enhetId)) {
-                            intygUser.setValdVardenhet(m);
-                            return;
-                        }
-                    }
-                }
+  private void setVardenhetById(String enhetId, IntygUser intygUser) {
+    for (Vardgivare vg : intygUser.getVardgivare()) {
+      for (Vardenhet ve : vg.getVardenheter()) {
+        if (ve.getId().equals(enhetId)) {
+          intygUser.setValdVardenhet(ve);
+          return;
+        } else if (ve.getMottagningar() != null) {
+          for (Mottagning m : ve.getMottagningar()) {
+            if (m.getId().equals(enhetId)) {
+              intygUser.setValdVardenhet(m);
+              return;
             }
+          }
         }
-        throw new AuthoritiesException("Could not select a Vardenhet given the fake credentials, not logging in.");
+      }
     }
-
+    throw new AuthoritiesException(
+        "Could not select a Vardenhet given the fake credentials, not logging in.");
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.service;
 
 import java.util.List;
@@ -27,19 +26,21 @@ import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodE
 @Service
 public class CheckSubscriptionService {
 
-    @Value("#{${servicenow.service.codes.eleg}}")
-    private List<String> elegServiceCodes;
+  @Value("#{${servicenow.service.codes.eleg}}")
+  private List<String> elegServiceCodes;
 
-    @Value("#{${servicenow.service.codes.siths}}")
-    private List<String> sithsServiceCodes;
+  @Value("#{${servicenow.service.codes.siths}}")
+  private List<String> sithsServiceCodes;
 
-    public boolean isMissing(List<String> activeServiceCodes, AuthenticationMethodEnum authMethod) {
-        if (activeServiceCodes.isEmpty()) {
-            return true;
-        }
-        if (authMethod == AuthenticationMethodEnum.ELEG) {
-            return activeServiceCodes.stream().noneMatch(serviceCode -> elegServiceCodes.contains(serviceCode));
-        }
-        return activeServiceCodes.stream().noneMatch(serviceCode -> sithsServiceCodes.contains(serviceCode));
+  public boolean isMissing(List<String> activeServiceCodes, AuthenticationMethodEnum authMethod) {
+    if (activeServiceCodes.isEmpty()) {
+      return true;
     }
+    if (authMethod == AuthenticationMethodEnum.ELEG) {
+      return activeServiceCodes.stream()
+          .noneMatch(serviceCode -> elegServiceCodes.contains(serviceCode));
+    }
+    return activeServiceCodes.stream()
+        .noneMatch(serviceCode -> sithsServiceCodes.contains(serviceCode));
+  }
 }

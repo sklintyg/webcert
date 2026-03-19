@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,42 +42,48 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 @RequiredArgsConstructor
 public class NotificationWSSender {
 
+  private final CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
+  private final NotificationResultMessageCreator notificationResultMessageCreator;
+  private final NotificationResultMessageSender notificationResultMessageSender;
+  private final MdcHelper mdcHelper;
 
-    private final CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
-    private final NotificationResultMessageCreator notificationResultMessageCreator;
-    private final NotificationResultMessageSender notificationResultMessageSender;
-    private final MdcHelper mdcHelper;
+  @PerformanceLogging(
+      eventAction = "send-status-update-for-care",
+      eventType = MdcLogConstants.EVENT_TYPE_INFO)
+  public void sendStatusUpdate(
+      CertificateStatusUpdateForCareType statusUpdate,
+      @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
+      @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
+      @Header(NotificationRouteHeaders.USER_ID) String userId,
+      @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId) {
 
-
-    @PerformanceLogging(eventAction = "send-status-update-for-care", eventType = MdcLogConstants.EVENT_TYPE_INFO)
-    public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
-        @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
-        @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
-        @Header(NotificationRouteHeaders.USER_ID) String userId,
-        @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId) {
-
-        if (Objects.nonNull(userId)) {
-            statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
-        }
-
-        final var resultMessage = notificationResultMessageCreator.createResultMessage(statusUpdate, correlationId);
-
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId);
-            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
-            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, correlationId);
-
-            log.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
-            final var resultType = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, statusUpdate).getResult();
-            notificationResultMessageCreator.addToResultMessage(resultMessage, statusUpdate, resultType);
-        } catch (Exception e) {
-            log.warn("Failure during status update for care with message: {}", resultMessage, e);
-            notificationResultMessageCreator.addToResultMessage(resultMessage, statusUpdate, e);
-        } finally {
-            notificationResultMessageSender.sendResultMessage(resultMessage);
-            MDC.clear();
-        }
+    if (Objects.nonNull(userId)) {
+      statusUpdate.setHanteratAv(
+          NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
     }
+
+    final var resultMessage =
+        notificationResultMessageCreator.createResultMessage(statusUpdate, correlationId);
+
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId);
+      MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+      MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, correlationId);
+
+      log.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);
+      final var resultType =
+          statusUpdateForCareClient
+              .certificateStatusUpdateForCare(logicalAddress, statusUpdate)
+              .getResult();
+      notificationResultMessageCreator.addToResultMessage(resultMessage, statusUpdate, resultType);
+    } catch (Exception e) {
+      log.warn("Failure during status update for care with message: {}", resultMessage, e);
+      notificationResultMessageCreator.addToResultMessage(resultMessage, statusUpdate, e);
+    } finally {
+      notificationResultMessageSender.sendResultMessage(resultMessage);
+      MDC.clear();
+    }
+  }
 }

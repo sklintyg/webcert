@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,9 +29,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CreateIntygsIdAsUUIDStrategy implements CreateIntygsIdStrategy {
 
-    @Override
-    public String createId() {
-        return UUID.randomUUID().toString();
-    }
-
+  @Override
+  public String createId() {
+    return UUID.randomUUID().toString();
+  }
 }

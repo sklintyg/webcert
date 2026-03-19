@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,48 +24,45 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.intyg.webcert.web.converter.util.ConvertToFKTypes;
 
-
-/**
- * Created by pehr on 10/2/13.
- */
+/** Created by pehr on 10/2/13. */
 public final class FKAnswerConverter {
 
-    private FKAnswerConverter() {
+  private FKAnswerConverter() {}
+
+  public static AnswerToFkType convert(FragaSvar fs) {
+    AnswerToFkType fkAnswer = new AnswerToFkType();
+
+    fkAnswer.setAmne(ConvertToFKTypes.toAmneTyp(fs.getAmne()));
+    fkAnswer.setAdressVard(ConvertToFKTypes.toVardAdresseringsType(fs.getVardperson()));
+
+    fkAnswer.setAvsantTidpunkt(fs.getFrageSkickadDatum());
+    if (fs.getMeddelandeRubrik() != null) {
+      fkAnswer.setFkMeddelanderubrik(fs.getMeddelandeRubrik());
     }
 
-    public static AnswerToFkType convert(FragaSvar fs) {
-        AnswerToFkType fkAnswer = new AnswerToFkType();
+    fkAnswer.setFkReferensId(fs.getExternReferens());
+    fkAnswer.setVardReferensId(fs.getInternReferens().toString());
 
-        fkAnswer.setAmne(ConvertToFKTypes.toAmneTyp(fs.getAmne()));
-        fkAnswer.setAdressVard(ConvertToFKTypes.toVardAdresseringsType(fs.getVardperson()));
-
-        fkAnswer.setAvsantTidpunkt(fs.getFrageSkickadDatum());
-        if (fs.getMeddelandeRubrik() != null) {
-            fkAnswer.setFkMeddelanderubrik(fs.getMeddelandeRubrik());
-        }
-
-        fkAnswer.setFkReferensId(fs.getExternReferens());
-        fkAnswer.setVardReferensId(fs.getInternReferens().toString());
-
-        if (fs.getSistaDatumForSvar() != null) {
-            fkAnswer.setFkSistaDatumForSvar(fs.getSistaDatumForSvar());
-        }
-
-        fkAnswer.setFraga(ConvertToFKTypes.toInnehallType(fs.getFrageText(), fs.getFrageSigneringsDatum()));
-        fkAnswer.setSvar(ConvertToFKTypes.toInnehallType(fs.getSvarsText(), fs.getSvarSigneringsDatum()));
-
-        fkAnswer.setLakarutlatande(ConvertToFKTypes.toLakarUtlatande(fs.getIntygsReferens()));
-
-        if (fs.getKompletteringar() != null) {
-            for (Komplettering komplettering : fs.getKompletteringar()) {
-                KompletteringType kt = new KompletteringType();
-                kt.setFalt(komplettering.getFalt());
-                kt.setText(komplettering.getText());
-                fkAnswer.getFkKomplettering().add(kt);
-            }
-        }
-
-        return fkAnswer;
+    if (fs.getSistaDatumForSvar() != null) {
+      fkAnswer.setFkSistaDatumForSvar(fs.getSistaDatumForSvar());
     }
 
+    fkAnswer.setFraga(
+        ConvertToFKTypes.toInnehallType(fs.getFrageText(), fs.getFrageSigneringsDatum()));
+    fkAnswer.setSvar(
+        ConvertToFKTypes.toInnehallType(fs.getSvarsText(), fs.getSvarSigneringsDatum()));
+
+    fkAnswer.setLakarutlatande(ConvertToFKTypes.toLakarUtlatande(fs.getIntygsReferens()));
+
+    if (fs.getKompletteringar() != null) {
+      for (Komplettering komplettering : fs.getKompletteringar()) {
+        KompletteringType kt = new KompletteringType();
+        kt.setFalt(komplettering.getFalt());
+        kt.setText(komplettering.getText());
+        fkAnswer.getFkKomplettering().add(kt);
+      }
+    }
+
+    return fkAnswer;
+  }
 }

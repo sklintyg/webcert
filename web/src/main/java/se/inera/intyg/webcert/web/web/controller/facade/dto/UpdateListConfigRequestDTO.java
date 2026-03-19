@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,22 +22,22 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 
 public class UpdateListConfigRequestDTO {
 
-    private String unitId;
-    private ListConfig config;
+  private String unitId;
+  private ListConfig config;
 
-    public String getUnitId() {
-        return unitId;
-    }
+  public String getUnitId() {
+    return unitId;
+  }
 
-    public void setUnitId(String unitId) {
-        this.unitId = unitId;
-    }
+  public void setUnitId(String unitId) {
+    this.unitId = unitId;
+  }
 
-    public ListConfig getConfig() {
-        return config;
-    }
+  public ListConfig getConfig() {
+    return config;
+  }
 
-    public void setConfig(ListConfig config) {
-        this.config = config;
-    }
+  public void setConfig(ListConfig config) {
+    this.config = config;
+  }
 }

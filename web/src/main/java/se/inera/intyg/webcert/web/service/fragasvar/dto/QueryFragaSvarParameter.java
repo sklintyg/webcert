@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,27 +31,27 @@ import lombok.NoArgsConstructor;
 @Builder
 public class QueryFragaSvarParameter {
 
-    private String enhetId;
+  private String enhetId;
 
-    private Boolean questionFromFK;
-    private Boolean questionFromWC;
+  private Boolean questionFromFK;
+  private Boolean questionFromWC;
 
-    private String hsaId;
+  private String hsaId;
 
-    private Boolean vidarebefordrad;
+  private Boolean vidarebefordrad;
 
-    private LocalDateTime changedFrom;
-    private LocalDateTime changedTo;
+  private LocalDateTime changedFrom;
+  private LocalDateTime changedTo;
 
-    private String vantarPa;
+  private String vantarPa;
 
-    private LocalDate replyLatest;
+  private LocalDate replyLatest;
 
-    private Integer startFrom;
-    private Integer pageSize;
+  private Integer startFrom;
+  private Integer pageSize;
 
-    private String orderBy;
-    private Boolean orderAscending;
+  private String orderBy;
+  private Boolean orderAscending;
 
-    private String patientPersonId;
+  private String patientPersonId;
 }

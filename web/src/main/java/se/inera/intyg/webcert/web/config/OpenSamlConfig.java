@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.config;
 
 import java.util.HashMap;
@@ -36,47 +35,48 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class OpenSamlConfig implements InitializingBean {
 
-    @Override
-    public void afterPropertiesSet() {
-        initializeOpenSamlConfiguration();
+  @Override
+  public void afterPropertiesSet() {
+    initializeOpenSamlConfiguration();
+  }
+
+  private void initializeOpenSamlConfiguration() {
+    try {
+      final var registry = new XMLObjectProviderRegistry();
+      ConfigurationService.register(XMLObjectProviderRegistry.class, registry);
+      registry.setParserPool(getParserPool());
+      InitializationService.initialize();
+
+    } catch (ComponentInitializationException | InitializationException e) {
+      throw new IllegalStateException("Failure initializing OpenSaml configuration", e);
     }
+  }
 
-    private void initializeOpenSamlConfiguration() {
-        try {
-            final var registry = new XMLObjectProviderRegistry();
-            ConfigurationService.register(XMLObjectProviderRegistry.class, registry);
-            registry.setParserPool(getParserPool());
-            InitializationService.initialize();
+  private ParserPool getParserPool() throws ComponentInitializationException {
+    final var parserPool = new BasicParserPool();
+    parserPool.setMaxPoolSize(100);
+    parserPool.setCoalescing(true);
+    parserPool.setIgnoreComments(true);
+    parserPool.setIgnoreElementContentWhitespace(true);
+    parserPool.setNamespaceAware(true);
+    parserPool.setExpandEntityReferences(false);
+    parserPool.setXincludeAware(false);
 
-        } catch (ComponentInitializationException | InitializationException e) {
-            throw new IllegalStateException("Failure initializing OpenSaml configuration", e);
-        }
-    }
+    final var features = getOpenSamlBuilderFeatures();
+    parserPool.setBuilderFeatures(features);
+    parserPool.setBuilderAttributes(new HashMap<>());
+    parserPool.initialize();
+    return parserPool;
+  }
 
-    private ParserPool getParserPool() throws ComponentInitializationException {
-        final var parserPool = new BasicParserPool();
-        parserPool.setMaxPoolSize(100);
-        parserPool.setCoalescing(true);
-        parserPool.setIgnoreComments(true);
-        parserPool.setIgnoreElementContentWhitespace(true);
-        parserPool.setNamespaceAware(true);
-        parserPool.setExpandEntityReferences(false);
-        parserPool.setXincludeAware(false);
-
-        final var features = getOpenSamlBuilderFeatures();
-        parserPool.setBuilderFeatures(features);
-        parserPool.setBuilderAttributes(new HashMap<>());
-        parserPool.initialize();
-        return parserPool;
-    }
-
-    private static Map<String, Boolean> getOpenSamlBuilderFeatures() {
-        final var features = new HashMap<String, Boolean>();
-        features.put("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
-        features.put("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
-        features.put("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
-        features.put("http://apache.org/xml/features/validation/schema/normalized-value", Boolean.FALSE);
-        features.put("http://javax.xml.XMLConstants/feature/secure-processing", Boolean.TRUE);
-        return features;
-    }
+  private static Map<String, Boolean> getOpenSamlBuilderFeatures() {
+    final var features = new HashMap<String, Boolean>();
+    features.put("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+    features.put("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+    features.put("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+    features.put(
+        "http://apache.org/xml/features/validation/schema/normalized-value", Boolean.FALSE);
+    features.put("http://javax.xml.XMLConstants/feature/secure-processing", Boolean.TRUE);
+    return features;
+  }
 }

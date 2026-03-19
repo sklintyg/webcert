@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,51 +36,54 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public class NotificationStoreTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationStoreTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationStoreTest.class);
 
-    private static List<String> INTYG_IDS = Arrays.asList("intyg1", "intyg2", "intyg3", "intyg4", "intyg5", "intyg6", "intyg7", "intyg8",
-        "intyg9",
-        "intyg10");
+  private static List<String> INTYG_IDS =
+      Arrays.asList(
+          "intyg1", "intyg2", "intyg3", "intyg4", "intyg5", "intyg6", "intyg7", "intyg8", "intyg9",
+          "intyg10");
 
+  @Test
+  public void testPurge() {
 
-    @Test
-    public void testPurge() {
+    NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl();
+    notificationStore.initForTesting();
+    LocalDateTime now = LocalDateTime.now();
+    populateNotificationsMap(100, notificationStore, now);
 
-        NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl();
-        notificationStore.initForTesting();
-        LocalDateTime now = LocalDateTime.now();
-        populateNotificationsMap(100, notificationStore, now);
+    notificationStore.purge();
+    assertEquals(80, notificationStore.getNotifications().size());
 
-        notificationStore.purge();
-        assertEquals(80, notificationStore.getNotifications().size());
-
-        LOG.info(notificationStore.getNotifications().stream().map(n -> n.getHandelse().getTidpunkt().toString()).sorted()
+    LOG.info(
+        notificationStore.getNotifications().stream()
+            .map(n -> n.getHandelse().getTidpunkt().toString())
+            .sorted()
             .collect(Collectors.joining("\n")));
-        LOG.info("Oldest should be: {}", now.minusMinutes(100).toString());
+    LOG.info("Oldest should be: {}", now.minusMinutes(100).toString());
+  }
+
+  private void populateNotificationsMap(
+      int nbr, NotificationStoreV3Impl notificationStore, LocalDateTime baseTime) {
+
+    Iterator<String> intygsIdIter = Iterables.cycle(INTYG_IDS).iterator();
+
+    for (int i = 0; i < nbr; i++) {
+
+      String intygsId = intygsIdIter.next();
+
+      CertificateStatusUpdateForCareType statusUpdate = new CertificateStatusUpdateForCareType();
+
+      Handelse handelse = new Handelse();
+      handelse.setTidpunkt(baseTime.minusMinutes(nbr - i));
+
+      statusUpdate.setHandelse(handelse);
+      Intyg intyg = new Intyg();
+      IntygId intygId = new IntygId();
+      intygId.setExtension(intygsId);
+      intyg.setIntygsId(intygId);
+      statusUpdate.setIntyg(intyg);
+
+      notificationStore.put(statusUpdate);
     }
-
-    private void populateNotificationsMap(int nbr, NotificationStoreV3Impl notificationStore, LocalDateTime baseTime) {
-
-        Iterator<String> intygsIdIter = Iterables.cycle(INTYG_IDS).iterator();
-
-        for (int i = 0; i < nbr; i++) {
-
-            String intygsId = intygsIdIter.next();
-
-            CertificateStatusUpdateForCareType statusUpdate = new CertificateStatusUpdateForCareType();
-
-            Handelse handelse = new Handelse();
-            handelse.setTidpunkt(baseTime.minusMinutes(nbr - i));
-
-            statusUpdate.setHandelse(handelse);
-            Intyg intyg = new Intyg();
-            IntygId intygId = new IntygId();
-            intygId.setExtension(intygsId);
-            intyg.setIntygsId(intygId);
-            statusUpdate.setIntyg(intyg);
-
-            notificationStore.put(statusUpdate);
-        }
-    }
-
+  }
 }

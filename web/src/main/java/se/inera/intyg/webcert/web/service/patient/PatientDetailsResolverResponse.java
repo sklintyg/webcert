@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,31 +22,31 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 
 public class PatientDetailsResolverResponse {
 
-    private boolean isDeceased;
-    private boolean isTestIndicator;
-    private SekretessStatus isProtectedPerson;
+  private boolean isDeceased;
+  private boolean isTestIndicator;
+  private SekretessStatus isProtectedPerson;
 
-    public boolean isDeceased() {
-        return isDeceased;
-    }
+  public boolean isDeceased() {
+    return isDeceased;
+  }
 
-    public void setDeceased(boolean deceased) {
-        isDeceased = deceased;
-    }
+  public void setDeceased(boolean deceased) {
+    isDeceased = deceased;
+  }
 
-    public boolean isTestIndicator() {
-        return isTestIndicator;
-    }
+  public boolean isTestIndicator() {
+    return isTestIndicator;
+  }
 
-    public void setTestIndicator(boolean testIndicator) {
-        isTestIndicator = testIndicator;
-    }
+  public void setTestIndicator(boolean testIndicator) {
+    isTestIndicator = testIndicator;
+  }
 
-    public SekretessStatus isProtectedPerson() {
-        return isProtectedPerson;
-    }
+  public SekretessStatus isProtectedPerson() {
+    return isProtectedPerson;
+  }
 
-    public void setProtectedPerson(SekretessStatus protectedPerson) {
-        isProtectedPerson = protectedPerson;
-    }
+  public void setProtectedPerson(SekretessStatus protectedPerson) {
+    isProtectedPerson = protectedPerson;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,62 +40,61 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 @Transactional
 public class ArendeDraftRepositoryTest {
 
-    @Autowired
-    private ArendeDraftRepository repo;
+  @Autowired private ArendeDraftRepository repo;
 
-    @After
-    public void cleanup() {
-        repo.deleteAll();
-    }
+  @After
+  public void cleanup() {
+    repo.deleteAll();
+  }
 
-    @Test
-    public void testFindByIntygId() {
-        repo.save(buildArendeDraft("0"));
-        repo.save(buildArendeDraft("1"));
-        repo.save(buildArendeDraft("11"));
-        repo.save(buildArendeDraft("2"));
+  @Test
+  public void testFindByIntygId() {
+    repo.save(buildArendeDraft("0"));
+    repo.save(buildArendeDraft("1"));
+    repo.save(buildArendeDraft("11"));
+    repo.save(buildArendeDraft("2"));
 
-        List<ArendeDraft> res = repo.findByIntygId("1");
+    List<ArendeDraft> res = repo.findByIntygId("1");
 
-        assertNotNull(res);
-        assertEquals(1, res.size());
+    assertNotNull(res);
+    assertEquals(1, res.size());
 
-        res = repo.findByIntygId("-1");
+    res = repo.findByIntygId("-1");
 
-        assertNotNull(res);
-        assertTrue(res.isEmpty());
-    }
+    assertNotNull(res);
+    assertTrue(res.isEmpty());
+  }
 
-    @Test
-    public void testFindByIntygIdAndQuestionId() {
-        ArendeDraft res = repo.findByIntygIdAndQuestionId("-1", "-1");
-        assertNull(res);
+  @Test
+  public void testFindByIntygIdAndQuestionId() {
+    ArendeDraft res = repo.findByIntygIdAndQuestionId("-1", "-1");
+    assertNull(res);
 
-        repo.save(buildArendeDraft("i11", "q1"));
+    repo.save(buildArendeDraft("i11", "q1"));
 
-        res = repo.findByIntygIdAndQuestionId("i11", "q1");
+    res = repo.findByIntygIdAndQuestionId("i11", "q1");
 
-        assertNotNull(res);
-        assertEquals("i11", res.getIntygId());
-        assertEquals("q1", res.getQuestionId());
+    assertNotNull(res);
+    assertEquals("i11", res.getIntygId());
+    assertEquals("q1", res.getQuestionId());
 
-        repo.save(buildArendeDraft("i1"));
+    repo.save(buildArendeDraft("i1"));
 
-        res = repo.findByIntygIdAndQuestionId("i1", null);
+    res = repo.findByIntygIdAndQuestionId("i1", null);
 
-        assertNotNull(res);
-        assertEquals("i1", res.getIntygId());
-        assertNull(res.getQuestionId());
-    }
+    assertNotNull(res);
+    assertEquals("i1", res.getIntygId());
+    assertNull(res.getQuestionId());
+  }
 
-    private ArendeDraft buildArendeDraft(String intygId, String questionId) {
-        ArendeDraft arendeDraft = new ArendeDraft();
-        arendeDraft.setQuestionId(questionId);
-        arendeDraft.setIntygId(intygId);
-        return arendeDraft;
-    }
+  private ArendeDraft buildArendeDraft(String intygId, String questionId) {
+    ArendeDraft arendeDraft = new ArendeDraft();
+    arendeDraft.setQuestionId(questionId);
+    arendeDraft.setIntygId(intygId);
+    return arendeDraft;
+  }
 
-    private ArendeDraft buildArendeDraft(String intygId) {
-        return buildArendeDraft(intygId, null);
-    }
+  private ArendeDraft buildArendeDraft(String intygId) {
+    return buildArendeDraft(intygId, null);
+  }
 }

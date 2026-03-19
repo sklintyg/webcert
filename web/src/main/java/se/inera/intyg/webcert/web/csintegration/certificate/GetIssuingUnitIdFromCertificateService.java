@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -29,17 +28,17 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 @RequiredArgsConstructor
 public class GetIssuingUnitIdFromCertificateService {
 
-    private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationService csIntegrationService;
 
-    public String get(String certificateId) {
-        log.debug("Attempting to retrieve certificate '{}' from Certificate Service", certificateId);
+  public String get(String certificateId) {
+    log.debug("Attempting to retrieve certificate '{}' from Certificate Service", certificateId);
 
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
-
-        final var certificate = csIntegrationService.getInternalCertificate(certificateId);
-        return certificate.getMetadata().getUnit().getUnitId();
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
     }
+
+    final var certificate = csIntegrationService.getInternalCertificate(certificateId);
+    return certificate.getMetadata().getUnit().getUnitId();
+  }
 }

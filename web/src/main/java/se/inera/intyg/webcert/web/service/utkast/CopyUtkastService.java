@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,39 +29,42 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRes
 
 public interface CopyUtkastService {
 
-    /**
-     * Create a completion, which is essentially a copy with a relation to the Intyg on which the copy is based.
-     *
-     * @return {@link CreateCompletionCopyResponse}
-     */
-    CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest);
+  /**
+   * Create a completion, which is essentially a copy with a relation to the Intyg on which the copy
+   * is based.
+   *
+   * @return {@link CreateCompletionCopyResponse}
+   */
+  CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest);
 
-    /**
-     * Create a renewal, which is essentially a copy with a relation to the Intyg on which the copy is based.
-     *
-     * @return {@link CreateRenewalCopyRequest}
-     */
-    CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest);
+  /**
+   * Create a renewal, which is essentially a copy with a relation to the Intyg on which the copy is
+   * based.
+   *
+   * @return {@link CreateRenewalCopyRequest}
+   */
+  CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest);
 
-    /**
-     * Create a replacement, which is essentially a copy with a relation to the Intyg on which the replacement is based.
-     *
-     * @return {@link CreateReplacementCopyResponse}
-     */
-    CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest copyRequest);
+  /**
+   * Create a replacement, which is essentially a copy with a relation to the Intyg on which the
+   * replacement is based.
+   *
+   * @return {@link CreateReplacementCopyResponse}
+   */
+  CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest copyRequest);
 
-    /**
-     * Create a new utkast from a signed template intyg.
-     *
-     * @return {@link CreateUtkastFromTemplateRequest}
-     */
-    CreateUtkastFromTemplateResponse createUtkastFromSignedTemplate(CreateUtkastFromTemplateRequest copyRequest);
+  /**
+   * Create a new utkast from a signed template intyg.
+   *
+   * @return {@link CreateUtkastFromTemplateRequest}
+   */
+  CreateUtkastFromTemplateResponse createUtkastFromSignedTemplate(
+      CreateUtkastFromTemplateRequest copyRequest);
 
-    /**
-     * Create a new utkast from utkast.
-     *
-     * @return {@link CreateUtkastFromTemplateRequest}
-     */
-    CreateUtkastFromTemplateResponse createUtkastCopy(CreateUtkastFromTemplateRequest copyRequest);
-
+  /**
+   * Create a new utkast from utkast.
+   *
+   * @return {@link CreateUtkastFromTemplateRequest}
+   */
+  CreateUtkastFromTemplateResponse createUtkastCopy(CreateUtkastFromTemplateRequest copyRequest);
 }

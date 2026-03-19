@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -27,12 +26,9 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractit
 
 @Builder
 @JsonDeserialize(builder = PrivatePractitionerConfigurationBuilder.class)
-public record PrivatePractitionerConfiguration(List<Code> positionCodes, List<Code> typeOfCareCodes,
-                                               List<Code> healthcareServiceTypeCodes) {
+public record PrivatePractitionerConfiguration(
+    List<Code> positionCodes, List<Code> typeOfCareCodes, List<Code> healthcareServiceTypeCodes) {
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerConfigurationBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class PrivatePractitionerConfigurationBuilder {}
 }
-

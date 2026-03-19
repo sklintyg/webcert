@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,10 +24,9 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 
 public interface CreateDraftCertificateValidator {
 
-    ResultValidator validate(Intyg intyg);
+  ResultValidator validate(Intyg intyg);
 
-    ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user);
+  ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user);
 
-    ResultValidator validateCertificateErrors(Intyg intyg, IntygUser user);
-
+  ResultValidator validateCertificateErrors(Intyg intyg, IntygUser user);
 }

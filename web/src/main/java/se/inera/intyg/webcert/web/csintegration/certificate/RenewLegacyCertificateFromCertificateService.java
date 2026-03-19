@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -40,24 +39,27 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 @RequiredArgsConstructor
 public class RenewLegacyCertificateFromCertificateService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final MonitoringLogService monitoringLogService;
-    private final WebCertUserService webCertUserService;
-    private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final GetCertificateService getCertificateService;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PDLLogService pdlLogService;
+  private final MonitoringLogService monitoringLogService;
+  private final WebCertUserService webCertUserService;
+  private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final GetCertificateService getCertificateService;
 
-    public String renewCertificate(Certificate certificate,
-        CertificateModelIdDTO certificateModelId) {
-        final var certificateId = certificate.getMetadata().getId();
-        log.debug("Attempting to renew legacy certificate '{}' from Certificate Service",
-            certificateId);
+  public String renewCertificate(
+      Certificate certificate, CertificateModelIdDTO certificateModelId) {
+    final var certificateId = certificate.getMetadata().getId();
+    log.debug(
+        "Attempting to renew legacy certificate '{}' from Certificate Service", certificateId);
 
-        final var intyg = getCertificateService.getCertificateAsIntyg(certificateId, certificate.getMetadata().getType());
+    final var intyg =
+        getCertificateService.getCertificateAsIntyg(
+            certificateId, certificate.getMetadata().getType());
 
-        final var renewalCertificate = csIntegrationService.renewLegacyCertificate(
+    final var renewalCertificate =
+        csIntegrationService.renewLegacyCertificate(
             certificateId,
             csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 certificate.getMetadata().getPatient(),
@@ -65,24 +67,22 @@ public class RenewLegacyCertificateFromCertificateService {
                 certificateModelId,
                 certificate.getMetadata().getStatus(),
                 certificate.getMetadata().getUnit(),
-                PrefillXmlDTO.marshall(getForifyllnad(intyg))
-            )
-        );
+                PrefillXmlDTO.marshall(getForifyllnad(intyg))));
 
-        integratedUnitRegistryHelper.addUnitForCopy(certificate, renewalCertificate);
+    integratedUnitRegistryHelper.addUnitForCopy(certificate, renewalCertificate);
 
-        log.debug("Renewed certificate '{}' from Certificate Service", certificateId);
-        monitoringLogService.logIntygCopiedRenewal(renewalCertificate.getMetadata().getId(),
-            certificateId);
-        pdlLogService.logCreated(renewalCertificate);
-        publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
+    log.debug("Renewed certificate '{}' from Certificate Service", certificateId);
+    monitoringLogService.logIntygCopiedRenewal(
+        renewalCertificate.getMetadata().getId(), certificateId);
+    pdlLogService.logCreated(renewalCertificate);
+    publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
 
-        return renewalCertificate.getMetadata().getId();
-    }
+    return renewalCertificate.getMetadata().getId();
+  }
 
-    private Forifyllnad getForifyllnad(Intyg intyg) {
-        final var prefill = new Forifyllnad();
-        prefill.getSvar().addAll(intyg.getSvar());
-        return prefill;
-    }
+  private Forifyllnad getForifyllnad(Intyg intyg) {
+    final var prefill = new Forifyllnad();
+    prefill.getSvar().addAll(intyg.getSvar());
+    return prefill;
+  }
 }

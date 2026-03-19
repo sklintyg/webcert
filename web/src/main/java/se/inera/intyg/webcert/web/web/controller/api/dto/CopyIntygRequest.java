@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,27 +23,28 @@ import se.inera.intyg.schemas.contract.Personnummer;
 
 public class CopyIntygRequest {
 
-    private Personnummer patientPersonnummer;
+  private Personnummer patientPersonnummer;
 
-    private String kommentar;
+  private String kommentar;
 
-    public Personnummer getPatientPersonnummer() {
-        return patientPersonnummer;
-    }
+  public Personnummer getPatientPersonnummer() {
+    return patientPersonnummer;
+  }
 
-    public void setPatientPersonnummer(Personnummer patientPersonnummer) {
-        this.patientPersonnummer = patientPersonnummer;
-    }
+  public void setPatientPersonnummer(Personnummer patientPersonnummer) {
+    this.patientPersonnummer = patientPersonnummer;
+  }
 
-    public boolean isValid() {
-        return patientPersonnummer != null && !Strings.nullToEmpty(patientPersonnummer.getPersonnummer()).trim().isEmpty();
-    }
+  public boolean isValid() {
+    return patientPersonnummer != null
+        && !Strings.nullToEmpty(patientPersonnummer.getPersonnummer()).trim().isEmpty();
+  }
 
-    public String getKommentar() {
-        return kommentar;
-    }
+  public String getKommentar() {
+    return kommentar;
+  }
 
-    public void setKommentar(String kommentar) {
-        this.kommentar = kommentar;
-    }
+  public void setKommentar(String kommentar) {
+    this.kommentar = kommentar;
+  }
 }

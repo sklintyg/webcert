@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,92 +44,86 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 @ExtendWith(MockitoExtension.class)
 class ListQuestionsFacadeServiceImplTest {
 
-    private static final ListFilter LIST_FILTER = new ListFilter();
-    private static final QueryFragaSvarParameter QUERY_FRAGA_SVAR_PARAMETER = new QueryFragaSvarParameter();
-    private static final QueryFragaSvarResponse QUERY_FRAGA_SVAR_RESPONSE_WC = new QueryFragaSvarResponse();
-    private static final QueryFragaSvarResponse QUERY_FRAGA_SVAR_RESPONSE_CS = new QueryFragaSvarResponse();
-    private static final WebCertUser WEBCERT_USER = new WebCertUser();
-    private static final ArendeListItem ARENDE_LIST_ITEM_WC = new ArendeListItem();
-    private static final ArendeListItem ARENDE_LIST_ITEM_CS = new ArendeListItem();
-    private static final List<ArendeListItem> ARENDE_LIST_WC = List.of(ARENDE_LIST_ITEM_WC);
-    private static final List<ArendeListItem> ARENDE_LIST_CS = List.of(ARENDE_LIST_ITEM_CS);
-    private static final CertificateListItem CERTIFICATE_LIST_ITEM = new CertificateListItem();
-    private static final String PATIENT_ID = "191212121212";
-    private static final String ID = "ID";
-    private static final ArendeListItem PAGINATED_ITEM_1 = new ArendeListItem();
-    private static final ArendeListItem PAGINATED_ITEM_2 = new ArendeListItem();
-    private static final List<ArendeListItem> PAGINATED_LIST = List.of(PAGINATED_ITEM_1, PAGINATED_ITEM_2);
+  private static final ListFilter LIST_FILTER = new ListFilter();
+  private static final QueryFragaSvarParameter QUERY_FRAGA_SVAR_PARAMETER =
+      new QueryFragaSvarParameter();
+  private static final QueryFragaSvarResponse QUERY_FRAGA_SVAR_RESPONSE_WC =
+      new QueryFragaSvarResponse();
+  private static final QueryFragaSvarResponse QUERY_FRAGA_SVAR_RESPONSE_CS =
+      new QueryFragaSvarResponse();
+  private static final WebCertUser WEBCERT_USER = new WebCertUser();
+  private static final ArendeListItem ARENDE_LIST_ITEM_WC = new ArendeListItem();
+  private static final ArendeListItem ARENDE_LIST_ITEM_CS = new ArendeListItem();
+  private static final List<ArendeListItem> ARENDE_LIST_WC = List.of(ARENDE_LIST_ITEM_WC);
+  private static final List<ArendeListItem> ARENDE_LIST_CS = List.of(ARENDE_LIST_ITEM_CS);
+  private static final CertificateListItem CERTIFICATE_LIST_ITEM = new CertificateListItem();
+  private static final String PATIENT_ID = "191212121212";
+  private static final String ID = "ID";
+  private static final ArendeListItem PAGINATED_ITEM_1 = new ArendeListItem();
+  private static final ArendeListItem PAGINATED_ITEM_2 = new ArendeListItem();
+  private static final List<ArendeListItem> PAGINATED_LIST =
+      List.of(PAGINATED_ITEM_1, PAGINATED_ITEM_2);
 
-    @InjectMocks
-    ListQuestionsFacadeServiceImpl listQuestionsFacadeServiceImpl;
-    @Mock
-    QuestionFilterConverter questionFilterConverter;
-    @Mock
-    CertificateListItemConverter certificateListItemConverter;
-    @Mock
-    ArendeService arendeService;
-    @Mock
-    WebCertUserService webCertUserService;
-    @Mock
-    CertificateAccessServiceHelper certificateAccessServiceHelper;
-    @Mock
-    PaginationAndLoggingService paginationAndLoggingService;
-    @Mock
-    ListCertificateQuestionsFromCS listCertificateQuestionsFromCS;
+  @InjectMocks ListQuestionsFacadeServiceImpl listQuestionsFacadeServiceImpl;
+  @Mock QuestionFilterConverter questionFilterConverter;
+  @Mock CertificateListItemConverter certificateListItemConverter;
+  @Mock ArendeService arendeService;
+  @Mock WebCertUserService webCertUserService;
+  @Mock CertificateAccessServiceHelper certificateAccessServiceHelper;
+  @Mock PaginationAndLoggingService paginationAndLoggingService;
+  @Mock ListCertificateQuestionsFromCS listCertificateQuestionsFromCS;
 
+  @Test
+  void shouldReturnListInfo() {
+    final var expectedConvertedList = List.of(CERTIFICATE_LIST_ITEM, CERTIFICATE_LIST_ITEM);
 
-    @Test
-    void shouldReturnListInfo() {
-        final var expectedConvertedList = List.of(CERTIFICATE_LIST_ITEM, CERTIFICATE_LIST_ITEM);
+    QUERY_FRAGA_SVAR_PARAMETER.setPatientPersonId(PATIENT_ID);
+    final var valdVardenhet = new Vardenhet();
+    valdVardenhet.setId(ID);
+    final var valdVardgivare = new Vardgivare();
+    valdVardgivare.setId(ID);
+    WEBCERT_USER.setValdVardenhet(valdVardenhet);
+    WEBCERT_USER.setValdVardgivare(valdVardgivare);
 
-        QUERY_FRAGA_SVAR_PARAMETER.setPatientPersonId(PATIENT_ID);
-        final var valdVardenhet = new Vardenhet();
-        valdVardenhet.setId(ID);
-        final var valdVardgivare = new Vardgivare();
-        valdVardgivare.setId(ID);
-        WEBCERT_USER.setValdVardenhet(valdVardenhet);
-        WEBCERT_USER.setValdVardgivare(valdVardgivare);
+    // Set meddelandeId on items so we can identify which come from WC
+    ARENDE_LIST_ITEM_WC.setPatientId(PATIENT_ID);
+    ARENDE_LIST_ITEM_WC.setMeddelandeId("WC-ID");
+    ARENDE_LIST_ITEM_CS.setMeddelandeId("CS-ID");
 
-        // Set meddelandeId on items so we can identify which come from WC
-        ARENDE_LIST_ITEM_WC.setPatientId(PATIENT_ID);
-        ARENDE_LIST_ITEM_WC.setMeddelandeId("WC-ID");
-        ARENDE_LIST_ITEM_CS.setMeddelandeId("CS-ID");
+    QUERY_FRAGA_SVAR_RESPONSE_WC.setResults(ARENDE_LIST_WC);
+    QUERY_FRAGA_SVAR_RESPONSE_WC.setTotalCount(1);
+    QUERY_FRAGA_SVAR_RESPONSE_CS.setResults(ARENDE_LIST_CS);
+    QUERY_FRAGA_SVAR_RESPONSE_CS.setTotalCount(1);
 
-        QUERY_FRAGA_SVAR_RESPONSE_WC.setResults(ARENDE_LIST_WC);
-        QUERY_FRAGA_SVAR_RESPONSE_WC.setTotalCount(1);
-        QUERY_FRAGA_SVAR_RESPONSE_CS.setResults(ARENDE_LIST_CS);
-        QUERY_FRAGA_SVAR_RESPONSE_CS.setTotalCount(1);
+    PAGINATED_ITEM_1.setMeddelandeId("WC-ID"); // From WC - will be decorated
+    PAGINATED_ITEM_1.setPatientId(PATIENT_ID);
+    PAGINATED_ITEM_1.setTestIntyg(false);
 
-        PAGINATED_ITEM_1.setMeddelandeId("WC-ID"); // From WC - will be decorated
-        PAGINATED_ITEM_1.setPatientId(PATIENT_ID);
-        PAGINATED_ITEM_1.setTestIntyg(false);
+    PAGINATED_ITEM_2.setMeddelandeId("CS-ID"); // From CS - will NOT be decorated
 
-        PAGINATED_ITEM_2.setMeddelandeId("CS-ID"); // From CS - will NOT be decorated
+    when(questionFilterConverter.convert(LIST_FILTER)).thenReturn(QUERY_FRAGA_SVAR_PARAMETER);
 
-        when(questionFilterConverter.convert(LIST_FILTER))
-            .thenReturn(QUERY_FRAGA_SVAR_PARAMETER);
+    when(arendeService.filterArende(QUERY_FRAGA_SVAR_PARAMETER, true))
+        .thenReturn(QUERY_FRAGA_SVAR_RESPONSE_WC);
 
-        when(arendeService.filterArende(QUERY_FRAGA_SVAR_PARAMETER, true))
-            .thenReturn(QUERY_FRAGA_SVAR_RESPONSE_WC);
+    when(listCertificateQuestionsFromCS.list(QUERY_FRAGA_SVAR_PARAMETER))
+        .thenReturn(QUERY_FRAGA_SVAR_RESPONSE_CS);
 
-        when(listCertificateQuestionsFromCS.list(QUERY_FRAGA_SVAR_PARAMETER))
-            .thenReturn(QUERY_FRAGA_SVAR_RESPONSE_CS);
+    when(webCertUserService.getUser()).thenReturn(WEBCERT_USER);
 
-        when(webCertUserService.getUser())
-            .thenReturn(WEBCERT_USER);
+    when(paginationAndLoggingService.get(
+            QUERY_FRAGA_SVAR_PARAMETER,
+            List.of(ARENDE_LIST_ITEM_WC, ARENDE_LIST_ITEM_CS),
+            WEBCERT_USER))
+        .thenReturn(PAGINATED_LIST);
 
-        when(paginationAndLoggingService.get(QUERY_FRAGA_SVAR_PARAMETER, List.of(ARENDE_LIST_ITEM_WC, ARENDE_LIST_ITEM_CS), WEBCERT_USER))
-            .thenReturn(PAGINATED_LIST);
+    when(certificateListItemConverter.convert(PAGINATED_ITEM_1)).thenReturn(CERTIFICATE_LIST_ITEM);
 
-        when(certificateListItemConverter.convert(PAGINATED_ITEM_1))
-            .thenReturn(CERTIFICATE_LIST_ITEM);
+    when(certificateListItemConverter.convert(PAGINATED_ITEM_2)).thenReturn(CERTIFICATE_LIST_ITEM);
 
-        when(certificateListItemConverter.convert(PAGINATED_ITEM_2))
-            .thenReturn(CERTIFICATE_LIST_ITEM);
+    final var result = listQuestionsFacadeServiceImpl.get(LIST_FILTER);
 
-        final var result = listQuestionsFacadeServiceImpl.get(LIST_FILTER);
-
-        assertEquals(expectedConvertedList, result.getList());
-        assertEquals(expectedConvertedList.size(), result.getTotalCount());
-    }
+    assertEquals(expectedConvertedList, result.getList());
+    assertEquals(expectedConvertedList.size(), result.getTotalCount());
+  }
 }

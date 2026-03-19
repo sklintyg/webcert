@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,18 +25,25 @@ import java.util.stream.Collectors;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 /**
- * Converts a collection of notification entries into a Map intygsId -> List of entries for that intygsId.
+ * Converts a collection of notification entries into a Map intygsId -> List of entries for that
+ * intygsId.
  *
- * Created by eriklupander on 2016-07-05.
+ * <p>Created by eriklupander on 2016-07-05.
  */
 public class StatTransformerUtil {
 
-    public Map<String, List<NotificationStubEntry>> toStat(Collection<CertificateStatusUpdateForCareType> notifs) {
-        Map<String, List<NotificationStubEntry>> listMap = notifs.stream()
-            .map(model -> new NotificationStubEntry(model.getIntyg().getIntygsId().getExtension(),
-                model.getHandelse().getHandelsekod().getCode(), model.getHandelse().getTidpunkt()))
+  public Map<String, List<NotificationStubEntry>> toStat(
+      Collection<CertificateStatusUpdateForCareType> notifs) {
+    Map<String, List<NotificationStubEntry>> listMap =
+        notifs.stream()
+            .map(
+                model ->
+                    new NotificationStubEntry(
+                        model.getIntyg().getIntygsId().getExtension(),
+                        model.getHandelse().getHandelsekod().getCode(),
+                        model.getHandelse().getTidpunkt()))
             .collect(Collectors.groupingBy(NotificationStubEntry::getIntygsId));
 
-        return listMap;
-    }
+    return listMap;
+  }
 }

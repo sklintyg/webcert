@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,51 +16,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import java.util.Objects;
 
 public class CertificateMessage {
 
-    private final CertificateMessageType messageType;
-    private final String message;
+  private final CertificateMessageType messageType;
+  private final String message;
 
-    public CertificateMessage(CertificateMessageType messageType, String message) {
-        this.messageType = messageType;
-        this.message = message;
-    }
+  public CertificateMessage(CertificateMessageType messageType, String message) {
+    this.messageType = messageType;
+    this.message = message;
+  }
 
-    public CertificateMessageType getMessageType() {
-        return messageType;
-    }
+  public CertificateMessageType getMessageType() {
+    return messageType;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        CertificateMessage that = (CertificateMessage) o;
-        return messageType == that.messageType && message.equals(that.message);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CertificateMessage that = (CertificateMessage) o;
+    return messageType == that.messageType && message.equals(that.message);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(messageType, message);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(messageType, message);
+  }
 
-    @Override
-    public String toString() {
-        return "CertificateMessage{"
-            + "messageType=" + messageType
-            + ", message='" + message + '\''
-            + '}';
-    }
+  @Override
+  public String toString() {
+    return "CertificateMessage{"
+        + "messageType="
+        + messageType
+        + ", message='"
+        + message
+        + '\''
+        + '}';
+  }
 }

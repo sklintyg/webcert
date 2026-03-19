@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,21 +28,22 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActio
 
 class DbConfirmationModalProviderTest {
 
-    private static final String NAME = "NAME MIDDLE LAST";
-    private static final String PATIENT_ID = "ID";
+  private static final String NAME = "NAME MIDDLE LAST";
+  private static final String PATIENT_ID = "ID";
 
-    private final DbConfirmationModalProvider provider = new DbConfirmationModalProvider();
+  private final DbConfirmationModalProvider provider = new DbConfirmationModalProvider();
 
-    @Test
-    void shouldReturnExpectedModalForNormalOrigin() {
-        final var expected = CertificateConfirmationModal.builder()
+  @Test
+  void shouldReturnExpectedModalForNormalOrigin() {
+    final var expected =
+        CertificateConfirmationModal.builder()
             .title("Kontrollera namn och personnummer på den avlidne")
             .alert(
                 Alert.builder()
                     .type(MessageLevel.ERROR)
-                    .text("Du är på väg att utfärda ett dödsbevis för<br/><strong>NAME MIDDLE LAST - ID</strong>")
-                    .build()
-            )
+                    .text(
+                        "Du är på väg att utfärda ett dödsbevis för<br/><strong>NAME MIDDLE LAST - ID</strong>")
+                    .build())
             .checkboxText("Jag har kontrollerat att personuppgifterna stämmer")
             .primaryAction(CertificateModalActionType.READ)
             .secondaryAction(CertificateModalActionType.CANCEL)
@@ -52,19 +52,20 @@ class DbConfirmationModalProviderTest {
                     + "<p>Kontrollera därför en extra gång att personuppgifterna stämmer.</p>")
             .build();
 
-        assertEquals(expected, provider.create(NAME, PATIENT_ID, "NORMAL"));
-    }
+    assertEquals(expected, provider.create(NAME, PATIENT_ID, "NORMAL"));
+  }
 
-    @Test
-    void shouldReturnExpectedModalForIntegratedOrigin() {
-        final var expected = CertificateConfirmationModal.builder()
+  @Test
+  void shouldReturnExpectedModalForIntegratedOrigin() {
+    final var expected =
+        CertificateConfirmationModal.builder()
             .title("Kontrollera namn och personnummer på den avlidne")
             .alert(
                 Alert.builder()
                     .type(MessageLevel.ERROR)
-                    .text("Du är på väg att utfärda ett dödsbevis för<br/><strong>NAME MIDDLE LAST - ID</strong>")
-                    .build()
-            )
+                    .text(
+                        "Du är på väg att utfärda ett dödsbevis för<br/><strong>NAME MIDDLE LAST - ID</strong>")
+                    .build())
             .checkboxText("Jag har kontrollerat att personuppgifterna stämmer")
             .primaryAction(CertificateModalActionType.READ)
             .secondaryAction(CertificateModalActionType.DELETE)
@@ -74,7 +75,6 @@ class DbConfirmationModalProviderTest {
                     + "<p>Om fel personuppgifter visas ovan, välj Radera.</p>")
             .build();
 
-        assertEquals(expected, provider.create(NAME, PATIENT_ID, "DJUPINTEGRATION"));
-    }
-
+    assertEquals(expected, provider.create(NAME, PATIENT_ID, "DJUPINTEGRATION"));
+  }
 }

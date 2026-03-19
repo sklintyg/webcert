@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,26 +29,26 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 
 public interface DiagnosInformationRepository extends JpaRepository<DiagnosInformation, Long> {
 
-    // CHECKSTYLE:OFF MethodName
-    Optional<DiagnosInformation> findFirstByIcd10KodList_kod(String icd10Kod);
-    // CHECKSTYLE:ON MethodName
+  // CHECKSTYLE:OFF MethodName
+  Optional<DiagnosInformation> findFirstByIcd10KodList_kod(String icd10Kod);
 
-    // CHECKSTYLE:OFF OperatorWrap
-    // CHECKSTYLE:OFF LineLength
-    @Query(
-        "SELECT new se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar(icd10Kod.kod, "
-            + "max(typfall.maximalSjukrivningstidDagar), typfall.maximalSjukrivningstidSourceValue, "
-            + "typfall.maximalSjukrivningstidSourceUnit) FROM DiagnosInformation diagnosInfo "
-            + "JOIN diagnosInfo.icd10KodList icd10Kod "
-            + "JOIN icd10Kod.typFallList typfall "
-            + "WHERE typfall.maximalSjukrivningstidDagar IS NOT NULL "
-            + "AND icd10Kod.kod IN :koder "
-            + "GROUP BY icd10Kod.kod, typfall.maximalSjukrivningstidDagar, typfall.maximalSjukrivningstidSourceValue, "
-            + "typfall.maximalSjukrivningstidSourceUnit "
-            + "ORDER BY typfall.maximalSjukrivningstidDagar DESC"
-    )
-    List<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(@Param("koder") Set<String> koder);
-    // CHECKSTYLE:ON OperatorWrap
-    // CHECKSTYLE:ON LineLength
+  // CHECKSTYLE:ON MethodName
+
+  // CHECKSTYLE:OFF OperatorWrap
+  // CHECKSTYLE:OFF LineLength
+  @Query(
+      "SELECT new se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar(icd10Kod.kod, "
+          + "max(typfall.maximalSjukrivningstidDagar), typfall.maximalSjukrivningstidSourceValue, "
+          + "typfall.maximalSjukrivningstidSourceUnit) FROM DiagnosInformation diagnosInfo "
+          + "JOIN diagnosInfo.icd10KodList icd10Kod "
+          + "JOIN icd10Kod.typFallList typfall "
+          + "WHERE typfall.maximalSjukrivningstidDagar IS NOT NULL "
+          + "AND icd10Kod.kod IN :koder "
+          + "GROUP BY icd10Kod.kod, typfall.maximalSjukrivningstidDagar, typfall.maximalSjukrivningstidSourceValue, "
+          + "typfall.maximalSjukrivningstidSourceUnit "
+          + "ORDER BY typfall.maximalSjukrivningstidDagar DESC")
+  List<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(
+      @Param("koder") Set<String> koder);
+  // CHECKSTYLE:ON OperatorWrap
+  // CHECKSTYLE:ON LineLength
 }
-

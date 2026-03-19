@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,122 +45,132 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 @Service
 public class ListDecoratorImpl implements ListDecorator {
 
-    private final IntygDraftDecorator intygDraftDecorator;
-    private final EmployeeNameService employeeNameService;
-    private final PatientDetailsResolver patientDetailsResolver;
-    private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-    private final WebCertUserService webCertUserService;
-    private final ResourceLinkHelper resourceLinkHelper;
-    private final DraftAccessServiceHelper draftAccessServiceHelper;
+  private final IntygDraftDecorator intygDraftDecorator;
+  private final EmployeeNameService employeeNameService;
+  private final PatientDetailsResolver patientDetailsResolver;
+  private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+  private final WebCertUserService webCertUserService;
+  private final ResourceLinkHelper resourceLinkHelper;
+  private final DraftAccessServiceHelper draftAccessServiceHelper;
 
+  public ListDecoratorImpl(
+      IntygDraftDecorator intygDraftDecorator,
+      EmployeeNameService employeeNameService,
+      PatientDetailsResolver patientDetailsResolver,
+      WebCertUserService webCertUserService,
+      ResourceLinkHelper resourceLinkHelper,
+      DraftAccessServiceHelper draftAccessServiceHelper) {
+    this.intygDraftDecorator = intygDraftDecorator;
+    this.employeeNameService = employeeNameService;
+    this.patientDetailsResolver = patientDetailsResolver;
+    this.webCertUserService = webCertUserService;
+    this.resourceLinkHelper = resourceLinkHelper;
+    this.draftAccessServiceHelper = draftAccessServiceHelper;
+  }
 
-    public ListDecoratorImpl(IntygDraftDecorator intygDraftDecorator, EmployeeNameService employeeNameService,
-        PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService,
-        ResourceLinkHelper resourceLinkHelper, DraftAccessServiceHelper draftAccessServiceHelper) {
-        this.intygDraftDecorator = intygDraftDecorator;
-        this.employeeNameService = employeeNameService;
-        this.patientDetailsResolver = patientDetailsResolver;
-        this.webCertUserService = webCertUserService;
-        this.resourceLinkHelper = resourceLinkHelper;
-        this.draftAccessServiceHelper = draftAccessServiceHelper;
-    }
+  @Override
+  public void decorateWithCertificateTypeName(List<ListIntygEntry> list) {
+    intygDraftDecorator.decorateWithCertificateTypeName(list);
+  }
 
-    @Override
-    public void decorateWithCertificateTypeName(List<ListIntygEntry> list) {
-        intygDraftDecorator.decorateWithCertificateTypeName(list);
-    }
+  @Override
+  public void decorateWithStaffName(List<ListIntygEntry> list) {
+    final var hsaIds =
+        list.stream().map(ListIntygEntry::getUpdatedSignedById).collect(Collectors.toSet());
+    final var hsaIdNameMap = getNamesByHsaIds(hsaIds);
 
-    @Override
-    public void decorateWithStaffName(List<ListIntygEntry> list) {
-        final var hsaIds = list.stream().map(ListIntygEntry::getUpdatedSignedById).collect(Collectors.toSet());
-        final var hsaIdNameMap = getNamesByHsaIds(hsaIds);
-
-        list.forEach(entry -> {
-            if (hsaIdNameMap.containsKey(entry.getUpdatedSignedById())) {
-                entry.setUpdatedSignedBy(hsaIdNameMap.get(entry.getUpdatedSignedById()));
-            }
+    list.forEach(
+        entry -> {
+          if (hsaIdNameMap.containsKey(entry.getUpdatedSignedById())) {
+            entry.setUpdatedSignedBy(hsaIdNameMap.get(entry.getUpdatedSignedById()));
+          }
         });
-    }
+  }
 
-    @Override
-    public void decorateWithResourceLinks(List<ListIntygEntry> list) {
-        list.forEach(entry -> {
-            resourceLinkHelper.decorateIntygWithValidActionLinks(entry, entry.getPatientId());
-            decorateWithForwardLink(entry);
+  @Override
+  public void decorateWithResourceLinks(List<ListIntygEntry> list) {
+    list.forEach(
+        entry -> {
+          resourceLinkHelper.decorateIntygWithValidActionLinks(entry, entry.getPatientId());
+          decorateWithForwardLink(entry);
         });
-    }
+  }
 
-    private void decorateWithForwardLink(ListIntygEntry entry) {
-        final var isForwardingAllowed = draftAccessServiceHelper.isAllowedToForwardUtkast(
+  private void decorateWithForwardLink(ListIntygEntry entry) {
+    final var isForwardingAllowed =
+        draftAccessServiceHelper.isAllowedToForwardUtkast(
             AccessEvaluationParameters.create(
                 entry.getIntygType(),
                 entry.getIntygTypeVersion(),
                 UtkastUtil.getCareUnit(entry.getVardgivarId(), entry.getVardenhetId()),
                 entry.getPatientId(),
-                entry.isTestIntyg()
-            )
-        );
+                entry.isTestIntyg()));
 
-        if (isForwardingAllowed) {
-            entry.addLink(new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST));
-        }
+    if (isForwardingAllowed) {
+      entry.addLink(new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST));
     }
+  }
 
-    private Map<String, String> getNamesByHsaIds(Collection<String> hsaIds) {
-        Map<String, String> hsaIdNameMap = new HashMap<>();
+  private Map<String, String> getNamesByHsaIds(Collection<String> hsaIds) {
+    Map<String, String> hsaIdNameMap = new HashMap<>();
 
-        hsaIds.forEach(hsaId -> hsaIdNameMap.put(hsaId, employeeNameService.getEmployeeHsaName(hsaId)));
+    hsaIds.forEach(hsaId -> hsaIdNameMap.put(hsaId, employeeNameService.getEmployeeHsaName(hsaId)));
 
-        return hsaIdNameMap;
-    }
+    return hsaIdNameMap;
+  }
 
-    @Override
-    public List<ListIntygEntry> decorateAndFilterProtectedPerson(List<ListIntygEntry> list) {
-        final var user = webCertUserService.getUser();
-        final var patientStatusMap = getPatientStatusMap(list);
+  @Override
+  public List<ListIntygEntry> decorateAndFilterProtectedPerson(List<ListIntygEntry> list) {
+    final var user = webCertUserService.getUser();
+    final var patientStatusMap = getPatientStatusMap(list);
 
-        list = filterEntriesForProtectedPatients(user, list, patientStatusMap);
-        list.forEach(entry -> markPatientStatuses(entry, patientStatusMap.get(entry.getPatientId())));
+    list = filterEntriesForProtectedPatients(user, list, patientStatusMap);
+    list.forEach(entry -> markPatientStatuses(entry, patientStatusMap.get(entry.getPatientId())));
 
-        return list;
-    }
+    return list;
+  }
 
-    private Map<Personnummer, PatientDetailsResolverResponse> getPatientStatusMap(List<ListIntygEntry> listIntygEntries) {
-        return patientDetailsResolver.getPersonStatusesForList(
-            listIntygEntries.stream()
-                .map(ListIntygEntry::getPatientId)
-                .collect(Collectors.toList())
-        );
-    }
+  private Map<Personnummer, PatientDetailsResolverResponse> getPatientStatusMap(
+      List<ListIntygEntry> listIntygEntries) {
+    return patientDetailsResolver.getPersonStatusesForList(
+        listIntygEntries.stream().map(ListIntygEntry::getPatientId).collect(Collectors.toList()));
+  }
 
-    private List<ListIntygEntry> filterEntriesForProtectedPatients(
-        WebCertUser user, List<ListIntygEntry> listIntygEntries, Map<Personnummer,
-            PatientDetailsResolverResponse> patientStatusMap) {
-        listIntygEntries = listIntygEntries.stream()
+  private List<ListIntygEntry> filterEntriesForProtectedPatients(
+      WebCertUser user,
+      List<ListIntygEntry> listIntygEntries,
+      Map<Personnummer, PatientDetailsResolverResponse> patientStatusMap) {
+    listIntygEntries =
+        listIntygEntries.stream()
             .filter(
-                entry -> this.isStaffAllowedToViewProtectedPatients(
-                    entry.getPatientId(), entry.getIntygType(), user, patientStatusMap
-                )
-            )
+                entry ->
+                    this.isStaffAllowedToViewProtectedPatients(
+                        entry.getPatientId(), entry.getIntygType(), user, patientStatusMap))
             .collect(Collectors.toList());
-        return listIntygEntries;
-    }
+    return listIntygEntries;
+  }
 
-    private void markPatientStatuses(ListIntygEntry entry, PatientDetailsResolverResponse patientResponse) {
-        entry.setSekretessmarkering(patientResponse.isProtectedPerson() == SekretessStatus.TRUE);
-        entry.setAvliden(patientResponse.isDeceased());
-        entry.setTestIntyg(patientResponse.isTestIndicator());
-    }
+  private void markPatientStatuses(
+      ListIntygEntry entry, PatientDetailsResolverResponse patientResponse) {
+    entry.setSekretessmarkering(patientResponse.isProtectedPerson() == SekretessStatus.TRUE);
+    entry.setAvliden(patientResponse.isDeceased());
+    entry.setTestIntyg(patientResponse.isTestIndicator());
+  }
 
-    private boolean isStaffAllowedToViewProtectedPatients(Personnummer patientId, String intygsTyp, WebCertUser user,
-        Map<Personnummer, PatientDetailsResolverResponse> sekretessStatusMap) {
-        final var status = sekretessStatusMap.get(patientId).isProtectedPerson();
-        if (status == SekretessStatus.UNDEFINED) {
-            return false;
-        } else {
-            return status == SekretessStatus.FALSE || authoritiesValidator.given(user, intygsTyp)
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                .isVerified();
-        }
+  private boolean isStaffAllowedToViewProtectedPatients(
+      Personnummer patientId,
+      String intygsTyp,
+      WebCertUser user,
+      Map<Personnummer, PatientDetailsResolverResponse> sekretessStatusMap) {
+    final var status = sekretessStatusMap.get(patientId).isProtectedPerson();
+    if (status == SekretessStatus.UNDEFINED) {
+      return false;
+    } else {
+      return status == SekretessStatus.FALSE
+          || authoritiesValidator
+              .given(user, intygsTyp)
+              .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+              .isVerified();
     }
+  }
 }

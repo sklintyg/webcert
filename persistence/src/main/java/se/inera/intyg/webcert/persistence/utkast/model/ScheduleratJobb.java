@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,47 +28,47 @@ import jakarta.persistence.Version;
 @Table(name = "SCHEDULERAT_JOBB")
 public class ScheduleratJobb {
 
-    @Id
-    @Column(name = "JOBB_ID")
-    private String id;
+  @Id
+  @Column(name = "JOBB_ID")
+  private String id;
 
-    @Version
-    @Column(name = "VERSION")
-    private long version;
+  @Version
+  @Column(name = "VERSION")
+  private long version;
 
-    @Column(name = "BEARBETAS")
-    private boolean bearbetas;
+  @Column(name = "BEARBETAS")
+  private boolean bearbetas;
 
-    public ScheduleratJobb() {
-        super();
-    }
+  public ScheduleratJobb() {
+    super();
+  }
 
-    public ScheduleratJobb(String id) {
-        super();
-        this.id = id;
-    }
+  public ScheduleratJobb(String id) {
+    super();
+    this.id = id;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public long getVersion() {
-        return version;
-    }
+  public long getVersion() {
+    return version;
+  }
 
-    public void setVersion(long version) {
-        this.version = version;
-    }
+  public void setVersion(long version) {
+    this.version = version;
+  }
 
-    public boolean isBearbetas() {
-        return bearbetas;
-    }
+  public boolean isBearbetas() {
+    return bearbetas;
+  }
 
-    public void setBearbetas(boolean bearbetas) {
-        this.bearbetas = bearbetas;
-    }
+  public void setBearbetas(boolean bearbetas) {
+    this.bearbetas = bearbetas;
+  }
 }

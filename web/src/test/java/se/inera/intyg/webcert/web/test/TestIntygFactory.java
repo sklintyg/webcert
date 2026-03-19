@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,74 +36,84 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
  */
 public final class TestIntygFactory {
 
-    private TestIntygFactory() {
+  private TestIntygFactory() {}
 
-    }
+  public static List<ListIntygEntry> createListWithIntygItems() {
 
-    public static List<ListIntygEntry> createListWithIntygItems() {
+    List<ListIntygEntry> list = new ArrayList<>();
 
-        List<ListIntygEntry> list = new ArrayList<>();
+    list.add(createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23")));
+    list.add(createIntygItem("4", LocalDateTime.parse("2014-01-03T12:12:18")));
 
-        list.add(createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23")));
-        list.add(createIntygItem("4", LocalDateTime.parse("2014-01-03T12:12:18")));
+    return list;
+  }
 
-        return list;
-    }
+  public static ListIntygEntry createIntygItem(String id, LocalDateTime signedDate) {
+    return createIntygItem(id, signedDate, null);
+  }
 
-    public static ListIntygEntry createIntygItem(String id, LocalDateTime signedDate) {
-        return createIntygItem(id, signedDate, null);
-    }
+  public static ListIntygEntry createIntygItem(
+      String id, LocalDateTime signedDate, IntygSource intygSource) {
 
-    public static ListIntygEntry createIntygItem(String id, LocalDateTime signedDate, IntygSource intygSource) {
+    ListIntygEntry it = new ListIntygEntry();
 
-        ListIntygEntry it = new ListIntygEntry();
+    it.setIntygId(id);
+    it.setUpdatedSignedBy("A Person");
+    it.setLastUpdatedSigned(signedDate);
+    it.setIntygType("Type 1");
+    it.setSource(intygSource);
 
-        it.setIntygId(id);
-        it.setUpdatedSignedBy("A Person");
-        it.setLastUpdatedSigned(signedDate);
-        it.setIntygType("Type 1");
-        it.setSource(intygSource);
+    it.setStatus(CertificateState.SENT.name());
 
-        it.setStatus(CertificateState.SENT.name());
+    return it;
+  }
 
-        return it;
-    }
+  public static List<Utkast> createListWithUtkast() {
 
-    public static List<Utkast> createListWithUtkast() {
+    List<Utkast> list = new ArrayList<>();
 
-        List<Utkast> list = new ArrayList<>();
+    list.add(createUtkast("2", LocalDateTime.parse("2014-01-01T10:00:00")));
+    list.add(createUtkast("1", LocalDateTime.parse("2014-01-01T08:00:00")));
 
-        list.add(createUtkast("2", LocalDateTime.parse("2014-01-01T10:00:00")));
-        list.add(createUtkast("1", LocalDateTime.parse("2014-01-01T08:00:00")));
+    return list;
+  }
 
-        return list;
-    }
+  public static Utkast createUtkast(String id, LocalDateTime lastUpdated) {
+    return createUtkast(
+        id,
+        lastUpdated,
+        "A Type",
+        "A Person",
+        "HSA1234",
+        UtkastStatus.DRAFT_COMPLETE,
+        Personnummer.createPersonnummer("19121212-1212").get());
+  }
 
-    public static Utkast createUtkast(String id, LocalDateTime lastUpdated) {
-        return createUtkast(id, lastUpdated, "A Type", "A Person", "HSA1234",
-            UtkastStatus.DRAFT_COMPLETE, Personnummer.createPersonnummer("19121212-1212").get());
-    }
+  public static Utkast createUtkast(
+      String id,
+      LocalDateTime lastUpdated,
+      String type,
+      String modifiedBy,
+      String modifiedByHsaId,
+      UtkastStatus status,
+      Personnummer patientId) {
 
-    public static Utkast createUtkast(String id, LocalDateTime lastUpdated, String type, String modifiedBy, String modifiedByHsaId,
-        UtkastStatus status, Personnummer patientId) {
+    VardpersonReferens vp = new VardpersonReferens();
+    vp.setNamn(modifiedBy);
+    vp.setHsaId(modifiedByHsaId);
 
-        VardpersonReferens vp = new VardpersonReferens();
-        vp.setNamn(modifiedBy);
-        vp.setHsaId(modifiedByHsaId);
+    Utkast utkast = new Utkast();
 
-        Utkast utkast = new Utkast();
+    utkast.setIntygsId(id);
+    utkast.setSenastSparadAv(vp);
+    utkast.setSkapadAv(vp);
+    utkast.setIntygsTyp(type);
+    utkast.setStatus(status);
+    utkast.setSenastSparadDatum(lastUpdated);
+    utkast.setPatientFornamn("Tolvan");
+    utkast.setPatientEfternamn("Tolvsson");
+    utkast.setPatientPersonnummer(patientId);
 
-        utkast.setIntygsId(id);
-        utkast.setSenastSparadAv(vp);
-        utkast.setSkapadAv(vp);
-        utkast.setIntygsTyp(type);
-        utkast.setStatus(status);
-        utkast.setSenastSparadDatum(lastUpdated);
-        utkast.setPatientFornamn("Tolvan");
-        utkast.setPatientEfternamn("Tolvsson");
-        utkast.setPatientPersonnummer(patientId);
-
-        return utkast;
-    }
-
+    return utkast;
+  }
 }

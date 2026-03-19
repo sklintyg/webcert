@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,50 +30,51 @@ import org.springframework.data.redis.support.collections.DefaultRedisMap;
 import se.inera.intyg.webcert.notificationstub.store.BaseStore;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
-public class NotificationStoreV3Impl extends BaseStore<CertificateStatusUpdateForCareType> implements NotificationStoreV3 {
+public class NotificationStoreV3Impl extends BaseStore<CertificateStatusUpdateForCareType>
+    implements NotificationStoreV3 {
 
-    private static final String NOTIFICATION_STORE_V3 = "NOTIFICATION_STORE_V3";
+  private static final String NOTIFICATION_STORE_V3 = "NOTIFICATION_STORE_V3";
 
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+  @Autowired private RedisConnectionFactory redisConnectionFactory;
 
-    private StringRedisTemplate stringRedisTemplate;
+  private StringRedisTemplate stringRedisTemplate;
 
-    @PostConstruct
-    public void init() {
-        stringRedisTemplate = new StringRedisTemplate();
-        stringRedisTemplate.setConnectionFactory(redisConnectionFactory);
-        stringRedisTemplate.afterPropertiesSet();
-        notificationsMap = new DefaultRedisMap<String, String>(NOTIFICATION_STORE_V3, stringRedisTemplate);
+  @PostConstruct
+  public void init() {
+    stringRedisTemplate = new StringRedisTemplate();
+    stringRedisTemplate.setConnectionFactory(redisConnectionFactory);
+    stringRedisTemplate.afterPropertiesSet();
+    notificationsMap =
+        new DefaultRedisMap<String, String>(NOTIFICATION_STORE_V3, stringRedisTemplate);
+  }
+
+  void initForTesting() {
+    notificationsMap = new HashMap<>();
+  }
+
+  //    @PreDestroy
+  //    public void close() {
+  //        if (this.notificationsMap != null) {
+  //            this.notificationsMap.close();
+  //        }
+  //    }
+
+  @Override
+  protected LocalDateTime getTidpunkt(Pair<String, CertificateStatusUpdateForCareType> left) {
+    return left.getValue().getHandelse().getTidpunkt();
+  }
+
+  @Override
+  public void purge() {
+    super.purge();
+  }
+
+  @Override
+  protected CertificateStatusUpdateForCareType transform(String s) {
+    try {
+      return objectMapper.readValue(s, CertificateStatusUpdateForCareType.class);
+    } catch (IOException e) {
+      return null;
     }
-
-    void initForTesting() {
-        notificationsMap = new HashMap<>();
-    }
-
-//    @PreDestroy
-//    public void close() {
-//        if (this.notificationsMap != null) {
-//            this.notificationsMap.close();
-//        }
-//    }
-
-    @Override
-    protected LocalDateTime getTidpunkt(Pair<String, CertificateStatusUpdateForCareType> left) {
-        return left.getValue().getHandelse().getTidpunkt();
-    }
-
-    @Override
-    public void purge() {
-        super.purge();
-    }
-
-    @Override
-    protected CertificateStatusUpdateForCareType transform(String s) {
-        try {
-            return objectMapper.readValue(s, CertificateStatusUpdateForCareType.class);
-        } catch (IOException e) {
-            return null;
-        }
-    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,28 +22,27 @@ import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 
 public class IntygGRPSignature implements IntygSignature {
 
-    private String intygJson;
-    private String intygHash;
+  private String intygJson;
+  private String intygHash;
 
-    public IntygGRPSignature(String intygJson, String intygHash) {
-        this.intygJson = intygJson;
-        this.intygHash = intygHash;
-    }
+  public IntygGRPSignature(String intygJson, String intygHash) {
+    this.intygJson = intygJson;
+    this.intygHash = intygHash;
+  }
 
-    @Override
-    public String getIntygJson() {
-        return intygJson;
-    }
+  @Override
+  public String getIntygJson() {
+    return intygJson;
+  }
 
+  // For GRP, this is the JSON rep.
+  @Override
+  public String getCanonicalizedIntyg() {
+    return intygJson;
+  }
 
-    // For GRP, this is the JSON rep.
-    @Override
-    public String getCanonicalizedIntyg() {
-        return intygJson;
-    }
-
-    @Override
-    public String getSigningData() {
-        return intygHash;
-    }
+  @Override
+  public String getSigningData() {
+    return intygHash;
+  }
 }

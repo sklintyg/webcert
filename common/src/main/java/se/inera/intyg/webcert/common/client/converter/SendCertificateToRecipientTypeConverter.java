@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,41 +31,42 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Part;
 
 public final class SendCertificateToRecipientTypeConverter {
 
-    private SendCertificateToRecipientTypeConverter() {
-    }
+  private SendCertificateToRecipientTypeConverter() {}
 
-    public static SendCertificateToRecipientType convert(String intygsId, String personnummer, HoSPersonal skickatAv, String recipient) {
-        SendCertificateToRecipientType request = new SendCertificateToRecipientType();
-        request.setSkickatTidpunkt(LocalDateTime.now());
-        request.setIntygsId(buildIntygId(intygsId));
-        request.setPatientPersonId(InternalConverterUtil.getPersonId(createPnr(personnummer)));
-        request.setMottagare(buildPart(recipient));
-        request.setSkickatAv(buildSkickatAv(skickatAv));
-        return request;
-    }
+  public static SendCertificateToRecipientType convert(
+      String intygsId, String personnummer, HoSPersonal skickatAv, String recipient) {
+    SendCertificateToRecipientType request = new SendCertificateToRecipientType();
+    request.setSkickatTidpunkt(LocalDateTime.now());
+    request.setIntygsId(buildIntygId(intygsId));
+    request.setPatientPersonId(InternalConverterUtil.getPersonId(createPnr(personnummer)));
+    request.setMottagare(buildPart(recipient));
+    request.setSkickatAv(buildSkickatAv(skickatAv));
+    return request;
+  }
 
-    private static IntygId buildIntygId(String intygsId) {
-        IntygId intygId = new IntygId();
-        intygId.setRoot("SE5565594230-B31"); // IT:s root since unit hsaId is not available
-        intygId.setExtension(intygsId);
-        return intygId;
-    }
+  private static IntygId buildIntygId(String intygsId) {
+    IntygId intygId = new IntygId();
+    intygId.setRoot("SE5565594230-B31"); // IT:s root since unit hsaId is not available
+    intygId.setExtension(intygsId);
+    return intygId;
+  }
 
-    private static Part buildPart(String recipient) {
-        Part part = new Part();
-        part.setCode(recipient);
-        part.setCodeSystem(KV_PART_CODE_SYSTEM);
-        return part;
-    }
+  private static Part buildPart(String recipient) {
+    Part part = new Part();
+    part.setCode(recipient);
+    part.setCodeSystem(KV_PART_CODE_SYSTEM);
+    return part;
+  }
 
-    private static SkickatAv buildSkickatAv(HoSPersonal hosPersonal) {
-        SkickatAv skickatAv = new SkickatAv();
-        skickatAv.setHosPersonal(InternalConverterUtil.getSkapadAv(hosPersonal, LocalDateTime.now()));
-        return skickatAv;
-    }
+  private static SkickatAv buildSkickatAv(HoSPersonal hosPersonal) {
+    SkickatAv skickatAv = new SkickatAv();
+    skickatAv.setHosPersonal(InternalConverterUtil.getSkapadAv(hosPersonal, LocalDateTime.now()));
+    return skickatAv;
+  }
 
-    private static Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
-    }
+  private static Personnummer createPnr(String personId) {
+    return Personnummer.createPersonnummer(personId)
+        .orElseThrow(
+            () -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+  }
 }

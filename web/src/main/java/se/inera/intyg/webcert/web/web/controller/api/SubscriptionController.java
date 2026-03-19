@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,16 +34,17 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 @Api(value = "subscription", produces = MediaType.APPLICATION_JSON)
 public class SubscriptionController extends AbstractApiController {
 
-    @Autowired
-    private SubscriptionService subscriptionService;
+  @Autowired private SubscriptionService subscriptionService;
 
-    @GET
-    @Path("/acknowledgeSubscriptionModal")
-    @Produces(MediaType.APPLICATION_JSON)
-    @PerformanceLogging(eventAction = "subscription-acknowledge-subscription-modal", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public ResponseEntity<String> acknowledgeSubscriptionModal() {
-        final var webCertUser = getWebCertUserService().getUser();
-        subscriptionService.acknowledgeSubscriptionModal(webCertUser);
-        return ResponseEntity.ok().build();
-    }
+  @GET
+  @Path("/acknowledgeSubscriptionModal")
+  @Produces(MediaType.APPLICATION_JSON)
+  @PerformanceLogging(
+      eventAction = "subscription-acknowledge-subscription-modal",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public ResponseEntity<String> acknowledgeSubscriptionModal() {
+    final var webCertUser = getWebCertUserService().getUser();
+    subscriptionService.acknowledgeSubscriptionModal(webCertUser);
+    return ResponseEntity.ok().build();
+  }
 }

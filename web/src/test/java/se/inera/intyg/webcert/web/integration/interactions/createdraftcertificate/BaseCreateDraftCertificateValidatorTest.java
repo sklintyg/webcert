@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,107 +49,141 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-/**
- * Created by eriklupander on 2017-09-19.
- */
+/** Created by eriklupander on 2017-09-19. */
 public abstract class BaseCreateDraftCertificateValidatorTest {
 
-    protected static final String FK7263 = Fk7263EntryPoint.MODULE_ID;
-    protected static final String TSBAS = TsBasEntryPoint.MODULE_ID;
-    protected static final String LUSE = LuseEntryPoint.MODULE_ID;
+  protected static final String FK7263 = Fk7263EntryPoint.MODULE_ID;
+  protected static final String TSBAS = TsBasEntryPoint.MODULE_ID;
+  protected static final String LUSE = LuseEntryPoint.MODULE_ID;
 
-    protected static final List<String> ALL_INTYG_TYPES = Arrays.asList(Fk7263EntryPoint.MODULE_ID,
-        TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
-        LisjpEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
-        LuaenaEntryPoint.MODULE_ID, DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
-    protected WebCertUser user;
+  protected static final List<String> ALL_INTYG_TYPES =
+      Arrays.asList(
+          Fk7263EntryPoint.MODULE_ID,
+          TsBasEntryPoint.MODULE_ID,
+          TsDiabetesEntryPoint.MODULE_ID,
+          LisjpEntryPoint.MODULE_ID,
+          LuaefsEntryPoint.MODULE_ID,
+          LuseEntryPoint.MODULE_ID,
+          LuaenaEntryPoint.MODULE_ID,
+          DbModuleEntryPoint.MODULE_ID,
+          DoiModuleEntryPoint.MODULE_ID);
+  protected WebCertUser user;
 
-    @Mock
-    protected IntygModuleRegistry moduleRegistry;
+  @Mock protected IntygModuleRegistry moduleRegistry;
 
-    @Mock
-    protected PatientDetailsResolver patientDetailsResolver;
+  @Mock protected PatientDetailsResolver patientDetailsResolver;
 
-    @Mock
-    protected AuthoritiesHelper authoritiesHelper;
+  @Mock protected AuthoritiesHelper authoritiesHelper;
 
-    @Mock
-    protected FeaturesHelper featuresHelper;
+  @Mock protected FeaturesHelper featuresHelper;
 
-    //    @Before
-    public void setup() throws ModuleNotFoundException {
-        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, FK7263.toLowerCase())).thenReturn(true);
-        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, TSBAS.toLowerCase())).thenReturn(true);
-        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase())).thenReturn(true);
+  //    @Before
+  public void setup() throws ModuleNotFoundException {
+    when(authoritiesHelper.isFeatureActive(
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, FK7263.toLowerCase()))
+        .thenReturn(true);
+    when(authoritiesHelper.isFeatureActive(
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, TSBAS.toLowerCase()))
+        .thenReturn(true);
+    when(authoritiesHelper.isFeatureActive(
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase()))
+        .thenReturn(true);
 
-        when(authoritiesHelper.getIntygstyperAllowedForAvliden()).thenReturn(List.of(DoiModuleEntryPoint.MODULE_ID));
-        when(moduleRegistry.getModuleIdFromExternalId(anyString()))
-            .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
-        when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
-        when(moduleRegistry.moduleExists(TsBasEntryPoint.MODULE_ID)).thenReturn(true);
-        when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
+    when(authoritiesHelper.getIntygstyperAllowedForAvliden())
+        .thenReturn(List.of(DoiModuleEntryPoint.MODULE_ID));
+    when(moduleRegistry.getModuleIdFromExternalId(anyString()))
+        .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
+    when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
+    when(moduleRegistry.moduleExists(TsBasEntryPoint.MODULE_ID)).thenReturn(true);
+    when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
 
-        when(moduleRegistry.getIntygModule(Fk7263EntryPoint.MODULE_ID)).thenReturn(buildIntygModule(FK7263));
-        when(moduleRegistry.getIntygModule(TsBasEntryPoint.MODULE_ID)).thenReturn(buildIntygModule(TSBAS));
-        when(moduleRegistry.getIntygModule(LuseEntryPoint.MODULE_ID)).thenReturn(buildIntygModule(LUSE));
+    when(moduleRegistry.getIntygModule(Fk7263EntryPoint.MODULE_ID))
+        .thenReturn(buildIntygModule(FK7263));
+    when(moduleRegistry.getIntygModule(TsBasEntryPoint.MODULE_ID))
+        .thenReturn(buildIntygModule(TSBAS));
+    when(moduleRegistry.getIntygModule(LuseEntryPoint.MODULE_ID))
+        .thenReturn(buildIntygModule(LUSE));
 
-        when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>(ALL_INTYG_TYPES));
+    when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering())
+        .thenReturn(new HashSet<>(ALL_INTYG_TYPES));
 
-        user = buildUser();
-    }
+    user = buildUser();
+  }
 
-    protected IntygModule buildIntygModule(String id) {
-        return new IntygModule(id, "", "", "", "", "", "", "", "", "");
-    }
+  protected IntygModule buildIntygModule(String id) {
+    return new IntygModule(id, "", "", "", "", "", "", "", "", "");
+  }
 
-    protected WebCertUser buildUser() {
-        WebCertUser webcertUser = new WebCertUser();
-        webcertUser.setAuthorities(new HashMap<>());
+  protected WebCertUser buildUser() {
+    WebCertUser webcertUser = new WebCertUser();
+    webcertUser.setAuthorities(new HashMap<>());
 
-        webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+    webcertUser
+        .getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
-        webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+    webcertUser
+        .getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
-        Feature feature = new Feature();
-        feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        feature.setIntygstyper(Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID));
-        feature.setGlobal(true);
-        webcertUser.setFeatures(Collections.singletonMap(feature.getName(), feature));
-        webcertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        return webcertUser;
-    }
+    Feature feature = new Feature();
+    feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+    feature.setIntygstyper(Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID));
+    feature.setGlobal(true);
+    webcertUser.setFeatures(Collections.singletonMap(feature.getName(), feature));
+    webcertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+    return webcertUser;
+  }
 
-    protected WebCertUser buildUserUnauthorized() {
-        WebCertUser webCertUser = new WebCertUser();
-        webCertUser.setAuthorities(new HashMap<>());
+  protected WebCertUser buildUserUnauthorized() {
+    WebCertUser webCertUser = new WebCertUser();
+    webCertUser.setAuthorities(new HashMap<>());
 
-        webCertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-            createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, ALL_INTYG_TYPES));
-        webCertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+    webCertUser
+        .getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+            createPrivilege(
+                AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, ALL_INTYG_TYPES));
+    webCertUser
+        .getAuthorities()
+        .put(
+            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, ALL_INTYG_TYPES));
-        Feature feature = new Feature();
-        feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        feature.setIntygstyper(Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
-            LisjpEntryPoint.MODULE_ID, LuaenaEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
-            DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
-        feature.setGlobal(true);
-        webCertUser.setFeatures(Collections.singletonMap(feature.getName(), feature));
-        webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        return webCertUser;
-    }
+    Feature feature = new Feature();
+    feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+    feature.setIntygstyper(
+        Arrays.asList(
+            Fk7263EntryPoint.MODULE_ID,
+            TsBasEntryPoint.MODULE_ID,
+            TsDiabetesEntryPoint.MODULE_ID,
+            LisjpEntryPoint.MODULE_ID,
+            LuaenaEntryPoint.MODULE_ID,
+            LuaefsEntryPoint.MODULE_ID,
+            LuseEntryPoint.MODULE_ID,
+            DbModuleEntryPoint.MODULE_ID,
+            DoiModuleEntryPoint.MODULE_ID));
+    feature.setGlobal(true);
+    webCertUser.setFeatures(Collections.singletonMap(feature.getName(), feature));
+    webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+    return webCertUser;
+  }
 
-    protected Privilege createPrivilege(String privilege) {
-        return createPrivilege(privilege, Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID));
-    }
+  protected Privilege createPrivilege(String privilege) {
+    return createPrivilege(
+        privilege, Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID));
+  }
 
-    protected Privilege createPrivilege(String privilege, List<String> intygstyper) {
-        Privilege priv = new Privilege();
-        priv.setName(privilege);
-        RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
-        requestOrigin.setIntygstyper(intygstyper);
-        priv.setRequestOrigins(List.of(requestOrigin));
-        priv.setIntygstyper(intygstyper);
-        return priv;
-    }
+  protected Privilege createPrivilege(String privilege, List<String> intygstyper) {
+    Privilege priv = new Privilege();
+    priv.setName(privilege);
+    RequestOrigin requestOrigin = new RequestOrigin();
+    requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
+    requestOrigin.setIntygstyper(intygstyper);
+    priv.setRequestOrigins(List.of(requestOrigin));
+    priv.setIntygstyper(intygstyper);
+    return priv;
+  }
 }

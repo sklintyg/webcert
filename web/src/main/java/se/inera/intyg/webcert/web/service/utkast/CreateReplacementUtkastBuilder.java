@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,14 +24,14 @@ import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 
 @Component
-public class CreateReplacementUtkastBuilder extends AbstractUtkastBuilder<CreateReplacementCopyRequest> {
+public class CreateReplacementUtkastBuilder
+    extends AbstractUtkastBuilder<CreateReplacementCopyRequest> {
 
-    @Override
-    public Relation createRelation(CreateReplacementCopyRequest request) {
-        Relation relation = new Relation();
-        relation.setRelationIntygsId(request.getOriginalIntygId());
-        relation.setRelationKod(RelationKod.ERSATT);
-        return relation;
-    }
-
+  @Override
+  public Relation createRelation(CreateReplacementCopyRequest request) {
+    Relation relation = new Relation();
+    relation.setRelationIntygsId(request.getOriginalIntygId());
+    relation.setRelationKod(RelationKod.ERSATT);
+    return relation;
+  }
 }

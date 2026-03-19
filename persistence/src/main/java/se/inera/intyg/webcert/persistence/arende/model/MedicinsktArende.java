@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,83 +24,82 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class MedicinsktArende {
 
-    @Column(name = "FRAGE_ID")
-    private String frageId;
+  @Column(name = "FRAGE_ID")
+  private String frageId;
 
-    @Column(name = "INSTANS")
-    private Integer instans;
+  @Column(name = "INSTANS")
+  private Integer instans;
 
-    @Column(name = "TEXT")
-    private String text;
+  @Column(name = "TEXT")
+  private String text;
 
-    public String getFrageId() {
-        return frageId;
+  public String getFrageId() {
+    return frageId;
+  }
+
+  public void setFrageId(String frageId) {
+    this.frageId = frageId;
+  }
+
+  public Integer getInstans() {
+    return instans;
+  }
+
+  public void setInstans(Integer instans) {
+    this.instans = instans;
+  }
+
+  public String getText() {
+    return text;
+  }
+
+  public void setText(String text) {
+    this.text = text;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((frageId == null) ? 0 : frageId.hashCode());
+    result = prime * result + ((instans == null) ? 0 : instans.hashCode());
+    result = prime * result + ((text == null) ? 0 : text.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    public void setFrageId(String frageId) {
-        this.frageId = frageId;
+    if (obj == null) {
+      return false;
     }
-
-    public Integer getInstans() {
-        return instans;
+    if (!(obj instanceof MedicinsktArende)) {
+      return false;
     }
-
-    public void setInstans(Integer instans) {
-        this.instans = instans;
+    MedicinsktArende other = (MedicinsktArende) obj;
+    if (frageId == null) {
+      if (other.frageId != null) {
+        return false;
+      }
+    } else if (!frageId.equals(other.frageId)) {
+      return false;
     }
-
-    public String getText() {
-        return text;
+    if (instans == null) {
+      if (other.instans != null) {
+        return false;
+      }
+    } else if (!instans.equals(other.instans)) {
+      return false;
     }
-
-    public void setText(String text) {
-        this.text = text;
+    if (text == null) {
+      if (other.text != null) {
+        return false;
+      }
+    } else if (!text.equals(other.text)) {
+      return false;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((frageId == null) ? 0 : frageId.hashCode());
-        result = prime * result + ((instans == null) ? 0 : instans.hashCode());
-        result = prime * result + ((text == null) ? 0 : text.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof MedicinsktArende)) {
-            return false;
-        }
-        MedicinsktArende other = (MedicinsktArende) obj;
-        if (frageId == null) {
-            if (other.frageId != null) {
-                return false;
-            }
-        } else if (!frageId.equals(other.frageId)) {
-            return false;
-        }
-        if (instans == null) {
-            if (other.instans != null) {
-                return false;
-            }
-        } else if (!instans.equals(other.instans)) {
-            return false;
-        }
-        if (text == null) {
-            if (other.text != null) {
-                return false;
-            }
-        } else if (!text.equals(other.text)) {
-            return false;
-        }
-        return true;
-    }
-
+    return true;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,78 +35,83 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public final class NotificationTypeConverter {
 
-    protected static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
+  protected static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationTypeConverter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(NotificationTypeConverter.class);
 
-    private NotificationTypeConverter() {
+  private NotificationTypeConverter() {}
+
+  public static CertificateStatusUpdateForCareType convert(
+      NotificationMessage notificationMessage, Intyg intyg) {
+    CertificateStatusUpdateForCareType destination = new CertificateStatusUpdateForCareType();
+    complementIntyg(intyg);
+    destination.setIntyg(intyg);
+    decorateWithHandelse(destination, notificationMessage);
+    decorateWithArenden(destination, notificationMessage);
+    destination.setRef(notificationMessage.getReference());
+    return destination;
+  }
+
+  /**
+   * This method should only be used for CertificateStatusUpdateForCare. DO NOT MOVE THIS METHOD!
+   *
+   * <p>It is needed because a utkast might not contain the information needed to meet the
+   * requirements of the service contract. And we send not yet signed utkast in
+   * CertificateStatusUpdateForCare.
+   */
+  public static void complementIntyg(Intyg intyg) {
+    Enhet enhet = intyg.getSkapadAv().getEnhet();
+    if (Strings.nullToEmpty(enhet.getArbetsplatskod().getExtension()).trim().isEmpty()) {
+      enhet.getArbetsplatskod().setExtension(TEMPORARY_ARBETSPLATSKOD);
+    }
+    if ("".equals(enhet.getEpost())) {
+      enhet.setEpost(null);
+    }
+  }
+
+  private static void decorateWithHandelse(
+      CertificateStatusUpdateForCareType statusUpdateType,
+      NotificationMessage notificationMessage) {
+    Handelsekod handelseKod = new Handelsekod();
+    handelseKod.setCodeSystem(KV_HANDELSE_CODE_SYSTEM);
+
+    handelseKod.setCode(notificationMessage.getHandelse().value());
+    handelseKod.setDisplayName(notificationMessage.getHandelse().description());
+
+    Handelse handelse = new Handelse();
+    handelse.setHandelsekod(handelseKod);
+    handelse.setTidpunkt(notificationMessage.getHandelseTid());
+
+    // JIRA INTYG-3715 föreskriver att ämne och sista svarsdatum endast ska läggas
+    // till om händelsen är av typen NYFRFM (ny fråga från mottagare).
+    if (HandelsekodEnum.fromValue(handelseKod.getCode()) == HandelsekodEnum.NYFRFM) {
+      if (notificationMessage.getAmne() == null) {
+        LOGGER.debug("Vid händelsetypen NYFRFM var ämneskod null");
+      }
+      handelse.setAmne(notificationMessage.getAmne());
+
+      if (notificationMessage.getSistaSvarsDatum() == null) {
+        LOGGER.debug("Vid händelsetypen NYFRFM var sista datum för svars null");
+      }
+      handelse.setSistaDatumForSvar(notificationMessage.getSistaSvarsDatum());
     }
 
-    public static CertificateStatusUpdateForCareType convert(NotificationMessage notificationMessage, Intyg intyg) {
-        CertificateStatusUpdateForCareType destination = new CertificateStatusUpdateForCareType();
-        complementIntyg(intyg);
-        destination.setIntyg(intyg);
-        decorateWithHandelse(destination, notificationMessage);
-        decorateWithArenden(destination, notificationMessage);
-        destination.setRef(notificationMessage.getReference());
-        return destination;
-    }
+    statusUpdateType.setHandelse(handelse);
+  }
 
-    /**
-     * This method should only be used for CertificateStatusUpdateForCare. DO NOT MOVE THIS METHOD!
-     *
-     * It is needed because a utkast might not contain the information needed to meet the requirements of the service
-     * contract. And we send not yet signed utkast in CertificateStatusUpdateForCare.
-     */
-    public static void complementIntyg(Intyg intyg) {
-        Enhet enhet = intyg.getSkapadAv().getEnhet();
-        if (Strings.nullToEmpty(enhet.getArbetsplatskod().getExtension()).trim().isEmpty()) {
-            enhet.getArbetsplatskod().setExtension(TEMPORARY_ARBETSPLATSKOD);
-        }
-        if ("".equals(enhet.getEpost())) {
-            enhet.setEpost(null);
-        }
-    }
+  private static void decorateWithArenden(
+      CertificateStatusUpdateForCareType statusUpdateType,
+      NotificationMessage notificationMessage) {
+    statusUpdateType.setSkickadeFragor(toArenden(notificationMessage.getSkickadeFragor()));
+    statusUpdateType.setMottagnaFragor(toArenden(notificationMessage.getMottagnaFragor()));
+  }
 
-    private static void decorateWithHandelse(CertificateStatusUpdateForCareType statusUpdateType, NotificationMessage notificationMessage) {
-        Handelsekod handelseKod = new Handelsekod();
-        handelseKod.setCodeSystem(KV_HANDELSE_CODE_SYSTEM);
-
-        handelseKod.setCode(notificationMessage.getHandelse().value());
-        handelseKod.setDisplayName(notificationMessage.getHandelse().description());
-
-        Handelse handelse = new Handelse();
-        handelse.setHandelsekod(handelseKod);
-        handelse.setTidpunkt(notificationMessage.getHandelseTid());
-
-        // JIRA INTYG-3715 föreskriver att ämne och sista svarsdatum endast ska läggas
-        // till om händelsen är av typen NYFRFM (ny fråga från mottagare).
-        if (HandelsekodEnum.fromValue(handelseKod.getCode()) == HandelsekodEnum.NYFRFM) {
-            if (notificationMessage.getAmne() == null) {
-                LOGGER.debug("Vid händelsetypen NYFRFM var ämneskod null");
-            }
-            handelse.setAmne(notificationMessage.getAmne());
-
-            if (notificationMessage.getSistaSvarsDatum() == null) {
-                LOGGER.debug("Vid händelsetypen NYFRFM var sista datum för svars null");
-            }
-            handelse.setSistaDatumForSvar(notificationMessage.getSistaSvarsDatum());
-        }
-
-        statusUpdateType.setHandelse(handelse);
-    }
-
-    private static void decorateWithArenden(CertificateStatusUpdateForCareType statusUpdateType, NotificationMessage notificationMessage) {
-        statusUpdateType.setSkickadeFragor(toArenden(notificationMessage.getSkickadeFragor()));
-        statusUpdateType.setMottagnaFragor(toArenden(notificationMessage.getMottagnaFragor()));
-    }
-
-    public static Arenden toArenden(ArendeCount source) {
-        Arenden target = new Arenden();
-        target.setTotalt(source.getTotalt());
-        target.setBesvarade(source.getBesvarade());
-        target.setEjBesvarade(source.getEjBesvarade());
-        target.setHanterade(source.getHanterade());
-        return target;
-    }
+  public static Arenden toArenden(ArendeCount source) {
+    Arenden target = new Arenden();
+    target.setTotalt(source.getTotalt());
+    target.setBesvarade(source.getBesvarade());
+    target.setEjBesvarade(source.getEjBesvarade());
+    target.setHanterade(source.getHanterade());
+    return target;
+  }
 }

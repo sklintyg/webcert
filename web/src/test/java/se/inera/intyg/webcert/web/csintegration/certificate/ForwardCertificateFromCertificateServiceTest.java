@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,81 +43,74 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertifica
 @ExtendWith(MockitoExtension.class)
 class ForwardCertificateFromCertificateServiceTest {
 
-    private static final ForwardCertificateRequestDTO REQUEST = ForwardCertificateRequestDTO.builder().build();
-    private static final String ID = "ID";
-    private static final boolean FORWARDED = false;
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final String TYPE = "TYPE";
+  private static final ForwardCertificateRequestDTO REQUEST =
+      ForwardCertificateRequestDTO.builder().build();
+  private static final String ID = "ID";
+  private static final boolean FORWARDED = false;
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final String TYPE = "TYPE";
 
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationService csIntegrationService;
 
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Mock
-    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+  @Mock
+  DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
-    @InjectMocks
-    ForwardCertificateFromCertificateService forwardCertificateFromCertificateService;
+  @InjectMocks ForwardCertificateFromCertificateService forwardCertificateFromCertificateService;
 
-    @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        final var response = forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
+  @Test
+  void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    final var response = forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
 
-        assertNull(response);
+    assertNull(response);
+  }
+
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+
+      CERTIFICATE.setMetadata(CertificateMetadata.builder().id(ID).type(TYPE).build());
+
+      when(csIntegrationService.certificateExists(ID)).thenReturn(true);
+
+      when(csIntegrationRequestFactory.forwardCertificateRequest()).thenReturn(REQUEST);
     }
 
     @Nested
-    class CertificateExistsInCS {
+    class CertificateIsForwardFromCS {
 
-        @BeforeEach
-        void setup() {
+      @BeforeEach
+      void setup() {
+        when(csIntegrationService.forwardCertificate(ID, REQUEST)).thenReturn(CERTIFICATE);
+      }
 
-            CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .build());
+      @Test
+      void shouldCallForwardWithId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
 
-            when(csIntegrationService.certificateExists(ID))
-                .thenReturn(true);
+        verify(csIntegrationService)
+            .forwardCertificate(captor.capture(), any(ForwardCertificateRequestDTO.class));
+        assertEquals(ID, captor.getValue());
+      }
 
-            when(csIntegrationRequestFactory.forwardCertificateRequest())
-                .thenReturn(REQUEST);
-        }
+      @Test
+      void shouldCallForwardWithRequest() {
+        final var captor = ArgumentCaptor.forClass(ForwardCertificateRequestDTO.class);
+        forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
 
-        @Nested
-        class CertificateIsForwardFromCS {
+        verify(csIntegrationService).forwardCertificate(anyString(), captor.capture());
+        assertEquals(REQUEST, captor.getValue());
+      }
 
-            @BeforeEach
-            void setup() {
-                when(csIntegrationService.forwardCertificate(ID, REQUEST))
-                    .thenReturn(CERTIFICATE);
-            }
-
-            @Test
-            void shouldCallForwardWithId() {
-                final var captor = ArgumentCaptor.forClass(String.class);
-                forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
-
-                verify(csIntegrationService).forwardCertificate(captor.capture(), any(ForwardCertificateRequestDTO.class));
-                assertEquals(ID, captor.getValue());
-            }
-
-            @Test
-            void shouldCallForwardWithRequest() {
-                final var captor = ArgumentCaptor.forClass(ForwardCertificateRequestDTO.class);
-                forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
-
-                verify(csIntegrationService).forwardCertificate(anyString(), captor.capture());
-                assertEquals(REQUEST, captor.getValue());
-            }
-
-            @Test
-            void shouldDecorateCertificateFromCSWithInformationFromWC() {
-                forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
-                verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
-            }
-        }
+      @Test
+      void shouldDecorateCertificateFromCSWithInformationFromWC() {
+        forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
+        verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
+      }
     }
+  }
 }

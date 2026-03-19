@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,19 +22,19 @@ import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEvent
 
 public class CertificateEventResponseDTO {
 
-    private CertificateEventDTO[] certificateEvents;
+  private CertificateEventDTO[] certificateEvents;
 
-    public static CertificateEventResponseDTO create(CertificateEventDTO[] certificateEvents) {
-        final var responseDTO = new CertificateEventResponseDTO();
-        responseDTO.certificateEvents = certificateEvents;
-        return responseDTO;
-    }
+  public static CertificateEventResponseDTO create(CertificateEventDTO[] certificateEvents) {
+    final var responseDTO = new CertificateEventResponseDTO();
+    responseDTO.certificateEvents = certificateEvents;
+    return responseDTO;
+  }
 
-    public CertificateEventDTO[] getCertificateEvents() {
-        return certificateEvents;
-    }
+  public CertificateEventDTO[] getCertificateEvents() {
+    return certificateEvents;
+  }
 
-    public void setCertificateEvents(CertificateEventDTO[] certificateEvents) {
-        this.certificateEvents = certificateEvents;
-    }
+  public void setCertificateEvents(CertificateEventDTO[] certificateEvents) {
+    this.certificateEvents = certificateEvents;
+  }
 }

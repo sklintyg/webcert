@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.util.Objects;
@@ -41,112 +40,111 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @Slf4j
 @RequiredArgsConstructor
 @Service("complementCertificateFromCertificateService")
-public class ComplementCertificateFromCertificateService implements ComplementCertificateFacadeService {
+public class ComplementCertificateFromCertificateService
+    implements ComplementCertificateFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final WebCertUserService webCertUser;
-    private final MonitoringLogService monitoringLogService;
-    private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final PDLLogService pdlLogService;
-    private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final WebCertUserService webCertUser;
+  private final MonitoringLogService monitoringLogService;
+  private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final PDLLogService pdlLogService;
+  private final DecorateCertificateFromCSWithInformationFromWC
+      decorateCertificateFromCSWithInformationFromWC;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Override
-    public Certificate complement(String certificateId, String message) {
-        log.debug("Attempting to complement certificate '{}' from Certificate Service", certificateId);
+  @Override
+  public Certificate complement(String certificateId, String message) {
+    log.debug("Attempting to complement certificate '{}' from Certificate Service", certificateId);
 
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
+    }
 
-        final var certificateToComplement = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
+    final var certificateToComplement =
+        csIntegrationService.getCertificate(
+            certificateId, csIntegrationRequestFactory.getCertificateRequest());
 
-        final var certificate = csIntegrationService.complementCertificate(
+    final var certificate =
+        csIntegrationService.complementCertificate(
             certificateId,
             csIntegrationRequestFactory.complementCertificateRequest(
                 certificateToComplement.getMetadata().getPatient(),
-                webCertUser.getUser().getParameters()
-            )
-        );
+                webCertUser.getUser().getParameters()));
 
-        integratedUnitRegistryHelper.addUnitForCopy(certificateToComplement, certificate);
-        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+    integratedUnitRegistryHelper.addUnitForCopy(certificateToComplement, certificate);
+    decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
-        log.debug("Complemented certificate '{}' from Certificate Service", certificateId);
-        monitoringLogService.logIntygCopiedCompletion(
-            certificate.getMetadata().getId(),
-            certificateToComplement.getMetadata().getId()
-        );
+    log.debug("Complemented certificate '{}' from Certificate Service", certificateId);
+    monitoringLogService.logIntygCopiedCompletion(
+        certificate.getMetadata().getId(), certificateToComplement.getMetadata().getId());
 
-        pdlLogService.logCreated(certificate);
+    pdlLogService.logCreated(certificate);
 
-        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
+    publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
 
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.certificateComplemented(certificate)
-        );
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.certificateComplemented(certificate));
 
-        return certificate;
+    return certificate;
+  }
+
+  @Override
+  public Certificate answerComplement(String certificateId, String message) {
+    log.debug(
+        "Attempting to answer complement on certificate '{}' from Certificate Service",
+        certificateId);
+
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
     }
 
-    @Override
-    public Certificate answerComplement(String certificateId, String message) {
-        log.debug("Attempting to answer complement on certificate '{}' from Certificate Service", certificateId);
-
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
-
-        final var answeredComplementIds = csIntegrationService.getQuestions(certificateId).stream()
+    final var answeredComplementIds =
+        csIntegrationService.getQuestions(certificateId).stream()
             .filter(question -> question.getType() == QuestionType.COMPLEMENT)
             .filter(question -> question.getAnswer() != null)
             .map(Question::getId)
             .toList();
 
-        final var certificate = csIntegrationService.answerComplementOnCertificate(
+    final var certificate =
+        csIntegrationService.answerComplementOnCertificate(
             certificateId,
-            csIntegrationRequestFactory.answerComplementOnCertificateRequest(message)
-        );
-        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+            csIntegrationRequestFactory.answerComplementOnCertificateRequest(message));
+    decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
-        final var messages = csIntegrationService.getQuestions(certificateId).stream()
+    final var messages =
+        csIntegrationService.getQuestions(certificateId).stream()
             .filter(question -> question.getType() == QuestionType.COMPLEMENT)
             .filter(question -> !answeredComplementIds.contains(question.getId()))
             .toList();
 
-        messages.stream()
-            .map(Question::getAnswer)
-            .filter(Objects::nonNull)
-            .map(Answer::getId)
-            .forEach(id ->
+    messages.stream()
+        .map(Question::getAnswer)
+        .filter(Objects::nonNull)
+        .map(Answer::getId)
+        .forEach(
+            id ->
                 monitoringLogService.logArendeCreated(
                     certificate.getMetadata().getId(),
                     certificate.getMetadata().getType(),
                     certificate.getMetadata().getUnit().getUnitId(),
                     ArendeAmne.KOMPLT,
                     true,
-                    id
-                )
-            );
+                    id));
 
-        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.HANFRFM);
+    publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.HANFRFM);
 
-        messages.stream()
-            .max((q1, q2) -> q2.getSent().compareTo(q1.getSent()))
-            .ifPresent(question ->
+    messages.stream()
+        .max((q1, q2) -> q2.getSent().compareTo(q1.getSent()))
+        .ifPresent(
+            question ->
                 publishCertificateAnalyticsMessage.publishEvent(
-                    certificateAnalyticsMessageFactory.sentMessage(certificate, question)
-                )
-            );
+                    certificateAnalyticsMessageFactory.sentMessage(certificate, question)));
 
-        return certificate;
-    }
+    return certificate;
+  }
 }

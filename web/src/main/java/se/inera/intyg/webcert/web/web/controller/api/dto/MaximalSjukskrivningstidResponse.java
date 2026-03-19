@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,92 +20,91 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 public final class MaximalSjukskrivningstidResponse {
 
-    private boolean overskriderRekommenderadSjukskrivningstid;
-    private int totalSjukskrivningstid;
-    private Integer maximaltRekommenderadSjukskrivningstid;
-    private String aktuellIcd10Kod;
-    private String maximaltRekommenderadSjukskrivningstidSource;
+  private boolean overskriderRekommenderadSjukskrivningstid;
+  private int totalSjukskrivningstid;
+  private Integer maximaltRekommenderadSjukskrivningstid;
+  private String aktuellIcd10Kod;
+  private String maximaltRekommenderadSjukskrivningstidSource;
 
-    public MaximalSjukskrivningstidResponse() {
-    }
+  public MaximalSjukskrivningstidResponse() {}
 
-    private MaximalSjukskrivningstidResponse(
-        final boolean overskriderRekommenderadSjukskrivningstid,
-        final int totalSjukskrivningstid,
-        final Integer maximalRekommenderadSjukskrivningstid,
-        final String aktuellIcd10Kod,
-        final String maximaltRekommenderadSjukskrivningstidSource) {
-        this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
-        this.totalSjukskrivningstid = totalSjukskrivningstid;
-        this.maximaltRekommenderadSjukskrivningstid = maximalRekommenderadSjukskrivningstid;
-        this.aktuellIcd10Kod = aktuellIcd10Kod;
-        this.maximaltRekommenderadSjukskrivningstidSource = maximaltRekommenderadSjukskrivningstidSource;
-    }
+  private MaximalSjukskrivningstidResponse(
+      final boolean overskriderRekommenderadSjukskrivningstid,
+      final int totalSjukskrivningstid,
+      final Integer maximalRekommenderadSjukskrivningstid,
+      final String aktuellIcd10Kod,
+      final String maximaltRekommenderadSjukskrivningstidSource) {
+    this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
+    this.totalSjukskrivningstid = totalSjukskrivningstid;
+    this.maximaltRekommenderadSjukskrivningstid = maximalRekommenderadSjukskrivningstid;
+    this.aktuellIcd10Kod = aktuellIcd10Kod;
+    this.maximaltRekommenderadSjukskrivningstidSource =
+        maximaltRekommenderadSjukskrivningstidSource;
+  }
 
-    public boolean isOverskriderRekommenderadSjukskrivningstid() {
-        return overskriderRekommenderadSjukskrivningstid;
-    }
+  public boolean isOverskriderRekommenderadSjukskrivningstid() {
+    return overskriderRekommenderadSjukskrivningstid;
+  }
 
-    public void setOverskriderRekommenderadSjukskrivningstid(final boolean overskriderRekommenderadSjukskrivningstid) {
-        this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
-    }
+  public void setOverskriderRekommenderadSjukskrivningstid(
+      final boolean overskriderRekommenderadSjukskrivningstid) {
+    this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
+  }
 
-    public int getTotalSjukskrivningstid() {
-        return totalSjukskrivningstid;
-    }
+  public int getTotalSjukskrivningstid() {
+    return totalSjukskrivningstid;
+  }
 
-    public void setTotalSjukskrivningstid(final int totalSjukskrivningstid) {
-        this.totalSjukskrivningstid = totalSjukskrivningstid;
-    }
+  public void setTotalSjukskrivningstid(final int totalSjukskrivningstid) {
+    this.totalSjukskrivningstid = totalSjukskrivningstid;
+  }
 
-    public Integer getMaximaltRekommenderadSjukskrivningstid() {
-        return maximaltRekommenderadSjukskrivningstid;
-    }
+  public Integer getMaximaltRekommenderadSjukskrivningstid() {
+    return maximaltRekommenderadSjukskrivningstid;
+  }
 
-    public void setMaximaltRekommenderadSjukskrivningstid(final Integer maximaltRekommenderadSjukskrivningstid) {
-        this.maximaltRekommenderadSjukskrivningstid = maximaltRekommenderadSjukskrivningstid;
-    }
+  public void setMaximaltRekommenderadSjukskrivningstid(
+      final Integer maximaltRekommenderadSjukskrivningstid) {
+    this.maximaltRekommenderadSjukskrivningstid = maximaltRekommenderadSjukskrivningstid;
+  }
 
-    public String getAktuellIcd10Kod() {
-        return aktuellIcd10Kod;
-    }
+  public String getAktuellIcd10Kod() {
+    return aktuellIcd10Kod;
+  }
 
-    public void setAktuellIcd10Kod(final String aktuellIcd10Kod) {
-        this.aktuellIcd10Kod = aktuellIcd10Kod;
-    }
+  public void setAktuellIcd10Kod(final String aktuellIcd10Kod) {
+    this.aktuellIcd10Kod = aktuellIcd10Kod;
+  }
 
-    public static MaximalSjukskrivningstidResponse fromFmbRekommendation(
-        final int totalSjukskrivningstid,
-        final int maximaltRekommenderadSjukskrivningstid,
-        final String aktuellIcd10Kod,
-        final String maximaltRekommenderadSjukskrivningstidSource) {
+  public static MaximalSjukskrivningstidResponse fromFmbRekommendation(
+      final int totalSjukskrivningstid,
+      final int maximaltRekommenderadSjukskrivningstid,
+      final String aktuellIcd10Kod,
+      final String maximaltRekommenderadSjukskrivningstidSource) {
 
-        final boolean overskriden = totalSjukskrivningstid > maximaltRekommenderadSjukskrivningstid;
+    final boolean overskriden = totalSjukskrivningstid > maximaltRekommenderadSjukskrivningstid;
 
-        return new MaximalSjukskrivningstidResponse(
-            overskriden,
-            totalSjukskrivningstid,
-            maximaltRekommenderadSjukskrivningstid,
-            aktuellIcd10Kod,
-            maximaltRekommenderadSjukskrivningstidSource);
-    }
+    return new MaximalSjukskrivningstidResponse(
+        overskriden,
+        totalSjukskrivningstid,
+        maximaltRekommenderadSjukskrivningstid,
+        aktuellIcd10Kod,
+        maximaltRekommenderadSjukskrivningstidSource);
+  }
 
-    public static MaximalSjukskrivningstidResponse ingenFmbRekommendation(
-        final int totalSjukskrivningstid) {
+  public static MaximalSjukskrivningstidResponse ingenFmbRekommendation(
+      final int totalSjukskrivningstid) {
 
-        return new MaximalSjukskrivningstidResponse(
-            false,
-            totalSjukskrivningstid,
-            null,
-            null,
-            null);
-    }
+    return new MaximalSjukskrivningstidResponse(false, totalSjukskrivningstid, null, null, null);
+  }
 
-    public String getMaximaltRekommenderadSjukskrivningstidSource() {
-        return maximaltRekommenderadSjukskrivningstidSource;
-    }
+  public String getMaximaltRekommenderadSjukskrivningstidSource() {
+    return maximaltRekommenderadSjukskrivningstidSource;
+  }
 
-    public void setMaximaltRekommenderadSjukskrivningstidSource(String maximaltRekommenderadSjukskrivningstidSource) {
-        this.maximaltRekommenderadSjukskrivningstidSource = maximaltRekommenderadSjukskrivningstidSource;
-    }
+  public void setMaximaltRekommenderadSjukskrivningstidSource(
+      String maximaltRekommenderadSjukskrivningstidSource) {
+    this.maximaltRekommenderadSjukskrivningstidSource =
+        maximaltRekommenderadSjukskrivningstidSource;
+  }
 }

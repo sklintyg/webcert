@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.config;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow")
 public class ServiceNowIntegrationConfig {
 
-    public ServiceNowIntegrationConfig() {
-        log.info("ServiceNow integration configured for subscription queries to kundportal.inera.se.");
-    }
+  public ServiceNowIntegrationConfig() {
+    log.info("ServiceNow integration configured for subscription queries to kundportal.inera.se.");
+  }
 }

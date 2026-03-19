@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,33 +25,38 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 @Component
 public class CreateCompletionCopyRequest extends AbstractCreateCopyRequest {
 
-    private String meddelandeId;
-    private String kommentar;
+  private String meddelandeId;
+  private String kommentar;
 
-    public CreateCompletionCopyRequest(String orginalIntygsId, String intygsTyp, String meddelandeId, Patient patient,
-        HoSPersonal hosPerson, String kommentar) {
-        super(orginalIntygsId, intygsTyp, patient, hosPerson);
-        this.setMeddelandeId(meddelandeId);
-        this.kommentar = kommentar;
-    }
+  public CreateCompletionCopyRequest(
+      String orginalIntygsId,
+      String intygsTyp,
+      String meddelandeId,
+      Patient patient,
+      HoSPersonal hosPerson,
+      String kommentar) {
+    super(orginalIntygsId, intygsTyp, patient, hosPerson);
+    this.setMeddelandeId(meddelandeId);
+    this.kommentar = kommentar;
+  }
 
-    public CreateCompletionCopyRequest() {
-        // Needed for deserialization
-    }
+  public CreateCompletionCopyRequest() {
+    // Needed for deserialization
+  }
 
-    public String getMeddelandeId() {
-        return meddelandeId;
-    }
+  public String getMeddelandeId() {
+    return meddelandeId;
+  }
 
-    public void setMeddelandeId(String meddelandeId) {
-        this.meddelandeId = meddelandeId;
-    }
+  public void setMeddelandeId(String meddelandeId) {
+    this.meddelandeId = meddelandeId;
+  }
 
-    public String getKommentar() {
-        return kommentar;
-    }
+  public String getKommentar() {
+    return kommentar;
+  }
 
-    public void setKommentar(String kommentar) {
-        this.kommentar = kommentar;
-    }
+  public void setKommentar(String kommentar) {
+    this.kommentar = kommentar;
+  }
 }

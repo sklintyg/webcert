@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,70 +45,69 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 @ExtendWith(MockitoExtension.class)
 class ProcessIncomingMessageAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String MESSAGE_ID = "messageId";
-    private static final String PATIENT_ID = "191212121212";
-    private static final String FKASSA = "FKASSA";
-    private SendMessageToCareType sendMessageToCareType;
-    @Mock
-    ArendeService arendeService;
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    ProcessIncomingMessageService processIncomingMessageService;
-    @InjectMocks
-    ProcessIncomingMessageAggregator processIncomingMessageAggregator;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String MESSAGE_ID = "messageId";
+  private static final String PATIENT_ID = "191212121212";
+  private static final String FKASSA = "FKASSA";
+  private SendMessageToCareType sendMessageToCareType;
+  @Mock ArendeService arendeService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock ProcessIncomingMessageService processIncomingMessageService;
+  @InjectMocks ProcessIncomingMessageAggregator processIncomingMessageAggregator;
 
-    @BeforeEach
-    void setUp() {
-        sendMessageToCareType = getSendMessageToCareTypeRequest();
-    }
-    @Test
-    void shallProcessIncomingMessageInArandeServiceIfCertificateNotFoundInCertificateService() {        doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        processIncomingMessageAggregator.process(sendMessageToCareType);
-        verify(arendeService, times(1)).processIncomingMessage(any());
-    }
+  @BeforeEach
+  void setUp() {
+    sendMessageToCareType = getSendMessageToCareTypeRequest();
+  }
 
-    @Test
-    void shallReturnSendMessageToCareResponseTypeFromProcessIncomingMessageService() {
-        final var expectedResult = new SendMessageToCareResponseType();        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(expectedResult).when(processIncomingMessageService).process(sendMessageToCareType);
+  @Test
+  void shallProcessIncomingMessageInArandeServiceIfCertificateNotFoundInCertificateService() {
+    doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    processIncomingMessageAggregator.process(sendMessageToCareType);
+    verify(arendeService, times(1)).processIncomingMessage(any());
+  }
 
-        final var actualResult = processIncomingMessageAggregator.process(sendMessageToCareType);
+  @Test
+  void shallReturnSendMessageToCareResponseTypeFromProcessIncomingMessageService() {
+    final var expectedResult = new SendMessageToCareResponseType();
+    doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    doReturn(expectedResult).when(processIncomingMessageService).process(sendMessageToCareType);
 
-        verify(arendeService, times(0)).processIncomingMessage(any());
-        assertEquals(expectedResult, actualResult);
-    }
+    final var actualResult = processIncomingMessageAggregator.process(sendMessageToCareType);
 
-    private SendMessageToCareType getSendMessageToCareTypeRequest() {
-        final var res = new SendMessageToCareType();
-        res.setAmne(new Amneskod());
-        res.getAmne().setCode(ArendeAmne.KONTKT.toString());
-        res.setIntygsId(createIntygsId());
-        res.setMeddelandeId(MESSAGE_ID);
-        res.setPatientPersonId(createPersonId());
-        res.setSkickatAv(createSkickadAv());
-        return res;
-    }
+    verify(arendeService, times(0)).processIncomingMessage(any());
+    assertEquals(expectedResult, actualResult);
+  }
 
-    private SkickatAv createSkickadAv() {
-        final var res = new SkickatAv();
-        res.setPart(new Part());
-        res.getPart().setCode(FKASSA);
-        return res;
-    }
+  private SendMessageToCareType getSendMessageToCareTypeRequest() {
+    final var res = new SendMessageToCareType();
+    res.setAmne(new Amneskod());
+    res.getAmne().setCode(ArendeAmne.KONTKT.toString());
+    res.setIntygsId(createIntygsId());
+    res.setMeddelandeId(MESSAGE_ID);
+    res.setPatientPersonId(createPersonId());
+    res.setSkickatAv(createSkickadAv());
+    return res;
+  }
 
-    private PersonId createPersonId() {
-        final var res = new PersonId();
-        res.setExtension(ProcessIncomingMessageAggregatorTest.PATIENT_ID);
-        res.setRoot("");
-        return res;
-    }
+  private SkickatAv createSkickadAv() {
+    final var res = new SkickatAv();
+    res.setPart(new Part());
+    res.getPart().setCode(FKASSA);
+    return res;
+  }
 
-    private IntygId createIntygsId() {
-        final var res = new IntygId();
-        res.setExtension(ProcessIncomingMessageAggregatorTest.CERTIFICATE_ID);
-        res.setRoot("");
-        return res;
-    }
+  private PersonId createPersonId() {
+    final var res = new PersonId();
+    res.setExtension(ProcessIncomingMessageAggregatorTest.PATIENT_ID);
+    res.setRoot("");
+    return res;
+  }
+
+  private IntygId createIntygsId() {
+    final var res = new IntygId();
+    res.setExtension(ProcessIncomingMessageAggregatorTest.CERTIFICATE_ID);
+    res.setRoot("");
+    return res;
+  }
 }

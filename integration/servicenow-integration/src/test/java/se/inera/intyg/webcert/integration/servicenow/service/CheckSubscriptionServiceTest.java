@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.service;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,43 +29,63 @@ import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodE
 
 class CheckSubscriptionServiceTest {
 
-    private CheckSubscriptionService checkSubscriptionService;
+  private CheckSubscriptionService checkSubscriptionService;
 
-    private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert fristående med e-legitimation");
-    private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert fristående med SITHS-kort", "Webcert Integrerad - via agent",
-        "Webcert Integrerad - via region", "Webcert integrerad - direktanslutning");
+  private static final List<String> ELEG_SERVICE_CODES =
+      List.of("Webcert fristående med e-legitimation");
+  private static final List<String> SITHS_SERVICE_CODES =
+      List.of(
+          "Webcert fristående med SITHS-kort",
+          "Webcert Integrerad - via agent",
+          "Webcert Integrerad - via region",
+          "Webcert integrerad - direktanslutning");
 
-    @BeforeEach
-    public void setup() {
-        checkSubscriptionService = new CheckSubscriptionService();
-        ReflectionTestUtils.setField(checkSubscriptionService, CheckSubscriptionService.class, "elegServiceCodes",
-            ELEG_SERVICE_CODES, List.class);
-        ReflectionTestUtils.setField(checkSubscriptionService, CheckSubscriptionService.class, "sithsServiceCodes",
-            SITHS_SERVICE_CODES, List.class);
-    }
+  @BeforeEach
+  public void setup() {
+    checkSubscriptionService = new CheckSubscriptionService();
+    ReflectionTestUtils.setField(
+        checkSubscriptionService,
+        CheckSubscriptionService.class,
+        "elegServiceCodes",
+        ELEG_SERVICE_CODES,
+        List.class);
+    ReflectionTestUtils.setField(
+        checkSubscriptionService,
+        CheckSubscriptionService.class,
+        "sithsServiceCodes",
+        SITHS_SERVICE_CODES,
+        List.class);
+  }
 
-    @Test
-    void shouldReturnTrueIfServiceCodesIsEmpty() {
-        assertTrue(checkSubscriptionService.isMissing(Collections.emptyList(), AuthenticationMethodEnum.ELEG));
-    }
+  @Test
+  void shouldReturnTrueIfServiceCodesIsEmpty() {
+    assertTrue(
+        checkSubscriptionService.isMissing(Collections.emptyList(), AuthenticationMethodEnum.ELEG));
+  }
 
-    @Test
-    void shouldReturnTrueIfNoneMatchForEleg() {
-        assertTrue(checkSubscriptionService.isMissing(List.of("SITHS-kort"), AuthenticationMethodEnum.ELEG));
-    }
+  @Test
+  void shouldReturnTrueIfNoneMatchForEleg() {
+    assertTrue(
+        checkSubscriptionService.isMissing(List.of("SITHS-kort"), AuthenticationMethodEnum.ELEG));
+  }
 
-    @Test
-    void shouldReturnFalseIfMatchForEleg() {
-        assertTrue(checkSubscriptionService.isMissing(List.of("e-legitimation"), AuthenticationMethodEnum.ELEG));
-    }
+  @Test
+  void shouldReturnFalseIfMatchForEleg() {
+    assertTrue(
+        checkSubscriptionService.isMissing(
+            List.of("e-legitimation"), AuthenticationMethodEnum.ELEG));
+  }
 
-    @Test
-    void shouldReturnTrueIfNoneMatchForSiths() {
-        assertTrue(checkSubscriptionService.isMissing(List.of("e-legitimation"), AuthenticationMethodEnum.SITHS));
-    }
+  @Test
+  void shouldReturnTrueIfNoneMatchForSiths() {
+    assertTrue(
+        checkSubscriptionService.isMissing(
+            List.of("e-legitimation"), AuthenticationMethodEnum.SITHS));
+  }
 
-    @Test
-    void shouldReturnFalseIfMatchForSiths() {
-        assertTrue(checkSubscriptionService.isMissing(List.of("SITHS-kort"), AuthenticationMethodEnum.SITHS));
-    }
+  @Test
+  void shouldReturnFalseIfMatchForSiths() {
+    assertTrue(
+        checkSubscriptionService.isMissing(List.of("SITHS-kort"), AuthenticationMethodEnum.SITHS));
+  }
 }

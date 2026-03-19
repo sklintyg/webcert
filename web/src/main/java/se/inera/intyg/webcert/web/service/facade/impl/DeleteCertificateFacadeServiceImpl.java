@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,21 +28,22 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Service("deleteCertificateFromWebcert")
 public class DeleteCertificateFacadeServiceImpl implements DeleteCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DeleteCertificateFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(DeleteCertificateFacadeServiceImpl.class);
 
-    private final UtkastService utkastService;
+  private final UtkastService utkastService;
 
-    @Autowired
-    public DeleteCertificateFacadeServiceImpl(UtkastService utkastService) {
-        this.utkastService = utkastService;
-    }
+  @Autowired
+  public DeleteCertificateFacadeServiceImpl(UtkastService utkastService) {
+    this.utkastService = utkastService;
+  }
 
-    @Override
-    public boolean deleteCertificate(String certificateId, long version) {
-        LOG.debug("Deleting certificate '{}' with version '{}'", certificateId, version);
-        utkastService.deleteUnsignedDraft(certificateId, version);
-        LOG.debug("Certificate '{}' deleted!", certificateId);
+  @Override
+  public boolean deleteCertificate(String certificateId, long version) {
+    LOG.debug("Deleting certificate '{}' with version '{}'", certificateId, version);
+    utkastService.deleteUnsignedDraft(certificateId, version);
+    LOG.debug("Certificate '{}' deleted!", certificateId);
 
-        return true;
-    }
+    return true;
+  }
 }

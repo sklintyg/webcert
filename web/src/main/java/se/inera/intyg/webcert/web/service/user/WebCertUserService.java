@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,69 +24,68 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface WebCertUserService {
 
-    /**
-     * Checks wether the currently executing thread has a user Principal, e.g. through
-     * {@link org.springframework.security.core.context.SecurityContextHolder#getContext}.
-     * <p>
-     * Typically, all requests from the frontend for a protected resource will have a Principal while
-     * unsecured and threads invoked by a service will not, such as CreateDraftCertificate.
-     *
-     * @return true if there is an available user Principal, false if not.
-     */
-    boolean hasAuthenticationContext();
+  /**
+   * Checks wether the currently executing thread has a user Principal, e.g. through {@link
+   * org.springframework.security.core.context.SecurityContextHolder#getContext}.
+   *
+   * <p>Typically, all requests from the frontend for a protected resource will have a Principal
+   * while unsecured and threads invoked by a service will not, such as CreateDraftCertificate.
+   *
+   * @return true if there is an available user Principal, false if not.
+   */
+  boolean hasAuthenticationContext();
 
-    /**
-     * Returns the user principal from the session.
-     */
-    WebCertUser getUser();
+  /** Returns the user principal from the session. */
+  WebCertUser getUser();
 
-    /**
-     * Stores (creates or updates) the given key-value pair for current user. Stores in DB and updates the session.
-     *
-     * @param key An arbitrary string-based key.
-     * @param value An arbitrary string-based value.
-     */
-    void storeUserPreference(String key, String value);
+  /**
+   * Stores (creates or updates) the given key-value pair for current user. Stores in DB and updates
+   * the session.
+   *
+   * @param key An arbitrary string-based key.
+   * @param value An arbitrary string-based value.
+   */
+  void storeUserPreference(String key, String value);
 
-    /**
-     * Deletes the specified user preference for the current user.
-     *
-     * @param key Preference key.
-     */
-    void deleteUserPreference(String key);
+  /**
+   * Deletes the specified user preference for the current user.
+   *
+   * @param key Preference key.
+   */
+  void deleteUserPreference(String key);
 
-    /**
-     * Deletes all user preferences for the current user.
-     */
-    void deleteUserPreferences();
+  /** Deletes all user preferences for the current user. */
+  void deleteUserPreferences();
 
-    boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation);
+  boolean isAuthorizedForUnit(
+      String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation);
 
-    boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation);
+  boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation);
 
-    boolean isAuthorizedForUnits(List<String> enhetsHsaIds);
+  boolean isAuthorizedForUnits(List<String> enhetsHsaIds);
 
-    void updateOrigin(String origin);
+  void updateOrigin(String origin);
 
-    void updateUserRole(String roleName);
+  void updateUserRole(String roleName);
 
-    /**
-     * Note - this is just a proxy for accessing
-     * {@link se.inera.intyg.infra.security.common.service.CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet}.
-     *
-     * @param enhetId HSA-id of a vardenhet or mottagning.
-     * @return True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
-     */
-    boolean isUserAllowedAccessToUnit(String enhetId);
+  /**
+   * Note - this is just a proxy for accessing {@link
+   * se.inera.intyg.infra.security.common.service.CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet}.
+   *
+   * @param enhetId HSA-id of a vardenhet or mottagning.
+   * @return True if the current IntygUser has access to the specified enhetsId including
+   *     mottagningsnivå.
+   */
+  boolean isUserAllowedAccessToUnit(String enhetId);
 
-    void scheduleSessionRemoval(HttpSession session);
+  void scheduleSessionRemoval(HttpSession session);
 
-    void cancelScheduledLogout(HttpSession session);
+  void cancelScheduledLogout(HttpSession session);
 
-    /**
-     * Performs immediate removal of backend session (both HttpSession and Spring session) for user.
-     *
-     * @param session The HttpSession to be immediately invalidated.
-     */
-    void removeSessionNow(HttpSession session);
+  /**
+   * Performs immediate removal of backend session (both HttpSession and Spring session) for user.
+   *
+   * @param session The HttpSession to be immediately invalidated.
+   */
+  void removeSessionNow(HttpSession session);
 }

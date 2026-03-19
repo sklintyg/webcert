@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,13 +30,11 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 @AllArgsConstructor
 public class CertificateType {
 
-    private String type;
-    private String internalType;
-    @JsonIgnore
-    private String certificateServiceTypeId;
-    private String name;
-    private List<String> versions;
-    private List<CertificateStatus> statuses;
-    private List<CreateCertificateFillType> fillType;
-
+  private String type;
+  private String internalType;
+  @JsonIgnore private String certificateServiceTypeId;
+  private String name;
+  private List<String> versions;
+  private List<CertificateStatus> statuses;
+  private List<CreateCertificateFillType> fillType;
 }

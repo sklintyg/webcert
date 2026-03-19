@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,64 +31,60 @@ import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "funktionsnedsattningsbeskrivning",
-    "kompletterandekod",
-    "centralkod"
-})
+@JsonPropertyOrder({"funktionsnedsattningsbeskrivning", "kompletterandekod", "centralkod"})
 public class Funktionsnedsattning implements FmxBeskrivning {
 
-    @JsonProperty("kompletterandekod")
-    private List<Kod> kompletterandekod = null;
-    @JsonProperty("centralkod")
-    private List<Kod> centralkod = null;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-    @JsonProperty("funktionsnedsattningsbeskrivning")
-    private String beskrivning;
+  @JsonProperty("kompletterandekod")
+  private List<Kod> kompletterandekod = null;
 
+  @JsonProperty("centralkod")
+  private List<Kod> centralkod = null;
 
-    @JsonProperty("kompletterandekod")
-    @Override
-    public List<Kod> getKompletterandekod() {
-        return kompletterandekod != null ? kompletterandekod : Lists.newArrayList();
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("kompletterandekod")
-    public void setKompletterandekod(List<Kod> kompletterandekod) {
-        this.kompletterandekod = kompletterandekod;
-    }
+  @JsonProperty("funktionsnedsattningsbeskrivning")
+  private String beskrivning;
 
-    @JsonProperty("centralkod")
-    @Override
-    public List<Kod> getCentralkod() {
-        return centralkod != null ? centralkod : Lists.newArrayList();
-    }
+  @JsonProperty("kompletterandekod")
+  @Override
+  public List<Kod> getKompletterandekod() {
+    return kompletterandekod != null ? kompletterandekod : Lists.newArrayList();
+  }
 
-    @JsonProperty("centralkod")
-    public void setCentralkod(List<Kod> centralkod) {
-        this.centralkod = centralkod;
-    }
+  @JsonProperty("kompletterandekod")
+  public void setKompletterandekod(List<Kod> kompletterandekod) {
+    this.kompletterandekod = kompletterandekod;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("centralkod")
+  @Override
+  public List<Kod> getCentralkod() {
+    return centralkod != null ? centralkod : Lists.newArrayList();
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("centralkod")
+  public void setCentralkod(List<Kod> centralkod) {
+    this.centralkod = centralkod;
+  }
 
-    @JsonProperty("funktionsnedsattningsbeskrivning")
-    @Override
-    public String getBeskrivning() {
-        return beskrivning;
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
 
-    @JsonProperty("funktionsnedsattningsbeskrivning")
-    public void setBeskrivning(String beskrivning) {
-        this.beskrivning = beskrivning;
-    }
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 
+  @JsonProperty("funktionsnedsattningsbeskrivning")
+  @Override
+  public String getBeskrivning() {
+    return beskrivning;
+  }
+
+  @JsonProperty("funktionsnedsattningsbeskrivning")
+  public void setBeskrivning(String beskrivning) {
+    this.beskrivning = beskrivning;
+  }
 }

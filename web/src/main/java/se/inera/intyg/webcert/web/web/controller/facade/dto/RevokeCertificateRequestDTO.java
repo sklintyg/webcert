@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,22 +20,22 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class RevokeCertificateRequestDTO {
 
-    private String message;
-    private String reason;
+  private String message;
+  private String reason;
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public String getReason() {
-        return reason;
-    }
+  public String getReason() {
+    return reason;
+  }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
 }

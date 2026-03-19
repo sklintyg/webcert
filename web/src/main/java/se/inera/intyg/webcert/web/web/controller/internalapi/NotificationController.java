@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import jakarta.ws.rs.POST;
@@ -46,78 +45,96 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
-    private final SendNotificationService sendNotificationService;
-    private final SendNotificationsForUnitsService sendNotificationsForUnitsService;
-    private final SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
+  private final SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
+  private final SendNotificationService sendNotificationService;
+  private final SendNotificationsForUnitsService sendNotificationsForUnitsService;
+  private final SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
-    @POST
-    @Path("/certificates")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "resend-status-updates-for-certificates", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public SendNotificationResponseDTO sendNotificationsForCertificates(@RequestBody SendNotificationsForCertificatesRequestDTO request) {
-        return sendNotificationsForCertificatesService.send(request);
-    }
+  @POST
+  @Path("/certificates")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "resend-status-updates-for-certificates",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public SendNotificationResponseDTO sendNotificationsForCertificates(
+      @RequestBody SendNotificationsForCertificatesRequestDTO request) {
+    return sendNotificationsForCertificatesService.send(request);
+  }
 
-    @POST
-    @Path("/count/certificates")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "count-status-updates-for-certificates", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public CountNotificationResponseDTO countNotificationsForCertificates(
-        @RequestBody CountNotificationsForCertificatesRequestDTO request) {
-        return sendNotificationsForCertificatesService.count(request);
-    }
+  @POST
+  @Path("/count/certificates")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "count-status-updates-for-certificates",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public CountNotificationResponseDTO countNotificationsForCertificates(
+      @RequestBody CountNotificationsForCertificatesRequestDTO request) {
+    return sendNotificationsForCertificatesService.count(request);
+  }
 
-    @POST
-    @Path("/{notificationId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "resend-status-update", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public SendNotificationResponseDTO sendNotification(@PathParam("notificationId") String notificationId) {
-        return sendNotificationService.send(notificationId);
-    }
+  @POST
+  @Path("/{notificationId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "resend-status-update",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public SendNotificationResponseDTO sendNotification(
+      @PathParam("notificationId") String notificationId) {
+    return sendNotificationService.send(notificationId);
+  }
 
-    @POST
-    @Path("/units")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "resend-status-updates-for-units", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public SendNotificationResponseDTO sendNotificationsForUnits(@RequestBody SendNotificationsForUnitsRequestDTO request) {
-        return sendNotificationsForUnitsService.send(request);
-    }
+  @POST
+  @Path("/units")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "resend-status-updates-for-units",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public SendNotificationResponseDTO sendNotificationsForUnits(
+      @RequestBody SendNotificationsForUnitsRequestDTO request) {
+    return sendNotificationsForUnitsService.send(request);
+  }
 
-    @POST
-    @Path("/count/units")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "count-status-updates-for-units", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public CountNotificationResponseDTO countNotificationsForUnits(@RequestBody CountNotificationsForUnitsRequestDTO request) {
-        return sendNotificationsForUnitsService.count(request);
-    }
+  @POST
+  @Path("/count/units")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "count-status-updates-for-units",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public CountNotificationResponseDTO countNotificationsForUnits(
+      @RequestBody CountNotificationsForUnitsRequestDTO request) {
+    return sendNotificationsForUnitsService.count(request);
+  }
 
-    @POST
-    @Path("/caregiver/{careGiverId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "resend-status-updates-for-care-giver", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public SendNotificationResponseDTO sendNotificationsForCareGiver(@PathParam("careGiverId") String careGiverId,
-        @RequestBody SendNotificationsForCareGiverRequestDTO request) {
-        return sendNotificationsForCareGiverService.send(careGiverId, request);
-    }
+  @POST
+  @Path("/caregiver/{careGiverId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "resend-status-updates-for-care-giver",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public SendNotificationResponseDTO sendNotificationsForCareGiver(
+      @PathParam("careGiverId") String careGiverId,
+      @RequestBody SendNotificationsForCareGiverRequestDTO request) {
+    return sendNotificationsForCareGiverService.send(careGiverId, request);
+  }
 
-    @POST
-    @Path("/count/caregiver/{careGiverId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "count-status-updates-for-care-giver", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public CountNotificationResponseDTO countNotificationsForCareGiver(@PathParam("careGiverId") String careGiverId,
-        @RequestBody CountNotificationsForCareGiverRequestDTO request) {
-        return sendNotificationsForCareGiverService.count(careGiverId, request);
-    }
-
-
+  @POST
+  @Path("/count/caregiver/{careGiverId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "count-status-updates-for-care-giver",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public CountNotificationResponseDTO countNotificationsForCareGiver(
+      @PathParam("careGiverId") String careGiverId,
+      @RequestBody CountNotificationsForCareGiverRequestDTO request) {
+    return sendNotificationsForCareGiverService.count(careGiverId, request);
+  }
 }

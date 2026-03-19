@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,47 +36,41 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 @ExtendWith(MockitoExtension.class)
 class CreateDraftCertificateAggregatorTest {
 
-    private static final Intyg UTKAST_PARAMS = new Intyg();
-    private static final String HSA_ID = "HSA_ID";
-    private static final IntygUser USER = new IntygUser(HSA_ID);
-    @Mock
-    private CreateDraftCertificate createDraftCertificateFromWC;
-    @Mock
-    private CreateDraftCertificate createDraftCertificateFromCS;
-    @Mock
-    private CreateDraftCertificate createDraftCertificateAggregator;
+  private static final Intyg UTKAST_PARAMS = new Intyg();
+  private static final String HSA_ID = "HSA_ID";
+  private static final IntygUser USER = new IntygUser(HSA_ID);
+  @Mock private CreateDraftCertificate createDraftCertificateFromWC;
+  @Mock private CreateDraftCertificate createDraftCertificateFromCS;
+  @Mock private CreateDraftCertificate createDraftCertificateAggregator;
 
-    @BeforeEach
-    void setUp() {
-        createDraftCertificateAggregator = new CreateDraftCertificateAggregator(
-            createDraftCertificateFromWC,
-            createDraftCertificateFromCS
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    createDraftCertificateAggregator =
+        new CreateDraftCertificateAggregator(
+            createDraftCertificateFromWC, createDraftCertificateFromCS);
+  }
 
-    @Test
-    void shouldReturnResponseFromCSSupportsType() {
-        final var expectedResult = new CreateDraftCertificateResponseType();
-        when(createDraftCertificateFromCS.create(UTKAST_PARAMS, USER))
-            .thenReturn(expectedResult);
+  @Test
+  void shouldReturnResponseFromCSSupportsType() {
+    final var expectedResult = new CreateDraftCertificateResponseType();
+    when(createDraftCertificateFromCS.create(UTKAST_PARAMS, USER)).thenReturn(expectedResult);
 
-        final var response = createDraftCertificateAggregator.create(UTKAST_PARAMS, USER);
-        verify(createDraftCertificateFromCS, times(1)).create(UTKAST_PARAMS, USER);
+    final var response = createDraftCertificateAggregator.create(UTKAST_PARAMS, USER);
+    verify(createDraftCertificateFromCS, times(1)).create(UTKAST_PARAMS, USER);
 
-        assertEquals(expectedResult, response);
-    }
+    assertEquals(expectedResult, response);
+  }
 
-    @Test
-    void shouldReturnCertificateIdFromWCIIfCSReturnsNull() {
-        final var expectedResult = new CreateDraftCertificateResponseType();
-        when(createDraftCertificateFromWC.create(UTKAST_PARAMS, USER))
-            .thenReturn(expectedResult);
+  @Test
+  void shouldReturnCertificateIdFromWCIIfCSReturnsNull() {
+    final var expectedResult = new CreateDraftCertificateResponseType();
+    when(createDraftCertificateFromWC.create(UTKAST_PARAMS, USER)).thenReturn(expectedResult);
 
-        final var response = createDraftCertificateAggregator.create(UTKAST_PARAMS, USER);
+    final var response = createDraftCertificateAggregator.create(UTKAST_PARAMS, USER);
 
-        verify(createDraftCertificateFromWC, times(1)).create(UTKAST_PARAMS, USER);
-        verify(createDraftCertificateFromCS, times(1)).create(UTKAST_PARAMS, USER);
+    verify(createDraftCertificateFromWC, times(1)).create(UTKAST_PARAMS, USER);
+    verify(createDraftCertificateFromCS, times(1)).create(UTKAST_PARAMS, USER);
 
-        assertEquals(expectedResult, response);
-    }
+    assertEquals(expectedResult, response);
+  }
 }

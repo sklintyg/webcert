@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,32 +32,31 @@ import se.inera.intyg.webcert.web.service.facade.GetUnansweredCommunicationFacad
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 
-import java.util.List;
-
 @ExtendWith(MockitoExtension.class)
 class UnansweredCommunicationControllerTest {
 
-    @Mock
-    private GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
-    @InjectMocks
-    private UnansweredCommunicationController unansweredCommunicationController;
+  @Mock private GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
+  @InjectMocks private UnansweredCommunicationController unansweredCommunicationController;
 
-    @Test
-    void shouldCallUnansweredCommunicationService() {
-        final var patientIds = List.of("patient1", "patient2");
-        final var request = new UnansweredCommunicationRequest(patientIds, 90);
-        unansweredCommunicationController.getUnansweredCommunications(request);
-        verify(getUnansweredCommunicationFacadeService).get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
-    }
+  @Test
+  void shouldCallUnansweredCommunicationService() {
+    final var patientIds = List.of("patient1", "patient2");
+    final var request = new UnansweredCommunicationRequest(patientIds, 90);
+    unansweredCommunicationController.getUnansweredCommunications(request);
+    verify(getUnansweredCommunicationFacadeService)
+        .get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
+  }
 
-    @Test
-    void shouldReturnUnansweredCommunicationResponse() {
-        final var patientIds = List.of("patient1", "patient2");
-        final var response = new UnansweredCommunicationResponse();
-        final var request = new UnansweredCommunicationRequest(patientIds, 90);
-        doReturn(response).when(getUnansweredCommunicationFacadeService).get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
+  @Test
+  void shouldReturnUnansweredCommunicationResponse() {
+    final var patientIds = List.of("patient1", "patient2");
+    final var response = new UnansweredCommunicationResponse();
+    final var request = new UnansweredCommunicationRequest(patientIds, 90);
+    doReturn(response)
+        .when(getUnansweredCommunicationFacadeService)
+        .get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
 
-        final var result = unansweredCommunicationController.getUnansweredCommunications(request);
-        assertEquals(response, result);
-    }
+    final var result = unansweredCommunicationController.getUnansweredCommunications(request);
+    assertEquals(response, result);
+  }
 }

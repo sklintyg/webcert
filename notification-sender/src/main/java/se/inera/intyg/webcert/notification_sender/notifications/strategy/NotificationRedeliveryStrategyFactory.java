@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,19 +22,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
-
 @Service
 public class NotificationRedeliveryStrategyFactory {
 
-    @Value("${notification.redelivery.strategy.template.standard}")
-    private String strategyTemplateStandard;
+  @Value("${notification.redelivery.strategy.template.standard}")
+  private String strategyTemplateStandard;
 
-    public NotificationRedeliveryStrategy getResendStrategy(NotificationRedeliveryStrategyEnum notificationResendStrategy) {
+  public NotificationRedeliveryStrategy getResendStrategy(
+      NotificationRedeliveryStrategyEnum notificationResendStrategy) {
 
-        if (notificationResendStrategy == NotificationRedeliveryStrategyEnum.SINGLE) {
-            return new NotificationRedeliveryStrategySingle();
-        } else {
-            return new NotificationRedeliveryStrategyStandard(strategyTemplateStandard);
-        }
+    if (notificationResendStrategy == NotificationRedeliveryStrategyEnum.SINGLE) {
+      return new NotificationRedeliveryStrategySingle();
+    } else {
+      return new NotificationRedeliveryStrategyStandard(strategyTemplateStandard);
     }
+  }
 }

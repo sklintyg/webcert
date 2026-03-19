@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,16 +33,14 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
 @Builder
 public class MessageQueryCriteriaDTO {
 
-    List<String> issuedOnUnitIds;
-    Boolean forwarded;
-    QuestionSenderType senderType;
-    LocalDateTime sentDateFrom;
-    LocalDateTime sentDateTo;
-    String issuedByStaffId;
-    PersonIdDTO patientId;
+  List<String> issuedOnUnitIds;
+  Boolean forwarded;
+  QuestionSenderType senderType;
+  LocalDateTime sentDateFrom;
+  LocalDateTime sentDateTo;
+  String issuedByStaffId;
+  PersonIdDTO patientId;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class MessageQueryCriteriaDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class MessageQueryCriteriaDTOBuilder {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -33,38 +32,37 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 @RequiredArgsConstructor
 public class HandleQuestionFromCertificateService implements HandleQuestionFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PDLLogService pdlLogService;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    @Override
-    public Question handle(String questionId, boolean isHandled) {
-        if (Boolean.FALSE.equals(csIntegrationService.messageExists(questionId))) {
-            return null;
-        }
-
-        final var question = csIntegrationService.handleMessage(
-            csIntegrationRequestFactory.handleMessageRequestDTO(isHandled),
-            questionId
-        );
-
-        final var certificate = csIntegrationService.getCertificate(
-            csIntegrationRequestFactory.getCertificateFromMessageRequestDTO(),
-            questionId
-        );
-
-        pdlLogService.logCreateMessage(
-            certificate.getMetadata().getPatient().getPersonId().getId(),
-            certificate.getMetadata().getId()
-        );
-
-        publishCertificateStatusUpdateService.publish(certificate, eventType(question.getAuthor()));
-
-        return question;
+  @Override
+  public Question handle(String questionId, boolean isHandled) {
+    if (Boolean.FALSE.equals(csIntegrationService.messageExists(questionId))) {
+      return null;
     }
 
-    private HandelsekodEnum eventType(String author) {
-        return FrageStallare.FORSAKRINGSKASSAN.isNameEqual(author) ? HandelsekodEnum.HANFRFM : HandelsekodEnum.HANFRFV;
-    }
+    final var question =
+        csIntegrationService.handleMessage(
+            csIntegrationRequestFactory.handleMessageRequestDTO(isHandled), questionId);
+
+    final var certificate =
+        csIntegrationService.getCertificate(
+            csIntegrationRequestFactory.getCertificateFromMessageRequestDTO(), questionId);
+
+    pdlLogService.logCreateMessage(
+        certificate.getMetadata().getPatient().getPersonId().getId(),
+        certificate.getMetadata().getId());
+
+    publishCertificateStatusUpdateService.publish(certificate, eventType(question.getAuthor()));
+
+    return question;
+  }
+
+  private HandelsekodEnum eventType(String author) {
+    return FrageStallare.FORSAKRINGSKASSAN.isNameEqual(author)
+        ? HandelsekodEnum.HANFRFM
+        : HandelsekodEnum.HANFRFV;
+  }
 }

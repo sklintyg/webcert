@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,146 +46,251 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 @Transactional
 public class UtkastRepositoryCustomTest {
 
-    @Autowired
-    private UtkastRepository utkastRepository;
+  @Autowired private UtkastRepository utkastRepository;
 
-    @Autowired
-    private UtkastRepositoryCustom utkastRepositoryCustom;
+  @Autowired private UtkastRepositoryCustom utkastRepositoryCustom;
 
-    /**
-     * Testing several @Query methods in same test to save setup/teardown time.
-     */
-    @Test
-    public void testFindRelations() {
-        // Create two hierarchies
-        String intygIdParent = "intyg-1";
-        String intygIdChild1 = "intyg-1-1";
-        String intygIdChild2 = "intyg-1-2";
-        String intygIdChild3 = "intyg-1-3";
+  /** Testing several @Query methods in same test to save setup/teardown time. */
+  @Test
+  public void testFindRelations() {
+    // Create two hierarchies
+    String intygIdParent = "intyg-1";
+    String intygIdChild1 = "intyg-1-1";
+    String intygIdChild2 = "intyg-1-2";
+    String intygIdChild3 = "intyg-1-3";
 
-        String intygId2Parent = "intyg-2";
-        String intygId2Child1 = "intyg-2-1";
-        String intygId2Child2 = "intyg-2-2";
-        String intygId2Child3 = "intyg-2-3";
+    String intygId2Parent = "intyg-2";
+    String intygId2Child1 = "intyg-2-1";
+    String intygId2Child2 = "intyg-2-2";
+    String intygId2Child3 = "intyg-2-3";
 
-        // Hierarchy 1, one parent, three children
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdParent, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
+    // Hierarchy 1, one parent, three children
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygIdParent,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.SIGNED,
+            null,
+            null,
             LocalDateTime.now().minusDays(10L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild1, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, intygIdParent,
-            RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild2, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_COMPLETE,
-            intygIdParent, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild3, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE,
-            intygIdParent, RelationKod.FRLANG, LocalDateTime.now().minusDays(1L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygIdChild1,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.SIGNED,
+            intygIdParent,
+            RelationKod.ERSATT,
+            LocalDateTime.now().minusDays(5L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygIdChild2,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_COMPLETE,
+            intygIdParent,
+            RelationKod.KOMPLT,
+            LocalDateTime.now().minusDays(2L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygIdChild3,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            intygIdParent,
+            RelationKod.FRLANG,
+            LocalDateTime.now().minusDays(1L)));
 
-        // Hierarchy 2, one parent, three children as well
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId2Parent, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
+    // Hierarchy 2, one parent, three children as well
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId2Parent,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.SIGNED,
+            null,
+            null,
             LocalDateTime.now().minusDays(10L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId2Child1, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, intygId2Parent,
-            RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId2Child2, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_COMPLETE,
-            intygId2Parent, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId2Child3, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE,
-            intygId2Parent, RelationKod.FRLANG, LocalDateTime.now().minusDays(1L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId2Child1,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.SIGNED,
+            intygId2Parent,
+            RelationKod.ERSATT,
+            LocalDateTime.now().minusDays(5L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId2Child2,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_COMPLETE,
+            intygId2Parent,
+            RelationKod.KOMPLT,
+            LocalDateTime.now().minusDays(2L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId2Child3,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            intygId2Parent,
+            RelationKod.FRLANG,
+            LocalDateTime.now().minusDays(1L)));
 
-        // Check the parent
-        List<WebcertCertificateRelation> parentRelations = utkastRepositoryCustom.findParentRelation(intygIdChild1);
+    // Check the parent
+    List<WebcertCertificateRelation> parentRelations =
+        utkastRepositoryCustom.findParentRelation(intygIdChild1);
 
-        assertNotNull(parentRelations);
-        assertEquals(1, parentRelations.size());
-        assertEquals(intygIdParent, parentRelations.get(0).getIntygsId());
-        assertEquals(RelationKod.ERSATT, parentRelations.get(0).getRelationKod());
+    assertNotNull(parentRelations);
+    assertEquals(1, parentRelations.size());
+    assertEquals(intygIdParent, parentRelations.get(0).getIntygsId());
+    assertEquals(RelationKod.ERSATT, parentRelations.get(0).getRelationKod());
 
-        // Check children
-        List<WebcertCertificateRelation> childRelations = utkastRepositoryCustom.findChildRelations(intygIdParent);
-        childRelations.sort((cr1, cr2) -> cr2.getSkapad().compareTo(cr1.getSkapad()));
+    // Check children
+    List<WebcertCertificateRelation> childRelations =
+        utkastRepositoryCustom.findChildRelations(intygIdParent);
+    childRelations.sort((cr1, cr2) -> cr2.getSkapad().compareTo(cr1.getSkapad()));
 
-        assertEquals(3, childRelations.size());
-        assertEquals(intygIdChild3, childRelations.get(0).getIntygsId());
-        assertEquals(UtkastStatus.DRAFT_INCOMPLETE, childRelations.get(0).getStatus());
+    assertEquals(3, childRelations.size());
+    assertEquals(intygIdChild3, childRelations.get(0).getIntygsId());
+    assertEquals(UtkastStatus.DRAFT_INCOMPLETE, childRelations.get(0).getStatus());
 
-        assertEquals(intygIdChild2, childRelations.get(1).getIntygsId());
-        assertEquals(UtkastStatus.DRAFT_COMPLETE, childRelations.get(1).getStatus());
+    assertEquals(intygIdChild2, childRelations.get(1).getIntygsId());
+    assertEquals(UtkastStatus.DRAFT_COMPLETE, childRelations.get(1).getStatus());
 
-        assertEquals(intygIdChild1, childRelations.get(2).getIntygsId());
-        assertEquals(UtkastStatus.SIGNED, childRelations.get(2).getStatus());
-    }
+    assertEquals(intygIdChild1, childRelations.get(2).getIntygsId());
+    assertEquals(UtkastStatus.SIGNED, childRelations.get(2).getStatus());
+  }
 
-    @Test
-    public void testRemoveRelationsToDraft() {
-        // Create two hierarchies
-        String intygIdParent = "intyg-1";
-        String intygIdChild1 = "intyg-1-1";
+  @Test
+  public void testRemoveRelationsToDraft() {
+    // Create two hierarchies
+    String intygIdParent = "intyg-1";
+    String intygIdChild1 = "intyg-1-1";
 
-        // Hierarchy 1, one parent, three children
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdParent, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
+    // Hierarchy 1, one parent, three children
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygIdParent,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.SIGNED,
+            null,
+            null,
             LocalDateTime.now().minusDays(10L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild1, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, intygIdParent,
-            RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygIdChild1,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.SIGNED,
+            intygIdParent,
+            RelationKod.ERSATT,
+            LocalDateTime.now().minusDays(5L)));
 
-        // Verify relation
-        Utkast intygChild1 = utkastRepository.findById(intygIdChild1).orElse(null);
+    // Verify relation
+    Utkast intygChild1 = utkastRepository.findById(intygIdChild1).orElse(null);
 
-        assertNotNull(intygChild1);
-        assertEquals(RelationKod.ERSATT, intygChild1.getRelationKod());
-        assertEquals(intygIdParent, intygChild1.getRelationIntygsId());
+    assertNotNull(intygChild1);
+    assertEquals(RelationKod.ERSATT, intygChild1.getRelationKod());
+    assertEquals(intygIdParent, intygChild1.getRelationIntygsId());
 
-        // Remove relations
-        utkastRepositoryCustom.removeRelationsToDraft(intygIdParent);
+    // Remove relations
+    utkastRepositoryCustom.removeRelationsToDraft(intygIdParent);
 
-        intygChild1 = utkastRepository.findById(intygIdChild1).orElse(null);
+    intygChild1 = utkastRepository.findById(intygIdChild1).orElse(null);
 
-        assertNull(intygChild1.getRelationKod());
-        assertNull(intygChild1.getRelationIntygsId());
-    }
+    assertNull(intygChild1.getRelationKod());
+    assertNull(intygChild1.getRelationIntygsId());
+  }
 
-    @Test
-    public void testFindDraftsByNotLockedOrSignedAndSkapadBefore() {
-        // Create two hierarchies
-        String intygId_signed = "intyg-1";
-        String intygId_locked = "intyg-2";
-        String intygId_draft_complete = "intyg-3";
-        String intygId_draft_incomplete = "intyg-4";
+  @Test
+  public void testFindDraftsByNotLockedOrSignedAndSkapadBefore() {
+    // Create two hierarchies
+    String intygId_signed = "intyg-1";
+    String intygId_locked = "intyg-2";
+    String intygId_draft_complete = "intyg-3";
+    String intygId_draft_incomplete = "intyg-4";
 
-        String intygId_draft_10_days = "intyg-10";
-        String intygId_draft_14_days = "intyg-14";
-        String intygId_draft_15_days = "intyg-15";
-        String intygId_draft_20_days = "intyg-20";
+    String intygId_draft_10_days = "intyg-10";
+    String intygId_draft_14_days = "intyg-14";
+    String intygId_draft_15_days = "intyg-15";
+    String intygId_draft_20_days = "intyg-20";
 
-        // Hierarchy 1, one parent, three children
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_signed, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
+    // Hierarchy 1, one parent, three children
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId_signed,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.SIGNED,
+            null,
+            null,
             LocalDateTime.now().minusDays(20L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_locked, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_LOCKED, null,
-            null, LocalDateTime.now().minusDays(25L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId_locked,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_LOCKED,
+            null,
+            null,
+            LocalDateTime.now().minusDays(25L)));
 
-        utkastRepository
-            .save(UtkastTestUtil.buildUtkast(intygId_draft_complete, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_COMPLETE, null,
-                null, LocalDateTime.now().minusDays(25L)));
-        utkastRepository
-            .save(UtkastTestUtil.buildUtkast(intygId_draft_incomplete, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
-                null, LocalDateTime.now().minusDays(25L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId_draft_complete,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_COMPLETE,
+            null,
+            null,
+            LocalDateTime.now().minusDays(25L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId_draft_incomplete,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            null,
+            null,
+            LocalDateTime.now().minusDays(25L)));
 
-        utkastRepository
-            .save(UtkastTestUtil.buildUtkast(intygId_draft_10_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
-                null, LocalDateTime.now().minusDays(10L)));
-        utkastRepository
-            .save(UtkastTestUtil.buildUtkast(intygId_draft_14_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
-                null, LocalDateTime.now().minusDays(14L)));
-        utkastRepository
-            .save(UtkastTestUtil.buildUtkast(intygId_draft_15_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
-                null, LocalDateTime.now().minusDays(15L)));
-        utkastRepository
-            .save(UtkastTestUtil.buildUtkast(intygId_draft_20_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
-                null, LocalDateTime.now().minusDays(20L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId_draft_10_days,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            null,
+            null,
+            LocalDateTime.now().minusDays(10L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId_draft_14_days,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            null,
+            null,
+            LocalDateTime.now().minusDays(14L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId_draft_15_days,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            null,
+            null,
+            LocalDateTime.now().minusDays(15L)));
+    utkastRepository.save(
+        UtkastTestUtil.buildUtkast(
+            intygId_draft_20_days,
+            UtkastTestUtil.ENHET_1_ID,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            null,
+            null,
+            LocalDateTime.now().minusDays(20L)));
 
-        LocalDateTime skapad = LocalDate.now().minusDays(14L).atStartOfDay();
-        List<Utkast> utkasts = utkastRepositoryCustom.findDraftsByNotLockedOrSignedAndSkapadBefore(skapad);
+    LocalDateTime skapad = LocalDate.now().minusDays(14L).atStartOfDay();
+    List<Utkast> utkasts =
+        utkastRepositoryCustom.findDraftsByNotLockedOrSignedAndSkapadBefore(skapad);
 
-        List<String> ids = utkasts.stream().map(Utkast::getIntygsId).collect(Collectors.toList());
-        List<String> intygsIdn = Arrays
-            .asList(intygId_draft_complete, intygId_draft_incomplete, intygId_draft_15_days, intygId_draft_20_days);
+    List<String> ids = utkasts.stream().map(Utkast::getIntygsId).collect(Collectors.toList());
+    List<String> intygsIdn =
+        Arrays.asList(
+            intygId_draft_complete,
+            intygId_draft_incomplete,
+            intygId_draft_15_days,
+            intygId_draft_20_days);
 
-        assertEquals(4, utkasts.size());
-        assertTrue(ids.containsAll(intygsIdn));
-    }
+    assertEquals(4, utkasts.size());
+    assertTrue(ids.containsAll(intygsIdn));
+  }
 }

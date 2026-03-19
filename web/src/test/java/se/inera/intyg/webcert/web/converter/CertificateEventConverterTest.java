@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,66 +44,66 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateEventConverterTest {
 
-    @Mock
-    IntygService intygService;
+  @Mock IntygService intygService;
 
-    @InjectMocks
-    CertificateEventConverter converter;
+  @InjectMocks CertificateEventConverter converter;
 
-    private final String CERTIFICATE_ID = "certId";
-    private final String PARENT_CERTIFICATE_ID = "parentId";
+  private final String CERTIFICATE_ID = "certId";
+  private final String PARENT_CERTIFICATE_ID = "parentId";
 
-    @Test
-    public void testConvertToCertificateEventDTO() {
-        CertificateEvent event = new CertificateEvent();
-        event.setCertificateId(CERTIFICATE_ID);
-        event.setEventCode(EventCode.SKAPAT);
+  @Test
+  public void testConvertToCertificateEventDTO() {
+    CertificateEvent event = new CertificateEvent();
+    event.setCertificateId(CERTIFICATE_ID);
+    event.setEventCode(EventCode.SKAPAT);
 
-        CertificateEventDTO dto = converter.convertToCertificateEventDTO(event);
+    CertificateEventDTO dto = converter.convertToCertificateEventDTO(event);
 
-        assertNotNull(dto);
-        assertEquals(CERTIFICATE_ID, dto.getCertificateId());
-        assertEquals(EventCode.SKAPAT, dto.getEventCode());
-    }
+    assertNotNull(dto);
+    assertEquals(CERTIFICATE_ID, dto.getCertificateId());
+    assertEquals(EventCode.SKAPAT, dto.getEventCode());
+  }
 
-    @Test
-    public void testConvertToCertificateEventDTOWithExtendedMessage() {
-        IntygContentHolder intygContentHolder = getIntygContentHolder();
-        when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean())).thenReturn(intygContentHolder);
-        when(intygService.getIntygTypeInfo(PARENT_CERTIFICATE_ID)).thenReturn(new IntygTypeInfo(PARENT_CERTIFICATE_ID, "type", "version"));
+  @Test
+  public void testConvertToCertificateEventDTOWithExtendedMessage() {
+    IntygContentHolder intygContentHolder = getIntygContentHolder();
+    when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean()))
+        .thenReturn(intygContentHolder);
+    when(intygService.getIntygTypeInfo(PARENT_CERTIFICATE_ID))
+        .thenReturn(new IntygTypeInfo(PARENT_CERTIFICATE_ID, "type", "version"));
 
-        CertificateEvent event = new CertificateEvent();
-        event.setCertificateId(CERTIFICATE_ID);
-        event.setEventCode(EventCode.ERSATTER);
+    CertificateEvent event = new CertificateEvent();
+    event.setCertificateId(CERTIFICATE_ID);
+    event.setEventCode(EventCode.ERSATTER);
 
-        CertificateEventDTO dto = converter.convertToCertificateEventDTO(event);
+    CertificateEventDTO dto = converter.convertToCertificateEventDTO(event);
 
-        verify(intygService).fetchIntygDataForInternalUse(anyString(), anyBoolean());
-        verify(intygService).getIntygTypeInfo(anyString());
-        assertNotNull(dto);
-        assertEquals(CERTIFICATE_ID, dto.getCertificateId());
-        assertEquals(EventCode.ERSATTER, dto.getEventCode());
-        assertNotNull(dto.getExtendedMessage());
-        assertNotNull(dto.getExtendedMessage().getOriginalCertificateType());
-    }
+    verify(intygService).fetchIntygDataForInternalUse(anyString(), anyBoolean());
+    verify(intygService).getIntygTypeInfo(anyString());
+    assertNotNull(dto);
+    assertEquals(CERTIFICATE_ID, dto.getCertificateId());
+    assertEquals(EventCode.ERSATTER, dto.getEventCode());
+    assertNotNull(dto.getExtendedMessage());
+    assertNotNull(dto.getExtendedMessage().getOriginalCertificateType());
+  }
 
-    private IntygContentHolder getIntygContentHolder() {
-        WebcertCertificateRelation complementedByIntyg = new WebcertCertificateRelation(PARENT_CERTIFICATE_ID, RelationKod.KOMPLT,
-            LocalDateTime.now(), null,
-            false);
-        Relations parent = new Relations();
-        parent.setParent(complementedByIntyg);
+  private IntygContentHolder getIntygContentHolder() {
+    WebcertCertificateRelation complementedByIntyg =
+        new WebcertCertificateRelation(
+            PARENT_CERTIFICATE_ID, RelationKod.KOMPLT, LocalDateTime.now(), null, false);
+    Relations parent = new Relations();
+    parent.setParent(complementedByIntyg);
 
-        return IntygContentHolder.builder()
-            .relations(parent)
-            .revoked(false)
-            .deceased(false)
-            .sekretessmarkering(false)
-            .patientNameChangedInPU(false)
-            .patientAddressChangedInPU(false)
-            .testIntyg(false)
-            .relations(parent)
-            .latestMajorTextVersion(true)
-            .build();
-    }
+    return IntygContentHolder.builder()
+        .relations(parent)
+        .revoked(false)
+        .deceased(false)
+        .sekretessmarkering(false)
+        .patientNameChangedInPU(false)
+        .patientAddressChangedInPU(false)
+        .testIntyg(false)
+        .relations(parent)
+        .latestMajorTextVersion(true)
+        .build();
+  }
 }

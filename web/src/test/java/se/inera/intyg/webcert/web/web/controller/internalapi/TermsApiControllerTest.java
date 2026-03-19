@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,19 +32,16 @@ import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 @RunWith(MockitoJUnitRunner.class)
 public class TermsApiControllerTest {
 
-    @Mock
-    private AvtalService avtalService;
+  @Mock private AvtalService avtalService;
 
-    @InjectMocks
-    private TermsApiController termsApiController;
+  @InjectMocks private TermsApiController termsApiController;
 
-    @Test
-    public void shouldReturnFetchedValue() {
-        when(avtalService.userHasApprovedLatestAvtal(any(String.class))).thenReturn(true);
+  @Test
+  public void shouldReturnFetchedValue() {
+    when(avtalService.userHasApprovedLatestAvtal(any(String.class))).thenReturn(true);
 
-        final var response = termsApiController.getWebcertTermsApproved("HSA_ID");
+    final var response = termsApiController.getWebcertTermsApproved("HSA_ID");
 
-        assertTrue(response);
-    }
-
+    assertTrue(response);
+  }
 }

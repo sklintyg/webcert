@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,32 +32,34 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 @Service
 public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SignCertificateFacadeServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SignCertificateFacadeServiceImpl.class);
 
-    private final UnderskriftService underskriftService;
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final UnderskriftService underskriftService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    public SignCertificateFacadeServiceImpl(@Qualifier("signAggregator") UnderskriftService signatureAggregator,
-        @Qualifier("getCertificateAggregator") GetCertificateFacadeService getCertificateFacadeService) {
-        this.underskriftService = signatureAggregator;
-        this.getCertificateFacadeService = getCertificateFacadeService;
-    }
+  public SignCertificateFacadeServiceImpl(
+      @Qualifier("signAggregator") UnderskriftService signatureAggregator,
+      @Qualifier("getCertificateAggregator") GetCertificateFacadeService getCertificateFacadeService) {
+    this.underskriftService = signatureAggregator;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
 
-    @Override
-    public Certificate signCertificate(Certificate certificate, String userIpAddress) {
-        final var certificateId = certificate.getMetadata().getId();
-        final var certificateType = certificate.getMetadata().getType();
-        final var version = certificate.getMetadata().getVersion();
-        final var signMethod = SignMethod.FAKE;
-        final var ticketId = UUID.randomUUID().toString();
+  @Override
+  public Certificate signCertificate(Certificate certificate, String userIpAddress) {
+    final var certificateId = certificate.getMetadata().getId();
+    final var certificateType = certificate.getMetadata().getType();
+    final var version = certificate.getMetadata().getVersion();
+    final var signMethod = SignMethod.FAKE;
+    final var ticketId = UUID.randomUUID().toString();
 
-        LOG.debug("Start fake signing process for certificate '{}'", certificateId);
-        underskriftService.startSigningProcess(certificateId, certificateType, version, signMethod, ticketId, userIpAddress);
+    LOG.debug("Start fake signing process for certificate '{}'", certificateId);
+    underskriftService.startSigningProcess(
+        certificateId, certificateType, version, signMethod, ticketId, userIpAddress);
 
-        LOG.debug("Make fake signature for certificate '{}'", certificateId);
-        underskriftService.fakeSignature(certificateId, certificateType, version, ticketId);
+    LOG.debug("Make fake signature for certificate '{}'", certificateId);
+    underskriftService.fakeSignature(certificateId, certificateType, version, ticketId);
 
-        LOG.debug("Get signed certificate '{}' and return", certificateId);
-        return getCertificateFacadeService.getCertificate(certificateId, false, true);
-    }
+    LOG.debug("Get signed certificate '{}' and return", certificateId);
+    return getCertificateFacadeService.getCertificate(certificateId, false, true);
+  }
 }

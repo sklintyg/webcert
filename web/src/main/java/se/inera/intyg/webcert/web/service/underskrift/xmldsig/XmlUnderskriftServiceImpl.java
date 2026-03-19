@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,31 +40,38 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Slf4j
 @Service
-public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implements CommonUnderskriftService {
+public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService
+    implements CommonUnderskriftService {
 
-    @Autowired
-    private PrepareSignatureService prepareSignatureService;
+  @Autowired private PrepareSignatureService prepareSignatureService;
 
-    @Autowired
-    private MonitoringLogService monitoringLogService;
+  @Autowired private MonitoringLogService monitoringLogService;
 
-    @Override
-    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> utkastJson,
-        SignMethod signMethod, String ticketId, String userIpAddress, String certificateXml) {
+  @Override
+  public SignaturBiljett skapaSigneringsBiljettMedDigest(
+      String intygsId,
+      String intygsTyp,
+      long version,
+      Optional<String> utkastJson,
+      SignMethod signMethod,
+      String ticketId,
+      String userIpAddress,
+      String certificateXml) {
 
-        String signatureAlgorithm;
-        if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
-            signatureAlgorithm = DssSignatureService.REQUESTED_SIGN_ALGORITHM;
-        } else {
-            signatureAlgorithm = PartialSignatureFactory.DEFAULT_SIGNATURE_ALGORITHM;
-        }
+    String signatureAlgorithm;
+    if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
+      signatureAlgorithm = DssSignatureService.REQUESTED_SIGN_ALGORITHM;
+    } else {
+      signatureAlgorithm = PartialSignatureFactory.DEFAULT_SIGNATURE_ALGORITHM;
+    }
 
-        IntygXMLDSignature intygSignature = prepareSignatureService
-            .prepareSignature(certificateXml, intygsId, signatureAlgorithm);
-        intygSignature.setIntygJson(utkastJson.orElse(null));
+    IntygXMLDSignature intygSignature =
+        prepareSignatureService.prepareSignature(certificateXml, intygsId, signatureAlgorithm);
+    intygSignature.setIntygJson(utkastJson.orElse(null));
 
-        SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
-            .aSignaturBiljett(ticketId, SignaturTyp.XMLDSIG, signMethod)
+    SignaturBiljett biljett =
+        SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(
+                ticketId, SignaturTyp.XMLDSIG, signMethod)
             .withIntygsId(intygsId)
             .withVersion(version)
             .withIntygSignature(intygSignature)
@@ -74,27 +81,36 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
             .withUserIpAddress(userIpAddress)
             .build();
 
-        redisTicketTracker.trackBiljett(biljett);
-        return biljett;
-    }
+    redisTicketTracker.trackBiljett(biljett);
+    return biljett;
+  }
 
-    @Override
-    public SignaturBiljett finalizeSignature(final SignaturBiljett biljett, final byte[] signatur, final String certifikat,
-        final Utkast utkast, WebCertUser user) {
-        SignaturBiljett sb = finalizeXMLDSigSignature(certifikat, user, biljett, signatur, utkast);
-        monitoringLogService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
-            utkast.getRelationKod());
+  @Override
+  public SignaturBiljett finalizeSignature(
+      final SignaturBiljett biljett,
+      final byte[] signatur,
+      final String certifikat,
+      final Utkast utkast,
+      WebCertUser user) {
+    SignaturBiljett sb = finalizeXMLDSigSignature(certifikat, user, biljett, signatur, utkast);
+    monitoringLogService.logIntygSigned(
+        utkast.getIntygsId(),
+        utkast.getIntygsTyp(),
+        user.getHsaId(),
+        user.getAuthenticationScheme(),
+        utkast.getRelationKod());
 
-        return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
-    }
+    return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
+  }
 
-    @Override
-    public FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat) {
-        final var finalizedCertificateSignature = finalizeXMLDSigSignatureForCS(certifikat, ticket, signatur);
-        redisTicketTracker.updateStatus(
-            finalizedCertificateSignature.getSignaturBiljett().getTicketId(),
-            finalizedCertificateSignature.getSignaturBiljett().getStatus()
-        );
-        return finalizedCertificateSignature;
-    }
+  @Override
+  public FinalizedCertificateSignature finalizeSignatureForCS(
+      SignaturBiljett ticket, byte[] signatur, String certifikat) {
+    final var finalizedCertificateSignature =
+        finalizeXMLDSigSignatureForCS(certifikat, ticket, signatur);
+    redisTicketTracker.updateStatus(
+        finalizedCertificateSignature.getSignaturBiljett().getTicketId(),
+        finalizedCertificateSignature.getSignaturBiljett().getStatus());
+    return finalizedCertificateSignature;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,34 +30,31 @@ import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "arbetsbelastning"
-})
+@JsonPropertyOrder({"arbetsbelastning"})
 public class Urvalarbetsbelastning {
 
-    @JsonProperty("arbetsbelastning")
-    private List<Kod> arbetsbelastning = null;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("arbetsbelastning")
+  private List<Kod> arbetsbelastning = null;
 
-    @JsonProperty("arbetsbelastning")
-    public List<Kod> getArbetsbelastning() {
-        return arbetsbelastning;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("arbetsbelastning")
-    public void setArbetsbelastning(List<Kod> arbetsbelastning) {
-        this.arbetsbelastning = arbetsbelastning;
-    }
+  @JsonProperty("arbetsbelastning")
+  public List<Kod> getArbetsbelastning() {
+    return arbetsbelastning;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("arbetsbelastning")
+  public void setArbetsbelastning(List<Kod> arbetsbelastning) {
+    this.arbetsbelastning = arbetsbelastning;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
 
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

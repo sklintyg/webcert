@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,31 +21,32 @@ package se.inera.intyg.webcert.notification_sender.notifications.enumerations;
 import java.util.stream.Stream;
 
 public enum NotificationErrorTypeEnum {
+  TECHNICAL_ERROR("TECHNICAL_ERROR", "Notification error type TECHNICAL_ERROR"),
+  APPLICATION_ERROR("APPLICATION_ERROR", "Notification error type APPLICATION_ERROR"),
+  VALIDATION_ERROR("VALIDATION_ERROR", "Notification error type VALIDATION_ERROR"),
+  REVOKED("REVOKED", "Notification error type REVOKED"),
+  WEBCERT_EXCEPTION("WEBCERT_EXCEPTION", "Notification error type WEBCERT_EXCEPTION");
 
-    TECHNICAL_ERROR("TECHNICAL_ERROR", "Notification error type TECHNICAL_ERROR"),
-    APPLICATION_ERROR("APPLICATION_ERROR", "Notification error type APPLICATION_ERROR"),
-    VALIDATION_ERROR("VALIDATION_ERROR", "Notification error type VALIDATION_ERROR"),
-    REVOKED("REVOKED", "Notification error type REVOKED"),
-    WEBCERT_EXCEPTION("WEBCERT_EXCEPTION", "Notification error type WEBCERT_EXCEPTION");
+  private final String value;
+  private final String description;
 
-    private final String value;
-    private final String description;
+  NotificationErrorTypeEnum(String value, String description) {
+    this.value = value;
+    this.description = description;
+  }
 
-    NotificationErrorTypeEnum(String value, String description) {
-        this.value = value;
-        this.description = description;
-    }
+  public String value() {
+    return this.value;
+  }
 
-    public String value() {
-        return this.value;
-    }
+  public String description() {
+    return this.description;
+  }
 
-    public String description() {
-        return this.description;
-    }
-
-    public static NotificationErrorTypeEnum fromValue(String value) {
-        return Stream.of(values()).filter((s) -> value.equals(s.value())).findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(value));
-    }
+  public static NotificationErrorTypeEnum fromValue(String value) {
+    return Stream.of(values())
+        .filter((s) -> value.equals(s.value()))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException(value));
+  }
 }

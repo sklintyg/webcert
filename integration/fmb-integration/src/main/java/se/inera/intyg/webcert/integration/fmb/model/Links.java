@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,34 +28,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "self"
-})
+@JsonPropertyOrder({"self"})
 public class Links {
 
-    @JsonProperty("self")
-    private String self;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("self")
+  private String self;
 
-    @JsonProperty("self")
-    public String getSelf() {
-        return self;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("self")
-    public void setSelf(String self) {
-        this.self = self;
-    }
+  @JsonProperty("self")
+  public String getSelf() {
+    return self;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("self")
+  public void setSelf(String self) {
+    this.self = self;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
 
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

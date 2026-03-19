@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,63 +41,61 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 @ExtendWith(MockitoExtension.class)
 class IntegrationCertificateAggregatorTest {
 
-    private static final String ID = "ID";
-    private static final PrepareRedirectToIntyg PREPARE_REDIRECT_TO_INTYG_FROM_CS = new PrepareRedirectToIntyg();
-    private static final PrepareRedirectToIntyg PREPARE_REDIRECT_TO_INTYG_FROM_WC = new PrepareRedirectToIntyg();
-    private static final WebCertUser USER = new WebCertUser();
-    private static final Personnummer ALTERNATE_SSN = Personnummer.createPersonnummer("191212121212").orElseThrow();
+  private static final String ID = "ID";
+  private static final PrepareRedirectToIntyg PREPARE_REDIRECT_TO_INTYG_FROM_CS =
+      new PrepareRedirectToIntyg();
+  private static final PrepareRedirectToIntyg PREPARE_REDIRECT_TO_INTYG_FROM_WC =
+      new PrepareRedirectToIntyg();
+  private static final WebCertUser USER = new WebCertUser();
+  private static final Personnummer ALTERNATE_SSN =
+      Personnummer.createPersonnummer("191212121212").orElseThrow();
 
-    IntegrationService integrationServiceFromWC;
-    IntegrationService integrationServiceFromCS;
-    IntegrationCertificateAggregator aggregator;
+  IntegrationService integrationServiceFromWC;
+  IntegrationService integrationServiceFromCS;
+  IntegrationCertificateAggregator aggregator;
 
-    @BeforeEach
-    void setup() {
-        integrationServiceFromWC = mock(IntegrationServiceImpl.class);
-        integrationServiceFromCS = mock(IntegrationServiceForCS.class);
+  @BeforeEach
+  void setup() {
+    integrationServiceFromWC = mock(IntegrationServiceImpl.class);
+    integrationServiceFromCS = mock(IntegrationServiceForCS.class);
 
-        aggregator = new IntegrationCertificateAggregator(
-            integrationServiceFromWC,
-            integrationServiceFromCS
-        );
-    }
+    aggregator =
+        new IntegrationCertificateAggregator(integrationServiceFromWC, integrationServiceFromCS);
+  }
 
-    @Test
-    void shouldReturnPrepareRedirectToIntygFromCSResponseFromCSNotNull() {
-        when(integrationServiceFromCS.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
-            .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
+  @Test
+  void shouldReturnPrepareRedirectToIntygFromCSResponseFromCSNotNull() {
+    when(integrationServiceFromCS.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
+        .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 
-        final var response = aggregator.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
-        verify(integrationServiceFromCS, times(1)).prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
+    final var response = aggregator.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
+    verify(integrationServiceFromCS, times(1)).prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
 
-        assertEquals(PREPARE_REDIRECT_TO_INTYG_FROM_CS, response);
-    }
+    assertEquals(PREPARE_REDIRECT_TO_INTYG_FROM_CS, response);
+  }
 
-    @Test
-    void shouldReturnPrepareRedirectToIntygFromWCIfResponseFromCSIsNull() {
-        when(integrationServiceFromWC.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
-            .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
+  @Test
+  void shouldReturnPrepareRedirectToIntygFromWCIfResponseFromCSIsNull() {
+    when(integrationServiceFromWC.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
+        .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 
-        final var response = aggregator.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
-        verify(integrationServiceFromWC, times(1)).prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
+    final var response = aggregator.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
+    verify(integrationServiceFromWC, times(1)).prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
 
-        assertEquals(PREPARE_REDIRECT_TO_INTYG_FROM_WC, response);
-    }
+    assertEquals(PREPARE_REDIRECT_TO_INTYG_FROM_WC, response);
+  }
 
-    @Test
-    void shouldSetPrepareBeforeAlternateSsnToNull() {
-        final var argumentCaptor = ArgumentCaptor.forClass(Personnummer.class);
-        when(integrationServiceFromCS.prepareRedirectToIntyg(ID, USER, null))
-            .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
+  @Test
+  void shouldSetPrepareBeforeAlternateSsnToNull() {
+    final var argumentCaptor = ArgumentCaptor.forClass(Personnummer.class);
+    when(integrationServiceFromCS.prepareRedirectToIntyg(ID, USER, null))
+        .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 
-        aggregator.prepareRedirectToIntyg(ID, USER);
+    aggregator.prepareRedirectToIntyg(ID, USER);
 
-        verify(integrationServiceFromCS, times(1)).prepareRedirectToIntyg(
-            eq(ID),
-            eq(USER),
-            argumentCaptor.capture()
-        );
+    verify(integrationServiceFromCS, times(1))
+        .prepareRedirectToIntyg(eq(ID), eq(USER), argumentCaptor.capture());
 
-        assertNull(argumentCaptor.getValue());
-    }
+    assertNull(argumentCaptor.getValue());
+  }
 }

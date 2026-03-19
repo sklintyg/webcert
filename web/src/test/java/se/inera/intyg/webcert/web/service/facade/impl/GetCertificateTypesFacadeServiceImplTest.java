@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -70,419 +70,470 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 @ExtendWith(MockitoExtension.class)
 class GetCertificateTypesFacadeServiceImplTest {
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
-    @Mock
-    private ResourceLinkHelper resourceLinkHelper;
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
-    @Mock
-    private FeaturesHelper featuresHelper;
-    @Mock
-    private WebCertUserService webCertUserService;
-    @Mock
-    private IntygTextsService intygTextsService;
-    @Mock
-    private CertificateTypeMessageService certificateTypeMessageService;
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
-    @Mock
-    private CertificateTypeInfoModalService certificateTypeInfoModalService;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
+  @Mock private ResourceLinkHelper resourceLinkHelper;
+  @Mock private AuthoritiesHelper authoritiesHelper;
+  @Mock private FeaturesHelper featuresHelper;
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private IntygTextsService intygTextsService;
+  @Mock private CertificateTypeMessageService certificateTypeMessageService;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
+  @Mock private CertificateTypeInfoModalService certificateTypeInfoModalService;
 
-    @Mock
-    private MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
+  @Mock private MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
 
-    @InjectMocks
-    private GetCertificateTypesFacadeServiceImpl getCertificateTypesFacadeService;
+  @InjectMocks private GetCertificateTypesFacadeServiceImpl getCertificateTypesFacadeService;
 
-    private static final String CERTIFICATE_TYPE_DB = "db";
-    private static final String CERTIFICATE_TYPE = "id";
-    private static final String CERTIFICATE_TYPE_VERSION = "1.0";
-    private static final String PATIENT_NAME = "Förnamn Efternamn";
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").orElseThrow();
+  private static final String CERTIFICATE_TYPE_DB = "db";
+  private static final String CERTIFICATE_TYPE = "id";
+  private static final String CERTIFICATE_TYPE_VERSION = "1.0";
+  private static final String PATIENT_NAME = "Förnamn Efternamn";
+  private static final Personnummer PATIENT_ID =
+      Personnummer.createPersonnummer("19121212-1212").orElseThrow();
+
+  @Nested
+  class CorrectCases {
+
+    private final IntygModule defaultModule = createIntygModule();
+    private final IntygModule notAllowedModule = createIntygModule("notAllowed");
+    private final IntygModule moduleDb =
+        new IntygModule(
+            CERTIFICATE_TYPE_DB,
+            "label",
+            "description",
+            "detailedDescription",
+            "issuerTypeId",
+            "cssPath",
+            "scriptPath",
+            "dependencyDefinitionPath",
+            "defaultRecipient",
+            CERTIFICATE_TYPE_DB);
+
+    @BeforeEach
+    void setup() {
+      doReturn(CERTIFICATE_TYPE_VERSION).when(intygTextsService).getLatestVersion(anyString());
+
+      final var user = mock(WebCertUser.class);
+      doReturn(user).when(webCertUserService).getUser();
+      doReturn("NORMAL").when(user).getOrigin();
+
+      doReturn(Set.of(defaultModule.getId(), moduleDb.getId()))
+          .when(authoritiesHelper)
+          .getIntygstyperForPrivilege(any(), any());
+    }
 
     @Nested
-    class CorrectCases {
+    class ModuleConversion {
 
-        private final IntygModule defaultModule = createIntygModule();
-        private final IntygModule notAllowedModule = createIntygModule("notAllowed");
-        private final IntygModule moduleDb = new IntygModule(CERTIFICATE_TYPE_DB, "label", "description", "detailedDescription",
-            "issuerTypeId", "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient", CERTIFICATE_TYPE_DB);
+      private List<CertificateTypeInfoDTO> types;
 
-        @BeforeEach
-        void setup() {
-            doReturn(CERTIFICATE_TYPE_VERSION)
-                .when(intygTextsService)
-                .getLatestVersion(anyString());
+      @BeforeEach
+      void setUp() {
+        doReturn(Arrays.asList(defaultModule, notAllowedModule, moduleDb))
+            .when(intygModuleRegistry)
+            .listAllModules();
+        final var patient = mock(Patient.class);
+        when(patient.getFullstandigtNamn()).thenReturn(PATIENT_NAME);
+        when(patientDetailsResolver.resolvePatient(any(), anyString(), anyString()))
+            .thenReturn(patient);
+      }
 
-            final var user = mock(WebCertUser.class);
-            doReturn(user)
-                .when(webCertUserService)
-                .getUser();
-            doReturn("NORMAL")
-                .when(user)
-                .getOrigin();
+      @Test
+      void shallConvertConfirmationModalIfProviderExists() {
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
-            doReturn(Set.of(defaultModule.getId(), moduleDb.getId()))
-                .when(authoritiesHelper)
-                .getIntygstyperForPrivilege(any(), any());
-        }
+        assertNotNull(types.get(1).getConfirmationModal());
+      }
 
-        @Nested
-        class ModuleConversion {
+      @Test
+      void shallConvertConfirmationModalToNullIfNoProvider() {
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
-            private List<CertificateTypeInfoDTO> types;
+        assertNull(types.getFirst().getConfirmationModal());
+      }
 
-            @BeforeEach
-            void setUp() {
-                doReturn(Arrays.asList(defaultModule, notAllowedModule, moduleDb))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
-                final var patient = mock(Patient.class);
-                when(patient.getFullstandigtNamn())
-                    .thenReturn(PATIENT_NAME);
-                when(patientDetailsResolver.resolvePatient(any(), anyString(), anyString()))
-                    .thenReturn(patient);
-            }
+      @Test
+      void shallConvertId() {
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(defaultModule.getId(), types.getFirst().getId());
+      }
 
-            @Test
-            void shallConvertConfirmationModalIfProviderExists() {
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
+      @Test
+      void shallConvertLabel() {
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(defaultModule.getLabel(), types.getFirst().getLabel());
+      }
 
-                assertNotNull(types.get(1).getConfirmationModal());
-            }
+      @Test
+      void shallConvertDescription() {
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(defaultModule.getDescription(), types.getFirst().getDescription());
+      }
 
-            @Test
-            void shallConvertConfirmationModalToNullIfNoProvider() {
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
+      @Test
+      void shallConvertDetailedDescription() {
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(
+            defaultModule.getDetailedDescription(), types.getFirst().getDetailedDescription());
+      }
 
-                assertNull(types.getFirst().getConfirmationModal());
-            }
+      @Test
+      void shallConvertIssuerTypeId() {
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(defaultModule.getIssuerTypeId(), types.getFirst().getIssuerTypeId());
+      }
+    }
 
-            @Test
-            void shallConvertId() {
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(defaultModule.getId(), types.getFirst().getId());
-            }
+    @Nested
+    class TypeInfoModal {
 
-            @Test
-            void shallConvertLabel() {
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(defaultModule.getLabel(), types.getFirst().getLabel());
-            }
+      @BeforeEach
+      void setUp() {
+        doReturn(Arrays.asList(defaultModule, notAllowedModule))
+            .when(intygModuleRegistry)
+            .listAllModules();
+      }
 
-            @Test
-            void shallConvertDescription() {
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(defaultModule.getDescription(), types.getFirst().getDescription());
-            }
-
-            @Test
-            void shallConvertDetailedDescription() {
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(defaultModule.getDetailedDescription(), types.getFirst().getDetailedDescription());
-            }
-
-            @Test
-            void shallConvertIssuerTypeId() {
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(defaultModule.getIssuerTypeId(), types.getFirst().getIssuerTypeId());
-            }
-        }
-
-        @Nested
-        class TypeInfoModal {
-
-            @BeforeEach
-            void setUp() {
-                doReturn(Arrays.asList(defaultModule, notAllowedModule))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
-            }
-
-            @Test
-            void shallIncludeModalLinkWhenModalExists() {
-                final var link = "link";
-                when(certificateTypeInfoModalService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(
-                    Optional.of(CertificateTypeInfoModal
-                        .builder()
+      @Test
+      void shallIncludeModalLinkWhenModalExists() {
+        final var link = "link";
+        when(certificateTypeInfoModalService.get(CERTIFICATE_TYPE, PATIENT_ID))
+            .thenReturn(
+                Optional.of(
+                    CertificateTypeInfoModal.builder()
                         .title("Title")
                         .link(link)
                         .description("Message")
-                        .build()
-                    )
-                );
-                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(link, types.getFirst().getModalLink());
-            }
+                        .build()));
+        final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(link, types.getFirst().getModalLink());
+      }
 
-            @Test
-            void shallExcludeLinkWhenModalDoesntExists() {
-                when(certificateTypeInfoModalService.get(CERTIFICATE_TYPE, PATIENT_ID))
-                    .thenReturn(Optional.empty());
-                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertNull(types.getFirst().getModalLink());
-            }
-        }
+      @Test
+      void shallExcludeLinkWhenModalDoesntExists() {
+        when(certificateTypeInfoModalService.get(CERTIFICATE_TYPE, PATIENT_ID))
+            .thenReturn(Optional.empty());
+        final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertNull(types.getFirst().getModalLink());
+      }
+    }
 
-        @Nested
-        class CertificateMessages {
+    @Nested
+    class CertificateMessages {
 
-            private List<CertificateTypeInfoDTO> types;
+      private List<CertificateTypeInfoDTO> types;
 
-            @BeforeEach
-            void setUp() {
-                doReturn(Arrays.asList(defaultModule, notAllowedModule))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
-            }
+      @BeforeEach
+      void setUp() {
+        doReturn(Arrays.asList(defaultModule, notAllowedModule))
+            .when(intygModuleRegistry)
+            .listAllModules();
+      }
 
-            @Test
-            void shallIncludeMessageWhenExists() {
-                final var expectedMessage = "Message for certificate type";
-                final var message = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT, expectedMessage);
-                when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.of(message));
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(expectedMessage, types.getFirst().getMessage());
-            }
+      @Test
+      void shallIncludeMessageWhenExists() {
+        final var expectedMessage = "Message for certificate type";
+        final var message =
+            new CertificateMessage(
+                CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT, expectedMessage);
+        when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID))
+            .thenReturn(Optional.of(message));
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(expectedMessage, types.getFirst().getMessage());
+      }
 
-            @Test
-            void shallExludeMessageWhenItDoesntExists() {
-                when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.empty());
-                types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertNull(types.getFirst().getMessage());
-            }
-        }
+      @Test
+      void shallExludeMessageWhenItDoesntExists() {
+        when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID))
+            .thenReturn(Optional.empty());
+        types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertNull(types.getFirst().getMessage());
+      }
+    }
 
-        @Nested
-        class ResourceLinks {
+    @Nested
+    class ResourceLinks {
 
-            @Test
-            void shallConvertResourceLinks() {
-                final var intygModule = createIntygModule();
-                doReturn(List.of(intygModule))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
+      @Test
+      void shallConvertResourceLinks() {
+        final var intygModule = createIntygModule();
+        doReturn(List.of(intygModule)).when(intygModuleRegistry).listAllModules();
 
-                doAnswer(invocation -> {
-                    List<IntygModuleDTO> dtos = invocation.getArgument(0);
-                    dtos.forEach(dto -> dto.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
-                    return null;
+        doAnswer(
+                invocation -> {
+                  List<IntygModuleDTO> dtos = invocation.getArgument(0);
+                  dtos.forEach(dto -> dto.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
+                  return null;
                 })
-                    .when(resourceLinkHelper)
-                    .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+            .when(resourceLinkHelper)
+            .decorateIntygModuleWithValidActionLinks(
+                ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
-                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.getFirst().getLinks().getFirst().getType());
-                assertTrue(types.getFirst().getLinks().getFirst().isEnabled());
-            }
+        final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(
+            ResourceLinkTypeDTO.CREATE_CERTIFICATE,
+            types.getFirst().getLinks().getFirst().getType());
+        assertTrue(types.getFirst().getLinks().getFirst().isEnabled());
+      }
 
-            @Test
-            void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() {
-                final var module = createIntygModule();
-                doReturn(List.of(module))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
+      @Test
+      void shallAddDisabledResourceLinkIfCreateCertificateIsUnavailable() {
+        final var module = createIntygModule();
+        doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
 
-                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.getFirst().getLinks().getFirst().getType());
-                assertFalse(types.getFirst().getLinks().getFirst().isEnabled());
-            }
+        final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        assertEquals(
+            ResourceLinkTypeDTO.CREATE_CERTIFICATE,
+            types.getFirst().getLinks().getFirst().getType());
+        assertFalse(types.getFirst().getLinks().getFirst().isEnabled());
+      }
 
-            @Test
-            void shallAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientOlderThanThirtyYearsAndTwoMonths() {
-                final var module = createIntygModule("luae_na");
-                doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
-                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+      @Test
+      void
+          shallAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientOlderThanThirtyYearsAndTwoMonths() {
+        final var module = createIntygModule("luae_na");
+        doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
+            .thenReturn(Set.of(module.getId()));
 
-                final var types = getCertificateTypesFacadeService.get(getPatientId(3));
-                assertEquals(1, types.getFirst().getLinks().stream()
-                    .filter(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)).count());
-                assertTrue(types.getFirst().getLinks().stream().filter(link ->
-                    link.getType() == ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION).findFirst().orElseThrow().isEnabled());
-            }
+        final var types = getCertificateTypesFacadeService.get(getPatientId(3));
+        assertEquals(
+            1,
+            types.getFirst().getLinks().stream()
+                .filter(
+                    link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION))
+                .count());
+        assertTrue(
+            types.getFirst().getLinks().stream()
+                .filter(link -> link.getType() == ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)
+                .findFirst()
+                .orElseThrow()
+                .isEnabled());
+      }
 
-            @Test
-            void shallAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientOlderThanThirtyYearsAndTwoMonthsWithCoordinationNo() {
-                final var module = createIntygModule("luae_na");
-                doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
-                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+      @Test
+      void
+          shallAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientOlderThanThirtyYearsAndTwoMonthsWithCoordinationNo() {
+        final var module = createIntygModule("luae_na");
+        doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
+            .thenReturn(Set.of(module.getId()));
 
-                final var types = getCertificateTypesFacadeService.get(getPatientIdAsCoordinationNumber(3));
-                assertEquals(1, types.getFirst().getLinks().stream()
-                    .filter(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)).count());
-                assertTrue(types.getFirst().getLinks().stream().filter(link ->
-                    link.getType() == ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION).findFirst().orElseThrow().isEnabled());
-            }
+        final var types = getCertificateTypesFacadeService.get(getPatientIdAsCoordinationNumber(3));
+        assertEquals(
+            1,
+            types.getFirst().getLinks().stream()
+                .filter(
+                    link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION))
+                .count());
+        assertTrue(
+            types.getFirst().getLinks().stream()
+                .filter(link -> link.getType() == ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)
+                .findFirst()
+                .orElseThrow()
+                .isEnabled());
+      }
 
-            @Test
-            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientYoungerThanThirtyYearsAndTwoMonths() {
-                final var module = createIntygModule("luae_na");
-                doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
-                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+      @Test
+      void
+          shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientYoungerThanThirtyYearsAndTwoMonths() {
+        final var module = createIntygModule("luae_na");
+        doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
+            .thenReturn(Set.of(module.getId()));
 
-                final var types = getCertificateTypesFacadeService.get(getPatientId(1));
-                assertTrue(types.getFirst().getLinks().stream()
-                    .noneMatch(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
-            }
+        final var types = getCertificateTypesFacadeService.get(getPatientId(1));
+        assertTrue(
+            types.getFirst().getLinks().stream()
+                .noneMatch(
+                    link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
+      }
 
-            @Test
-            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientYoungThanThirtyYearsAndTwoMonthsCoordinationNo() {
-                final var module = createIntygModule("luae_na");
-                doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
-                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+      @Test
+      void
+          shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientYoungThanThirtyYearsAndTwoMonthsCoordinationNo() {
+        final var module = createIntygModule("luae_na");
+        doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
+            .thenReturn(Set.of(module.getId()));
 
-                final var types = getCertificateTypesFacadeService.get(getPatientIdAsCoordinationNumber(1));
-                assertTrue(types.getFirst().getLinks().stream()
-                    .noneMatch(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
-            }
+        final var types = getCertificateTypesFacadeService.get(getPatientIdAsCoordinationNumber(1));
+        assertTrue(
+            types.getFirst().getLinks().stream()
+                .noneMatch(
+                    link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
+      }
 
-            @Test
-            void shallAddMissingRelatedCertificateConfirmationResourceLinkIfExists() {
-                final var module = createIntygModule("doi");
-                doReturn(List.of(module))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
+      @Test
+      void shallAddMissingRelatedCertificateConfirmationResourceLinkIfExists() {
+        final var module = createIntygModule("doi");
+        doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
 
-                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
+            .thenReturn(Set.of(module.getId()));
 
-                doReturn(Optional.of(
+        doReturn(
+                Optional.of(
                     ResourceLinkDTO.create(
                         ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION,
                         "name",
                         "description",
                         true)))
-                    .when(missingRelatedCertificateConfirmation).get(module.getId(), PATIENT_ID);
+            .when(missingRelatedCertificateConfirmation)
+            .get(module.getId(), PATIENT_ID);
 
-                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
-                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.getFirst().getLinks().getFirst().getType());
-                assertEquals(ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION, types.getFirst().getLinks().get(1).getType());
-            }
+        assertEquals(
+            ResourceLinkTypeDTO.CREATE_CERTIFICATE,
+            types.getFirst().getLinks().getFirst().getType());
+        assertEquals(
+            ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION,
+            types.getFirst().getLinks().get(1).getType());
+      }
 
-            @Test
-            void shallNotAddMissingRelatedCertificateConfirmationResourceLinkDoesntExists() {
-                final var module = createIntygModule("doi");
-                doReturn(List.of(module))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
+      @Test
+      void shallNotAddMissingRelatedCertificateConfirmationResourceLinkDoesntExists() {
+        final var module = createIntygModule("doi");
+        doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
 
-                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
+            .thenReturn(Set.of(module.getId()));
 
-                doReturn(Optional.empty())
-                    .when(missingRelatedCertificateConfirmation).get(module.getId(), PATIENT_ID);
+        doReturn(Optional.empty())
+            .when(missingRelatedCertificateConfirmation)
+            .get(module.getId(), PATIENT_ID);
 
-                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
+        final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
-                assertTrue(types.getFirst().getLinks().stream().noneMatch(
-                        resourceLinkDTO -> resourceLinkDTO.getType() == ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION),
-                    "Should not contain a ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION");
-            }
-        }
-
-        @Nested
-        class AuthorityCheck {
-
-            @BeforeEach
-            void setUp() {
-                doReturn(Arrays.asList(defaultModule, notAllowedModule))
-                    .when(intygModuleRegistry)
-                    .listAllModules();
-            }
-
-            @Test
-            void shallFilterCertificateTypesIfUserDoesNotHaveAuthority() {
-                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
-
-                assertEquals(1, types.size());
-                assertEquals(CERTIFICATE_TYPE, types.getFirst().getId());
-            }
-        }
+        assertTrue(
+            types.getFirst().getLinks().stream()
+                .noneMatch(
+                    resourceLinkDTO ->
+                        resourceLinkDTO.getType()
+                            == ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION),
+            "Should not contain a ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION");
+      }
     }
 
     @Nested
-    class DeprecatedIntygModules {
+    class AuthorityCheck {
 
-        WebCertUser user;
+      @BeforeEach
+      void setUp() {
+        doReturn(Arrays.asList(defaultModule, notAllowedModule))
+            .when(intygModuleRegistry)
+            .listAllModules();
+      }
 
-        void setup(boolean hasTextVersion) {
-            final var module = createIntygModule();
+      @Test
+      void shallFilterCertificateTypesIfUserDoesNotHaveAuthority() {
+        final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
-            if (hasTextVersion) {
-                doReturn("1.0")
-                    .when(intygTextsService)
-                    .getLatestVersion(anyString());
-            }
+        assertEquals(1, types.size());
+        assertEquals(CERTIFICATE_TYPE, types.getFirst().getId());
+      }
+    }
+  }
 
-            doReturn(List.of(module))
-                .when(intygModuleRegistry)
-                .listAllModules();
+  @Nested
+  class DeprecatedIntygModules {
 
-            doNothing()
-                .when(resourceLinkHelper)
-                .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
+    WebCertUser user;
 
-            user = mock(WebCertUser.class);
-            doReturn(user)
-                .when(webCertUserService)
-                .getUser();
+    void setup(boolean hasTextVersion) {
+      final var module = createIntygModule();
 
-            doReturn(Set.of(module.getId()))
-                .when(authoritiesHelper)
-                .getIntygstyperForPrivilege(any(), any());
-        }
+      if (hasTextVersion) {
+        doReturn("1.0").when(intygTextsService).getLatestVersion(anyString());
+      }
 
-        @Test
-        void shouldNotFilterOutIntygModulesWithTextVersion() {
-            setup(true);
-            doReturn("NORMAL")
-                .when(user)
-                .getOrigin();
+      doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
 
-            final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
+      doNothing()
+          .when(resourceLinkHelper)
+          .decorateIntygModuleWithValidActionLinks(
+              ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
-            assertEquals(1, result.size());
-        }
+      user = mock(WebCertUser.class);
+      doReturn(user).when(webCertUserService).getUser();
 
-        @Test
-        void shouldNotFilterOutIntygModulesWithoutTextVersion() {
-            setup(false);
-            final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
-            assertEquals(0, result.size());
-        }
-
-        @Test
-        void shouldFilterOutInactiveIntygModule() {
-            setup(false);
-            doReturn(List.of(CERTIFICATE_TYPE)).when(featuresHelper)
-                .getCertificateTypesForFeature(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
-            final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
-            assertEquals(0, result.size());
-        }
+      doReturn(Set.of(module.getId()))
+          .when(authoritiesHelper)
+          .getIntygstyperForPrivilege(any(), any());
     }
 
-    private IntygModule createIntygModule(String id) {
-        return new IntygModule(id, "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient", id);
+    @Test
+    void shouldNotFilterOutIntygModulesWithTextVersion() {
+      setup(true);
+      doReturn("NORMAL").when(user).getOrigin();
+
+      final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
+
+      assertEquals(1, result.size());
     }
 
-    private IntygModule createIntygModule() {
-        return new IntygModule(CERTIFICATE_TYPE, "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient", CERTIFICATE_TYPE);
+    @Test
+    void shouldNotFilterOutIntygModulesWithoutTextVersion() {
+      setup(false);
+      final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
+      assertEquals(0, result.size());
     }
 
-    private Personnummer getPatientId(int minusMonths) {
-        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths);
-        final var patientId = patientBirthDate.toString().replace("-", "") + "4321";
-        return Personnummer.createPersonnummer(patientId).orElseThrow();
+    @Test
+    void shouldFilterOutInactiveIntygModule() {
+      setup(false);
+      doReturn(List.of(CERTIFICATE_TYPE))
+          .when(featuresHelper)
+          .getCertificateTypesForFeature(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
+      final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
+      assertEquals(0, result.size());
     }
+  }
 
-    private Personnummer getPatientIdAsCoordinationNumber(int minusMonths) {
-        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths)
+  private IntygModule createIntygModule(String id) {
+    return new IntygModule(
+        id,
+        "label",
+        "description",
+        "detailedDescription",
+        "issuerTypeId",
+        "cssPath",
+        "scriptPath",
+        "dependencyDefinitionPath",
+        "defaultRecipient",
+        id);
+  }
+
+  private IntygModule createIntygModule() {
+    return new IntygModule(
+        CERTIFICATE_TYPE,
+        "label",
+        "description",
+        "detailedDescription",
+        "issuerTypeId",
+        "cssPath",
+        "scriptPath",
+        "dependencyDefinitionPath",
+        "defaultRecipient",
+        CERTIFICATE_TYPE);
+  }
+
+  private Personnummer getPatientId(int minusMonths) {
+    final var patientBirthDate =
+        LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths);
+    final var patientId = patientBirthDate.toString().replace("-", "") + "4321";
+    return Personnummer.createPersonnummer(patientId).orElseThrow();
+  }
+
+  private Personnummer getPatientIdAsCoordinationNumber(int minusMonths) {
+    final var patientBirthDate =
+        LocalDate.now(ZoneId.systemDefault())
+            .minusYears(30)
+            .minusMonths(minusMonths)
             .format(DateTimeFormatter.BASIC_ISO_DATE);
-        final var dayOfBirth = Integer.parseInt(patientBirthDate.substring(6, 8));
-        final var coordinationNumber = patientBirthDate.substring(0, 6) + (dayOfBirth + 60) + "1234";
-        return Personnummer.createPersonnummer(coordinationNumber).orElseThrow();
-    }
-
+    final var dayOfBirth = Integer.parseInt(patientBirthDate.substring(6, 8));
+    final var coordinationNumber = patientBirthDate.substring(0, 6) + (dayOfBirth + 60) + "1234";
+    return Personnummer.createPersonnummer(coordinationNumber).orElseThrow();
+  }
 }

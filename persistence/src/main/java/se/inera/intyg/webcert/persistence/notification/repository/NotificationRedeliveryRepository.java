@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,50 +31,47 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
-public interface NotificationRedeliveryRepository extends
-    JpaRepository<NotificationRedelivery, String> {
+public interface NotificationRedeliveryRepository
+    extends JpaRepository<NotificationRedelivery, String> {
 
+  Optional<NotificationRedelivery> findByCorrelationId(String correlationId);
 
-    Optional<NotificationRedelivery> findByCorrelationId(String correlationId);
+  List<NotificationRedelivery> findByCorrelationIdNull();
 
-    List<NotificationRedelivery> findByCorrelationIdNull();
+  Optional<NotificationRedelivery> findByEventId(Long handelseId);
 
-    Optional<NotificationRedelivery> findByEventId(Long handelseId);
+  List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime);
 
-    List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime);
+  List<NotificationRedelivery> findByRedeliveryTimeLessThan(
+      LocalDateTime currentTime, Pageable pageable);
 
-    List<NotificationRedelivery> findByRedeliveryTimeLessThan(LocalDateTime currentTime,
-        Pageable pageable);
+  default List<NotificationRedelivery> findRedeliveryUpForDelivery(LocalDateTime time, int limit) {
+    final var pageZero = 0;
+    final var pageable = PageRequest.of(pageZero, limit, Sort.by(Order.asc("redeliveryTime")));
+    return findByRedeliveryTimeLessThan(time, pageable);
+  }
 
-    default List<NotificationRedelivery> findRedeliveryUpForDelivery(LocalDateTime time, int limit) {
-        final var pageZero = 0;
-        final var pageable = PageRequest.of(
-            pageZero,
-            limit,
-            Sort.by(Order.asc("redeliveryTime"))
-        );
-        return findByRedeliveryTimeLessThan(time, pageable);
-    }
+  List<NotificationRedelivery> findByRedeliveryTime(LocalDateTime currentTime);
 
-    List<NotificationRedelivery> findByRedeliveryTime(LocalDateTime currentTime);
+  List<NotificationRedelivery> findByAttemptedDeliveries(Integer attemptedDeliveries);
 
-    List<NotificationRedelivery> findByAttemptedDeliveries(Integer attemptedDeliveries);
+  @Modifying
+  @Query("Update NotificationRedelivery n SET n.redeliveryTime=null WHERE n.eventId in (:ids)")
+  void clearRedeliveryTime(@Param("ids") List<Long> ids);
 
-    @Modifying
-    @Query("Update NotificationRedelivery n SET n.redeliveryTime=null WHERE n.eventId in (:ids)")
-    void clearRedeliveryTime(@Param("ids") List<Long> ids);
+  @Query("select nr from NotificationRedelivery nr where nr.eventId in :eventIds")
+  List<NotificationRedelivery> getRedeliveriesByEventIds(@Param("eventIds") List<Long> eventIds);
 
-    @Query("select nr from NotificationRedelivery nr where nr.eventId in :eventIds")
-    List<NotificationRedelivery> getRedeliveriesByEventIds(@Param("eventIds") List<Long> eventIds);
+  default int eraseRedeliveriesForEventIds(List<Long> eventIds) {
+    final var redeliveries = getRedeliveriesByEventIds(eventIds);
+    deleteAll(redeliveries);
+    return redeliveries.size();
+  }
 
-    default int eraseRedeliveriesForEventIds(List<Long> eventIds) {
-        final var redeliveries = getRedeliveriesByEventIds(eventIds);
-        deleteAll(redeliveries);
-        return redeliveries.size();
-    }
-
-    @Modifying
-    @Query(value = """
+  @Modifying
+  @Query(
+      value =
+          """
         INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
         SELECT h.ID, 'STANDARD', now() FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
@@ -82,12 +79,16 @@ public interface NotificationRedeliveryRepository extends
         AND NOT EXISTS (
             SELECT 1 FROM NOTIFICATION_REDELIVERY nr WHERE nr.HANDELSE_ID = h.ID
         )
-        ORDER BY h.TIMESTAMP""", nativeQuery = true)
-    int sendNotificationsForCertificates(@Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<String> statuses);
+        ORDER BY h.TIMESTAMP""",
+      nativeQuery = true)
+  int sendNotificationsForCertificates(
+      @Param("certificateIds") List<String> certificateIds,
+      @Param("statuses") List<String> statuses);
 
-    @Modifying
-    @Query(value = """
+  @Modifying
+  @Query(
+      value =
+          """
         INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
         SELECT h.ID, 'STANDARD', :activationTime FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
@@ -96,15 +97,19 @@ public interface NotificationRedeliveryRepository extends
         AND NOT EXISTS (
             SELECT 1 FROM NOTIFICATION_REDELIVERY nr WHERE nr.HANDELSE_ID = h.ID
         )
-        ORDER BY h.TIMESTAMP""", nativeQuery = true)
-    int sendNotificationsForUnits(@Param("unitIds") List<String> unitIds,
-        @Param("statuses") List<String> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end,
-        @Param("activationTime") LocalDateTime activationTime);
+        ORDER BY h.TIMESTAMP""",
+      nativeQuery = true)
+  int sendNotificationsForUnits(
+      @Param("unitIds") List<String> unitIds,
+      @Param("statuses") List<String> statuses,
+      @Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end,
+      @Param("activationTime") LocalDateTime activationTime);
 
-    @Modifying
-    @Query(value = """
+  @Modifying
+  @Query(
+      value =
+          """
         INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
         SELECT h.ID, 'STANDARD', :activationTime FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
@@ -113,21 +118,25 @@ public interface NotificationRedeliveryRepository extends
         AND NOT EXISTS (
             SELECT 1 FROM NOTIFICATION_REDELIVERY nr WHERE nr.HANDELSE_ID = h.ID
         )
-        ORDER BY h.TIMESTAMP""", nativeQuery = true)
-    int sendNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<String> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end,
-        @Param("activationTime") LocalDateTime activationTime);
+        ORDER BY h.TIMESTAMP""",
+      nativeQuery = true)
+  int sendNotificationsForCareGiver(
+      @Param("careGiverId") String careGiverId,
+      @Param("statuses") List<String> statuses,
+      @Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end,
+      @Param("activationTime") LocalDateTime activationTime);
 
-    @Modifying
-    @Query(value = """
+  @Modifying
+  @Query(
+      value =
+          """
         INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
         SELECT h.ID, 'STANDARD', now() FROM HANDELSE h
         WHERE h.ID = :notificationId
         AND NOT EXISTS (
             SELECT 1 FROM NOTIFICATION_REDELIVERY nr WHERE nr.HANDELSE_ID = h.ID
-        )""", nativeQuery = true)
-    int sendNotification(@Param("notificationId") String notificationId);
-
+        )""",
+      nativeQuery = true)
+  int sendNotification(@Param("notificationId") String notificationId);
 }

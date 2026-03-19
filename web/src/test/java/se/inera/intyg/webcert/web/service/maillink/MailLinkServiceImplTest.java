@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,40 +29,42 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class MailLinkServiceImplTest {
 
-    private static final Object URL_BASE_TEMPLATE = "url/base/template";
-    private static final Object URL_UTKAST_FRAGMENT_TEMPLATE = "/{certType}/{certTypeVersion}/edit/{certId}";
-    private static final String INTYG_TYPE_VERSION = "1.1";
+  private static final Object URL_BASE_TEMPLATE = "url/base/template";
+  private static final Object URL_UTKAST_FRAGMENT_TEMPLATE =
+      "/{certType}/{certTypeVersion}/edit/{certId}";
+  private static final String INTYG_TYPE_VERSION = "1.1";
 
-    private MailLinkServiceImpl service = new MailLinkServiceImpl();
+  private MailLinkServiceImpl service = new MailLinkServiceImpl();
 
-    @Before
-    public void setup() {
-        ReflectionTestUtils.setField(service, "urlBaseTemplate", URL_BASE_TEMPLATE);
-        ReflectionTestUtils.setField(service, "urlUtkastFragmentTemplate", URL_UTKAST_FRAGMENT_TEMPLATE);
-    }
+  @Before
+  public void setup() {
+    ReflectionTestUtils.setField(service, "urlBaseTemplate", URL_BASE_TEMPLATE);
+    ReflectionTestUtils.setField(
+        service, "urlUtkastFragmentTemplate", URL_UTKAST_FRAGMENT_TEMPLATE);
+  }
 
-    @Test
-    public void testIntygRedirectIntygIdMissing() {
-        URI res = service.intygRedirect("typ", INTYG_TYPE_VERSION, null);
+  @Test
+  public void testIntygRedirectIntygIdMissing() {
+    URI res = service.intygRedirect("typ", INTYG_TYPE_VERSION, null);
 
-        assertNull(res);
-    }
+    assertNull(res);
+  }
 
-    @Test
-    public void testIntygRedirectTypMissing() {
-        URI res = service.intygRedirect(null, INTYG_TYPE_VERSION, "intygId");
+  @Test
+  public void testIntygRedirectTypMissing() {
+    URI res = service.intygRedirect(null, INTYG_TYPE_VERSION, "intygId");
 
-        assertNull(res);
-    }
+    assertNull(res);
+  }
 
-    @Test
-    public void testIntygRedirect() {
-        final String typ = "typ";
-        final String intygId = "intyg-id";
-        URI res = service.intygRedirect(typ, INTYG_TYPE_VERSION, intygId);
+  @Test
+  public void testIntygRedirect() {
+    final String typ = "typ";
+    final String intygId = "intyg-id";
+    URI res = service.intygRedirect(typ, INTYG_TYPE_VERSION, intygId);
 
-        assertNotNull(res);
-        assertEquals(URL_BASE_TEMPLATE, res.getPath());
-        assertEquals("/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id", res.getFragment());
-    }
+    assertNotNull(res);
+    assertEquals(URL_BASE_TEMPLATE, res.getPath());
+    assertEquals("/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id", res.getFragment());
+  }
 }

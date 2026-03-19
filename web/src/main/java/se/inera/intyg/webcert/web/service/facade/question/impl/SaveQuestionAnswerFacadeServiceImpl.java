@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,30 +30,32 @@ import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFaca
 @Service("saveAnswerFromWC")
 public class SaveQuestionAnswerFacadeServiceImpl implements SaveQuestionAnswerFacadeService {
 
-    private final ArendeService arendeService;
-    private final ArendeDraftService arendeDraftService;
-    private final GetQuestionFacadeService getQuestionFacadeService;
+  private final ArendeService arendeService;
+  private final ArendeDraftService arendeDraftService;
+  private final GetQuestionFacadeService getQuestionFacadeService;
 
-    @Autowired
-    public SaveQuestionAnswerFacadeServiceImpl(ArendeService arendeService,
-        ArendeDraftService arendeDraftService, GetQuestionFacadeService getQuestionFacadeService) {
-        this.arendeService = arendeService;
-        this.arendeDraftService = arendeDraftService;
-        this.getQuestionFacadeService = getQuestionFacadeService;
-    }
+  @Autowired
+  public SaveQuestionAnswerFacadeServiceImpl(
+      ArendeService arendeService,
+      ArendeDraftService arendeDraftService,
+      GetQuestionFacadeService getQuestionFacadeService) {
+    this.arendeService = arendeService;
+    this.arendeDraftService = arendeDraftService;
+    this.getQuestionFacadeService = getQuestionFacadeService;
+  }
 
-    @Override
-    public Question save(String questionId, String message) {
-        final var question = getQuestion(questionId);
-        saveAnswerDraftForQuestion(question, message);
-        return getQuestionFacadeService.get(questionId);
-    }
+  @Override
+  public Question save(String questionId, String message) {
+    final var question = getQuestion(questionId);
+    saveAnswerDraftForQuestion(question, message);
+    return getQuestionFacadeService.get(questionId);
+  }
 
-    private void saveAnswerDraftForQuestion(Arende question, String message) {
-        arendeDraftService.saveDraft(question.getIntygsId(), question.getMeddelandeId(), message, null);
-    }
+  private void saveAnswerDraftForQuestion(Arende question, String message) {
+    arendeDraftService.saveDraft(question.getIntygsId(), question.getMeddelandeId(), message, null);
+  }
 
-    private Arende getQuestion(String questionId) {
-        return arendeService.getArende(questionId);
-    }
+  private Arende getQuestion(String questionId) {
+    return arendeService.getArende(questionId);
+  }
 }

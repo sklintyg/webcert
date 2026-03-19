@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,36 +28,37 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 public class IntygServiceConfigurationManagerTest {
 
-    private IntygServiceConfigurationManagerImpl configurationManager;
+  private IntygServiceConfigurationManagerImpl configurationManager;
 
-    @Before
-    public void setup() {
-        configurationManager = new IntygServiceConfigurationManagerImpl();
-        configurationManager.setObjectMapper(new CustomObjectMapper());
-    }
+  @Before
+  public void setup() {
+    configurationManager = new IntygServiceConfigurationManagerImpl();
+    configurationManager.setObjectMapper(new CustomObjectMapper());
+  }
 
-    @Test
-    public void testUnmarshallForSendIntygWithConsent() {
+  @Test
+  public void testUnmarshallForSendIntygWithConsent() {
 
-        String configAsJson = "{\"recipient\":\"FKASSA\"}";
+    String configAsJson = "{\"recipient\":\"FKASSA\"}";
 
-        SendIntygConfiguration config = configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
+    SendIntygConfiguration config =
+        configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
-        assertNotNull(config);
-        assertEquals("FKASSA", config.getRecipient());
-        assertTrue(config.getPatientConsentMessage().contains("mottagare FKASSA"));
-    }
+    assertNotNull(config);
+    assertEquals("FKASSA", config.getRecipient());
+    assertTrue(config.getPatientConsentMessage().contains("mottagare FKASSA"));
+  }
 
-    @Test
-    public void testUnmarshallForSendIntygWithoutConsentToTs() {
+  @Test
+  public void testUnmarshallForSendIntygWithoutConsentToTs() {
 
-        String configAsJson = "{\"recipient\":\"TRANSP\"}";
+    String configAsJson = "{\"recipient\":\"TRANSP\"}";
 
-        SendIntygConfiguration config = configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
+    SendIntygConfiguration config =
+        configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
-        assertNotNull(config);
-        assertEquals("TRANSP", config.getRecipient());
-        assertTrue(config.getPatientConsentMessage().contains("mottagare TRANSP"));
-    }
-
+    assertNotNull(config);
+    assertEquals("TRANSP", config.getRecipient());
+    assertTrue(config.getPatientConsentMessage().contains("mottagare TRANSP"));
+  }
 }

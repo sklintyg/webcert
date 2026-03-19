@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -71,321 +71,453 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 @ExtendWith(MockitoExtension.class)
 class IntygIntegrationControllerTest {
 
-    private static final String ALTERNATE_SSN = "19010101-0101";
-    private static final String INTYGSTYP = "lisjp";
-    private static final String INTYGSTYPVERSION = "1.0";
-    private static final String INTYGSID_POST = "6ce5fa9f-58d6-4a43-bc65-841c9646eb78";
-    private static final String INTYGSID = "A1234-B5678-C90123-D4567";
-    private static final String ENHETSID = "11111";
-    private static final String LAUNCHID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
-    private static final String SESSION_ID = "12345";
-    private UriInfo uriInfo;
+  private static final String ALTERNATE_SSN = "19010101-0101";
+  private static final String INTYGSTYP = "lisjp";
+  private static final String INTYGSTYPVERSION = "1.0";
+  private static final String INTYGSID_POST = "6ce5fa9f-58d6-4a43-bc65-841c9646eb78";
+  private static final String INTYGSID = "A1234-B5678-C90123-D4567";
+  private static final String ENHETSID = "11111";
+  private static final String LAUNCHID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
+  private static final String SESSION_ID = "12345";
+  private UriInfo uriInfo;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @Mock
-    private IntegrationService integrationService;
+  @Mock private IntegrationService integrationService;
 
-    @Mock
-    private CommonAuthoritiesResolver authoritiesResolver;
+  @Mock private CommonAuthoritiesResolver authoritiesResolver;
 
-    @Mock
-    private ReactUriFactory reactUriFactory;
+  @Mock private ReactUriFactory reactUriFactory;
 
-    @Mock
-    private @Context
-    HttpServletRequest httpServletRequest;
+  @Mock private @Context HttpServletRequest httpServletRequest;
 
-    @Mock
-    private Cache redisCacheLaunchId;
-    @InjectMocks
-    private IntygIntegrationController intygIntegrationController;
+  @Mock private Cache redisCacheLaunchId;
+  @InjectMocks private IntygIntegrationController intygIntegrationController;
+
+  @Test
+  void testSavedRequestGETHandlerRequiresIntegrationParameters() {
+    final var user = mock(WebCertUser.class);
+
+    when(user.getParameters()).thenReturn(null);
+    when(webCertUserService.getUser()).thenReturn(user);
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> intygIntegrationController.getRedirectToIntyg(null, null, INTYGSID, null),
+        "Expected getRedirectToIntyg() to throw, but it didn't");
+  }
+
+  private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
+    PrepareRedirectToIntyg redirect = new PrepareRedirectToIntyg();
+    redirect.setIntygId(INTYGSID);
+    redirect.setIntygTyp(INTYGSTYP);
+    redirect.setIntygTypeVersion(INTYGSTYPVERSION);
+    redirect.setUtkast(true);
+    return redirect;
+  }
+
+  private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
+    RequestOrigin o = new RequestOrigin();
+    o.setName(name);
+    o.setIntygstyper(intygstyper);
+    return o;
+  }
+
+  private Privilege createPrivilege(List<String> intygsTyper, List<RequestOrigin> requestOrigins) {
+    Privilege p = new Privilege();
+    p.setName(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+    p.setIntygstyper(intygsTyper);
+    p.setRequestOrigins(requestOrigins);
+    return p;
+  }
+
+  private WebCertUser createUser(Privilege p, Map<String, Feature> features, String origin) {
+    WebCertUser user = new WebCertUser();
+
+    HashMap<String, Privilege> pMap = new HashMap<>();
+    pMap.put(p.getName(), p);
+    user.setAuthorities(pMap);
+
+    user.setOrigin(origin);
+    user.setFeatures(features);
+
+    HashMap<String, Role> rMap = new HashMap<>();
+    Role role = new Role();
+    role.setName(AuthoritiesConstants.ROLE_LAKARE);
+    rMap.put(AuthoritiesConstants.ROLE_LAKARE, role);
+
+    user.setRoles(rMap);
+
+    Vardgivare vg = new Vardgivare();
+    vg.setId("vg1");
+    Vardenhet ve = new Vardenhet();
+    ve.setVardgivareHsaId("vg1");
+    ve.setId(ENHETSID);
+    vg.setVardenheter(List.of(ve));
+    user.setVardgivare(List.of(vg));
+    return user;
+  }
+
+  private WebCertUser createDefaultUser() {
+    return createUser(
+        createPrivilege(
+            Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
+            Arrays.asList(
+                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), List.of("lisjp")),
+                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), List.of("ts-bas")))),
+        Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(List.of("lisjp"));
+                      return feature;
+                    })),
+        UserOriginType.DJUPINTEGRATION.name());
+  }
+
+  private WebCertUser createDefaultUserWithIntegrationParameters() {
+    final var user = createDefaultUser();
+    user.setParameters(
+        new IntegrationParameters(
+            null,
+            null,
+            ALTERNATE_SSN,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            false,
+            false,
+            null));
+    return user;
+  }
+
+  private WebCertUser createDefaultUserWithIntegrationParametersAndLaunchId1() {
+    final var user = createDefaultUser();
+    user.setParameters(
+        IntegrationParameters.of(
+            null,
+            null,
+            ALTERNATE_SSN,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            false,
+            false,
+            LAUNCHID));
+
+    return user;
+  }
+
+  @Nested
+  class LaunchIdPostVerification {
+
+    private WebCertUser user;
+
+    @BeforeEach
+    void setup() {
+      uriInfo = mock(UriInfo.class);
+      when(integrationService.prepareRedirectToIntyg(any(), any()))
+          .thenReturn(createPrepareRedirectToIntyg());
+      when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+      this.user = createDefaultUser();
+      when(webCertUserService.getUser()).thenReturn(user);
+      doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq"))
+          .when(reactUriFactory)
+          .uriForCertificate(uriInfo, INTYGSID);
+
+      final var session = mock(HttpSession.class);
+      when(httpServletRequest.getSession()).thenReturn(session);
+      when(httpServletRequest.getSession().getId()).thenReturn("12345");
+    }
+
+    @Nested
+    class PostiviteLaunchIdVerification {
+
+      @Test
+      void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
+        intygIntegrationController.postRedirectToIntyg(
+            uriInfo,
+            httpServletRequest,
+            INTYGSID_POST,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            true,
+            "",
+            false,
+            false,
+            true,
+            LAUNCHID);
+
+        assertEquals(LAUNCHID, user.getParameters().getLaunchId());
+      }
+
+      @Test
+      void assertThatRedisAddsLaunchIdToCache() {
+        intygIntegrationController.postRedirectToIntyg(
+            uriInfo,
+            httpServletRequest,
+            INTYGSID_POST,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            true,
+            "",
+            false,
+            false,
+            true,
+            LAUNCHID);
+
+        verify(redisCacheLaunchId).put(anyString(), anyString());
+      }
+    }
+
+    @Nested
+    class NegativeLaunchIdVerification {
+
+      @Test
+      void assertThatLaunchIdIsNotGuid() {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              intygIntegrationController.postRedirectToIntyg(
+                  uriInfo,
+                  httpServletRequest,
+                  INTYGSID_POST,
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  true,
+                  "",
+                  false,
+                  false,
+                  true,
+                  "LAUNCH_ID_1");
+            },
+            "Provided launchId is not guid: LAUNCH_ID_1");
+        assertDoesNotThrow(
+            () ->
+                intygIntegrationController.postRedirectToIntyg(
+                    uriInfo,
+                    httpServletRequest,
+                    INTYGSID_POST,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    true,
+                    "",
+                    false,
+                    false,
+                    true,
+                    ""));
+      }
+
+      @Test
+      void handleLaunchIdThatIsNull() {
+        assertDoesNotThrow(
+            () ->
+                intygIntegrationController.postRedirectToIntyg(
+                    uriInfo,
+                    httpServletRequest,
+                    INTYGSID_POST,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    true,
+                    "",
+                    false,
+                    false,
+                    true,
+                    null));
+      }
+
+      @Test
+      void launchIdShouldBeAddedEvenIfNotProvided() {
+        intygIntegrationController.postRedirectToIntyg(
+            uriInfo,
+            httpServletRequest,
+            INTYGSID_POST,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            true,
+            "",
+            false,
+            false,
+            true,
+            "");
+
+        assertNull(user.getParameters().getLaunchId());
+      }
+    }
+  }
+
+  @Nested
+  class LaunchIdSavedRequestVerification {
+
+    @BeforeEach
+    void setup() {
+      uriInfo = mock(UriInfo.class);
+      final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
+
+      when(integrationService.prepareRedirectToIntyg(any(), any()))
+          .thenReturn(createPrepareRedirectToIntyg());
+      when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+      WebCertUser user = createDefaultUserWithIntegrationParametersAndLaunchId1();
+      when(webCertUserService.getUser()).thenReturn(user);
+      doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq"))
+          .when(reactUriFactory)
+          .uriForCertificate(uriInfo, INTYGSID);
+
+      final var session = mock(HttpSession.class);
+      when(httpServletRequest.getSession()).thenReturn(session);
+      when(httpServletRequest.getSession().getId()).thenReturn(SESSION_ID);
+    }
+
+    @Nested
+    class PostiviteLaunchIdVerification {
+
+      @Test
+      void assertThatRedisAddsLaunchIdToCache() {
+        intygIntegrationController.getRedirectToIntyg(
+            httpServletRequest, uriInfo, INTYGSID, ENHETSID);
+
+        verify(redisCacheLaunchId)
+            .put(LAUNCHID, Base64.getEncoder().encodeToString(SESSION_ID.getBytes()));
+      }
+    }
+  }
+
+  @Nested
+  class RedirectToCertificate {
+
+    @BeforeEach
+    void setup() {
+      uriInfo = mock(UriInfo.class);
+      when(integrationService.prepareRedirectToIntyg(any(), any()))
+          .thenReturn(createPrepareRedirectToIntyg());
+      when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+
+      final var session = mock(HttpSession.class);
+      when(httpServletRequest.getSession()).thenReturn(session);
+      when(httpServletRequest.getSession().getId()).thenReturn("12345");
+    }
 
     @Test
-    void testSavedRequestGETHandlerRequiresIntegrationParameters() {
-        final var user = mock(WebCertUser.class);
+    void shallRedirectWithStatusSeeOtherAsTheRedirectShouldAlwaysBeAGET() {
+      final var user = createDefaultUserWithIntegrationParameters();
 
-        when(user.getParameters()).thenReturn(null);
-        when(webCertUserService.getUser()).thenReturn(user);
+      when(webCertUserService.getUser()).thenReturn(user);
+      doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq"))
+          .when(reactUriFactory)
+          .uriForCertificate(uriInfo, INTYGSID);
 
-        assertThrows(
-            IllegalStateException.class,
-            () -> intygIntegrationController.getRedirectToIntyg(null, null, INTYGSID, null),
-            "Expected getRedirectToIntyg() to throw, but it didn't"
-        );
+      final var redirectToIntyg =
+          intygIntegrationController.getRedirectToIntyg(
+              httpServletRequest, uriInfo, INTYGSID, ENHETSID);
+
+      assertEquals(Response.Status.SEE_OTHER.getStatusCode(), redirectToIntyg.getStatus());
     }
 
-    private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
-        PrepareRedirectToIntyg redirect = new PrepareRedirectToIntyg();
-        redirect.setIntygId(INTYGSID);
-        redirect.setIntygTyp(INTYGSTYP);
-        redirect.setIntygTypeVersion(INTYGSTYPVERSION);
-        redirect.setUtkast(true);
-        return redirect;
+    @Test
+    void shallRedirectToCertificate() {
+      final var user = createDefaultUserWithIntegrationParameters();
+
+      when(webCertUserService.getUser()).thenReturn(user);
+      doReturn(URI.create("https://wc.localtest.me/certificate/A1234-B5678-C90123-D4567"))
+          .when(reactUriFactory)
+          .uriForCertificate(uriInfo, INTYGSID);
+
+      final var redirectToIntyg =
+          intygIntegrationController.getRedirectToIntyg(
+              httpServletRequest, uriInfo, INTYGSID, ENHETSID);
+
+      assertEquals(
+          "https://wc.localtest.me/certificate/" + INTYGSID,
+          redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
+    }
+  }
+
+  @Nested
+  class GrantedRoleTest {
+
+    @Test
+    void shouldReturnLakare() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_LAKARE, intygIntegrationController.getGrantedRoles()[0]);
     }
 
-    private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
-        RequestOrigin o = new RequestOrigin();
-        o.setName(name);
-        o.setIntygstyper(intygstyper);
-        return o;
+    @Test
+    void shouldReturnAdmin() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_TANDLAKARE, intygIntegrationController.getGrantedRoles()[1]);
     }
 
-    private Privilege createPrivilege(List<String> intygsTyper, List<RequestOrigin> requestOrigins) {
-        Privilege p = new Privilege();
-        p.setName(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
-        p.setIntygstyper(intygsTyper);
-        p.setRequestOrigins(requestOrigins);
-        return p;
+    @Test
+    void shouldReturnTandlakare() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_ADMIN, intygIntegrationController.getGrantedRoles()[2]);
     }
 
-    private WebCertUser createUser(Privilege p, Map<String, Feature> features, String origin) {
-        WebCertUser user = new WebCertUser();
-
-        HashMap<String, Privilege> pMap = new HashMap<>();
-        pMap.put(p.getName(), p);
-        user.setAuthorities(pMap);
-
-        user.setOrigin(origin);
-        user.setFeatures(features);
-
-        HashMap<String, Role> rMap = new HashMap<>();
-        Role role = new Role();
-        role.setName(AuthoritiesConstants.ROLE_LAKARE);
-        rMap.put(AuthoritiesConstants.ROLE_LAKARE, role);
-
-        user.setRoles(rMap);
-
-        Vardgivare vg = new Vardgivare();
-        vg.setId("vg1");
-        Vardenhet ve = new Vardenhet();
-        ve.setVardgivareHsaId("vg1");
-        ve.setId(ENHETSID);
-        vg.setVardenheter(List.of(ve));
-        user.setVardgivare(List.of(vg));
-        return user;
+    @Test
+    void shouldReturnBarnmorska() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_SJUKSKOTERSKA, intygIntegrationController.getGrantedRoles()[3]);
     }
 
-    private WebCertUser createDefaultUser() {
-        return createUser(
-            createPrivilege(
-                Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
-                Arrays.asList(
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), List.of("lisjp")),
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), List.of("ts-bas")))),
-            Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
-                .collect(Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setIntygstyper(List.of("lisjp"));
-                    return feature;
-                })),
-            UserOriginType.DJUPINTEGRATION.name());
+    @Test
+    void shouldReturnSjukskoterska() {
+      assertEquals(
+          AuthoritiesConstants.ROLE_BARNMORSKA, intygIntegrationController.getGrantedRoles()[4]);
     }
-
-    private WebCertUser createDefaultUserWithIntegrationParameters() {
-        final var user = createDefaultUser();
-        user.setParameters(new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false, null));
-        return user;
-    }
-
-    private WebCertUser createDefaultUserWithIntegrationParametersAndLaunchId1() {
-        final var user = createDefaultUser();
-        user.setParameters(IntegrationParameters.of(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false, LAUNCHID));
-
-        return user;
-    }
-
-    @Nested
-    class LaunchIdPostVerification {
-
-        private WebCertUser user;
-
-        @BeforeEach
-        void setup() {
-            uriInfo = mock(UriInfo.class);
-            when(integrationService.prepareRedirectToIntyg(any(), any()))
-                .thenReturn(createPrepareRedirectToIntyg());
-            when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
-            this.user = createDefaultUser();
-            when(webCertUserService.getUser()).thenReturn(user);
-            doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq")).when(reactUriFactory)
-                .uriForCertificate(uriInfo, INTYGSID);
-
-            final var session = mock(HttpSession.class);
-            when(httpServletRequest.getSession()).thenReturn(session);
-            when(httpServletRequest.getSession().getId()).thenReturn("12345");
-        }
-
-        @Nested
-        class PostiviteLaunchIdVerification {
-
-            @Test
-            void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
-                intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
-                    "", "", "", "", "", "", true, "", false,
-                    false, true, LAUNCHID);
-
-                assertEquals(LAUNCHID, user.getParameters().getLaunchId());
-            }
-
-            @Test
-            void assertThatRedisAddsLaunchIdToCache() {
-                intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
-                    "", "", "", "", "", "", true, "", false,
-                    false, true, LAUNCHID);
-
-                verify(redisCacheLaunchId).put(anyString(), anyString());
-            }
-
-        }
-
-        @Nested
-        class NegativeLaunchIdVerification {
-
-            @Test
-            void assertThatLaunchIdIsNotGuid() {
-                assertThrows(
-                    IllegalArgumentException.class,
-                    () -> {
-                        intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
-                            "", "", "", "", "", "", true, "", false,
-                            false, true, "LAUNCH_ID_1");
-                    },
-                    "Provided launchId is not guid: LAUNCH_ID_1"
-                );
-                assertDoesNotThrow(() ->
-                    intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
-                        "", "", "", "", "", "", true, "", false,
-                        false, true, "")
-                );
-            }
-
-            @Test
-            void handleLaunchIdThatIsNull() {
-                assertDoesNotThrow(() ->
-                    intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
-                        "", "", "", "", "", "", true, "", false,
-                        false, true, null)
-                );
-            }
-
-            @Test
-            void launchIdShouldBeAddedEvenIfNotProvided() {
-                intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
-                    "", "", "", "", "", "", true, "", false,
-                    false, true, "");
-
-                assertNull(user.getParameters().getLaunchId());
-            }
-        }
-    }
-
-    @Nested
-    class LaunchIdSavedRequestVerification {
-
-        @BeforeEach
-        void setup() {
-            uriInfo = mock(UriInfo.class);
-            final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
-
-            when(integrationService.prepareRedirectToIntyg(any(), any()))
-                .thenReturn(createPrepareRedirectToIntyg());
-            when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
-            WebCertUser user = createDefaultUserWithIntegrationParametersAndLaunchId1();
-            when(webCertUserService.getUser()).thenReturn(user);
-            doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq")).when(reactUriFactory)
-                .uriForCertificate(uriInfo, INTYGSID);
-
-            final var session = mock(HttpSession.class);
-            when(httpServletRequest.getSession()).thenReturn(session);
-            when(httpServletRequest.getSession().getId()).thenReturn(SESSION_ID);
-        }
-
-        @Nested
-        class PostiviteLaunchIdVerification {
-
-            @Test
-            void assertThatRedisAddsLaunchIdToCache() {
-                intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
-
-                verify(redisCacheLaunchId).put(LAUNCHID, Base64.getEncoder().encodeToString(SESSION_ID.getBytes()));
-            }
-        }
-    }
-
-    @Nested
-    class RedirectToCertificate {
-
-        @BeforeEach
-        void setup() {
-            uriInfo = mock(UriInfo.class);
-            when(integrationService.prepareRedirectToIntyg(any(), any()))
-                .thenReturn(createPrepareRedirectToIntyg());
-            when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
-
-            final var session = mock(HttpSession.class);
-            when(httpServletRequest.getSession()).thenReturn(session);
-            when(httpServletRequest.getSession().getId()).thenReturn("12345");
-        }
-
-        @Test
-        void shallRedirectWithStatusSeeOtherAsTheRedirectShouldAlwaysBeAGET() {
-            final var user = createDefaultUserWithIntegrationParameters();
-
-            when(webCertUserService.getUser()).thenReturn(user);
-            doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq")).when(reactUriFactory)
-                .uriForCertificate(uriInfo, INTYGSID);
-
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
-
-            assertEquals(Response.Status.SEE_OTHER.getStatusCode(), redirectToIntyg.getStatus());
-        }
-
-        @Test
-        void shallRedirectToCertificate() {
-            final var user = createDefaultUserWithIntegrationParameters();
-
-            when(webCertUserService.getUser()).thenReturn(user);
-            doReturn(URI.create("https://wc.localtest.me/certificate/A1234-B5678-C90123-D4567")).when(reactUriFactory)
-                .uriForCertificate(uriInfo, INTYGSID);
-
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
-
-            assertEquals("https://wc.localtest.me/certificate/" + INTYGSID,
-                redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
-        }
-    }
-
-    @Nested
-    class GrantedRoleTest {
-
-        @Test
-        void shouldReturnLakare() {
-            assertEquals(AuthoritiesConstants.ROLE_LAKARE, intygIntegrationController.getGrantedRoles()[0]);
-        }
-
-        @Test
-        void shouldReturnAdmin() {
-            assertEquals(AuthoritiesConstants.ROLE_TANDLAKARE, intygIntegrationController.getGrantedRoles()[1]);
-        }
-
-        @Test
-        void shouldReturnTandlakare() {
-            assertEquals(AuthoritiesConstants.ROLE_ADMIN, intygIntegrationController.getGrantedRoles()[2]);
-        }
-
-        @Test
-        void shouldReturnBarnmorska() {
-            assertEquals(AuthoritiesConstants.ROLE_SJUKSKOTERSKA, intygIntegrationController.getGrantedRoles()[3]);
-        }
-
-        @Test
-        void shouldReturnSjukskoterska() {
-            assertEquals(AuthoritiesConstants.ROLE_BARNMORSKA, intygIntegrationController.getGrantedRoles()[4]);
-        }
-    }
+  }
 }

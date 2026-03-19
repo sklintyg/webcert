@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,30 +18,28 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-/**
- * Created by marced on 2018-09-17.
- */
+/** Created by marced on 2018-09-17. */
 public class IntygTypeInfo {
 
-    private String intygId;
-    private String intygType;
-    private String intygTypeVersion;
+  private String intygId;
+  private String intygType;
+  private String intygTypeVersion;
 
-    public IntygTypeInfo(String intygId, String intygType, String intygTypeVersion) {
-        this.intygId = intygId;
-        this.intygType = intygType;
-        this.intygTypeVersion = intygTypeVersion;
-    }
+  public IntygTypeInfo(String intygId, String intygType, String intygTypeVersion) {
+    this.intygId = intygId;
+    this.intygType = intygType;
+    this.intygTypeVersion = intygTypeVersion;
+  }
 
-    public String getIntygTypeVersion() {
-        return intygTypeVersion;
-    }
+  public String getIntygTypeVersion() {
+    return intygTypeVersion;
+  }
 
-    public String getIntygId() {
-        return intygId;
-    }
+  public String getIntygId() {
+    return intygId;
+  }
 
-    public String getIntygType() {
-        return intygType;
-    }
+  public String getIntygType() {
+    return intygType;
+  }
 }

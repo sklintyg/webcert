@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,46 +36,51 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 public class CertificateSendProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CertificateSendProcessor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CertificateSendProcessor.class);
 
-    @Autowired
-    private SendCertificateServiceClient sendServiceClient;
-    @Autowired
-    private MdcHelper mdcHelper;
+  @Autowired private SendCertificateServiceClient sendServiceClient;
+  @Autowired private MdcHelper mdcHelper;
 
-    public void process(@Body String skickatAv,
-        @Header(Constants.INTYGS_ID) String intygsId,
-        @Header(Constants.PERSON_ID) String personId,
-        @Header(Constants.RECIPIENT) String recipient,
-        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException {
+  public void process(
+      @Body String skickatAv,
+      @Header(Constants.INTYGS_ID) String intygsId,
+      @Header(Constants.PERSON_ID) String personId,
+      @Header(Constants.RECIPIENT) String recipient,
+      @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
+      throws TemporaryException {
 
-        SendCertificateToRecipientResponseType response;
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
-            MDC.put(MdcLogConstants.EVENT_RECIPIENT, recipient);
-            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+    SendCertificateToRecipientResponseType response;
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
+      MDC.put(MdcLogConstants.EVENT_RECIPIENT, recipient);
+      MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
 
-            response = sendServiceClient.sendCertificate(intygsId, personId, skickatAv, recipient, logicalAddress);
+      response =
+          sendServiceClient.sendCertificate(
+              intygsId, personId, skickatAv, recipient, logicalAddress);
 
-            final ResultType result = response.getResult();
-            final String resultText = result.getResultText();
-            if (ResultCodeType.ERROR == result.getResultCode()) {
-                LOG.warn("Error occured when trying to send intyg '{}'; {}", intygsId, resultText);
-                throw new TemporaryException(resultText);
-            } else {
-                if (ResultCodeType.INFO.equals(result.getResultCode())) {
-                    LOG.warn("Warning occured when trying to send intyg '{}'; {}. Will not requeue.", intygsId, resultText);
-                }
-            }
-        } catch (WebServiceException e) {
-            throw new TemporaryException(
-                "Call to send intyg '%s' caused an error: '%s'. Will retry".formatted(intygsId, e.getMessage()),
-                e
-            );
-        } finally {
-            MDC.clear();
+      final ResultType result = response.getResult();
+      final String resultText = result.getResultText();
+      if (ResultCodeType.ERROR == result.getResultCode()) {
+        LOG.warn("Error occured when trying to send intyg '{}'; {}", intygsId, resultText);
+        throw new TemporaryException(resultText);
+      } else {
+        if (ResultCodeType.INFO.equals(result.getResultCode())) {
+          LOG.warn(
+              "Warning occured when trying to send intyg '{}'; {}. Will not requeue.",
+              intygsId,
+              resultText);
         }
+      }
+    } catch (WebServiceException e) {
+      throw new TemporaryException(
+          "Call to send intyg '%s' caused an error: '%s'. Will retry"
+              .formatted(intygsId, e.getMessage()),
+          e);
+    } finally {
+      MDC.clear();
     }
+  }
 }

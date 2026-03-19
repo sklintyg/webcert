@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,33 +25,31 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
- * Logback converter that returns information about the current user.
- * User info is retrieved from the Spring Security context. If no context
- * is available a NO USER is returned.
+ * Logback converter that returns information about the current user. User info is retrieved from
+ * the Spring Security context. If no context is available a NO USER is returned.
  *
  * @author nikpet
  */
 public class UserConverter extends ClassicConverter {
 
-    private static final String NO_USER = "NO USER";
+  private static final String NO_USER = "NO USER";
 
-    @Override
-    public String convert(ILoggingEvent event) {
+  @Override
+  public String convert(ILoggingEvent event) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null) {
-            return NO_USER;
-        }
-
-        Object principal = auth.getPrincipal();
-
-        if (principal instanceof WebCertUser) {
-            WebCertUser user = (WebCertUser) auth.getPrincipal();
-            return user.getHsaId();
-        }
-
-        return NO_USER;
+    if (auth == null) {
+      return NO_USER;
     }
 
+    Object principal = auth.getPrincipal();
+
+    if (principal instanceof WebCertUser) {
+      WebCertUser user = (WebCertUser) auth.getPrincipal();
+      return user.getHsaId();
+    }
+
+    return NO_USER;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -64,203 +64,211 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 @ExtendWith(MockitoExtension.class)
 class NotificationTransformerTest {
 
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
-    @Mock
-    private FeaturesHelper featuresHelper;
-    @Mock
-    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-    @Mock
-    private NotificationResultMessageCreator notificationResultMessageCreator;
-    @Mock
-    private NotificationResultMessageSender notificationResultMessageSender;
-    @Spy
-    private MdcHelper mdcHelper;
+  @Mock private IntygModuleRegistry moduleRegistry;
+  @Mock private FeaturesHelper featuresHelper;
+  @Mock private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+  @Mock private NotificationResultMessageCreator notificationResultMessageCreator;
+  @Mock private NotificationResultMessageSender notificationResultMessageSender;
+  @Spy private MdcHelper mdcHelper;
 
-    @InjectMocks
-    private NotificationTransformer notificationTransformer;
+  @InjectMocks private NotificationTransformer notificationTransformer;
 
-    @Test
-    void shallTransformNotificationMessageToCertificateStatusUpdateForCare() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var mockCertificateStatusUpdateForCare = mock(CertificateStatusUpdateForCareType.class);
-        final var mockMessage = mock(Message.class);
+  @Test
+  void shallTransformNotificationMessageToCertificateStatusUpdateForCare() throws Exception {
+    final var notificationMessage = createNotificationMessage();
+    final var mockCertificateStatusUpdateForCare = mock(CertificateStatusUpdateForCareType.class);
+    final var mockMessage = mock(Message.class);
 
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-        doReturn(mockCertificateStatusUpdateForCare).when(certificateStatusUpdateForCareCreator).create(eq(notificationMessage), any());
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+    doReturn(mockCertificateStatusUpdateForCare)
+        .when(certificateStatusUpdateForCareCreator)
+        .create(eq(notificationMessage), any());
 
-        notificationTransformer.process(mockMessage);
+    notificationTransformer.process(mockMessage);
 
-        verify(mockMessage).setBody(mockCertificateStatusUpdateForCare);
+    verify(mockMessage).setBody(mockCertificateStatusUpdateForCare);
+  }
+
+  @Test
+  void shallUseProvidedCertificateStatusUpdateForCareIfIncludedInNotificationMessage()
+      throws Exception {
+    final var notificationMessage = new NotificationMessage();
+    notificationMessage.setHandelse(HandelsekodEnum.SKAPAT);
+    notificationMessage.setLogiskAdress("ENHETS_ID");
+    notificationMessage.setIntygsId("INTYGS_ID");
+    notificationMessage.setVersion(SchemaVersion.VERSION_3);
+    notificationMessage.setStatusUpdateXml("statusUpdateXml".getBytes(StandardCharsets.UTF_8));
+
+    final var mockMessage = mock(Message.class);
+    final var factory = new ObjectFactory();
+    final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
+    final var certificateStatusUpdateForCare =
+        factory.createCertificateStatusUpdateForCare(certificateStatusUpdateForCareType);
+
+    try (MockedStatic<XmlMarshallerHelper> mockedStatic = mockStatic(XmlMarshallerHelper.class)) {
+      doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+      mockedStatic
+          .when(
+              () ->
+                  XmlMarshallerHelper.unmarshal(
+                      new String(notificationMessage.getStatusUpdateXml(), StandardCharsets.UTF_8)))
+          .thenReturn(certificateStatusUpdateForCare);
+
+      notificationTransformer.process(mockMessage);
+      verifyNoInteractions(certificateStatusUpdateForCareCreator);
+      verify(mockMessage).setBody(certificateStatusUpdateForCareType);
     }
+  }
 
-    @Test
-    void shallUseProvidedCertificateStatusUpdateForCareIfIncludedInNotificationMessage() throws Exception {
-        final var notificationMessage = new NotificationMessage();
-        notificationMessage.setHandelse(HandelsekodEnum.SKAPAT);
-        notificationMessage.setLogiskAdress("ENHETS_ID");
-        notificationMessage.setIntygsId("INTYGS_ID");
-        notificationMessage.setVersion(SchemaVersion.VERSION_3);
-        notificationMessage.setStatusUpdateXml("statusUpdateXml".getBytes(StandardCharsets.UTF_8));
+  @Test
+  void shallSetVersionHeaderOnTransformedMessage() throws Exception {
+    final var notificationMessage = createNotificationMessage(SchemaVersion.VERSION_3);
+    final var mockMessage = mock(Message.class);
 
-        final var mockMessage = mock(Message.class);
-        final var factory = new ObjectFactory();
-        final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
-        final var certificateStatusUpdateForCare = factory.createCertificateStatusUpdateForCare(certificateStatusUpdateForCareType);
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
 
-        try (MockedStatic<XmlMarshallerHelper> mockedStatic = mockStatic(XmlMarshallerHelper.class)) {
-            doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+    notificationTransformer.process(mockMessage);
 
-            mockedStatic.when(
-                    () -> XmlMarshallerHelper.unmarshal(new String(notificationMessage.getStatusUpdateXml(), StandardCharsets.UTF_8)))
-                .thenReturn(certificateStatusUpdateForCare);
+    verify(mockMessage).setHeader(VERSION, notificationMessage.getVersion().name());
+  }
 
-            notificationTransformer.process(mockMessage);
-            verifyNoInteractions(certificateStatusUpdateForCareCreator);
-            verify(mockMessage).setBody(certificateStatusUpdateForCareType);
-        }
+  @Test
+  void shallSetVersionV3HeaderOnTransformedMessageWithoutVersion() throws Exception {
+    final var notificationMessage = createNotificationMessage(null);
+    final var mockMessage = mock(Message.class);
+
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+    notificationTransformer.process(mockMessage);
+
+    verify(mockMessage).setHeader(VERSION, SchemaVersion.VERSION_3.name());
+  }
+
+  @Test
+  void shallThrowExceptionOnTransformedMessageWithUnsupportedVersion() throws Exception {
+    final var notificationMessage = createNotificationMessage(SchemaVersion.VERSION_1);
+    final var mockMessage = mock(Message.class);
+
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+    try {
+      notificationTransformer.process(mockMessage);
+      fail("Should have thrown exception due to unsupported version!");
+    } catch (IllegalArgumentException e) {
+      assertTrue(true);
     }
+  }
 
-    @Test
-    void shallSetVersionHeaderOnTransformedMessage() throws Exception {
-        final var notificationMessage = createNotificationMessage(SchemaVersion.VERSION_3);
-        final var mockMessage = mock(Message.class);
+  @Test
+  void shallSetLogicalAddressHeaderOnTransformedMessage() throws Exception {
+    final var notificationMessage = createNotificationMessage();
+    final var mockMessage = mock(Message.class);
 
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
 
-        notificationTransformer.process(mockMessage);
+    notificationTransformer.process(mockMessage);
 
-        verify(mockMessage).setHeader(VERSION, notificationMessage.getVersion().name());
+    verify(mockMessage).setHeader(LOGISK_ADRESS, notificationMessage.getLogiskAdress());
+  }
+
+  @Test
+  void shallSetCertificateIdHeaderOnTransformedMessage() throws Exception {
+    final var notificationMessage = createNotificationMessage();
+    final var mockMessage = mock(Message.class);
+
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+    notificationTransformer.process(mockMessage);
+
+    verify(mockMessage).setHeader(INTYGS_ID, notificationMessage.getIntygsId());
+  }
+
+  @Test
+  void shallSetEventTypeHeaderOnTransformedMessage() throws Exception {
+    final var notificationMessage = createNotificationMessage();
+    final var mockMessage = mock(Message.class);
+
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+    notificationTransformer.process(mockMessage);
+
+    verify(mockMessage).setHeader(HANDELSE, notificationMessage.getHandelse().value());
+  }
+
+  @Test
+  void shallSetCertificateTypeVersionHeaderOnTransformedMessage() throws Exception {
+    final var notificationMessage = createNotificationMessage();
+    final var expectedCertificateTypeVersion = "CERTIFICATE_TYPE";
+    final var mockMessage = mock(Message.class);
+
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+    doReturn(expectedCertificateTypeVersion)
+        .when(moduleRegistry)
+        .resolveVersionFromUtlatandeJson(
+            notificationMessage.getIntygsTyp(), "CERTIFICATE_AS_JSON_STRING");
+
+    notificationTransformer.process(mockMessage);
+
+    verify(mockMessage).setHeader(INTYG_TYPE_VERSION, expectedCertificateTypeVersion);
+  }
+
+  @Test
+  void shallUseCertificateTypeVersionHeaderIfAlreadyExistsOnTransformedMessage() throws Exception {
+    final var notificationMessage = createNotificationMessage();
+    final var expectedCertificateTypeVersion = "CERTIFICATE_TYPE";
+    final var mockMessage = mock(Message.class);
+
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+    doReturn(expectedCertificateTypeVersion).when(mockMessage).getHeader(INTYG_TYPE_VERSION);
+
+    notificationTransformer.process(mockMessage);
+
+    verify(moduleRegistry, noInteractions()).resolveVersionFromUtlatandeJson(any(), any());
+  }
+
+  @Test
+  void shallSendResultMessageOnTransformationError() throws Exception {
+    final var notificationMessage = createNotificationMessage();
+    final var mockNotificationResultMessage = mock(NotificationResultMessage.class);
+    final var mockMessage = mock(Message.class);
+
+    final var captureNotificationResultMessage =
+        ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+    doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+    doThrow(new RuntimeException())
+        .when(certificateStatusUpdateForCareCreator)
+        .create(any(), any());
+    doReturn(mockNotificationResultMessage)
+        .when(notificationResultMessageCreator)
+        .createFailureMessage(any(), any(), any(), any(), any());
+
+    try {
+      notificationTransformer.process(mockMessage);
+      Assertions.fail("Should have thrown exception due to transformation error!");
+    } catch (Exception e) {
+      verify(notificationResultMessageSender)
+          .sendResultMessage(captureNotificationResultMessage.capture());
+
+      Assertions.assertEquals(
+          mockNotificationResultMessage, captureNotificationResultMessage.getValue());
     }
+  }
 
-    @Test
-    void shallSetVersionV3HeaderOnTransformedMessageWithoutVersion() throws Exception {
-        final var notificationMessage = createNotificationMessage(null);
-        final var mockMessage = mock(Message.class);
+  private NotificationMessage createNotificationMessage() {
+    return createNotificationMessage(SchemaVersion.VERSION_3);
+  }
 
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-
-        notificationTransformer.process(mockMessage);
-
-        verify(mockMessage).setHeader(VERSION, SchemaVersion.VERSION_3.name());
-    }
-
-    @Test
-    void shallThrowExceptionOnTransformedMessageWithUnsupportedVersion() throws Exception {
-        final var notificationMessage = createNotificationMessage(SchemaVersion.VERSION_1);
-        final var mockMessage = mock(Message.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-
-        try {
-            notificationTransformer.process(mockMessage);
-            fail("Should have thrown exception due to unsupported version!");
-        } catch (IllegalArgumentException e) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    void shallSetLogicalAddressHeaderOnTransformedMessage() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var mockMessage = mock(Message.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-
-        notificationTransformer.process(mockMessage);
-
-        verify(mockMessage).setHeader(LOGISK_ADRESS, notificationMessage.getLogiskAdress());
-    }
-
-    @Test
-    void shallSetCertificateIdHeaderOnTransformedMessage() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var mockMessage = mock(Message.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-
-        notificationTransformer.process(mockMessage);
-
-        verify(mockMessage).setHeader(INTYGS_ID, notificationMessage.getIntygsId());
-    }
-
-    @Test
-    void shallSetEventTypeHeaderOnTransformedMessage() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var mockMessage = mock(Message.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-
-        notificationTransformer.process(mockMessage);
-
-        verify(mockMessage).setHeader(HANDELSE, notificationMessage.getHandelse().value());
-    }
-
-    @Test
-    void shallSetCertificateTypeVersionHeaderOnTransformedMessage() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var expectedCertificateTypeVersion = "CERTIFICATE_TYPE";
-        final var mockMessage = mock(Message.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-        doReturn(expectedCertificateTypeVersion).when(moduleRegistry)
-            .resolveVersionFromUtlatandeJson(notificationMessage.getIntygsTyp(), "CERTIFICATE_AS_JSON_STRING");
-
-        notificationTransformer.process(mockMessage);
-
-        verify(mockMessage).setHeader(INTYG_TYPE_VERSION, expectedCertificateTypeVersion);
-    }
-
-    @Test
-    void shallUseCertificateTypeVersionHeaderIfAlreadyExistsOnTransformedMessage() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var expectedCertificateTypeVersion = "CERTIFICATE_TYPE";
-        final var mockMessage = mock(Message.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-        doReturn(expectedCertificateTypeVersion).when(mockMessage).getHeader(INTYG_TYPE_VERSION);
-
-        notificationTransformer.process(mockMessage);
-
-        verify(moduleRegistry, noInteractions()).resolveVersionFromUtlatandeJson(any(), any());
-    }
-
-    @Test
-    void shallSendResultMessageOnTransformationError() throws Exception {
-        final var notificationMessage = createNotificationMessage();
-        final var mockNotificationResultMessage = mock(NotificationResultMessage.class);
-        final var mockMessage = mock(Message.class);
-
-        final var captureNotificationResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
-        doThrow(new RuntimeException()).when(certificateStatusUpdateForCareCreator).create(any(), any());
-        doReturn(mockNotificationResultMessage).when(notificationResultMessageCreator)
-            .createFailureMessage(any(), any(), any(), any(), any());
-
-        try {
-            notificationTransformer.process(mockMessage);
-            Assertions.fail("Should have thrown exception due to transformation error!");
-        } catch (Exception e) {
-            verify(notificationResultMessageSender).sendResultMessage(captureNotificationResultMessage.capture());
-
-            Assertions.assertEquals(mockNotificationResultMessage, captureNotificationResultMessage.getValue());
-        }
-    }
-
-    private NotificationMessage createNotificationMessage() {
-        return createNotificationMessage(SchemaVersion.VERSION_3);
-    }
-
-    private NotificationMessage createNotificationMessage(SchemaVersion version) {
-        final var notificationMessage = new NotificationMessage();
-        notificationMessage.setHandelse(HandelsekodEnum.SKAPAT);
-        notificationMessage.setLogiskAdress("ENHETS_ID");
-        notificationMessage.setIntygsId("INTYGS_ID");
-        notificationMessage.setVersion(version);
-        final var mockCertificateAsJson = mock(JsonNode.class);
-        doReturn("CERTIFICATE_AS_JSON_STRING").when(mockCertificateAsJson).toString();
-        notificationMessage.setUtkast(mockCertificateAsJson);
-        return notificationMessage;
-    }
+  private NotificationMessage createNotificationMessage(SchemaVersion version) {
+    final var notificationMessage = new NotificationMessage();
+    notificationMessage.setHandelse(HandelsekodEnum.SKAPAT);
+    notificationMessage.setLogiskAdress("ENHETS_ID");
+    notificationMessage.setIntygsId("INTYGS_ID");
+    notificationMessage.setVersion(version);
+    final var mockCertificateAsJson = mock(JsonNode.class);
+    doReturn("CERTIFICATE_AS_JSON_STRING").when(mockCertificateAsJson).toString();
+    notificationMessage.setUtkast(mockCertificateAsJson);
+    return notificationMessage;
+  }
 }

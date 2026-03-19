@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,27 +22,24 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.converter.util.ConvertToFKTypes;
 
-/**
- * Created by pehr on 10/2/13.
- */
+/** Created by pehr on 10/2/13. */
 public final class FKQuestionConverter {
 
-    private FKQuestionConverter() {
+  private FKQuestionConverter() {}
 
-    }
+  public static QuestionToFkType convert(FragaSvar fs) {
+    QuestionToFkType fkQuestion = new QuestionToFkType();
 
-    public static QuestionToFkType convert(FragaSvar fs) {
-        QuestionToFkType fkQuestion = new QuestionToFkType();
+    fkQuestion.setAmne(ConvertToFKTypes.toAmneTyp(fs.getAmne()));
+    fkQuestion.setAdressVard(ConvertToFKTypes.toVardAdresseringsType(fs.getVardperson()));
 
-        fkQuestion.setAmne(ConvertToFKTypes.toAmneTyp(fs.getAmne()));
-        fkQuestion.setAdressVard(ConvertToFKTypes.toVardAdresseringsType(fs.getVardperson()));
+    fkQuestion.setAvsantTidpunkt(fs.getFrageSkickadDatum());
+    fkQuestion.setFraga(
+        ConvertToFKTypes.toInnehallType(fs.getFrageText(), fs.getFrageSigneringsDatum()));
 
-        fkQuestion.setAvsantTidpunkt(fs.getFrageSkickadDatum());
-        fkQuestion.setFraga(ConvertToFKTypes.toInnehallType(fs.getFrageText(), fs.getFrageSigneringsDatum()));
+    fkQuestion.setLakarutlatande(ConvertToFKTypes.toLakarUtlatande(fs.getIntygsReferens()));
+    fkQuestion.setVardReferensId(fs.getInternReferens().toString());
 
-        fkQuestion.setLakarutlatande(ConvertToFKTypes.toLakarUtlatande(fs.getIntygsReferens()));
-        fkQuestion.setVardReferensId(fs.getInternReferens().toString());
-
-        return fkQuestion;
-    }
+    return fkQuestion;
+  }
 }

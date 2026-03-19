@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -34,18 +33,17 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 @TestPropertySource(properties = {"notification.redelivery.strategy.template.standard=1#1:s"})
 public class NotificationRedeliveryStrategyFactoryTest {
 
-    @Autowired
-    NotificationRedeliveryStrategyFactory factory;
+  @Autowired NotificationRedeliveryStrategyFactory factory;
 
-    @Test
-    public void shouldReturnStandardStrategyWhenRequested() {
-        final var strategy = factory.getResendStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
-        assertTrue(strategy instanceof NotificationRedeliveryStrategyStandard);
-    }
+  @Test
+  public void shouldReturnStandardStrategyWhenRequested() {
+    final var strategy = factory.getResendStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
+    assertTrue(strategy instanceof NotificationRedeliveryStrategyStandard);
+  }
 
-    @Test
-    public void shouldReturnStrategySingleWhenRequested() {
-        final var strategy = factory.getResendStrategy(NotificationRedeliveryStrategyEnum.SINGLE);
-        assertTrue(strategy instanceof NotificationRedeliveryStrategySingle);
-    }
+  @Test
+  public void shouldReturnStrategySingleWhenRequested() {
+    final var strategy = factory.getResendStrategy(NotificationRedeliveryStrategyEnum.SINGLE);
+    assertTrue(strategy instanceof NotificationRedeliveryStrategySingle);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,31 +33,25 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @ExtendWith(MockitoExtension.class)
 class DeleteCertificateFacadeServiceImplTest {
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @InjectMocks
-    private DeleteCertificateFacadeServiceImpl deleteCertificateFacadeService;
+  @InjectMocks private DeleteCertificateFacadeServiceImpl deleteCertificateFacadeService;
 
-    @Test
-    void shallDeleteDraft() {
-        final var expectedCertificateId = "certificateId";
-        final var expectedVersion = 100L;
+  @Test
+  void shallDeleteDraft() {
+    final var expectedCertificateId = "certificateId";
+    final var expectedVersion = 100L;
 
-        deleteCertificateFacadeService.deleteCertificate(expectedCertificateId, expectedVersion);
+    deleteCertificateFacadeService.deleteCertificate(expectedCertificateId, expectedVersion);
 
-        final var actualCertificateIdCaptor = ArgumentCaptor.forClass(String.class);
-        final var actualVersionCaptor = ArgumentCaptor.forClass(Long.class);
+    final var actualCertificateIdCaptor = ArgumentCaptor.forClass(String.class);
+    final var actualVersionCaptor = ArgumentCaptor.forClass(Long.class);
 
-        verify(utkastService)
-            .deleteUnsignedDraft(
-                actualCertificateIdCaptor.capture(),
-                actualVersionCaptor.capture()
-            );
+    verify(utkastService)
+        .deleteUnsignedDraft(actualCertificateIdCaptor.capture(), actualVersionCaptor.capture());
 
-        assertAll(
-            () -> assertEquals(expectedCertificateId, actualCertificateIdCaptor.getValue()),
-            () -> assertEquals(expectedVersion, actualVersionCaptor.getValue())
-        );
-    }
+    assertAll(
+        () -> assertEquals(expectedCertificateId, actualCertificateIdCaptor.getValue()),
+        () -> assertEquals(expectedVersion, actualVersionCaptor.getValue()));
+  }
 }

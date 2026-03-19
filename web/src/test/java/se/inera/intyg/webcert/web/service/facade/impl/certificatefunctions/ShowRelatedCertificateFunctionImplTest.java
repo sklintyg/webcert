@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,172 +47,204 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @ExtendWith(MockitoExtension.class)
 class ShowRelatedCertificateFunctionImplTest {
 
-    @Mock
-    private WebCertUser webCertUser;
+  @Mock private WebCertUser webCertUser;
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @InjectMocks
-    private ShowRelatedCertificateFunctionImpl showRelatedCertificateFunction;
+  @InjectMocks private ShowRelatedCertificateFunctionImpl showRelatedCertificateFunction;
 
-    @Nested
-    class ShowDoiFromDb {
+  @Nested
+  class ShowDoiFromDb {
 
-        private Certificate certificate;
-        private Personnummer personNummer;
+    private Certificate certificate;
+    private Personnummer personNummer;
 
-        @BeforeEach
-        void setup() {
-            certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            personNummer = Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).get();
-        }
-
-        @Test
-        void shallIncludeShowRelatedCertificateIfShowDoiIsTrueForPreviousDraft() {
-            final var dbWithinCareProvider = Map.of(
-                UTKAST_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService)
-                .checkIfPersonHasExistingIntyg(personNummer, webCertUser, certificate.getMetadata().getId());
-
-            final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isPresent());
-        }
-
-        @Test
-        void shallExcludeShowRelatedCertificateIfShowDoiIsFalseForPreviousDraft() {
-            final var dbWithinCareProvider = Map.of(
-                UTKAST_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, false, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService)
-                .checkIfPersonHasExistingIntyg(personNummer, webCertUser, certificate.getMetadata().getId());
-
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallIncludeShowRelatedCertificateIfShowDoiIsTrueForPreviousCertificate() {
-            final var dbWithinCareProvider = Map.of(
-                INTYG_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService)
-                .checkIfPersonHasExistingIntyg(personNummer, webCertUser, certificate.getMetadata().getId());
-
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isPresent());
-        }
-
-        @Test
-        void shallExcludeShowRelatedCertificateIfShowDoiIsFalseForPreviousCertificate() {
-            final var dbWithinCareProvider = Map.of(
-                INTYG_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, false, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService)
-                .checkIfPersonHasExistingIntyg(personNummer, webCertUser, certificate.getMetadata().getId());
-
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
-            assertTrue(actualLink.isEmpty());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOType() {
-            final var dbWithinCareProvider = Map.of(
-                INTYG_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService)
-                .checkIfPersonHasExistingIntyg(personNummer, webCertUser, certificate.getMetadata().getId());
-
-            final var expectedType = ResourceLinkTypeDTO.SHOW_RELATED_CERTIFICATE;
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
-            assertEquals(expectedType, actualLink.get().getType());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOName() {
-            final var dbWithinCareProvider = Map.of(
-                INTYG_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService)
-                .checkIfPersonHasExistingIntyg(personNummer, webCertUser, certificate.getMetadata().getId());
-
-            final var expectedName = "Visa dödsorsaksintyg";
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
-            assertEquals(expectedName, actualLink.get().getName());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTODescription() {
-            final var dbWithinCareProvider = Map.of(
-                INTYG_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService)
-                .checkIfPersonHasExistingIntyg(personNummer, webCertUser, certificate.getMetadata().getId());
-
-            final var expectedDescription = "Visa det dödsorsaksintyg som har skapats från dödsbeviset.";
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
-            assertEquals(expectedDescription, actualLink.get().getDescription());
-        }
-
-        @Test
-        void shallIncludeResourceLinkDTOEnabled() {
-            final var dbWithinCareProvider = Map.of(
-                INTYG_INDICATOR,
-                Map.of(
-                    DoiModuleEntryPoint.MODULE_ID,
-                    PreviousIntyg.of(true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())
-                )
-            );
-
-            doReturn(dbWithinCareProvider).when(utkastService)
-                .checkIfPersonHasExistingIntyg(personNummer, webCertUser, certificate.getMetadata().getId());
-
-            final var expectedEnabled = true;
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
-            final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
-            assertEquals(expectedEnabled, actualLink.get().isEnabled());
-        }
+    @BeforeEach
+    void setup() {
+      certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      personNummer =
+          Personnummer.createPersonnummer(
+                  certificate.getMetadata().getPatient().getPersonId().getId())
+              .get();
     }
+
+    @Test
+    void shallIncludeShowRelatedCertificateIfShowDoiIsTrueForPreviousDraft() {
+      final var dbWithinCareProvider =
+          Map.of(
+              UTKAST_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(
+              personNummer, webCertUser, certificate.getMetadata().getId());
+
+      final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isPresent());
+    }
+
+    @Test
+    void shallExcludeShowRelatedCertificateIfShowDoiIsFalseForPreviousDraft() {
+      final var dbWithinCareProvider =
+          Map.of(
+              UTKAST_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true, false, false, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(
+              personNummer, webCertUser, certificate.getMetadata().getId());
+
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallIncludeShowRelatedCertificateIfShowDoiIsTrueForPreviousCertificate() {
+      final var dbWithinCareProvider =
+          Map.of(
+              INTYG_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(
+              personNummer, webCertUser, certificate.getMetadata().getId());
+
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isPresent());
+    }
+
+    @Test
+    void shallExcludeShowRelatedCertificateIfShowDoiIsFalseForPreviousCertificate() {
+      final var dbWithinCareProvider =
+          Map.of(
+              INTYG_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true, false, false, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(
+              personNummer, webCertUser, certificate.getMetadata().getId());
+
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
+      assertTrue(actualLink.isEmpty());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOType() {
+      final var dbWithinCareProvider =
+          Map.of(
+              INTYG_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(
+              personNummer, webCertUser, certificate.getMetadata().getId());
+
+      final var expectedType = ResourceLinkTypeDTO.SHOW_RELATED_CERTIFICATE;
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
+      assertEquals(expectedType, actualLink.get().getType());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOName() {
+      final var dbWithinCareProvider =
+          Map.of(
+              INTYG_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(
+              personNummer, webCertUser, certificate.getMetadata().getId());
+
+      final var expectedName = "Visa dödsorsaksintyg";
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
+      assertEquals(expectedName, actualLink.get().getName());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTODescription() {
+      final var dbWithinCareProvider =
+          Map.of(
+              INTYG_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(
+              personNummer, webCertUser, certificate.getMetadata().getId());
+
+      final var expectedDescription = "Visa det dödsorsaksintyg som har skapats från dödsbeviset.";
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
+      assertEquals(expectedDescription, actualLink.get().getDescription());
+    }
+
+    @Test
+    void shallIncludeResourceLinkDTOEnabled() {
+      final var dbWithinCareProvider =
+          Map.of(
+              INTYG_INDICATOR,
+              Map.of(
+                  DoiModuleEntryPoint.MODULE_ID,
+                  PreviousIntyg.of(
+                      true, false, true, "ENHET", "xxxxx-yyyyyy-zzzzz", LocalDateTime.now())));
+
+      doReturn(dbWithinCareProvider)
+          .when(utkastService)
+          .checkIfPersonHasExistingIntyg(
+              personNummer, webCertUser, certificate.getMetadata().getId());
+
+      final var expectedEnabled = true;
+      final var certificate =
+          CertificateFacadeTestHelper.createCertificate(
+              DbModuleEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
+      final var actualLink = showRelatedCertificateFunction.get(certificate, webCertUser);
+      assertEquals(expectedEnabled, actualLink.get().isEnabled());
+    }
+  }
 }

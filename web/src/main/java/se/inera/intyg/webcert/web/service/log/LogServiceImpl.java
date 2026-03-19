@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -61,256 +61,298 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Service
 public class LogServiceImpl implements LogService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LogServiceImpl.class);
 
-    private static final String PRINTED_AS_PDF = "Intyg utskrivet";
-    private static final String PRINTED_AS_DRAFT = "Utkastet utskrivet";
-    private static final String PRINTED_WHEN_REVOKED = "Makulerat intyg utskrivet";
-    private static final String SHOW_PREDICTION = "Prediktion från SRS av risk för lång sjukskrivning";
-    private static final String SET_OWN_OPINION = "Läkarens egen bedömning";
+  private static final String PRINTED_AS_PDF = "Intyg utskrivet";
+  private static final String PRINTED_AS_DRAFT = "Utkastet utskrivet";
+  private static final String PRINTED_WHEN_REVOKED = "Makulerat intyg utskrivet";
+  private static final String SHOW_PREDICTION =
+      "Prediktion från SRS av risk för lång sjukskrivning";
+  private static final String SET_OWN_OPINION = "Läkarens egen bedömning";
 
-    @Autowired(required = false)
-    @Qualifier("jmsPDLLogTemplate")
-    private JmsTemplate jmsTemplate;
+  @Autowired(required = false)
+  @Qualifier("jmsPDLLogTemplate") private JmsTemplate jmsTemplate;
 
-    @Autowired
-    private WebCertUserService webCertUserService;
+  @Autowired private WebCertUserService webCertUserService;
 
-    @Autowired
-    private LogMessagePopulator logMessagePopulator;
+  @Autowired private LogMessagePopulator logMessagePopulator;
 
-    @Autowired
-    private LogRequestFactory logRequestFactory;
+  @Autowired private LogRequestFactory logRequestFactory;
 
-    @PostConstruct
-    public void checkJmsTemplate() {
-        if (jmsTemplate == null) {
-            LOGGER.error("PDL logging is disabled!");
-        }
+  @PostConstruct
+  public void checkJmsTemplate() {
+    if (jmsTemplate == null) {
+      LOGGER.error("PDL logging is disabled!");
+    }
+  }
+
+  @Override
+  public void logCreateIntyg(LogRequest logRequest) {
+    logCreateIntyg(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logCreateIntyg(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygCreateMessage.build(logRequest.getIntygId()), logRequest, user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logUpdateIntyg(LogRequest logRequest) {
+    logUpdateIntyg(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logUpdateIntyg(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygUpdateMessage.build(logRequest.getIntygId()), logRequest, user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logReadIntyg(LogRequest logRequest) {
+    logReadIntyg(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logReadIntyg(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygReadMessage.build(logRequest.getIntygId()), logRequest, user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logDeleteIntyg(LogRequest logRequest) {
+    logDeleteIntyg(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logDeleteIntyg(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygDeleteMessage.build(logRequest.getIntygId()), logRequest, user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logSignIntyg(LogRequest logRequest) {
+    logSignIntyg(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logSignIntyg(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygSignMessage.build(logRequest.getIntygId()), logRequest, user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logRevokeIntyg(LogRequest logRequest) {
+    logRevokeIntyg(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logRevokeIntyg(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygRevokeMessage.build(logRequest.getIntygId()), logRequest, user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logPrintIntygAsPDF(LogRequest logRequest) {
+    logPrintIntygAsPDF(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logPrintIntygAsPDF(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_PDF), logRequest, user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logPrintIntygAsDraft(LogRequest logRequest) {
+    logPrintIntygAsDraft(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logPrintIntygAsDraft(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_DRAFT), logRequest, user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logPrintRevokedIntygAsPDF(LogRequest logRequest) {
+    logPrintRevokedIntygAsPDF(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED),
+            logRequest,
+            user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logSendIntygToRecipient(LogRequest logRequest) {
+    logSendIntygToRecipient(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logSendIntygToRecipient(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygSendMessage.build(logRequest.getIntygId(), logRequest.getAdditionalInfo()),
+            logRequest,
+            user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logShowPrediction(String patientId, String intygId) {
+    LogRequest logReq =
+        logRequestFactory.createLogRequestFromUser(
+            webCertUserService.getUser(), patientId, intygId);
+    logShowPrediction(logReq, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logShowPrediction(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygPredictionMessage.build(
+                logRequest.getIntygId(), SHOW_PREDICTION, ActivityType.READ),
+            logRequest,
+            user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logSetOwnOpinion(String patientId, String intygId) {
+    LogRequest logRequest =
+        logRequestFactory.createLogRequestFromUser(
+            webCertUserService.getUser(), patientId, intygId);
+    logSetOwnOpinion(logRequest, getLogUser(webCertUserService.getUser()));
+  }
+
+  @Override
+  public void logSetOwnOpinion(LogRequest logRequest, LogUser user) {
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygPredictionMessage.build(
+                logRequest.getIntygId(), SET_OWN_OPINION, ActivityType.CREATE),
+            logRequest,
+            user),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logReadLevelTwo(WebCertUser user, String patient) {
+    LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygListsMessage.build(), logRequest, getLogUser(user)),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public void logReadLevelOne(WebCertUser user, String patient) {
+    LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
+    send(
+        logMessagePopulator.populateLogMessage(
+            GeneralInformationMessage.build(), logRequest, getLogUser(user)),
+        logRequest.isTestIntyg());
+  }
+
+  @Override
+  public LogUser getLogUser(WebCertUser webCertUser) {
+    SelectableVardenhet valdVardenhet = webCertUser.getValdVardenhet();
+    SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
+
+    return new LogUser.Builder(
+            webCertUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
+        .userName(webCertUser.getNamn())
+        .userAssignment(webCertUser.getSelectedMedarbetarUppdragNamn())
+        .userTitle(webCertUser.getTitel())
+        .enhetsNamn(valdVardenhet.getNamn())
+        .vardgivareNamn(valdVardgivare.getNamn())
+        .build();
+  }
+
+  @Override
+  public void logCreateMessage(WebCertUser user, String personId, String certificateId) {
+
+    LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, personId);
+    send(
+        logMessagePopulator.populateLogMessage(
+            IntygCreateMessage.build(certificateId), logRequest, getLogUser(user)),
+        logRequest.isTestIntyg());
+  }
+
+  private void send(PdlLogMessage logMsg, boolean isTestIntyg) {
+    if (isTestIntyg) {
+      LOGGER.info(
+          "Can not log {} of Intyg '{}' since it is a test intyg or related to patient with testIndicator",
+          logMsg.getActivityType(),
+          logMsg.getActivityLevel());
+      return;
+    }
+
+    if (jmsTemplate == null) {
+      LOGGER.warn(
+          "Can not log {} of Intyg '{}' since PDL logging is disabled!",
+          logMsg.getActivityType(),
+          logMsg.getActivityLevel());
+      return;
+    }
+
+    LOGGER.debug(
+        "Logging {} ({}) of Intyg {}",
+        logMsg.getActivityType(),
+        logMsg.getActivityArgs(),
+        logMsg.getActivityLevel());
+
+    jmsTemplate.send(new MC(logMsg));
+  }
+
+  @VisibleForTesting
+  void setLogMessagePopulator(LogMessagePopulator logMessagePopulator) {
+    this.logMessagePopulator = logMessagePopulator;
+  }
+
+  private static final class MC implements MessageCreator {
+
+    private final PdlLogMessage logMsg;
+
+    private final ObjectMapper objectMapper = new CustomObjectMapper();
+
+    private MC(PdlLogMessage log) {
+      this.logMsg = log;
     }
 
     @Override
-    public void logCreateIntyg(LogRequest logRequest) {
-        logCreateIntyg(logRequest, getLogUser(webCertUserService.getUser()));
+    public Message createMessage(Session session) throws JMSException {
+      try {
+        return session.createTextMessage(objectMapper.writeValueAsString(logMsg));
+      } catch (JsonProcessingException e) {
+        throw new IllegalArgumentException(
+            "Could not serialize log message of type '"
+                + logMsg.getClass().getName()
+                + "' into JSON, message: "
+                + e.getMessage());
+      }
     }
-
-    @Override
-    public void logCreateIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygCreateMessage.build(logRequest.getIntygId()), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logUpdateIntyg(LogRequest logRequest) {
-        logUpdateIntyg(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logUpdateIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygUpdateMessage.build(logRequest.getIntygId()), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logReadIntyg(LogRequest logRequest) {
-        logReadIntyg(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logReadIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygReadMessage.build(logRequest.getIntygId()), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logDeleteIntyg(LogRequest logRequest) {
-        logDeleteIntyg(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logDeleteIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygDeleteMessage.build(logRequest.getIntygId()), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logSignIntyg(LogRequest logRequest) {
-        logSignIntyg(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logSignIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygSignMessage.build(logRequest.getIntygId()), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logRevokeIntyg(LogRequest logRequest) {
-        logRevokeIntyg(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logRevokeIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygRevokeMessage.build(logRequest.getIntygId()), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logPrintIntygAsPDF(LogRequest logRequest) {
-        logPrintIntygAsPDF(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logPrintIntygAsPDF(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_PDF), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logPrintIntygAsDraft(LogRequest logRequest) {
-        logPrintIntygAsDraft(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logPrintIntygAsDraft(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_DRAFT), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logPrintRevokedIntygAsPDF(LogRequest logRequest) {
-        logPrintRevokedIntygAsPDF(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logSendIntygToRecipient(LogRequest logRequest) {
-        logSendIntygToRecipient(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logSendIntygToRecipient(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygSendMessage.build(logRequest.getIntygId(), logRequest.getAdditionalInfo()), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logShowPrediction(String patientId, String intygId) {
-        LogRequest logReq = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId, intygId);
-        logShowPrediction(logReq, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logShowPrediction(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygPredictionMessage.build(logRequest.getIntygId(), SHOW_PREDICTION, ActivityType.READ), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logSetOwnOpinion(String patientId, String intygId) {
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId, intygId);
-        logSetOwnOpinion(logRequest, getLogUser(webCertUserService.getUser()));
-    }
-
-    @Override
-    public void logSetOwnOpinion(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(
-                IntygPredictionMessage.build(logRequest.getIntygId(), SET_OWN_OPINION, ActivityType.CREATE), logRequest, user),
-            logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logReadLevelTwo(WebCertUser user, String patient) {
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
-        send(logMessagePopulator.populateLogMessage(
-            IntygListsMessage.build(), logRequest, getLogUser(user)), logRequest.isTestIntyg());
-    }
-
-    @Override
-    public void logReadLevelOne(WebCertUser user, String patient) {
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
-        send(logMessagePopulator.populateLogMessage(
-            GeneralInformationMessage.build(), logRequest, getLogUser(user)), logRequest.isTestIntyg());
-    }
-
-    @Override
-    public LogUser getLogUser(WebCertUser webCertUser) {
-        SelectableVardenhet valdVardenhet = webCertUser.getValdVardenhet();
-        SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
-
-        return new LogUser.Builder(webCertUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
-            .userName(webCertUser.getNamn())
-            .userAssignment(webCertUser.getSelectedMedarbetarUppdragNamn())
-            .userTitle(webCertUser.getTitel())
-            .enhetsNamn(valdVardenhet.getNamn())
-            .vardgivareNamn(valdVardgivare.getNamn())
-            .build();
-    }
-
-    @Override
-    public void logCreateMessage(WebCertUser user, String personId, String certificateId) {
-
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, personId);
-        send(logMessagePopulator.populateLogMessage(
-            IntygCreateMessage.build(certificateId), logRequest, getLogUser(user)), logRequest.isTestIntyg());
-    }
-
-    private void send(PdlLogMessage logMsg, boolean isTestIntyg) {
-        if (isTestIntyg) {
-            LOGGER.info("Can not log {} of Intyg '{}' since it is a test intyg or related to patient with testIndicator",
-                logMsg.getActivityType(), logMsg.getActivityLevel());
-            return;
-        }
-
-        if (jmsTemplate == null) {
-            LOGGER.warn("Can not log {} of Intyg '{}' since PDL logging is disabled!", logMsg.getActivityType(), logMsg.getActivityLevel());
-            return;
-        }
-
-        LOGGER.debug("Logging {} ({}) of Intyg {}", logMsg.getActivityType(), logMsg.getActivityArgs(), logMsg.getActivityLevel());
-
-        jmsTemplate.send(new MC(logMsg));
-    }
-
-    @VisibleForTesting
-    void setLogMessagePopulator(LogMessagePopulator logMessagePopulator) {
-        this.logMessagePopulator = logMessagePopulator;
-    }
-
-    private static final class MC implements MessageCreator {
-
-        private final PdlLogMessage logMsg;
-
-        private final ObjectMapper objectMapper = new CustomObjectMapper();
-
-        private MC(PdlLogMessage log) {
-            this.logMsg = log;
-        }
-
-        @Override
-        public Message createMessage(Session session) throws JMSException {
-            try {
-                return session.createTextMessage(objectMapper.writeValueAsString(logMsg));
-            } catch (JsonProcessingException e) {
-                throw new IllegalArgumentException("Could not serialize log message of type '" + logMsg.getClass().getName()
-                    + "' into JSON, message: " + e.getMessage());
-            }
-        }
-    }
+  }
 }

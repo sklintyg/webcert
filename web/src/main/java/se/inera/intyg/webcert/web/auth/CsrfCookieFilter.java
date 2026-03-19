@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.auth;
 
 import jakarta.servlet.FilterChain;
@@ -29,21 +28,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * This handler is required to make CSRF-protection work in a single-page application.
- * <p>
- * <a
+ *
+ * <p><a
  * href="https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html#csrf-integration-javascript-spa">Spring
  * Security - Single-Page Applications</a>
  */
 public final class CsrfCookieFilter extends OncePerRequestFilter {
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain filterChain)
-        throws ServletException, IOException {
-        final var csrfToken = (CsrfToken) request.getAttribute("_csrf");
-        // Render the token value to a cookie by causing the deferred token to be loaded
-        csrfToken.getToken();
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    final var csrfToken = (CsrfToken) request.getAttribute("_csrf");
+    // Render the token value to a cookie by causing the deferred token to be loaded
+    csrfToken.getToken();
 
-        filterChain.doFilter(request, response);
-    }
+    filterChain.doFilter(request, response);
+  }
 }

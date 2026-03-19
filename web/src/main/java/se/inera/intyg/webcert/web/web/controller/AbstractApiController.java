@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,37 +30,37 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public abstract class AbstractApiController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractApiController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractApiController.class);
 
-    protected static final String UTF_8 = "UTF-8";
+  protected static final String UTF_8 = "UTF-8";
 
-    protected static final String UTF_8_CHARSET = ";charset=utf-8";
+  protected static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+  protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    private WebCertUserService webCertUserService;
+  private WebCertUserService webCertUserService;
 
-    protected HoSPersonal createHoSPersonFromUser() {
-        WebCertUser user = webCertUserService.getUser();
-        return IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
-    }
+  protected HoSPersonal createHoSPersonFromUser() {
+    WebCertUser user = webCertUserService.getUser();
+    return IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
+  }
 
-    protected List<String> getEnhetIdsForCurrentUser() {
+  protected List<String> getEnhetIdsForCurrentUser() {
 
-        WebCertUser webCertUser = webCertUserService.getUser();
-        List<String> vardenheterIds = webCertUser.getIdsOfSelectedVardenhet();
+    WebCertUser webCertUser = webCertUserService.getUser();
+    List<String> vardenheterIds = webCertUser.getIdsOfSelectedVardenhet();
 
-        LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), vardenheterIds);
+    LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), vardenheterIds);
 
-        return vardenheterIds;
-    }
+    return vardenheterIds;
+  }
 
-    public WebCertUserService getWebCertUserService() {
-        return webCertUserService;
-    }
+  public WebCertUserService getWebCertUserService() {
+    return webCertUserService;
+  }
 
-    @Autowired
-    public void setWebCertUserService(WebCertUserService webCertUserService) {
-        this.webCertUserService = webCertUserService;
-    }
+  @Autowired
+  public void setWebCertUserService(WebCertUserService webCertUserService) {
+    this.webCertUserService = webCertUserService;
+  }
 }

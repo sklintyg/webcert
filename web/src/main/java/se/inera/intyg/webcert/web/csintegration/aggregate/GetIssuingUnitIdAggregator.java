@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import lombok.RequiredArgsConstructor;
@@ -27,12 +26,12 @@ import se.inera.intyg.webcert.web.service.certificate.GetIssuingUnitIdFromWebcer
 @Service
 @RequiredArgsConstructor
 public class GetIssuingUnitIdAggregator {
-    private final GetIssuingUnitIdFromWebcert getUnitIdFromWC;
-    private final GetIssuingUnitIdFromCertificateService getUnitIdFromCS;
+  private final GetIssuingUnitIdFromWebcert getUnitIdFromWC;
+  private final GetIssuingUnitIdFromCertificateService getUnitIdFromCS;
 
-    public String get(String certificateId) {
-        final var unitIdFromCS = getUnitIdFromCS.get(certificateId);
+  public String get(String certificateId) {
+    final var unitIdFromCS = getUnitIdFromCS.get(certificateId);
 
-        return unitIdFromCS != null ? unitIdFromCS : getUnitIdFromWC.get(certificateId);
-    }
+    return unitIdFromCS != null ? unitIdFromCS : getUnitIdFromWC.get(certificateId);
+  }
 }

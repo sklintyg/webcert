@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,45 +33,50 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 @Service("replaceCertificateFromWebcert")
 public class ReplaceCertificateFacadeServiceImpl implements ReplaceCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReplaceCertificateFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(ReplaceCertificateFacadeServiceImpl.class);
 
-    private final CopyUtkastServiceHelper copyUtkastServiceHelper;
+  private final CopyUtkastServiceHelper copyUtkastServiceHelper;
 
-    private final CopyUtkastService copyUtkastService;
+  private final CopyUtkastService copyUtkastService;
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public ReplaceCertificateFacadeServiceImpl(
-        CopyUtkastServiceHelper copyUtkastServiceHelper, CopyUtkastService copyUtkastService,
-        GetCertificateFacadeService getCertificateFacadeService) {
-        this.copyUtkastServiceHelper = copyUtkastServiceHelper;
-        this.copyUtkastService = copyUtkastService;
-        this.getCertificateFacadeService = getCertificateFacadeService;
+  @Autowired
+  public ReplaceCertificateFacadeServiceImpl(
+      CopyUtkastServiceHelper copyUtkastServiceHelper,
+      CopyUtkastService copyUtkastService,
+      GetCertificateFacadeService getCertificateFacadeService) {
+    this.copyUtkastServiceHelper = copyUtkastServiceHelper;
+    this.copyUtkastService = copyUtkastService;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
+
+  @Override
+  public String replaceCertificate(String certificateId) {
+    LOG.debug("Get certificate '{}' that will be replaced", certificateId);
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+    final var certificateType = certificate.getMetadata().getType();
+    final var copyIntygRequest = new CopyIntygRequest();
+    copyIntygRequest.setPatientPersonnummer(getPersonId(certificate.getMetadata().getPatient()));
+
+    LOG.debug(
+        "Preparing to create a replacement for '{}' with type '{}'",
+        certificateId,
+        certificateType);
+    final var serviceRequest =
+        copyUtkastServiceHelper.createReplacementCopyRequest(
+            certificateId, certificateType, copyIntygRequest);
+    final var serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
+
+    LOG.debug("Created replacement '{}'", serviceResponse.getNewDraftIntygId());
+    return serviceResponse.getNewDraftIntygId();
+  }
+
+  private Personnummer getPersonId(Patient patient) {
+    if (patient.isReserveId()) {
+      return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
     }
-
-    @Override
-    public String replaceCertificate(String certificateId) {
-        LOG.debug("Get certificate '{}' that will be replaced", certificateId);
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
-        final var certificateType = certificate.getMetadata().getType();
-        final var copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setPatientPersonnummer(
-            getPersonId(certificate.getMetadata().getPatient())
-        );
-
-        LOG.debug("Preparing to create a replacement for '{}' with type '{}'", certificateId, certificateType);
-        final var serviceRequest = copyUtkastServiceHelper.createReplacementCopyRequest(certificateId, certificateType, copyIntygRequest);
-        final var serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
-
-        LOG.debug("Created replacement '{}'", serviceResponse.getNewDraftIntygId());
-        return serviceResponse.getNewDraftIntygId();
-    }
-
-    private Personnummer getPersonId(Patient patient) {
-        if (patient.isReserveId()) {
-            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
-        }
-        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
-    }
+    return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
+  }
 }

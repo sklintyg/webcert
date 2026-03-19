@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,14 +33,15 @@ import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 @Api(value = "/terms/approved", produces = MediaType.APPLICATION_JSON)
 public class TermsApiController {
 
-    @Autowired
-    private AvtalService avtalService;
+  @Autowired private AvtalService avtalService;
 
-    @GET
-    @Path("/approved/{hsaId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @PerformanceLogging(eventAction = "terms-get-webcert-approved-terms", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public boolean getWebcertTermsApproved(@PathParam("hsaId") String hsaId) {
-        return avtalService.userHasApprovedLatestAvtal(hsaId);
-    }
+  @GET
+  @Path("/approved/{hsaId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @PerformanceLogging(
+      eventAction = "terms-get-webcert-approved-terms",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public boolean getWebcertTermsApproved(@PathParam("hsaId") String hsaId) {
+    return avtalService.userHasApprovedLatestAvtal(hsaId);
+  }
 }

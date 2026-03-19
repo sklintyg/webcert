@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,108 +46,121 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 public class NotificationTransformer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationTransformer.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationTransformer.class);
 
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
-    @Autowired
-    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-    @Autowired
-    private NotificationResultMessageCreator notificationResultMessageCreator;
-    @Autowired
-    private NotificationResultMessageSender notificationResultMessageSender;
-    @Autowired
-    private MdcHelper mdcHelper;
+  @Autowired private IntygModuleRegistry moduleRegistry;
+  @Autowired private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+  @Autowired private NotificationResultMessageCreator notificationResultMessageCreator;
+  @Autowired private NotificationResultMessageSender notificationResultMessageSender;
+  @Autowired private MdcHelper mdcHelper;
 
-    /**
-     * Process message by adding headers and creating a CertificateStatusUpdateForCareType based on the {@link NotificationMessage} and
-     * set it as the message body.
-     *
-     * Failure to do so will result in an error and if a TemporaryException is thrown, the message will be processed again. If
-     * it resulted in a different exception a NotificationResultMessage will be created and added to the queue for post processing.
-     */
-    public void process(Message message) throws ModuleException, IOException, ModuleNotFoundException, TemporaryException {
-        LOG.debug("Receiving message: {}", message.getMessageId());
+  /**
+   * Process message by adding headers and creating a CertificateStatusUpdateForCareType based on
+   * the {@link NotificationMessage} and set it as the message body.
+   *
+   * <p>Failure to do so will result in an error and if a TemporaryException is thrown, the message
+   * will be processed again. If it resulted in a different exception a NotificationResultMessage
+   * will be created and added to the queue for post processing.
+   */
+  public void process(Message message)
+      throws ModuleException, IOException, ModuleNotFoundException, TemporaryException {
+    LOG.debug("Receiving message: {}", message.getMessageId());
 
-        final var notificationMessage = message.getBody(NotificationMessage.class);
+    final var notificationMessage = message.getBody(NotificationMessage.class);
 
-        try {
-            final var certificateId = notificationMessage.getIntygsId();
-            final var logicaAddress = notificationMessage.getLogiskAdress();
-            final var eventId = notificationMessage.getHandelse().value();
+    try {
+      final var certificateId = notificationMessage.getIntygsId();
+      final var logicaAddress = notificationMessage.getLogiskAdress();
+      final var eventId = notificationMessage.getHandelse().value();
 
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId);
-            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicaAddress);
-            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, eventId);
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId);
+      MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicaAddress);
+      MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, eventId);
 
-            message.setHeader(NotificationRouteHeaders.VERSION, getSchemaVersion(notificationMessage));
-            message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, logicaAddress);
-            message.setHeader(NotificationRouteHeaders.INTYGS_ID, certificateId);
-            message.setHeader(NotificationRouteHeaders.HANDELSE, eventId);
+      message.setHeader(NotificationRouteHeaders.VERSION, getSchemaVersion(notificationMessage));
+      message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, logicaAddress);
+      message.setHeader(NotificationRouteHeaders.INTYGS_ID, certificateId);
+      message.setHeader(NotificationRouteHeaders.HANDELSE, eventId);
 
-            final var statusUpdateForCare = getStatusUpdateForCare(notificationMessage, message);
-            message.setBody(statusUpdateForCare);
-        } catch (Exception e) {
-            handleExceptions(message, notificationMessage, e);
-            throw e;
-        } finally {
-            MDC.clear();
-        }
+      final var statusUpdateForCare = getStatusUpdateForCare(notificationMessage, message);
+      message.setBody(statusUpdateForCare);
+    } catch (Exception e) {
+      handleExceptions(message, notificationMessage, e);
+      throw e;
+    } finally {
+      MDC.clear();
+    }
+  }
+
+  private CertificateStatusUpdateForCareType getStatusUpdateForCare(
+      NotificationMessage notificationMessage, Message message)
+      throws ModuleNotFoundException, IOException, ModuleException {
+    if (notificationMessage.getStatusUpdateXml() != null) {
+      final var element =
+          XmlMarshallerHelper.unmarshal(
+              new String(notificationMessage.getStatusUpdateXml(), StandardCharsets.UTF_8));
+      return (CertificateStatusUpdateForCareType) element.getValue();
     }
 
-    private CertificateStatusUpdateForCareType getStatusUpdateForCare(NotificationMessage notificationMessage, Message message)
-        throws ModuleNotFoundException, IOException, ModuleException {
-        if (notificationMessage.getStatusUpdateXml() != null) {
-            final var element = XmlMarshallerHelper.unmarshal(
-                new String(notificationMessage.getStatusUpdateXml(), StandardCharsets.UTF_8)
-            );
-            return (CertificateStatusUpdateForCareType) element.getValue();
-        }
+    final var certificateTypeVersion =
+        resolveIntygTypeVersion(
+            notificationMessage.getIntygsTyp(), message, notificationMessage.getUtkast());
+    return certificateStatusUpdateForCareCreator.create(
+        notificationMessage, certificateTypeVersion);
+  }
 
-        final var certificateTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(),
-            message, notificationMessage.getUtkast());
-        return certificateStatusUpdateForCareCreator.create(notificationMessage, certificateTypeVersion);
+  private void handleExceptions(
+      Message message, NotificationMessage notificationMessage, Exception e)
+      throws ModuleNotFoundException, IOException, ModuleException {
+    LOG.error(
+        "Failure transforming notification [certificateId: "
+            + notificationMessage.getIntygsId()
+            + ", eventType: "
+            + notificationMessage.getHandelse().value()
+            + ", timestamp: "
+            + notificationMessage.getHandelseTid()
+            + "]",
+        e);
+    final var certificateTypeVersion =
+        resolveIntygTypeVersion(
+            notificationMessage.getIntygsTyp(), message, notificationMessage.getUtkast());
+    final var correlationId = message.getHeader(CORRELATION_ID, String.class);
+    final var userId = message.getHeader(USER_ID, String.class);
+    final var resultMessage =
+        notificationResultMessageCreator.createFailureMessage(
+            notificationMessage, correlationId, userId, certificateTypeVersion, e);
+    notificationResultMessageSender.sendResultMessage(resultMessage);
+  }
+
+  private String getSchemaVersion(NotificationMessage notificationMessage) {
+    final var schemaVersion = notificationMessage.getVersion();
+    if (schemaVersion == null) {
+      LOG.warn("Recieved notificationMessage with unknown VERSION header, forcing V3");
+      return SchemaVersion.VERSION_3.name();
     }
 
-    private void handleExceptions(Message message, NotificationMessage notificationMessage, Exception e)
-        throws ModuleNotFoundException, IOException, ModuleException {
-        LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
-            + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
-        final var certificateTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(),
-            message, notificationMessage.getUtkast());
-        final var correlationId = message.getHeader(CORRELATION_ID, String.class);
-        final var userId = message.getHeader(USER_ID, String.class);
-        final var resultMessage = notificationResultMessageCreator
-            .createFailureMessage(notificationMessage, correlationId, userId, certificateTypeVersion, e);
-        notificationResultMessageSender.sendResultMessage(resultMessage);
+    if (!SchemaVersion.VERSION_3.equals(schemaVersion)) {
+      throw new IllegalArgumentException(
+          "Unsupported combination of version '"
+              + schemaVersion
+              + "' and type '"
+              + notificationMessage.getIntygsTyp()
+              + "'");
     }
 
-    private String getSchemaVersion(NotificationMessage notificationMessage) {
-        final var schemaVersion = notificationMessage.getVersion();
-        if (schemaVersion == null) {
-            LOG.warn("Recieved notificationMessage with unknown VERSION header, forcing V3");
-            return SchemaVersion.VERSION_3.name();
-        }
+    return schemaVersion.name();
+  }
 
-        if (!SchemaVersion.VERSION_3.equals(schemaVersion)) {
-            throw new IllegalArgumentException("Unsupported combination of version '" + schemaVersion + "' and type '"
-                + notificationMessage.getIntygsTyp() + "'");
-        }
-
-        return schemaVersion.name();
+  /** Prefer using header for INTYG_TYPE_VERSION before trying to parse from body. */
+  private String resolveIntygTypeVersion(String intygsTyp, Message message, String json)
+      throws ModuleNotFoundException {
+    if (message.getHeader(INTYG_TYPE_VERSION) != null) {
+      return (String) message.getHeader(INTYG_TYPE_VERSION);
     }
-
-    /**
-     * Prefer using header for INTYG_TYPE_VERSION before trying to parse from body.
-     */
-    private String resolveIntygTypeVersion(String intygsTyp, Message message, String json) throws ModuleNotFoundException {
-        if (message.getHeader(INTYG_TYPE_VERSION) != null) {
-            return (String) message.getHeader(INTYG_TYPE_VERSION);
-        }
-        String certificateVersion = moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json);
-        message.setHeader(INTYG_TYPE_VERSION, certificateVersion);
-        return certificateVersion;
-    }
+    String certificateVersion = moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json);
+    message.setHeader(INTYG_TYPE_VERSION, certificateVersion);
+    return certificateVersion;
+  }
 }

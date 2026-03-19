@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,35 +27,34 @@ import se.inera.intyg.common.support.facade.model.PersonId;
 @Component
 public class SupportedPatientsUtil {
 
-    public static final Patient ATHENA_ANDERSSON = createPatient("194011306125", "Athena", "Andersson");
-    public static final Patient ALVE_ALFREDSSON = createPatient("194112128154", "Alve", "Alfridsson");
-    public static final Patient ALEXA_VALFRIDSSON = createPatient("194110299221", "Alexa", "Valfridsson");
-    public static final Patient BOSTADSLOSE_ANDERSSON = createPatient("194110147495", "Bostadslöse", "Andersson");
-    public static final Patient ATLAS_ABRAHAMSSON = createPatient("194111299055", "Atlas", "Abrahamsson");
-    public static final Patient ANONYMA_ATTILA = createPatient("194012019149", "Anonyma", "Attila");
+  public static final Patient ATHENA_ANDERSSON =
+      createPatient("194011306125", "Athena", "Andersson");
+  public static final Patient ALVE_ALFREDSSON = createPatient("194112128154", "Alve", "Alfridsson");
+  public static final Patient ALEXA_VALFRIDSSON =
+      createPatient("194110299221", "Alexa", "Valfridsson");
+  public static final Patient BOSTADSLOSE_ANDERSSON =
+      createPatient("194110147495", "Bostadslöse", "Andersson");
+  public static final Patient ATLAS_ABRAHAMSSON =
+      createPatient("194111299055", "Atlas", "Abrahamsson");
+  public static final Patient ANONYMA_ATTILA = createPatient("194012019149", "Anonyma", "Attila");
 
-    public List<Patient> get() {
-        final var patients = new ArrayList<Patient>();
-        patients.add(ATHENA_ANDERSSON);
-        patients.add(ALVE_ALFREDSSON);
-        patients.add(BOSTADSLOSE_ANDERSSON);
-        patients.add(ATLAS_ABRAHAMSSON);
-        patients.add(ANONYMA_ATTILA);
-        patients.add(ALEXA_VALFRIDSSON);
-        return patients;
-    }
+  public List<Patient> get() {
+    final var patients = new ArrayList<Patient>();
+    patients.add(ATHENA_ANDERSSON);
+    patients.add(ALVE_ALFREDSSON);
+    patients.add(BOSTADSLOSE_ANDERSSON);
+    patients.add(ATLAS_ABRAHAMSSON);
+    patients.add(ANONYMA_ATTILA);
+    patients.add(ALEXA_VALFRIDSSON);
+    return patients;
+  }
 
-    private static Patient createPatient(String id, String firstName, String lastName) {
-        return Patient.builder()
-            .personId(
-                PersonId.builder()
-                    .id(id)
-                    .type("PERSON_NUMMER")
-                    .build()
-            )
-            .firstName(firstName)
-            .lastName(lastName)
-            .fullName(firstName + ' ' + lastName)
-            .build();
-    }
+  private static Patient createPatient(String id, String firstName, String lastName) {
+    return Patient.builder()
+        .personId(PersonId.builder().id(id).type("PERSON_NUMMER").build())
+        .firstName(firstName)
+        .lastName(lastName)
+        .fullName(firstName + ' ' + lastName)
+        .build();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,69 +47,65 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationPostProcessorTest {
 
-    @Mock
-    private NotificationPostProcessingService notificationPostProcessingService;
-    @Spy
-    private MdcHelper mdcHelper;
-    @Mock
-    private Message message;
-    @Spy
-    private ObjectMapper objectMapper;
+  @Mock private NotificationPostProcessingService notificationPostProcessingService;
+  @Spy private MdcHelper mdcHelper;
+  @Mock private Message message;
+  @Spy private ObjectMapper objectMapper;
 
-    @InjectMocks
-    private NotificationPostProcessor notificationPostProcessor;
+  @InjectMocks private NotificationPostProcessor notificationPostProcessor;
 
-    @Before
-    public void setup() {
-        when(message.getHeader(anyString())).thenReturn("headerValue");
-    }
+  @Before
+  public void setup() {
+    when(message.getHeader(anyString())).thenReturn("headerValue");
+  }
 
-    @Test
-    public void shallProcessNotificationResultMessage() throws Exception {
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var body = objectMapper.writeValueAsString(notificationResultMessage);
-        final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
+  @Test
+  public void shallProcessNotificationResultMessage() throws Exception {
+    final var notificationResultMessage = createNotificationResultMessage();
+    final var body = objectMapper.writeValueAsString(notificationResultMessage);
+    final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
-        doReturn(body).when(message).getBody(String.class);
+    doReturn(body).when(message).getBody(String.class);
 
-        notificationPostProcessor.process(message);
+    notificationPostProcessor.process(message);
 
-        verify(notificationPostProcessingService).processNotificationResult(argumentCaptor.capture());
-        assertEquals(notificationResultMessage.getCorrelationId(), argumentCaptor.getValue().getCorrelationId());
-    }
+    verify(notificationPostProcessingService).processNotificationResult(argumentCaptor.capture());
+    assertEquals(
+        notificationResultMessage.getCorrelationId(), argumentCaptor.getValue().getCorrelationId());
+  }
 
-    @Test
-    public void shallNotProcessNotificationResultMessageIfCorrupt() {
-        final var body = "Text for parsing";
+  @Test
+  public void shallNotProcessNotificationResultMessageIfCorrupt() {
+    final var body = "Text for parsing";
 
-        doReturn(body).when(message).getBody(String.class);
+    doReturn(body).when(message).getBody(String.class);
 
-        notificationPostProcessor.process(message);
+    notificationPostProcessor.process(message);
 
-        verifyNoInteractions(notificationPostProcessingService);
-    }
+    verifyNoInteractions(notificationPostProcessingService);
+  }
 
-    @Test(expected = Exception.class)
-    public void shallNotCatchExceptionsExceptJsonProcessingExceptions() throws Exception {
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var body = objectMapper.writeValueAsString(notificationResultMessage);
+  @Test(expected = Exception.class)
+  public void shallNotCatchExceptionsExceptJsonProcessingExceptions() throws Exception {
+    final var notificationResultMessage = createNotificationResultMessage();
+    final var body = objectMapper.writeValueAsString(notificationResultMessage);
 
-        doReturn(body).when(message).getBody(String.class);
-        doThrow(new RuntimeException("Fail!"))
-            .when(notificationPostProcessingService)
-            .processNotificationResult(any(NotificationResultMessage.class));
+    doReturn(body).when(message).getBody(String.class);
+    doThrow(new RuntimeException("Fail!"))
+        .when(notificationPostProcessingService)
+        .processNotificationResult(any(NotificationResultMessage.class));
 
-        notificationPostProcessor.process(message);
+    notificationPostProcessor.process(message);
 
-        fail("Should never reach this assert!");
-    }
+    fail("Should never reach this assert!");
+  }
 
-    private NotificationResultMessage createNotificationResultMessage() {
-        final var notificationResultMessage = new NotificationResultMessage();
-        notificationResultMessage.setEvent(new Handelse());
-        notificationResultMessage.setResultType(new NotificationResultType());
-        notificationResultMessage.setStatusUpdateXml("STATUS_UPDATE_XML".getBytes());
-        notificationResultMessage.setCorrelationId("CORRELATION_ID");
-        return notificationResultMessage;
-    }
+  private NotificationResultMessage createNotificationResultMessage() {
+    final var notificationResultMessage = new NotificationResultMessage();
+    notificationResultMessage.setEvent(new Handelse());
+    notificationResultMessage.setResultType(new NotificationResultType());
+    notificationResultMessage.setStatusUpdateXml("STATUS_UPDATE_XML".getBytes());
+    notificationResultMessage.setCorrelationId("CORRELATION_ID");
+    return notificationResultMessage;
+  }
 }

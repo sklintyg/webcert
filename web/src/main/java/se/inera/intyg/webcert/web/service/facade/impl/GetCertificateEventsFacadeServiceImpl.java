@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,212 +46,241 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelat
 @Service("getCertificateEventsFromWebcert")
 public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEventsFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateEventsFacadeServiceImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(GetCertificateEventsFacadeServiceImpl.class);
 
-    private final CertificateRelationService certificateRelationService;
+  private final CertificateRelationService certificateRelationService;
 
-    private final CertificateEventService certificateEventService;
+  private final CertificateEventService certificateEventService;
 
-    private final IntygService intygService;
+  private final IntygService intygService;
 
-    private final List<EventCode> eventCodesToRemove = Arrays.asList(
-        EventCode.RELINTYGMAKULE,
-        EventCode.NYFRFM,
-        EventCode.NYFRFV,
-        EventCode.HANFRFV,
-        EventCode.HANFRFM,
-        EventCode.NYSVFM,
-        EventCode.PAMINNELSE,
-        EventCode.KFSIGN
-    );
+  private final List<EventCode> eventCodesToRemove =
+      Arrays.asList(
+          EventCode.RELINTYGMAKULE,
+          EventCode.NYFRFM,
+          EventCode.NYFRFV,
+          EventCode.HANFRFV,
+          EventCode.HANFRFM,
+          EventCode.NYSVFM,
+          EventCode.PAMINNELSE,
+          EventCode.KFSIGN);
 
-    @Autowired
-    public GetCertificateEventsFacadeServiceImpl(
-        CertificateRelationService certificateRelationService,
-        CertificateEventService certificateEventService,
-        GetCertificateFacadeService getCertificateFacadeService, IntygService intygService) {
-        this.certificateRelationService = certificateRelationService;
-        this.certificateEventService = certificateEventService;
-        this.intygService = intygService;
+  @Autowired
+  public GetCertificateEventsFacadeServiceImpl(
+      CertificateRelationService certificateRelationService,
+      CertificateEventService certificateEventService,
+      GetCertificateFacadeService getCertificateFacadeService,
+      IntygService intygService) {
+    this.certificateRelationService = certificateRelationService;
+    this.certificateEventService = certificateEventService;
+    this.intygService = intygService;
+  }
+
+  @Override
+  public CertificateEventDTO[] getCertificateEvents(String certificateId) {
+    LOG.debug("Retrieve events to convert for certificate '{}'", certificateId);
+    final var eventsToConvert = certificateEventService.getCertificateEvents(certificateId);
+
+    LOG.debug("Retrieve relations to other certificates for certificate '{}'", certificateId);
+    final var relations = certificateRelationService.getRelations(certificateId);
+
+    final var certificateType = intygService.getIntygTypeInfo(certificateId).getIntygType();
+
+    LOG.debug("Convert events for certificate '{}'", certificateId);
+    return convert(certificateId, eventsToConvert, relations, certificateType);
+  }
+
+  private CertificateEventDTO[] convert(
+      String certificateId,
+      List<CertificateEvent> eventsToConvert,
+      Relations relations,
+      String certificateType) {
+    final var events = getCertificateEvents(eventsToConvert);
+
+    decorateCertificateEventsWithParentInfo(events, relations.getParent());
+
+    addAvailableForPatientIfNeeded(events, certificateType);
+
+    addEventsBasedOnChildRelations(events, relations.getLatestChildRelations(), certificateId);
+
+    return sortAndReturnArray(events);
+  }
+
+  private CertificateEventDTO[] sortAndReturnArray(List<CertificateEventDTO> events) {
+    return events.stream()
+        .sorted(Comparator.comparing(CertificateEventDTO::getTimestamp))
+        .toArray(CertificateEventDTO[]::new);
+  }
+
+  private void addEventsBasedOnChildRelations(
+      List<CertificateEventDTO> events, FrontendRelations childRelations, String certificateId) {
+    addEventForChildRelation(
+        events,
+        childRelations.getReplacedByUtkast(),
+        CertificateEventTypeDTO.REPLACED,
+        certificateId);
+    addEventForChildRelation(
+        events,
+        childRelations.getReplacedByIntyg(),
+        CertificateEventTypeDTO.REPLACED,
+        certificateId);
+    addEventForChildRelation(
+        events, childRelations.getUtkastCopy(), CertificateEventTypeDTO.COPIED_BY, certificateId);
+    addEventForChildRelation(
+        events,
+        childRelations.getComplementedByUtkast(),
+        CertificateEventTypeDTO.COMPLEMENTED,
+        certificateId);
+    addEventForChildRelation(
+        events,
+        childRelations.getComplementedByIntyg(),
+        CertificateEventTypeDTO.COMPLEMENTED,
+        certificateId);
+  }
+
+  private void addEventForChildRelation(
+      List<CertificateEventDTO> events,
+      WebcertCertificateRelation relation,
+      CertificateEventTypeDTO type,
+      String certificateId) {
+    if (relation == null) {
+      return;
     }
 
-    @Override
-    public CertificateEventDTO[] getCertificateEvents(String certificateId) {
-        LOG.debug("Retrieve events to convert for certificate '{}'", certificateId);
-        final var eventsToConvert = certificateEventService.getCertificateEvents(certificateId);
+    final var event = new CertificateEventDTO();
+    event.setCertificateId(certificateId);
+    event.setType(type);
+    event.setTimestamp(relation.getSkapad());
+    event.setRelatedCertificateId(relation.getIntygsId());
+    event.setRelatedCertificateStatus(getRelatedCertificateStatus(relation));
 
-        LOG.debug("Retrieve relations to other certificates for certificate '{}'", certificateId);
-        final var relations = certificateRelationService.getRelations(certificateId);
+    events.add(event);
+  }
 
-        final var certificateType = intygService.getIntygTypeInfo(certificateId).getIntygType();
-
-        LOG.debug("Convert events for certificate '{}'", certificateId);
-        return convert(certificateId, eventsToConvert, relations, certificateType);
+  private CertificateStatus getRelatedCertificateStatus(WebcertCertificateRelation relation) {
+    if (relation.isMakulerat()) {
+      if (relation.getStatus() == UtkastStatus.DRAFT_LOCKED) {
+        return CertificateStatus.LOCKED_REVOKED;
+      }
+      return CertificateStatus.REVOKED;
     }
 
-    private CertificateEventDTO[] convert(String certificateId, List<CertificateEvent> eventsToConvert,
-        Relations relations, String certificateType) {
-        final var events = getCertificateEvents(eventsToConvert);
+    switch (relation.getStatus()) {
+      case SIGNED:
+        return CertificateStatus.SIGNED;
+      case DRAFT_LOCKED:
+        return CertificateStatus.LOCKED;
+      case DRAFT_INCOMPLETE:
+      case DRAFT_COMPLETE:
+        return CertificateStatus.UNSIGNED;
+      default:
+        throw new IllegalArgumentException("Cannot convert status: " + relation.getStatus());
+    }
+  }
 
-        decorateCertificateEventsWithParentInfo(events, relations.getParent());
-
-        addAvailableForPatientIfNeeded(events, certificateType);
-
-        addEventsBasedOnChildRelations(events, relations.getLatestChildRelations(), certificateId);
-
-        return sortAndReturnArray(events);
+  private void addAvailableForPatientIfNeeded(
+      List<CertificateEventDTO> events, String certificateType) {
+    if (certificateType.equals(DbModuleEntryPoint.MODULE_ID)
+        || certificateType.equals(DoiModuleEntryPoint.MODULE_ID)) {
+      return;
     }
 
-    private CertificateEventDTO[] sortAndReturnArray(List<CertificateEventDTO> events) {
-        return events.stream()
-            .sorted(Comparator.comparing(CertificateEventDTO::getTimestamp))
-            .toArray(CertificateEventDTO[]::new);
-    }
-
-    private void addEventsBasedOnChildRelations(List<CertificateEventDTO> events, FrontendRelations childRelations, String certificateId) {
-        addEventForChildRelation(events, childRelations.getReplacedByUtkast(), CertificateEventTypeDTO.REPLACED, certificateId);
-        addEventForChildRelation(events, childRelations.getReplacedByIntyg(), CertificateEventTypeDTO.REPLACED, certificateId);
-        addEventForChildRelation(events, childRelations.getUtkastCopy(), CertificateEventTypeDTO.COPIED_BY, certificateId);
-        addEventForChildRelation(events, childRelations.getComplementedByUtkast(), CertificateEventTypeDTO.COMPLEMENTED, certificateId);
-        addEventForChildRelation(events, childRelations.getComplementedByIntyg(), CertificateEventTypeDTO.COMPLEMENTED, certificateId);
-    }
-
-    private void addEventForChildRelation(List<CertificateEventDTO> events, WebcertCertificateRelation relation,
-        CertificateEventTypeDTO type, String certificateId) {
-        if (relation == null) {
-            return;
-        }
-
-        final var event = new CertificateEventDTO();
-        event.setCertificateId(certificateId);
-        event.setType(type);
-        event.setTimestamp(relation.getSkapad());
-        event.setRelatedCertificateId(relation.getIntygsId());
-        event.setRelatedCertificateStatus(
-            getRelatedCertificateStatus(relation)
-        );
-
-        events.add(event);
-    }
-
-    private CertificateStatus getRelatedCertificateStatus(WebcertCertificateRelation relation) {
-        if (relation.isMakulerat()) {
-            if (relation.getStatus() == UtkastStatus.DRAFT_LOCKED) {
-                return CertificateStatus.LOCKED_REVOKED;
-            }
-            return CertificateStatus.REVOKED;
-        }
-
-        switch (relation.getStatus()) {
-            case SIGNED:
-                return CertificateStatus.SIGNED;
-            case DRAFT_LOCKED:
-                return CertificateStatus.LOCKED;
-            case DRAFT_INCOMPLETE:
-            case DRAFT_COMPLETE:
-                return CertificateStatus.UNSIGNED;
-            default:
-                throw new IllegalArgumentException("Cannot convert status: " + relation.getStatus());
-        }
-    }
-
-    private void addAvailableForPatientIfNeeded(List<CertificateEventDTO> events, String certificateType) {
-        if (certificateType.equals(DbModuleEntryPoint.MODULE_ID) || certificateType.equals(DoiModuleEntryPoint.MODULE_ID)) {
-            return;
-        }
-
-        final var signedEvent = events.stream()
-            .filter(certificateEventDTO -> certificateEventDTO.getType() == CertificateEventTypeDTO.SIGNED)
+    final var signedEvent =
+        events.stream()
+            .filter(
+                certificateEventDTO ->
+                    certificateEventDTO.getType() == CertificateEventTypeDTO.SIGNED)
             .findAny();
 
-        if (signedEvent.isEmpty()) {
-            return;
-        }
-
-        final var availableForPatientEvent = new CertificateEventDTO();
-        availableForPatientEvent.setType(CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT);
-        availableForPatientEvent.setTimestamp(signedEvent.get().getTimestamp());
-        availableForPatientEvent.setCertificateId(signedEvent.get().getCertificateId());
-
-        events.add(availableForPatientEvent);
+    if (signedEvent.isEmpty()) {
+      return;
     }
 
-    private List<CertificateEventDTO> getCertificateEvents(List<CertificateEvent> events) {
-        return events.stream()
-            .filter(this::shouldBeIncluded)
-            .map(this::convertCertificateEvent)
-            .collect(Collectors.toList());
+    final var availableForPatientEvent = new CertificateEventDTO();
+    availableForPatientEvent.setType(CertificateEventTypeDTO.AVAILABLE_FOR_PATIENT);
+    availableForPatientEvent.setTimestamp(signedEvent.get().getTimestamp());
+    availableForPatientEvent.setCertificateId(signedEvent.get().getCertificateId());
+
+    events.add(availableForPatientEvent);
+  }
+
+  private List<CertificateEventDTO> getCertificateEvents(List<CertificateEvent> events) {
+    return events.stream()
+        .filter(this::shouldBeIncluded)
+        .map(this::convertCertificateEvent)
+        .collect(Collectors.toList());
+  }
+
+  private boolean shouldBeIncluded(CertificateEvent event) {
+    return !eventCodesToRemove.contains(event.getEventCode());
+  }
+
+  private CertificateEventDTO convertCertificateEvent(CertificateEvent eventToConvert) {
+    final var event = new CertificateEventDTO();
+    event.setCertificateId(eventToConvert.getCertificateId());
+    event.setTimestamp(eventToConvert.getTimestamp());
+    event.setType(getCertificateEventType(eventToConvert.getEventCode()));
+    return event;
+  }
+
+  private CertificateEventTypeDTO getCertificateEventType(EventCode eventCode) {
+    switch (eventCode) {
+      case SKAPAT:
+        return CertificateEventTypeDTO.CREATED;
+      case LAST:
+        return CertificateEventTypeDTO.LOCKED;
+      case SIGNAT:
+        return CertificateEventTypeDTO.SIGNED;
+      case SKICKAT:
+        return CertificateEventTypeDTO.SENT;
+      case MAKULERAT:
+        return CertificateEventTypeDTO.REVOKED;
+      case ERSATTER:
+        return CertificateEventTypeDTO.REPLACES;
+      case FORLANGER:
+        return CertificateEventTypeDTO.EXTENDED;
+      case KOPIERATFRAN:
+        return CertificateEventTypeDTO.COPIED_FROM;
+      case KOMPLBEGARAN:
+        return CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT;
+      case KOMPLETTERAR:
+        return CertificateEventTypeDTO.COMPLEMENTS;
+      case SKAPATFRAN:
+        return CertificateEventTypeDTO.CREATED_FROM;
+      default:
+        throw new IllegalArgumentException("Cannot map the EventCode: " + eventCode);
+    }
+  }
+
+  private void decorateCertificateEventsWithParentInfo(
+      List<CertificateEventDTO> events, WebcertCertificateRelation parentRelation) {
+    events.forEach(
+        certificateEventDTO ->
+            decorateCertificateEventWithParentInfo(certificateEventDTO, parentRelation));
+  }
+
+  private void decorateCertificateEventWithParentInfo(
+      CertificateEventDTO event, WebcertCertificateRelation parentRelation) {
+    if (parentRelation == null) {
+      return;
     }
 
-    private boolean shouldBeIncluded(CertificateEvent event) {
-        return !eventCodesToRemove.contains(event.getEventCode());
+    if (!shouldDecorateWithParent(event.getType())) {
+      return;
     }
 
-    private CertificateEventDTO convertCertificateEvent(CertificateEvent eventToConvert) {
-        final var event = new CertificateEventDTO();
-        event.setCertificateId(eventToConvert.getCertificateId());
-        event.setTimestamp(eventToConvert.getTimestamp());
-        event.setType(
-            getCertificateEventType(eventToConvert.getEventCode())
-        );
-        return event;
-    }
+    event.setRelatedCertificateId(parentRelation.getIntygsId());
+    event.setRelatedCertificateStatus(getRelatedCertificateStatus(parentRelation));
+  }
 
-    private CertificateEventTypeDTO getCertificateEventType(EventCode eventCode) {
-        switch (eventCode) {
-            case SKAPAT:
-                return CertificateEventTypeDTO.CREATED;
-            case LAST:
-                return CertificateEventTypeDTO.LOCKED;
-            case SIGNAT:
-                return CertificateEventTypeDTO.SIGNED;
-            case SKICKAT:
-                return CertificateEventTypeDTO.SENT;
-            case MAKULERAT:
-                return CertificateEventTypeDTO.REVOKED;
-            case ERSATTER:
-                return CertificateEventTypeDTO.REPLACES;
-            case FORLANGER:
-                return CertificateEventTypeDTO.EXTENDED;
-            case KOPIERATFRAN:
-                return CertificateEventTypeDTO.COPIED_FROM;
-            case KOMPLBEGARAN:
-                return CertificateEventTypeDTO.REQUEST_FOR_COMPLEMENT;
-            case KOMPLETTERAR:
-                return CertificateEventTypeDTO.COMPLEMENTS;
-            case SKAPATFRAN:
-                return CertificateEventTypeDTO.CREATED_FROM;
-            default:
-                throw new IllegalArgumentException("Cannot map the EventCode: " + eventCode);
-        }
-    }
-
-    private void decorateCertificateEventsWithParentInfo(List<CertificateEventDTO> events, WebcertCertificateRelation parentRelation) {
-        events.forEach(certificateEventDTO -> decorateCertificateEventWithParentInfo(certificateEventDTO, parentRelation));
-    }
-
-    private void decorateCertificateEventWithParentInfo(CertificateEventDTO event, WebcertCertificateRelation parentRelation) {
-        if (parentRelation == null) {
-            return;
-        }
-
-        if (!shouldDecorateWithParent(event.getType())) {
-            return;
-        }
-
-        event.setRelatedCertificateId(parentRelation.getIntygsId());
-        event.setRelatedCertificateStatus(
-            getRelatedCertificateStatus(parentRelation)
-        );
-    }
-
-    private boolean shouldDecorateWithParent(CertificateEventTypeDTO eventType) {
-        final var eventTypesToDecorateWithParent = Arrays.asList(
+  private boolean shouldDecorateWithParent(CertificateEventTypeDTO eventType) {
+    final var eventTypesToDecorateWithParent =
+        Arrays.asList(
             CertificateEventTypeDTO.REPLACES,
             CertificateEventTypeDTO.EXTENDED,
             CertificateEventTypeDTO.COPIED_FROM,
-            CertificateEventTypeDTO.COMPLEMENTS
-        );
-        return eventTypesToDecorateWithParent.contains(eventType);
-    }
+            CertificateEventTypeDTO.COMPLEMENTS);
+    return eventTypesToDecorateWithParent.contains(eventType);
+  }
 }

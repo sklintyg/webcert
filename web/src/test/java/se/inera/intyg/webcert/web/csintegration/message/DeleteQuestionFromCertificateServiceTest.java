@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.mockito.Mockito.doReturn;
@@ -34,23 +33,19 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageReq
 @ExtendWith(MockitoExtension.class)
 class DeleteQuestionFromCertificateServiceTest {
 
+  private static final String QUESTION_ID = "questionId";
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks DeleteQuestionFromCertificateService deleteQuestionFromCertificateService;
 
-    private static final String QUESTION_ID = "questionId";
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    DeleteQuestionFromCertificateService deleteQuestionFromCertificateService;
+  @Test
+  void shallCallDeleteMessageFromCSIntegrationService() {
+    final var request = DeleteMessageRequestDTO.builder().build();
 
-    @Test
-    void shallCallDeleteMessageFromCSIntegrationService() {
-        final var request = DeleteMessageRequestDTO.builder().build();
+    doReturn(request).when(csIntegrationRequestFactory).deleteMessageRequest();
 
-        doReturn(request).when(csIntegrationRequestFactory).deleteMessageRequest();
+    deleteQuestionFromCertificateService.delete(QUESTION_ID);
 
-        deleteQuestionFromCertificateService.delete(QUESTION_ID);
-
-        verify(csIntegrationService).deleteMessage(QUESTION_ID, request);
-    }
+    verify(csIntegrationService).deleteMessage(QUESTION_ID, request);
+  }
 }

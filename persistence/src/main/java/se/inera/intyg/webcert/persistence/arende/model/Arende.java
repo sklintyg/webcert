@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,314 +42,314 @@ import se.inera.intyg.webcert.persistence.model.Status;
 @Table(name = "ARENDE")
 public class Arende {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  private Long id;
 
-    @Column(name = "TIMESTAMP")
-    private LocalDateTime timestamp;
+  @Column(name = "TIMESTAMP")
+  private LocalDateTime timestamp;
 
-    @Column(name = "MEDDELANDE_ID")
-    private String meddelandeId;
+  @Column(name = "MEDDELANDE_ID")
+  private String meddelandeId;
 
-    @Column(name = "REFERENS_ID")
-    private String referensId;
+  @Column(name = "REFERENS_ID")
+  private String referensId;
 
-    @Column(name = "SKICKAT_TIDPUNKT")
-    private LocalDateTime skickatTidpunkt;
+  @Column(name = "SKICKAT_TIDPUNKT")
+  private LocalDateTime skickatTidpunkt;
 
-    @Column(name = "INTYGS_ID")
-    private String intygsId;
+  @Column(name = "INTYGS_ID")
+  private String intygsId;
 
-    @Column(name = "PATIENT_PERSON_ID")
-    private String patientPersonId;
+  @Column(name = "PATIENT_PERSON_ID")
+  private String patientPersonId;
 
-    @Column(name = "AMNE")
-    @Enumerated(EnumType.STRING)
-    private ArendeAmne amne;
+  @Column(name = "AMNE")
+  @Enumerated(EnumType.STRING)
+  private ArendeAmne amne;
 
-    @Column(name = "RUBRIK")
-    private String rubrik;
+  @Column(name = "RUBRIK")
+  private String rubrik;
 
-    @Column(name = "MEDDELANDE")
-    private String meddelande;
+  @Column(name = "MEDDELANDE")
+  private String meddelande;
 
-    @Column(name = "PAMINNELSE_MEDDELANDE_ID")
-    private String paminnelseMeddelandeId;
+  @Column(name = "PAMINNELSE_MEDDELANDE_ID")
+  private String paminnelseMeddelandeId;
 
-    @Column(name = "SVAR_PA_ID")
-    private String svarPaId;
+  @Column(name = "SVAR_PA_ID")
+  private String svarPaId;
 
-    @Column(name = "SVAR_PA_REFERENS")
-    private String svarPaReferens;
+  @Column(name = "SVAR_PA_REFERENS")
+  private String svarPaReferens;
 
-    @Column(name = "SKICKAT_AV")
-    private String skickatAv;
+  @Column(name = "SKICKAT_AV")
+  private String skickatAv;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Fetch(value = FetchMode.SUBSELECT)
-    @CollectionTable(name = "ARENDE_KONTAKT_INFO")
-    @Column(name = "KONTAKT_INFO")
-    private List<String> kontaktInfo;
+  @ElementCollection(fetch = FetchType.EAGER)
+  @Fetch(value = FetchMode.SUBSELECT)
+  @CollectionTable(name = "ARENDE_KONTAKT_INFO")
+  @Column(name = "KONTAKT_INFO")
+  private List<String> kontaktInfo;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "MEDICINSKT_ARENDE", joinColumns = @JoinColumn(name = "ARENDE_ID"))
-    private List<MedicinsktArende> komplettering;
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "MEDICINSKT_ARENDE", joinColumns = @JoinColumn(name = "ARENDE_ID"))
+  private List<MedicinsktArende> komplettering;
 
-    @Column(name = "SISTA_DATUM_FOR_SVAR")
-    private LocalDate sistaDatumForSvar;
+  @Column(name = "SISTA_DATUM_FOR_SVAR")
+  private LocalDate sistaDatumForSvar;
 
-    @Column(name = "INTYG_TYP")
-    private String intygTyp;
+  @Column(name = "INTYG_TYP")
+  private String intygTyp;
 
-    @Column(name = "SIGNERAT_AV")
-    private String signeratAv;
+  @Column(name = "SIGNERAT_AV")
+  private String signeratAv;
 
-    @Column(name = "SIGNERAT_AV_NAME")
-    private String signeratAvName;
+  @Column(name = "SIGNERAT_AV_NAME")
+  private String signeratAvName;
 
-    @Column(name = "ENHET")
-    private String enhetId;
+  @Column(name = "ENHET")
+  private String enhetId;
 
-    @Column(name = "ENHET_NAME")
-    private String enhetName;
+  @Column(name = "ENHET_NAME")
+  private String enhetName;
 
-    @Column(name = "STATUS")
-    @Enumerated(EnumType.STRING)
-    private Status status;
+  @Column(name = "STATUS")
+  @Enumerated(EnumType.STRING)
+  private Status status;
 
-    @Column(name = "SENASTE_HANDELSE")
-    private LocalDateTime senasteHandelse;
+  @Column(name = "SENASTE_HANDELSE")
+  private LocalDateTime senasteHandelse;
 
-    @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
-    private Boolean vidarebefordrad = Boolean.FALSE;
+  @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
+  private Boolean vidarebefordrad = Boolean.FALSE;
 
-    @Column(name = "VARDAKTOR_NAME")
-    private String vardaktorName;
+  @Column(name = "VARDAKTOR_NAME")
+  private String vardaktorName;
 
-    @Column(name = "VARDGIVARE_NAME")
-    private String vardgivareName;
+  @Column(name = "VARDGIVARE_NAME")
+  private String vardgivareName;
 
-    public Long getId() {
-        return id;
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public LocalDateTime getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(LocalDateTime timestamp) {
+    this.timestamp = timestamp;
+  }
+
+  public String getMeddelandeId() {
+    return meddelandeId;
+  }
+
+  public void setMeddelandeId(String meddelandeId) {
+    this.meddelandeId = meddelandeId;
+  }
+
+  public String getReferensId() {
+    return referensId;
+  }
+
+  public void setReferensId(String referensId) {
+    this.referensId = referensId;
+  }
+
+  public LocalDateTime getSkickatTidpunkt() {
+    return skickatTidpunkt;
+  }
+
+  public void setSkickatTidpunkt(LocalDateTime skickatTidpunkt) {
+    this.skickatTidpunkt = skickatTidpunkt;
+  }
+
+  public String getIntygsId() {
+    return intygsId;
+  }
+
+  public void setIntygsId(String intygsId) {
+    this.intygsId = intygsId;
+  }
+
+  public String getPatientPersonId() {
+    return patientPersonId;
+  }
+
+  public void setPatientPersonId(String patientPersonId) {
+    this.patientPersonId = patientPersonId;
+  }
+
+  public ArendeAmne getAmne() {
+    return amne;
+  }
+
+  public void setAmne(ArendeAmne amne) {
+    this.amne = amne;
+  }
+
+  public String getRubrik() {
+    return rubrik;
+  }
+
+  public void setRubrik(String rubrik) {
+    this.rubrik = rubrik;
+  }
+
+  public String getMeddelande() {
+    return meddelande;
+  }
+
+  public void setMeddelande(String meddelande) {
+    this.meddelande = meddelande;
+  }
+
+  public String getPaminnelseMeddelandeId() {
+    return paminnelseMeddelandeId;
+  }
+
+  public void setPaminnelseMeddelandeId(String paminnelseMeddelandeId) {
+    this.paminnelseMeddelandeId = paminnelseMeddelandeId;
+  }
+
+  public String getSkickatAv() {
+    return skickatAv;
+  }
+
+  public void setSkickatAv(String skickatAv) {
+    this.skickatAv = skickatAv;
+  }
+
+  public List<MedicinsktArende> getKomplettering() {
+    if (komplettering == null) {
+      komplettering = new ArrayList<>();
     }
+    return komplettering;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public LocalDate getSistaDatumForSvar() {
+    return sistaDatumForSvar;
+  }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
+  public void setSistaDatumForSvar(LocalDate sistaDatumForSvar) {
+    this.sistaDatumForSvar = sistaDatumForSvar;
+  }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+  public List<String> getKontaktInfo() {
+    if (kontaktInfo == null) {
+      kontaktInfo = new ArrayList<>();
     }
+    return kontaktInfo;
+  }
 
-    public String getMeddelandeId() {
-        return meddelandeId;
-    }
+  public String getSvarPaId() {
+    return svarPaId;
+  }
 
-    public void setMeddelandeId(String meddelandeId) {
-        this.meddelandeId = meddelandeId;
-    }
+  public void setSvarPaId(String svarPaId) {
+    this.svarPaId = svarPaId;
+  }
 
-    public String getReferensId() {
-        return referensId;
-    }
+  public String getSvarPaReferens() {
+    return svarPaReferens;
+  }
 
-    public void setReferensId(String referensId) {
-        this.referensId = referensId;
-    }
+  public void setSvarPaReferens(String svarPaReferens) {
+    this.svarPaReferens = svarPaReferens;
+  }
 
-    public LocalDateTime getSkickatTidpunkt() {
-        return skickatTidpunkt;
-    }
+  public String getIntygTyp() {
+    return intygTyp;
+  }
 
-    public void setSkickatTidpunkt(LocalDateTime skickatTidpunkt) {
-        this.skickatTidpunkt = skickatTidpunkt;
-    }
+  public void setIntygTyp(String intygTyp) {
+    this.intygTyp = intygTyp;
+  }
 
-    public String getIntygsId() {
-        return intygsId;
-    }
+  public String getSigneratAv() {
+    return signeratAv;
+  }
 
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
-    }
+  public void setSigneratAv(String signeratAv) {
+    this.signeratAv = signeratAv;
+  }
 
-    public String getPatientPersonId() {
-        return patientPersonId;
-    }
+  public String getEnhetId() {
+    return enhetId;
+  }
 
-    public void setPatientPersonId(String patientPersonId) {
-        this.patientPersonId = patientPersonId;
-    }
+  public void setEnhetId(String enhetId) {
+    this.enhetId = enhetId;
+  }
 
-    public ArendeAmne getAmne() {
-        return amne;
-    }
+  public String getEnhetName() {
+    return enhetName;
+  }
 
-    public void setAmne(ArendeAmne amne) {
-        this.amne = amne;
-    }
+  public void setEnhetName(String enhetName) {
+    this.enhetName = enhetName;
+  }
 
-    public String getRubrik() {
-        return rubrik;
-    }
+  public Status getStatus() {
+    return status;
+  }
 
-    public void setRubrik(String rubrik) {
-        this.rubrik = rubrik;
-    }
+  public void setStatus(Status status) {
+    this.status = status;
+  }
 
-    public String getMeddelande() {
-        return meddelande;
-    }
+  public void setKomplettering(List<MedicinsktArende> kompletteringar) {
+    this.komplettering = kompletteringar;
+  }
 
-    public void setMeddelande(String meddelande) {
-        this.meddelande = meddelande;
-    }
+  public String getSigneratAvName() {
+    return signeratAvName;
+  }
 
-    public String getPaminnelseMeddelandeId() {
-        return paminnelseMeddelandeId;
-    }
+  public void setSigneratAvName(String signeratAvName) {
+    this.signeratAvName = signeratAvName;
+  }
 
-    public void setPaminnelseMeddelandeId(String paminnelseMeddelandeId) {
-        this.paminnelseMeddelandeId = paminnelseMeddelandeId;
-    }
+  public LocalDateTime getSenasteHandelse() {
+    return senasteHandelse;
+  }
 
-    public String getSkickatAv() {
-        return skickatAv;
-    }
+  public void setSenasteHandelse(LocalDateTime senasteHandelse) {
+    this.senasteHandelse = senasteHandelse;
+  }
 
-    public void setSkickatAv(String skickatAv) {
-        this.skickatAv = skickatAv;
-    }
+  public Boolean getVidarebefordrad() {
+    return vidarebefordrad;
+  }
 
-    public List<MedicinsktArende> getKomplettering() {
-        if (komplettering == null) {
-            komplettering = new ArrayList<>();
-        }
-        return komplettering;
-    }
+  public void setVidarebefordrad(Boolean vidarebefordrad) {
+    this.vidarebefordrad = vidarebefordrad;
+  }
 
-    public LocalDate getSistaDatumForSvar() {
-        return sistaDatumForSvar;
-    }
+  public void setArendeToVidareBerordrat() {
+    this.vidarebefordrad = true;
+  }
 
-    public void setSistaDatumForSvar(LocalDate sistaDatumForSvar) {
-        this.sistaDatumForSvar = sistaDatumForSvar;
-    }
+  public String getVardaktorName() {
+    return vardaktorName;
+  }
 
-    public List<String> getKontaktInfo() {
-        if (kontaktInfo == null) {
-            kontaktInfo = new ArrayList<>();
-        }
-        return kontaktInfo;
-    }
+  public void setVardaktorName(String vardaktorName) {
+    this.vardaktorName = vardaktorName;
+  }
 
-    public String getSvarPaId() {
-        return svarPaId;
-    }
+  public String getVardgivareName() {
+    return vardgivareName;
+  }
 
-    public void setSvarPaId(String svarPaId) {
-        this.svarPaId = svarPaId;
-    }
-
-    public String getSvarPaReferens() {
-        return svarPaReferens;
-    }
-
-    public void setSvarPaReferens(String svarPaReferens) {
-        this.svarPaReferens = svarPaReferens;
-    }
-
-    public String getIntygTyp() {
-        return intygTyp;
-    }
-
-    public void setIntygTyp(String intygTyp) {
-        this.intygTyp = intygTyp;
-    }
-
-    public String getSigneratAv() {
-        return signeratAv;
-    }
-
-    public void setSigneratAv(String signeratAv) {
-        this.signeratAv = signeratAv;
-    }
-
-    public String getEnhetId() {
-        return enhetId;
-    }
-
-    public void setEnhetId(String enhetId) {
-        this.enhetId = enhetId;
-    }
-
-    public String getEnhetName() {
-        return enhetName;
-    }
-
-    public void setEnhetName(String enhetName) {
-        this.enhetName = enhetName;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public void setKomplettering(List<MedicinsktArende> kompletteringar) {
-        this.komplettering = kompletteringar;
-    }
-
-    public String getSigneratAvName() {
-        return signeratAvName;
-    }
-
-    public void setSigneratAvName(String signeratAvName) {
-        this.signeratAvName = signeratAvName;
-    }
-
-    public LocalDateTime getSenasteHandelse() {
-        return senasteHandelse;
-    }
-
-    public void setSenasteHandelse(LocalDateTime senasteHandelse) {
-        this.senasteHandelse = senasteHandelse;
-    }
-
-    public Boolean getVidarebefordrad() {
-        return vidarebefordrad;
-    }
-
-    public void setVidarebefordrad(Boolean vidarebefordrad) {
-        this.vidarebefordrad = vidarebefordrad;
-    }
-
-    public void setArendeToVidareBerordrat() {
-        this.vidarebefordrad = true;
-    }
-
-    public String getVardaktorName() {
-        return vardaktorName;
-    }
-
-    public void setVardaktorName(String vardaktorName) {
-        this.vardaktorName = vardaktorName;
-    }
-
-    public String getVardgivareName() {
-        return vardgivareName;
-    }
-
-    public void setVardgivareName(String vardgivareName) {
-        this.vardgivareName = vardgivareName;
-    }
+  public void setVardgivareName(String vardgivareName) {
+    this.vardgivareName = vardgivareName;
+  }
 }

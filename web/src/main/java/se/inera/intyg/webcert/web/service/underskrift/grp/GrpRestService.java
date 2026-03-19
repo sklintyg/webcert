@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,112 +43,126 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 @Service
 public class GrpRestService {
 
-    @Value("${cgi.grp.rest.url}")
-    private String grpBaseUrl;
-    @Value("${cgi.grp.rest.accessToken}")
-    private String accessToken;
-    @Value("${cgi.grp.rest.serviceId}")
-    private String serviceId;
-    @Value("${cgi.grp.rest.displayName}")
-    private String displayName;
+  @Value("${cgi.grp.rest.url}")
+  private String grpBaseUrl;
 
-    private final RestClient grpRestClient;
-    private final RedisTicketTracker redisTicketTracker;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+  @Value("${cgi.grp.rest.accessToken}")
+  private String accessToken;
 
-    public GrpRestService(@Qualifier("grpRestClient") RestClient grpRestClient, RedisTicketTracker redisTicketTracker) {
-        this.grpRestClient = grpRestClient;
-        this.redisTicketTracker = redisTicketTracker;
+  @Value("${cgi.grp.rest.serviceId}")
+  private String serviceId;
+
+  @Value("${cgi.grp.rest.displayName}")
+  private String displayName;
+
+  private final RestClient grpRestClient;
+  private final RedisTicketTracker redisTicketTracker;
+  private final ObjectMapper objectMapper = new ObjectMapper();
+
+  public GrpRestService(
+      @Qualifier("grpRestClient") RestClient grpRestClient, RedisTicketTracker redisTicketTracker) {
+    this.grpRestClient = grpRestClient;
+    this.redisTicketTracker = redisTicketTracker;
+  }
+
+  private static final String INIT_PATH = "/init";
+  private static final String COLLECT_PATH = "/collect";
+  private static final String ACCESS_TOKEN = "accessToken";
+  private static final String SERVICE_ID = "serviceId";
+  private static final String REF_ID = "refId";
+  private static final String TRANSACTION_ID = "transactionId";
+  private static final String DISPLAY_NAME = "displayName";
+  private static final String PROVIDER = "provider";
+  private static final String PERSONID_TYPE = "TIN";
+  private static final String REQUEST_TYPE = "requestType";
+  private static final String END_USER_INFO = "endUserInfo";
+  private static final String PROVIDER_BANKID = "bankid";
+  private static final String REQUEST_TYPE_AUTH = "AUTH";
+
+  public GrpOrderResponse init(String personId, SignaturBiljett ticket) {
+    try {
+      return grpRestClient
+          .post()
+          .uri(
+              UriComponentsBuilder.fromHttpUrl(grpBaseUrl)
+                  .path(INIT_PATH)
+                  .queryParam(SERVICE_ID, serviceId)
+                  .queryParam(DISPLAY_NAME, displayName)
+                  .queryParam(PROVIDER, PROVIDER_BANKID)
+                  .queryParam(REQUEST_TYPE, REQUEST_TYPE_AUTH)
+                  .queryParam(TRANSACTION_ID, ticket.getTicketId())
+                  .queryParam(END_USER_INFO, ticket.getUserIpAddress())
+                  .build()
+                  .toUri())
+          .header(ACCESS_TOKEN, accessToken)
+          .body(orderRequest(personId))
+          .retrieve()
+          .body(GrpOrderResponse.class);
+
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      final var errorMessage =
+          handleError(e, ticket.getTicketId(), ticket.getIntygsId(), INIT_PATH.substring(1));
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, errorMessage, e);
     }
+  }
 
-    private static final String INIT_PATH = "/init";
-    private static final String COLLECT_PATH = "/collect";
-    private static final String ACCESS_TOKEN = "accessToken";
-    private static final String SERVICE_ID = "serviceId";
-    private static final String REF_ID = "refId";
-    private static final String TRANSACTION_ID = "transactionId";
-    private static final String DISPLAY_NAME = "displayName";
-    private static final String PROVIDER = "provider";
-    private static final String PERSONID_TYPE = "TIN";
-    private static final String REQUEST_TYPE = "requestType";
-    private static final String END_USER_INFO = "endUserInfo";
-    private static final String PROVIDER_BANKID = "bankid";
-    private static final String REQUEST_TYPE_AUTH = "AUTH";
+  public GrpCollectResponse collect(String refId, String transactionId) {
+    try {
+      return grpRestClient
+          .get()
+          .uri(
+              UriComponentsBuilder.fromHttpUrl(grpBaseUrl)
+                  .path(COLLECT_PATH)
+                  .queryParam(SERVICE_ID, serviceId)
+                  .queryParam(REF_ID, refId)
+                  .queryParam(TRANSACTION_ID, transactionId)
+                  .build()
+                  .toUri())
+          .header(ACCESS_TOKEN, accessToken)
+          .retrieve()
+          .body(GrpCollectResponse.class);
 
-    public GrpOrderResponse init(String personId, SignaturBiljett ticket) {
-        try {
-            return grpRestClient.post()
-                .uri(UriComponentsBuilder.fromHttpUrl(grpBaseUrl)
-                    .path(INIT_PATH)
-                    .queryParam(SERVICE_ID, serviceId)
-                    .queryParam(DISPLAY_NAME, displayName)
-                    .queryParam(PROVIDER, PROVIDER_BANKID)
-                    .queryParam(REQUEST_TYPE, REQUEST_TYPE_AUTH)
-                    .queryParam(TRANSACTION_ID, ticket.getTicketId())
-                    .queryParam(END_USER_INFO, ticket.getUserIpAddress())
-                    .build().toUri())
-                .header(ACCESS_TOKEN, accessToken)
-                .body(orderRequest(personId))
-                .retrieve()
-                .body(GrpOrderResponse.class);
-
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            final var errorMessage = handleError(e, ticket.getTicketId(), ticket.getIntygsId(), INIT_PATH.substring(1));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, errorMessage, e);
-        }
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
+      log.error(
+          handleError(e, transactionId, certificateId(transactionId), COLLECT_PATH.substring(1)),
+          e);
+      return null;
     }
+  }
 
-    public GrpCollectResponse collect(String refId, String transactionId) {
-        try {
-            return grpRestClient.get()
-                .uri(UriComponentsBuilder.fromHttpUrl(grpBaseUrl)
-                    .path(COLLECT_PATH)
-                    .queryParam(SERVICE_ID, serviceId)
-                    .queryParam(REF_ID, refId)
-                    .queryParam(TRANSACTION_ID, transactionId)
-                    .build()
-                    .toUri())
-                .header(ACCESS_TOKEN, accessToken)
-                .retrieve()
-                .body(GrpCollectResponse.class);
+  private String handleError(
+      HttpStatusCodeException e, String transactionId, String certificateId, String requestType) {
+    redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
 
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            log.error(handleError(e, transactionId, certificateId(transactionId), COLLECT_PATH.substring(1)), e);
-            return null;
-        }
+    final var grpErrorResponse = parseErrorResponse(e);
+    final var httpErrorResponse = String.join(" ", e.getStatusCode().toString(), e.getStatusText());
+    return "Grp %s failure for transactionId '%s' and certificateId: '%s' with Grp error code '%s', Grp message '%s' and http status %s"
+        .formatted(
+            requestType,
+            transactionId,
+            certificateId,
+            grpErrorResponse.getErrorCode(),
+            grpErrorResponse.getMessage(),
+            httpErrorResponse);
+  }
+
+  private GrpErrorResponse parseErrorResponse(HttpStatusCodeException e) {
+    try {
+      return objectMapper.readValue(e.getResponseBodyAsString(), GrpErrorResponse.class);
+
+    } catch (Exception ex) {
+      log.error("Failed to parse GRP error response", e);
+      return GrpErrorResponse.builder().build();
     }
+  }
 
-    private String handleError(HttpStatusCodeException e, String transactionId, String certificateId, String requestType) {
-        redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
+  private GrpOrderRequest orderRequest(String personId) {
+    final var subjectIdentifier =
+        GrpSubjectIdentifier.builder().value(personId).type(PERSONID_TYPE).build();
+    return GrpOrderRequest.builder().subjectIdentifier(subjectIdentifier).build();
+  }
 
-        final var grpErrorResponse = parseErrorResponse(e);
-        final var httpErrorResponse = String.join(" ", e.getStatusCode().toString(), e.getStatusText());
-        return "Grp %s failure for transactionId '%s' and certificateId: '%s' with Grp error code '%s', Grp message '%s' and http status %s"
-            .formatted(requestType, transactionId, certificateId, grpErrorResponse.getErrorCode(), grpErrorResponse.getMessage(),
-                httpErrorResponse);
-    }
-
-    private GrpErrorResponse parseErrorResponse(HttpStatusCodeException e) {
-        try {
-            return objectMapper.readValue(e.getResponseBodyAsString(), GrpErrorResponse.class);
-
-        } catch (Exception ex) {
-            log.error("Failed to parse GRP error response", e);
-            return GrpErrorResponse.builder().build();
-        }
-    }
-
-    private GrpOrderRequest orderRequest(String personId) {
-        final var subjectIdentifier = GrpSubjectIdentifier.builder()
-            .value(personId)
-            .type(PERSONID_TYPE)
-            .build();
-        return GrpOrderRequest.builder()
-            .subjectIdentifier(subjectIdentifier)
-            .build();
-    }
-
-    private String certificateId(String transactionId) {
-        return redisTicketTracker.findBiljett(transactionId).getIntygsId();
-    }
+  private String certificateId(String transactionId) {
+    return redisTicketTracker.findBiljett(transactionId).getIntygsId();
+  }
 }

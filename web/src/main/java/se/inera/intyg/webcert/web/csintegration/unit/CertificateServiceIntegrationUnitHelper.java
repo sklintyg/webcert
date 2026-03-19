@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import lombok.RequiredArgsConstructor;
@@ -28,21 +27,22 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 @RequiredArgsConstructor
 public class CertificateServiceIntegrationUnitHelper {
 
-    private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
+  private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
 
-    public CertificateServiceUnitDTO getCareProvider(IntygUser user) {
-        return CertificateServiceUnitDTO.builder()
-            .id(user.getValdVardgivare().getId())
-            .name(user.getValdVardgivare().getNamn())
-            .build();
-    }
+  public CertificateServiceUnitDTO getCareProvider(IntygUser user) {
+    return CertificateServiceUnitDTO.builder()
+        .id(user.getValdVardgivare().getId())
+        .name(user.getValdVardgivare().getNamn())
+        .build();
+  }
 
-    public CertificateServiceUnitDTO getCareUnit(IntygUser user) {
-        final var careUnit = CertificateServiceUnitUtil.getCareUnit(user);
-        return certificateServiceVardenhetConverter.convert(careUnit, false);
-    }
+  public CertificateServiceUnitDTO getCareUnit(IntygUser user) {
+    final var careUnit = CertificateServiceUnitUtil.getCareUnit(user);
+    return certificateServiceVardenhetConverter.convert(careUnit, false);
+  }
 
-    public CertificateServiceUnitDTO getUnit(IntygUser user) {
-        return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet(), false);
-    }
+  public CertificateServiceUnitDTO getUnit(IntygUser user) {
+    return certificateServiceVardenhetConverter.convert(
+        (AbstractVardenhet) user.getValdVardenhet(), false);
+  }
 }

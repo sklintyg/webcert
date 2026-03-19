@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,33 +38,30 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
 @ExtendWith(MockitoExtension.class)
 public class IcfControllerTest {
 
-    @Mock
-    private IcfFacadeService icfFacadeService;
+  @Mock private IcfFacadeService icfFacadeService;
 
-    @InjectMocks
-    private IcfController icfController;
+  @InjectMocks private IcfController icfController;
 
-    @Nested
-    class ValidateSickLeavePeriod {
+  @Nested
+  class ValidateSickLeavePeriod {
 
-        @BeforeEach
-        void setup() {
-        }
+    @BeforeEach
+    void setup() {}
 
-        @Test
-        void shallGetIcfInformation() {
-            IcfRequestDTO request = new IcfRequestDTO();
-            icfController.getIcf(request);
-            verify(icfFacadeService).getIcfInformation(any());
-        }
-
-        @Test
-        void shallReturnIcfInformation() {
-            when(icfFacadeService.getIcfInformation(any())).thenReturn(new IcfResponseDTO());
-            IcfRequestDTO request = new IcfRequestDTO();
-            final var response = icfController.getIcf(request);
-            assertEquals(response.getStatus(), 200);
-            assertTrue(response.getEntity() instanceof IcfResponseDTO);
-        }
+    @Test
+    void shallGetIcfInformation() {
+      IcfRequestDTO request = new IcfRequestDTO();
+      icfController.getIcf(request);
+      verify(icfFacadeService).getIcfInformation(any());
     }
+
+    @Test
+    void shallReturnIcfInformation() {
+      when(icfFacadeService.getIcfInformation(any())).thenReturn(new IcfResponseDTO());
+      IcfRequestDTO request = new IcfRequestDTO();
+      final var response = icfController.getIcf(request);
+      assertEquals(response.getStatus(), 200);
+      assertTrue(response.getEntity() instanceof IcfResponseDTO);
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,58 +20,57 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import se.inera.intyg.schemas.contract.Personnummer;
 
-/**
- * Created by marced on 2016-11-30.
- */
+/** Created by marced on 2016-11-30. */
 public class UpdatePatientOnDraftRequest {
 
-    private Personnummer personnummer;
-    private Personnummer oldPersonnummer;
-    private String draftId;
-    private long version;
+  private Personnummer personnummer;
+  private Personnummer oldPersonnummer;
+  private String draftId;
+  private long version;
 
-    public UpdatePatientOnDraftRequest(Personnummer personnummer, String draftId, long version) {
-        this.personnummer = personnummer;
-        this.draftId = draftId;
-        this.version = version;
-    }
+  public UpdatePatientOnDraftRequest(Personnummer personnummer, String draftId, long version) {
+    this.personnummer = personnummer;
+    this.draftId = draftId;
+    this.version = version;
+  }
 
-    public UpdatePatientOnDraftRequest(Personnummer personnummer, Personnummer oldPersonnummer, String draftId, long version) {
-        this.personnummer = personnummer;
-        this.oldPersonnummer = oldPersonnummer;
-        this.draftId = draftId;
-        this.version = version;
-    }
+  public UpdatePatientOnDraftRequest(
+      Personnummer personnummer, Personnummer oldPersonnummer, String draftId, long version) {
+    this.personnummer = personnummer;
+    this.oldPersonnummer = oldPersonnummer;
+    this.draftId = draftId;
+    this.version = version;
+  }
 
-    public Personnummer getPersonnummer() {
-        return personnummer;
-    }
+  public Personnummer getPersonnummer() {
+    return personnummer;
+  }
 
-    public void setPersonnummer(Personnummer personnummer) {
-        this.personnummer = personnummer;
-    }
+  public void setPersonnummer(Personnummer personnummer) {
+    this.personnummer = personnummer;
+  }
 
-    public Personnummer getOldPersonnummer() {
-        return oldPersonnummer;
-    }
+  public Personnummer getOldPersonnummer() {
+    return oldPersonnummer;
+  }
 
-    public void setOldPersonnummer(final Personnummer oldPersonnummer) {
-        this.oldPersonnummer = oldPersonnummer;
-    }
+  public void setOldPersonnummer(final Personnummer oldPersonnummer) {
+    this.oldPersonnummer = oldPersonnummer;
+  }
 
-    public String getDraftId() {
-        return draftId;
-    }
+  public String getDraftId() {
+    return draftId;
+  }
 
-    public void setDraftId(String draftId) {
-        this.draftId = draftId;
-    }
+  public void setDraftId(String draftId) {
+    this.draftId = draftId;
+  }
 
-    public long getVersion() {
-        return version;
-    }
+  public long getVersion() {
+    return version;
+  }
 
-    public void setVersion(long version) {
-        this.version = version;
-    }
+  public void setVersion(long version) {
+    this.version = version;
+  }
 }

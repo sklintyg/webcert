@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,14 +27,19 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 class FragaSvarUthoppControllerTest {
 
-    private final FragaSvarUthoppController fragaSvarUthoppController = new FragaSvarUthoppController();
+  private final FragaSvarUthoppController fragaSvarUthoppController =
+      new FragaSvarUthoppController();
 
-    @Test
-    void shouldReturnArrayOfGrantedRoles() {
-        final var expectedRoles = List.of(
-            AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE,
-            AuthoritiesConstants.ROLE_SJUKSKOTERSKA, AuthoritiesConstants.ROLE_BARNMORSKA);
-        final var grantedRoles = fragaSvarUthoppController.getGrantedRoles();
-        expectedRoles.forEach(role -> assertTrue(Arrays.asList(grantedRoles).contains(role)));
-    }
+  @Test
+  void shouldReturnArrayOfGrantedRoles() {
+    final var expectedRoles =
+        List.of(
+            AuthoritiesConstants.ROLE_ADMIN,
+            AuthoritiesConstants.ROLE_LAKARE,
+            AuthoritiesConstants.ROLE_TANDLAKARE,
+            AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
+            AuthoritiesConstants.ROLE_BARNMORSKA);
+    final var grantedRoles = fragaSvarUthoppController.getGrantedRoles();
+    expectedRoles.forEach(role -> assertTrue(Arrays.asList(grantedRoles).contains(role)));
+  }
 }

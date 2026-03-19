@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,25 +20,24 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public class ListFilterPersonIdValue implements ListFilterValue {
 
-    private String value;
+  private String value;
 
-    @Override
-    public ListFilterType getType() {
-        return ListFilterType.PERSON_ID;
-    }
+  @Override
+  public ListFilterType getType() {
+    return ListFilterType.PERSON_ID;
+  }
 
-    public ListFilterPersonIdValue() {
-    }
+  public ListFilterPersonIdValue() {}
 
-    public ListFilterPersonIdValue(String value) {
-        this.value = value;
-    }
+  public ListFilterPersonIdValue(String value) {
+    this.value = value;
+  }
 
-    public String getValue() {
-        return value;
-    }
+  public String getValue() {
+    return value;
+  }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 }

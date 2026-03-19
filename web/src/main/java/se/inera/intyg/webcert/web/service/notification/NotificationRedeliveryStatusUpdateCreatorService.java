@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,75 +40,78 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 @Service
 public class NotificationRedeliveryStatusUpdateCreatorService {
 
-    @Autowired
-    private UtkastRepository draftRepo;
+  @Autowired private UtkastRepository draftRepo;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Autowired
-    private HsaOrganizationsService hsaOrganizationsService;
+  @Autowired private HsaOrganizationsService hsaOrganizationsService;
 
-    @Autowired
-    private HsaPersonService hsaPersonService;
+  @Autowired private HsaPersonService hsaPersonService;
 
-    @Autowired
-    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+  @Autowired private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
-    @Autowired
-    private IntygService intygService;
+  @Autowired private IntygService intygService;
 
-    @Autowired
-    private NotificationMessageFactory notificationMessageFactory;
+  @Autowired private NotificationMessageFactory notificationMessageFactory;
 
-    /**
-     * Returns an XML String of a {@link CertificateStatusUpdateForCareType} created based on the information received in e
-     * {@link NotificationRedelivery} or, in case of manually initiated redeliveries, a {@link Handelse}.
-     */
-    public String getCertificateStatusUpdateXml(NotificationRedelivery redelivery, Handelse event)
-        throws IOException, ModuleException, ModuleNotFoundException, TemporaryException, JAXBException {
-        if (containsMessage(redelivery)) {
-            return getStatusUpdateXmlFromNotificationRedelivery(redelivery);
-        }
-
-        final var statusUpdate = createStatusUpdateFromEvent(event);
-        return certificateStatusUpdateForCareCreator.marshal(statusUpdate);
+  /**
+   * Returns an XML String of a {@link CertificateStatusUpdateForCareType} created based on the
+   * information received in e {@link NotificationRedelivery} or, in case of manually initiated
+   * redeliveries, a {@link Handelse}.
+   */
+  public String getCertificateStatusUpdateXml(NotificationRedelivery redelivery, Handelse event)
+      throws IOException,
+          ModuleException,
+          ModuleNotFoundException,
+          TemporaryException,
+          JAXBException {
+    if (containsMessage(redelivery)) {
+      return getStatusUpdateXmlFromNotificationRedelivery(redelivery);
     }
 
-    private boolean containsMessage(NotificationRedelivery redelivery) {
-        return redelivery.getMessage() != null;
+    final var statusUpdate = createStatusUpdateFromEvent(event);
+    return certificateStatusUpdateForCareCreator.marshal(statusUpdate);
+  }
+
+  private boolean containsMessage(NotificationRedelivery redelivery) {
+    return redelivery.getMessage() != null;
+  }
+
+  private String getStatusUpdateXmlFromNotificationRedelivery(NotificationRedelivery redelivery)
+      throws IOException {
+    return objectMapper.readValue(redelivery.getMessage(), String.class);
+  }
+
+  private CertificateStatusUpdateForCareType createStatusUpdateFromEvent(Handelse event)
+      throws ModuleNotFoundException, IOException, ModuleException {
+
+    if (isDeletedEvent(event)) {
+      final var careProvider = hsaOrganizationsService.getVardgivareInfo(event.getVardgivarId());
+      final var careUnit = hsaOrganizationsService.getVardenhet(event.getEnhetsId());
+      final var personInfo = hsaPersonService.getHsaPersonInfo(event.getCertificateIssuer()).get(0);
+      return certificateStatusUpdateForCareCreator.create(
+          event, careProvider, careUnit, personInfo);
     }
 
-    private String getStatusUpdateXmlFromNotificationRedelivery(NotificationRedelivery redelivery) throws IOException {
-        return objectMapper.readValue(redelivery.getMessage(), String.class);
+    final var notificationMessage = createNotificationMessage(event);
+    return certificateStatusUpdateForCareCreator.create(
+        notificationMessage, event.getCertificateVersion());
+  }
+
+  private boolean isDeletedEvent(Handelse event) {
+    return event.getCode() == HandelsekodEnum.RADERA;
+  }
+
+  private NotificationMessage createNotificationMessage(Handelse event)
+      throws ModuleNotFoundException, IOException, ModuleException {
+    final var draft = draftRepo.findById(event.getIntygsId());
+    if (draft.isPresent()) {
+      return notificationMessageFactory.createNotificationMessage(event, draft.get().getModel());
     }
 
-    private CertificateStatusUpdateForCareType createStatusUpdateFromEvent(Handelse event)
-        throws ModuleNotFoundException, IOException, ModuleException {
-
-        if (isDeletedEvent(event)) {
-            final var careProvider = hsaOrganizationsService.getVardgivareInfo(event.getVardgivarId());
-            final var careUnit = hsaOrganizationsService.getVardenhet(event.getEnhetsId());
-            final var personInfo = hsaPersonService.getHsaPersonInfo(event.getCertificateIssuer()).get(0);
-            return certificateStatusUpdateForCareCreator.create(event, careProvider, careUnit, personInfo);
-        }
-
-        final var notificationMessage = createNotificationMessage(event);
-        return certificateStatusUpdateForCareCreator.create(notificationMessage, event.getCertificateVersion());
-    }
-
-    private boolean isDeletedEvent(Handelse event) {
-        return event.getCode() == HandelsekodEnum.RADERA;
-    }
-
-    private NotificationMessage createNotificationMessage(Handelse event)
-        throws ModuleNotFoundException, IOException, ModuleException {
-        final var draft = draftRepo.findById(event.getIntygsId());
-        if (draft.isPresent()) {
-            return notificationMessageFactory.createNotificationMessage(event, draft.get().getModel());
-        }
-
-        final var certificateContentHolder = intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
-        return notificationMessageFactory.createNotificationMessage(event, certificateContentHolder.getContents());
-    }
+    final var certificateContentHolder =
+        intygService.fetchIntygDataForInternalUse(event.getIntygsId(), true);
+    return notificationMessageFactory.createNotificationMessage(
+        event, certificateContentHolder.getContents());
+  }
 }

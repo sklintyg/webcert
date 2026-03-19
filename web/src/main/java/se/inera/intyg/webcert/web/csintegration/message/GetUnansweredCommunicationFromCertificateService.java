@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.csintegration.message;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -25,16 +26,22 @@ import se.inera.intyg.webcert.web.service.unansweredcommunication.UnansweredComm
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 
-import java.util.Map;
-
 @Service("getUnansweredCommunicationFromCS")
 @RequiredArgsConstructor
-public class GetUnansweredCommunicationFromCertificateService implements UnansweredCommunicationService {
-    private final CSIntegrationService csIntegrationService;
+public class GetUnansweredCommunicationFromCertificateService
+    implements UnansweredCommunicationService {
+  private final CSIntegrationService csIntegrationService;
 
-    @Override
-    public UnansweredCommunicationResponse get(UnansweredCommunicationRequest request) {
-        final var messages = csIntegrationService.getUnansweredCommunicationMessages(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
-        return messages.map(getUnansweredCommunicationInternalResponseDTO -> new UnansweredCommunicationResponse(getUnansweredCommunicationInternalResponseDTO.getMessages())).orElseGet(() -> new UnansweredCommunicationResponse(Map.of()));
-    }
+  @Override
+  public UnansweredCommunicationResponse get(UnansweredCommunicationRequest request) {
+    final var messages =
+        csIntegrationService.getUnansweredCommunicationMessages(
+            request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
+    return messages
+        .map(
+            getUnansweredCommunicationInternalResponseDTO ->
+                new UnansweredCommunicationResponse(
+                    getUnansweredCommunicationInternalResponseDTO.getMessages()))
+        .orElseGet(() -> new UnansweredCommunicationResponse(Map.of()));
+  }
 }

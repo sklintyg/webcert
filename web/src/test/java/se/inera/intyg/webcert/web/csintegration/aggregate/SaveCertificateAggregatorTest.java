@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,47 +32,44 @@ import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 @ExtendWith(MockitoExtension.class)
 class SaveCertificateAggregatorTest {
 
-    @Mock
-    SaveCertificateFacadeService saveCertificateFacadeServiceInWC;
-    @Mock
-    SaveCertificateFacadeService saveCertificateFacadeServiceInCS;
-    SaveCertificateAggregator aggregator;
+  @Mock SaveCertificateFacadeService saveCertificateFacadeServiceInWC;
+  @Mock SaveCertificateFacadeService saveCertificateFacadeServiceInCS;
+  SaveCertificateAggregator aggregator;
 
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final boolean PDL_LOG = false;
-    private static final long VERSION_FROM_WC = 1;
-    private static final long VERSION_FROM_CS = 99;
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final boolean PDL_LOG = false;
+  private static final long VERSION_FROM_WC = 1;
+  private static final long VERSION_FROM_CS = 99;
 
-    @BeforeEach
-    void setup() {
-        aggregator = new SaveCertificateAggregator(
-            saveCertificateFacadeServiceInWC,
-            saveCertificateFacadeServiceInCS
-        );
-    }
+  @BeforeEach
+  void setup() {
+    aggregator =
+        new SaveCertificateAggregator(
+            saveCertificateFacadeServiceInWC, saveCertificateFacadeServiceInCS);
+  }
 
-    @Test
-    void shallSaveCertificateInWebcertIfCertificateServiceIsNotActive() {
-        doReturn(VERSION_FROM_WC).when(saveCertificateFacadeServiceInWC).saveCertificate(CERTIFICATE, PDL_LOG);
-        assertEquals(VERSION_FROM_WC,
-            aggregator.saveCertificate(CERTIFICATE, PDL_LOG)
-        );
-    }
+  @Test
+  void shallSaveCertificateInWebcertIfCertificateServiceIsNotActive() {
+    doReturn(VERSION_FROM_WC)
+        .when(saveCertificateFacadeServiceInWC)
+        .saveCertificate(CERTIFICATE, PDL_LOG);
+    assertEquals(VERSION_FROM_WC, aggregator.saveCertificate(CERTIFICATE, PDL_LOG));
+  }
 
-    @Test
-    void shallSaveCertificateInCSIfCertificateServiceIsActive() {
-        doReturn(VERSION_FROM_CS).when(saveCertificateFacadeServiceInCS).saveCertificate(CERTIFICATE, PDL_LOG);
-        assertEquals(VERSION_FROM_CS,
-            aggregator.saveCertificate(CERTIFICATE, PDL_LOG)
-        );
-    }
+  @Test
+  void shallSaveCertificateInCSIfCertificateServiceIsActive() {
+    doReturn(VERSION_FROM_CS)
+        .when(saveCertificateFacadeServiceInCS)
+        .saveCertificate(CERTIFICATE, PDL_LOG);
+    assertEquals(VERSION_FROM_CS, aggregator.saveCertificate(CERTIFICATE, PDL_LOG));
+  }
 
-    @Test
-    void shallSaveCertificateInWCIfCertificateServiceIsActiveButCSReturnsNegativeVersion() {
-        doReturn(-1L).when(saveCertificateFacadeServiceInCS).saveCertificate(CERTIFICATE, PDL_LOG);
-        doReturn(VERSION_FROM_WC).when(saveCertificateFacadeServiceInWC).saveCertificate(CERTIFICATE, PDL_LOG);
-        assertEquals(VERSION_FROM_WC,
-            aggregator.saveCertificate(CERTIFICATE, PDL_LOG)
-        );
-    }
+  @Test
+  void shallSaveCertificateInWCIfCertificateServiceIsActiveButCSReturnsNegativeVersion() {
+    doReturn(-1L).when(saveCertificateFacadeServiceInCS).saveCertificate(CERTIFICATE, PDL_LOG);
+    doReturn(VERSION_FROM_WC)
+        .when(saveCertificateFacadeServiceInWC)
+        .saveCertificate(CERTIFICATE, PDL_LOG);
+    assertEquals(VERSION_FROM_WC, aggregator.saveCertificate(CERTIFICATE, PDL_LOG));
+  }
 }

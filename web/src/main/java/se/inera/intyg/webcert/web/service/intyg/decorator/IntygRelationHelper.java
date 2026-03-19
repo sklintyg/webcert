@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,12 +22,10 @@ import java.util.List;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-/**
- * Created by eriklupander on 2017-05-18.
- */
+/** Created by eriklupander on 2017-05-18. */
 public interface IntygRelationHelper {
 
-    Relations getRelationsForIntyg(String intygId);
+  Relations getRelationsForIntyg(String intygId);
 
-    void decorateIntygListWithRelations(List<ListIntygEntry> fullIntygItemList);
+  void decorateIntygListWithRelations(List<ListIntygEntry> fullIntygItemList);
 }

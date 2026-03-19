@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,102 +27,107 @@ import java.util.List;
 import org.springframework.data.util.Pair;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
-
 public class NotificationRedeliveryStrategyStandard implements NotificationRedeliveryStrategy {
 
-    private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = STANDARD;
-    private final String strategyTemplateString;
-    private int maxDeliveries;
-    private List<Pair<ChronoUnit, Integer>> notificationRedeliverySchedule;
+  private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = STANDARD;
+  private final String strategyTemplateString;
+  private int maxDeliveries;
+  private List<Pair<ChronoUnit, Integer>> notificationRedeliverySchedule;
 
-    public NotificationRedeliveryStrategyStandard(@Nonnull String strategyTemplateString) {
-        throwExceptionIfInvalidTemplate(strategyTemplateString);
-        this.strategyTemplateString = strategyTemplateString;
+  public NotificationRedeliveryStrategyStandard(@Nonnull String strategyTemplateString) {
+    throwExceptionIfInvalidTemplate(strategyTemplateString);
+    this.strategyTemplateString = strategyTemplateString;
+  }
+
+  @Override
+  public NotificationRedeliveryStrategyEnum getName() {
+    return STRATEGY_NAME;
+  }
+
+  @Override
+  public int getMaxDeliveries() {
+    assertHasNotificationStrategy();
+    return maxDeliveries;
+  }
+
+  @Override
+  public ChronoUnit getNextTimeUnit(int attemptedDeliveries) {
+    assertHasNotificationStrategy();
+
+    int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
+
+    if (attemptedRedeliveries < notificationRedeliverySchedule.size()) {
+      return notificationRedeliverySchedule.get(attemptedRedeliveries).getFirst();
+    } else {
+      return notificationRedeliverySchedule
+          .get(notificationRedeliverySchedule.size() - 1)
+          .getFirst();
     }
+  }
 
-    @Override
-    public NotificationRedeliveryStrategyEnum getName() {
-        return STRATEGY_NAME;
+  @Override
+  public int getNextTimeValue(int attemptedDeliveries) {
+    assertHasNotificationStrategy();
+
+    int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
+
+    if (attemptedRedeliveries < notificationRedeliverySchedule.size()) {
+      return notificationRedeliverySchedule.get(attemptedRedeliveries).getSecond();
+    } else {
+      return notificationRedeliverySchedule
+          .get(notificationRedeliverySchedule.size() - 1)
+          .getSecond();
     }
+  }
 
-    @Override
-    public int getMaxDeliveries() {
-        assertHasNotificationStrategy();
-        return maxDeliveries;
+  private int calculateAttemptedRedeliveries(int attemptedDeliveries) {
+    return attemptedDeliveries - 1;
+  }
+
+  private void throwExceptionIfInvalidTemplate(String strategyTemplateString) {
+    if (!strategyTemplateString.matches(STRATEGY_TEMPLATE_FORMAT_REGEX)) {
+      throw new IllegalArgumentException(
+          "Strategy template string sent to NotificationRedeliveryStrategyStandard "
+              + " does not match the required format.");
     }
+  }
 
-    @Override
-    public ChronoUnit getNextTimeUnit(int attemptedDeliveries) {
-        assertHasNotificationStrategy();
-
-        int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
-
-        if (attemptedRedeliveries < notificationRedeliverySchedule.size()) {
-            return notificationRedeliverySchedule.get(attemptedRedeliveries).getFirst();
-        } else {
-            return notificationRedeliverySchedule.get(notificationRedeliverySchedule.size() - 1).getFirst();
-        }
+  private void assertHasNotificationStrategy() {
+    if (notificationRedeliverySchedule == null) {
+      buildRedeliveryStrategyFromTemplateString();
     }
+  }
 
-    @Override
-    public int getNextTimeValue(int attemptedDeliveries) {
-        assertHasNotificationStrategy();
+  private void buildRedeliveryStrategyFromTemplateString() {
+    final var splitStrategyTemplate = strategyTemplateString.split("#");
+    maxDeliveries = Integer.parseInt(splitStrategyTemplate[0]);
+    notificationRedeliverySchedule = createRedliveryScheduleFromTemplate(splitStrategyTemplate[1]);
+  }
 
-        int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
+  private List<Pair<ChronoUnit, Integer>> createRedliveryScheduleFromTemplate(
+      String redeliveryScheduleTemplate) {
+    final var notificationRedeliverySchedule = new ArrayList<Pair<ChronoUnit, Integer>>();
+    final var splitRedeliveryScheduleTemplate = redeliveryScheduleTemplate.split(",");
+    for (final var unitValuePair : splitRedeliveryScheduleTemplate) {
+      String[] splitUnitValue = unitValuePair.split(":");
+      Integer timeValue = Integer.parseInt(splitUnitValue[0]);
+      ChronoUnit timeUnit = getTimeUnit(splitUnitValue[1]);
 
-        if (attemptedRedeliveries < notificationRedeliverySchedule.size()) {
-            return notificationRedeliverySchedule.get(attemptedRedeliveries).getSecond();
-        } else {
-            return notificationRedeliverySchedule.get(notificationRedeliverySchedule.size() - 1).getSecond();
-        }
+      notificationRedeliverySchedule.add(Pair.of(timeUnit, timeValue));
     }
+    return notificationRedeliverySchedule;
+  }
 
-    private int calculateAttemptedRedeliveries(int attemptedDeliveries) {
-        return attemptedDeliveries - 1;
+  private ChronoUnit getTimeUnit(String timeUnitString) {
+    switch (timeUnitString) {
+      case "s":
+        return ChronoUnit.SECONDS;
+      case "m":
+        return ChronoUnit.MINUTES;
+      case "h":
+        return ChronoUnit.HOURS;
+      default:
+        return ChronoUnit.DAYS;
     }
-
-    private void throwExceptionIfInvalidTemplate(String strategyTemplateString) {
-        if (!strategyTemplateString.matches(STRATEGY_TEMPLATE_FORMAT_REGEX)) {
-            throw new IllegalArgumentException("Strategy template string sent to NotificationRedeliveryStrategyStandard "
-                + " does not match the required format.");
-        }
-    }
-
-    private void assertHasNotificationStrategy() {
-        if (notificationRedeliverySchedule == null) {
-            buildRedeliveryStrategyFromTemplateString();
-        }
-    }
-
-    private void buildRedeliveryStrategyFromTemplateString() {
-        final var splitStrategyTemplate = strategyTemplateString.split("#");
-        maxDeliveries = Integer.parseInt(splitStrategyTemplate[0]);
-        notificationRedeliverySchedule = createRedliveryScheduleFromTemplate(splitStrategyTemplate[1]);
-    }
-
-    private List<Pair<ChronoUnit, Integer>> createRedliveryScheduleFromTemplate(String redeliveryScheduleTemplate) {
-        final var notificationRedeliverySchedule = new ArrayList<Pair<ChronoUnit, Integer>>();
-        final var splitRedeliveryScheduleTemplate = redeliveryScheduleTemplate.split(",");
-        for (final var unitValuePair : splitRedeliveryScheduleTemplate) {
-            String[] splitUnitValue = unitValuePair.split(":");
-            Integer timeValue = Integer.parseInt(splitUnitValue[0]);
-            ChronoUnit timeUnit = getTimeUnit(splitUnitValue[1]);
-
-            notificationRedeliverySchedule.add(Pair.of(timeUnit, timeValue));
-        }
-        return notificationRedeliverySchedule;
-    }
-
-    private ChronoUnit getTimeUnit(String timeUnitString) {
-        switch (timeUnitString) {
-            case "s":
-                return ChronoUnit.SECONDS;
-            case "m":
-                return ChronoUnit.MINUTES;
-            case "h":
-                return ChronoUnit.HOURS;
-            default:
-                return ChronoUnit.DAYS;
-        }
-    }
+  }
 }

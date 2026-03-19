@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,15 +29,15 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 
 @Service("getCertificateTypeInfoFromCertificateService")
 @RequiredArgsConstructor
-public class GetCertificateTypeInfoFromCertificateService implements GetCertificateTypesFacadeService {
+public class GetCertificateTypeInfoFromCertificateService
+    implements GetCertificateTypesFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Override
-    public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
-        return csIntegrationService.getTypeInfo(
-            csIntegrationRequestFactory.getCertificateTypesRequest(patientId)
-        );
-    }
+  @Override
+  public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
+    return csIntegrationService.getTypeInfo(
+        csIntegrationRequestFactory.getCertificateTypesRequest(patientId));
+  }
 }

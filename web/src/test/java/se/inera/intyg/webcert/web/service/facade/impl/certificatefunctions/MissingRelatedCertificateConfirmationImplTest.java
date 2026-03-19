@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,94 +44,101 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @ExtendWith(MockitoExtension.class)
 class MissingRelatedCertificateConfirmationImplTest {
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    private MissingRelatedCertificateConfirmationImpl missingRelatedCertificateConfirmation;
+  @InjectMocks
+  private MissingRelatedCertificateConfirmationImpl missingRelatedCertificateConfirmation;
 
-    private WebCertUser webCertUser;
+  private WebCertUser webCertUser;
 
-    private static final String PERSON_ID = "19121212-1212";
-    private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PERSON_ID).get();
+  private static final String PERSON_ID = "19121212-1212";
+  private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PERSON_ID).get();
 
-    @BeforeEach
-    void setUp() {
-        webCertUser = mock(WebCertUser.class);
-    }
+  @BeforeEach
+  void setUp() {
+    webCertUser = mock(WebCertUser.class);
+  }
 
-    @Test
-    void shallNotReturnResourceLinkIfItsNotOfCorrectType() {
-        final var actualResourcelink = missingRelatedCertificateConfirmation.get(DbModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-        assertTrue(actualResourcelink.isEmpty(), "Expect no resource link!");
-    }
+  @Test
+  void shallNotReturnResourceLinkIfItsNotOfCorrectType() {
+    final var actualResourcelink =
+        missingRelatedCertificateConfirmation.get(DbModuleEntryPoint.MODULE_ID, PERSONNUMMER);
+    assertTrue(actualResourcelink.isEmpty(), "Expect no resource link!");
+  }
 
-    @Test
-    void shallReturnResourceLinkIfItsDoiAndNoDbExists() {
-        final var actualResourcelink = missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-        assertTrue(actualResourcelink.isPresent(), "Expect resource link!");
-    }
+  @Test
+  void shallReturnResourceLinkIfItsDoiAndNoDbExists() {
+    final var actualResourcelink =
+        missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
+    assertTrue(actualResourcelink.isPresent(), "Expect resource link!");
+  }
 
-    @Test
-    void shallReturnResourceLinkIfItsDoiAndNoDbExistsWithCorrectType() {
-        final var actualResourcelink = missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-        assertEquals(ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION, actualResourcelink.get().getType());
-    }
+  @Test
+  void shallReturnResourceLinkIfItsDoiAndNoDbExistsWithCorrectType() {
+    final var actualResourcelink =
+        missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
+    assertEquals(
+        ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION,
+        actualResourcelink.get().getType());
+  }
 
-    @Test
-    void shallReturnResourceLinkIfItsDoiAndNoDbExistsWithCorrectName() {
-        final var actualResourcelink = missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-        assertEquals("Dödsbevis saknas", actualResourcelink.get().getName());
-    }
+  @Test
+  void shallReturnResourceLinkIfItsDoiAndNoDbExistsWithCorrectName() {
+    final var actualResourcelink =
+        missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
+    assertEquals("Dödsbevis saknas", actualResourcelink.get().getName());
+  }
 
-    @Test
-    void shallReturnResourceLinkIfItsDoiAndNoDbExistsWithCorrectBody() {
-        final var actualResourcelink = missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-        assertEquals("Är du säker att du vill skapa ett dödsorsaksintyg? Det finns inget dödsbevis i nuläget inom vårdgivaren.\n"
+  @Test
+  void shallReturnResourceLinkIfItsDoiAndNoDbExistsWithCorrectBody() {
+    final var actualResourcelink =
+        missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
+    assertEquals(
+        "Är du säker att du vill skapa ett dödsorsaksintyg? Det finns inget dödsbevis i nuläget inom vårdgivaren.\n"
             + "\n"
-            + "Dödsorsaksintyget bör alltid skapas efter dödsbeviset.", actualResourcelink.get().getBody());
-    }
+            + "Dödsorsaksintyget bör alltid skapas efter dödsbeviset.",
+        actualResourcelink.get().getBody());
+  }
 
-    @Test
-    void shallNotReturnResourceLinkIfItsDoiAndDbExistsWithinCareProvider() {
-        final var dbWithinCareProvider = Map.of(
+  @Test
+  void shallNotReturnResourceLinkIfItsDoiAndDbExistsWithinCareProvider() {
+    final var dbWithinCareProvider =
+        Map.of(
             INTYG_INDICATOR,
             Map.of(
                 DbModuleEntryPoint.MODULE_ID,
-                PreviousIntyg.of(true, false, false, "ENHET", "123", LocalDateTime.now())
-            )
-        );
+                PreviousIntyg.of(true, false, false, "ENHET", "123", LocalDateTime.now())));
 
-        doReturn(webCertUser)
-            .when(webCertUserService).getUser();
+    doReturn(webCertUser).when(webCertUserService).getUser();
 
-        doReturn(dbWithinCareProvider)
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, webCertUser, null);
+    doReturn(dbWithinCareProvider)
+        .when(utkastService)
+        .checkIfPersonHasExistingIntyg(PERSONNUMMER, webCertUser, null);
 
-        final var actualResourcelink = missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-        assertTrue(actualResourcelink.isEmpty(), "Expect no resource link!");
-    }
+    final var actualResourcelink =
+        missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
+    assertTrue(actualResourcelink.isEmpty(), "Expect no resource link!");
+  }
 
-    @Test
-    void shallReturnResourceLinkIfItsDoiAndDbExistsOutsideCareProvider() {
-        final var dbWithinCareProvider = Map.of(
+  @Test
+  void shallReturnResourceLinkIfItsDoiAndDbExistsOutsideCareProvider() {
+    final var dbWithinCareProvider =
+        Map.of(
             INTYG_INDICATOR,
             Map.of(
                 DbModuleEntryPoint.MODULE_ID,
-                PreviousIntyg.of(false, false, false, "ENHET", "123", LocalDateTime.now())
-            )
-        );
+                PreviousIntyg.of(false, false, false, "ENHET", "123", LocalDateTime.now())));
 
-        doReturn(webCertUser)
-            .when(webCertUserService).getUser();
+    doReturn(webCertUser).when(webCertUserService).getUser();
 
-        doReturn(dbWithinCareProvider)
-            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, webCertUser, null);
+    doReturn(dbWithinCareProvider)
+        .when(utkastService)
+        .checkIfPersonHasExistingIntyg(PERSONNUMMER, webCertUser, null);
 
-        final var actualResourcelink = missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-        assertTrue(actualResourcelink.isPresent(), "Expect resource link!");
-    }
+    final var actualResourcelink =
+        missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
+    assertTrue(actualResourcelink.isPresent(), "Expect resource link!");
+  }
 }

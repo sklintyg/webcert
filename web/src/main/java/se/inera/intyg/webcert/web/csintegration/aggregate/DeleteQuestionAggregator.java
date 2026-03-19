@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.stereotype.Service;
@@ -26,24 +25,27 @@ import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeSe
 @Service("deleteQuestionAggregator")
 public class DeleteQuestionAggregator implements DeleteQuestionFacadeService {
 
-    private final DeleteQuestionFacadeService deleteQuestionFromWC;
-    private final DeleteQuestionFacadeService deleteQuestionFromCS;
-    private final CSIntegrationService csIntegrationService;
+  private final DeleteQuestionFacadeService deleteQuestionFromWC;
+  private final DeleteQuestionFacadeService deleteQuestionFromCS;
+  private final CSIntegrationService csIntegrationService;
 
-    public DeleteQuestionAggregator(
-        DeleteQuestionFacadeService deleteQuestionFromWC, DeleteQuestionFacadeService deleteQuestionFromCS, CSIntegrationService csIntegrationService) {
-        this.deleteQuestionFromWC = deleteQuestionFromWC;
-        this.deleteQuestionFromCS = deleteQuestionFromCS;        this.csIntegrationService = csIntegrationService;
+  public DeleteQuestionAggregator(
+      DeleteQuestionFacadeService deleteQuestionFromWC,
+      DeleteQuestionFacadeService deleteQuestionFromCS,
+      CSIntegrationService csIntegrationService) {
+    this.deleteQuestionFromWC = deleteQuestionFromWC;
+    this.deleteQuestionFromCS = deleteQuestionFromCS;
+    this.csIntegrationService = csIntegrationService;
+  }
+
+  @Override
+  public void delete(String questionId) {
+
+    if (Boolean.TRUE.equals(csIntegrationService.messageExists(questionId))) {
+      deleteQuestionFromCS.delete(questionId);
+      return;
     }
 
-    @Override
-    public void delete(String questionId) {
-
-        if (Boolean.TRUE.equals(csIntegrationService.messageExists(questionId))) {
-            deleteQuestionFromCS.delete(questionId);
-            return;
-        }
-
-        deleteQuestionFromWC.delete(questionId);
-    }
+    deleteQuestionFromWC.delete(questionId);
+  }
 }

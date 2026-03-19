@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import com.google.common.base.Strings;
@@ -40,74 +39,92 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 @Service
 public class PaginationAndLoggingServiceImpl implements PaginationAndLoggingService {
 
-    private final LogService logService;
-    private final AuthoritiesHelper authoritiesHelper;
+  private final LogService logService;
+  private final AuthoritiesHelper authoritiesHelper;
 
-    @Autowired
-    public PaginationAndLoggingServiceImpl(LogService logService, AuthoritiesHelper authoritiesHelper) {
-        this.logService = logService;
-        this.authoritiesHelper = authoritiesHelper;
+  @Autowired
+  public PaginationAndLoggingServiceImpl(
+      LogService logService, AuthoritiesHelper authoritiesHelper) {
+    this.logService = logService;
+    this.authoritiesHelper = authoritiesHelper;
+  }
+
+  @Override
+  public List<ArendeListItem> get(
+      QueryFragaSvarParameter filterParameters, List<ArendeListItem> results, WebCertUser user) {
+    Set<String> intygstyperForPrivilege =
+        authoritiesHelper.getIntygstyperForPrivilege(
+            user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+
+    Filter filter;
+
+    if (!Strings.isNullOrEmpty(filterParameters.getEnhetId())) {
+      filter =
+          FilterConverter.convert(
+              filterParameters,
+              Collections.singletonList(filterParameters.getEnhetId()),
+              intygstyperForPrivilege);
+    } else {
+      filter =
+          FilterConverter.convert(
+              filterParameters, user.getIdsOfSelectedVardenhet(), intygstyperForPrivilege);
     }
 
-    @Override
-    public List<ArendeListItem> get(QueryFragaSvarParameter filterParameters, List<ArendeListItem> results, WebCertUser user) {
-        Set<String> intygstyperForPrivilege = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-
-        Filter filter;
-
-        if (!Strings.isNullOrEmpty(filterParameters.getEnhetId())) {
-            filter = FilterConverter.convert(filterParameters, Collections.singletonList(filterParameters.getEnhetId()),
-                intygstyperForPrivilege);
-        } else {
-            filter = FilterConverter.convert(filterParameters, user.getIdsOfSelectedVardenhet(), intygstyperForPrivilege);
-        }
-
-        final var list = results.stream()
-            .sorted((getComparator(filterParameters.getOrderBy(), filterParameters.getOrderAscending())))
+    final var list =
+        results.stream()
+            .sorted(
+                (getComparator(
+                    filterParameters.getOrderBy(), filterParameters.getOrderAscending())))
             .collect(Collectors.toList());
 
-        List<ArendeListItem> resultList = list
-            .subList(filter.getStartFrom(), Math.min(filter.getPageSize() + filter.getStartFrom(), list.size()));
+    List<ArendeListItem> resultList =
+        list.subList(
+            filter.getStartFrom(),
+            Math.min(filter.getPageSize() + filter.getStartFrom(), list.size()));
 
-        resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> logService.logReadLevelTwo(user, patient));
+    resultList.stream()
+        .map(ArendeListItem::getPatientId)
+        .distinct()
+        .forEach(patient -> logService.logReadLevelTwo(user, patient));
 
-        return resultList;
+    return resultList;
+  }
+
+  private Comparator<ArendeListItem> getComparator(String orderBy, Boolean ascending) {
+    Comparator<ArendeListItem> comparator;
+    if (orderBy == null) {
+      comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
+    } else {
+      switch (orderBy) {
+        case "amne":
+          comparator =
+              Comparator.comparing(
+                  a ->
+                      ArendeServiceImpl.getAmneString(
+                          a.getAmne(), a.getStatus(), a.isPaminnelse(), a.getFragestallare()));
+          break;
+        case "fragestallare":
+          comparator = Comparator.comparing(ArendeListItem::getFragestallare);
+          break;
+        case "patientId":
+          comparator = Comparator.comparing(ArendeListItem::getPatientId);
+          break;
+        case "signeratAvNamn":
+          comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
+          break;
+        case "vidarebefordrad":
+          comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
+          break;
+        case "receivedDate":
+        default:
+          comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
+          break;
+      }
     }
 
-    private Comparator<ArendeListItem> getComparator(String orderBy, Boolean ascending) {
-        Comparator<ArendeListItem> comparator;
-        if (orderBy == null) {
-            comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
-        } else {
-            switch (orderBy) {
-                case "amne":
-                    comparator = Comparator.comparing(
-                        a -> ArendeServiceImpl.getAmneString(a.getAmne(), a.getStatus(), a.isPaminnelse(), a.getFragestallare())
-                    );
-                    break;
-                case "fragestallare":
-                    comparator = Comparator.comparing(ArendeListItem::getFragestallare);
-                    break;
-                case "patientId":
-                    comparator = Comparator.comparing(ArendeListItem::getPatientId);
-                    break;
-                case "signeratAvNamn":
-                    comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
-                    break;
-                case "vidarebefordrad":
-                    comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
-                    break;
-                case "receivedDate":
-                default:
-                    comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
-                    break;
-            }
-        }
-
-        if (ascending == null || !ascending) {
-            comparator = comparator.reversed();
-        }
-        return comparator;
+    if (ascending == null || !ascending) {
+      comparator = comparator.reversed();
     }
-
+    return comparator;
+  }
 }

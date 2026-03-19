@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,30 +21,31 @@ package se.inera.intyg.webcert.notification_sender.notifications.enumerations;
 import java.util.stream.Stream;
 
 public enum NotificationResultTypeEnum {
+  OK("OK", "Notification result type OK"),
+  INFO("INFO", "Notification result type INFO"),
+  ERROR("ERROR", "Notification result type ERROR"),
+  UNRECOVERABLE_ERROR("UNRECOVERABLE_ERROR", "Notification result type UNRECOVERABLE_ERROR");
 
-    OK("OK", "Notification result type OK"),
-    INFO("INFO", "Notification result type INFO"),
-    ERROR("ERROR", "Notification result type ERROR"),
-    UNRECOVERABLE_ERROR("UNRECOVERABLE_ERROR", "Notification result type UNRECOVERABLE_ERROR");
+  private final String value;
+  private final String description;
 
-    private final String value;
-    private final String description;
+  NotificationResultTypeEnum(String value, String description) {
+    this.value = value;
+    this.description = description;
+  }
 
-    NotificationResultTypeEnum(String value, String description) {
-        this.value = value;
-        this.description = description;
-    }
+  public String value() {
+    return this.value;
+  }
 
-    public String value() {
-        return this.value;
-    }
+  public String description() {
+    return this.description;
+  }
 
-    public String description() {
-        return this.description;
-    }
-
-    public static NotificationResultTypeEnum fromValue(String value) {
-        return Stream.of(values()).filter((s) -> value.equals(s.value())).findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(value));
-    }
+  public static NotificationResultTypeEnum fromValue(String value) {
+    return Stream.of(values())
+        .filter((s) -> value.equals(s.value()))
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException(value));
+  }
 }

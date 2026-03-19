@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,18 +31,15 @@ import java.util.stream.Collectors;
  */
 public final class StreamUtil {
 
-    private StreamUtil() {
-    }
+  private StreamUtil() {}
 
-    @SafeVarargs
-    public static <T> Predicate<T> distinctByKeys(Function<? super T, ?>... keyExtractors) {
-        final Map<List<?>, Boolean> seen = new ConcurrentHashMap<>();
-        return t -> {
-            final List<?> keys = Arrays.stream(keyExtractors)
-                .map(ke -> ke.apply(t))
-                .collect(Collectors.toList());
-            return seen.putIfAbsent(keys, Boolean.TRUE) == null;
-        };
-    }
-
+  @SafeVarargs
+  public static <T> Predicate<T> distinctByKeys(Function<? super T, ?>... keyExtractors) {
+    final Map<List<?>, Boolean> seen = new ConcurrentHashMap<>();
+    return t -> {
+      final List<?> keys =
+          Arrays.stream(keyExtractors).map(ke -> ke.apply(t)).collect(Collectors.toList());
+      return seen.putIfAbsent(keys, Boolean.TRUE) == null;
+    };
+  }
 }

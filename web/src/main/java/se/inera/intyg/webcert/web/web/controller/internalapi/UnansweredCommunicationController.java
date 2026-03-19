@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import jakarta.ws.rs.Consumes;
@@ -39,16 +38,20 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommu
 @Path("/unanswered-communication")
 public class UnansweredCommunicationController {
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
-    private final GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private final GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
 
-    @POST
-    @Path("/")
-    @PrometheusTimeMethod
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PerformanceLogging(eventAction = "unanswered-communications-get-unanswered", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public UnansweredCommunicationResponse getUnansweredCommunications(@RequestBody UnansweredCommunicationRequest request) {
-        return getUnansweredCommunicationFacadeService.get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
-    }
+  @POST
+  @Path("/")
+  @PrometheusTimeMethod
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PerformanceLogging(
+      eventAction = "unanswered-communications-get-unanswered",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public UnansweredCommunicationResponse getUnansweredCommunications(
+      @RequestBody UnansweredCommunicationRequest request) {
+    return getUnansweredCommunicationFacadeService.get(
+        request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
+  }
 }

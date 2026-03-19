@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,13 +23,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public interface GetCertificateService {
 
-    /**
-     * Get Certificate from Webcert and if it doesn't exist it retrieves it from Intygstjänst.
-     */
-    Intyg getCertificateAsIntyg(String certificateId, String certificateType);
+  /** Get Certificate from Webcert and if it doesn't exist it retrieves it from Intygstjänst. */
+  Intyg getCertificateAsIntyg(String certificateId, String certificateType);
 
-    /**
-     * Get Certificate from Webcert and if it doesn't exist it retrieves it from Intygstjänst.
-     */
-    Utlatande getCertificateAsUtlatande(String certificateId, String certificateType);
+  /** Get Certificate from Webcert and if it doesn't exist it retrieves it from Intygstjänst. */
+  Utlatande getCertificateAsUtlatande(String certificateId, String certificateType);
 }

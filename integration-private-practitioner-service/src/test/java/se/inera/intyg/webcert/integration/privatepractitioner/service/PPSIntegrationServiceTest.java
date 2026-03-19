@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,245 +65,268 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 @ExtendWith(MockitoExtension.class)
 class PPSIntegrationServiceTest {
 
-    private static final String SESSION_ID = "session-123";
-    private static final String TRACE_ID = "trace-456";
+  private static final String SESSION_ID = "session-123";
+  private static final String TRACE_ID = "trace-456";
 
-    @Mock
-    private RestClient ppsRestClient;
-    @InjectMocks
-    private PPSIntegrationService ppsIntegrationService;
+  @Mock private RestClient ppsRestClient;
+  @InjectMocks private PPSIntegrationService ppsIntegrationService;
 
-    private RequestHeadersUriSpec requestHeadersUriSpec;
-    private RequestBodyUriSpec requestBodyUriSpec;
-    private ResponseSpec responseSpec;
+  private RequestHeadersUriSpec requestHeadersUriSpec;
+  private RequestBodyUriSpec requestBodyUriSpec;
+  private ResponseSpec responseSpec;
 
-    @Nested
-    class TestValidate {
+  @Nested
+  class TestValidate {
 
-        @Captor
-        private ArgumentCaptor<PrivatePractitionerValidationRequest> requestCaptor;
+    @Captor private ArgumentCaptor<PrivatePractitionerValidationRequest> requestCaptor;
 
-        @BeforeEach
-        void setUp() {
-            MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
+    @BeforeEach
+    void setUp() {
+      MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
 
-            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
-            responseSpec = mock(RestClient.ResponseSpec.class);
+      requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+      responseSpec = mock(RestClient.ResponseSpec.class);
 
-            when(ppsRestClient.post()).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.uri("/validate")).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
-                requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(PrivatePractitionerValidationRequest.class))).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
-        }
-
-        @Test
-        void shouldValidatePrivatePractitioner() {
-            when(responseSpec.body(PrivatePractitionerValidationResponse.class)).thenReturn(new PrivatePractitionerValidationResponse(
-                PrivatePractitionerValidationResultCode.OK, "OK"));
-            final var result = ppsIntegrationService.validatePrivatePractitioner(
-                new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID));
-            assertEquals(new PrivatePractitionerValidationResponse(
-                PrivatePractitionerValidationResultCode.OK, "OK"), result);
-        }
-
-        @Test
-        void shouldSendCorrectRequestBody() {
-            when(responseSpec.body(PrivatePractitionerValidationResponse.class)).thenReturn(new PrivatePractitionerValidationResponse(
-                PrivatePractitionerValidationResultCode.OK, "OK"));
-
-            ppsIntegrationService.validatePrivatePractitioner(new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID));
-            verify(requestBodyUriSpec).body(requestCaptor.capture());
-
-            assertEquals(new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID), requestCaptor.getValue());
-        }
+      when(ppsRestClient.post()).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.uri("/validate")).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.body(any(PrivatePractitionerValidationRequest.class)))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
     }
 
-    @Nested
-    class TestConfiguration {
-
-        @BeforeEach
-        void setUp() {
-            MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
-
-            requestHeadersUriSpec = mock(RestClient.RequestBodyUriSpec.class);
-            responseSpec = mock(RestClient.ResponseSpec.class);
-
-            when(ppsRestClient.get()).thenReturn(requestHeadersUriSpec);
-            when(requestHeadersUriSpec.uri("/configuration")).thenReturn(requestHeadersUriSpec);
-            when(requestHeadersUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersUriSpec);
-            when(requestHeadersUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestHeadersUriSpec);
-            when(requestHeadersUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
-                requestHeadersUriSpec);
-            when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
-        }
-
-        @Test
-        void shouldGetConfiguration() {
-            when(responseSpec.body(PrivatePractitionerConfiguration.class)).thenReturn(PRIVATE_PRACTITIONER_CONFIG);
-            final var result = ppsIntegrationService.getPrivatePractitionerConfig();
-            assertEquals(PRIVATE_PRACTITIONER_CONFIG, result);
-        }
+    @Test
+    void shouldValidatePrivatePractitioner() {
+      when(responseSpec.body(PrivatePractitionerValidationResponse.class))
+          .thenReturn(
+              new PrivatePractitionerValidationResponse(
+                  PrivatePractitionerValidationResultCode.OK, "OK"));
+      final var result =
+          ppsIntegrationService.validatePrivatePractitioner(
+              new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID));
+      assertEquals(
+          new PrivatePractitionerValidationResponse(
+              PrivatePractitionerValidationResultCode.OK, "OK"),
+          result);
     }
 
-    @Nested
-    class TestRegister {
+    @Test
+    void shouldSendCorrectRequestBody() {
+      when(responseSpec.body(PrivatePractitionerValidationResponse.class))
+          .thenReturn(
+              new PrivatePractitionerValidationResponse(
+                  PrivatePractitionerValidationResultCode.OK, "OK"));
 
-        @Captor
-        private ArgumentCaptor<RegisterPrivatePractitionerRequest> requestCaptor;
+      ppsIntegrationService.validatePrivatePractitioner(
+          new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID));
+      verify(requestBodyUriSpec).body(requestCaptor.capture());
 
-        @BeforeEach
-        void setUp() {
-            MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
+      assertEquals(
+          new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID),
+          requestCaptor.getValue());
+    }
+  }
 
-            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
-            responseSpec = mock(RestClient.ResponseSpec.class);
+  @Nested
+  class TestConfiguration {
 
-            when(ppsRestClient.post()).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
-                requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(RegisterPrivatePractitionerRequest.class))).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
-        }
+    @BeforeEach
+    void setUp() {
+      MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
 
-        @Test
-        void shouldRegisterPrivatePractitioner() {
-            when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
-            final var result = ppsIntegrationService.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
-            assertEquals(DR_KRANSTEGE, result);
-        }
+      requestHeadersUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+      responseSpec = mock(RestClient.ResponseSpec.class);
 
-        @Test
-        void shouldSendCorrectRequestBody() {
-            when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
-
-            ppsIntegrationService.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
-            verify(requestBodyUriSpec).body(requestCaptor.capture());
-
-            assertEquals(kranstegeRegisterPractitionerRequest(), requestCaptor.getValue());
-        }
+      when(ppsRestClient.get()).thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.uri("/configuration")).thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.accept(MediaType.APPLICATION_JSON))
+          .thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID))
+          .thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID))
+          .thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
     }
 
-    @Nested
-    class TestUpdate {
+    @Test
+    void shouldGetConfiguration() {
+      when(responseSpec.body(PrivatePractitionerConfiguration.class))
+          .thenReturn(PRIVATE_PRACTITIONER_CONFIG);
+      final var result = ppsIntegrationService.getPrivatePractitionerConfig();
+      assertEquals(PRIVATE_PRACTITIONER_CONFIG, result);
+    }
+  }
 
-        @Captor
-        private ArgumentCaptor<UpdatePrivatePractitionerRequest> requestCaptor;
+  @Nested
+  class TestRegister {
 
-        @BeforeEach
-        void setUp() {
-            MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
+    @Captor private ArgumentCaptor<RegisterPrivatePractitionerRequest> requestCaptor;
 
-            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
-            responseSpec = mock(RestClient.ResponseSpec.class);
+    @BeforeEach
+    void setUp() {
+      MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
 
-            when(ppsRestClient.put()).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
-                requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(UpdatePrivatePractitionerRequest.class))).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
-        }
+      requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+      responseSpec = mock(RestClient.ResponseSpec.class);
 
-        @Test
-        void shouldUpdatePrivatePractitioner() {
-            when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
-            final var result = ppsIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST);
-            assertEquals(DR_KRANSTEGE, result);
-        }
-
-        @Test
-        void shouldSendCorrectRequestBody() {
-            when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
-
-            ppsIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST);
-            verify(requestBodyUriSpec).body(requestCaptor.capture());
-
-            assertEquals(DR_KRANSTEGE_UPDATE_REQUEST, requestCaptor.getValue());
-        }
+      when(ppsRestClient.post()).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.body(any(RegisterPrivatePractitionerRequest.class)))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
     }
 
-    @Nested
-    class TestGetHospInformation {
-
-        @Captor
-        private ArgumentCaptor<GetHospInformationRequest> requestCaptor;
-
-        @BeforeEach
-        void setUp() {
-            MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
-
-            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
-            responseSpec = mock(RestClient.ResponseSpec.class);
-
-            when(ppsRestClient.post()).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.uri("/hosp")).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
-                requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(GetHospInformationRequest.class))).thenReturn(requestBodyUriSpec);
-            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
-        }
-
-        @Test
-        void shouldGetHospInfo() {
-            when(responseSpec.body(HospInformation.class)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
-            final var result = ppsIntegrationService.getHospInformation(new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID));
-            assertEquals(DR_KRANSTEGE_HOSP_INFO, result);
-        }
-
-        @Test
-        void shouldSendCorrectRequestBody() {
-            when(responseSpec.body(HospInformation.class)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
-
-            ppsIntegrationService.getHospInformation(new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID));
-            verify(requestBodyUriSpec).body(requestCaptor.capture());
-
-            assertEquals(new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID), requestCaptor.getValue());
-        }
+    @Test
+    void shouldRegisterPrivatePractitioner() {
+      when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
+      final var result =
+          ppsIntegrationService.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
+      assertEquals(DR_KRANSTEGE, result);
     }
 
-    @Nested
-    class TestGetPrivatePractitioner {
+    @Test
+    void shouldSendCorrectRequestBody() {
+      when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
 
-        @BeforeEach
-        void setUp() {
-            MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
+      ppsIntegrationService.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
+      verify(requestBodyUriSpec).body(requestCaptor.capture());
 
-            requestHeadersUriSpec = mock(RestClient.RequestBodyUriSpec.class);
-            responseSpec = mock(RestClient.ResponseSpec.class);
-
-            when(ppsRestClient.get()).thenReturn(requestHeadersUriSpec);
-            when(requestHeadersUriSpec.uri(ArgumentMatchers.<Function<UriBuilder, URI>>any())).thenReturn(requestHeadersUriSpec);
-            when(requestHeadersUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersUriSpec);
-            when(requestHeadersUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestHeadersUriSpec);
-            when(requestHeadersUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
-                requestHeadersUriSpec);
-            when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
-        }
-
-        @Test
-        void shouldGetPrivatePractitioner() {
-            when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
-            final var result = ppsIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID);
-            assertEquals(DR_KRANSTEGE, result);
-        }
+      assertEquals(kranstegeRegisterPractitionerRequest(), requestCaptor.getValue());
     }
+  }
+
+  @Nested
+  class TestUpdate {
+
+    @Captor private ArgumentCaptor<UpdatePrivatePractitionerRequest> requestCaptor;
+
+    @BeforeEach
+    void setUp() {
+      MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
+
+      requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+      responseSpec = mock(RestClient.ResponseSpec.class);
+
+      when(ppsRestClient.put()).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.body(any(UpdatePrivatePractitionerRequest.class)))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+    }
+
+    @Test
+    void shouldUpdatePrivatePractitioner() {
+      when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
+      final var result =
+          ppsIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST);
+      assertEquals(DR_KRANSTEGE, result);
+    }
+
+    @Test
+    void shouldSendCorrectRequestBody() {
+      when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
+
+      ppsIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST);
+      verify(requestBodyUriSpec).body(requestCaptor.capture());
+
+      assertEquals(DR_KRANSTEGE_UPDATE_REQUEST, requestCaptor.getValue());
+    }
+  }
+
+  @Nested
+  class TestGetHospInformation {
+
+    @Captor private ArgumentCaptor<GetHospInformationRequest> requestCaptor;
+
+    @BeforeEach
+    void setUp() {
+      MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
+
+      requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+      responseSpec = mock(RestClient.ResponseSpec.class);
+
+      when(ppsRestClient.post()).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.uri("/hosp")).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.body(any(GetHospInformationRequest.class)))
+          .thenReturn(requestBodyUriSpec);
+      when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+    }
+
+    @Test
+    void shouldGetHospInfo() {
+      when(responseSpec.body(HospInformation.class)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
+      final var result =
+          ppsIntegrationService.getHospInformation(
+              new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID));
+      assertEquals(DR_KRANSTEGE_HOSP_INFO, result);
+    }
+
+    @Test
+    void shouldSendCorrectRequestBody() {
+      when(responseSpec.body(HospInformation.class)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
+
+      ppsIntegrationService.getHospInformation(
+          new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID));
+      verify(requestBodyUriSpec).body(requestCaptor.capture());
+
+      assertEquals(new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID), requestCaptor.getValue());
+    }
+  }
+
+  @Nested
+  class TestGetPrivatePractitioner {
+
+    @BeforeEach
+    void setUp() {
+      MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
+
+      requestHeadersUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+      responseSpec = mock(RestClient.ResponseSpec.class);
+
+      when(ppsRestClient.get()).thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.uri(ArgumentMatchers.<Function<UriBuilder, URI>>any()))
+          .thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.accept(MediaType.APPLICATION_JSON))
+          .thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID))
+          .thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID))
+          .thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
+    }
+
+    @Test
+    void shouldGetPrivatePractitioner() {
+      when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
+      final var result = ppsIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID);
+      assertEquals(DR_KRANSTEGE, result);
+    }
+  }
 }

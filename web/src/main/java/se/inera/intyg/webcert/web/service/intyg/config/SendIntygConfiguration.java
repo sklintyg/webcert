@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,41 +24,40 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class SendIntygConfiguration {
 
-    private static final String PATIENT_CONSENT_PATTERN = "Intyg skickat till mottagare {0}";
+  private static final String PATIENT_CONSENT_PATTERN = "Intyg skickat till mottagare {0}";
 
-    private String recipient;
+  private String recipient;
 
-    private WebCertUser webCertUser;
+  private WebCertUser webCertUser;
 
-    public SendIntygConfiguration() {
-        // Needed for deserialization
-    }
+  public SendIntygConfiguration() {
+    // Needed for deserialization
+  }
 
-    public SendIntygConfiguration(String recipient, WebCertUser webCertUser) {
-        super();
-        this.recipient = recipient;
-        this.webCertUser = webCertUser;
-    }
+  public SendIntygConfiguration(String recipient, WebCertUser webCertUser) {
+    super();
+    this.recipient = recipient;
+    this.webCertUser = webCertUser;
+  }
 
-    @JsonIgnore
-    public String getPatientConsentMessage() {
-        return MessageFormat.format(PATIENT_CONSENT_PATTERN, recipient);
-    }
+  @JsonIgnore
+  public String getPatientConsentMessage() {
+    return MessageFormat.format(PATIENT_CONSENT_PATTERN, recipient);
+  }
 
-    public String getRecipient() {
-        return recipient;
-    }
+  public String getRecipient() {
+    return recipient;
+  }
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
-    }
+  public void setRecipient(String recipient) {
+    this.recipient = recipient;
+  }
 
-    public WebCertUser getWebCertUser() {
-        return webCertUser;
-    }
+  public WebCertUser getWebCertUser() {
+    return webCertUser;
+  }
 
-    public void setWebCertUser(WebCertUser webCertUser) {
-        this.webCertUser = webCertUser;
-    }
-
+  public void setWebCertUser(WebCertUser webCertUser) {
+    this.webCertUser = webCertUser;
+  }
 }

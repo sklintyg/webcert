@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,286 +60,297 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class FinalizeCertificateSignServiceTest {
 
-    private static final String HSA_ID = "hsaId";
-    private static final String AUTH_SCHEME = "authScheme";
-    private static final String ID = "id";
-    private static final String TYPE = "type";
-    @Mock
-    private SendCertificateFromCertificateService sendCertificateFromCertificateService;
-    @Mock
-    private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @Mock
-    private PDLLogService pdlLogService;
-    @Mock
-    private WebCertUserService webCertUserService;
-    @Mock
-    private MonitoringLogService monitoringLogService;
-    @Mock
-    private CSIntegrationService csIntegrationService;
-    @Mock
-    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @Mock
-    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-    @InjectMocks
-    private FinalizeCertificateSignService finalizeCertificateSignService;
+  private static final String HSA_ID = "hsaId";
+  private static final String AUTH_SCHEME = "authScheme";
+  private static final String ID = "id";
+  private static final String TYPE = "type";
+  @Mock private SendCertificateFromCertificateService sendCertificateFromCertificateService;
+  @Mock private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock private PDLLogService pdlLogService;
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private MonitoringLogService monitoringLogService;
+  @Mock private CSIntegrationService csIntegrationService;
+  @Mock private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @InjectMocks private FinalizeCertificateSignService finalizeCertificateSignService;
 
-    private static final WebCertUser USER = new WebCertUser();
+  private static final WebCertUser USER = new WebCertUser();
 
-    private final Certificate certificate = new Certificate();
+  private final Certificate certificate = new Certificate();
+
+  @BeforeEach
+  void setUp() {
+    USER.setHsaId(HSA_ID);
+    USER.setAuthenticationScheme(AUTH_SCHEME);
+    doReturn(USER).when(webCertUserService).getUser();
+
+    certificate.setMetadata(CertificateMetadata.builder().id(ID).type(TYPE).build());
+
+    certificate.setLinks(Collections.emptyList());
+  }
+
+  @Nested
+  class MonitorLoggingTests {
+
+    private final ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+    private final ArgumentCaptor<RelationKod> argumentCaptorRelation =
+        ArgumentCaptor.forClass(RelationKod.class);
+
+    @Test
+    void shouldLogIntygSignedWithIdFromCertificate() {
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(monitoringLogService)
+          .logIntygSigned(
+              argumentCaptor.capture(), eq(TYPE), eq(HSA_ID), eq(AUTH_SCHEME), eq(null));
+
+      assertEquals(ID, argumentCaptor.getValue());
+    }
+
+    @Test
+    void shouldLogIntygSignedWithTypeFromCertificate() {
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(monitoringLogService)
+          .logIntygSigned(eq(ID), argumentCaptor.capture(), eq(HSA_ID), eq(AUTH_SCHEME), eq(null));
+
+      assertEquals(TYPE, argumentCaptor.getValue());
+    }
+
+    @Test
+    void shouldLogIntygSignedWithHsaIdFromWebcertUser() {
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(monitoringLogService)
+          .logIntygSigned(eq(ID), eq(TYPE), argumentCaptor.capture(), eq(AUTH_SCHEME), eq(null));
+
+      assertEquals(HSA_ID, argumentCaptor.getValue());
+    }
+
+    @Test
+    void shouldLogIntygSignedWithAuthSchemaFromWebcertUser() {
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(monitoringLogService)
+          .logIntygSigned(eq(ID), eq(TYPE), eq(HSA_ID), argumentCaptor.capture(), eq(null));
+
+      assertEquals(AUTH_SCHEME, argumentCaptor.getValue());
+    }
+
+    @Test
+    void shouldLogIntygSignedWithRelationCodeNull() {
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(monitoringLogService)
+          .logIntygSigned(
+              eq(ID), eq(TYPE), eq(HSA_ID), eq(AUTH_SCHEME), argumentCaptorRelation.capture());
+
+      assertNull(argumentCaptorRelation.getValue());
+    }
+  }
+
+  @Nested
+  class PdlLoggingTests {
+
+    private final ArgumentCaptor<Certificate> certificateArgumentCaptor =
+        ArgumentCaptor.forClass(Certificate.class);
+
+    @Test
+    void shouldLogSignWithProvidedCertificate() {
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(pdlLogService).logSign(certificateArgumentCaptor.capture());
+
+      assertEquals(certificate, certificateArgumentCaptor.getValue());
+    }
+  }
+
+  @Nested
+  class PublishCertificateStatusForCare {
+
+    @Test
+    void shouldPublishCertificateStatusUpdate() {
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.SIGNAT);
+    }
+  }
+
+  @Nested
+  class PublishCertificateAnalyticsMessageTests {
+
+    @Test
+    void shouldPublishAnalyticsMessageWhenCertificateIsSigned() {
+      final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+      when(certificateAnalyticsMessageFactory.certificateSigned(certificate))
+          .thenReturn(analyticsMessage);
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+    }
+  }
+
+  @Nested
+  class SendCertificateTests {
+
+    @Test
+    void shouldSendCertificateIfResourceLinkSendAfterSignIsPresentOnCertificate() {
+      certificate.setLinks(
+          List.of(
+              ResourceLink.builder()
+                  .type(ResourceLinkTypeEnum.SEND_AFTER_SIGN_CERTIFICATE)
+                  .build()));
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(sendCertificateFromCertificateService).sendCertificate(ID);
+    }
+
+    @Test
+    void shouldNotSendCertificateIfResourceLinkSendAfterSignIsNotPresentOnCertificate() {
+      certificate.setLinks(
+          List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.SEND_CERTIFICATE).build()));
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verifyNoInteractions(sendCertificateFromCertificateService);
+    }
+  }
+
+  @Nested
+  class NotifyHandledComplementQuestionsForParentCertificate {
+
+    private List<Question> questionsWithoutComplement;
+    private List<Question> questionsWithComplement;
 
     @BeforeEach
     void setUp() {
-        USER.setHsaId(HSA_ID);
-        USER.setAuthenticationScheme(AUTH_SCHEME);
-        doReturn(USER).when(webCertUserService).getUser();
-
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .build()
-        );
-
-        certificate.setLinks(Collections.emptyList());
+      questionsWithoutComplement = List.of(Question.builder().type(QuestionType.CONTACT).build());
+      questionsWithComplement = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
     }
 
-    @Nested
-    class MonitorLoggingTests {
-
-        private final ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
-        private final ArgumentCaptor<RelationKod> argumentCaptorRelation = ArgumentCaptor.forClass(RelationKod.class);
-
-        @Test
-        void shouldLogIntygSignedWithIdFromCertificate() {
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(monitoringLogService).logIntygSigned(argumentCaptor.capture(), eq(TYPE), eq(HSA_ID), eq(AUTH_SCHEME), eq(null));
-
-            assertEquals(ID, argumentCaptor.getValue());
-        }
-
-        @Test
-        void shouldLogIntygSignedWithTypeFromCertificate() {
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(monitoringLogService).logIntygSigned(eq(ID), argumentCaptor.capture(), eq(HSA_ID), eq(AUTH_SCHEME), eq(null));
-
-            assertEquals(TYPE, argumentCaptor.getValue());
-        }
-
-        @Test
-        void shouldLogIntygSignedWithHsaIdFromWebcertUser() {
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), argumentCaptor.capture(), eq(AUTH_SCHEME), eq(null));
-
-            assertEquals(HSA_ID, argumentCaptor.getValue());
-        }
-
-        @Test
-        void shouldLogIntygSignedWithAuthSchemaFromWebcertUser() {
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), eq(HSA_ID), argumentCaptor.capture(), eq(null));
-
-            assertEquals(AUTH_SCHEME, argumentCaptor.getValue());
-        }
-
-        @Test
-        void shouldLogIntygSignedWithRelationCodeNull() {
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), eq(HSA_ID), eq(AUTH_SCHEME), argumentCaptorRelation.capture());
-
-            assertNull(argumentCaptorRelation.getValue());
-        }
+    @Test
+    void shouldNotNotifyHandledComplementQuestionWhenNoRelations() {
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(publishCertificateStatusUpdateService, never())
+          .publish(certificate, HandelsekodEnum.HANFRFM);
     }
 
-    @Nested
-    class PdlLoggingTests {
-
-        private final ArgumentCaptor<Certificate> certificateArgumentCaptor = ArgumentCaptor.forClass(Certificate.class);
-
-        @Test
-        void shouldLogSignWithProvidedCertificate() {
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(pdlLogService).logSign(certificateArgumentCaptor.capture());
-
-            assertEquals(certificate, certificateArgumentCaptor.getValue());
-        }
+    @Test
+    void shouldNotNotifyHandledComplementQuestionWhenNoParent() {
+      certificate.getMetadata().setRelations(CertificateRelations.builder().build());
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(publishCertificateStatusUpdateService, never())
+          .publish(certificate, HandelsekodEnum.HANFRFM);
     }
 
-    @Nested
-    class PublishCertificateStatusForCare {
-
-        @Test
-        void shouldPublishCertificateStatusUpdate() {
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.SIGNAT);
-        }
+    @Test
+    void shouldNotNotifyHandledComplementQuestionWhenParentIsCopied() {
+      certificate
+          .getMetadata()
+          .setRelations(
+              CertificateRelations.builder()
+                  .parent(
+                      CertificateRelation.builder().type(CertificateRelationType.COPIED).build())
+                  .build());
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(publishCertificateStatusUpdateService, never())
+          .publish(certificate, HandelsekodEnum.HANFRFM);
     }
 
+    @Test
+    void shouldNotNotifyHandledComplementQuestionWhenParentHasNoComplementQuestions() {
+      final var parentCertificateId = "parentCertificateId";
+      certificate
+          .getMetadata()
+          .setRelations(
+              CertificateRelations.builder()
+                  .parent(
+                      CertificateRelation.builder()
+                          .certificateId(parentCertificateId)
+                          .type(CertificateRelationType.REPLACED)
+                          .build())
+                  .build());
 
-    @Nested
-    class PublishCertificateAnalyticsMessageTests {
+      doReturn(questionsWithoutComplement)
+          .when(csIntegrationService)
+          .getQuestions(parentCertificateId);
 
-        @Test
-        void shouldPublishAnalyticsMessageWhenCertificateIsSigned() {
-            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-            when(certificateAnalyticsMessageFactory.certificateSigned(certificate)).thenReturn(analyticsMessage);
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-        }
+      finalizeCertificateSignService.finalizeSign(certificate);
+      verify(publishCertificateStatusUpdateService, never())
+          .publish(certificate, HandelsekodEnum.HANFRFM);
     }
 
-    @Nested
-    class SendCertificateTests {
+    @Test
+    void shouldNotifyHandledComplementQuestionWhenReplacedParentHasComplementQuestions() {
+      final var parentCertificateId = "parentCertificateId";
+      final var parentCertificate = new Certificate();
+      certificate
+          .getMetadata()
+          .setRelations(
+              CertificateRelations.builder()
+                  .parent(
+                      CertificateRelation.builder()
+                          .certificateId(parentCertificateId)
+                          .type(CertificateRelationType.REPLACED)
+                          .build())
+                  .build());
 
-        @Test
-        void shouldSendCertificateIfResourceLinkSendAfterSignIsPresentOnCertificate() {
-            certificate.setLinks(
-                List.of(ResourceLink.builder()
-                    .type(ResourceLinkTypeEnum.SEND_AFTER_SIGN_CERTIFICATE)
-                    .build())
-            );
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(sendCertificateFromCertificateService).sendCertificate(ID);
-        }
+      doReturn(questionsWithComplement)
+          .when(csIntegrationService)
+          .getQuestions(parentCertificateId);
+      doReturn(parentCertificate)
+          .when(csIntegrationService)
+          .getInternalCertificate(parentCertificateId);
 
-        @Test
-        void shouldNotSendCertificateIfResourceLinkSendAfterSignIsNotPresentOnCertificate() {
-            certificate.setLinks(
-                List.of(ResourceLink.builder()
-                    .type(ResourceLinkTypeEnum.SEND_CERTIFICATE)
-                    .build())
-            );
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verifyNoInteractions(sendCertificateFromCertificateService);
-        }
+      finalizeCertificateSignService.finalizeSign(certificate);
+
+      verify(publishCertificateStatusUpdateService)
+          .publish(parentCertificate, HandelsekodEnum.HANFRFM);
     }
 
-    @Nested
-    class NotifyHandledComplementQuestionsForParentCertificate {
+    @Test
+    void shouldNotifyHandledComplementQuestionWhenComplementedParentHasComplementQuestions() {
+      final var parentCertificateId = "parentCertificateId";
+      final var parentCertificate = new Certificate();
+      certificate
+          .getMetadata()
+          .setRelations(
+              CertificateRelations.builder()
+                  .parent(
+                      CertificateRelation.builder()
+                          .certificateId(parentCertificateId)
+                          .type(CertificateRelationType.COMPLEMENTED)
+                          .build())
+                  .build());
 
-        private List<Question> questionsWithoutComplement;
-        private List<Question> questionsWithComplement;
+      doReturn(questionsWithComplement)
+          .when(csIntegrationService)
+          .getQuestions(parentCertificateId);
+      doReturn(parentCertificate)
+          .when(csIntegrationService)
+          .getInternalCertificate(parentCertificateId);
 
-        @BeforeEach
-        void setUp() {
-            questionsWithoutComplement = List.of(Question.builder().type(QuestionType.CONTACT).build());
-            questionsWithComplement = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
-        }
+      finalizeCertificateSignService.finalizeSign(certificate);
 
-        @Test
-        void shouldNotNotifyHandledComplementQuestionWhenNoRelations() {
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(publishCertificateStatusUpdateService, never()).publish(certificate, HandelsekodEnum.HANFRFM);
-        }
-
-        @Test
-        void shouldNotNotifyHandledComplementQuestionWhenNoParent() {
-            certificate.getMetadata().setRelations(CertificateRelations.builder().build());
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(publishCertificateStatusUpdateService, never()).publish(certificate, HandelsekodEnum.HANFRFM);
-        }
-
-        @Test
-        void shouldNotNotifyHandledComplementQuestionWhenParentIsCopied() {
-            certificate.getMetadata().setRelations(
-                CertificateRelations.builder()
-                    .parent(
-                        CertificateRelation.builder()
-                            .type(CertificateRelationType.COPIED)
-                            .build()
-                    )
-                    .build()
-            );
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(publishCertificateStatusUpdateService, never()).publish(certificate, HandelsekodEnum.HANFRFM);
-        }
-
-        @Test
-        void shouldNotNotifyHandledComplementQuestionWhenParentHasNoComplementQuestions() {
-            final var parentCertificateId = "parentCertificateId";
-            certificate.getMetadata().setRelations(
-                CertificateRelations.builder()
-                    .parent(
-                        CertificateRelation.builder()
-                            .certificateId(parentCertificateId)
-                            .type(CertificateRelationType.REPLACED)
-                            .build()
-                    )
-                    .build()
-            );
-
-            doReturn(questionsWithoutComplement).when(csIntegrationService).getQuestions(parentCertificateId);
-
-            finalizeCertificateSignService.finalizeSign(certificate);
-            verify(publishCertificateStatusUpdateService, never()).publish(certificate, HandelsekodEnum.HANFRFM);
-        }
-
-        @Test
-        void shouldNotifyHandledComplementQuestionWhenReplacedParentHasComplementQuestions() {
-            final var parentCertificateId = "parentCertificateId";
-            final var parentCertificate = new Certificate();
-            certificate.getMetadata().setRelations(
-                CertificateRelations.builder()
-                    .parent(
-                        CertificateRelation.builder()
-                            .certificateId(parentCertificateId)
-                            .type(CertificateRelationType.REPLACED)
-                            .build()
-                    )
-                    .build()
-            );
-
-            doReturn(questionsWithComplement).when(csIntegrationService).getQuestions(parentCertificateId);
-            doReturn(parentCertificate).when(csIntegrationService).getInternalCertificate(parentCertificateId);
-
-            finalizeCertificateSignService.finalizeSign(certificate);
-
-            verify(publishCertificateStatusUpdateService).publish(parentCertificate, HandelsekodEnum.HANFRFM);
-        }
-
-        @Test
-        void shouldNotifyHandledComplementQuestionWhenComplementedParentHasComplementQuestions() {
-            final var parentCertificateId = "parentCertificateId";
-            final var parentCertificate = new Certificate();
-            certificate.getMetadata().setRelations(
-                CertificateRelations.builder()
-                    .parent(
-                        CertificateRelation.builder()
-                            .certificateId(parentCertificateId)
-                            .type(CertificateRelationType.COMPLEMENTED)
-                            .build()
-                    )
-                    .build()
-            );
-
-            doReturn(questionsWithComplement).when(csIntegrationService).getQuestions(parentCertificateId);
-            doReturn(parentCertificate).when(csIntegrationService).getInternalCertificate(parentCertificateId);
-
-            finalizeCertificateSignService.finalizeSign(certificate);
-
-            verify(publishCertificateStatusUpdateService).publish(parentCertificate, HandelsekodEnum.HANFRFM);
-        }
-
-        @Test
-        void shouldNotifyHandledComplementQuestionWhenExtendedParentHasComplementQuestions() {
-            final var parentCertificateId = "parentCertificateId";
-            final var parentCertificate = new Certificate();
-            certificate.getMetadata().setRelations(
-                CertificateRelations.builder()
-                    .parent(
-                        CertificateRelation.builder()
-                            .certificateId(parentCertificateId)
-                            .type(CertificateRelationType.EXTENDED)
-                            .build()
-                    )
-                    .build()
-            );
-
-            doReturn(questionsWithComplement).when(csIntegrationService).getQuestions(parentCertificateId);
-            doReturn(parentCertificate).when(csIntegrationService).getInternalCertificate(parentCertificateId);
-
-            finalizeCertificateSignService.finalizeSign(certificate);
-
-            verify(publishCertificateStatusUpdateService).publish(parentCertificate, HandelsekodEnum.HANFRFM);
-        }
+      verify(publishCertificateStatusUpdateService)
+          .publish(parentCertificate, HandelsekodEnum.HANFRFM);
     }
+
+    @Test
+    void shouldNotifyHandledComplementQuestionWhenExtendedParentHasComplementQuestions() {
+      final var parentCertificateId = "parentCertificateId";
+      final var parentCertificate = new Certificate();
+      certificate
+          .getMetadata()
+          .setRelations(
+              CertificateRelations.builder()
+                  .parent(
+                      CertificateRelation.builder()
+                          .certificateId(parentCertificateId)
+                          .type(CertificateRelationType.EXTENDED)
+                          .build())
+                  .build());
+
+      doReturn(questionsWithComplement)
+          .when(csIntegrationService)
+          .getQuestions(parentCertificateId);
+      doReturn(parentCertificate)
+          .when(csIntegrationService)
+          .getInternalCertificate(parentCertificateId);
+
+      finalizeCertificateSignService.finalizeSign(certificate);
+
+      verify(publishCertificateStatusUpdateService)
+          .publish(parentCertificate, HandelsekodEnum.HANFRFM);
+    }
+  }
 }

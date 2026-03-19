@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,58 +33,59 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 @Service("complementCertificateFromWebcert")
 public class ComplementCertificateFacadeServiceImpl implements ComplementCertificateFacadeService {
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
-    private final ArendeService arendeService;
-    private final CopyUtkastServiceHelper copyUtkastServiceHelper;
-    private final CopyUtkastService copyUtkastService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
+  private final ArendeService arendeService;
+  private final CopyUtkastServiceHelper copyUtkastServiceHelper;
+  private final CopyUtkastService copyUtkastService;
 
-    @Autowired
-    public ComplementCertificateFacadeServiceImpl(
-        GetCertificateFacadeService getCertificateFacadeService, ArendeService arendeService,
-        CopyUtkastServiceHelper copyUtkastServiceHelper, CopyUtkastService copyUtkastService) {
-        this.getCertificateFacadeService = getCertificateFacadeService;
-        this.arendeService = arendeService;
-        this.copyUtkastServiceHelper = copyUtkastServiceHelper;
-        this.copyUtkastService = copyUtkastService;
-    }
+  @Autowired
+  public ComplementCertificateFacadeServiceImpl(
+      GetCertificateFacadeService getCertificateFacadeService,
+      ArendeService arendeService,
+      CopyUtkastServiceHelper copyUtkastServiceHelper,
+      CopyUtkastService copyUtkastService) {
+    this.getCertificateFacadeService = getCertificateFacadeService;
+    this.arendeService = arendeService;
+    this.copyUtkastServiceHelper = copyUtkastServiceHelper;
+    this.copyUtkastService = copyUtkastService;
+  }
 
-    @Override
-    public Certificate complement(String certificateId, String message) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+  @Override
+  public Certificate complement(String certificateId, String message) {
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
 
-        final var newCertificateId = complement(certificate, message);
-        return getCertificateFacadeService.getCertificate(newCertificateId, true, true);
-    }
+    final var newCertificateId = complement(certificate, message);
+    return getCertificateFacadeService.getCertificate(newCertificateId, true, true);
+  }
 
-    @Override
-    public Certificate answerComplement(String certificateId, String message) {
-        arendeService.answerKomplettering(certificateId, message);
-        return getCertificateFacadeService.getCertificate(certificateId, false, true);
-    }
+  @Override
+  public Certificate answerComplement(String certificateId, String message) {
+    arendeService.answerKomplettering(certificateId, message);
+    return getCertificateFacadeService.getCertificate(certificateId, false, true);
+  }
 
-    private String complement(Certificate certificate, String message) {
-        final var latestComplementQuestionId = arendeService.getLatestMeddelandeIdForCurrentCareUnit(certificate.getMetadata().getId());
+  private String complement(Certificate certificate, String message) {
+    final var latestComplementQuestionId =
+        arendeService.getLatestMeddelandeIdForCurrentCareUnit(certificate.getMetadata().getId());
 
-        final var copyIntygRequest = new CopyIntygRequest();
-        copyIntygRequest.setKommentar(message);
-        copyIntygRequest.setPatientPersonnummer(
-            getPersonId(certificate.getMetadata().getPatient())
-        );
+    final var copyIntygRequest = new CopyIntygRequest();
+    copyIntygRequest.setKommentar(message);
+    copyIntygRequest.setPatientPersonnummer(getPersonId(certificate.getMetadata().getPatient()));
 
-        final var serviceRequest = copyUtkastServiceHelper.createCompletionCopyRequest(
+    final var serviceRequest =
+        copyUtkastServiceHelper.createCompletionCopyRequest(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getType(),
             latestComplementQuestionId,
-            copyIntygRequest
-        );
+            copyIntygRequest);
 
-        return copyUtkastService.createCompletion(serviceRequest).getNewDraftIntygId();
-    }
+    return copyUtkastService.createCompletion(serviceRequest).getNewDraftIntygId();
+  }
 
-    private Personnummer getPersonId(Patient patient) {
-        if (patient.isReserveId()) {
-            return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
-        }
-        return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
+  private Personnummer getPersonId(Patient patient) {
+    if (patient.isReserveId()) {
+      return Personnummer.createPersonnummer(patient.getPreviousPersonId().getId()).orElseThrow();
     }
+    return Personnummer.createPersonnummer(patient.getPersonId().getId()).orElseThrow();
+  }
 }

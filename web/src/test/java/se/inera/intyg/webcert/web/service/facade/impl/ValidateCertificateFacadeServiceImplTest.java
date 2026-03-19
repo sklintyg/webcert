@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,180 +47,175 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 @ExtendWith(MockitoExtension.class)
 class ValidateCertificateFacadeServiceImplTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "lisjp";
-    private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
-    private static final String EXPECTED_TEXT = "expectedText";
-    private static final String EXPECTED_TEXT2 = "expectedText2";
-    private static final String EXPECTED_MESSAGE = "expectedMessage";
-    private static final String QUESTION_ID_40 = "40";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "lisjp";
+  private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
+  private static final String EXPECTED_TEXT = "expectedText";
+  private static final String EXPECTED_TEXT2 = "expectedText2";
+  private static final String EXPECTED_MESSAGE = "expectedMessage";
+  private static final String QUESTION_ID_40 = "40";
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
 
-    @InjectMocks
-    private ValidateCertificateFacadeServiceImpl validateCertificateFacadeService;
+  @InjectMocks private ValidateCertificateFacadeServiceImpl validateCertificateFacadeService;
 
-    private Certificate certificate;
-    private DraftValidation draftValidation = new DraftValidation();
+  private Certificate certificate;
+  private DraftValidation draftValidation = new DraftValidation();
 
-    @BeforeEach
-    void setup() throws Exception {
-        certificate = CertificateBuilder.create()
+  @BeforeEach
+  void setup() throws Exception {
+    certificate =
+        CertificateBuilder.create()
             .metadata(
                 CertificateMetadata.builder()
                     .id(CERTIFICATE_ID)
                     .type(CERTIFICATE_TYPE)
                     .typeVersion(CERTIFICATE_TYPE_VERSION)
-                    .build()
-            ).addElement(CertificateDataElement.builder()
-                .id(QUESTION_ID_40)
-                .config(CertificateDataConfigCheckboxMultipleCode.builder().build())
-                .build())
+                    .build())
+            .addElement(
+                CertificateDataElement.builder()
+                    .id(QUESTION_ID_40)
+                    .config(CertificateDataConfigCheckboxMultipleCode.builder().build())
+                    .build())
             .build();
 
-        final var currentCertificate = new Utkast();
-        currentCertificate.setModel("currentCertificateJson");
+    final var currentCertificate = new Utkast();
+    currentCertificate.setModel("currentCertificateJson");
 
-        doReturn(currentCertificate)
-            .when(utkastService)
-            .getDraft(CERTIFICATE_ID, false);
+    doReturn(currentCertificate).when(utkastService).getDraft(CERTIFICATE_ID, false);
 
-        final var moduleApi = mock(ModuleApi.class);
-        doReturn(moduleApi)
-            .when(intygModuleRegistry)
-            .getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+    final var moduleApi = mock(ModuleApi.class);
+    doReturn(moduleApi)
+        .when(intygModuleRegistry)
+        .getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
 
-        final var certificateJson = "json";
-        doReturn(certificateJson)
-            .when(moduleApi)
-            .getJsonFromCertificate(certificate, currentCertificate.getModel(), currentCertificate.getSkapad());
+    final var certificateJson = "json";
+    doReturn(certificateJson)
+        .when(moduleApi)
+        .getJsonFromCertificate(
+            certificate, currentCertificate.getModel(), currentCertificate.getSkapad());
 
-        final var messagesProvider = mock(CertificateMessagesProvider.class);
-        lenient().doReturn(messagesProvider)
-            .when(moduleApi)
-            .getMessagesProvider();
+    final var messagesProvider = mock(CertificateMessagesProvider.class);
+    lenient().doReturn(messagesProvider).when(moduleApi).getMessagesProvider();
 
-        lenient().doReturn(EXPECTED_TEXT)
-            .when(messagesProvider)
-            .get(EXPECTED_MESSAGE);
+    lenient().doReturn(EXPECTED_TEXT).when(messagesProvider).get(EXPECTED_MESSAGE);
 
-        lenient().doReturn(EXPECTED_TEXT2)
-            .when(messagesProvider)
-            .get("common.validation.ue-checkgroup-disabled.empty");
+    lenient()
+        .doReturn(EXPECTED_TEXT2)
+        .when(messagesProvider)
+        .get("common.validation.ue-checkgroup-disabled.empty");
 
-        doReturn(draftValidation)
-            .when(utkastService)
-            .validateDraft(CERTIFICATE_ID, CERTIFICATE_TYPE, certificateJson);
-    }
+    doReturn(draftValidation)
+        .when(utkastService)
+        .validateDraft(CERTIFICATE_ID, CERTIFICATE_TYPE, certificateJson);
+  }
 
-    @Test
-    void shallReturnEmptyValidationErrorsWhenValid() {
-        draftValidation.setStatus(ValidationStatus.VALID);
+  @Test
+  void shallReturnEmptyValidationErrorsWhenValid() {
+    draftValidation.setStatus(ValidationStatus.VALID);
 
-        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+    final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
-        assertEquals(0, actualValidationErrors.length);
-    }
+    assertEquals(0, actualValidationErrors.length);
+  }
 
-    @Test
-    void shallIncludeCategoryInValidationError() {
-        final var draftValidationMessage = addValidationMessage();
+  @Test
+  void shallIncludeCategoryInValidationError() {
+    final var draftValidationMessage = addValidationMessage();
 
-        final var expectedCategory = "expectedCategory";
-        draftValidationMessage.setCategory(expectedCategory);
+    final var expectedCategory = "expectedCategory";
+    draftValidationMessage.setCategory(expectedCategory);
 
-        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+    final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
-        assertEquals(expectedCategory, actualValidationErrors[0].getCategory());
-    }
+    assertEquals(expectedCategory, actualValidationErrors[0].getCategory());
+  }
 
-    @Test
-    void shallIncludeFieldInValidationError() {
-        final var draftValidationMessage = addValidationMessage();
+  @Test
+  void shallIncludeFieldInValidationError() {
+    final var draftValidationMessage = addValidationMessage();
 
-        final var expectedField = "expectedQuestionId";
-        draftValidationMessage.setField(expectedField);
+    final var expectedField = "expectedQuestionId";
+    draftValidationMessage.setField(expectedField);
 
-        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+    final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
-        assertEquals(expectedField, actualValidationErrors[0].getField());
-    }
+    assertEquals(expectedField, actualValidationErrors[0].getField());
+  }
 
-    @Test
-    void shallIncludeQuestionIdInValidationError() {
-        final var draftValidationMessage = addValidationMessage();
+  @Test
+  void shallIncludeQuestionIdInValidationError() {
+    final var draftValidationMessage = addValidationMessage();
 
-        final var expectedId = "expectedId";
-        draftValidationMessage.setQuestionId(expectedId);
+    final var expectedId = "expectedId";
+    draftValidationMessage.setQuestionId(expectedId);
 
-        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+    final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
-        assertEquals(expectedId, actualValidationErrors[0].getId());
-    }
+    assertEquals(expectedId, actualValidationErrors[0].getId());
+  }
 
-    @Test
-    void shallIncludeTypeInValidationError() {
-        final var draftValidationMessage = addValidationMessage();
+  @Test
+  void shallIncludeTypeInValidationError() {
+    final var draftValidationMessage = addValidationMessage();
 
-        final var expectedType = "EMPTY";
-        draftValidationMessage.setType(ValidationMessageType.EMPTY);
+    final var expectedType = "EMPTY";
+    draftValidationMessage.setType(ValidationMessageType.EMPTY);
 
-        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+    final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
-        assertEquals(expectedType, actualValidationErrors[0].getType());
-    }
+    assertEquals(expectedType, actualValidationErrors[0].getType());
+  }
 
-    @Test
-    void shallIncludeTextInValidationError() {
-        final var draftValidationMessage = addValidationMessage();
+  @Test
+  void shallIncludeTextInValidationError() {
+    final var draftValidationMessage = addValidationMessage();
 
-        draftValidationMessage.setMessage(EXPECTED_MESSAGE);
+    draftValidationMessage.setMessage(EXPECTED_MESSAGE);
 
-        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+    final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
-        assertEquals(EXPECTED_TEXT, actualValidationErrors[0].getText());
-    }
+    assertEquals(EXPECTED_TEXT, actualValidationErrors[0].getText());
+  }
 
-    @Test
-    void shallReturnValidationErrorEvenIfQuestionIdIsMissingAndMessageIsEmpty() {
-        final var draftValidationMessage = addValidationMessage();
+  @Test
+  void shallReturnValidationErrorEvenIfQuestionIdIsMissingAndMessageIsEmpty() {
+    final var draftValidationMessage = addValidationMessage();
 
-        draftValidationMessage.setQuestionId(null);
-        draftValidationMessage.setMessage(null);
+    draftValidationMessage.setQuestionId(null);
+    draftValidationMessage.setMessage(null);
 
-        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+    final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
-        assertEquals(1, actualValidationErrors.length);
-    }
+    assertEquals(1, actualValidationErrors.length);
+  }
 
-    @Test
-    void shallIncludeTextDependingOnComponentInValidationError() {
-        final var draftValidationMessage = addValidationMessage();
+  @Test
+  void shallIncludeTextDependingOnComponentInValidationError() {
+    final var draftValidationMessage = addValidationMessage();
 
-        draftValidationMessage.setType(ValidationMessageType.EMPTY);
-        draftValidationMessage.setMessage(null);
-        draftValidationMessage.setQuestionId(QUESTION_ID_40);
+    draftValidationMessage.setType(ValidationMessageType.EMPTY);
+    draftValidationMessage.setMessage(null);
+    draftValidationMessage.setQuestionId(QUESTION_ID_40);
 
-        final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
+    final var actualValidationErrors = validateCertificateFacadeService.validate(certificate);
 
-        assertEquals(EXPECTED_TEXT2, actualValidationErrors[0].getText());
-    }
+    assertEquals(EXPECTED_TEXT2, actualValidationErrors[0].getText());
+  }
 
-    private DraftValidationMessage addValidationMessage() {
-        draftValidation.setStatus(ValidationStatus.INVALID);
-        final var validationMessage = new DraftValidationMessage(
+  private DraftValidationMessage addValidationMessage() {
+    draftValidation.setStatus(ValidationStatus.INVALID);
+    final var validationMessage =
+        new DraftValidationMessage(
             "expectedCategory",
             "expectedField",
             ValidationMessageType.EMPTY,
             "expectedMessage",
             null,
-            "expectedQuestionId"
-        );
-        draftValidation.addMessage(validationMessage);
-        return validationMessage;
-    }
+            "expectedQuestionId");
+    draftValidation.addMessage(validationMessage);
+    return validationMessage;
+  }
 }

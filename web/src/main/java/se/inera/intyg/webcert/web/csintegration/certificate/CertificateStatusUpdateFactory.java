@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
@@ -47,59 +46,67 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 
 public class CertificateStatusUpdateFactory {
 
-    private CertificateStatusUpdateFactory() {
-        throw new IllegalStateException("Utility class");
+  private CertificateStatusUpdateFactory() {
+    throw new IllegalStateException("Utility class");
+  }
+
+  public static byte[] create(
+      String encodedXmlRepresentation,
+      HandelsekodEnum eventType,
+      LocalDateTime now,
+      String handledByHsaId,
+      String reference,
+      ArendeCount sentQuestions,
+      ArendeCount recievedQuestions,
+      LocalDate lastDateToAnswer,
+      ArendeAmne subject) {
+    final var request = getRegisterCertificateType(encodedXmlRepresentation);
+
+    final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
+    certificateStatusUpdateForCareType.setIntyg(request.getIntyg());
+    certificateStatusUpdateForCareType.setHandelse(
+        NotificationRedeliveryUtil.getEventV3(eventType, now, subject, lastDateToAnswer));
+    certificateStatusUpdateForCareType.setSkickadeFragor(
+        NotificationTypeConverter.toArenden(sentQuestions));
+    certificateStatusUpdateForCareType.setMottagnaFragor(
+        NotificationTypeConverter.toArenden(recievedQuestions));
+    certificateStatusUpdateForCareType.setHanteratAv(
+        NotificationRedeliveryUtil.getIIType(new HsaId(), handledByHsaId, HSA_ID_OID));
+    certificateStatusUpdateForCareType.setRef(reference);
+
+    final var factory = new ObjectFactory();
+    final var certificateStatusUpdateForCare =
+        factory.createCertificateStatusUpdateForCare(certificateStatusUpdateForCareType);
+    return convertToByteArray(certificateStatusUpdateForCare);
+  }
+
+  private static RegisterCertificateType getRegisterCertificateType(
+      String encodedXmlRepresentation) {
+    final var decodedXmlRepresentation =
+        new String(Base64.getDecoder().decode(encodedXmlRepresentation), StandardCharsets.UTF_8);
+    final var element = XmlMarshallerHelper.unmarshal(decodedXmlRepresentation);
+    return (RegisterCertificateType) element.getValue();
+  }
+
+  private static byte[] convertToByteArray(
+      JAXBElement<CertificateStatusUpdateForCareType> jaxbElement) {
+    try {
+      final var context =
+          JAXBContext.newInstance(
+              CertificateStatusUpdateForCareType.class,
+              DatePeriodType.class,
+              PartialDateType.class,
+              XPathType.class,
+              PQType.class);
+
+      final var marshaller = context.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      final var outputStream = new ByteArrayOutputStream();
+      marshaller.marshal(jaxbElement, outputStream);
+
+      return outputStream.toByteArray();
+    } catch (JAXBException e) {
+      throw new IllegalStateException(e);
     }
-
-    public static byte[] create(String encodedXmlRepresentation, HandelsekodEnum eventType,
-        LocalDateTime now, String handledByHsaId, String reference, ArendeCount sentQuestions, ArendeCount recievedQuestions,
-        LocalDate lastDateToAnswer, ArendeAmne subject) {
-        final var request = getRegisterCertificateType(encodedXmlRepresentation);
-
-        final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
-        certificateStatusUpdateForCareType.setIntyg(request.getIntyg());
-        certificateStatusUpdateForCareType.setHandelse(
-            NotificationRedeliveryUtil.getEventV3(eventType, now, subject, lastDateToAnswer)
-        );
-        certificateStatusUpdateForCareType.setSkickadeFragor(NotificationTypeConverter.toArenden(sentQuestions));
-        certificateStatusUpdateForCareType.setMottagnaFragor(NotificationTypeConverter.toArenden(recievedQuestions));
-        certificateStatusUpdateForCareType.setHanteratAv(
-            NotificationRedeliveryUtil.getIIType(new HsaId(), handledByHsaId, HSA_ID_OID)
-        );
-        certificateStatusUpdateForCareType.setRef(reference);
-
-        final var factory = new ObjectFactory();
-        final var certificateStatusUpdateForCare = factory.createCertificateStatusUpdateForCare(certificateStatusUpdateForCareType);
-        return convertToByteArray(certificateStatusUpdateForCare);
-    }
-
-    private static RegisterCertificateType getRegisterCertificateType(String encodedXmlRepresentation) {
-        final var decodedXmlRepresentation = new String(
-            Base64.getDecoder().decode(encodedXmlRepresentation),
-            StandardCharsets.UTF_8
-        );
-        final var element = XmlMarshallerHelper.unmarshal(decodedXmlRepresentation);
-        return (RegisterCertificateType) element.getValue();
-    }
-
-    private static byte[] convertToByteArray(JAXBElement<CertificateStatusUpdateForCareType> jaxbElement) {
-        try {
-            final var context = JAXBContext.newInstance(
-                CertificateStatusUpdateForCareType.class,
-                DatePeriodType.class,
-                PartialDateType.class,
-                XPathType.class,
-                PQType.class
-            );
-
-            final var marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            final var outputStream = new ByteArrayOutputStream();
-            marshaller.marshal(jaxbElement, outputStream);
-
-            return outputStream.toByteArray();
-        } catch (JAXBException e) {
-            throw new IllegalStateException(e);
-        }
-    }
+  }
 }

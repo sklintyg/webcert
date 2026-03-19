@@ -1,6 +1,26 @@
+/*
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.srs;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,17 +45,16 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 @ExtendWith(MockitoExtension.class)
 class GetSrsCertificateFromWebcertTest {
 
-  @Mock
-  private IntygModuleFacade intygModuleFacade;
+  @Mock private IntygModuleFacade intygModuleFacade;
 
-  @Mock
-  private IntygService intygService;
+  @Mock private IntygService intygService;
 
   private GetSrsCertificateFromWebcert getSrsCertificateFromWebcert;
 
   @BeforeEach
   void setUp() {
-    getSrsCertificateFromWebcert = new GetSrsCertificateFromWebcert(intygModuleFacade, intygService);
+    getSrsCertificateFromWebcert =
+        new GetSrsCertificateFromWebcert(intygModuleFacade, intygService);
   }
 
   @Test
@@ -61,7 +80,8 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldReturnNullWhenCertificateNotFound() {
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(null);
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(null);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
 
@@ -71,11 +91,10 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldReturnNullWhenCertificateContentIsNull() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents(null)
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents(null).build();
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
 
@@ -84,14 +103,14 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldReturnSrsCertificateWithBasicInfo() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
     final var utlatande = createBasicUtlatande("cert-1");
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -102,16 +121,16 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldSetSignedDateWhenAvailable() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
     LocalDateTime signingDateTime = LocalDateTime.of(2025, 10, 30, 14, 30);
     final var utlatande = createBasicUtlatande("cert-1");
     utlatande.getGrundData().setSigneringsdatum(signingDateTime);
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -122,17 +141,17 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldSetMainDiagnosisCodeWhenAvailable() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
     final var diagnoser = new ArrayList<Diagnos>();
     diagnoser.add(Diagnos.create("F438A", "ICD_10_SE", "Description", "Display"));
 
     final var utlatande = createUtlatandeWithDiagnoses("cert-1", diagnoser);
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -143,9 +162,7 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldSetExtendsCertificateIdWhenRelationIsFRLANG() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
     final var utlatande = createBasicUtlatande("cert-1");
     final var relation = new Relation();
@@ -153,8 +170,10 @@ class GetSrsCertificateFromWebcertTest {
     relation.setRelationIntygsId("parent-cert-1");
     utlatande.getGrundData().setRelation(relation);
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -165,9 +184,7 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldNotSetExtendsCertificateIdWhenRelationIsNotFRLANG() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
     final var utlatande = createBasicUtlatande("cert-1");
     final var relation = new Relation();
@@ -175,8 +192,10 @@ class GetSrsCertificateFromWebcertTest {
     relation.setRelationIntygsId("parent-cert-1");
     utlatande.getGrundData().setRelation(relation);
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -187,9 +206,7 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldNotSetExtendsCertificateIdWhenRelationIntygsIdIsEmpty() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
     final var utlatande = createBasicUtlatande("cert-1");
     final var relation = new Relation();
@@ -197,8 +214,10 @@ class GetSrsCertificateFromWebcertTest {
     relation.setRelationIntygsId("");
     utlatande.getGrundData().setRelation(relation);
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -209,9 +228,7 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldReturnCompletelyPopulatedSrsCertificate() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
     final var signingDateTime = LocalDateTime.of(2025, 10, 30, 14, 30);
 
@@ -227,8 +244,10 @@ class GetSrsCertificateFromWebcertTest {
     relation.setRelationIntygsId("parent-cert-1");
     utlatande.getGrundData().setRelation(relation);
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -242,18 +261,19 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldHandleUtlatandeWithoutGrundData() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
-    final var utlatande = LisjpUtlatandeV1.builder()
-        .setId("cert-1")
-        .setGrundData(new GrundData())
-        .setTextVersion("1.0")
-        .build();
+    final var utlatande =
+        LisjpUtlatandeV1.builder()
+            .setId("cert-1")
+            .setGrundData(new GrundData())
+            .setTextVersion("1.0")
+            .build();
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -266,14 +286,14 @@ class GetSrsCertificateFromWebcertTest {
 
   @Test
   void shouldHandleEmptyDiagnosisList() {
-    final var contentHolder = IntygContentHolder.builder()
-        .contents("model-content")
-        .build();
+    final var contentHolder = IntygContentHolder.builder().contents("model-content").build();
 
     final var utlatande = createUtlatandeWithDiagnoses("cert-1", new ArrayList<>());
 
-    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID)).thenReturn(contentHolder);
-    when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "model-content"))
+    when(intygService.fetchIntygDataWithRelations("cert-1", LisjpEntryPoint.MODULE_ID))
+        .thenReturn(contentHolder);
+    when(intygModuleFacade.getUtlatandeFromInternalModel(
+            LisjpEntryPoint.MODULE_ID, "model-content"))
         .thenReturn(utlatande);
 
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
@@ -302,7 +322,4 @@ class GetSrsCertificateFromWebcertTest {
         .setTextVersion("1.0")
         .build();
   }
-
 }
-
-

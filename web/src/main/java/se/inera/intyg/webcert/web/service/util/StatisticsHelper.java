@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,17 +27,22 @@ import java.util.stream.Stream;
 
 public class StatisticsHelper {
 
-    public static Map<String, Long> mergeArendeAndFragaSvarMaps(Map<String, Long> fragaSvarStatsMap, Map<String, Long> arendeStatsMap) {
-        Map<String, Long> mergedMap = new HashMap<>();
+  public static Map<String, Long> mergeArendeAndFragaSvarMaps(
+      Map<String, Long> fragaSvarStatsMap, Map<String, Long> arendeStatsMap) {
+    Map<String, Long> mergedMap = new HashMap<>();
 
-        Set<String> uniqueEnhetsId = Stream.of(fragaSvarStatsMap.keySet(), arendeStatsMap.keySet()).flatMap(Collection::stream).distinct()
+    Set<String> uniqueEnhetsId =
+        Stream.of(fragaSvarStatsMap.keySet(), arendeStatsMap.keySet())
+            .flatMap(Collection::stream)
+            .distinct()
             .collect(Collectors.toSet());
 
-        for (String enhetId : uniqueEnhetsId) {
-            Long sum = (fragaSvarStatsMap.get(enhetId) != null ? fragaSvarStatsMap.get(enhetId) : 0)
-                + (arendeStatsMap.get(enhetId) != null ? arendeStatsMap.get(enhetId) : 0);
-            mergedMap.put(enhetId, sum);
-        }
-        return mergedMap;
+    for (String enhetId : uniqueEnhetsId) {
+      Long sum =
+          (fragaSvarStatsMap.get(enhetId) != null ? fragaSvarStatsMap.get(enhetId) : 0)
+              + (arendeStatsMap.get(enhetId) != null ? arendeStatsMap.get(enhetId) : 0);
+      mergedMap.put(enhetId, sum);
     }
+    return mergedMap;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,47 +30,51 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.GetCandidateMessageForCertificateDTO;
 
 @Service
-public class GetCandidateMessageForCertificateFacadeServiceImpl implements GetCandidateMesssageForCertificateFacadeService {
+public class GetCandidateMessageForCertificateFacadeServiceImpl
+    implements GetCandidateMesssageForCertificateFacadeService {
 
-    private static final String MISSING_MESSAGE = "Saknar meddelande";
-    private static final String MISSING_TITLE = "Saknar titel";
-    private static final String UNIT_TITLE_TEXT = "Information om vårdenhet";
-    private final GetCertificateFacadeService getCertificateFacadeService;
-    private final CandidateDataHelper candidateDataHelper;
+  private static final String MISSING_MESSAGE = "Saknar meddelande";
+  private static final String MISSING_TITLE = "Saknar titel";
+  private static final String UNIT_TITLE_TEXT = "Information om vårdenhet";
+  private final GetCertificateFacadeService getCertificateFacadeService;
+  private final CandidateDataHelper candidateDataHelper;
 
-    public GetCandidateMessageForCertificateFacadeServiceImpl(GetCertificateFacadeService getCertificateFacadeService,
-        CandidateDataHelper candidateDataHelper) {
-        this.getCertificateFacadeService = getCertificateFacadeService;
-        this.candidateDataHelper = candidateDataHelper;
+  public GetCandidateMessageForCertificateFacadeServiceImpl(
+      GetCertificateFacadeService getCertificateFacadeService,
+      CandidateDataHelper candidateDataHelper) {
+    this.getCertificateFacadeService = getCertificateFacadeService;
+    this.candidateDataHelper = candidateDataHelper;
+  }
+
+  @Override
+  public GetCandidateMessageForCertificateDTO get(String certificateId) {
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+    final var candidateMetadata = getCandidateMetadata(certificate);
+
+    if (candidateMetadata.isEmpty()) {
+      return GetCandidateMessageForCertificateDTO.create(MISSING_MESSAGE, MISSING_TITLE);
     }
 
-    @Override
-    public GetCandidateMessageForCertificateDTO get(String certificateId) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
-        final var candidateMetadata = getCandidateMetadata(certificate);
-
-        if (candidateMetadata.isEmpty()) {
-            return GetCandidateMessageForCertificateDTO.create(MISSING_MESSAGE, MISSING_TITLE);
-        }
-
-        if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(candidateMetadata.get().getIntygType())) {
-            return GetCandidateMessageForCertificateDTO.create(getDbMessage(candidateMetadata.get().getEnhetName()), UNIT_TITLE_TEXT);
-        }
-        return GetCandidateMessageForCertificateDTO.create(MISSING_MESSAGE, MISSING_TITLE);
+    if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(candidateMetadata.get().getIntygType())) {
+      return GetCandidateMessageForCertificateDTO.create(
+          getDbMessage(candidateMetadata.get().getEnhetName()), UNIT_TITLE_TEXT);
     }
+    return GetCandidateMessageForCertificateDTO.create(MISSING_MESSAGE, MISSING_TITLE);
+  }
 
-    private String getDbMessage(String enhetName) {
-        return "<p>Det finns ett signerat dödsbevis för detta personnummer på "
-            + "<span class='iu-fw-bold'>"
-            + enhetName
-            + "</span>. Det är tyvärr inte möjligt att kopiera de svar som givits i det intyget till detta intygsutkast. ";
-    }
+  private String getDbMessage(String enhetName) {
+    return "<p>Det finns ett signerat dödsbevis för detta personnummer på "
+        + "<span class='iu-fw-bold'>"
+        + enhetName
+        + "</span>. Det är tyvärr inte möjligt att kopiera de svar som givits i det intyget till detta intygsutkast. ";
+  }
 
-    private Optional<UtkastCandidateMetaData> getCandidateMetadata(Certificate certificate) {
-        return candidateDataHelper.getCandidateMetadata(
-            certificate.getMetadata().getType(),
-            certificate.getMetadata().getTypeVersion(),
-            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow()
-        );
-    }
+  private Optional<UtkastCandidateMetaData> getCandidateMetadata(Certificate certificate) {
+    return candidateDataHelper.getCandidateMetadata(
+        certificate.getMetadata().getType(),
+        certificate.getMetadata().getTypeVersion(),
+        Personnummer.createPersonnummer(
+                certificate.getMetadata().getPatient().getPersonId().getId())
+            .orElseThrow());
+  }
 }

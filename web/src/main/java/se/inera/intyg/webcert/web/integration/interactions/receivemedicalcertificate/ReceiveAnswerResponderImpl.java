@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,67 +48,74 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
  * @author andreaskaltenbach
  */
 @SchemaValidation
-public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnswerResponderInterface {
+public class ReceiveAnswerResponderImpl
+    implements ReceiveMedicalCertificateAnswerResponderInterface {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveAnswerResponderImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveAnswerResponderImpl.class);
 
-    @Autowired
-    private FragaSvarService fragaSvarService;
+  @Autowired private FragaSvarService fragaSvarService;
 
-    @Autowired
-    private NotificationService notificationService;
+  @Autowired private NotificationService notificationService;
 
-    @Autowired
-    private CertificateEventService certificateEventService;
+  @Autowired private CertificateEventService certificateEventService;
 
-    @Override
-    @PerformanceLogging(eventAction = "receive-medical-certificate-answer", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public ReceiveMedicalCertificateAnswerResponseType receiveMedicalCertificateAnswer(
-        AttributedURIType logicalAddress, ReceiveMedicalCertificateAnswerType request) {
+  @Override
+  @PerformanceLogging(
+      eventAction = "receive-medical-certificate-answer",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public ReceiveMedicalCertificateAnswerResponseType receiveMedicalCertificateAnswer(
+      AttributedURIType logicalAddress, ReceiveMedicalCertificateAnswerType request) {
 
-        ReceiveMedicalCertificateAnswerResponseType response = new ReceiveMedicalCertificateAnswerResponseType();
+    ReceiveMedicalCertificateAnswerResponseType response =
+        new ReceiveMedicalCertificateAnswerResponseType();
 
-        // Validate incoming request
-        List<String> validationMessages = QuestionAnswerValidator.validate(request);
-        if (!validationMessages.isEmpty()) {
-            response.setResult(ResultOfCallUtil.failResult(Joiner.on(",").join(validationMessages)));
-            return response;
-        }
-
-        // Fetch the answer
-        AnswerFromFkType answerType = request.getAnswer();
-
-        // Verify there is a valid reference ID
-        Long referensId;
-        try {
-            referensId = Long.parseLong(answerType.getVardReferensId());
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("No question found with internal ID " + request.getAnswer().getVardReferensId(), e);
-        }
-
-        // Set result and send response back to caller
-        response.setResult(ResultOfCallUtil.okResult());
-
-        // Notify stakeholders and return the response
-        sendNotification(processAnswer(referensId, answerType.getSvar()));
-
-        certificateEventService.createCertificateEvent(referensId.toString(), "FK", EventCode.NYSVFM,
-            String.format("received medical certificate answer: %s}", answerType.getSvar()));
-
-        return response;
+    // Validate incoming request
+    List<String> validationMessages = QuestionAnswerValidator.validate(request);
+    if (!validationMessages.isEmpty()) {
+      response.setResult(ResultOfCallUtil.failResult(Joiner.on(",").join(validationMessages)));
+      return response;
     }
 
-    private FragaSvar processAnswer(Long referensId, InnehallType answerContents) {
-        long refId = referensId;
-        String text = answerContents.getMeddelandeText();
-        LocalDateTime ldt = answerContents.getSigneringsTidpunkt();
+    // Fetch the answer
+    AnswerFromFkType answerType = request.getAnswer();
 
-        return fragaSvarService.processIncomingAnswer(refId, text, ldt);
+    // Verify there is a valid reference ID
+    Long referensId;
+    try {
+      referensId = Long.parseLong(answerType.getVardReferensId());
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException(
+          "No question found with internal ID " + request.getAnswer().getVardReferensId(), e);
     }
 
-    private void sendNotification(FragaSvar fragaSvar) {
-        notificationService.sendNotificationForAnswerRecieved(fragaSvar);
-        LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.",
-            fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
-    }
+    // Set result and send response back to caller
+    response.setResult(ResultOfCallUtil.okResult());
+
+    // Notify stakeholders and return the response
+    sendNotification(processAnswer(referensId, answerType.getSvar()));
+
+    certificateEventService.createCertificateEvent(
+        referensId.toString(),
+        "FK",
+        EventCode.NYSVFM,
+        String.format("received medical certificate answer: %s}", answerType.getSvar()));
+
+    return response;
+  }
+
+  private FragaSvar processAnswer(Long referensId, InnehallType answerContents) {
+    long refId = referensId;
+    String text = answerContents.getMeddelandeText();
+    LocalDateTime ldt = answerContents.getSigneringsTidpunkt();
+
+    return fragaSvarService.processIncomingAnswer(refId, text, ldt);
+  }
+
+  private void sendNotification(FragaSvar fragaSvar) {
+    notificationService.sendNotificationForAnswerRecieved(fragaSvar);
+    LOGGER.debug(
+        "Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.",
+        fragaSvar.getInternReferens(),
+        fragaSvar.getIntygsReferens().getIntygsId());
+  }
 }

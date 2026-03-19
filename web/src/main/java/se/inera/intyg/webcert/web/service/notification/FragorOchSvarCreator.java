@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,16 +24,15 @@ import se.inera.intyg.common.support.modules.support.api.notification.FragorOchS
 
 public interface FragorOchSvarCreator {
 
-    FragorOchSvar createFragorOchSvar(String intygsId);
+  FragorOchSvar createFragorOchSvar(String intygsId);
 
-    /**
-     * Returns counters for number of handled and unhandled questions and answers for the certificate.
-     *
-     * @param intygsId the id of the certificate
-     * @param intygstyp type of the certificate
-     * @return a pair of the counters split into left side containing the sent questions and right side the received
-     * questions
-     */
-    Pair<ArendeCount, ArendeCount> createArenden(String intygsId, String intygstyp);
-
+  /**
+   * Returns counters for number of handled and unhandled questions and answers for the certificate.
+   *
+   * @param intygsId the id of the certificate
+   * @param intygstyp type of the certificate
+   * @return a pair of the counters split into left side containing the sent questions and right
+   *     side the received questions
+   */
+  Pair<ArendeCount, ArendeCount> createArenden(String intygsId, String intygstyp);
 }

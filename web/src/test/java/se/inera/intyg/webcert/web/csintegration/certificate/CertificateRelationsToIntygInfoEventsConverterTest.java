@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,253 +42,216 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 @ExtendWith(MockitoExtension.class)
 class CertificateRelationsToIntygInfoEventsConverterTest {
 
-    @Mock
-    private CertificateRelationToIntygEventInfoConverter certificateRelationToIntygEventInfoConverter;
-    @Mock
-    private CSIntegrationService csIntegrationService;
-    @Mock
-    private GetCertificateInternalServiceFromWC getCertificateInternalServiceFromWC;
+  @Mock
+  private CertificateRelationToIntygEventInfoConverter certificateRelationToIntygEventInfoConverter;
 
-    @InjectMocks
-    private CertificateRelationsToIntygInfoEventsConverter certificateRelationsToIntygInfoEventsConverter;
+  @Mock private CSIntegrationService csIntegrationService;
+  @Mock private GetCertificateInternalServiceFromWC getCertificateInternalServiceFromWC;
 
-    @Test
-    void shouldReturnEmptyListIfNoEvents() {
-        final var certificate = new Certificate();
-        final var metadata = CertificateMetadata.builder()
+  @InjectMocks
+  private CertificateRelationsToIntygInfoEventsConverter
+      certificateRelationsToIntygInfoEventsConverter;
+
+  @Test
+  void shouldReturnEmptyListIfNoEvents() {
+    final var certificate = new Certificate();
+    final var metadata =
+        CertificateMetadata.builder()
             .relations(
                 CertificateRelations.builder()
                     .parent(null)
                     .children(new CertificateRelation[0])
-                    .build()
-            ).build();
-        certificate.setMetadata(metadata);
-
-        assertEquals(
-            Collections.emptyList(),
-            certificateRelationsToIntygInfoEventsConverter.convert(certificate)
-        );
-    }
-
-    @Test
-    void shouldReturnEmptyListIfNullEvents() {
-        final var certificate = new Certificate();
-        final var metadata = CertificateMetadata.builder()
-            .relations(null)
+                    .build())
             .build();
-        certificate.setMetadata(metadata);
+    certificate.setMetadata(metadata);
 
-        assertEquals(
-            Collections.emptyList(),
-            certificateRelationsToIntygInfoEventsConverter.convert(certificate)
-        );
-    }
+    assertEquals(
+        Collections.emptyList(),
+        certificateRelationsToIntygInfoEventsConverter.convert(certificate));
+  }
 
-    @Test
-    void shouldReturnEmptyListIfNullChildrenEvents() {
-        final var certificate = new Certificate();
-        final var metadata = CertificateMetadata.builder()
-            .relations(
-                CertificateRelations.builder()
-                    .parent(null)
-                    .children(null)
-                    .build()
-            )
+  @Test
+  void shouldReturnEmptyListIfNullEvents() {
+    final var certificate = new Certificate();
+    final var metadata = CertificateMetadata.builder().relations(null).build();
+    certificate.setMetadata(metadata);
+
+    assertEquals(
+        Collections.emptyList(),
+        certificateRelationsToIntygInfoEventsConverter.convert(certificate));
+  }
+
+  @Test
+  void shouldReturnEmptyListIfNullChildrenEvents() {
+    final var certificate = new Certificate();
+    final var metadata =
+        CertificateMetadata.builder()
+            .relations(CertificateRelations.builder().parent(null).children(null).build())
             .build();
-        certificate.setMetadata(metadata);
+    certificate.setMetadata(metadata);
 
-        assertEquals(
-            Collections.emptyList(),
-            certificateRelationsToIntygInfoEventsConverter.convert(certificate)
-        );
-    }
+    assertEquals(
+        Collections.emptyList(),
+        certificateRelationsToIntygInfoEventsConverter.convert(certificate));
+  }
 
-    @Test
-    void shouldReturnChildRelation() {
-        final var certificate = new Certificate();
-        final var relatedCertificate = new Certificate();
-        final var childRelation = CertificateRelation.builder().certificateId("ID").build();
-        final var childEvent = new IntygInfoEvent(Source.WEBCERT);
-        final var metadata = CertificateMetadata.builder()
+  @Test
+  void shouldReturnChildRelation() {
+    final var certificate = new Certificate();
+    final var relatedCertificate = new Certificate();
+    final var childRelation = CertificateRelation.builder().certificateId("ID").build();
+    final var childEvent = new IntygInfoEvent(Source.WEBCERT);
+    final var metadata =
+        CertificateMetadata.builder()
             .id("ORIGINAL_ID")
             .relations(
                 CertificateRelations.builder()
                     .parent(null)
-                    .children(
-                        Array.of(
-                            childRelation
-                        ).toJavaArray(CertificateRelation[]::new)
-                    )
-                    .build()
-            )
+                    .children(Array.of(childRelation).toJavaArray(CertificateRelation[]::new))
+                    .build())
             .build();
-        certificate.setMetadata(metadata);
+    certificate.setMetadata(metadata);
 
-        when(csIntegrationService.getInternalCertificate("ID"))
-            .thenReturn(relatedCertificate);
-        when(certificateRelationToIntygEventInfoConverter.convert(childRelation, relatedCertificate, true))
-            .thenReturn(childEvent);
+    when(csIntegrationService.getInternalCertificate("ID")).thenReturn(relatedCertificate);
+    when(certificateRelationToIntygEventInfoConverter.convert(
+            childRelation, relatedCertificate, true))
+        .thenReturn(childEvent);
 
-        final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+    final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
 
-        assertEquals(
-            List.of(childEvent),
-            response
-        );
-    }
+    assertEquals(List.of(childEvent), response);
+  }
 
-    @Test
-    void shouldReturnParentRelation() {
-        final var certificate = new Certificate();
-        final var parentRelatedCertificate = new Certificate();
-        final var parentRelation = CertificateRelation.builder().certificateId("ID").build();
-        final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
-        final var metadata = CertificateMetadata.builder()
+  @Test
+  void shouldReturnParentRelation() {
+    final var certificate = new Certificate();
+    final var parentRelatedCertificate = new Certificate();
+    final var parentRelation = CertificateRelation.builder().certificateId("ID").build();
+    final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
+    final var metadata =
+        CertificateMetadata.builder()
             .id("ORIGINAL_ID")
             .relations(
                 CertificateRelations.builder()
                     .parent(parentRelation)
                     .children(new CertificateRelation[0])
-                    .build()
-            )
+                    .build())
             .build();
-        certificate.setMetadata(metadata);
-        when(csIntegrationService.certificateExists("ID"))
-            .thenReturn(true);
-        when(csIntegrationService.getInternalCertificate("ID"))
-            .thenReturn(parentRelatedCertificate);
-        when(certificateRelationToIntygEventInfoConverter.convert(parentRelation, parentRelatedCertificate, false))
-            .thenReturn(parentEvent);
+    certificate.setMetadata(metadata);
+    when(csIntegrationService.certificateExists("ID")).thenReturn(true);
+    when(csIntegrationService.getInternalCertificate("ID")).thenReturn(parentRelatedCertificate);
+    when(certificateRelationToIntygEventInfoConverter.convert(
+            parentRelation, parentRelatedCertificate, false))
+        .thenReturn(parentEvent);
 
-        final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+    final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
 
-        assertEquals(
-            List.of(parentEvent),
-            response
-        );
-    }
+    assertEquals(List.of(parentEvent), response);
+  }
 
-    @Test
-    void shouldReturnParentRelationFromWebcert() {
-        final var certificate = new Certificate();
-        final var parentRelatedCertificate = new Certificate();
-        final var parentRelation = CertificateRelation.builder().certificateId("ID").build();
-        final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
-        final var metadata = CertificateMetadata.builder()
+  @Test
+  void shouldReturnParentRelationFromWebcert() {
+    final var certificate = new Certificate();
+    final var parentRelatedCertificate = new Certificate();
+    final var parentRelation = CertificateRelation.builder().certificateId("ID").build();
+    final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
+    final var metadata =
+        CertificateMetadata.builder()
             .id("ORIGINAL_ID")
             .relations(
                 CertificateRelations.builder()
                     .parent(parentRelation)
                     .children(new CertificateRelation[0])
-                    .build()
-            )
+                    .build())
             .build();
-        certificate.setMetadata(metadata);
+    certificate.setMetadata(metadata);
 
-        final var getCertificateResponse = new GetCertificateResponse();
-        getCertificateResponse.setCertificate(parentRelatedCertificate);
+    final var getCertificateResponse = new GetCertificateResponse();
+    getCertificateResponse.setCertificate(parentRelatedCertificate);
 
-        when(csIntegrationService.certificateExists("ID"))
-            .thenReturn(false);
-        when(getCertificateInternalServiceFromWC.get("ID", null))
-            .thenReturn(getCertificateResponse);
-        when(certificateRelationToIntygEventInfoConverter.convert(parentRelation, parentRelatedCertificate, false))
-            .thenReturn(parentEvent);
+    when(csIntegrationService.certificateExists("ID")).thenReturn(false);
+    when(getCertificateInternalServiceFromWC.get("ID", null)).thenReturn(getCertificateResponse);
+    when(certificateRelationToIntygEventInfoConverter.convert(
+            parentRelation, parentRelatedCertificate, false))
+        .thenReturn(parentEvent);
 
-        final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+    final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
 
-        assertEquals(
-            List.of(parentEvent),
-            response
-        );
-    }
+    assertEquals(List.of(parentEvent), response);
+  }
 
-    @Test
-    void shouldReturnChildAndParentRelation() {
-        final var certificate = new Certificate();
-        final var relatedCertificate = new Certificate();
-        final var parentRelatedCertificate = new Certificate();
-        final var childRelation = CertificateRelation.builder().certificateId("CHILD_ID").build();
-        final var parentRelation = CertificateRelation.builder().certificateId("PARENT_ID").build();
-        final var childEvent = new IntygInfoEvent(Source.WEBCERT);
-        final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
-        final var metadata = CertificateMetadata.builder()
+  @Test
+  void shouldReturnChildAndParentRelation() {
+    final var certificate = new Certificate();
+    final var relatedCertificate = new Certificate();
+    final var parentRelatedCertificate = new Certificate();
+    final var childRelation = CertificateRelation.builder().certificateId("CHILD_ID").build();
+    final var parentRelation = CertificateRelation.builder().certificateId("PARENT_ID").build();
+    final var childEvent = new IntygInfoEvent(Source.WEBCERT);
+    final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
+    final var metadata =
+        CertificateMetadata.builder()
             .id("ORIGINAL_ID")
             .relations(
                 CertificateRelations.builder()
                     .parent(parentRelation)
-                    .children(
-                        Array.of(
-                            childRelation
-                        ).toJavaArray(CertificateRelation[]::new)
-                    )
-                    .build()
-            )
+                    .children(Array.of(childRelation).toJavaArray(CertificateRelation[]::new))
+                    .build())
             .build();
-        certificate.setMetadata(metadata);
+    certificate.setMetadata(metadata);
 
-        when(csIntegrationService.certificateExists("PARENT_ID"))
-            .thenReturn(true);
-        when(csIntegrationService.getInternalCertificate("CHILD_ID"))
-            .thenReturn(relatedCertificate);
-        when(csIntegrationService.getInternalCertificate("PARENT_ID"))
-            .thenReturn(parentRelatedCertificate);
-        when(certificateRelationToIntygEventInfoConverter.convert(childRelation, relatedCertificate, true))
-            .thenReturn(childEvent);
-        when(certificateRelationToIntygEventInfoConverter.convert(parentRelation, parentRelatedCertificate, false))
-            .thenReturn(parentEvent);
+    when(csIntegrationService.certificateExists("PARENT_ID")).thenReturn(true);
+    when(csIntegrationService.getInternalCertificate("CHILD_ID")).thenReturn(relatedCertificate);
+    when(csIntegrationService.getInternalCertificate("PARENT_ID"))
+        .thenReturn(parentRelatedCertificate);
+    when(certificateRelationToIntygEventInfoConverter.convert(
+            childRelation, relatedCertificate, true))
+        .thenReturn(childEvent);
+    when(certificateRelationToIntygEventInfoConverter.convert(
+            parentRelation, parentRelatedCertificate, false))
+        .thenReturn(parentEvent);
 
-        final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+    final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
 
-        assertEquals(
-            List.of(parentEvent, childEvent),
-            response
-        );
-    }
+    assertEquals(List.of(parentEvent, childEvent), response);
+  }
 
-    @Test
-    void shouldReturnChildAndParentRelationWhenParentFromWebcert() {
-        final var certificate = new Certificate();
-        final var relatedCertificate = new Certificate();
-        final var parentRelatedCertificate = new Certificate();
-        final var childRelation = CertificateRelation.builder().certificateId("CHILD_ID").build();
-        final var parentRelation = CertificateRelation.builder().certificateId("PARENT_ID").build();
-        final var childEvent = new IntygInfoEvent(Source.WEBCERT);
-        final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
-        final var metadata = CertificateMetadata.builder()
+  @Test
+  void shouldReturnChildAndParentRelationWhenParentFromWebcert() {
+    final var certificate = new Certificate();
+    final var relatedCertificate = new Certificate();
+    final var parentRelatedCertificate = new Certificate();
+    final var childRelation = CertificateRelation.builder().certificateId("CHILD_ID").build();
+    final var parentRelation = CertificateRelation.builder().certificateId("PARENT_ID").build();
+    final var childEvent = new IntygInfoEvent(Source.WEBCERT);
+    final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
+    final var metadata =
+        CertificateMetadata.builder()
             .id("ORIGINAL_ID")
             .relations(
                 CertificateRelations.builder()
                     .parent(parentRelation)
-                    .children(
-                        Array.of(
-                            childRelation
-                        ).toJavaArray(CertificateRelation[]::new)
-                    )
-                    .build()
-            )
+                    .children(Array.of(childRelation).toJavaArray(CertificateRelation[]::new))
+                    .build())
             .build();
-        certificate.setMetadata(metadata);
+    certificate.setMetadata(metadata);
 
-        final var getCertificateResponse = new GetCertificateResponse();
-        getCertificateResponse.setCertificate(parentRelatedCertificate);
+    final var getCertificateResponse = new GetCertificateResponse();
+    getCertificateResponse.setCertificate(parentRelatedCertificate);
 
-        when(csIntegrationService.certificateExists("PARENT_ID"))
-            .thenReturn(false);
-        when(getCertificateInternalServiceFromWC.get("PARENT_ID", null))
-            .thenReturn(getCertificateResponse);
-        when(csIntegrationService.getInternalCertificate("CHILD_ID"))
-            .thenReturn(relatedCertificate);
-        when(certificateRelationToIntygEventInfoConverter.convert(childRelation, relatedCertificate, true))
-            .thenReturn(childEvent);
-        when(certificateRelationToIntygEventInfoConverter.convert(parentRelation, parentRelatedCertificate, false))
-            .thenReturn(parentEvent);
+    when(csIntegrationService.certificateExists("PARENT_ID")).thenReturn(false);
+    when(getCertificateInternalServiceFromWC.get("PARENT_ID", null))
+        .thenReturn(getCertificateResponse);
+    when(csIntegrationService.getInternalCertificate("CHILD_ID")).thenReturn(relatedCertificate);
+    when(certificateRelationToIntygEventInfoConverter.convert(
+            childRelation, relatedCertificate, true))
+        .thenReturn(childEvent);
+    when(certificateRelationToIntygEventInfoConverter.convert(
+            parentRelation, parentRelatedCertificate, false))
+        .thenReturn(parentEvent);
 
-        final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+    final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
 
-        assertEquals(
-            List.of(parentEvent, childEvent),
-            response
-        );
-    }
+    assertEquals(List.of(parentEvent, childEvent), response);
+  }
 }

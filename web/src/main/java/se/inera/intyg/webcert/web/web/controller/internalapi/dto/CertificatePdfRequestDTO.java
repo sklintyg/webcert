@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -30,11 +29,9 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfR
 @Builder
 public class CertificatePdfRequestDTO {
 
-    String customizationId;
-    String personId;
+  String customizationId;
+  String personId;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificatePdfRequestDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class CertificatePdfRequestDTOBuilder {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,125 +44,134 @@ import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 @Component
 public class ComplementConverterImpl implements ComplementConverter {
 
-    private final GetCertificateService getCertificateService;
-    private final IntygModuleRegistry intygModuleRegistry;
+  private final GetCertificateService getCertificateService;
+  private final IntygModuleRegistry intygModuleRegistry;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ComplementConverterImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ComplementConverterImpl.class);
 
-    @Autowired
-    public ComplementConverterImpl(GetCertificateService getCertificateService, IntygModuleRegistry intygModuleRegistry) {
-        this.getCertificateService = getCertificateService;
-        this.intygModuleRegistry = intygModuleRegistry;
-    }
+  @Autowired
+  public ComplementConverterImpl(
+      GetCertificateService getCertificateService, IntygModuleRegistry intygModuleRegistry) {
+    this.getCertificateService = getCertificateService;
+    this.intygModuleRegistry = intygModuleRegistry;
+  }
 
-    @Override
-    public Complement[] convert(Arende complementQuestion) {
-        final var certificateAsUtlatande = getCertificateService.getCertificateAsUtlatande(
-            complementQuestion.getIntygsId(), complementQuestion.getIntygTyp()
-        );
+  @Override
+  public Complement[] convert(Arende complementQuestion) {
+    final var certificateAsUtlatande =
+        getCertificateService.getCertificateAsUtlatande(
+            complementQuestion.getIntygsId(), complementQuestion.getIntygTyp());
 
-        final var certificateTextProvider = getCertificateTextProvider(certificateAsUtlatande);
+    final var certificateTextProvider = getCertificateTextProvider(certificateAsUtlatande);
 
-        return getComplements(complementQuestion, certificateAsUtlatande, certificateTextProvider);
-    }
+    return getComplements(complementQuestion, certificateAsUtlatande, certificateTextProvider);
+  }
 
-    @Override
-    public Map<String, Complement[]> convert(List<Arende> complementQuestions) {
-        final var firstComplementQuestion = complementQuestions.stream().findFirst().orElseThrow();
+  @Override
+  public Map<String, Complement[]> convert(List<Arende> complementQuestions) {
+    final var firstComplementQuestion = complementQuestions.stream().findFirst().orElseThrow();
 
-        final var certificateAsUtlatande = getCertificateService.getCertificateAsUtlatande(
-            firstComplementQuestion.getIntygsId(), firstComplementQuestion.getIntygTyp()
-        );
+    final var certificateAsUtlatande =
+        getCertificateService.getCertificateAsUtlatande(
+            firstComplementQuestion.getIntygsId(), firstComplementQuestion.getIntygTyp());
 
-        final var certificateTextProvider = getCertificateTextProvider(certificateAsUtlatande);
+    final var certificateTextProvider = getCertificateTextProvider(certificateAsUtlatande);
 
-        return complementQuestions.stream()
-            .map(complementQuestion ->
+    return complementQuestions.stream()
+        .map(
+            complementQuestion ->
                 Map.of(
                     complementQuestion.getMeddelandeId(),
-                    getComplements(complementQuestion, certificateAsUtlatande, certificateTextProvider)
-                )
-            )
-            .reduce((complementMap, complementMap2) ->
+                    getComplements(
+                        complementQuestion, certificateAsUtlatande, certificateTextProvider)))
+        .reduce(
+            (complementMap, complementMap2) ->
                 ImmutableMap.<String, Complement[]>builder()
                     .putAll(complementMap)
                     .putAll(complementMap2)
-                    .build()
-            )
-            .orElse(Collections.emptyMap());
-    }
+                    .build())
+        .orElse(Collections.emptyMap());
+  }
 
-    private Complement[] getComplements(Arende complementQuestion, Utlatande certificateAsUtlatande,
-        CertificateTextProvider certificateTextProvider) {
-        final var questionIds = complementQuestion.getKomplettering().stream()
+  private Complement[] getComplements(
+      Arende complementQuestion,
+      Utlatande certificateAsUtlatande,
+      CertificateTextProvider certificateTextProvider) {
+    final var questionIds =
+        complementQuestion.getKomplettering().stream()
             .map(MedicinsktArende::getFrageId)
             .distinct()
             .collect(Collectors.toList());
 
-        final var jsonPropertiesMap = getJsonPropertiesMap(certificateAsUtlatande, questionIds);
+    final var jsonPropertiesMap = getJsonPropertiesMap(certificateAsUtlatande, questionIds);
 
-        return complementQuestion.getKomplettering().stream()
-            .map(complement ->
+    return complementQuestion.getKomplettering().stream()
+        .map(
+            complement ->
                 Complement.builder()
                     .questionId(complement.getFrageId())
                     .questionText(certificateTextProvider.get(complement.getFrageId()))
                     .valueId(getValueId(complement, jsonPropertiesMap))
                     .message(complement.getText())
-                    .build()
-            )
-            .toArray(Complement[]::new);
+                    .build())
+        .toArray(Complement[]::new);
+  }
+
+  private String getValueId(
+      MedicinsktArende medicinsktArende, Map<String, List<String>> arendeParameters) {
+    return getJsonProperty(
+        medicinsktArende, getListPositionForInstanceId(medicinsktArende), arendeParameters);
+  }
+
+  private int getListPositionForInstanceId(MedicinsktArende medicinsktArende) {
+    final var instanceId = medicinsktArende.getInstans();
+    return instanceId != null && instanceId > 0 ? instanceId : 0;
+  }
+
+  private String getJsonProperty(
+      MedicinsktArende arende, Integer position, Map<String, List<String>> arendeParameters) {
+    final var jsonProperties = arendeParameters.get(arende.getFrageId());
+    if (CollectionUtils.isEmpty(jsonProperties)) {
+      LOG.warn("Cannot find jsonProperties for question '{}'", arende.getFrageId());
+      return "";
     }
 
-    private String getValueId(MedicinsktArende medicinsktArende, Map<String, List<String>> arendeParameters) {
-        return getJsonProperty(
-            medicinsktArende,
-            getListPositionForInstanceId(medicinsktArende),
-            arendeParameters
-        );
-    }
+    return jsonProperties.get(position < jsonProperties.size() ? position : 0);
+  }
 
-    private int getListPositionForInstanceId(MedicinsktArende medicinsktArende) {
-        final var instanceId = medicinsktArende.getInstans();
-        return instanceId != null && instanceId > 0 ? instanceId : 0;
+  private Map<String, List<String>> getJsonPropertiesMap(
+      Utlatande certificateAsUtlatande, List<String> questionIds) {
+    try {
+      final var moduleApi =
+          getModuleApi(certificateAsUtlatande.getTyp(), certificateAsUtlatande.getTextVersion());
+      return moduleApi.getModuleSpecificArendeParameters(certificateAsUtlatande, questionIds);
+    } catch (ModuleException ex) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+          String.format(
+              "Could not retrieve jsonProperties for certificate '%s'",
+              certificateAsUtlatande.getId()),
+          ex);
     }
+  }
 
-    private String getJsonProperty(MedicinsktArende arende, Integer position, Map<String, List<String>> arendeParameters) {
-        final var jsonProperties = arendeParameters.get(arende.getFrageId());
-        if (CollectionUtils.isEmpty(jsonProperties)) {
-            LOG.warn("Cannot find jsonProperties for question '{}'", arende.getFrageId());
-            return "";
-        }
+  private CertificateTextProvider getCertificateTextProvider(Utlatande certificateAsUtlatande) {
+    final var moduleApi =
+        getModuleApi(certificateAsUtlatande.getTyp(), certificateAsUtlatande.getTextVersion());
+    return moduleApi.getTextProvider(
+        certificateAsUtlatande.getTyp(), certificateAsUtlatande.getTextVersion());
+  }
 
-        return jsonProperties.get(position < jsonProperties.size() ? position : 0);
+  private ModuleApi getModuleApi(String certificateType, String certificateVersion) {
+    try {
+      return intygModuleRegistry.getModuleApi(certificateType, certificateVersion);
+    } catch (ModuleNotFoundException ex) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+          String.format(
+              "Could not find ModuleAPI for certificate type '%s' and version %s",
+              certificateType, certificateVersion),
+          ex);
     }
-
-    private Map<String, List<String>> getJsonPropertiesMap(Utlatande certificateAsUtlatande, List<String> questionIds) {
-        try {
-            final var moduleApi = getModuleApi(certificateAsUtlatande.getTyp(), certificateAsUtlatande.getTextVersion());
-            return moduleApi.getModuleSpecificArendeParameters(certificateAsUtlatande, questionIds);
-        } catch (ModuleException ex) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                String.format("Could not retrieve jsonProperties for certificate '%s'", certificateAsUtlatande.getId()),
-                ex
-            );
-        }
-    }
-
-    private CertificateTextProvider getCertificateTextProvider(Utlatande certificateAsUtlatande) {
-        final var moduleApi = getModuleApi(certificateAsUtlatande.getTyp(), certificateAsUtlatande.getTextVersion());
-        return moduleApi.getTextProvider(certificateAsUtlatande.getTyp(), certificateAsUtlatande.getTextVersion());
-    }
-
-    private ModuleApi getModuleApi(String certificateType, String certificateVersion) {
-        try {
-            return intygModuleRegistry.getModuleApi(certificateType, certificateVersion);
-        } catch (ModuleNotFoundException ex) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                String.format("Could not find ModuleAPI for certificate type '%s' and version %s", certificateType, certificateVersion),
-                ex
-            );
-        }
-    }
+  }
 }

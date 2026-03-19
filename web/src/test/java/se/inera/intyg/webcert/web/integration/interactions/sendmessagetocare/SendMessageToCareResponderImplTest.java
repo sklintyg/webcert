@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,144 +50,163 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 @RunWith(MockitoJUnitRunner.class)
 public class SendMessageToCareResponderImplTest {
 
-    private static final String DEFAULT_LOGICAL_ADDRESS = "webcert";
-    private static final String DEFAULT_INTYG_ID = "intyg-1";
-    private static final String DEFAULT_MEDDELANDE_ID = "1";
-    private static final String DEFAULT_PATIENT_ID = "191212121212";
+  private static final String DEFAULT_LOGICAL_ADDRESS = "webcert";
+  private static final String DEFAULT_INTYG_ID = "intyg-1";
+  private static final String DEFAULT_MEDDELANDE_ID = "1";
+  private static final String DEFAULT_PATIENT_ID = "191212121212";
 
-    @Mock
-    private NotificationService mockNotificationService;
+  @Mock private NotificationService mockNotificationService;
 
-    @Mock
-    private ProcessIncomingMessageAggregator processIncomingMessageAggregator;
+  @Mock private ProcessIncomingMessageAggregator processIncomingMessageAggregator;
 
-    @InjectMocks
-    private SendMessageToCareResponderImpl responder;
+  @InjectMocks private SendMessageToCareResponderImpl responder;
 
-    @Test
-    public void testSendRequestToService() throws WebCertServiceException {
-        final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
-        final var resultType = new ResultType();
-        resultType.setResultCode(ResultCodeType.OK);
-        sendMessageToCareResponseType.setResult(resultType);
+  @Test
+  public void testSendRequestToService() throws WebCertServiceException {
+    final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
+    final var resultType = new ResultType();
+    resultType.setResultCode(ResultCodeType.OK);
+    sendMessageToCareResponseType.setResult(resultType);
 
-        when(processIncomingMessageAggregator.process(any())).thenReturn(sendMessageToCareResponseType);
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
-    }
+    when(processIncomingMessageAggregator.process(any())).thenReturn(sendMessageToCareResponseType);
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
+  }
 
-    @Test
-    public void testSendRequestToServiceFailed() throws WebCertServiceException {
-        when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Exception message"));
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
-    }
+  @Test
+  public void testSendRequestToServiceFailed() throws WebCertServiceException {
+    when(processIncomingMessageAggregator.process(any()))
+        .thenThrow(
+            new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Exception message"));
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
+  }
 
-    @Test
-    public void testSendRequestToServiceFailedMessageAlreadyExists() throws WebCertServiceException {
-        when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.MESSAGE_ALREADY_EXISTS, "Exception message"));
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.INFO, response.getResult().getResultCode());
-        assertNull(response.getResult().getErrorId());
-    }
+  @Test
+  public void testSendRequestToServiceFailedMessageAlreadyExists() throws WebCertServiceException {
+    when(processIncomingMessageAggregator.process(any()))
+        .thenThrow(
+            new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.MESSAGE_ALREADY_EXISTS, "Exception message"));
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.INFO, response.getResult().getResultCode());
+    assertNull(response.getResult().getErrorId());
+  }
 
-    @Test
-    public void testSendRequestToServiceFailedNotSigned() throws WebCertServiceException {
-        when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Exception message"));
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
-    }
+  @Test
+  public void testSendRequestToServiceFailedNotSigned() throws WebCertServiceException {
+    when(processIncomingMessageAggregator.process(any()))
+        .thenThrow(
+            new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.INVALID_STATE, "Exception message"));
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+  }
 
-    @Test
-    public void testSendRequestToServiceFailedNotFound() throws WebCertServiceException {
-        when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Exception message"));
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
-    }
+  @Test
+  public void testSendRequestToServiceFailedNotFound() throws WebCertServiceException {
+    when(processIncomingMessageAggregator.process(any()))
+        .thenThrow(
+            new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Exception message"));
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+  }
 
-    @Test
-    public void testSendRequestToServiceFailedExternalServiceProblem() throws WebCertServiceException {
-        when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Exception message"));
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
-    }
+  @Test
+  public void testSendRequestToServiceFailedExternalServiceProblem()
+      throws WebCertServiceException {
+    when(processIncomingMessageAggregator.process(any()))
+        .thenThrow(
+            new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Exception message"));
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+  }
 
-    @Test
-    public void testSendRequestToServiceFailedWithRuntimeException() throws WebCertServiceException {
-        when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new IllegalStateException("Exception message"));
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
-    }
+  @Test
+  public void testSendRequestToServiceFailedWithRuntimeException() throws WebCertServiceException {
+    when(processIncomingMessageAggregator.process(any()))
+        .thenThrow(new IllegalStateException("Exception message"));
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
+  }
 
-    @Test
-    public void testSendRequestToServiceFailedWithBadRequestException() throws WebCertServiceException {
-        when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Exception message"));
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
-    }
+  @Test
+  public void testSendRequestToServiceFailedWithBadRequestException()
+      throws WebCertServiceException {
+    when(processIncomingMessageAggregator.process(any()))
+        .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Exception message"));
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+  }
 
+  @Test
+  public void testSendRequestToServiceFailedWithHttpClientException()
+      throws WebCertServiceException {
+    when(processIncomingMessageAggregator.process(any()))
+        .thenThrow(
+            new HttpClientErrorException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, "Exception message"));
+    SendMessageToCareResponseType response =
+        responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+    assertNotNull(response.getResult());
+    assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
+  }
 
-    @Test
-    public void testSendRequestToServiceFailedWithHttpClientException() throws WebCertServiceException {
-        when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new HttpClientErrorException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, "Exception message"));
-        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
-        assertNotNull(response.getResult());
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
-    }
+  private SendMessageToCareType createNewRequest() {
+    SendMessageToCareType res = new SendMessageToCareType();
+    res.setAmne(new Amneskod());
+    res.getAmne().setCode(ArendeAmne.KONTKT.toString());
+    res.setIntygsId(createIntygsId(DEFAULT_INTYG_ID));
+    res.setMeddelandeId(DEFAULT_MEDDELANDE_ID);
+    res.setPatientPersonId(createPersonId(DEFAULT_PATIENT_ID));
+    res.setSkickatAv(createSkickadAv());
 
-    private SendMessageToCareType createNewRequest() {
-        SendMessageToCareType res = new SendMessageToCareType();
-        res.setAmne(new Amneskod());
-        res.getAmne().setCode(ArendeAmne.KONTKT.toString());
-        res.setIntygsId(createIntygsId(DEFAULT_INTYG_ID));
-        res.setMeddelandeId(DEFAULT_MEDDELANDE_ID);
-        res.setPatientPersonId(createPersonId(DEFAULT_PATIENT_ID));
-        res.setSkickatAv(createSkickadAv());
+    return res;
+  }
 
-        return res;
-    }
+  private SkickatAv createSkickadAv() {
+    SkickatAv res = new SkickatAv();
+    res.setPart(new Part());
+    res.getPart().setCode("FKASSA");
+    return res;
+  }
 
-    private SkickatAv createSkickadAv() {
-        SkickatAv res = new SkickatAv();
-        res.setPart(new Part());
-        res.getPart().setCode("FKASSA");
-        return res;
-    }
+  private PersonId createPersonId(String patientId) {
+    PersonId res = new PersonId();
+    res.setExtension(patientId);
+    res.setRoot("");
+    return res;
+  }
 
-    private PersonId createPersonId(String patientId) {
-        PersonId res = new PersonId();
-        res.setExtension(patientId);
-        res.setRoot("");
-        return res;
-    }
-
-    private IntygId createIntygsId(String intygId) {
-        IntygId res = new IntygId();
-        res.setExtension(intygId);
-        res.setRoot("");
-        return res;
-    }
+  private IntygId createIntygsId(String intygId) {
+    IntygId res = new IntygId();
+    res.setExtension(intygId);
+    res.setRoot("");
+    return res;
+  }
 }

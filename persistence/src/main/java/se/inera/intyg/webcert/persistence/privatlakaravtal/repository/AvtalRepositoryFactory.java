@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,48 +33,47 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 @Service
 public class AvtalRepositoryFactory {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
 
-    @Value("${privatepractitioner.defaultterms.file}")
-    private String location;
+  @Value("${privatepractitioner.defaultterms.file}")
+  private String location;
 
-    @Autowired
-    private AvtalRepository avtalRepository;
+  @Autowired private AvtalRepository avtalRepository;
 
-    @Autowired
-    ResourceLoader resourceLoader;
+  @Autowired ResourceLoader resourceLoader;
 
-    @PostConstruct
-    @Transactional
-    public void populateStandardAvtal() {
+  @PostConstruct
+  @Transactional
+  public void populateStandardAvtal() {
 
-        // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
-        if (!ResourceUtils.isUrl(location)) {
-            location = "file:" + location;
-        }
-
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        if (latestAvtalVersion == -1) {
-            try {
-                final String avtalText = IOUtils.toString(resourceLoader.getResource(location).getInputStream(),
-                    Charsets.UTF_8);
-                final Avtal avtal = new Avtal();
-                avtal.setAvtalText(avtalText);
-                avtal.setAvtalVersion(1);
-                avtal.setVersionDatum(LocalDateTime.now());
-                avtalRepository.save(avtal);
-                LOG.info("Persisted basic Avtal for privatlakare.");
-
-            } catch (IOException ioe) {
-                LOG.error("Something went wrong while persisting basic privatlakaravtal on startup. Message: " + ioe.getMessage());
-                throw new RuntimeException(ioe);
-            }
-        }
+    // FIXME: Legacy support, can be removed when local config has been substituted by refdata
+    // (INTYG-7701)
+    if (!ResourceUtils.isUrl(location)) {
+      location = "file:" + location;
     }
+
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    if (latestAvtalVersion == -1) {
+      try {
+        final String avtalText =
+            IOUtils.toString(resourceLoader.getResource(location).getInputStream(), Charsets.UTF_8);
+        final Avtal avtal = new Avtal();
+        avtal.setAvtalText(avtalText);
+        avtal.setAvtalVersion(1);
+        avtal.setVersionDatum(LocalDateTime.now());
+        avtalRepository.save(avtal);
+        LOG.info("Persisted basic Avtal for privatlakare.");
+
+      } catch (IOException ioe) {
+        LOG.error(
+            "Something went wrong while persisting basic privatlakaravtal on startup. Message: "
+                + ioe.getMessage());
+        throw new RuntimeException(ioe);
+      }
+    }
+  }
 }

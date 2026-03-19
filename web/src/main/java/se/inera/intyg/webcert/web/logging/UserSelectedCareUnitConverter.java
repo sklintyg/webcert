@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,36 +26,34 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
- * Logback converter that returns information about the current user.
- * User info is retrieved from the Spring Security context. If no context
- * is available a NO USER is returned.
+ * Logback converter that returns information about the current user. User info is retrieved from
+ * the Spring Security context. If no context is available a NO USER is returned.
  *
  * @author nikpet
  */
 public class UserSelectedCareUnitConverter extends ClassicConverter {
 
-    private static final String NO_UNIT_SELECTED = "NO UNIT";
+  private static final String NO_UNIT_SELECTED = "NO UNIT";
 
-    @Override
-    public String convert(ILoggingEvent event) {
+  @Override
+  public String convert(ILoggingEvent event) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null) {
-            return NO_UNIT_SELECTED;
-        }
-
-        Object principal = auth.getPrincipal();
-
-        if (principal instanceof WebCertUser) {
-            WebCertUser user = (WebCertUser) auth.getPrincipal();
-            SelectableVardenhet valdVardenhet = user.getValdVardenhet();
-            if (valdVardenhet != null) {
-                return valdVardenhet.getId();
-            }
-        }
-
-        return NO_UNIT_SELECTED;
+    if (auth == null) {
+      return NO_UNIT_SELECTED;
     }
 
+    Object principal = auth.getPrincipal();
+
+    if (principal instanceof WebCertUser) {
+      WebCertUser user = (WebCertUser) auth.getPrincipal();
+      SelectableVardenhet valdVardenhet = user.getValdVardenhet();
+      if (valdVardenhet != null) {
+        return valdVardenhet.getId();
+      }
+    }
+
+    return NO_UNIT_SELECTED;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.jobs;
 
 import static org.mockito.Mockito.verify;
@@ -36,25 +35,21 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @ExtendWith(MockitoExtension.class)
 class UtkastLockJobTest {
 
-    private static final int LOCKED_AFTER_DAY = 5;
-    @Mock
-    private UtkastService utkastService;
-    @Mock
-    private LockDraftsFromCertificateService lockDraftsFromCertificateService;
-    @Spy
-    private MdcHelper mdcHelper;
-    @InjectMocks
-    private UtkastLockJob utkastLockJob;
+  private static final int LOCKED_AFTER_DAY = 5;
+  @Mock private UtkastService utkastService;
+  @Mock private LockDraftsFromCertificateService lockDraftsFromCertificateService;
+  @Spy private MdcHelper mdcHelper;
+  @InjectMocks private UtkastLockJob utkastLockJob;
 
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(utkastLockJob, "lockedAfterDay", LOCKED_AFTER_DAY);
-    }
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(utkastLockJob, "lockedAfterDay", LOCKED_AFTER_DAY);
+  }
 
-    @Test
-    void shallLockOldDraftsFromWCAndCertificateService() {
-        utkastLockJob.run();
-        verify(utkastService).lockOldDrafts(LOCKED_AFTER_DAY, LocalDate.now());
-        verify(lockDraftsFromCertificateService).lock(LOCKED_AFTER_DAY);
-    }
+  @Test
+  void shallLockOldDraftsFromWCAndCertificateService() {
+    utkastLockJob.run();
+    verify(utkastService).lockOldDrafts(LOCKED_AFTER_DAY, LocalDate.now());
+    verify(lockDraftsFromCertificateService).lock(LOCKED_AFTER_DAY);
+  }
 }

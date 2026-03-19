@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,252 +47,271 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @RunWith(MockitoJUnitRunner.class)
 public class AccessServiceEvaluationTest {
 
-    @Mock
-    private WebCertUserService webCertUserService;
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
-    @Mock
-    private UtkastService utkastService;
-    @Mock
-    private IntygTextsService intygTextsService;
-    @Mock
-    private WebCertUser user;
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
+  @Mock private UtkastService utkastService;
+  @Mock private IntygTextsService intygTextsService;
+  @Mock private WebCertUser user;
 
-    private AccessServiceEvaluation accessServiceEvaluation;
+  private AccessServiceEvaluation accessServiceEvaluation;
 
-    @Before
-    public void setup() {
-        accessServiceEvaluation = AccessServiceEvaluation
-            .create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
-    }
+  @Before
+  public void setup() {
+    accessServiceEvaluation =
+        AccessServiceEvaluation.create(
+            webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
+  }
 
-    @Test
-    public void shallNotAllowIfFeatureInactiveCertificateTypeIsTrue() {
-        final var feature = new Feature();
-        feature.setGlobal(true);
-        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+  @Test
+  public void shallNotAllowIfFeatureInactiveCertificateTypeIsTrue() {
+    final var feature = new Feature();
+    feature.setGlobal(true);
+    feature.setIntygstyper(Collections.singletonList("ts-bas"));
 
-        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, feature);
-        when(user.getFeatures()).thenReturn(features);
+    final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, feature);
+    when(user.getFeatures()).thenReturn(features);
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+    final var actualAccessResult =
+        accessServiceEvaluation.given(user, "ts-bas").checkInactiveCertificateType().evaluate();
+
+    assertEquals(AccessResultCode.INACTIVE_CERTIFICATE_TYPE, actualAccessResult.getCode());
+  }
+
+  @Test
+  public void shallAllowIfFeatureInactiveCertificateTypeIsFalse() {
+    final var feature = new Feature();
+    feature.setGlobal(true);
+    feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+    final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, feature);
+    when(user.getFeatures()).thenReturn(features);
+
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "ts-diabetes")
             .checkInactiveCertificateType()
             .evaluate();
 
-        assertEquals(AccessResultCode.INACTIVE_CERTIFICATE_TYPE, actualAccessResult.getCode());
-    }
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
 
-    @Test
-    public void shallAllowIfFeatureInactiveCertificateTypeIsFalse() {
-        final var feature = new Feature();
-        feature.setGlobal(true);
-        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+  @Test
+  public void shallBlockIfNotOfLatestMajorVersion() {
+    final var feature = new Feature();
+    feature.setGlobal(true);
+    feature.setIntygstyper(Collections.singletonList("ts-bas"));
 
-        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, feature);
-        when(user.getFeatures()).thenReturn(features);
+    final var features =
+        Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+    when(user.getFeatures()).thenReturn(features);
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-diabetes")
-            .checkInactiveCertificateType()
-            .evaluate();
-
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
-
-    @Test
-    public void shallBlockIfNotOfLatestMajorVersion() {
-        final var feature = new Feature();
-        feature.setGlobal(true);
-        feature.setIntygstyper(Collections.singletonList("ts-bas"));
-
-        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
-        when(user.getFeatures()).thenReturn(features);
-
-        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "ts-bas")
             .checkLatestCertificateTypeVersion("6.8")
             .evaluate();
 
-        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualAccessResult.getCode());
-    }
+    assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualAccessResult.getCode());
+  }
 
-    @Test
-    public void shallBlockIfNotOfLatestMajorVersionWhenAddCheck() {
-        final var feature = new Feature();
-        feature.setGlobal(true);
-        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+  @Test
+  public void shallBlockIfNotOfLatestMajorVersionWhenAddCheck() {
+    final var feature = new Feature();
+    feature.setGlobal(true);
+    feature.setIntygstyper(Collections.singletonList("ts-bas"));
 
-        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
-        when(user.getFeatures()).thenReturn(features);
+    final var features =
+        Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+    when(user.getFeatures()).thenReturn(features);
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "ts-bas")
             .checkLatestCertificateTypeVersionIf("6.8", true)
             .evaluate();
 
-        assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualAccessResult.getCode());
-    }
+    assertEquals(AccessResultCode.NOT_LATEST_MAJOR_VERSION, actualAccessResult.getCode());
+  }
 
-    @Test
-    public void shallAllowIfNotOfLatestMajorVersionWhenNotAddCheck() {
-        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+  @Test
+  public void shallAllowIfNotOfLatestMajorVersionWhenNotAddCheck() {
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "ts-bas")
             .checkLatestCertificateTypeVersionIf("6.8", false)
             .evaluate();
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
 
-        // Make sure no interaction with user-mock as it would show that the check is being made anyway.
-        verifyNoInteractions(user);
-    }
+    // Make sure no interaction with user-mock as it would show that the check is being made anyway.
+    verifyNoInteractions(user);
+  }
 
-    @Test
-    public void shallAllowIfLatestMajorVersion() {
-        final var feature = new Feature();
-        feature.setGlobal(true);
-        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+  @Test
+  public void shallAllowIfLatestMajorVersion() {
+    final var feature = new Feature();
+    feature.setGlobal(true);
+    feature.setIntygstyper(Collections.singletonList("ts-bas"));
 
-        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
-        when(user.getFeatures()).thenReturn(features);
-        when(intygTextsService.isLatestMajorVersion("ts-bas", "7.0")).thenReturn(true);
+    final var features =
+        Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+    when(user.getFeatures()).thenReturn(features);
+    when(intygTextsService.isLatestMajorVersion("ts-bas", "7.0")).thenReturn(true);
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "ts-bas")
             .checkLatestCertificateTypeVersion("7.0")
             .evaluate();
 
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
 
-    @Test
-    public void shallAllowIfNotLatestMajorVersionWhenNotActive() {
-        final var feature = new Feature();
-        feature.setGlobal(true);
-        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+  @Test
+  public void shallAllowIfNotLatestMajorVersionWhenNotActive() {
+    final var feature = new Feature();
+    feature.setGlobal(true);
+    feature.setIntygstyper(Collections.singletonList("ts-bas"));
 
-        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
-        when(user.getFeatures()).thenReturn(features);
+    final var features =
+        Map.of(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, feature);
+    when(user.getFeatures()).thenReturn(features);
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "lisjp")
             .checkLatestCertificateTypeVersion("2.0")
             .evaluate();
 
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
 
-    @Test
-    public void shallAllowIfNotLatestMajorVersionWhenFeatureMissing() {
-        when(user.getFeatures()).thenReturn(Collections.emptyMap());
+  @Test
+  public void shallAllowIfNotLatestMajorVersionWhenFeatureMissing() {
+    when(user.getFeatures()).thenReturn(Collections.emptyMap());
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "lisjp")
             .checkLatestCertificateTypeVersion("2.0")
             .evaluate();
 
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
 
-    @Test
-    public void shallAllowIfNoBlockRuleActive() {
-        final var feature = new Feature();
-        feature.setGlobal(false);
+  @Test
+  public void shallAllowIfNoBlockRuleActive() {
+    final var feature = new Feature();
+    feature.setGlobal(false);
 
-        final var features = Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature);
-        when(user.getFeatures()).thenReturn(features);
+    final var features = Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature);
+    when(user.getFeatures()).thenReturn(features);
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "lisjp")
             .blockFeature(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)
             .evaluate();
 
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
 
-    @Test
-    public void shallAllowIfNoBlockRuleExists() {
-        when(user.getFeatures()).thenReturn(Collections.emptyMap());
+  @Test
+  public void shallAllowIfNoBlockRuleExists() {
+    when(user.getFeatures()).thenReturn(Collections.emptyMap());
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "lisjp")
             .blockFeature(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)
             .evaluate();
 
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
 
-    @Test
-    public void shallBlockIfBlockRuleValid() {
-        final var feature = new Feature();
-        feature.setGlobal(true);
+  @Test
+  public void shallBlockIfBlockRuleValid() {
+    final var feature = new Feature();
+    feature.setGlobal(true);
 
-        final var features = Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature);
-        when(user.getFeatures()).thenReturn(features);
+    final var features = Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature);
+    when(user.getFeatures()).thenReturn(features);
 
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
+    final var actualAccessResult =
+        accessServiceEvaluation
+            .given(user, "lisjp")
             .blockFeature(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)
             .evaluate();
 
-        assertEquals(AccessResultCode.AUTHORIZATION_BLOCKED, actualAccessResult.getCode());
+    assertEquals(AccessResultCode.AUTHORIZATION_BLOCKED, actualAccessResult.getCode());
+  }
+
+  @Test
+  public void shallAllowIfHasSubscriptionWhenSubscriptionRequired() {
+    setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 2, UserOriginType.NORMAL);
+
+    final var actualAccessResult =
+        accessServiceEvaluation.given(user, "lisjp").checkSubscription().evaluate();
+
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
+
+  @Test
+  public void shallNotAllowIfMissingSubscriptionWhenSubscriptionRequired() {
+    setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 3, UserOriginType.NORMAL);
+
+    final var actualAccessResult =
+        accessServiceEvaluation.given(user, "lisjp").checkSubscription().evaluate();
+
+    assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualAccessResult.getCode());
+  }
+
+  @Test
+  public void shallAllowIfMissingSubscriptionWhenSubscriptionRequiredButNotFristaende() {
+    setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 3, UserOriginType.DJUPINTEGRATION);
+
+    final var actualAccessResult =
+        accessServiceEvaluation.given(user, "lisjp").checkSubscription().evaluate();
+
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
+
+  @Test
+  public void shallAllowIfMissingSubscriptionWhenSubscriptionNotRequired() {
+    setupMocksForSubscriptionCheck(SubscriptionAction.NONE, 3, UserOriginType.NORMAL);
+
+    final var actualAccessResult =
+        accessServiceEvaluation.given(user, "lisjp").checkSubscription().evaluate();
+
+    assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+  }
+
+  private void setupMocksForSubscriptionCheck(
+      SubscriptionAction subscriptionAction,
+      int numberOfMissingSubscriptions,
+      UserOriginType userOriginType) {
+    final var subscriptionInfo =
+        getSubscriptionInfo(subscriptionAction, numberOfMissingSubscriptions);
+    final var selectedCareProviderMock = mock(Vardgivare.class);
+    when(user.getSubscriptionInfo()).thenReturn(subscriptionInfo);
+    when(user.getOrigin()).thenReturn(userOriginType.name());
+    when(user.getValdVardgivare()).thenReturn(selectedCareProviderMock);
+    when(selectedCareProviderMock.getId()).thenReturn("CARE_PROVIDER_HSA_ID_3");
+  }
+
+  private SubscriptionInfo getSubscriptionInfo(
+      SubscriptionAction subscriptionAction, int numberOfMissingSubscriptions) {
+    final var missingSubscriptionList = getMissingSubscriptionsList(numberOfMissingSubscriptions);
+    final var subscriptionInfo = new SubscriptionInfo();
+    subscriptionInfo.setSubscriptionAction(subscriptionAction);
+    subscriptionInfo.setCareProvidersMissingSubscription(List.copyOf(missingSubscriptionList));
+    return subscriptionInfo;
+  }
+
+  private List<String> getMissingSubscriptionsList(int numberOfMissingSubscriptions) {
+    final var careProviderHsaIds = new ArrayList<String>();
+    for (var i = 1; i <= numberOfMissingSubscriptions; i++) {
+      careProviderHsaIds.add("CARE_PROVIDER_HSA_ID_" + i);
     }
-
-    @Test
-    public void shallAllowIfHasSubscriptionWhenSubscriptionRequired() {
-        setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 2, UserOriginType.NORMAL);
-
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
-            .checkSubscription()
-            .evaluate();
-
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
-
-    @Test
-    public void shallNotAllowIfMissingSubscriptionWhenSubscriptionRequired() {
-        setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 3, UserOriginType.NORMAL);
-
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
-            .checkSubscription()
-            .evaluate();
-
-        assertEquals(AccessResultCode.MISSING_SUBSCRIPTION, actualAccessResult.getCode());
-    }
-
-    @Test
-    public void shallAllowIfMissingSubscriptionWhenSubscriptionRequiredButNotFristaende() {
-        setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 3, UserOriginType.DJUPINTEGRATION);
-
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
-            .checkSubscription()
-            .evaluate();
-
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
-
-    @Test
-    public void shallAllowIfMissingSubscriptionWhenSubscriptionNotRequired() {
-        setupMocksForSubscriptionCheck(SubscriptionAction.NONE, 3, UserOriginType.NORMAL);
-
-        final var actualAccessResult = accessServiceEvaluation.given(user, "lisjp")
-            .checkSubscription()
-            .evaluate();
-
-        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
-    }
-
-    private void setupMocksForSubscriptionCheck(SubscriptionAction subscriptionAction, int numberOfMissingSubscriptions,
-        UserOriginType userOriginType) {
-        final var subscriptionInfo = getSubscriptionInfo(subscriptionAction, numberOfMissingSubscriptions);
-        final var selectedCareProviderMock = mock(Vardgivare.class);
-        when(user.getSubscriptionInfo()).thenReturn(subscriptionInfo);
-        when(user.getOrigin()).thenReturn(userOriginType.name());
-        when(user.getValdVardgivare()).thenReturn(selectedCareProviderMock);
-        when(selectedCareProviderMock.getId()).thenReturn("CARE_PROVIDER_HSA_ID_3");
-    }
-
-    private SubscriptionInfo getSubscriptionInfo(SubscriptionAction subscriptionAction, int numberOfMissingSubscriptions) {
-        final var missingSubscriptionList = getMissingSubscriptionsList(numberOfMissingSubscriptions);
-        final var subscriptionInfo = new SubscriptionInfo();
-        subscriptionInfo.setSubscriptionAction(subscriptionAction);
-        subscriptionInfo.setCareProvidersMissingSubscription(List.copyOf(missingSubscriptionList));
-        return subscriptionInfo;
-    }
-
-    private List<String> getMissingSubscriptionsList(int numberOfMissingSubscriptions) {
-        final var careProviderHsaIds = new ArrayList<String>();
-        for (var i = 1; i <= numberOfMissingSubscriptions; i++) {
-            careProviderHsaIds.add("CARE_PROVIDER_HSA_ID_" + i);
-        }
-        return careProviderHsaIds;
-    }
+    return careProviderHsaIds;
+  }
 }

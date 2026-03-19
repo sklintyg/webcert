@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,80 +18,83 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.model;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import org.hibernate.annotations.Type;
+import java.time.LocalDateTime;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 @Embeddable
 public class IntygsReferens {
 
-    @Column(name = "INTYGS_ID")
-    private String intygsId;
+  @Column(name = "INTYGS_ID")
+  private String intygsId;
 
-    @Column(name = "INTYGS_TYP")
-    private String intygsTyp;
+  @Column(name = "INTYGS_TYP")
+  private String intygsTyp;
 
-    @Column(name = "PATIENT_ID")
-    private String patientId;
+  @Column(name = "PATIENT_ID")
+  private String patientId;
 
-    @Column(name = "PATIENT_NAMN")
-    private String patientNamn;
+  @Column(name = "PATIENT_NAMN")
+  private String patientNamn;
 
-    @Column(name = "SIGNERINGS_DATUM")
-    private LocalDateTime signeringsDatum;
+  @Column(name = "SIGNERINGS_DATUM")
+  private LocalDateTime signeringsDatum;
 
-    public IntygsReferens() {
-        // default constructor for hibernate
-    }
+  public IntygsReferens() {
+    // default constructor for hibernate
+  }
 
-    public IntygsReferens(String intygsId, String intygsTyp, Personnummer patientId,
-        String patientName, LocalDateTime signeringsDatum) {
-        this.intygsId = intygsId;
-        this.intygsTyp = intygsTyp;
-        this.patientId = patientId.getPersonnummer();
-        this.patientNamn = patientName;
-        this.signeringsDatum = signeringsDatum;
-    }
+  public IntygsReferens(
+      String intygsId,
+      String intygsTyp,
+      Personnummer patientId,
+      String patientName,
+      LocalDateTime signeringsDatum) {
+    this.intygsId = intygsId;
+    this.intygsTyp = intygsTyp;
+    this.patientId = patientId.getPersonnummer();
+    this.patientNamn = patientName;
+    this.signeringsDatum = signeringsDatum;
+  }
 
-    public String getIntygsId() {
-        return intygsId;
-    }
+  public String getIntygsId() {
+    return intygsId;
+  }
 
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
-    }
+  public void setIntygsId(String intygsId) {
+    this.intygsId = intygsId;
+  }
 
-    public String getIntygsTyp() {
-        return intygsTyp;
-    }
+  public String getIntygsTyp() {
+    return intygsTyp;
+  }
 
-    public void setIntygsTyp(String intygsTyp) {
-        this.intygsTyp = intygsTyp;
-    }
+  public void setIntygsTyp(String intygsTyp) {
+    this.intygsTyp = intygsTyp;
+  }
 
-    public Personnummer getPatientId() {
-        return Personnummer.createPersonnummer(patientId).orElse(null);
-    }
+  public Personnummer getPatientId() {
+    return Personnummer.createPersonnummer(patientId).orElse(null);
+  }
 
-    public void setPatientId(Personnummer patientId) {
-        this.patientId = patientId.getPersonnummer();
-    }
+  public void setPatientId(Personnummer patientId) {
+    this.patientId = patientId.getPersonnummer();
+  }
 
-    public String getPatientNamn() {
-        return patientNamn;
-    }
+  public String getPatientNamn() {
+    return patientNamn;
+  }
 
-    public void setPatientNamn(String patientNamn) {
-        this.patientNamn = patientNamn;
-    }
+  public void setPatientNamn(String patientNamn) {
+    this.patientNamn = patientNamn;
+  }
 
-    public LocalDateTime getSigneringsDatum() {
-        return signeringsDatum;
-    }
+  public LocalDateTime getSigneringsDatum() {
+    return signeringsDatum;
+  }
 
-    public void setSigneringsDatum(LocalDateTime signeringsDatum) {
-        this.signeringsDatum = signeringsDatum;
-    }
+  public void setSigneringsDatum(LocalDateTime signeringsDatum) {
+    this.signeringsDatum = signeringsDatum;
+  }
 }

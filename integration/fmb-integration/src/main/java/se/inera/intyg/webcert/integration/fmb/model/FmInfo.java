@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,6 +22,5 @@ import java.util.Optional;
 
 public interface FmInfo {
 
-    Optional<Meta> getOptionalMeta();
-
+  Optional<Meta> getOptionalMeta();
 }

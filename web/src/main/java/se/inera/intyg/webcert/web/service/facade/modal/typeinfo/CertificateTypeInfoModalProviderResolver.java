@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.modal.typeinfo;
 
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
@@ -24,20 +23,19 @@ import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 
 public class CertificateTypeInfoModalProviderResolver {
 
-    private CertificateTypeInfoModalProviderResolver() {
-        throw new IllegalStateException("Utility class");
+  private CertificateTypeInfoModalProviderResolver() {
+    throw new IllegalStateException("Utility class");
+  }
+
+  public static CertificateTypeInfoModalProvider getModalProvider(String certificateType) {
+    if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)) {
+      return new DbTypeInfoModalProvider();
     }
 
-    public static CertificateTypeInfoModalProvider getModalProvider(String certificateType) {
-        if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)) {
-            return new DbTypeInfoModalProvider();
-        }
-        
-        if (DoiModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)) {
-            return new DoiTypeInfoModalProvider();
-        }
-
-        return null;
+    if (DoiModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)) {
+      return new DoiTypeInfoModalProvider();
     }
+
+    return null;
+  }
 }
-

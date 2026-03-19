@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,21 +34,20 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO
 @Builder
 public class QuestionsResponseDTO {
 
-    List<QuestionDTO> questions;
+  List<QuestionDTO> questions;
 
-    public static QuestionsResponseDTO create(List<Question> questions, Map<Question, List<ResourceLinkDTO>> links) {
-        final var questionDTOList = new ArrayList<QuestionDTO>();
-        questions.forEach(
-            question -> questionDTOList.add(QuestionDTO.create(question, links.getOrDefault(question, Collections.emptyList())))
-        );
+  public static QuestionsResponseDTO create(
+      List<Question> questions, Map<Question, List<ResourceLinkDTO>> links) {
+    final var questionDTOList = new ArrayList<QuestionDTO>();
+    questions.forEach(
+        question ->
+            questionDTOList.add(
+                QuestionDTO.create(
+                    question, links.getOrDefault(question, Collections.emptyList()))));
 
-        return QuestionsResponseDTO.builder()
-            .questions(questionDTOList)
-            .build();
-    }
+    return QuestionsResponseDTO.builder().questions(questionDTOList).build();
+  }
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class QuestionsResponseDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class QuestionsResponseDTOBuilder {}
 }

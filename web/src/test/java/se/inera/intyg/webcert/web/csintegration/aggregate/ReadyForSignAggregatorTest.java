@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,38 +35,36 @@ import se.inera.intyg.webcert.web.service.facade.impl.ReadyForSignFacadeServiceI
 @ExtendWith(MockitoExtension.class)
 class ReadyForSignAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    @Mock
-    private ReadyForSignFacadeServiceImpl readyForSignForWC;
-    @Mock
-    private ReadyForSignForCertificateService readyForSignForCS;
-    private ReadyForSignAggregator readyForSignAggregator;
+  private static final String CERTIFICATE_ID = "certificateId";
+  @Mock private ReadyForSignFacadeServiceImpl readyForSignForWC;
+  @Mock private ReadyForSignForCertificateService readyForSignForCS;
+  private ReadyForSignAggregator readyForSignAggregator;
 
-    @BeforeEach
-    void setUp() {
-        readyForSignAggregator = new ReadyForSignAggregator(readyForSignForWC, readyForSignForCS);
-    }
+  @BeforeEach
+  void setUp() {
+    readyForSignAggregator = new ReadyForSignAggregator(readyForSignForWC, readyForSignForCS);
+  }
 
-    @Test
-    void shallReturnResponseFromWCIfResponseFromCSReturnsNull() {
-        final var expectedCertificate = new Certificate();
-        doReturn(null).when(readyForSignForCS).readyForSign(CERTIFICATE_ID);
-        doReturn(expectedCertificate).when(readyForSignForWC).readyForSign(CERTIFICATE_ID);
-        final var actualCertificate = readyForSignAggregator.readyForSign(CERTIFICATE_ID);
+  @Test
+  void shallReturnResponseFromWCIfResponseFromCSReturnsNull() {
+    final var expectedCertificate = new Certificate();
+    doReturn(null).when(readyForSignForCS).readyForSign(CERTIFICATE_ID);
+    doReturn(expectedCertificate).when(readyForSignForWC).readyForSign(CERTIFICATE_ID);
+    final var actualCertificate = readyForSignAggregator.readyForSign(CERTIFICATE_ID);
 
-        verify(readyForSignForWC, times(1)).readyForSign(CERTIFICATE_ID);
-        verify(readyForSignForCS, times(1)).readyForSign(CERTIFICATE_ID);
-        assertEquals(expectedCertificate, actualCertificate);
-    }
+    verify(readyForSignForWC, times(1)).readyForSign(CERTIFICATE_ID);
+    verify(readyForSignForCS, times(1)).readyForSign(CERTIFICATE_ID);
+    assertEquals(expectedCertificate, actualCertificate);
+  }
 
-    @Test
-    void shallReturnResponseFromCS() {
-        final var expectedCertificate = new Certificate();
-        doReturn(expectedCertificate).when(readyForSignForCS).readyForSign(CERTIFICATE_ID);
-        final var actualCertificate = readyForSignAggregator.readyForSign(CERTIFICATE_ID);
+  @Test
+  void shallReturnResponseFromCS() {
+    final var expectedCertificate = new Certificate();
+    doReturn(expectedCertificate).when(readyForSignForCS).readyForSign(CERTIFICATE_ID);
+    final var actualCertificate = readyForSignAggregator.readyForSign(CERTIFICATE_ID);
 
-        verify(readyForSignForWC, times(0)).readyForSign(CERTIFICATE_ID);
-        verify(readyForSignForCS, times(1)).readyForSign(CERTIFICATE_ID);
-        assertEquals(expectedCertificate, actualCertificate);
-    }
+    verify(readyForSignForWC, times(0)).readyForSign(CERTIFICATE_ID);
+    verify(readyForSignForCS, times(1)).readyForSign(CERTIFICATE_ID);
+    assertEquals(expectedCertificate, actualCertificate);
+  }
 }

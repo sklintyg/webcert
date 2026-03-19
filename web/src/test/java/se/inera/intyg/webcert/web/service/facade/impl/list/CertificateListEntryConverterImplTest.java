@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -60,630 +60,649 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 @ExtendWith(MockitoExtension.class)
 class CertificateListEntryConverterImplTest {
 
-    final String UNIT_NAME = "UNIT_NAME";
-    final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";
-    final List<ResourceLinkDTO> LINKS = List.of(ResourceLinkFactory.read());
-    final String PATIENT_ID = "191212121212";
+  final String UNIT_NAME = "UNIT_NAME";
+  final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";
+  final List<ResourceLinkDTO> LINKS = List.of(ResourceLinkFactory.read());
+  final String PATIENT_ID = "191212121212";
 
-    @Mock
-    private HsaOrganizationsService hsaOrganizationsService;
-    @Mock
-    private ResourceLinkListHelper resourceLinkListHelper;
-    @InjectMocks
-    private CertificateListItemConverterImpl certificateListItemConverter;
+  @Mock private HsaOrganizationsService hsaOrganizationsService;
+  @Mock private ResourceLinkListHelper resourceLinkListHelper;
+  @InjectMocks private CertificateListItemConverterImpl certificateListItemConverter;
 
-    @Nested
-    class ListDrafts {
+  @Nested
+  class ListDrafts {
 
-        @BeforeEach
-        public void setup() {
-            when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(LINKS);
-        }
-
-        private final ListType LIST_TYPE = ListType.DRAFTS;
-
-        @Test
-        public void shouldSetCertificateId() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(listIntygEntry.getIntygId(), result.getValue(ListColumnType.CERTIFICATE_ID));
-        }
-
-        @Test
-        public void shouldSetCertificateTypeName() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(listIntygEntry.getIntygTypeName(), result.getValue(ListColumnType.CERTIFICATE_TYPE_NAME));
-        }
-
-        @Test
-        public void shouldSetPatientId() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertEquals(listIntygEntry.getPatientId().getPersonnummerWithDash(), patientListInfo.getId());
-        }
-
-        @Test
-        public void shouldSetPatientIsProtectedPerson() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertTrue(patientListInfo.isProtectedPerson());
-        }
-
-        @Test
-        public void shouldSetPatientIsDeceased() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertTrue(patientListInfo.isDeceased());
-        }
-
-        @Test
-        public void shouldSetPatientIsTestIndicated() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertTrue(patientListInfo.isTestIndicated());
-        }
-
-        @Test
-        public void shouldSetPatientIsNotProtectedPerson() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isProtectedPerson());
-        }
-
-        @Test
-        public void shouldSetPatientIsNotDeceased() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isDeceased());
-        }
-
-        @Test
-        public void shouldSetPatientIsNotTestIndicated() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isTestIndicated());
-        }
-
-        @Test
-        public void shouldSetDraftStatusComplete() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(CertificateListItemStatus.COMPLETE.getName(), result.getValue(ListColumnType.STATUS));
-        }
-
-        @Test
-        public void shouldSetDraftStatusIncomplete() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_INCOMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(CertificateListItemStatus.INCOMPLETE.getName(), result.getValue(ListColumnType.STATUS));
-        }
-
-        @Test
-        public void shouldSetDraftStatusLocked() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_LOCKED.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(CertificateListItemStatus.LOCKED.getName(), result.getValue(ListColumnType.STATUS));
-        }
-
-        @Test
-        public void shouldSetSaved() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(listIntygEntry.getLastUpdated(), result.getValue(ListColumnType.SAVED));
-        }
-
-        @Test
-        public void shouldSetSavedBy() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-
-            assertEquals(listIntygEntry.getUpdatedSignedBy(), result.getValue(ListColumnType.SAVED_BY));
-        }
-
-        @Test
-        public void shouldSetLinks() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
-
-            assertTrue(links.size() > 0);
-            assertEquals(LINKS.get(0), links.get(0));
-        }
-
-        @Test
-        public void shouldNotSetForwardedInfoIfLinkDoesNotExist() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwarded = result.getValue(ListColumnType.FORWARD_CERTIFICATE);
-
-            assertNull(forwarded);
-        }
+    @BeforeEach
+    public void setup() {
+      when(resourceLinkListHelper.get(
+              any(ListIntygEntry.class), any(CertificateListItemStatus.class)))
+          .thenReturn(LINKS);
     }
 
+    private final ListType LIST_TYPE = ListType.DRAFTS;
 
-    @Nested
-    class Forwarded {
+    @Test
+    public void shouldSetCertificateId() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-        private final ListType LIST_TYPE = ListType.DRAFTS;
-        final List<ResourceLinkDTO> linksWithForwarded = List.of(ResourceLinkFactory.read(),
-            CertificateForwardFunction.createResourceLink());
-
-        @BeforeEach
-        public void setup() {
-            final var unit = new Vardenhet();
-            final var careProvider = new Vardgivare();
-
-            unit.setNamn(UNIT_NAME);
-            careProvider.setNamn(CARE_PROVIDER_NAME);
-
-            when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(
-                linksWithForwarded);
-            when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(unit);
-            when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(careProvider);
-        }
-
-        @Test
-        public void shouldSetIsForwarded() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwarded = (boolean) result.getValue(ListColumnType.FORWARDED);
-
-            assertTrue(forwarded);
-        }
-
-        @Test
-        public void shouldSetUnitName() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
-
-            assertEquals(UNIT_NAME, forwardedListInfo.getUnitName());
-        }
-
-        @Test
-        public void shouldSetCareProviderName() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
-
-            assertEquals(CARE_PROVIDER_NAME, forwardedListInfo.getCareProviderName());
-        }
-
-        @Test
-        public void shouldSetIsNotForwarded() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwarded = (boolean) result.getValue(ListColumnType.FORWARDED);
-
-            assertFalse(forwarded);
-        }
-
-        @Test
-        public void shouldSetCertificateType() {
-            final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
-            final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
-            final var forwardedListInfo = (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
-
-            assertEquals(listIntygEntry.getIntygType(), forwardedListInfo.getCertificateType());
-        }
+      assertEquals(listIntygEntry.getIntygId(), result.getValue(ListColumnType.CERTIFICATE_ID));
     }
 
-    @Nested
-    class Statuses {
+    @Test
+    public void shouldSetCertificateTypeName() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-        private final ListType LIST_TYPE = ListType.DRAFTS;
-        WebcertCertificateRelation certificateRelation;
-        Relations relations;
-        Relations.FrontendRelations frontendRelations;
+      assertEquals(
+          listIntygEntry.getIntygTypeName(), result.getValue(ListColumnType.CERTIFICATE_TYPE_NAME));
+    }
 
-        @BeforeEach
-        void setup() {
-            relations = mock(Relations.class);
-            frontendRelations = mock(Relations.FrontendRelations.class);
-            certificateRelation = mock(WebcertCertificateRelation.class);
+    @Test
+    public void shouldSetPatientId() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-            doReturn(frontendRelations)
-                .when(relations)
-                .getLatestChildRelations();
-        }
+      assertEquals(
+          listIntygEntry.getPatientId().getPersonnummerWithDash(), patientListInfo.getId());
+    }
 
-        @Nested
-        class Complemented {
+    @Test
+    public void shouldSetPatientIsProtectedPerson() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-            @Test
-            void shouldSetStatusSentWhenComplementedByDraftRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
-                entry.setRelations(relations);
-                doReturn(certificateRelation)
-                    .when(frontendRelations)
-                    .getComplementedByUtkast();
+      assertTrue(patientListInfo.isProtectedPerson());
+    }
 
-                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+    @Test
+    public void shouldSetPatientIsDeceased() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-                assertEquals(CertificateListItemStatus.SENT.getName(), result.getValue("STATUS"));
-            }
+      assertTrue(patientListInfo.isDeceased());
+    }
 
-            @Test
-            void shouldSetStatusComplementedWhenComplementedByCertificateRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
-                entry.setRelations(relations);
-                doReturn(certificateRelation)
-                    .when(frontendRelations)
-                    .getComplementedByIntyg();
+    @Test
+    public void shouldSetPatientIsTestIndicated() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+      assertTrue(patientListInfo.isTestIndicated());
+    }
 
-                assertEquals(CertificateListItemStatus.COMPLEMENTED.getName(), result.getValue("STATUS"));
-            }
+    @Test
+    public void shouldSetPatientIsNotProtectedPerson() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-            @Test
-            void shouldNotSetStatusComplementedWhenComplementedByRevokedCertificateRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
-                entry.setRelations(relations);
-                doReturn(certificateRelation)
-                    .when(frontendRelations)
-                    .getComplementedByIntyg();
+      assertFalse(patientListInfo.isProtectedPerson());
+    }
 
-                doReturn(true)
-                    .when(certificateRelation)
-                    .isMakulerat();
+    @Test
+    public void shouldSetPatientIsNotDeceased() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+      assertFalse(patientListInfo.isDeceased());
+    }
 
-                assertNotEquals(CertificateListItemStatus.COMPLEMENTED.getName(), result.getValue("STATUS"));
-            }
-        }
+    @Test
+    public void shouldSetPatientIsNotTestIndicated() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 
-        @Nested
-        class Replaced {
+      assertFalse(patientListInfo.isTestIndicated());
+    }
 
-            @Test
-            void shouldNotSetStatusReplacedWhenReplacedByDraftRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
-                entry.setRelations(relations);
+    @Test
+    public void shouldSetDraftStatusComplete() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+      assertEquals(
+          CertificateListItemStatus.COMPLETE.getName(), result.getValue(ListColumnType.STATUS));
+    }
 
-                assertNotEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
-            }
+    @Test
+    public void shouldSetDraftStatusIncomplete() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_INCOMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-            @Test
-            void shouldSetStatusReplacedWhenReplacedByCertificateRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
-                entry.setRelations(relations);
-                doReturn(certificateRelation)
-                    .when(frontendRelations)
-                    .getReplacedByIntyg();
+      assertEquals(
+          CertificateListItemStatus.INCOMPLETE.getName(), result.getValue(ListColumnType.STATUS));
+    }
 
-                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+    @Test
+    public void shouldSetDraftStatusLocked() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_LOCKED.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-                assertEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
-            }
+      assertEquals(
+          CertificateListItemStatus.LOCKED.getName(), result.getValue(ListColumnType.STATUS));
+    }
 
-            @Test
-            void shouldNotSetStatusReplacedWhenReplacedByRevokedCertificateRelation() {
-                final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
-                entry.setRelations(relations);
-                doReturn(certificateRelation)
-                    .when(frontendRelations)
-                    .getComplementedByIntyg();
+    @Test
+    public void shouldSetSaved() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-                doReturn(true)
-                    .when(certificateRelation)
-                    .isMakulerat();
+      assertEquals(listIntygEntry.getLastUpdated(), result.getValue(ListColumnType.SAVED));
+    }
 
-                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+    @Test
+    public void shouldSetSavedBy() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-                assertNotEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
-            }
-        }
+      assertEquals(listIntygEntry.getUpdatedSignedBy(), result.getValue(ListColumnType.SAVED_BY));
+    }
 
-        @Nested
-        class Revoked {
+    @Test
+    public void shouldSetLinks() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
 
-            @Test
-            void shouldTranslateCancelledIntoRevokedStatus() {
-                final var entry = ListTestHelper.createListIntygEntry("CANCELLED", false, false);
-                entry.setRelations(relations);
+      assertTrue(links.size() > 0);
+      assertEquals(LINKS.get(0), links.get(0));
+    }
 
-                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+    @Test
+    public void shouldNotSetForwardedInfoIfLinkDoesNotExist() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var forwarded = result.getValue(ListColumnType.FORWARD_CERTIFICATE);
 
-                assertEquals(CertificateListItemStatus.REVOKED.getName(), result.getValue("STATUS"));
-            }
+      assertNull(forwarded);
+    }
+  }
 
-            @Test
-            void shouldTranslateDraftLockedCancelledIntoRevokedStatus() {
-                final var entry = ListTestHelper.createListIntygEntry("DRAFT_LOCKED_CANCELLED", false, false);
-                entry.setRelations(relations);
+  @Nested
+  class Forwarded {
 
-                final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+    private final ListType LIST_TYPE = ListType.DRAFTS;
+    final List<ResourceLinkDTO> linksWithForwarded =
+        List.of(ResourceLinkFactory.read(), CertificateForwardFunction.createResourceLink());
 
-                assertEquals(CertificateListItemStatus.REVOKED.getName(), result.getValue("STATUS"));
-            }
-        }
+    @BeforeEach
+    public void setup() {
+      final var unit = new Vardenhet();
+      final var careProvider = new Vardgivare();
+
+      unit.setNamn(UNIT_NAME);
+      careProvider.setNamn(CARE_PROVIDER_NAME);
+
+      when(resourceLinkListHelper.get(
+              any(ListIntygEntry.class), any(CertificateListItemStatus.class)))
+          .thenReturn(linksWithForwarded);
+      when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(unit);
+      when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(careProvider);
+    }
+
+    @Test
+    public void shouldSetIsForwarded() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var forwarded = (boolean) result.getValue(ListColumnType.FORWARDED);
+
+      assertTrue(forwarded);
+    }
+
+    @Test
+    public void shouldSetUnitName() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var forwardedListInfo =
+          (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
+
+      assertEquals(UNIT_NAME, forwardedListInfo.getUnitName());
+    }
+
+    @Test
+    public void shouldSetCareProviderName() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var forwardedListInfo =
+          (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
+
+      assertEquals(CARE_PROVIDER_NAME, forwardedListInfo.getCareProviderName());
+    }
+
+    @Test
+    public void shouldSetIsNotForwarded() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var forwarded = (boolean) result.getValue(ListColumnType.FORWARDED);
+
+      assertFalse(forwarded);
+    }
+
+    @Test
+    public void shouldSetCertificateType() {
+      final var listIntygEntry =
+          ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
+      final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
+      final var forwardedListInfo =
+          (ForwardedListInfo) result.getValue(ListColumnType.FORWARD_CERTIFICATE);
+
+      assertEquals(listIntygEntry.getIntygType(), forwardedListInfo.getCertificateType());
+    }
+  }
+
+  @Nested
+  class Statuses {
+
+    private final ListType LIST_TYPE = ListType.DRAFTS;
+    WebcertCertificateRelation certificateRelation;
+    Relations relations;
+    Relations.FrontendRelations frontendRelations;
+
+    @BeforeEach
+    void setup() {
+      relations = mock(Relations.class);
+      frontendRelations = mock(Relations.FrontendRelations.class);
+      certificateRelation = mock(WebcertCertificateRelation.class);
+
+      doReturn(frontendRelations).when(relations).getLatestChildRelations();
     }
 
     @Nested
-    class ListSignedCertificates {
+    class Complemented {
 
-        @BeforeEach
-        public void setup() {
-            when(resourceLinkListHelper.get(any(CertificateListEntry.class), any(CertificateListItemStatus.class))).thenReturn(LINKS);
-        }
+      @Test
+      void shouldSetStatusSentWhenComplementedByDraftRelation() {
+        final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+        entry.setRelations(relations);
+        doReturn(certificateRelation).when(frontendRelations).getComplementedByUtkast();
 
-        @Test
-        public void shouldSetLinks() {
-            final var entry = ListTestHelper.createCertificateListEntry();
-            final var result = certificateListItemConverter.convert(entry);
-            final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
+        final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
-            assertTrue(links.size() > 0);
-            assertEquals(LINKS.get(0), links.get(0));
-        }
+        assertEquals(CertificateListItemStatus.SENT.getName(), result.getValue("STATUS"));
+      }
 
-        @Test
-        public void shouldSetCertificateId() {
-            final var entry = ListTestHelper.createCertificateListEntry();
-            final var result = certificateListItemConverter.convert(entry);
+      @Test
+      void shouldSetStatusComplementedWhenComplementedByCertificateRelation() {
+        final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+        entry.setRelations(relations);
+        doReturn(certificateRelation).when(frontendRelations).getComplementedByIntyg();
 
-            assertEquals(entry.getCertificateId(), result.getValue(ListColumnType.CERTIFICATE_ID));
-        }
+        final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
-        @Test
-        public void shouldSetCertificateTypeName() {
-            final var entry = ListTestHelper.createCertificateListEntry();
-            final var result = certificateListItemConverter.convert(entry);
+        assertEquals(CertificateListItemStatus.COMPLEMENTED.getName(), result.getValue("STATUS"));
+      }
 
-            assertEquals(entry.getCertificateTypeName(), result.getValue(ListColumnType.CERTIFICATE_TYPE_NAME));
-        }
+      @Test
+      void shouldNotSetStatusComplementedWhenComplementedByRevokedCertificateRelation() {
+        final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
+        entry.setRelations(relations);
+        doReturn(certificateRelation).when(frontendRelations).getComplementedByIntyg();
 
-        @Test
-        public void shouldSetPatientId() {
-            final var entry = ListTestHelper.createCertificateListEntry();
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+        doReturn(true).when(certificateRelation).isMakulerat();
 
-            assertEquals(entry.getCivicRegistrationNumber(), patientListInfo.getId());
-        }
+        final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
-        @Test
-        public void shouldSetPatientIsProtectedPerson() {
-            final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertTrue(patientListInfo.isProtectedPerson());
-        }
-
-        @Test
-        public void shouldSetPatientIsDeceased() {
-            final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertTrue(patientListInfo.isDeceased());
-        }
-
-        @Test
-        public void shouldSetPatientIsTestIndicated() {
-            final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertTrue(patientListInfo.isTestIndicated());
-        }
-
-        @Test
-        public void shouldSetIsSent() {
-            final var entry = ListTestHelper.createCertificateListEntry(true, true, "191212121212");
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertEquals("Skickat", result.getValue("STATUS"));
-        }
-
-        @Test
-        public void shouldSetIsNotSent() {
-            final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertEquals("Ej skickat", result.getValue("STATUS"));
-        }
-
-        @Test
-        public void shouldSetPatientIsNotProtectedPerson() {
-            final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isProtectedPerson());
-        }
-
-        @Test
-        public void shouldSetPatientIsNotDeceased() {
-            final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isDeceased());
-        }
-
-        @Test
-        public void shouldSetPatientIsNotTestIndicated() {
-            final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isTestIndicated());
-        }
-
-        @Test
-        public void shouldSetSigned() {
-            final var entry = ListTestHelper.createCertificateListEntry();
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertEquals(entry.getSignedDate(), result.getValue(ListColumnType.SIGNED));
-        }
+        assertNotEquals(
+            CertificateListItemStatus.COMPLEMENTED.getName(), result.getValue("STATUS"));
+      }
     }
 
     @Nested
-    class ListQuestions {
+    class Replaced {
 
-        @BeforeEach
-        public void setup() {
-            when(resourceLinkListHelper.get(any(ArendeListItem.class), any(CertificateListItemStatus.class))).thenReturn(LINKS);
-        }
+      @Test
+      void shouldNotSetStatusReplacedWhenReplacedByDraftRelation() {
+        final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
+        entry.setRelations(relations);
 
-        @Test
-        public void shouldSetLinks() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-            final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
+        final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
-            assertTrue(links.size() > 0);
-            assertEquals(LINKS.get(0), links.get(0));
-        }
+        assertNotEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
+      }
 
-        @Test
-        public void shouldSetCertificateId() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
+      @Test
+      void shouldSetStatusReplacedWhenReplacedByCertificateRelation() {
+        final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
+        entry.setRelations(relations);
+        doReturn(certificateRelation).when(frontendRelations).getReplacedByIntyg();
 
-            assertEquals(entry.getIntygId(), result.getValue(ListColumnType.CERTIFICATE_ID));
-        }
+        final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
-        @Test
-        public void shouldSetPatientId() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+        assertEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
+      }
 
-            assertEquals(entry.getPatientId(), patientListInfo.getId());
-        }
+      @Test
+      void shouldNotSetStatusReplacedWhenReplacedByRevokedCertificateRelation() {
+        final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
+        entry.setRelations(relations);
+        doReturn(certificateRelation).when(frontendRelations).getComplementedByIntyg();
 
-        @Test
-        public void shouldSetPatientIsProtectedPerson() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+        doReturn(true).when(certificateRelation).isMakulerat();
 
-            assertTrue(patientListInfo.isProtectedPerson());
-        }
+        final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
-        @Test
-        public void shouldSetPatientIsDeceased() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertTrue(patientListInfo.isDeceased());
-        }
-
-        @Test
-        public void shouldSetPatientIsTestIndicated() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertTrue(patientListInfo.isTestIndicated());
-        }
-
-        @Test
-        public void shouldSetPatientIsNotProtectedPerson() {
-            final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isProtectedPerson());
-        }
-
-        @Test
-        public void shouldSetPatientIsNotDeceased() {
-            final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isDeceased());
-        }
-
-        @Test
-        public void shouldSetPatientIsNotTestIndicated() {
-            final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-            final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
-
-            assertFalse(patientListInfo.isTestIndicated());
-        }
-
-        @Test
-        public void shouldSetSignedBy() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertEquals(entry.getSigneratAvNamn(), result.getValue(ListColumnType.SIGNED_BY));
-        }
-
-        @Test
-        public void shouldSetQuestionAction() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertTrue(result.getValue(ListColumnType.QUESTION_ACTION).toString().length() > 0);
-        }
-
-        @Test
-        public void shouldSetSentReceived() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertEquals(entry.getReceivedDate(), result.getValue(ListColumnType.SENT_RECEIVED));
-        }
-
-        @Test
-        public void shouldSetSenderFK() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            entry.setFragestallare("FK");
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertEquals("Försäkringskassan", result.getValue(ListColumnType.SENDER));
-        }
-
-        @Test
-        public void shouldSetSenderWC() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            entry.setFragestallare("WC");
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertEquals("Vårdenheten", result.getValue(ListColumnType.SENDER));
-        }
-
-        @Test
-        public void shouldSetForwarded() {
-            final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
-            entry.setVidarebefordrad(true);
-            final var result = certificateListItemConverter.convert(entry);
-
-            assertTrue((boolean) result.getValue(ListColumnType.FORWARDED));
-        }
+        assertNotEquals(CertificateListItemStatus.REPLACED.getName(), result.getValue("STATUS"));
+      }
     }
+
+    @Nested
+    class Revoked {
+
+      @Test
+      void shouldTranslateCancelledIntoRevokedStatus() {
+        final var entry = ListTestHelper.createListIntygEntry("CANCELLED", false, false);
+        entry.setRelations(relations);
+
+        final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+        assertEquals(CertificateListItemStatus.REVOKED.getName(), result.getValue("STATUS"));
+      }
+
+      @Test
+      void shouldTranslateDraftLockedCancelledIntoRevokedStatus() {
+        final var entry =
+            ListTestHelper.createListIntygEntry("DRAFT_LOCKED_CANCELLED", false, false);
+        entry.setRelations(relations);
+
+        final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
+
+        assertEquals(CertificateListItemStatus.REVOKED.getName(), result.getValue("STATUS"));
+      }
+    }
+  }
+
+  @Nested
+  class ListSignedCertificates {
+
+    @BeforeEach
+    public void setup() {
+      when(resourceLinkListHelper.get(
+              any(CertificateListEntry.class), any(CertificateListItemStatus.class)))
+          .thenReturn(LINKS);
+    }
+
+    @Test
+    public void shouldSetLinks() {
+      final var entry = ListTestHelper.createCertificateListEntry();
+      final var result = certificateListItemConverter.convert(entry);
+      final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
+
+      assertTrue(links.size() > 0);
+      assertEquals(LINKS.get(0), links.get(0));
+    }
+
+    @Test
+    public void shouldSetCertificateId() {
+      final var entry = ListTestHelper.createCertificateListEntry();
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals(entry.getCertificateId(), result.getValue(ListColumnType.CERTIFICATE_ID));
+    }
+
+    @Test
+    public void shouldSetCertificateTypeName() {
+      final var entry = ListTestHelper.createCertificateListEntry();
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals(
+          entry.getCertificateTypeName(), result.getValue(ListColumnType.CERTIFICATE_TYPE_NAME));
+    }
+
+    @Test
+    public void shouldSetPatientId() {
+      final var entry = ListTestHelper.createCertificateListEntry();
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertEquals(entry.getCivicRegistrationNumber(), patientListInfo.getId());
+    }
+
+    @Test
+    public void shouldSetPatientIsProtectedPerson() {
+      final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertTrue(patientListInfo.isProtectedPerson());
+    }
+
+    @Test
+    public void shouldSetPatientIsDeceased() {
+      final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertTrue(patientListInfo.isDeceased());
+    }
+
+    @Test
+    public void shouldSetPatientIsTestIndicated() {
+      final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertTrue(patientListInfo.isTestIndicated());
+    }
+
+    @Test
+    public void shouldSetIsSent() {
+      final var entry = ListTestHelper.createCertificateListEntry(true, true, "191212121212");
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals("Skickat", result.getValue("STATUS"));
+    }
+
+    @Test
+    public void shouldSetIsNotSent() {
+      final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals("Ej skickat", result.getValue("STATUS"));
+    }
+
+    @Test
+    public void shouldSetPatientIsNotProtectedPerson() {
+      final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertFalse(patientListInfo.isProtectedPerson());
+    }
+
+    @Test
+    public void shouldSetPatientIsNotDeceased() {
+      final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertFalse(patientListInfo.isDeceased());
+    }
+
+    @Test
+    public void shouldSetPatientIsNotTestIndicated() {
+      final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertFalse(patientListInfo.isTestIndicated());
+    }
+
+    @Test
+    public void shouldSetSigned() {
+      final var entry = ListTestHelper.createCertificateListEntry();
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals(entry.getSignedDate(), result.getValue(ListColumnType.SIGNED));
+    }
+  }
+
+  @Nested
+  class ListQuestions {
+
+    @BeforeEach
+    public void setup() {
+      when(resourceLinkListHelper.get(
+              any(ArendeListItem.class), any(CertificateListItemStatus.class)))
+          .thenReturn(LINKS);
+    }
+
+    @Test
+    public void shouldSetLinks() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+      final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
+
+      assertTrue(links.size() > 0);
+      assertEquals(LINKS.get(0), links.get(0));
+    }
+
+    @Test
+    public void shouldSetCertificateId() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals(entry.getIntygId(), result.getValue(ListColumnType.CERTIFICATE_ID));
+    }
+
+    @Test
+    public void shouldSetPatientId() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertEquals(entry.getPatientId(), patientListInfo.getId());
+    }
+
+    @Test
+    public void shouldSetPatientIsProtectedPerson() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertTrue(patientListInfo.isProtectedPerson());
+    }
+
+    @Test
+    public void shouldSetPatientIsDeceased() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertTrue(patientListInfo.isDeceased());
+    }
+
+    @Test
+    public void shouldSetPatientIsTestIndicated() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertTrue(patientListInfo.isTestIndicated());
+    }
+
+    @Test
+    public void shouldSetPatientIsNotProtectedPerson() {
+      final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertFalse(patientListInfo.isProtectedPerson());
+    }
+
+    @Test
+    public void shouldSetPatientIsNotDeceased() {
+      final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertFalse(patientListInfo.isDeceased());
+    }
+
+    @Test
+    public void shouldSetPatientIsNotTestIndicated() {
+      final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+      final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
+
+      assertFalse(patientListInfo.isTestIndicated());
+    }
+
+    @Test
+    public void shouldSetSignedBy() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals(entry.getSigneratAvNamn(), result.getValue(ListColumnType.SIGNED_BY));
+    }
+
+    @Test
+    public void shouldSetQuestionAction() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertTrue(result.getValue(ListColumnType.QUESTION_ACTION).toString().length() > 0);
+    }
+
+    @Test
+    public void shouldSetSentReceived() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals(entry.getReceivedDate(), result.getValue(ListColumnType.SENT_RECEIVED));
+    }
+
+    @Test
+    public void shouldSetSenderFK() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      entry.setFragestallare("FK");
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals("Försäkringskassan", result.getValue(ListColumnType.SENDER));
+    }
+
+    @Test
+    public void shouldSetSenderWC() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      entry.setFragestallare("WC");
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertEquals("Vårdenheten", result.getValue(ListColumnType.SENDER));
+    }
+
+    @Test
+    public void shouldSetForwarded() {
+      final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
+      entry.setVidarebefordrad(true);
+      final var result = certificateListItemConverter.convert(entry);
+
+      assertTrue((boolean) result.getValue(ListColumnType.FORWARDED));
+    }
+  }
 }

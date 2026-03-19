@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,88 +38,85 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @RequiredArgsConstructor
 public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService {
 
-    private final WebCertUserService webCertUserService;
-    private final UtkastService utkastService;
-    private final ArendeService arendeService;
-    private final ListCertificatesInfoAggregator listCertificatesInfoAggregator;
+  private final WebCertUserService webCertUserService;
+  private final UtkastService utkastService;
+  private final ArendeService arendeService;
+  private final ListCertificatesInfoAggregator listCertificatesInfoAggregator;
 
-    @Override
-    public List<StaffListInfo> get() {
-        return getStaffInfo();
+  @Override
+  public List<StaffListInfo> get() {
+    return getStaffInfo();
+  }
+
+  @Override
+  public List<StaffListInfo> get(String unitId) {
+    return getStaffInfo(unitId);
+  }
+
+  @Override
+  public String getLoggedInStaffHsaId() {
+    return webCertUserService.getUser().getHsaId();
+  }
+
+  @Override
+  public boolean isLoggedInUserDoctor() {
+    return webCertUserService.getUser().isLakare() || webCertUserService.getUser().isPrivatLakare();
+  }
+
+  @Override
+  public List<String> getIdsOfSelectedUnit() {
+    final var webCertUser = webCertUserService.getUser();
+    final var units = webCertUser.getIdsOfSelectedVardenhet();
+    log.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), units);
+    return units;
+  }
+
+  private List<StaffListInfo> getStaffInfo() {
+    final var staffListFromWC = listStaffFromWC();
+    final var staffListFromCS = listCertificatesInfoAggregator.listCertificatesInfoForUnit();
+    return Stream.concat(
+            staffListFromWC.stream(),
+            staffListFromCS.stream().filter(ifNotAlreadyInStaffListFromWC(staffListFromWC)))
+        .collect(Collectors.toList());
+  }
+
+  private static Predicate<StaffListInfo> ifNotAlreadyInStaffListFromWC(
+      List<StaffListInfo> staffListFromWC) {
+    return staffListInfo ->
+        staffListFromWC.stream()
+            .noneMatch(staffWc -> staffWc.getHsaId().equals(staffListInfo.getHsaId()));
+  }
+
+  private List<StaffListInfo> listStaffFromWC() {
+    final var user = webCertUserService.getUser();
+    final var selectedUnitHsaId = user.getValdVardenhet().getId();
+    final var staff = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
+    addUserToList(staff, user);
+    return convertStaffList(staff);
+  }
+
+  private void addUserToList(List<Lakare> staff, WebCertUser user) {
+    if (isUserMissingFromList(staff, user) && user.isLakare()) {
+      staff.add(new Lakare(user.getHsaId(), user.getNamn()));
     }
+  }
 
-    @Override
-    public List<StaffListInfo> get(String unitId) {
-        return getStaffInfo(unitId);
-    }
+  private List<StaffListInfo> getStaffInfo(String unitId) {
+    final var user = webCertUserService.getUser();
+    final var staff = arendeService.listSignedByForUnits(unitId.length() > 0 ? unitId : null);
+    addUserToList(staff, user);
+    return convertStaffList(staff);
+  }
 
-    @Override
-    public String getLoggedInStaffHsaId() {
-        return webCertUserService.getUser().getHsaId();
-    }
+  private boolean isUserMissingFromList(List<Lakare> staff, WebCertUser user) {
+    return staff.stream().noneMatch((doctor) -> doctor.getHsaId().equals(user.getHsaId()));
+  }
 
-    @Override
-    public boolean isLoggedInUserDoctor() {
-        return webCertUserService.getUser().isLakare() || webCertUserService.getUser().isPrivatLakare();
-    }
+  private List<StaffListInfo> convertStaffList(List<Lakare> staff) {
+    return staff.stream().map(this::convertStaff).collect(Collectors.toList());
+  }
 
-    @Override
-    public List<String> getIdsOfSelectedUnit() {
-        final var webCertUser = webCertUserService.getUser();
-        final var units = webCertUser.getIdsOfSelectedVardenhet();
-        log.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), units);
-        return units;
-    }
-
-    private List<StaffListInfo> getStaffInfo() {
-        final var staffListFromWC = listStaffFromWC();
-        final var staffListFromCS = listCertificatesInfoAggregator.listCertificatesInfoForUnit();
-        return Stream.concat(
-                staffListFromWC.stream(),
-                staffListFromCS.stream().filter(ifNotAlreadyInStaffListFromWC(staffListFromWC))
-            )
-            .collect(Collectors.toList());
-    }
-
-    private static Predicate<StaffListInfo> ifNotAlreadyInStaffListFromWC(List<StaffListInfo> staffListFromWC) {
-        return staffListInfo ->
-            staffListFromWC.stream().noneMatch(staffWc ->
-                staffWc.getHsaId().equals(staffListInfo.getHsaId())
-            );
-    }
-
-    private List<StaffListInfo> listStaffFromWC() {
-        final var user = webCertUserService.getUser();
-        final var selectedUnitHsaId = user.getValdVardenhet().getId();
-        final var staff = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
-        addUserToList(staff, user);
-        return convertStaffList(staff);
-    }
-
-    private void addUserToList(List<Lakare> staff, WebCertUser user) {
-        if (isUserMissingFromList(staff, user) && user.isLakare()) {
-            staff.add(new Lakare(user.getHsaId(), user.getNamn()));
-        }
-    }
-
-    private List<StaffListInfo> getStaffInfo(String unitId) {
-        final var user = webCertUserService.getUser();
-        final var staff = arendeService.listSignedByForUnits(unitId.length() > 0 ? unitId : null);
-        addUserToList(staff, user);
-        return convertStaffList(staff);
-    }
-
-    private boolean isUserMissingFromList(List<Lakare> staff, WebCertUser user) {
-        return staff.stream().noneMatch((doctor) -> doctor.getHsaId().equals(user.getHsaId()));
-    }
-
-    private List<StaffListInfo> convertStaffList(List<Lakare> staff) {
-        return staff.stream().map(this::convertStaff).collect(Collectors.toList());
-    }
-
-    private StaffListInfo convertStaff(Lakare lakare) {
-        return new StaffListInfo(lakare.getHsaId(), lakare.getName());
-    }
-
-
+  private StaffListInfo convertStaff(Lakare lakare) {
+    return new StaffListInfo(lakare.getHsaId(), lakare.getName());
+  }
 }

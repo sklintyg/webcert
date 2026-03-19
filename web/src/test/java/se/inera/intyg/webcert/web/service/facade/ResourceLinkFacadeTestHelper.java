@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,38 +30,44 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 public class ResourceLinkFacadeTestHelper {
 
-    public static void assertInclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertNotNull(actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));
-    }
+  public static void assertInclude(
+      List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
+    final var actualResourceLink = get(availableFunctions, type);
+    assertNotNull(
+        actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));
+  }
 
-    public static void assertInclude(ResourceLinkDTO[] availableFunctions, ResourceLinkTypeDTO type) {
-        assertInclude(Arrays.asList(availableFunctions), type);
-    }
+  public static void assertInclude(ResourceLinkDTO[] availableFunctions, ResourceLinkTypeDTO type) {
+    assertInclude(Arrays.asList(availableFunctions), type);
+  }
 
-    public static void assertExclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertNull(actualResourceLink, () -> String.format("Don't expect resource link with type '%s'", type));
-    }
+  public static void assertExclude(
+      List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
+    final var actualResourceLink = get(availableFunctions, type);
+    assertNull(
+        actualResourceLink, () -> String.format("Don't expect resource link with type '%s'", type));
+  }
 
-    public static void assertExclude(ResourceLinkDTO[] availableFunctions, ResourceLinkTypeDTO type) {
-        assertExclude(Arrays.asList(availableFunctions), type);
-    }
+  public static void assertExclude(ResourceLinkDTO[] availableFunctions, ResourceLinkTypeDTO type) {
+    assertExclude(Arrays.asList(availableFunctions), type);
+  }
 
-    public static void assertDisabled(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertFalse(actualResourceLink.isEnabled());
-    }
+  public static void assertDisabled(
+      List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
+    final var actualResourceLink = get(availableFunctions, type);
+    assertFalse(actualResourceLink.isEnabled());
+  }
 
-    public static void assertEnabled(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertTrue(actualResourceLink.isEnabled());
-    }
+  public static void assertEnabled(
+      List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
+    final var actualResourceLink = get(availableFunctions, type);
+    assertTrue(actualResourceLink.isEnabled());
+  }
 
-    public static ResourceLinkDTO get(List<ResourceLinkDTO> resourceLinks, ResourceLinkTypeDTO type) {
-        return resourceLinks.stream()
-            .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
-            .findFirst()
-            .orElse(null);
-    }
+  public static ResourceLinkDTO get(List<ResourceLinkDTO> resourceLinks, ResourceLinkTypeDTO type) {
+    return resourceLinks.stream()
+        .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
+        .findFirst()
+        .orElse(null);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,26 +38,27 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 @Path("/patient")
 public class PatientController {
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Autowired
-    private GetPatientFacadeService getPatientFacadeService;
+  @Autowired private GetPatientFacadeService getPatientFacadeService;
 
-    @GET
-    @Path("/{patientId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "patient-get-patient", eventType = MdcLogConstants.EVENT_TYPE_ERROR)
-    public Response getPatient(@PathParam("patientId") @NotNull String patientId) {
-        try {
-            final var patient = getPatientFacadeService.getPatient(patientId);
-            return Response.ok(PatientResponseDTO.create(patient)).build();
-        } catch (InvalidPatientIdException e) {
-            return Response.ok(PatientResponseDTO.createInvalidPatientIdResponse()).build();
-        } catch (PatientSearchErrorException e) {
-            return Response.ok(PatientResponseDTO.createErrorResponse()).build();
-        } catch (PatientNoNameException e) {
-            return Response.ok(PatientResponseDTO.createNoNameResponse()).build();
-        }
+  @GET
+  @Path("/{patientId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "patient-get-patient",
+      eventType = MdcLogConstants.EVENT_TYPE_ERROR)
+  public Response getPatient(@PathParam("patientId") @NotNull String patientId) {
+    try {
+      final var patient = getPatientFacadeService.getPatient(patientId);
+      return Response.ok(PatientResponseDTO.create(patient)).build();
+    } catch (InvalidPatientIdException e) {
+      return Response.ok(PatientResponseDTO.createInvalidPatientIdResponse()).build();
+    } catch (PatientSearchErrorException e) {
+      return Response.ok(PatientResponseDTO.createErrorResponse()).build();
+    } catch (PatientNoNameException e) {
+      return Response.ok(PatientResponseDTO.createNoNameResponse()).build();
     }
+  }
 }

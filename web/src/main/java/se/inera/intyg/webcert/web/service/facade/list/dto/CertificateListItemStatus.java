@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,25 +19,25 @@
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 public enum CertificateListItemStatus {
-    SHOW_ALL("Visa alla"),
-    COMPLETE("Utkast, kan signeras"),
-    LOCKED("Utkast, låst"),
-    INCOMPLETE("Utkast, uppgifter saknas"),
-    SIGNED("Signerat"),
-    REVOKED("Makulerat"),
-    REPLACED("Ersatt"),
-    COMPLEMENTED("Kompletterat"),
-    SENT("Skickat"),
-    NOT_SENT("Ej skickat"),
-    UNKOWN("Okänd status");
+  SHOW_ALL("Visa alla"),
+  COMPLETE("Utkast, kan signeras"),
+  LOCKED("Utkast, låst"),
+  INCOMPLETE("Utkast, uppgifter saknas"),
+  SIGNED("Signerat"),
+  REVOKED("Makulerat"),
+  REPLACED("Ersatt"),
+  COMPLEMENTED("Kompletterat"),
+  SENT("Skickat"),
+  NOT_SENT("Ej skickat"),
+  UNKOWN("Okänd status");
 
-    private final String name;
+  private final String name;
 
-    CertificateListItemStatus(String name) {
-        this.name = name;
-    }
+  CertificateListItemStatus(String name) {
+    this.name = name;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,20 +23,19 @@ import java.util.List;
 
 public class FmbForm {
 
-    private FmbFormName name;
-    private List<FmbContent> content;
+  private FmbFormName name;
+  private List<FmbContent> content;
 
-    public FmbForm(FmbFormName name, List<FmbContent> content) {
-        this.name = name;
-        this.content = Collections.unmodifiableList(content);
-    }
+  public FmbForm(FmbFormName name, List<FmbContent> content) {
+    this.name = name;
+    this.content = Collections.unmodifiableList(content);
+  }
 
-    public FmbFormName getName() {
-        return name;
-    }
+  public FmbFormName getName() {
+    return name;
+  }
 
-    public List<FmbContent> getContent() {
-        return content;
-    }
-
+  public List<FmbContent> getContent() {
+    return content;
+  }
 }

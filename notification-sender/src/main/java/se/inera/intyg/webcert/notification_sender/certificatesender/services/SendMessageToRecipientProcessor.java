@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,45 +38,44 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 public class SendMessageToRecipientProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SendMessageToRecipientProcessor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SendMessageToRecipientProcessor.class);
 
-    @Autowired
-    private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
-    @Autowired
-    private MdcHelper mdcHelper;
+  @Autowired private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
+  @Autowired private MdcHelper mdcHelper;
 
-    public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId,
-        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException {
+  public void process(
+      @Body String xmlBody,
+      @Header(Constants.INTYGS_ID) String intygsId,
+      @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
+      throws TemporaryException {
 
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
-            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
-            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+      MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
+      MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
 
-            SendMessageToRecipientType parameters = SendMessageToRecipientTypeConverter.fromXml(xmlBody);
-            SendMessageToRecipientResponseType response = sendMessageToRecipientResponder.sendMessageToRecipient(logicalAddress,
-                parameters);
+      SendMessageToRecipientType parameters = SendMessageToRecipientTypeConverter.fromXml(xmlBody);
+      SendMessageToRecipientResponseType response =
+          sendMessageToRecipientResponder.sendMessageToRecipient(logicalAddress, parameters);
 
-            ResultType result = response.getResult();
+      ResultType result = response.getResult();
 
-            switch (result.getResultCode()) {
-                case OK, INFO:
-                    return;
-                case ERROR:
-                    throw new TemporaryException(
-                        "Call to sendMessageToRecipient for intyg '%s' caused an error: '%s', ErrorId: '%s'.  Will retry"
-                            .formatted(intygsId, result.getResultText(), result.getErrorId())
-                    );
-            }
-        } catch (UnmarshallingFailureException | WebServiceException e) {
-            throw new TemporaryException(
-                "Call to sendMessageToRecipient for intyg '%s' caused an error: '%s'. Will retry"
-                    .formatted(intygsId, e.getMessage()),
-                e
-            );
-        } finally {
-            MDC.clear();
-        }
+      switch (result.getResultCode()) {
+        case OK, INFO:
+          return;
+        case ERROR:
+          throw new TemporaryException(
+              "Call to sendMessageToRecipient for intyg '%s' caused an error: '%s', ErrorId: '%s'.  Will retry"
+                  .formatted(intygsId, result.getResultText(), result.getErrorId()));
+      }
+    } catch (UnmarshallingFailureException | WebServiceException e) {
+      throw new TemporaryException(
+          "Call to sendMessageToRecipient for intyg '%s' caused an error: '%s'. Will retry"
+              .formatted(intygsId, e.getMessage()),
+          e);
+    } finally {
+      MDC.clear();
     }
+  }
 }

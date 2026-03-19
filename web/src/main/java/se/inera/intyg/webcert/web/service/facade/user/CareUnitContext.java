@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,89 +28,89 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+public record CareUnitContext(
+    List<String> allUnitIds,
+    List<String> careUnitIds,
+    Set<String> selectedUnitIds,
+    Map<String, List<String>> careUnitToSubUnits,
+    Map<String, String> careUnitToCareProviderId,
+    boolean maxCommissionsExceeded) {
 
-public record CareUnitContext(List<String> allUnitIds, List<String> careUnitIds, Set<String> selectedUnitIds,
-                              Map<String, List<String>> careUnitToSubUnits, Map<String, String> careUnitToCareProviderId,
-                              boolean maxCommissionsExceeded) {
+  public static CareUnitContext build(WebCertUser user, int maxCommissionsForStatistics) {
+    final var careProviders = user.getVardgivare();
+    if (careProviders == null) {
+      return null;
+    }
 
-    public static CareUnitContext build(WebCertUser user, int maxCommissionsForStatistics) {
-        final var careProviders = user.getVardgivare();
-        if (careProviders == null) {
-            return null;
+    final var careUnitData = extractCareUnitData(careProviders);
+    if (careUnitData.careUnitIds().isEmpty()) {
+      return null;
+    }
+
+    final boolean exceeded = careUnitData.careUnitIds().size() > maxCommissionsForStatistics;
+    final var allUnitIds = determineAllUnitIds(user, exceeded);
+    final var selectedUnitIds = extractSelectedUnitIds(user);
+
+    return new CareUnitContext(
+        allUnitIds,
+        careUnitData.careUnitIds(),
+        selectedUnitIds,
+        careUnitData.careUnitToSubUnits(),
+        careUnitData.careUnitToCareProviderId(),
+        exceeded);
+  }
+
+  private static CareUnitData extractCareUnitData(List<Vardgivare> careProviders) {
+    final var careUnitIds = new ArrayList<String>();
+    final var careUnitToSubUnits = new HashMap<String, List<String>>();
+    final var careUnitToCareProviderId = new HashMap<String, String>();
+
+    for (Vardgivare careProvider : careProviders) {
+      for (Vardenhet careUnit : careProvider.getVardenheter()) {
+        final var careUnitId = careUnit.getId();
+        if (careUnitId == null) {
+          continue;
         }
-
-        final var careUnitData = extractCareUnitData(careProviders);
-        if (careUnitData.careUnitIds().isEmpty()) {
-            return null;
-        }
-
-        final boolean exceeded = careUnitData.careUnitIds().size() > maxCommissionsForStatistics;
-        final var allUnitIds = determineAllUnitIds(user, exceeded);
-        final var selectedUnitIds = extractSelectedUnitIds(user);
-
-        return new CareUnitContext(
-            allUnitIds,
-            careUnitData.careUnitIds(),
-            selectedUnitIds,
-            careUnitData.careUnitToSubUnits(),
-            careUnitData.careUnitToCareProviderId(),
-            exceeded
-        );
+        careUnitIds.add(careUnitId);
+        careUnitToCareProviderId.put(careUnitId, careProvider.getId());
+        careUnitToSubUnits.put(careUnitId, extractSubUnitIds(careUnit, careUnitId));
+      }
     }
 
-    private static CareUnitData extractCareUnitData(List<Vardgivare> careProviders) {
-        final var careUnitIds = new ArrayList<String>();
-        final var careUnitToSubUnits = new HashMap<String, List<String>>();
-        final var careUnitToCareProviderId = new HashMap<String, String>();
+    return new CareUnitData(careUnitIds, careUnitToSubUnits, careUnitToCareProviderId);
+  }
 
-        for (Vardgivare careProvider : careProviders) {
-            for (Vardenhet careUnit : careProvider.getVardenheter()) {
-                final var careUnitId = careUnit.getId();
-                if (careUnitId == null) {
-                    continue;
-                }
-                careUnitIds.add(careUnitId);
-                careUnitToCareProviderId.put(careUnitId, careProvider.getId());
-                careUnitToSubUnits.put(careUnitId, extractSubUnitIds(careUnit, careUnitId));
-            }
-        }
+  private static List<String> extractSubUnitIds(Vardenhet careUnit, String careUnitId) {
+    return careUnit.getHsaIds().stream()
+        .filter(id -> id != null && !id.equals(careUnitId))
+        .toList();
+  }
 
-        return new CareUnitData(careUnitIds, careUnitToSubUnits, careUnitToCareProviderId);
+  private static List<String> determineAllUnitIds(WebCertUser user, boolean exceeded) {
+    if (exceeded && user.getValdVardenhet() != null) {
+      return new ArrayList<>(user.getValdVardenhet().getHsaIds());
     }
-
-    private static List<String> extractSubUnitIds(Vardenhet careUnit, String careUnitId) {
-        return careUnit.getHsaIds().stream()
-            .filter(id -> id != null && !id.equals(careUnitId))
-            .toList();
+    if (!exceeded && user.getIdsOfAllVardenheter() != null) {
+      return new ArrayList<>(user.getIdsOfAllVardenheter());
     }
+    return List.of();
+  }
 
-    private static List<String> determineAllUnitIds(WebCertUser user, boolean exceeded) {
-        if (exceeded && user.getValdVardenhet() != null) {
-            return new ArrayList<>(user.getValdVardenhet().getHsaIds());
-        }
-        if (!exceeded && user.getIdsOfAllVardenheter() != null) {
-            return new ArrayList<>(user.getIdsOfAllVardenheter());
-        }
-        return List.of();
-    }
+  private static Set<String> extractSelectedUnitIds(WebCertUser user) {
+    return user.getIdsOfSelectedVardenhet().isEmpty()
+        ? Set.of()
+        : new HashSet<>(user.getIdsOfSelectedVardenhet());
+  }
 
-    private static Set<String> extractSelectedUnitIds(WebCertUser user) {
-        return user.getIdsOfSelectedVardenhet().isEmpty()
-            ? Set.of()
-            : new HashSet<>(user.getIdsOfSelectedVardenhet());
-    }
+  public List<String> getSubUnitsFor(String careUnitId) {
+    return careUnitToSubUnits.getOrDefault(careUnitId, List.of());
+  }
 
-    public List<String> getSubUnitsFor(String careUnitId) {
-        return careUnitToSubUnits.getOrDefault(careUnitId, List.of());
-    }
+  public String getCareProviderIdFor(String careUnitId) {
+    return careUnitToCareProviderId.get(careUnitId);
+  }
 
-    public String getCareProviderIdFor(String careUnitId) {
-        return careUnitToCareProviderId.get(careUnitId);
-    }
-
-    public List<String> getNotSelectedUnitIds() {
-        return allUnitIds.stream()
-            .filter(id -> !selectedUnitIds.contains(id))
-            .toList();
-    }
+  public List<String> getNotSelectedUnitIds() {
+    return allUnitIds.stream().filter(id -> !selectedUnitIds.contains(id)).toList();
+  }
 }

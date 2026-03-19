@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,34 +24,34 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class VardpersonReferens {
 
-    @Column(name = "HSAID")
-    private String hsaId;
+  @Column(name = "HSAID")
+  private String hsaId;
 
-    @Column(name = "NAMN")
-    private String namn;
+  @Column(name = "NAMN")
+  private String namn;
 
-    public VardpersonReferens() {
-        // no-args
-    }
+  public VardpersonReferens() {
+    // no-args
+  }
 
-    public VardpersonReferens(String hsaId, String namn) {
-        this.hsaId = hsaId;
-        this.namn = namn;
-    }
+  public VardpersonReferens(String hsaId, String namn) {
+    this.hsaId = hsaId;
+    this.namn = namn;
+  }
 
-    public String getHsaId() {
-        return hsaId;
-    }
+  public String getHsaId() {
+    return hsaId;
+  }
 
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
+  public void setHsaId(String hsaId) {
+    this.hsaId = hsaId;
+  }
 
-    public String getNamn() {
-        return namn;
-    }
+  public String getNamn() {
+    return namn;
+  }
 
-    public void setNamn(String namn) {
-        this.namn = namn;
-    }
+  public void setNamn(String namn) {
+    this.namn = namn;
+  }
 }

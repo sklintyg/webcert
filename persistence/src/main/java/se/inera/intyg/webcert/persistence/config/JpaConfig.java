@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.persistence.config;
 
-
 import static se.inera.intyg.webcert.persistence.config.JpaConfigBase.BASE_PACKAGES;
 
 import org.springframework.context.annotation.ComponentScan;
@@ -30,6 +29,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Profile("!h2")
 @ComponentScan(BASE_PACKAGES)
 @EnableJpaRepositories(basePackages = BASE_PACKAGES)
-public class JpaConfig extends JpaConfigBase {
-
-}
+public class JpaConfig extends JpaConfigBase {}

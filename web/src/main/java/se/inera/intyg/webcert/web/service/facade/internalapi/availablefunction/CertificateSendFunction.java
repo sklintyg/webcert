@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isReplacedOrComplemented;
@@ -33,49 +32,49 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @Component
 public class CertificateSendFunction implements AvailableFunctions {
 
-    private final AuthoritiesHelper authoritiesHelper;
+  private final AuthoritiesHelper authoritiesHelper;
 
-    public CertificateSendFunction(AuthoritiesHelper authoritiesHelper) {
-        this.authoritiesHelper = authoritiesHelper;
+  public CertificateSendFunction(AuthoritiesHelper authoritiesHelper) {
+    this.authoritiesHelper = authoritiesHelper;
+  }
+
+  @Override
+  public List<AvailableFunctionDTO> get(Certificate certificate) {
+    final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
+
+    if (isSendFunctionActive(certificate)) {
+      availableFunctions.add(AvailableFunctionFactory.send(!certificate.getMetadata().isSent()));
     }
 
-    @Override
-    public List<AvailableFunctionDTO> get(Certificate certificate) {
-        final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
+    return availableFunctions;
+  }
 
-        if (isSendFunctionActive(certificate)) {
-            availableFunctions.add(AvailableFunctionFactory.send(!certificate.getMetadata().isSent()));
-        }
+  private boolean isSendFunctionActive(Certificate certificate) {
+    final var type = certificate.getMetadata().getType();
+    final var latestMajorVersion = certificate.getMetadata().isLatestMajorVersion();
+    final var recipient = certificate.getMetadata().getRecipient();
+    final var relations = certificate.getMetadata().getRelations();
 
-        return availableFunctions;
+    return isSendFeatureActive(type)
+        && isVersionAbleToSend(latestMajorVersion, type)
+        && recipient != null
+        && !isReplacedOrComplemented(relations);
+  }
+
+  private boolean isVersionAbleToSend(boolean latestMajorVersion, String type) {
+    if (latestMajorVersion) {
+      return true;
     }
 
-    private boolean isSendFunctionActive(Certificate certificate) {
-        final var type = certificate.getMetadata().getType();
-        final var latestMajorVersion = certificate.getMetadata().isLatestMajorVersion();
-        final var recipient = certificate.getMetadata().getRecipient();
-        final var relations = certificate.getMetadata().getRelations();
+    return !isFeatureInactiveOlderVersionsActive(type);
+  }
 
-        return isSendFeatureActive(type)
-            && isVersionAbleToSend(latestMajorVersion, type)
-            && recipient != null
-            && !isReplacedOrComplemented(relations);
-    }
+  private boolean isFeatureInactiveOlderVersionsActive(String type) {
+    return authoritiesHelper.isFeatureActive(
+        AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, type);
+  }
 
-    private boolean isVersionAbleToSend(boolean latestMajorVersion, String type) {
-        if (latestMajorVersion) {
-            return true;
-        }
-
-        return !isFeatureInactiveOlderVersionsActive(type);
-    }
-
-    private boolean isFeatureInactiveOlderVersionsActive(String type) {
-        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, type);
-    }
-
-    private boolean isSendFeatureActive(String type) {
-        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, type);
-    }
-
+  private boolean isSendFeatureActive(String type) {
+    return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, type);
+  }
 }

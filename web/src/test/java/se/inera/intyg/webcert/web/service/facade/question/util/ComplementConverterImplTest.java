@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,184 +45,194 @@ import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 @ExtendWith(MockitoExtension.class)
 class ComplementConverterImplTest {
 
-    @Mock
-    private GetCertificateService getCertificateService;
+  @Mock private GetCertificateService getCertificateService;
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
 
-    @InjectMocks
-    private ComplementConverterImpl complementConverter;
+  @InjectMocks private ComplementConverterImpl complementConverter;
 
-    private Arende complementQuestion;
-    private Arende anotherComplementQuestion;
-    private List<MedicinsktArende> kompletteringar = new ArrayList<>();
+  private Arende complementQuestion;
+  private Arende anotherComplementQuestion;
+  private List<MedicinsktArende> kompletteringar = new ArrayList<>();
 
-    @BeforeEach
-    void setUp() throws Exception {
-        final var certificateId = "certificateId";
-        final var certificateType = "certificateType";
-        final var certificateTypeVersion = "certificateTypeVersion";
+  @BeforeEach
+  void setUp() throws Exception {
+    final var certificateId = "certificateId";
+    final var certificateType = "certificateType";
+    final var certificateTypeVersion = "certificateTypeVersion";
 
-        complementQuestion = new Arende();
-        complementQuestion.setMeddelandeId("complementQuestionId");
-        complementQuestion.setIntygsId(certificateId);
-        complementQuestion.setIntygTyp(certificateType);
-        complementQuestion.setKomplettering(kompletteringar);
+    complementQuestion = new Arende();
+    complementQuestion.setMeddelandeId("complementQuestionId");
+    complementQuestion.setIntygsId(certificateId);
+    complementQuestion.setIntygTyp(certificateType);
+    complementQuestion.setKomplettering(kompletteringar);
 
-        anotherComplementQuestion = new Arende();
-        anotherComplementQuestion.setMeddelandeId("anotherComplementQuestionId");
-        anotherComplementQuestion.setIntygsId(certificateId);
-        anotherComplementQuestion.setIntygTyp(certificateType);
-        anotherComplementQuestion.setKomplettering(kompletteringar);
+    anotherComplementQuestion = new Arende();
+    anotherComplementQuestion.setMeddelandeId("anotherComplementQuestionId");
+    anotherComplementQuestion.setIntygsId(certificateId);
+    anotherComplementQuestion.setIntygTyp(certificateType);
+    anotherComplementQuestion.setKomplettering(kompletteringar);
 
-        final var certificateAsUtlatande = mock(Utlatande.class);
-        doReturn(certificateAsUtlatande)
-            .when(getCertificateService)
-            .getCertificateAsUtlatande(certificateId, certificateType);
+    final var certificateAsUtlatande = mock(Utlatande.class);
+    doReturn(certificateAsUtlatande)
+        .when(getCertificateService)
+        .getCertificateAsUtlatande(certificateId, certificateType);
 
-        doReturn(certificateType)
-            .when(certificateAsUtlatande)
-            .getTyp();
+    doReturn(certificateType).when(certificateAsUtlatande).getTyp();
 
-        doReturn(certificateTypeVersion)
-            .when(certificateAsUtlatande)
-            .getTextVersion();
+    doReturn(certificateTypeVersion).when(certificateAsUtlatande).getTextVersion();
 
-        final var moduleApi = mock(ModuleApi.class);
-        doReturn(moduleApi)
-            .when(intygModuleRegistry)
-            .getModuleApi(certificateType, certificateTypeVersion);
+    final var moduleApi = mock(ModuleApi.class);
+    doReturn(moduleApi)
+        .when(intygModuleRegistry)
+        .getModuleApi(certificateType, certificateTypeVersion);
 
-        final var jsonPropertiesMap = Map.of("questionId", List.of("jsonProperty"));
-        doReturn(jsonPropertiesMap)
-            .when(moduleApi)
-            .getModuleSpecificArendeParameters(eq(certificateAsUtlatande), anyList());
+    final var jsonPropertiesMap = Map.of("questionId", List.of("jsonProperty"));
+    doReturn(jsonPropertiesMap)
+        .when(moduleApi)
+        .getModuleSpecificArendeParameters(eq(certificateAsUtlatande), anyList());
 
-        final var certificateTextProvider = mock(CertificateTextProvider.class);
-        doReturn(certificateTextProvider)
-            .when(moduleApi)
-            .getTextProvider(certificateType, certificateTypeVersion);
+    final var certificateTextProvider = mock(CertificateTextProvider.class);
+    doReturn(certificateTextProvider)
+        .when(moduleApi)
+        .getTextProvider(certificateType, certificateTypeVersion);
 
-        doReturn("questionText")
-            .when(certificateTextProvider)
-            .get("questionId");
-    }
+    doReturn("questionText").when(certificateTextProvider).get("questionId");
+  }
 
-    @Test
-    void shallReturnConvertedComplement() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplement() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(complementQuestion);
+    final var actualComplements = complementConverter.convert(complementQuestion);
 
-        assertTrue(actualComplements.length == 1, "Should contain one converted complement");
-    }
+    assertTrue(actualComplements.length == 1, "Should contain one converted complement");
+  }
 
-    @Test
-    void shallReturnConvertedComplementWithQuestionId() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplementWithQuestionId() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(complementQuestion);
+    final var actualComplements = complementConverter.convert(complementQuestion);
 
-        assertEquals(medicinsktArende.getFrageId(), actualComplements[0].getQuestionId());
-    }
+    assertEquals(medicinsktArende.getFrageId(), actualComplements[0].getQuestionId());
+  }
 
-    @Test
-    void shallReturnConvertedComplementWithQuestionText() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplementWithQuestionText() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(complementQuestion);
+    final var actualComplements = complementConverter.convert(complementQuestion);
 
-        assertEquals("questionText", actualComplements[0].getQuestionText());
-    }
+    assertEquals("questionText", actualComplements[0].getQuestionText());
+  }
 
-    @Test
-    void shallReturnConvertedComplementWithValueId() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplementWithValueId() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(complementQuestion);
+    final var actualComplements = complementConverter.convert(complementQuestion);
 
-        assertEquals("jsonProperty", actualComplements[0].getValueId());
-    }
+    assertEquals("jsonProperty", actualComplements[0].getValueId());
+  }
 
-    @Test
-    void shallReturnConvertedComplementWithMessage() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        medicinsktArende.setText("Meddelande till kompletteringen");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplementWithMessage() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    medicinsktArende.setText("Meddelande till kompletteringen");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(complementQuestion);
+    final var actualComplements = complementConverter.convert(complementQuestion);
 
-        assertEquals(medicinsktArende.getText(), actualComplements[0].getMessage());
-    }
+    assertEquals(medicinsktArende.getText(), actualComplements[0].getMessage());
+  }
 
-    @Test
-    void shallReturnConvertedComplements() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplements() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
+    final var actualComplements =
+        complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
-        assertTrue(actualComplements.get("complementQuestionId").length == 1, "Should contain one converted complement");
-        assertTrue(actualComplements.get("anotherComplementQuestionId").length == 1, "Should contain one converted complement");
-    }
+    assertTrue(
+        actualComplements.get("complementQuestionId").length == 1,
+        "Should contain one converted complement");
+    assertTrue(
+        actualComplements.get("anotherComplementQuestionId").length == 1,
+        "Should contain one converted complement");
+  }
 
-    @Test
-    void shallReturnConvertedComplementsWithQuestionId() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplementsWithQuestionId() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
+    final var actualComplements =
+        complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
-        assertEquals(medicinsktArende.getFrageId(), actualComplements.get("complementQuestionId")[0].getQuestionId());
-        assertEquals(medicinsktArende.getFrageId(), actualComplements.get("anotherComplementQuestionId")[0].getQuestionId());
-    }
+    assertEquals(
+        medicinsktArende.getFrageId(),
+        actualComplements.get("complementQuestionId")[0].getQuestionId());
+    assertEquals(
+        medicinsktArende.getFrageId(),
+        actualComplements.get("anotherComplementQuestionId")[0].getQuestionId());
+  }
 
-    @Test
-    void shallReturnConvertedComplementsWithQuestionText() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplementsWithQuestionText() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
+    final var actualComplements =
+        complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
-        assertEquals("questionText", actualComplements.get("complementQuestionId")[0].getQuestionText());
-        assertEquals("questionText", actualComplements.get("anotherComplementQuestionId")[0].getQuestionText());
-    }
+    assertEquals(
+        "questionText", actualComplements.get("complementQuestionId")[0].getQuestionText());
+    assertEquals(
+        "questionText", actualComplements.get("anotherComplementQuestionId")[0].getQuestionText());
+  }
 
-    @Test
-    void shallReturnConvertedComplementsWithValueId() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplementsWithValueId() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
+    final var actualComplements =
+        complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
-        assertEquals("jsonProperty", actualComplements.get("complementQuestionId")[0].getValueId());
-        assertEquals("jsonProperty", actualComplements.get("anotherComplementQuestionId")[0].getValueId());
-    }
+    assertEquals("jsonProperty", actualComplements.get("complementQuestionId")[0].getValueId());
+    assertEquals(
+        "jsonProperty", actualComplements.get("anotherComplementQuestionId")[0].getValueId());
+  }
 
-    @Test
-    void shallReturnConvertedComplementsWithMessage() {
-        final var medicinsktArende = new MedicinsktArende();
-        medicinsktArende.setFrageId("questionId");
-        medicinsktArende.setText("Meddelande till kompletteringen");
-        kompletteringar.add(medicinsktArende);
+  @Test
+  void shallReturnConvertedComplementsWithMessage() {
+    final var medicinsktArende = new MedicinsktArende();
+    medicinsktArende.setFrageId("questionId");
+    medicinsktArende.setText("Meddelande till kompletteringen");
+    kompletteringar.add(medicinsktArende);
 
-        final var actualComplements = complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
+    final var actualComplements =
+        complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
-        assertEquals(medicinsktArende.getText(), actualComplements.get("complementQuestionId")[0].getMessage());
-        assertEquals(medicinsktArende.getText(), actualComplements.get("anotherComplementQuestionId")[0].getMessage());
-    }
+    assertEquals(
+        medicinsktArende.getText(), actualComplements.get("complementQuestionId")[0].getMessage());
+    assertEquals(
+        medicinsktArende.getText(),
+        actualComplements.get("anotherComplementQuestionId")[0].getMessage());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,52 +18,48 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import java.time.LocalDate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.time.LocalDate;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 public class Period {
 
-    private LocalDate from;
-    private LocalDate tom;
-    private int nedsattning;
+  private LocalDate from;
+  private LocalDate tom;
+  private int nedsattning;
 
-    public Period() {
+  public Period() {}
 
+  public LocalDate getFrom() {
+    return from;
+  }
+
+  public void setFrom(LocalDate from) {
+    this.from = from;
+  }
+
+  public LocalDate getTom() {
+    return tom;
+  }
+
+  public void setTom(LocalDate tom) {
+    this.tom = tom;
+  }
+
+  public int getNedsattning() {
+    return nedsattning;
+  }
+
+  public void setNedsattning(int nedsattning) {
+    this.nedsattning = nedsattning;
+  }
+
+  public static Period valueOf(String value) {
+    try {
+      final ObjectMapper objectMapper = new CustomObjectMapper();
+      return objectMapper.readValue(value, Period.class);
+    } catch (Exception ex) {
+      return null;
     }
-
-    public LocalDate getFrom() {
-        return from;
-    }
-
-    public void setFrom(LocalDate from) {
-        this.from = from;
-    }
-
-    public LocalDate getTom() {
-        return tom;
-    }
-
-    public void setTom(LocalDate tom) {
-        this.tom = tom;
-    }
-
-    public int getNedsattning() {
-        return nedsattning;
-    }
-
-    public void setNedsattning(int nedsattning) {
-        this.nedsattning = nedsattning;
-    }
-
-    public static Period valueOf(String value) {
-        try {
-            final ObjectMapper objectMapper = new CustomObjectMapper();
-            return objectMapper.readValue(value, Period.class);
-        } catch (Exception ex) {
-            return null;
-        }
-    }
+  }
 }

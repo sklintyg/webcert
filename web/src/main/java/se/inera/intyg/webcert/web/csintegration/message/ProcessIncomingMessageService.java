@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import lombok.RequiredArgsConstructor;
@@ -42,81 +41,77 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 @RequiredArgsConstructor
 public class ProcessIncomingMessageService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
-    private final MonitoringLogService monitoringLogService;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CSIntegrationService csIntegrationService;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
+  private final MonitoringLogService monitoringLogService;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final SendMailNotificationForReceivedMessageService
+      sendMailNotificationForReceivedMessageService;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-    public SendMessageToCareResponseType process(SendMessageToCareType sendMessageToCare) {
-        final var incomingMessageRequest = csIntegrationRequestFactory.getIncomingMessageRequest(
-            sendMessageToCare);
-        csIntegrationService.postMessage(
-            incomingMessageRequest
-        );
+  public SendMessageToCareResponseType process(SendMessageToCareType sendMessageToCare) {
+    final var incomingMessageRequest =
+        csIntegrationRequestFactory.getIncomingMessageRequest(sendMessageToCare);
+    csIntegrationService.postMessage(incomingMessageRequest);
 
-        final var certificate = csIntegrationService.getInternalCertificate(
-            sendMessageToCare.getIntygsId().getExtension()
-        );
+    final var certificate =
+        csIntegrationService.getInternalCertificate(sendMessageToCare.getIntygsId().getExtension());
 
-        final var questionType = ArendeAmne.valueOf(sendMessageToCare.getAmne().getCode());
-        final var isAnswer = sendMessageToCare.getSvarPa() != null;
+    final var questionType = ArendeAmne.valueOf(sendMessageToCare.getAmne().getCode());
+    final var isAnswer = sendMessageToCare.getSvarPa() != null;
 
-        monitoringLogService.logArendeReceived(
-            certificate.getMetadata().getId(),
-            certificate.getMetadata().getType(),
-            certificate.getMetadata().getUnit().getUnitId(),
-            questionType,
-            sendMessageToCare.getKomplettering().stream().map(Komplettering::getFrageId).toList(),
-            isAnswer,
-            sendMessageToCare.getMeddelandeId()
-        );
+    monitoringLogService.logArendeReceived(
+        certificate.getMetadata().getId(),
+        certificate.getMetadata().getType(),
+        certificate.getMetadata().getUnit().getUnitId(),
+        questionType,
+        sendMessageToCare.getKomplettering().stream().map(Komplettering::getFrageId).toList(),
+        isAnswer,
+        sendMessageToCare.getMeddelandeId());
 
-        final var shouldReceiveMailNotifications = shouldReciveMailNotifications(certificate);
+    final var shouldReceiveMailNotifications = shouldReciveMailNotifications(certificate);
 
-        if (!unitIsIntegrated(certificate) || shouldReceiveMailNotifications) {
-            sendMailNotificationForReceivedMessageService.send(sendMessageToCare, certificate);
-        } else {
-            publishCertificateStatusUpdateService.publish(
-                certificate,
-                getEventType(questionType, isAnswer),
-                questionType,
-                incomingMessageRequest.getLastDateToAnswer()
-            );
-        }
-
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.receivedMessage(certificate, incomingMessageRequest)
-        );
-
-        final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
-        final var result = new ResultType();
-        result.setResultCode(ResultCodeType.OK);
-        sendMessageToCareResponseType.setResult(result);
-        return sendMessageToCareResponseType;
+    if (!unitIsIntegrated(certificate) || shouldReceiveMailNotifications) {
+      sendMailNotificationForReceivedMessageService.send(sendMessageToCare, certificate);
+    } else {
+      publishCertificateStatusUpdateService.publish(
+          certificate,
+          getEventType(questionType, isAnswer),
+          questionType,
+          incomingMessageRequest.getLastDateToAnswer());
     }
 
-    private boolean shouldReciveMailNotifications(Certificate certificate) {
-        return integratedUnitNotificationEvaluator.mailNotification(
-            certificate.getMetadata().getCareProvider().getUnitId(),
-            certificate.getMetadata().getUnit().getUnitId(),
-            certificate.getMetadata().getId(),
-            certificate.getMetadata().getSigned()
-        );
-    }
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.receivedMessage(certificate, incomingMessageRequest));
 
-    private static HandelsekodEnum getEventType(ArendeAmne questionType, boolean isAnswer) {
-        if (questionType.equals(ArendeAmne.PAMINN) || !isAnswer) {
-            return HandelsekodEnum.NYFRFM;
-        }
-        return HandelsekodEnum.NYSVFM;
-    }
+    final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
+    final var result = new ResultType();
+    result.setResultCode(ResultCodeType.OK);
+    sendMessageToCareResponseType.setResult(result);
+    return sendMessageToCareResponseType;
+  }
 
-    private boolean unitIsIntegrated(Certificate certificate) {
-        return integreradeEnheterRegistry.getIntegreradEnhet(certificate.getMetadata().getUnit().getUnitId()) != null;
+  private boolean shouldReciveMailNotifications(Certificate certificate) {
+    return integratedUnitNotificationEvaluator.mailNotification(
+        certificate.getMetadata().getCareProvider().getUnitId(),
+        certificate.getMetadata().getUnit().getUnitId(),
+        certificate.getMetadata().getId(),
+        certificate.getMetadata().getSigned());
+  }
+
+  private static HandelsekodEnum getEventType(ArendeAmne questionType, boolean isAnswer) {
+    if (questionType.equals(ArendeAmne.PAMINN) || !isAnswer) {
+      return HandelsekodEnum.NYFRFM;
     }
+    return HandelsekodEnum.NYSVFM;
+  }
+
+  private boolean unitIsIntegrated(Certificate certificate) {
+    return integreradeEnheterRegistry.getIntegreradEnhet(
+            certificate.getMetadata().getUnit().getUnitId())
+        != null;
+  }
 }

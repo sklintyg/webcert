@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,23 +38,26 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePer
 @Path("/fmb")
 public class FMBController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FMBController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FMBController.class);
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Autowired
-    private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
+  @Autowired private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
 
-    @POST
-    @Path("/validateSickLeavePeriod")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "fmb-validate-sickleave-period", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response validateSickLeavePeriod(@RequestBody @NotNull ValidateSickLeavePeriodRequestDTO validateSickLeavePeriod) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Validating sick leave period");
-        }
-        final var response = validateSickLeavePeriodFacadeService.validateSickLeavePeriod(validateSickLeavePeriod);
-        return Response.ok(ValidateSickLeavePeriodResponseDTO.create(response)).build();
+  @POST
+  @Path("/validateSickLeavePeriod")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "fmb-validate-sickleave-period",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response validateSickLeavePeriod(
+      @RequestBody @NotNull ValidateSickLeavePeriodRequestDTO validateSickLeavePeriod) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Validating sick leave period");
     }
+    final var response =
+        validateSickLeavePeriodFacadeService.validateSickLeavePeriod(validateSickLeavePeriod);
+    return Response.ok(ValidateSickLeavePeriodResponseDTO.create(response)).build();
+  }
 }

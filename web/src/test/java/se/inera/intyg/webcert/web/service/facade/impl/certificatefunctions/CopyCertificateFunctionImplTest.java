@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,18 +47,16 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @ExtendWith(MockitoExtension.class)
 class CopyCertificateFunctionImplTest {
 
-    @Mock
-    private CertificateTypeMessageService certificateTypeMessageService;
+  @Mock private CertificateTypeMessageService certificateTypeMessageService;
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @InjectMocks
-    private CopyCertificateFunctionImpl copyCertificateFunction;
+  @InjectMocks private CopyCertificateFunctionImpl copyCertificateFunction;
 
-    @Test
-    void shallIncludeCopyCertificateIfLocked() {
-        final var expected = ResourceLinkDTO.create(
+  @Test
+  void shallIncludeCopyCertificateIfLocked() {
+    final var expected =
+        ResourceLinkDTO.create(
             ResourceLinkTypeDTO.COPY_CERTIFICATE,
             "Kopiera",
             "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
@@ -69,71 +66,89 @@ class CopyCertificateFunctionImplTest {
                 + "</p>"
                 + "<br/>"
                 + "<p>Det nya utkastet skapas på den enhet du är inloggad på.</p>",
-            true
-        );
+            true);
 
-        final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+    final var certificate =
+        CertificateFacadeTestHelper.createCertificate(
+            LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
 
-        final var actual = copyCertificateFunction.get(certificate).orElseThrow();
-        assertEquals(expected, actual);
-    }
+    final var actual = copyCertificateFunction.get(certificate).orElseThrow();
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    void shallIncludeCopyContinueCertificate() {
-        final var expected = ResourceLinkDTO.create(
+  @Test
+  void shallIncludeCopyContinueCertificate() {
+    final var expected =
+        ResourceLinkDTO.create(
             ResourceLinkTypeDTO.COPY_CERTIFICATE_CONTINUE,
             "Kopiera",
             "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
-            true
-        );
+            true);
 
-        final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
-        CertificateRelation copied = CertificateRelation.builder().type(CertificateRelationType.COPIED)
-            .status(CertificateStatus.UNSIGNED).build();
-        final var children = new CertificateRelation[]{copied};
-        certificate.getMetadata().setRelations(CertificateRelations.builder().children(children).build());
+    final var certificate =
+        CertificateFacadeTestHelper.createCertificate(
+            LisjpEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+    CertificateRelation copied =
+        CertificateRelation.builder()
+            .type(CertificateRelationType.COPIED)
+            .status(CertificateStatus.UNSIGNED)
+            .build();
+    final var children = new CertificateRelation[] {copied};
+    certificate
+        .getMetadata()
+        .setRelations(CertificateRelations.builder().children(children).build());
 
-        final var actual = copyCertificateFunction.get(certificate).orElseThrow();
-        assertEquals(expected, actual);
-    }
+    final var actual = copyCertificateFunction.get(certificate).orElseThrow();
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    void shallNotIncludeAnyCopyCertificateIfCertificateIsNotLocked() {
-        final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+  @Test
+  void shallNotIncludeAnyCopyCertificateIfCertificateIsNotLocked() {
+    final var certificate =
+        CertificateFacadeTestHelper.createCertificate(
+            LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
 
-        final var actual = copyCertificateFunction.get(certificate);
-        assertTrue(actual.isEmpty());
-    }
+    final var actual = copyCertificateFunction.get(certificate);
+    assertTrue(actual.isEmpty());
+  }
 
-    @Test
-    void shallIncludeDisabledCopyCertificateIfLockedAndSpecificMessageReturned() {
-        final var message = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+  @Test
+  void shallIncludeDisabledCopyCertificateIfLockedAndSpecificMessageReturned() {
+    final var message =
+        new CertificateMessage(
+            CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
             "Specific message for copy description");
-        final var expected = ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.COPY_CERTIFICATE,
-            "Kopiera",
-            message.getMessage(),
-            false
-        );
+    final var expected =
+        ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.COPY_CERTIFICATE, "Kopiera", message.getMessage(), false);
 
-        doReturn(Optional.of(message)).when(certificateTypeMessageService)
-            .get(DbModuleEntryPoint.MODULE_ID, Personnummer.createPersonnummer("191212121212").orElseThrow());
+    doReturn(Optional.of(message))
+        .when(certificateTypeMessageService)
+        .get(
+            DbModuleEntryPoint.MODULE_ID,
+            Personnummer.createPersonnummer("191212121212").orElseThrow());
 
-        final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+    final var certificate =
+        CertificateFacadeTestHelper.createCertificate(
+            DbModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
 
-        final var actual = copyCertificateFunction.get(certificate).orElseThrow();
-        assertEquals(expected, actual);
-    }
+    final var actual = copyCertificateFunction.get(certificate).orElseThrow();
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    void shallIncludeEnabledCopyCertificateIfLockedAndDraftOnDifferentCareProviderMesssageType() {
-        final var message = new CertificateMessage(CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
+  @Test
+  void shallIncludeEnabledCopyCertificateIfLockedAndDraftOnDifferentCareProviderMesssageType() {
+    final var message =
+        new CertificateMessage(
+            CertificateMessageType.DRAFT_ON_DIFFERENT_CARE_PROVIDER,
             "Specific message for copy description");
-        final var expected = ResourceLinkDTO.create(
+    final var expected =
+        ResourceLinkDTO.create(
             ResourceLinkTypeDTO.COPY_CERTIFICATE,
             "Kopiera",
             "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
-            String.format("<div class='ic-alert ic-alert--status ic-alert--observe'>\n"
+            String.format(
+                "<div class='ic-alert ic-alert--status ic-alert--observe'>\n"
                     + "<i class='ic-alert__icon ic-observe-icon'></i><p>%s</p></div><br/>"
                     + "<p>"
                     + "Genom att kopiera ett låst intygsutkast skapas ett nytt utkast med samma information som i det ursprungliga "
@@ -142,27 +157,36 @@ class CopyCertificateFunctionImplTest {
                     + "<br/>"
                     + "<p>Det nya utkastet skapas på den enhet du är inloggad på.</p>",
                 message.getMessage()),
-            true
-        );
+            true);
 
-        doReturn(Optional.of(message)).when(certificateTypeMessageService)
-            .get(DbModuleEntryPoint.MODULE_ID, Personnummer.createPersonnummer("191212121212").orElseThrow());
+    doReturn(Optional.of(message))
+        .when(certificateTypeMessageService)
+        .get(
+            DbModuleEntryPoint.MODULE_ID,
+            Personnummer.createPersonnummer("191212121212").orElseThrow());
 
-        final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+    final var certificate =
+        CertificateFacadeTestHelper.createCertificate(
+            DbModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
 
-        final var actual = copyCertificateFunction.get(certificate).orElseThrow();
-        assertEquals(expected, actual);
-    }
+    final var actual = copyCertificateFunction.get(certificate).orElseThrow();
+    assertEquals(expected, actual);
+  }
 
-    @Test
-    void shallIncludeEnabledCopyCertificateIfLockedAndCertificateOnDifferentCareProviderMesssageTypeIfDoi() {
-        final var message = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
+  @Test
+  void
+      shallIncludeEnabledCopyCertificateIfLockedAndCertificateOnDifferentCareProviderMesssageTypeIfDoi() {
+    final var message =
+        new CertificateMessage(
+            CertificateMessageType.CERTIFICATE_ON_DIFFERENT_CARE_PROVIDER,
             "Specific message for copy description");
-        final var expected = ResourceLinkDTO.create(
+    final var expected =
+        ResourceLinkDTO.create(
             ResourceLinkTypeDTO.COPY_CERTIFICATE,
             "Kopiera",
             "Skapar en redigerbar kopia av utkastet på den enheten du är inloggad på.",
-            String.format("<div class='ic-alert ic-alert--status ic-alert--observe'>\n"
+            String.format(
+                "<div class='ic-alert ic-alert--status ic-alert--observe'>\n"
                     + "<i class='ic-alert__icon ic-observe-icon'></i><p>%s</p></div><br/>"
                     + "<p>"
                     + "Genom att kopiera ett låst intygsutkast skapas ett nytt utkast med samma information som i det ursprungliga "
@@ -171,15 +195,19 @@ class CopyCertificateFunctionImplTest {
                     + "<br/>"
                     + "<p>Det nya utkastet skapas på den enhet du är inloggad på.</p>",
                 message.getMessage()),
-            true
-        );
+            true);
 
-        doReturn(Optional.of(message)).when(certificateTypeMessageService)
-            .get(DoiModuleEntryPoint.MODULE_ID, Personnummer.createPersonnummer("191212121212").orElseThrow());
+    doReturn(Optional.of(message))
+        .when(certificateTypeMessageService)
+        .get(
+            DoiModuleEntryPoint.MODULE_ID,
+            Personnummer.createPersonnummer("191212121212").orElseThrow());
 
-        final var certificate = CertificateFacadeTestHelper.createCertificate(DoiModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
+    final var certificate =
+        CertificateFacadeTestHelper.createCertificate(
+            DoiModuleEntryPoint.MODULE_ID, CertificateStatus.LOCKED);
 
-        final var actual = copyCertificateFunction.get(certificate).orElseThrow();
-        assertEquals(expected, actual);
-    }
+    final var actual = copyCertificateFunction.get(certificate).orElseThrow();
+    assertEquals(expected, actual);
+  }
 }

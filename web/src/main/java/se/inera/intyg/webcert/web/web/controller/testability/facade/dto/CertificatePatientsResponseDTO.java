@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,17 +23,17 @@ import se.inera.intyg.common.support.facade.model.Patient;
 
 public class CertificatePatientsResponseDTO {
 
-    private List<Patient> patients;
+  private List<Patient> patients;
 
-    public CertificatePatientsResponseDTO(List<Patient> patients) {
-        this.patients = patients;
-    }
+  public CertificatePatientsResponseDTO(List<Patient> patients) {
+    this.patients = patients;
+  }
 
-    public List<Patient> getPatients() {
-        return patients;
-    }
+  public List<Patient> getPatients() {
+    return patients;
+  }
 
-    public void setPatients(List<Patient> patients) {
-        this.patients = patients;
-    }
+  public void setPatients(List<Patient> patients) {
+    this.patients = patients;
+  }
 }

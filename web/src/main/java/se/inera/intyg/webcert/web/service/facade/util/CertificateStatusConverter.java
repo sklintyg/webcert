@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,36 +27,36 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public abstract class CertificateStatusConverter {
 
-    public static CertificateStatus getStatus(boolean isRevoked, UtkastStatus status) {
-        if (isRevoked) {
-            if (status == UtkastStatus.DRAFT_LOCKED) {
-                return CertificateStatus.LOCKED_REVOKED;
-            } else {
-                return CertificateStatus.REVOKED;
-            }
-        }
-
-        switch (status) {
-            case SIGNED:
-                return CertificateStatus.SIGNED;
-            case DRAFT_LOCKED:
-                return CertificateStatus.LOCKED;
-            case DRAFT_COMPLETE:
-            case DRAFT_INCOMPLETE:
-                return CertificateStatus.UNSIGNED;
-            default:
-                throw new IllegalArgumentException("Cannot map the status: " + status);
-        }
+  public static CertificateStatus getStatus(boolean isRevoked, UtkastStatus status) {
+    if (isRevoked) {
+      if (status == UtkastStatus.DRAFT_LOCKED) {
+        return CertificateStatus.LOCKED_REVOKED;
+      } else {
+        return CertificateStatus.REVOKED;
+      }
     }
 
-    public static CertificateStatus getStatus(List<Status> statuses) {
-        if (statuses.stream().anyMatch(status -> status.getType() == CertificateState.CANCELLED)) {
-            return CertificateStatus.REVOKED;
-        }
+    switch (status) {
+      case SIGNED:
         return CertificateStatus.SIGNED;
+      case DRAFT_LOCKED:
+        return CertificateStatus.LOCKED;
+      case DRAFT_COMPLETE:
+      case DRAFT_INCOMPLETE:
+        return CertificateStatus.UNSIGNED;
+      default:
+        throw new IllegalArgumentException("Cannot map the status: " + status);
     }
+  }
 
-    public static boolean isRevoked(Utkast certificate) {
-        return certificate.getAterkalladDatum() != null;
+  public static CertificateStatus getStatus(List<Status> statuses) {
+    if (statuses.stream().anyMatch(status -> status.getType() == CertificateState.CANCELLED)) {
+      return CertificateStatus.REVOKED;
     }
+    return CertificateStatus.SIGNED;
+  }
+
+  public static boolean isRevoked(Utkast certificate) {
+    return certificate.getAterkalladDatum() != null;
+  }
 }

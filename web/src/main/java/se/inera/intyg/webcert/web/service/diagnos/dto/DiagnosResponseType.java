@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,28 +20,18 @@ package se.inera.intyg.webcert.web.service.diagnos.dto;
 
 public enum DiagnosResponseType {
 
-    /**
-     * A Diagnosis matching the code was not found.
-     */
-    NOT_FOUND,
+  /** A Diagnosis matching the code was not found. */
+  NOT_FOUND,
 
-    /**
-     * The supplied code is not valid.
-     */
-    INVALID_CODE,
+  /** The supplied code is not valid. */
+  INVALID_CODE,
 
-    /**
-     * The search string is not valid.
-     */
-    INVALID_SEARCH_STRING,
+  /** The search string is not valid. */
+  INVALID_SEARCH_STRING,
 
-    /**
-     * The code system is not valid.
-     */
-    INVALID_CODE_SYSTEM,
+  /** The code system is not valid. */
+  INVALID_CODE_SYSTEM,
 
-    /**
-     * A match was found using the code.
-     */
-    OK;
+  /** A match was found using the code. */
+  OK;
 }

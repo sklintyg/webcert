@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,121 +44,125 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public final class IntygConverterUtil {
 
-    private IntygConverterUtil() {
+  private IntygConverterUtil() {}
+
+  public static SendType buildSendTypeFromUtlatande(Utlatande utlatande) {
+
+    LakarutlatandeEnkelType utlatandeType = ModelConverter.toLakarutlatandeEnkelType(utlatande);
+
+    VardAdresseringsType vardAdressType =
+        ModelConverter.toVardAdresseringsType(utlatande.getGrundData());
+
+    SendType sendType = new SendType();
+    sendType.setLakarutlatande(utlatandeType);
+    sendType.setAdressVard(vardAdressType);
+    sendType.setVardReferensId(buildVardReferensId(utlatande.getId()));
+    sendType.setAvsantTidpunkt(LocalDateTime.now());
+
+    return sendType;
+  }
+
+  public static String concatPatientName(String fName, String mName, String lName) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(fName);
+
+    if (!Strings.nullToEmpty(mName).trim().isEmpty()) {
+      sb.append(" ").append(mName);
     }
 
-    public static SendType buildSendTypeFromUtlatande(Utlatande utlatande) {
+    sb.append(" ").append(lName);
+    return sb.toString().trim();
+  }
 
-        LakarutlatandeEnkelType utlatandeType = ModelConverter.toLakarutlatandeEnkelType(utlatande);
+  public static String buildVardReferensId(String intygId) {
+    return buildVardReferensId(intygId, LocalDateTime.now());
+  }
 
-        VardAdresseringsType vardAdressType = ModelConverter.toVardAdresseringsType(utlatande.getGrundData());
+  public static String buildVardReferensId(String intygId, LocalDateTime ts) {
+    return Joiner.on("-")
+        .join("SEND", intygId, ts.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS")));
+  }
 
-        SendType sendType = new SendType();
-        sendType.setLakarutlatande(utlatandeType);
-        sendType.setAdressVard(vardAdressType);
-        sendType.setVardReferensId(buildVardReferensId(utlatande.getId()));
-        sendType.setAvsantTidpunkt(LocalDateTime.now());
+  /**
+   * Given an Utkast, a List of Statuses is built given:
+   * <li>If draft has a skickadTillMottagareDatum, a SENT status is added
+   * <li>If draft has a aterkalledDatum, a CANCELLED status is added
+   * <li>If there is a signature with a signature date, a RECEIVED status is added.
+   */
+  public static List<Status> buildStatusesFromUtkast(Utkast draft) {
+    List<Status> statuses = new ArrayList<>();
 
-        return sendType;
+    if (draft.getSkickadTillMottagareDatum() != null) {
+      Status status =
+          new Status(
+              CertificateState.SENT,
+              draft.getSkickadTillMottagare(),
+              draft.getSkickadTillMottagareDatum());
+      statuses.add(status);
     }
-
-    public static String concatPatientName(String fName, String mName, String lName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(fName);
-
-        if (!Strings.nullToEmpty(mName).trim().isEmpty()) {
-            sb.append(" ").append(mName);
-        }
-
-        sb.append(" ").append(lName);
-        return sb.toString().trim();
+    if (draft.getAterkalladDatum() != null) {
+      Status status = new Status(CertificateState.CANCELLED, null, draft.getAterkalladDatum());
+      statuses.add(status);
     }
-
-    public static String buildVardReferensId(String intygId) {
-        return buildVardReferensId(intygId, LocalDateTime.now());
+    if (draft.getStatus() == UtkastStatus.SIGNED
+        && draft.getSignatur() != null
+        && draft.getSignatur().getSigneringsDatum() != null) {
+      Status status =
+          new Status(CertificateState.RECEIVED, null, draft.getSignatur().getSigneringsDatum());
+      statuses.add(status);
     }
+    return statuses;
+  }
 
-    public static String buildVardReferensId(String intygId, LocalDateTime ts) {
-        return Joiner.on("-").join("SEND", intygId, ts.format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss.SSS")));
-    }
+  public static HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user, Vardenhet vardenhet) {
+    HoSPersonal hosPersonal = new HoSPersonal();
+    hosPersonal.setPersonId(user.getHsaId());
+    hosPersonal.setFullstandigtNamn(user.getNamn());
+    hosPersonal.setForskrivarKod(user.getForskrivarkod());
+    hosPersonal.getBefattningar().addAll(user.getBefattningar());
+    hosPersonal.getBefattningsKoder().addAll(convertToInternalList(user));
+    hosPersonal.getSpecialiteter().addAll(user.getSpecialiseringar());
+    hosPersonal.setVardenhet(Objects.requireNonNullElseGet(vardenhet, () -> buildVardenhet(user)));
+    return hosPersonal;
+  }
 
-    /**
-     * Given an Utkast, a List of Statuses is built given:
-     *
-     * <li>If draft has a skickadTillMottagareDatum, a SENT status is added</li>
-     * <li>If draft has a aterkalledDatum, a CANCELLED status is added</li>
-     * <li>If there is a signature with a signature date, a RECEIVED status is added.</li>
-     */
-    public static List<Status> buildStatusesFromUtkast(Utkast draft) {
-        List<Status> statuses = new ArrayList<>();
-
-        if (draft.getSkickadTillMottagareDatum() != null) {
-            Status status = new Status(CertificateState.SENT,
-                draft.getSkickadTillMottagare(), draft.getSkickadTillMottagareDatum());
-            statuses.add(status);
-        }
-        if (draft.getAterkalladDatum() != null) {
-            Status status = new Status(CertificateState.CANCELLED,
-                null, draft.getAterkalladDatum());
-            statuses.add(status);
-        }
-        if (draft.getStatus() == UtkastStatus.SIGNED && draft.getSignatur() != null
-            && draft.getSignatur().getSigneringsDatum() != null) {
-            Status status = new Status(CertificateState.RECEIVED,
-                null, draft.getSignatur().getSigneringsDatum());
-            statuses.add(status);
-        }
-        return statuses;
-    }
-
-    public static HoSPersonal buildHosPersonalFromWebCertUser(WebCertUser user, Vardenhet vardenhet) {
-        HoSPersonal hosPersonal = new HoSPersonal();
-        hosPersonal.setPersonId(user.getHsaId());
-        hosPersonal.setFullstandigtNamn(user.getNamn());
-        hosPersonal.setForskrivarKod(user.getForskrivarkod());
-        hosPersonal.getBefattningar().addAll(user.getBefattningar());
-        hosPersonal.getBefattningsKoder().addAll(convertToInternalList(user));
-        hosPersonal.getSpecialiteter().addAll(user.getSpecialiseringar());
-        hosPersonal.setVardenhet(Objects.requireNonNullElseGet(vardenhet, () -> buildVardenhet(user)));
-        return hosPersonal;
-    }
-
-    private static List<PaTitle> convertToInternalList(WebCertUser user) {
-        return user.getBefattningsKoder().stream()
-            .distinct()
-            .map(pt -> {
-                final var internal = new PaTitle();
-                internal.setKlartext(pt.getPaTitleName());
-                internal.setKod(pt.getPaTitleCode());
-                return internal;
+  private static List<PaTitle> convertToInternalList(WebCertUser user) {
+    return user.getBefattningsKoder().stream()
+        .distinct()
+        .map(
+            pt -> {
+              final var internal = new PaTitle();
+              internal.setKlartext(pt.getPaTitleName());
+              internal.setKod(pt.getPaTitleCode());
+              return internal;
             })
-            .toList();
-    }
+        .toList();
+  }
 
-    private static Vardenhet buildVardenhet(WebCertUser user) {
-        Vardenhet vardenhet = new Vardenhet();
-        SelectableVardenhet sourceVardenhet = user.getValdVardenhet();
-        if (sourceVardenhet != null && sourceVardenhet instanceof AbstractVardenhet) {
-            AbstractVardenhet valdVardenhet = (AbstractVardenhet) sourceVardenhet;
-            vardenhet.setArbetsplatsKod(valdVardenhet.getArbetsplatskod());
-            vardenhet.setEnhetsid(valdVardenhet.getId());
-            vardenhet.setEnhetsnamn(valdVardenhet.getNamn());
-            vardenhet.setEpost(valdVardenhet.getEpost());
-            vardenhet.setPostadress(valdVardenhet.getPostadress());
-            vardenhet.setPostnummer(valdVardenhet.getPostnummer());
-            vardenhet.setPostort(valdVardenhet.getPostort());
-            vardenhet.setTelefonnummer(valdVardenhet.getTelefonnummer());
-        }
-        vardenhet.setVardgivare(buildVardgivare(user.getValdVardgivare()));
-        return vardenhet;
+  private static Vardenhet buildVardenhet(WebCertUser user) {
+    Vardenhet vardenhet = new Vardenhet();
+    SelectableVardenhet sourceVardenhet = user.getValdVardenhet();
+    if (sourceVardenhet != null && sourceVardenhet instanceof AbstractVardenhet) {
+      AbstractVardenhet valdVardenhet = (AbstractVardenhet) sourceVardenhet;
+      vardenhet.setArbetsplatsKod(valdVardenhet.getArbetsplatskod());
+      vardenhet.setEnhetsid(valdVardenhet.getId());
+      vardenhet.setEnhetsnamn(valdVardenhet.getNamn());
+      vardenhet.setEpost(valdVardenhet.getEpost());
+      vardenhet.setPostadress(valdVardenhet.getPostadress());
+      vardenhet.setPostnummer(valdVardenhet.getPostnummer());
+      vardenhet.setPostort(valdVardenhet.getPostort());
+      vardenhet.setTelefonnummer(valdVardenhet.getTelefonnummer());
     }
+    vardenhet.setVardgivare(buildVardgivare(user.getValdVardgivare()));
+    return vardenhet;
+  }
 
-    private static Vardgivare buildVardgivare(SelectableVardenhet valdVardgivare) {
-        Vardgivare vardgivare = new Vardgivare();
-        if (valdVardgivare != null) {
-            vardgivare.setVardgivarid(valdVardgivare.getId());
-            vardgivare.setVardgivarnamn(valdVardgivare.getNamn());
-        }
-        return vardgivare;
+  private static Vardgivare buildVardgivare(SelectableVardenhet valdVardgivare) {
+    Vardgivare vardgivare = new Vardgivare();
+    if (valdVardgivare != null) {
+      vardgivare.setVardgivarid(valdVardgivare.getId());
+      vardgivare.setVardgivarnamn(valdVardgivare.getNamn());
     }
+    return vardgivare;
+  }
 }

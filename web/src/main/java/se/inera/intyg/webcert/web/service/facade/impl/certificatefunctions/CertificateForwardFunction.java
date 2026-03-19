@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,42 +25,30 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 public class CertificateForwardFunction {
 
-    private static final String FORWARD_NAME = "Vidarebefordra utkast";
-    private static final String FORWARD_DESCRIPTION =
-        "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
-    private static final String FORWARD_DESCRIPTION_CERTIFICATE =
-        "Skapar ett e-postmeddelande med länk till intyget.";
-    private static final String FORWARD_DESCRIPTION_QUESTION =
-        "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.";
+  private static final String FORWARD_NAME = "Vidarebefordra utkast";
+  private static final String FORWARD_DESCRIPTION =
+      "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.";
+  private static final String FORWARD_DESCRIPTION_CERTIFICATE =
+      "Skapar ett e-postmeddelande med länk till intyget.";
+  private static final String FORWARD_DESCRIPTION_QUESTION =
+      "Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.";
 
-    public static boolean validate(CertificateStatus status, WebCertUser user) {
-        return status == CertificateStatus.UNSIGNED && !user.isPrivatLakare();
-    }
+  public static boolean validate(CertificateStatus status, WebCertUser user) {
+    return status == CertificateStatus.UNSIGNED && !user.isPrivatLakare();
+  }
 
-    public static ResourceLinkDTO createResourceLinkForDraft() {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
-            FORWARD_NAME,
-            FORWARD_DESCRIPTION,
-            true
-        );
-    }
+  public static ResourceLinkDTO createResourceLinkForDraft() {
+    return ResourceLinkDTO.create(
+        ResourceLinkTypeDTO.FORWARD_CERTIFICATE, FORWARD_NAME, FORWARD_DESCRIPTION, true);
+  }
 
-    public static ResourceLinkDTO createResourceLinkForQuestionList() {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.FORWARD_QUESTION,
-            "Vidarebefordra",
-            FORWARD_DESCRIPTION_QUESTION,
-            true
-        );
-    }
+  public static ResourceLinkDTO createResourceLinkForQuestionList() {
+    return ResourceLinkDTO.create(
+        ResourceLinkTypeDTO.FORWARD_QUESTION, "Vidarebefordra", FORWARD_DESCRIPTION_QUESTION, true);
+  }
 
-    public static ResourceLinkDTO createResourceLink() {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.FORWARD_CERTIFICATE,
-            "Vidarebefordra",
-            FORWARD_DESCRIPTION,
-            true
-        );
-    }
+  public static ResourceLinkDTO createResourceLink() {
+    return ResourceLinkDTO.create(
+        ResourceLinkTypeDTO.FORWARD_CERTIFICATE, "Vidarebefordra", FORWARD_DESCRIPTION, true);
+  }
 }

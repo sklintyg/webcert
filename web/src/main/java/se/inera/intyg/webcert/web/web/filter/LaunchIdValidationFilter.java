@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,65 +45,71 @@ import se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionResponse;
 @Component(value = "launchIdValidationFilter")
 public class LaunchIdValidationFilter extends OncePerRequestFilter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LaunchIdValidationFilter.class);
-    private static RequestMatcher requestMatcher;
+  private static final Logger LOG = LoggerFactory.getLogger(LaunchIdValidationFilter.class);
+  private static RequestMatcher requestMatcher;
 
-    @Autowired
-    @Qualifier("objectMapper")
-    private ObjectMapper mapper;
+  @Autowired
+  @Qualifier("objectMapper") private ObjectMapper mapper;
 
-    @Autowired
-    private WebCertUserService webCertUserService;
+  @Autowired private WebCertUserService webCertUserService;
 
-    static {
-        final String[] publicEndPoints = {"/api/configuration/**", "/api/log/**"};
-        ignorePatterns(publicEndPoints);
+  static {
+    final String[] publicEndPoints = {"/api/configuration/**", "/api/log/**"};
+    ignorePatterns(publicEndPoints);
+  }
+
+  private static void ignorePatterns(String... antPatterns) {
+    List<RequestMatcher> matchers = new ArrayList<>();
+    for (String pattern : antPatterns) {
+      matchers.add(new AntPathRequestMatcher(pattern, null));
     }
+    requestMatcher = new OrRequestMatcher(matchers);
+  }
 
-    private static void ignorePatterns(String... antPatterns) {
-        List<RequestMatcher> matchers = new ArrayList<>();
-        for (String pattern : antPatterns) {
-            matchers.add(new AntPathRequestMatcher(pattern, null));
-        }
-        requestMatcher = new OrRequestMatcher(matchers);
+  @Override
+  protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+    return requestMatcher.matches(request);
+  }
+
+  @Override
+  protected void doFilterInternal(
+      @NonNull HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain)
+      throws ServletException, IOException {
+    if (continueFilterChain(request)) {
+      filterChain.doFilter(request, response);
+      return;
     }
-
-    @Override
-    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
-        return requestMatcher.matches(request);
+    final var user = webCertUserService.getUser();
+    final var launchId = request.getHeader("launchId");
+    if (user.getParameters().getLaunchId().equals(launchId)) {
+      filterChain.doFilter(request, response);
+      return;
     }
+    final var errorDetails = new HashMap<>();
+    final var webcertRestExceptionResponse = getWebcertRestExceptionResponse();
+    errorDetails.put("errorCode", webcertRestExceptionResponse.getErrorCode());
+    errorDetails.put("message", webcertRestExceptionResponse.getMessage());
+    LOG.info(
+        "Provided launchId: '{}'- does not match with current session launchId: '{}' - session will be invalidated.",
+        launchId,
+        user.getParameters().getLaunchId());
 
-    @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-        @NonNull FilterChain filterChain) throws ServletException, IOException {
-        if (continueFilterChain(request)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        final var user = webCertUserService.getUser();
-        final var launchId = request.getHeader("launchId");
-        if (user.getParameters().getLaunchId().equals(launchId)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        final var errorDetails = new HashMap<>();
-        final var webcertRestExceptionResponse = getWebcertRestExceptionResponse();
-        errorDetails.put("errorCode", webcertRestExceptionResponse.getErrorCode());
-        errorDetails.put("message", webcertRestExceptionResponse.getMessage());
-        LOG.info("Provided launchId: '{}'- does not match with current session launchId: '{}' - session will be invalidated.", launchId,
-            user.getParameters().getLaunchId());
+    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+    mapper.writeValue(response.getWriter(), errorDetails);
+  }
 
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        mapper.writeValue(response.getWriter(), errorDetails);
-    }
+  private boolean continueFilterChain(HttpServletRequest request) {
+    return request.getHeader("launchId") == null
+        || webCertUserService == null
+        || webCertUserService.getUser() == null
+        || webCertUserService.getUser().getParameters() == null;
+  }
 
-    private boolean continueFilterChain(HttpServletRequest request) {
-        return request.getHeader("launchId") == null || webCertUserService == null || webCertUserService.getUser() == null
-            || webCertUserService.getUser().getParameters() == null;
-    }
-
-    private WebcertRestExceptionResponse getWebcertRestExceptionResponse() {
-        return new WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum.INVALID_LAUNCHID, "Invalid launchId");
-    }
+  private WebcertRestExceptionResponse getWebcertRestExceptionResponse() {
+    return new WebcertRestExceptionResponse(
+        WebCertServiceErrorCodeEnum.INVALID_LAUNCHID, "Invalid launchId");
+  }
 }

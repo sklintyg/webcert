@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,208 +38,209 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 @ExtendWith(MockitoExtension.class)
 class SendNotificationRequestSanitizerTest {
 
-    private static final LocalDateTime DATE_TIME = LocalDateTime.now();
+  private static final LocalDateTime DATE_TIME = LocalDateTime.now();
 
-    private static final SendNotificationsForCertificatesRequestDTO.SendNotificationsForCertificatesRequestDTOBuilder
-        CERTIFICATES_REQUEST_BUILDER = SendNotificationsForCertificatesRequestDTO.builder()
-        .statuses(
-            List.of(NotificationDeliveryStatusEnum.FAILURE,
-                NotificationDeliveryStatusEnum.RESEND,
-                NotificationDeliveryStatusEnum.SUCCESS)
-        );
+  private static final SendNotificationsForCertificatesRequestDTO
+          .SendNotificationsForCertificatesRequestDTOBuilder
+      CERTIFICATES_REQUEST_BUILDER =
+          SendNotificationsForCertificatesRequestDTO.builder()
+              .statuses(
+                  List.of(
+                      NotificationDeliveryStatusEnum.FAILURE,
+                      NotificationDeliveryStatusEnum.RESEND,
+                      NotificationDeliveryStatusEnum.SUCCESS));
 
-    private final SendNotificationsForUnitsRequestDTO.SendNotificationsForUnitsRequestDTOBuilder UNITS_RESEND_REQUEST_BUILDER =
-        SendNotificationsForUnitsRequestDTO.builder()
-            .start(DATE_TIME)
-            .end(DATE_TIME)
-            .activationTime(DATE_TIME)
-            .statuses(
-                List.of(NotificationDeliveryStatusEnum.FAILURE,
-                    NotificationDeliveryStatusEnum.RESEND,
-                    NotificationDeliveryStatusEnum.SUCCESS)
-            );
+  private final SendNotificationsForUnitsRequestDTO.SendNotificationsForUnitsRequestDTOBuilder
+      UNITS_RESEND_REQUEST_BUILDER =
+          SendNotificationsForUnitsRequestDTO.builder()
+              .start(DATE_TIME)
+              .end(DATE_TIME)
+              .activationTime(DATE_TIME)
+              .statuses(
+                  List.of(
+                      NotificationDeliveryStatusEnum.FAILURE,
+                      NotificationDeliveryStatusEnum.RESEND,
+                      NotificationDeliveryStatusEnum.SUCCESS));
 
-    private final CountNotificationsForUnitsRequestDTO.CountNotificationsForUnitsRequestDTOBuilder UNITS_COUNT_REQUEST_BUILDER =
-        CountNotificationsForUnitsRequestDTO.builder()
-            .start(DATE_TIME)
-            .end(DATE_TIME)
-            .activationTime(DATE_TIME)
-            .statuses(
-                List.of(NotificationDeliveryStatusEnum.FAILURE,
-                    NotificationDeliveryStatusEnum.RESEND,
-                    NotificationDeliveryStatusEnum.SUCCESS)
-            );
+  private final CountNotificationsForUnitsRequestDTO.CountNotificationsForUnitsRequestDTOBuilder
+      UNITS_COUNT_REQUEST_BUILDER =
+          CountNotificationsForUnitsRequestDTO.builder()
+              .start(DATE_TIME)
+              .end(DATE_TIME)
+              .activationTime(DATE_TIME)
+              .statuses(
+                  List.of(
+                      NotificationDeliveryStatusEnum.FAILURE,
+                      NotificationDeliveryStatusEnum.RESEND,
+                      NotificationDeliveryStatusEnum.SUCCESS));
 
-    private final SendNotificationsForCareGiverRequestDTO.SendNotificationsForCareGiverRequestDTOBuilder CARE_GIVER_RESEND_REQUEST_BUILDER =
-        SendNotificationsForCareGiverRequestDTO.builder()
-            .start(DATE_TIME)
-            .end(DATE_TIME)
-            .activationTime(DATE_TIME)
-            .statuses(
-                List.of(NotificationDeliveryStatusEnum.FAILURE,
-                    NotificationDeliveryStatusEnum.RESEND,
-                    NotificationDeliveryStatusEnum.SUCCESS)
-            );
+  private final SendNotificationsForCareGiverRequestDTO
+          .SendNotificationsForCareGiverRequestDTOBuilder
+      CARE_GIVER_RESEND_REQUEST_BUILDER =
+          SendNotificationsForCareGiverRequestDTO.builder()
+              .start(DATE_TIME)
+              .end(DATE_TIME)
+              .activationTime(DATE_TIME)
+              .statuses(
+                  List.of(
+                      NotificationDeliveryStatusEnum.FAILURE,
+                      NotificationDeliveryStatusEnum.RESEND,
+                      NotificationDeliveryStatusEnum.SUCCESS));
 
-    private final CountNotificationsForCareGiverRequestDTO.CountNotificationsForCareGiverRequestDTOBuilder CARE_GIVER_COUNT_REQUEST_BUILDER =
-        CountNotificationsForCareGiverRequestDTO.builder()
-            .start(DATE_TIME)
-            .end(DATE_TIME)
-            .activationTime(DATE_TIME)
-            .statuses(
-                List.of(NotificationDeliveryStatusEnum.FAILURE,
-                    NotificationDeliveryStatusEnum.RESEND,
-                    NotificationDeliveryStatusEnum.SUCCESS)
-            );
+  private final CountNotificationsForCareGiverRequestDTO
+          .CountNotificationsForCareGiverRequestDTOBuilder
+      CARE_GIVER_COUNT_REQUEST_BUILDER =
+          CountNotificationsForCareGiverRequestDTO.builder()
+              .start(DATE_TIME)
+              .end(DATE_TIME)
+              .activationTime(DATE_TIME)
+              .statuses(
+                  List.of(
+                      NotificationDeliveryStatusEnum.FAILURE,
+                      NotificationDeliveryStatusEnum.RESEND,
+                      NotificationDeliveryStatusEnum.SUCCESS));
 
-    @Nested
-    class RemoveBlankSpaces {
+  @Nested
+  class RemoveBlankSpaces {
 
-        @Test
-        void shouldRemoveBlankSpacesFromCertificateIdsInCertificatesRequest() {
-            final var request = CERTIFICATES_REQUEST_BUILDER
-                .certificateIds(List.of("certificateId1 ", "certificateId 2", " certificateId3"))
-                .build();
+    @Test
+    void shouldRemoveBlankSpacesFromCertificateIdsInCertificatesRequest() {
+      final var request =
+          CERTIFICATES_REQUEST_BUILDER
+              .certificateIds(List.of("certificateId1 ", "certificateId 2", " certificateId3"))
+              .build();
 
-            final var expected = List.of("certificateId1", "certificateId2", "certificateId3");
+      final var expected = List.of("certificateId1", "certificateId2", "certificateId3");
 
-            final var result = SendNotificationRequestSanitizer.sanitize(request);
+      final var result = SendNotificationRequestSanitizer.sanitize(request);
 
-            assertEquals(expected, result.getCertificateIds());
-        }
-
-        @Test
-        void shouldReturnEmptyListIfListIfCertificateIdsAreNull() {
-            final var request = CERTIFICATES_REQUEST_BUILDER
-                .certificateIds(null)
-                .build();
-
-            final var result = SendNotificationRequestSanitizer.sanitize(request);
-
-            assertEquals(Collections.emptyList(), result.getCertificateIds());
-        }
-
-        @Test
-        void shouldRemoveBlankSpacesFromUnitIdsInUnitRequest() {
-            final var request = UNITS_RESEND_REQUEST_BUILDER
-                .unitIds(List.of("unitId1 ", "unitId 2", " unitId3"))
-                .build();
-
-            final var expected = List.of("unitId1", "unitId2", "unitId3");
-
-            final var result = SendNotificationRequestSanitizer.sanitize(request);
-
-            assertEquals(expected, result.getUnitIds());
-        }
-
-        @Test
-        void shouldReturnEmptyListIfListIfUnitIdsAreNull() {
-            final var request = UNITS_RESEND_REQUEST_BUILDER
-                .unitIds(null)
-                .build();
-
-            final var result = SendNotificationRequestSanitizer.sanitize(request);
-
-            assertEquals(Collections.emptyList(), result.getUnitIds());
-        }
-
-        @Test
-        void shouldRemoveBlankSpaceFromString() {
-            final var stringWithBlankSpace = "string ";
-            final var result = SendNotificationRequestSanitizer.sanitize(stringWithBlankSpace);
-
-            assertEquals("string", result);
-        }
-
+      assertEquals(expected, result.getCertificateIds());
     }
 
-    @Nested
-    class RemoveIncorrectStatus {
+    @Test
+    void shouldReturnEmptyListIfListIfCertificateIdsAreNull() {
+      final var request = CERTIFICATES_REQUEST_BUILDER.certificateIds(null).build();
 
-        @Test
-        void shouldRemoveStatusResendFromStatusesInUnitRequest() {
-            final var expected = List.of(NotificationDeliveryStatusEnum.FAILURE, NotificationDeliveryStatusEnum.SUCCESS);
+      final var result = SendNotificationRequestSanitizer.sanitize(request);
 
-            final var result = SendNotificationRequestSanitizer.sanitize(UNITS_RESEND_REQUEST_BUILDER.build());
-
-            assertEquals(expected, result.getStatuses());
-        }
-
-        @Test
-        void shouldRemoveStatusResendFromStatusesInCertificatesRequest() {
-            final var expected = List.of(NotificationDeliveryStatusEnum.FAILURE, NotificationDeliveryStatusEnum.SUCCESS);
-
-            final var result = SendNotificationRequestSanitizer.sanitize(CERTIFICATES_REQUEST_BUILDER.build());
-
-            assertEquals(expected, result.getStatuses());
-        }
-
-        @Test
-        void shouldRemoveStatusResendFromStatusesInResendCareGiverRequest() {
-            final var expected = List.of(NotificationDeliveryStatusEnum.FAILURE, NotificationDeliveryStatusEnum.SUCCESS);
-
-            final var result = SendNotificationRequestSanitizer.sanitize(CARE_GIVER_RESEND_REQUEST_BUILDER.build());
-
-            assertEquals(expected, result.getStatuses());
-        }
-
-        @Test
-        void shouldRemoveStatusResendFromStatusesInCountCareGiverRequest() {
-            final var expected = List.of(NotificationDeliveryStatusEnum.FAILURE, NotificationDeliveryStatusEnum.SUCCESS);
-
-            final var result = SendNotificationRequestSanitizer.sanitize(CARE_GIVER_COUNT_REQUEST_BUILDER.build());
-
-            assertEquals(expected, result.getStatuses());
-        }
+      assertEquals(Collections.emptyList(), result.getCertificateIds());
     }
 
-    @Nested
-    class
-    SetActivationTime {
+    @Test
+    void shouldRemoveBlankSpacesFromUnitIdsInUnitRequest() {
+      final var request =
+          UNITS_RESEND_REQUEST_BUILDER.unitIds(List.of("unitId1 ", "unitId 2", " unitId3")).build();
 
-        @Test
-        void shouldSetActivationTimeToCurrentTimeIfNullInResendUnitRequest() {
-            final var request = UNITS_RESEND_REQUEST_BUILDER
-                .activationTime(null)
-                .build();
+      final var expected = List.of("unitId1", "unitId2", "unitId3");
 
-            final var result = SendNotificationRequestSanitizer.sanitize(request);
+      final var result = SendNotificationRequestSanitizer.sanitize(request);
 
-            assertNotNull(result.getActivationTime());
-        }
-
-        @Test
-        void shouldSetActivationTimeToCurrentTimeIfNullInCountUnitRequest() {
-            final var request = UNITS_COUNT_REQUEST_BUILDER
-                .activationTime(null)
-                .build();
-
-            final var result = SendNotificationRequestSanitizer.sanitize(request);
-
-            assertNotNull(result.getActivationTime());
-        }
-
-
-        @Test
-        void shouldSetActivationTimeToCurrentTimeIfNullInResendCareGiverRequest() {
-            final var request = CARE_GIVER_RESEND_REQUEST_BUILDER
-                .activationTime(null)
-                .build();
-
-            final var result = SendNotificationRequestSanitizer.sanitize(request);
-
-            assertNotNull(result.getActivationTime());
-        }
-
-        @Test
-        void shouldSetActivationTimeToCurrentTimeIfNullInCountCareGiverRequest() {
-            final var request = CARE_GIVER_COUNT_REQUEST_BUILDER
-                .activationTime(null)
-                .build();
-
-            final var result = SendNotificationRequestSanitizer.sanitize(request);
-
-            assertNotNull(result.getActivationTime());
-        }
+      assertEquals(expected, result.getUnitIds());
     }
+
+    @Test
+    void shouldReturnEmptyListIfListIfUnitIdsAreNull() {
+      final var request = UNITS_RESEND_REQUEST_BUILDER.unitIds(null).build();
+
+      final var result = SendNotificationRequestSanitizer.sanitize(request);
+
+      assertEquals(Collections.emptyList(), result.getUnitIds());
+    }
+
+    @Test
+    void shouldRemoveBlankSpaceFromString() {
+      final var stringWithBlankSpace = "string ";
+      final var result = SendNotificationRequestSanitizer.sanitize(stringWithBlankSpace);
+
+      assertEquals("string", result);
+    }
+  }
+
+  @Nested
+  class RemoveIncorrectStatus {
+
+    @Test
+    void shouldRemoveStatusResendFromStatusesInUnitRequest() {
+      final var expected =
+          List.of(NotificationDeliveryStatusEnum.FAILURE, NotificationDeliveryStatusEnum.SUCCESS);
+
+      final var result =
+          SendNotificationRequestSanitizer.sanitize(UNITS_RESEND_REQUEST_BUILDER.build());
+
+      assertEquals(expected, result.getStatuses());
+    }
+
+    @Test
+    void shouldRemoveStatusResendFromStatusesInCertificatesRequest() {
+      final var expected =
+          List.of(NotificationDeliveryStatusEnum.FAILURE, NotificationDeliveryStatusEnum.SUCCESS);
+
+      final var result =
+          SendNotificationRequestSanitizer.sanitize(CERTIFICATES_REQUEST_BUILDER.build());
+
+      assertEquals(expected, result.getStatuses());
+    }
+
+    @Test
+    void shouldRemoveStatusResendFromStatusesInResendCareGiverRequest() {
+      final var expected =
+          List.of(NotificationDeliveryStatusEnum.FAILURE, NotificationDeliveryStatusEnum.SUCCESS);
+
+      final var result =
+          SendNotificationRequestSanitizer.sanitize(CARE_GIVER_RESEND_REQUEST_BUILDER.build());
+
+      assertEquals(expected, result.getStatuses());
+    }
+
+    @Test
+    void shouldRemoveStatusResendFromStatusesInCountCareGiverRequest() {
+      final var expected =
+          List.of(NotificationDeliveryStatusEnum.FAILURE, NotificationDeliveryStatusEnum.SUCCESS);
+
+      final var result =
+          SendNotificationRequestSanitizer.sanitize(CARE_GIVER_COUNT_REQUEST_BUILDER.build());
+
+      assertEquals(expected, result.getStatuses());
+    }
+  }
+
+  @Nested
+  class SetActivationTime {
+
+    @Test
+    void shouldSetActivationTimeToCurrentTimeIfNullInResendUnitRequest() {
+      final var request = UNITS_RESEND_REQUEST_BUILDER.activationTime(null).build();
+
+      final var result = SendNotificationRequestSanitizer.sanitize(request);
+
+      assertNotNull(result.getActivationTime());
+    }
+
+    @Test
+    void shouldSetActivationTimeToCurrentTimeIfNullInCountUnitRequest() {
+      final var request = UNITS_COUNT_REQUEST_BUILDER.activationTime(null).build();
+
+      final var result = SendNotificationRequestSanitizer.sanitize(request);
+
+      assertNotNull(result.getActivationTime());
+    }
+
+    @Test
+    void shouldSetActivationTimeToCurrentTimeIfNullInResendCareGiverRequest() {
+      final var request = CARE_GIVER_RESEND_REQUEST_BUILDER.activationTime(null).build();
+
+      final var result = SendNotificationRequestSanitizer.sanitize(request);
+
+      assertNotNull(result.getActivationTime());
+    }
+
+    @Test
+    void shouldSetActivationTimeToCurrentTimeIfNullInCountCareGiverRequest() {
+      final var request = CARE_GIVER_COUNT_REQUEST_BUILDER.activationTime(null).build();
+
+      final var result = SendNotificationRequestSanitizer.sanitize(request);
+
+      assertNotNull(result.getActivationTime());
+    }
+  }
 }

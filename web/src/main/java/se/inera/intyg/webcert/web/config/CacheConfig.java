@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,17 +35,18 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 @ImportResource({"classpath:basic-cache-config.xml"})
 public class CacheConfig {
 
-    @Bean
-    StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        return new StringRedisTemplate(redisConnectionFactory);
-    }
+  @Bean
+  StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    return new StringRedisTemplate(redisConnectionFactory);
+  }
 
-    @Bean
-    public RequestCache requestCache() {
-        final var requestCache = new HttpSessionRequestCache();
-        requestCache.setRequestMatcher(new OrRequestMatcher(ELEG_REQUEST_MATCHER, SITHS_REQUEST_MATCHER, SITHS_NORMAL_REQUEST_MATCHER));
-        requestCache.setMatchingRequestParameterName(null);
-        return requestCache;
-    }
-
+  @Bean
+  public RequestCache requestCache() {
+    final var requestCache = new HttpSessionRequestCache();
+    requestCache.setRequestMatcher(
+        new OrRequestMatcher(
+            ELEG_REQUEST_MATCHER, SITHS_REQUEST_MATCHER, SITHS_NORMAL_REQUEST_MATCHER));
+    requestCache.setMatchingRequestParameterName(null);
+    return requestCache;
+  }
 }

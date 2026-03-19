@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,39 +25,39 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 
 public class CertificateDTO {
 
-    private CertificateMetadata metadata;
-    private Map<String, CertificateDataElement> data;
-    private ResourceLinkDTO[] links;
+  private CertificateMetadata metadata;
+  private Map<String, CertificateDataElement> data;
+  private ResourceLinkDTO[] links;
 
-    public static CertificateDTO create(Certificate certificate, ResourceLinkDTO[] links) {
-        final var certificateDTO = new CertificateDTO();
-        certificateDTO.setMetadata(certificate.getMetadata());
-        certificateDTO.setData(certificate.getData());
-        certificateDTO.setLinks(links);
-        return certificateDTO;
-    }
+  public static CertificateDTO create(Certificate certificate, ResourceLinkDTO[] links) {
+    final var certificateDTO = new CertificateDTO();
+    certificateDTO.setMetadata(certificate.getMetadata());
+    certificateDTO.setData(certificate.getData());
+    certificateDTO.setLinks(links);
+    return certificateDTO;
+  }
 
-    public CertificateMetadata getMetadata() {
-        return metadata;
-    }
+  public CertificateMetadata getMetadata() {
+    return metadata;
+  }
 
-    public void setMetadata(CertificateMetadata metadata) {
-        this.metadata = metadata;
-    }
+  public void setMetadata(CertificateMetadata metadata) {
+    this.metadata = metadata;
+  }
 
-    public Map<String, CertificateDataElement> getData() {
-        return data;
-    }
+  public Map<String, CertificateDataElement> getData() {
+    return data;
+  }
 
-    public void setData(Map<String, CertificateDataElement> data) {
-        this.data = data;
-    }
+  public void setData(Map<String, CertificateDataElement> data) {
+    this.data = data;
+  }
 
-    public ResourceLinkDTO[] getLinks() {
-        return links;
-    }
+  public ResourceLinkDTO[] getLinks() {
+    return links;
+  }
 
-    public void setLinks(ResourceLinkDTO[] links) {
-        this.links = links;
-    }
+  public void setLinks(ResourceLinkDTO[] links) {
+    this.links = links;
+  }
 }

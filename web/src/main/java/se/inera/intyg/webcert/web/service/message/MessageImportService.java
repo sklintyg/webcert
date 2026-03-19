@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,38 +18,37 @@
  */
 package se.inera.intyg.webcert.web.service.message;
 
-/**
- * Service to import any messages that are missing in Webcert.
- */
+/** Service to import any messages that are missing in Webcert. */
 public interface MessageImportService {
 
-    /**
-     * Check a certificate if import is needed.
-     *
-     * @param certificateId Id of the certificate to check
-     * @return True if import is needed.
-     */
-    boolean isImportNeeded(String certificateId);
+  /**
+   * Check a certificate if import is needed.
+   *
+   * @param certificateId Id of the certificate to check
+   * @return True if import is needed.
+   */
+  boolean isImportNeeded(String certificateId);
 
-    /**
-     * Imports any messages that doesn't already exists in Webcert.
-     *
-     * Note: Before calling the method check if import is really needed.
-     *
-     * @param certificateId Id of the certificate to import any messages.
-     */
-    void importMessages(String certificateId);
+  /**
+   * Imports any messages that doesn't already exists in Webcert.
+   *
+   * <p>Note: Before calling the method check if import is really needed.
+   *
+   * @param certificateId Id of the certificate to import any messages.
+   */
+  void importMessages(String certificateId);
 
-    /**
-     * Imports any messages that doesn't already exists in Webcert.
-     *
-     * Use this method if importing while receiving a new message for care. Then pass receiving messageId as the
-     * excludeMessageId argument. This is to make sure that the import message doesn't import the received message.
-     *
-     * Note: Before calling the method check if import is really needed.
-     *
-     * @param certificateId Id of the certificate to import any messages.
-     * @param excludeMessageId Id of a message not to import.
-     */
-    void importMessages(String certificateId, String excludeMessageId);
+  /**
+   * Imports any messages that doesn't already exists in Webcert.
+   *
+   * <p>Use this method if importing while receiving a new message for care. Then pass receiving
+   * messageId as the excludeMessageId argument. This is to make sure that the import message
+   * doesn't import the received message.
+   *
+   * <p>Note: Before calling the method check if import is really needed.
+   *
+   * @param certificateId Id of the certificate to import any messages.
+   * @param excludeMessageId Id of a message not to import.
+   */
+  void importMessages(String certificateId, String excludeMessageId);
 }

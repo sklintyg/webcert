@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,22 +29,23 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface UtkastRepository extends JpaRepository<Utkast, String>, UtkastRepositoryCustom {
 
-    List<Utkast> findAllByRelationIntygsId(String relationIntygsId);
+  List<Utkast> findAllByRelationIntygsId(String relationIntygsId);
 
-    Utkast findByIntygsIdAndIntygsTyp(String intygsId, String intygsTyp);
+  Utkast findByIntygsIdAndIntygsTyp(String intygsId, String intygsTyp);
 
-    List<Utkast> findAllByPatientPersonnummerAndIntygsTypIn(String personnummer, Set<String> intygstyp);
+  List<Utkast> findAllByPatientPersonnummerAndIntygsTypIn(
+      String personnummer, Set<String> intygstyp);
 
-    @Query("select u.intygsId from Utkast u where u.vardgivarId = :careProviderId")
-    Page<String> findCertificateIdsForCareProvider(@Param("careProviderId") String careProviderId, Pageable pageable);
+  @Query("select u.intygsId from Utkast u where u.vardgivarId = :careProviderId")
+  Page<String> findCertificateIdsForCareProvider(
+      @Param("careProviderId") String careProviderId, Pageable pageable);
 
-    @Query("select u from Utkast u where u.intygsId in :certificateIds")
-    List<Utkast> getCertificatesByIntygsId(@Param("certificateIds") List<String> certificateIds);
+  @Query("select u from Utkast u where u.intygsId in :certificateIds")
+  List<Utkast> getCertificatesByIntygsId(@Param("certificateIds") List<String> certificateIds);
 
-    default int eraseCertificatesByCertificateIds(List<String> certificateIds) {
-        final var utkastList = getCertificatesByIntygsId(certificateIds);
-        deleteAll(utkastList);
-        return utkastList.size();
-    }
-
+  default int eraseCertificatesByCertificateIds(List<String> certificateIds) {
+    final var utkastList = getCertificatesByIntygsId(certificateIds);
+    deleteAll(utkastList);
+    return utkastList.size();
+  }
 }

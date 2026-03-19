@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.util.Optional;
@@ -32,27 +31,23 @@ import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 @RequiredArgsConstructor
 public class GetIntygInfoFromCertificateService implements IntygInfoServiceInterface {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CertificateToIntygInfoConverter certificateToIntygInfoConverter;
+  private final CSIntegrationService csIntegrationService;
+  private final CertificateToIntygInfoConverter certificateToIntygInfoConverter;
 
-    @Override
-    public Optional<WcIntygInfo> getIntygInfo(String certificateId) {
-        final var exists = csIntegrationService.certificateExists(certificateId);
-        if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
-            return Optional.empty();
-        }
-
-        log.debug("Getting certificate from certificate service with id '{}'", certificateId);
-        final var certificate = csIntegrationService.getInternalCertificate(
-            certificateId
-        );
-        log.debug("Certificate with id '{}' was retrieved from certificate service", certificateId);
-
-        final var questions = csIntegrationService.getQuestions(
-            certificateId
-        );
-
-        return Optional.of(certificateToIntygInfoConverter.convert(certificate, questions));
+  @Override
+  public Optional<WcIntygInfo> getIntygInfo(String certificateId) {
+    final var exists = csIntegrationService.certificateExists(certificateId);
+    if (Boolean.FALSE.equals(exists)) {
+      log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
+      return Optional.empty();
     }
+
+    log.debug("Getting certificate from certificate service with id '{}'", certificateId);
+    final var certificate = csIntegrationService.getInternalCertificate(certificateId);
+    log.debug("Certificate with id '{}' was retrieved from certificate service", certificateId);
+
+    final var questions = csIntegrationService.getQuestions(certificateId);
+
+    return Optional.of(certificateToIntygInfoConverter.convert(certificate, questions));
+  }
 }

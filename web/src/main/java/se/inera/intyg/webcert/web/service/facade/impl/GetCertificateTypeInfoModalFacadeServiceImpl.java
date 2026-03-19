@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,22 +28,25 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoM
 
 @Service
 @RequiredArgsConstructor
-public class GetCertificateTypeInfoModalFacadeServiceImpl implements GetCertificateTypeInfoModalFacadeService {
+public class GetCertificateTypeInfoModalFacadeServiceImpl
+    implements GetCertificateTypeInfoModalFacadeService {
 
-    private final CertificateTypeInfoModalService certificateTypeInfoModalService;
-    private final LogService logService;
-    private final WebCertUserService webCertUserService;
+  private final CertificateTypeInfoModalService certificateTypeInfoModalService;
+  private final LogService logService;
+  private final WebCertUserService webCertUserService;
 
-    @Override
-    public CertificateTypeInfoModalDTO get(String certificateType, Personnummer patientId) {
-        final var modal = certificateTypeInfoModalService.get(certificateType, patientId);
-        logService.logReadLevelOne(webCertUserService.getUser(), patientId.getPersonnummer());
+  @Override
+  public CertificateTypeInfoModalDTO get(String certificateType, Personnummer patientId) {
+    final var modal = certificateTypeInfoModalService.get(certificateType, patientId);
+    logService.logReadLevelOne(webCertUserService.getUser(), patientId.getPersonnummer());
 
-        return modal.map(certificateTypeInfoModal -> CertificateTypeInfoModalDTO.builder()
-            .title(certificateTypeInfoModal.getTitle())
-            .description(certificateTypeInfoModal.getDescription())
-            .build()
-        ).orElse(null);
-    }
+    return modal
+        .map(
+            certificateTypeInfoModal ->
+                CertificateTypeInfoModalDTO.builder()
+                    .title(certificateTypeInfoModal.getTitle())
+                    .description(certificateTypeInfoModal.getDescription())
+                    .build())
+        .orElse(null);
+  }
 }
-

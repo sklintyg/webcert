@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,142 +49,160 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 @Service
 public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
 
-    private final CertificateAccessServiceHelper certificateAccessServiceHelper;
-    private final WebCertUserService webCertUserService;
-    private final UserService userService;
-    private final CertificateRelationsConverter certificateRelationsConverter;
-    private final AuthoritiesHelper authoritiesHelper;
+  private final CertificateAccessServiceHelper certificateAccessServiceHelper;
+  private final WebCertUserService webCertUserService;
+  private final UserService userService;
+  private final CertificateRelationsConverter certificateRelationsConverter;
+  private final AuthoritiesHelper authoritiesHelper;
 
-    @Autowired
-    public ResourceLinkListHelperImpl(CertificateAccessServiceHelper certificateAccessServiceHelper,
-        WebCertUserService webCertUserService, UserService userService,
-        CertificateRelationsConverter certificateRelationsConverter,
-        AuthoritiesHelper authoritiesHelper) {
-        this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-        this.webCertUserService = webCertUserService;
-        this.userService = userService;
-        this.certificateRelationsConverter = certificateRelationsConverter;
-        this.authoritiesHelper = authoritiesHelper;
-    }
+  @Autowired
+  public ResourceLinkListHelperImpl(
+      CertificateAccessServiceHelper certificateAccessServiceHelper,
+      WebCertUserService webCertUserService,
+      UserService userService,
+      CertificateRelationsConverter certificateRelationsConverter,
+      AuthoritiesHelper authoritiesHelper) {
+    this.certificateAccessServiceHelper = certificateAccessServiceHelper;
+    this.webCertUserService = webCertUserService;
+    this.userService = userService;
+    this.certificateRelationsConverter = certificateRelationsConverter;
+    this.authoritiesHelper = authoritiesHelper;
+  }
 
-    @Override
-    public List<ResourceLinkDTO> get(CertificateListEntry entry, CertificateListItemStatus status) {
-        final var actionLinks = getActionLinks(entry);
-        return convertResourceLinks(actionLinks, status);
-    }
+  @Override
+  public List<ResourceLinkDTO> get(CertificateListEntry entry, CertificateListItemStatus status) {
+    final var actionLinks = getActionLinks(entry);
+    return convertResourceLinks(actionLinks, status);
+  }
 
-    @Override
-    public List<ResourceLinkDTO> get(ListIntygEntry entry, CertificateListItemStatus status) {
-        final var convertedRelations = certificateRelationsConverter.convert(entry.getRelations());
-        return convertResourceLinks(entry.getLinks(), entry.getVardenhetId(), entry.getIntygType(), status, convertedRelations);
-    }
+  @Override
+  public List<ResourceLinkDTO> get(ListIntygEntry entry, CertificateListItemStatus status) {
+    final var convertedRelations = certificateRelationsConverter.convert(entry.getRelations());
+    return convertResourceLinks(
+        entry.getLinks(), entry.getVardenhetId(), entry.getIntygType(), status, convertedRelations);
+  }
 
-    @Override
-    public List<ResourceLinkDTO> get(ArendeListItem entry, CertificateListItemStatus status) {
-        return convertResourceLinks(entry.getLinks(), status);
-    }
+  @Override
+  public List<ResourceLinkDTO> get(ArendeListItem entry, CertificateListItemStatus status) {
+    return convertResourceLinks(entry.getLinks(), status);
+  }
 
-    private List<ActionLink> getActionLinks(CertificateListEntry entry) {
-        final var user = webCertUserService.getUser();
-        final var careUnit = createCareUnit(user.getValdVardenhet().getId(), user.getValdVardgivare().getId());
-        final var links = new ArrayList<ActionLink>();
+  private List<ActionLink> getActionLinks(CertificateListEntry entry) {
+    final var user = webCertUserService.getUser();
+    final var careUnit =
+        createCareUnit(user.getValdVardenhet().getId(), user.getValdVardgivare().getId());
+    final var links = new ArrayList<ActionLink>();
 
-        final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
+    final AccessEvaluationParameters accessEvaluationParameters =
+        AccessEvaluationParameters.create(
             entry.getCertificateType(),
             entry.getCertificateTypeVersion(),
             careUnit,
             Personnummer.createPersonnummer(entry.getCivicRegistrationNumber()).get(),
-            entry.isTestIndicator()
-        );
+            entry.isTestIndicator());
 
-        if (certificateAccessServiceHelper.isAllowToRead(accessEvaluationParameters)) {
-            links.add(new ActionLink(ActionLinkType.LASA_INTYG));
-        }
-
-        if (certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)) {
-            links.add(new ActionLink(ActionLinkType.FORNYA_INTYG));
-        }
-
-        return links;
+    if (certificateAccessServiceHelper.isAllowToRead(accessEvaluationParameters)) {
+      links.add(new ActionLink(ActionLinkType.LASA_INTYG));
     }
 
-    private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links, CertificateListItemStatus status) {
-        return links.stream()
-            .map((link) -> getConvertedResourceLink(link, status))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+    if (certificateAccessServiceHelper.isAllowToRenew(accessEvaluationParameters)) {
+      links.add(new ActionLink(ActionLinkType.FORNYA_INTYG));
     }
 
-    private List<ResourceLinkDTO> convertResourceLinks(
-        List<ActionLink> links, String unitId, String certificateType,
-        CertificateListItemStatus status, CertificateRelations relations
-    ) {
-        return links.stream()
-            .map((link) -> getConvertedResourceLink(link, unitId, certificateType, status, relations))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+    return links;
+  }
+
+  private List<ResourceLinkDTO> convertResourceLinks(
+      List<ActionLink> links, CertificateListItemStatus status) {
+    return links.stream()
+        .map((link) -> getConvertedResourceLink(link, status))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
+
+  private List<ResourceLinkDTO> convertResourceLinks(
+      List<ActionLink> links,
+      String unitId,
+      String certificateType,
+      CertificateListItemStatus status,
+      CertificateRelations relations) {
+    return links.stream()
+        .map((link) -> getConvertedResourceLink(link, unitId, certificateType, status, relations))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
+
+  private ResourceLinkDTO getConvertedResourceLink(
+      ActionLink link, CertificateListItemStatus status) {
+    if (link.getType() == ActionLinkType.LASA_INTYG
+        || link.getType() == ActionLinkType.LASA_FRAGA) {
+      return ResourceLinkFactory.read();
     }
 
-    private ResourceLinkDTO getConvertedResourceLink(ActionLink link, CertificateListItemStatus status) {
-        if (link.getType() == ActionLinkType.LASA_INTYG || link.getType() == ActionLinkType.LASA_FRAGA) {
-            return ResourceLinkFactory.read();
-        }
-
-        if (link.getType() == ActionLinkType.VIDAREBEFODRA_FRAGA) {
-            return CertificateForwardFunction.createResourceLinkForQuestionList();
-        }
-
-        if (validateForward(link, getCertificateStatus(status))) {
-            return CertificateForwardFunction.createResourceLink();
-        }
-
-        return null;
+    if (link.getType() == ActionLinkType.VIDAREBEFODRA_FRAGA) {
+      return CertificateForwardFunction.createResourceLinkForQuestionList();
     }
 
-    private CertificateStatus getCertificateStatus(CertificateListItemStatus status) {
-        if (status == CertificateListItemStatus.LOCKED) {
-            return CertificateStatus.LOCKED;
-        } else if (status == CertificateListItemStatus.INCOMPLETE || status == CertificateListItemStatus.COMPLETE) {
-            return CertificateStatus.UNSIGNED;
-        } else if (status == CertificateListItemStatus.REVOKED) {
-            return CertificateStatus.REVOKED;
-        } else {
-            return CertificateStatus.SIGNED;
-        }
+    if (validateForward(link, getCertificateStatus(status))) {
+      return CertificateForwardFunction.createResourceLink();
     }
 
-    private boolean validateForward(ActionLink link, CertificateStatus status) {
-        return link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST
-            && CertificateForwardFunction.validate(status, webCertUserService.getUser());
-    }
+    return null;
+  }
 
-    private ResourceLinkDTO getConvertedResourceLink(
-        ActionLink link, String savedUnitId, String certificateType,
-        CertificateListItemStatus status, CertificateRelations relations
-    ) {
-        final var convertedResourceLink = getConvertedResourceLink(link, status);
-        if (convertedResourceLink != null) {
-            return convertedResourceLink;
-        } else if (validateRenew(link, certificateType, relations, getCertificateStatus(status))) {
-            final var loggedInCareUnitId = userService.getLoggedInCareUnit(webCertUserService.getUser()).getId();
-            return CertificateRenewFunction.createResourceLink(loggedInCareUnitId, savedUnitId, certificateType);
-        }
-        return null;
+  private CertificateStatus getCertificateStatus(CertificateListItemStatus status) {
+    if (status == CertificateListItemStatus.LOCKED) {
+      return CertificateStatus.LOCKED;
+    } else if (status == CertificateListItemStatus.INCOMPLETE
+        || status == CertificateListItemStatus.COMPLETE) {
+      return CertificateStatus.UNSIGNED;
+    } else if (status == CertificateListItemStatus.REVOKED) {
+      return CertificateStatus.REVOKED;
+    } else {
+      return CertificateStatus.SIGNED;
     }
+  }
 
-    private boolean validateRenew(ActionLink link, String certificateType, CertificateRelations relations, CertificateStatus status) {
-        if (link.getType() == ActionLinkType.FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE) {
-            return true;
-        }
-        return link.getType() == ActionLinkType.FORNYA_INTYG
-            && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
-    }
+  private boolean validateForward(ActionLink link, CertificateStatus status) {
+    return link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST
+        && CertificateForwardFunction.validate(status, webCertUserService.getUser());
+  }
 
-    private Vardenhet createCareUnit(String unitId, String caregiverId) {
-        final var vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(unitId);
-        vardenhet.setVardgivare(new Vardgivare());
-        vardenhet.getVardgivare().setVardgivarid(caregiverId);
-        return vardenhet;
+  private ResourceLinkDTO getConvertedResourceLink(
+      ActionLink link,
+      String savedUnitId,
+      String certificateType,
+      CertificateListItemStatus status,
+      CertificateRelations relations) {
+    final var convertedResourceLink = getConvertedResourceLink(link, status);
+    if (convertedResourceLink != null) {
+      return convertedResourceLink;
+    } else if (validateRenew(link, certificateType, relations, getCertificateStatus(status))) {
+      final var loggedInCareUnitId =
+          userService.getLoggedInCareUnit(webCertUserService.getUser()).getId();
+      return CertificateRenewFunction.createResourceLink(
+          loggedInCareUnitId, savedUnitId, certificateType);
     }
+    return null;
+  }
+
+  private boolean validateRenew(
+      ActionLink link,
+      String certificateType,
+      CertificateRelations relations,
+      CertificateStatus status) {
+    if (link.getType() == ActionLinkType.FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE) {
+      return true;
+    }
+    return link.getType() == ActionLinkType.FORNYA_INTYG
+        && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
+  }
+
+  private Vardenhet createCareUnit(String unitId, String caregiverId) {
+    final var vardenhet = new Vardenhet();
+    vardenhet.setEnhetsid(unitId);
+    vardenhet.setVardgivare(new Vardgivare());
+    vardenhet.getVardgivare().setVardgivarid(caregiverId);
+    return vardenhet;
+  }
 }

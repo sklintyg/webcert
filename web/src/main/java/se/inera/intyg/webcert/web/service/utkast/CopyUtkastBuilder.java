@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,10 +26,11 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 
 public interface CopyUtkastBuilder<T extends AbstractCreateCopyRequest> {
 
-    UtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation)
-        throws ModuleNotFoundException, ModuleException;
+  UtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(
+      T copyRequest, Person patientDetails, boolean addRelation)
+      throws ModuleNotFoundException, ModuleException;
 
-    UtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation)
-        throws ModuleNotFoundException, ModuleException;
-
+  UtkastBuilderResponse populateCopyUtkastFromSignedIntyg(
+      T copyRequest, Person patientDetails, boolean addRelation)
+      throws ModuleNotFoundException, ModuleException;
 }

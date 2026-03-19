@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,8 +23,8 @@ import java.util.Map;
 
 public interface SubscriptionIntegrationService {
 
-    List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod);
+  List<String> getMissingSubscriptions(
+      Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod);
 
-    boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber);
-
+  boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber);
 }

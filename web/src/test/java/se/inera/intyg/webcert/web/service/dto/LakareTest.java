@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,17 +28,17 @@ import org.junit.Test;
 
 public class LakareTest {
 
-    @Test
-    public void testMerge() {
-        Lakare lakare1 = new Lakare("1", "1");
-        Lakare lakare2 = new Lakare("2", "2");
-        Lakare lakare3 = new Lakare("3", "3");
-        Lakare lakare4 = new Lakare("4", "4");
-        List<Lakare> a = Arrays.asList(lakare1, lakare2, lakare4);
-        List<Lakare> b = Arrays.asList(lakare2, lakare3, lakare4);
-        List<Lakare> merged = Lakare.merge(a, b);
-        assertNotNull(merged);
-        assertFalse(merged.isEmpty());
-        assertEquals(Arrays.asList(lakare1, lakare2, lakare3, lakare4), merged);
-    }
+  @Test
+  public void testMerge() {
+    Lakare lakare1 = new Lakare("1", "1");
+    Lakare lakare2 = new Lakare("2", "2");
+    Lakare lakare3 = new Lakare("3", "3");
+    Lakare lakare4 = new Lakare("4", "4");
+    List<Lakare> a = Arrays.asList(lakare1, lakare2, lakare4);
+    List<Lakare> b = Arrays.asList(lakare2, lakare3, lakare4);
+    List<Lakare> merged = Lakare.merge(a, b);
+    assertNotNull(merged);
+    assertFalse(merged.isEmpty());
+    assertEquals(Arrays.asList(lakare1, lakare2, lakare3, lakare4), merged);
+  }
 }

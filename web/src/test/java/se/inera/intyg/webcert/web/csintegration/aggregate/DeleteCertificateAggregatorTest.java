@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.mock;
@@ -33,37 +32,33 @@ import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 @ExtendWith(MockitoExtension.class)
 class DeleteCertificateAggregatorTest {
 
-    private static final String ID = "ID";
-    private static final int VERSION = 10;
+  private static final String ID = "ID";
+  private static final int VERSION = 10;
 
-    DeleteCertificateFacadeService deleteCertificateFromWC;
-    DeleteCertificateFacadeService deleteCertificateFromCS;
-    DeleteCertificateFacadeService aggregator;
+  DeleteCertificateFacadeService deleteCertificateFromWC;
+  DeleteCertificateFacadeService deleteCertificateFromCS;
+  DeleteCertificateFacadeService aggregator;
 
-    @BeforeEach
-    void setup() {
-        deleteCertificateFromWC = mock(DeleteCertificateFacadeService.class);
-        deleteCertificateFromCS = mock(DeleteCertificateFacadeService.class);
+  @BeforeEach
+  void setup() {
+    deleteCertificateFromWC = mock(DeleteCertificateFacadeService.class);
+    deleteCertificateFromCS = mock(DeleteCertificateFacadeService.class);
 
-        aggregator = new DeleteCertificateAggregator(
-            deleteCertificateFromWC,
-            deleteCertificateFromCS
-        );
-    }
+    aggregator = new DeleteCertificateAggregator(deleteCertificateFromWC, deleteCertificateFromCS);
+  }
 
-    @Test
-    void shouldDeleteFromCSIfExists() {
-        when(deleteCertificateFromCS.deleteCertificate(ID, VERSION))
-            .thenReturn(true);
-        aggregator.deleteCertificate(ID, VERSION);
+  @Test
+  void shouldDeleteFromCSIfExists() {
+    when(deleteCertificateFromCS.deleteCertificate(ID, VERSION)).thenReturn(true);
+    aggregator.deleteCertificate(ID, VERSION);
 
-        Mockito.verify(deleteCertificateFromWC, times(0)).deleteCertificate(ID, VERSION);
-    }
+    Mockito.verify(deleteCertificateFromWC, times(0)).deleteCertificate(ID, VERSION);
+  }
 
-    @Test
-    void shouldDeleteFromWCIfCertificateDoesNotExistInCS() {
-        aggregator.deleteCertificate(ID, VERSION);
+  @Test
+  void shouldDeleteFromWCIfCertificateDoesNotExistInCS() {
+    aggregator.deleteCertificate(ID, VERSION);
 
-        Mockito.verify(deleteCertificateFromWC, times(1)).deleteCertificate(ID, VERSION);
-    }
+    Mockito.verify(deleteCertificateFromWC, times(1)).deleteCertificate(ID, VERSION);
+  }
 }

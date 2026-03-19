@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,24 +20,23 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 public class ChangeSelectedUnitRequest {
 
-    private String id;
+  private String id;
 
-    private String namn;
+  private String namn;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    public String getNamn() {
-        return namn;
-    }
+  public String getNamn() {
+    return namn;
+  }
 
-    public void setNamn(String namn) {
-        this.namn = namn;
-    }
-
+  public void setNamn(String namn) {
+    this.namn = namn;
+  }
 }

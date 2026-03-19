@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,28 +22,28 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 
 public class WebcertRestExceptionResponse {
 
-    private WebCertServiceErrorCodeEnum errorCode;
+  private WebCertServiceErrorCodeEnum errorCode;
 
-    private String message;
+  private String message;
 
-    public WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum errorCode, String message) {
-        this.errorCode = errorCode;
-        this.message = message;
-    }
+  public WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum errorCode, String message) {
+    this.errorCode = errorCode;
+    this.message = message;
+  }
 
-    public WebCertServiceErrorCodeEnum getErrorCode() {
-        return errorCode;
-    }
+  public WebCertServiceErrorCodeEnum getErrorCode() {
+    return errorCode;
+  }
 
-    public void setErrorCode(WebCertServiceErrorCodeEnum errorCode) {
-        this.errorCode = errorCode;
-    }
+  public void setErrorCode(WebCertServiceErrorCodeEnum errorCode) {
+    this.errorCode = errorCode;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }

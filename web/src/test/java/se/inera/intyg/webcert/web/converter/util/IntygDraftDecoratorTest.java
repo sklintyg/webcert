@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,106 +25,103 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class IntygDraftDecoratorTest {
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
 
-    @InjectMocks
-    private IntygDraftDecorator intygDraftDecorator;
+  @InjectMocks private IntygDraftDecorator intygDraftDecorator;
 
-    @Test
-    public void testDecorateWithCertificateTypeName() throws Exception {
-        final ModuleEntryPoint moduleEntryPointOne = mock(ModuleEntryPoint.class);
-        doReturn("TypeOneName").when(moduleEntryPointOne).getModuleName();
+  @Test
+  public void testDecorateWithCertificateTypeName() throws Exception {
+    final ModuleEntryPoint moduleEntryPointOne = mock(ModuleEntryPoint.class);
+    doReturn("TypeOneName").when(moduleEntryPointOne).getModuleName();
 
-        final ModuleEntryPoint moduleEntryPointTwo = mock(ModuleEntryPoint.class);
-        doReturn("TypeTwoName").when(moduleEntryPointTwo).getModuleName();
+    final ModuleEntryPoint moduleEntryPointTwo = mock(ModuleEntryPoint.class);
+    doReturn("TypeTwoName").when(moduleEntryPointTwo).getModuleName();
 
-        doReturn(moduleEntryPointOne).when(intygModuleRegistry).getModuleEntryPoint("TypeOne");
-        doReturn(moduleEntryPointTwo).when(intygModuleRegistry).getModuleEntryPoint("TypeTwo");
+    doReturn(moduleEntryPointOne).when(intygModuleRegistry).getModuleEntryPoint("TypeOne");
+    doReturn(moduleEntryPointTwo).when(intygModuleRegistry).getModuleEntryPoint("TypeTwo");
 
-        final List<ListIntygEntry> listIntygEntries = getIntygEntryList();
+    final List<ListIntygEntry> listIntygEntries = getIntygEntryList();
 
-        intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
+    intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
 
-        assertEquals(3, listIntygEntries.size());
-        assertEquals("TypeOneName", listIntygEntries.get(0).getIntygTypeName());
-        assertEquals("TypeTwoName", listIntygEntries.get(1).getIntygTypeName());
-        assertEquals("TypeOneName", listIntygEntries.get(2).getIntygTypeName());
-    }
+    assertEquals(3, listIntygEntries.size());
+    assertEquals("TypeOneName", listIntygEntries.get(0).getIntygTypeName());
+    assertEquals("TypeTwoName", listIntygEntries.get(1).getIntygTypeName());
+    assertEquals("TypeOneName", listIntygEntries.get(2).getIntygTypeName());
+  }
 
-    @Test
-    public void testDecorateWithCertificateTypeNameMissingModule() throws Exception {
-        final ModuleEntryPoint moduleEntryPointOne = mock(ModuleEntryPoint.class);
-        doReturn("TypeOneName").when(moduleEntryPointOne).getModuleName();
+  @Test
+  public void testDecorateWithCertificateTypeNameMissingModule() throws Exception {
+    final ModuleEntryPoint moduleEntryPointOne = mock(ModuleEntryPoint.class);
+    doReturn("TypeOneName").when(moduleEntryPointOne).getModuleName();
 
-        final ModuleEntryPoint moduleEntryPointTwo = mock(ModuleEntryPoint.class);
-        doReturn("TypeTwoName").when(moduleEntryPointTwo).getModuleName();
+    final ModuleEntryPoint moduleEntryPointTwo = mock(ModuleEntryPoint.class);
+    doReturn("TypeTwoName").when(moduleEntryPointTwo).getModuleName();
 
-        doReturn(moduleEntryPointOne).when(intygModuleRegistry).getModuleEntryPoint("TypeOne");
-        doReturn(moduleEntryPointTwo).when(intygModuleRegistry).getModuleEntryPoint("TypeTwo");
+    doReturn(moduleEntryPointOne).when(intygModuleRegistry).getModuleEntryPoint("TypeOne");
+    doReturn(moduleEntryPointTwo).when(intygModuleRegistry).getModuleEntryPoint("TypeTwo");
 
-        doThrow(new ModuleNotFoundException()).when(intygModuleRegistry).getModuleEntryPoint("TypeThree");
+    doThrow(new ModuleNotFoundException())
+        .when(intygModuleRegistry)
+        .getModuleEntryPoint("TypeThree");
 
-        final ListIntygEntry listIntygEntryMissingModule = new ListIntygEntry();
-        listIntygEntryMissingModule.setIntygType("TypeThree");
+    final ListIntygEntry listIntygEntryMissingModule = new ListIntygEntry();
+    listIntygEntryMissingModule.setIntygType("TypeThree");
 
-        final List<ListIntygEntry> listIntygEntries = getIntygEntryList();
-        listIntygEntries.add(listIntygEntryMissingModule);
+    final List<ListIntygEntry> listIntygEntries = getIntygEntryList();
+    listIntygEntries.add(listIntygEntryMissingModule);
 
-        intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
+    intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
 
-        assertEquals(4, listIntygEntries.size());
-        assertEquals("TypeOneName", listIntygEntries.get(0).getIntygTypeName());
-        assertEquals("TypeTwoName", listIntygEntries.get(1).getIntygTypeName());
-        assertEquals("TypeOneName", listIntygEntries.get(2).getIntygTypeName());
-        assertEquals("TypeThree", listIntygEntries.get(3).getIntygTypeName());
-    }
+    assertEquals(4, listIntygEntries.size());
+    assertEquals("TypeOneName", listIntygEntries.get(0).getIntygTypeName());
+    assertEquals("TypeTwoName", listIntygEntries.get(1).getIntygTypeName());
+    assertEquals("TypeOneName", listIntygEntries.get(2).getIntygTypeName());
+    assertEquals("TypeThree", listIntygEntries.get(3).getIntygTypeName());
+  }
 
-    @Test
-    public void testDecorateWithCertificateStatusName() throws Exception {
-        final List<ListIntygEntry> listIntygEntries = getIntygEntryList();
-        intygDraftDecorator.decorateWithCertificateStatusName(listIntygEntries);
+  @Test
+  public void testDecorateWithCertificateStatusName() throws Exception {
+    final List<ListIntygEntry> listIntygEntries = getIntygEntryList();
+    intygDraftDecorator.decorateWithCertificateStatusName(listIntygEntries);
 
-        assertEquals(3, listIntygEntries.size());
-        assertEquals("Utkast, låst", listIntygEntries.get(0).getStatusName());
-        assertEquals("Utkast, kan signeras", listIntygEntries.get(1).getStatusName());
-        assertEquals("Utkast, uppgifter saknas", listIntygEntries.get(2).getStatusName());
-    }
+    assertEquals(3, listIntygEntries.size());
+    assertEquals("Utkast, låst", listIntygEntries.get(0).getStatusName());
+    assertEquals("Utkast, kan signeras", listIntygEntries.get(1).getStatusName());
+    assertEquals("Utkast, uppgifter saknas", listIntygEntries.get(2).getStatusName());
+  }
 
-    private List<ListIntygEntry> getIntygEntryList() {
-        final ListIntygEntry listIntygEntryOne = new ListIntygEntry();
-        listIntygEntryOne.setIntygType("TypeOne");
-        listIntygEntryOne.setStatus("DRAFT_LOCKED");
+  private List<ListIntygEntry> getIntygEntryList() {
+    final ListIntygEntry listIntygEntryOne = new ListIntygEntry();
+    listIntygEntryOne.setIntygType("TypeOne");
+    listIntygEntryOne.setStatus("DRAFT_LOCKED");
 
-        final ListIntygEntry listIntygEntryTwo = new ListIntygEntry();
-        listIntygEntryTwo.setIntygType("TypeTwo");
-        listIntygEntryTwo.setStatus("DRAFT_COMPLETE");
+    final ListIntygEntry listIntygEntryTwo = new ListIntygEntry();
+    listIntygEntryTwo.setIntygType("TypeTwo");
+    listIntygEntryTwo.setStatus("DRAFT_COMPLETE");
 
-        final ListIntygEntry listIntygEntryThree = new ListIntygEntry();
-        listIntygEntryThree.setIntygType("TypeOne");
-        listIntygEntryThree.setStatus("DRAFT_INCOMPLETE");
+    final ListIntygEntry listIntygEntryThree = new ListIntygEntry();
+    listIntygEntryThree.setIntygType("TypeOne");
+    listIntygEntryThree.setStatus("DRAFT_INCOMPLETE");
 
-        final List<ListIntygEntry> listIntygEntries = new ArrayList<>();
-        listIntygEntries.add(listIntygEntryOne);
-        listIntygEntries.add(listIntygEntryTwo);
-        listIntygEntries.add(listIntygEntryThree);
+    final List<ListIntygEntry> listIntygEntries = new ArrayList<>();
+    listIntygEntries.add(listIntygEntryOne);
+    listIntygEntries.add(listIntygEntryTwo);
+    listIntygEntries.add(listIntygEntryThree);
 
-        return listIntygEntries;
-    }
+    return listIntygEntries;
+  }
 }

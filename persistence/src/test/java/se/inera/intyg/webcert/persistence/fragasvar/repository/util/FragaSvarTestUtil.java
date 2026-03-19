@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,75 +30,108 @@ import se.inera.intyg.webcert.persistence.model.Status;
 
 public final class FragaSvarTestUtil {
 
-    private FragaSvarTestUtil() {
+  private FragaSvarTestUtil() {}
+
+  public static final String FRAGA_TEXT = "To be, or not to be: that is the question:";
+  public static final String SVAR_TEXT = "This are not the droids you are looking for";
+
+  private static final LocalDateTime FRAGE_SENT_DATE = LocalDateTime.parse("2012-03-01T12:00:00");
+  private static final LocalDateTime SVAR_SIGN_DATE = LocalDateTime.parse("2014-10-21T11:11:11");
+  private static final LocalDateTime SVAR_SENT_DATE = LocalDateTime.parse("2014-10-21T12:00:00");
+
+  private static final IntygsReferens INTYGS_REFERENS =
+      new IntygsReferens(
+          "abc123",
+          "fk7263",
+          Personnummer.createPersonnummer("19121212-1212").get(),
+          "Sven Persson",
+          FRAGE_SENT_DATE);
+
+  public static String ENHET_1_ID = "ENHET_TEST_1_ID";
+  public static String ENHET_2_ID = "ENHET_TEST_2_ID";
+
+  public static FragaSvar buildFraga(
+      long fragaSvarId,
+      String enhetsId,
+      Status status,
+      Amne amne,
+      String fragestallare,
+      String hsaId,
+      String fragaSkickad,
+      boolean vidarebefordrad) {
+    return buildFraga(
+        fragaSvarId,
+        enhetsId,
+        status,
+        amne,
+        fragestallare,
+        hsaId,
+        LocalDateTime.parse(fragaSkickad),
+        vidarebefordrad);
+  }
+
+  public static FragaSvar buildFraga(
+      long fragaSvarId,
+      String enhetsId,
+      Status status,
+      Amne amne,
+      String fragestallare,
+      String hsaId,
+      LocalDateTime fragaSkickad,
+      boolean vidarebefordrad) {
+
+    FragaSvar f = new FragaSvar();
+
+    f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+
+    if (fragestallare.equalsIgnoreCase("FKASSA")) {
+      f.setExternReferens("externReferens-" + fragaSvarId);
     }
 
-    public static final String FRAGA_TEXT = "To be, or not to be: that is the question:";
-    public static final String SVAR_TEXT = "This are not the droids you are looking for";
+    f.setFrageSigneringsDatum(fragaSkickad);
+    f.setFrageSkickadDatum(fragaSkickad);
+    f.setAmne((amne != null) ? amne : Amne.OVRIGT);
 
-    private static final LocalDateTime FRAGE_SENT_DATE = LocalDateTime.parse("2012-03-01T12:00:00");
-    private static final LocalDateTime SVAR_SIGN_DATE = LocalDateTime.parse("2014-10-21T11:11:11");
-    private static final LocalDateTime SVAR_SENT_DATE = LocalDateTime.parse("2014-10-21T12:00:00");
+    f.setVidarebefordrad(vidarebefordrad);
 
-    private static final IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk7263",
-        Personnummer.createPersonnummer("19121212-1212").get(), "Sven Persson", FRAGE_SENT_DATE);
+    f.setFrageStallare(fragestallare);
+    Vardperson vardperson = new Vardperson();
+    vardperson.setHsaId(hsaId);
+    vardperson.setEnhetsId(enhetsId);
+    vardperson.setEnhetsnamn(enhetsId + "-namnet");
 
-    public static String ENHET_1_ID = "ENHET_TEST_1_ID";
-    public static String ENHET_2_ID = "ENHET_TEST_2_ID";
+    f.setVardperson(vardperson);
 
-    public static FragaSvar buildFraga(long fragaSvarId, String enhetsId, Status status, Amne amne, String fragestallare, String hsaId,
-        String fragaSkickad, boolean vidarebefordrad) {
-        return buildFraga(fragaSvarId, enhetsId, status, amne, fragestallare, hsaId, LocalDateTime.parse(fragaSkickad), vidarebefordrad);
-    }
+    f.setFrageText(FRAGA_TEXT);
 
-    public static FragaSvar buildFraga(long fragaSvarId, String enhetsId, Status status, Amne amne, String fragestallare, String hsaId,
-        LocalDateTime fragaSkickad, boolean vidarebefordrad) {
+    f.setIntygsReferens(INTYGS_REFERENS);
 
-        FragaSvar f = new FragaSvar();
+    f.setStatus(status);
 
-        f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+    return f;
+  }
 
-        if (fragestallare.equalsIgnoreCase("FKASSA")) {
-            f.setExternReferens("externReferens-" + fragaSvarId);
-        }
+  /** Builds a FragaSvara, a question with reply, from the supplied params. */
+  public static FragaSvar buildFragaWithSvar(
+      String enhetsId,
+      Status status,
+      Amne amne,
+      String fragestallare,
+      String hsaId,
+      String fragaSkickad,
+      String svarSkickad,
+      boolean vidarebefordrad) {
 
-        f.setFrageSigneringsDatum(fragaSkickad);
-        f.setFrageSkickadDatum(fragaSkickad);
-        f.setAmne((amne != null) ? amne : Amne.OVRIGT);
+    FragaSvar f =
+        buildFraga(1L, enhetsId, status, amne, fragestallare, hsaId, fragaSkickad, vidarebefordrad);
 
-        f.setVidarebefordrad(vidarebefordrad);
+    f.setSvarSigneringsDatum(
+        (svarSkickad != null ? LocalDateTime.parse(svarSkickad) : SVAR_SIGN_DATE));
+    f.setSvarSkickadDatum(
+        (svarSkickad != null ? LocalDateTime.parse(svarSkickad) : SVAR_SENT_DATE));
 
-        f.setFrageStallare(fragestallare);
-        Vardperson vardperson = new Vardperson();
-        vardperson.setHsaId(hsaId);
-        vardperson.setEnhetsId(enhetsId);
-        vardperson.setEnhetsnamn(enhetsId + "-namnet");
+    f.setSvarsText(SVAR_TEXT);
 
-        f.setVardperson(vardperson);
-
-        f.setFrageText(FRAGA_TEXT);
-
-        f.setIntygsReferens(INTYGS_REFERENS);
-
-        f.setStatus(status);
-
-        return f;
-    }
-
-    /**
-     * Builds a FragaSvara, a question with reply, from the supplied params.
-     */
-    public static FragaSvar buildFragaWithSvar(String enhetsId, Status status, Amne amne, String fragestallare, String hsaId,
-        String fragaSkickad,
-        String svarSkickad, boolean vidarebefordrad) {
-
-        FragaSvar f = buildFraga(1L, enhetsId, status, amne, fragestallare, hsaId, fragaSkickad, vidarebefordrad);
-
-        f.setSvarSigneringsDatum((svarSkickad != null ? LocalDateTime.parse(svarSkickad) : SVAR_SIGN_DATE));
-        f.setSvarSkickadDatum((svarSkickad != null ? LocalDateTime.parse(svarSkickad) : SVAR_SENT_DATE));
-
-        f.setSvarsText(SVAR_TEXT);
-
-        return f;
-    }
+    return f;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,16 +26,14 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmati
 @Data
 public class CertificateTypeInfoDTO {
 
-    private String id;
-    @JsonIgnore
-    private String certificateServiceTypeId;
-    private String label;
-    private String issuerTypeId;
-    private String description;
-    private String detailedDescription;
-    private List<ResourceLinkDTO> links;
-    private String message;
-    private CertificateConfirmationModal confirmationModal;
-    private String modalLink;
-
+  private String id;
+  @JsonIgnore private String certificateServiceTypeId;
+  private String label;
+  private String issuerTypeId;
+  private String description;
+  private String detailedDescription;
+  private List<ResourceLinkDTO> links;
+  private String message;
+  private CertificateConfirmationModal confirmationModal;
+  private String modalLink;
 }

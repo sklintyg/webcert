@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,13 +23,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationStubStateBean {
 
-    private String errorCode = "0";
+  private String errorCode = "0";
 
-    public String getErrorCode() {
-        return errorCode;
-    }
+  public String getErrorCode() {
+    return errorCode;
+  }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
+  public void setErrorCode(String errorCode) {
+    this.errorCode = errorCode;
+  }
 }

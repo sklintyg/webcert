@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,13 +20,13 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class ForwardCertificateRequestDTO {
 
-    private boolean forward;
+  private boolean forward;
 
-    public boolean isForwarded() {
-        return forward;
-    }
+  public boolean isForwarded() {
+    return forward;
+  }
 
-    public void setForward(boolean forward) {
-        this.forward = forward;
-    }
+  public void setForward(boolean forward) {
+    this.forward = forward;
+  }
 }

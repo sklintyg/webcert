@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,71 +42,76 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 @ExtendWith(MockitoExtension.class)
 class ServiceNowSubscriptionIntegrationServiceTest {
 
-    @Mock
-    private SubscriptionRestClient subscriptionRestClient;
-    @Mock
-    private GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
-    @Mock
-    private CheckSubscriptionService checkSubscriptionService;
+  @Mock private SubscriptionRestClient subscriptionRestClient;
 
-    @InjectMocks
-    private ServiceNowSubscriptionIntegrationService serviceNowSubscriptionIntegrationService;
+  @Mock
+  private GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
 
-    private static final String HSA_ID = "hsaId";
-    private static final String ORG_NUMBER = "org_number";
+  @Mock private CheckSubscriptionService checkSubscriptionService;
 
-    @Nested
-    class GetMissingSubscriptions {
+  @InjectMocks
+  private ServiceNowSubscriptionIntegrationService serviceNowSubscriptionIntegrationService;
 
-        @Test
-        void shouldReturnListOfMissingSubscriptions() {
-            final var expectedResult = List.of("expectedResult");
-            final var organizationNumberHsaIdMap = Map.of(ORG_NUMBER, List.of(HSA_ID));
-            final var organizationResponse = OrganizationResponse.builder().build();
+  private static final String HSA_ID = "hsaId";
+  private static final String ORG_NUMBER = "org_number";
 
-            doReturn(organizationResponse).when(subscriptionRestClient).getSubscriptionServiceResponse(
-                organizationNumberHsaIdMap.keySet()
-            );
-            doReturn(expectedResult).when(getCareProvidersMissingSubscriptionService)
-                .get(organizationResponse.getResult(), organizationNumberHsaIdMap, SITHS);
+  @Nested
+  class GetMissingSubscriptions {
 
-            final var actualResult = serviceNowSubscriptionIntegrationService.getMissingSubscriptions(organizationNumberHsaIdMap, SITHS);
-            assertEquals(expectedResult, actualResult);
-        }
+    @Test
+    void shouldReturnListOfMissingSubscriptions() {
+      final var expectedResult = List.of("expectedResult");
+      final var organizationNumberHsaIdMap = Map.of(ORG_NUMBER, List.of(HSA_ID));
+      final var organizationResponse = OrganizationResponse.builder().build();
+
+      doReturn(organizationResponse)
+          .when(subscriptionRestClient)
+          .getSubscriptionServiceResponse(organizationNumberHsaIdMap.keySet());
+      doReturn(expectedResult)
+          .when(getCareProvidersMissingSubscriptionService)
+          .get(organizationResponse.getResult(), organizationNumberHsaIdMap, SITHS);
+
+      final var actualResult =
+          serviceNowSubscriptionIntegrationService.getMissingSubscriptions(
+              organizationNumberHsaIdMap, SITHS);
+      assertEquals(expectedResult, actualResult);
     }
+  }
 
-    @Nested
-    class IsMissingSubscriptionUnregisteredElegUser {
+  @Nested
+  class IsMissingSubscriptionUnregisteredElegUser {
 
-        private final OrganizationResponse organizationResponse = OrganizationResponse.builder()
-            .result(List.of(
-                    Organization.builder()
-                        .serviceCodes(Collections.emptyList())
-                        .build()
-                )
-            )
+    private final OrganizationResponse organizationResponse =
+        OrganizationResponse.builder()
+            .result(List.of(Organization.builder().serviceCodes(Collections.emptyList()).build()))
             .build();
 
-        @Test
-        void shouldReturnTrueIfSubscriptionIsMissing() {
-            doReturn(organizationResponse).when(subscriptionRestClient).getSubscriptionServiceResponse(
-                Set.of(ORG_NUMBER)
-            );
-            doReturn(true).when(checkSubscriptionService).isMissing(
-                organizationResponse.getResult().getFirst().getServiceCodes(), ELEG);
+    @Test
+    void shouldReturnTrueIfSubscriptionIsMissing() {
+      doReturn(organizationResponse)
+          .when(subscriptionRestClient)
+          .getSubscriptionServiceResponse(Set.of(ORG_NUMBER));
+      doReturn(true)
+          .when(checkSubscriptionService)
+          .isMissing(organizationResponse.getResult().getFirst().getServiceCodes(), ELEG);
 
-            assertTrue(serviceNowSubscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(ORG_NUMBER));
-        }
-
-        @Test
-        void shouldReturnFalseIfSubscriptionIsNotMissing() {
-            doReturn(organizationResponse).when(subscriptionRestClient).getSubscriptionServiceResponse(
-                Set.of(ORG_NUMBER)
-            );
-            doReturn(false).when(checkSubscriptionService).isMissing(
-                organizationResponse.getResult().getFirst().getServiceCodes(), ELEG);
-
-            assertFalse(serviceNowSubscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(ORG_NUMBER));
-        }
+      assertTrue(
+          serviceNowSubscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(
+              ORG_NUMBER));
     }
+
+    @Test
+    void shouldReturnFalseIfSubscriptionIsNotMissing() {
+      doReturn(organizationResponse)
+          .when(subscriptionRestClient)
+          .getSubscriptionServiceResponse(Set.of(ORG_NUMBER));
+      doReturn(false)
+          .when(checkSubscriptionService)
+          .isMissing(organizationResponse.getResult().getFirst().getServiceCodes(), ELEG);
+
+      assertFalse(
+          serviceNowSubscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(
+              ORG_NUMBER));
+    }
+  }
 }

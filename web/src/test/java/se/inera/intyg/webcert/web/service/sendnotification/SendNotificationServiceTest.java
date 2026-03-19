@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,47 +35,43 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @ExtendWith(MockitoExtension.class)
 class SendNotificationServiceTest {
 
-    private static final Integer COUNT = 10;
-    private static final String ID = "ID ID";
-    private static final String SANITIZED_ID = "IDID";
+  private static final Integer COUNT = 10;
+  private static final String ID = "ID ID";
+  private static final String SANITIZED_ID = "IDID";
 
-    @Mock
-    SendNotificationCountValidator sendNotificationCountValidator;
+  @Mock SendNotificationCountValidator sendNotificationCountValidator;
 
-    @Mock
-    NotificationRedeliveryRepository notificationRedeliveryRepositoryCustom;
+  @Mock NotificationRedeliveryRepository notificationRedeliveryRepositoryCustom;
 
-    @Mock
-    SendNotificationRequestValidator sendNotificationRequestValidator;
+  @Mock SendNotificationRequestValidator sendNotificationRequestValidator;
 
-    @InjectMocks
-    SendNotificationService sendNotificationService;
+  @InjectMocks SendNotificationService sendNotificationService;
 
-    @Test
-    void shouldThrowIfCountExceedLimit() {
-        doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-            .notification(SANITIZED_ID);
+  @Test
+  void shouldThrowIfCountExceedLimit() {
+    doThrow(IllegalArgumentException.class)
+        .when(sendNotificationCountValidator)
+        .notification(SANITIZED_ID);
 
-        assertThrows(IllegalArgumentException.class, () -> sendNotificationService.send(ID));
-    }
+    assertThrows(IllegalArgumentException.class, () -> sendNotificationService.send(ID));
+  }
 
-    @Test
-    void shouldReturnResponseFromRepository() {
-        when(notificationRedeliveryRepositoryCustom.sendNotification(SANITIZED_ID))
-            .thenReturn(COUNT);
+  @Test
+  void shouldReturnResponseFromRepository() {
+    when(notificationRedeliveryRepositoryCustom.sendNotification(SANITIZED_ID)).thenReturn(COUNT);
 
-        final var response = sendNotificationService.send(ID);
+    final var response = sendNotificationService.send(ID);
 
-        assertEquals(COUNT, response.getCount());
-    }
+    assertEquals(COUNT, response.getCount());
+  }
 
-    @Test
-    void shouldValidateId() {
-        final var captor = ArgumentCaptor.forClass(String.class);
-        sendNotificationService.send(ID);
+  @Test
+  void shouldValidateId() {
+    final var captor = ArgumentCaptor.forClass(String.class);
+    sendNotificationService.send(ID);
 
-        verify(sendNotificationRequestValidator).validateId(captor.capture());
+    verify(sendNotificationRequestValidator).validateId(captor.capture());
 
-        assertEquals(SANITIZED_ID, captor.getValue());
-    }
+    assertEquals(SANITIZED_ID, captor.getValue());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,56 +43,52 @@ import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 
 public class FmbApiControllerTest {
 
-    @InjectMocks
-    private FmbApiController controller;
+  @InjectMocks private FmbApiController controller;
 
-    @Mock
-    private FmbRepository fmbRepository;
+  @Mock private FmbRepository fmbRepository;
 
-    @Mock
-    private FmbDiagnosInformationService fmbDiagnosInformationService;
+  @Mock private FmbDiagnosInformationService fmbDiagnosInformationService;
 
-    @Mock
-    private FmbService fmbService;
+  @Mock private FmbService fmbService;
 
-    @Mock
-    private DiagnosService diagnosService;
+  @Mock private DiagnosService diagnosService;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        Mockito.when(diagnosService.getDiagnosisByCode(anyString(), any(Diagnoskodverk.class)))
-            .thenReturn(DiagnosResponse.ok(makeDiagnoser(), false));
-    }
+  @Before
+  public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+    Mockito.when(diagnosService.getDiagnosisByCode(anyString(), any(Diagnoskodverk.class)))
+        .thenReturn(DiagnosResponse.ok(makeDiagnoser(), false));
+  }
 
-    private List<Diagnos> makeDiagnoser() {
-        Diagnos diagnos = new Diagnos();
-        diagnos.setBeskrivning("Diagnosbeskrivning");
-        diagnos.setKod("Diagnoskod");
-        return Arrays.asList(diagnos);
-    }
+  private List<Diagnos> makeDiagnoser() {
+    Diagnos diagnos = new Diagnos();
+    diagnos.setBeskrivning("Diagnosbeskrivning");
+    diagnos.setKod("Diagnoskod");
+    return Arrays.asList(diagnos);
+  }
 
-    @Test
-    public void testGetFmbForIcd10HandlesNull() throws Exception {
-        Response response = controller.getFmbForIcd10(null);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-    }
+  @Test
+  public void testGetFmbForIcd10HandlesNull() throws Exception {
+    Response response = controller.getFmbForIcd10(null);
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+  }
 
-    @Test
-    public void testGetFmbForIcd10HandlesEmptyInput() throws Exception {
-        Response response = controller.getFmbForIcd10("");
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-    }
+  @Test
+  public void testGetFmbForIcd10HandlesEmptyInput() throws Exception {
+    Response response = controller.getFmbForIcd10("");
+    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+  }
 
-    @Test
-    public void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData() throws Exception {
-        // Given
-        doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
+  @Test
+  public void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData()
+      throws Exception {
+    // Given
+    doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
-        // When
-        Response response = controller.getFmbForIcd10("A10");
+    // When
+    Response response = controller.getFmbForIcd10("A10");
 
-        // Then
-        assertEquals(204, response.getStatus());
-    }
+    // Then
+    assertEquals(204, response.getStatus());
+  }
 }

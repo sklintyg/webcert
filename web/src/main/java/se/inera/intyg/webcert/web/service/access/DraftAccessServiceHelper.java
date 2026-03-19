@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,220 +28,210 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 @Component
 public final class DraftAccessServiceHelper {
 
-    private final DraftAccessService draftAccessService;
-    private final AccessResultExceptionHelper accessResultExceptionHelper;
+  private final DraftAccessService draftAccessService;
+  private final AccessResultExceptionHelper accessResultExceptionHelper;
 
-    @Autowired
-    public DraftAccessServiceHelper(DraftAccessService draftAccessService,
-        AccessResultExceptionHelper accessResultExceptionHelper) {
-        this.draftAccessService = draftAccessService;
-        this.accessResultExceptionHelper = accessResultExceptionHelper;
-    }
+  @Autowired
+  public DraftAccessServiceHelper(
+      DraftAccessService draftAccessService,
+      AccessResultExceptionHelper accessResultExceptionHelper) {
+    this.draftAccessService = draftAccessService;
+    this.accessResultExceptionHelper = accessResultExceptionHelper;
+  }
 
-    public boolean isAllowedToCreateUtkast(String intygsTyp, Personnummer personnummer) {
-        return evaluateAllowToCreateUtkast(intygsTyp, personnummer).isAllowed();
-    }
+  public boolean isAllowedToCreateUtkast(String intygsTyp, Personnummer personnummer) {
+    return evaluateAllowToCreateUtkast(intygsTyp, personnummer).isAllowed();
+  }
 
-    public void validateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
-        final AccessResult accessResult = evaluateAllowToCreateUtkast(intygsTyp, personnummer);
+  public void validateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
+    final AccessResult accessResult = evaluateAllowToCreateUtkast(intygsTyp, personnummer);
 
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
+    accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+  }
 
-    public AccessResult evaluateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
-        return draftAccessService.allowToCreateDraft(
-            AccessEvaluationParameters.create(intygsTyp, personnummer)
-        );
-    }
+  public AccessResult evaluateAllowToCreateUtkast(String intygsTyp, Personnummer personnummer) {
+    return draftAccessService.allowToCreateDraft(
+        AccessEvaluationParameters.create(intygsTyp, personnummer));
+  }
 
-    public boolean isAllowedToReadUtkast(Utkast utkast) {
-        return evaluateAllowToReadUtkast(utkast).isAllowed();
-    }
+  public boolean isAllowedToReadUtkast(Utkast utkast) {
+    return evaluateAllowToReadUtkast(utkast).isAllowed();
+  }
 
-    public void validateAllowToReadUtkast(Utkast utkast) {
-        final AccessResult accessResult = evaluateAllowToReadUtkast(utkast);
+  public void validateAllowToReadUtkast(Utkast utkast) {
+    final AccessResult accessResult = evaluateAllowToReadUtkast(utkast);
 
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
+    accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+  }
 
-    private AccessResult evaluateAllowToReadUtkast(Utkast utkast) {
-        return draftAccessService.allowToReadDraft(
-            AccessEvaluationParameters.create(
-                utkast.getIntygsTyp(),
-                utkast.getIntygTypeVersion(),
-                UtkastUtil.getVardenhet(utkast),
-                utkast.getPatientPersonnummer(),
-                utkast.isTestIntyg()
-            )
-        );
-    }
+  private AccessResult evaluateAllowToReadUtkast(Utkast utkast) {
+    return draftAccessService.allowToReadDraft(
+        AccessEvaluationParameters.create(
+            utkast.getIntygsTyp(),
+            utkast.getIntygTypeVersion(),
+            UtkastUtil.getVardenhet(utkast),
+            utkast.getPatientPersonnummer(),
+            utkast.isTestIntyg()));
+  }
 
-    public boolean isAllowToEditUtkast(AccessEvaluationParameters accessEvaluationParameters) {
-        return draftAccessService.allowToEditDraft(accessEvaluationParameters).isAllowed();
-    }
+  public boolean isAllowToEditUtkast(AccessEvaluationParameters accessEvaluationParameters) {
+    return draftAccessService.allowToEditDraft(accessEvaluationParameters).isAllowed();
+  }
 
-    public boolean isAllowToEditUtkast(Utkast draft) {
-        return evaluateAllowToEditUtkast(draft).isAllowed();
-    }
+  public boolean isAllowToEditUtkast(Utkast draft) {
+    return evaluateAllowToEditUtkast(draft).isAllowed();
+  }
 
-    public void validateAllowToEditUtkast(Utkast utkast) {
-        final AccessResult accessResult = evaluateAllowToEditUtkast(utkast);
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
+  public void validateAllowToEditUtkast(Utkast utkast) {
+    final AccessResult accessResult = evaluateAllowToEditUtkast(utkast);
+    accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+  }
 
-    private AccessResult evaluateAllowToEditUtkast(Utkast utkast) {
-        return draftAccessService.allowToEditDraft(
-            AccessEvaluationParameters.create(
-                utkast.getIntygsTyp(),
-                utkast.getIntygTypeVersion(),
-                UtkastUtil.getVardenhet(utkast),
-                utkast.getPatientPersonnummer(),
-                utkast.isTestIntyg()
-            )
-        );
-    }
+  private AccessResult evaluateAllowToEditUtkast(Utkast utkast) {
+    return draftAccessService.allowToEditDraft(
+        AccessEvaluationParameters.create(
+            utkast.getIntygsTyp(),
+            utkast.getIntygTypeVersion(),
+            UtkastUtil.getVardenhet(utkast),
+            utkast.getPatientPersonnummer(),
+            utkast.isTestIntyg()));
+  }
 
-    public boolean isAllowToDeleteUtkast(AccessEvaluationParameters accessEvaluationParameters) {
-        return draftAccessService.allowToDeleteDraft(accessEvaluationParameters).isAllowed();
-    }
+  public boolean isAllowToDeleteUtkast(AccessEvaluationParameters accessEvaluationParameters) {
+    return draftAccessService.allowToDeleteDraft(accessEvaluationParameters).isAllowed();
+  }
 
-    public boolean isAllowToDeleteUtkast(Utkast draft) {
-        return evaluateAllowToDeleteUtkast(draft).isAllowed();
-    }
+  public boolean isAllowToDeleteUtkast(Utkast draft) {
+    return evaluateAllowToDeleteUtkast(draft).isAllowed();
+  }
 
-    public void validateAllowToDeleteUtkast(Utkast utkast) {
-        final AccessResult accessResult = evaluateAllowToDeleteUtkast(utkast);
+  public void validateAllowToDeleteUtkast(Utkast utkast) {
+    final AccessResult accessResult = evaluateAllowToDeleteUtkast(utkast);
 
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
+    accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+  }
 
-    private AccessResult evaluateAllowToDeleteUtkast(Utkast utkast) {
-        return draftAccessService.allowToDeleteDraft(
-            AccessEvaluationParameters.create(
-                utkast.getIntygsTyp(),
-                utkast.getIntygTypeVersion(),
-                UtkastUtil.getVardenhet(utkast),
-                utkast.getPatientPersonnummer(),
-                utkast.isTestIntyg()
-            )
-        );
-    }
+  private AccessResult evaluateAllowToDeleteUtkast(Utkast utkast) {
+    return draftAccessService.allowToDeleteDraft(
+        AccessEvaluationParameters.create(
+            utkast.getIntygsTyp(),
+            utkast.getIntygTypeVersion(),
+            UtkastUtil.getVardenhet(utkast),
+            utkast.getPatientPersonnummer(),
+            utkast.isTestIntyg()));
+  }
 
-    public boolean isAllowToPrintUtkast(AccessEvaluationParameters accessEvaluationParameters) {
-        return draftAccessService.allowToPrintDraft(accessEvaluationParameters).isAllowed();
-    }
+  public boolean isAllowToPrintUtkast(AccessEvaluationParameters accessEvaluationParameters) {
+    return draftAccessService.allowToPrintDraft(accessEvaluationParameters).isAllowed();
+  }
 
-    public boolean isAllowToPrintUtkast(Utkast draft) {
-        return evaluateAllowToPrintUtkast(draft).isAllowed();
-    }
+  public boolean isAllowToPrintUtkast(Utkast draft) {
+    return evaluateAllowToPrintUtkast(draft).isAllowed();
+  }
 
-    public void validateAllowToPrintUtkast(Utkast utkast) {
-        final AccessResult accessResult = evaluateAllowToPrintUtkast(utkast);
+  public void validateAllowToPrintUtkast(Utkast utkast) {
+    final AccessResult accessResult = evaluateAllowToPrintUtkast(utkast);
 
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
+    accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+  }
 
-    private AccessResult evaluateAllowToPrintUtkast(Utkast utkast) {
-        return draftAccessService.allowToPrintDraft(
-            AccessEvaluationParameters.create(
-                utkast.getIntygsTyp(),
-                utkast.getIntygTypeVersion(),
-                UtkastUtil.getVardenhet(utkast),
-                utkast.getPatientPersonnummer(),
-                utkast.isTestIntyg()
-            )
-        );
-    }
+  private AccessResult evaluateAllowToPrintUtkast(Utkast utkast) {
+    return draftAccessService.allowToPrintDraft(
+        AccessEvaluationParameters.create(
+            utkast.getIntygsTyp(),
+            utkast.getIntygTypeVersion(),
+            UtkastUtil.getVardenhet(utkast),
+            utkast.getPatientPersonnummer(),
+            utkast.isTestIntyg()));
+  }
 
-    public boolean isAllowedToForwardUtkast(Utkast utkast) {
-        return evaluateAllowToForwardUtkast(utkast).isAllowed();
-    }
+  public boolean isAllowedToForwardUtkast(Utkast utkast) {
+    return evaluateAllowToForwardUtkast(utkast).isAllowed();
+  }
 
-    public boolean isAllowedToForwardUtkast(AccessEvaluationParameters accessEvaluationParameters) {
-        return draftAccessService.allowToForwardDraft(accessEvaluationParameters).isAllowed();
-    }
+  public boolean isAllowedToForwardUtkast(AccessEvaluationParameters accessEvaluationParameters) {
+    return draftAccessService.allowToForwardDraft(accessEvaluationParameters).isAllowed();
+  }
 
-    public void validateAllowToForwardDraft(Utkast utkast) {
-        final AccessResult accessResult = evaluateAllowToForwardUtkast(utkast);
+  public void validateAllowToForwardDraft(Utkast utkast) {
+    final AccessResult accessResult = evaluateAllowToForwardUtkast(utkast);
 
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
+    accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+  }
 
-    private AccessResult evaluateAllowToForwardUtkast(Utkast utkast) {
-        return draftAccessService.allowToForwardDraft(
-            AccessEvaluationParameters.create(
-                utkast.getIntygsTyp(),
-                utkast.getIntygTypeVersion(),
-                UtkastUtil.getVardenhet(utkast),
-                utkast.getPatientPersonnummer(),
-                utkast.isTestIntyg()
-            )
-        );
-    }
+  private AccessResult evaluateAllowToForwardUtkast(Utkast utkast) {
+    return draftAccessService.allowToForwardDraft(
+        AccessEvaluationParameters.create(
+            utkast.getIntygsTyp(),
+            utkast.getIntygTypeVersion(),
+            UtkastUtil.getVardenhet(utkast),
+            utkast.getPatientPersonnummer(),
+            utkast.isTestIntyg()));
+  }
 
-    public boolean isAllowedToReadyForSign(Utkast utkast) {
-        return evaluateAllowToReadyForSign(utkast).isAllowed();
-    }
+  public boolean isAllowedToReadyForSign(Utkast utkast) {
+    return evaluateAllowToReadyForSign(utkast).isAllowed();
+  }
 
-    public boolean isAllowedToReadyForSign(AccessEvaluationParameters accessEvaluationParameters) {
-        return draftAccessService.allowToReadyForSign(accessEvaluationParameters).isAllowed();
-    }
+  public boolean isAllowedToReadyForSign(AccessEvaluationParameters accessEvaluationParameters) {
+    return draftAccessService.allowToReadyForSign(accessEvaluationParameters).isAllowed();
+  }
 
-    public void validateAllowToReadyForSign(Utkast utkast) {
-        final AccessResult accessResult = evaluateAllowToReadyForSign(utkast);
+  public void validateAllowToReadyForSign(Utkast utkast) {
+    final AccessResult accessResult = evaluateAllowToReadyForSign(utkast);
 
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
+    accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+  }
 
-    private AccessResult evaluateAllowToReadyForSign(Utkast utkast) {
-        return draftAccessService.allowToReadyForSign(
-            AccessEvaluationParameters.create(
-                utkast.getIntygsTyp(),
-                utkast.getIntygTypeVersion(),
-                UtkastUtil.getVardenhet(utkast),
-                utkast.getPatientPersonnummer(),
-                utkast.isTestIntyg()
-            )
-        );
-    }
+  private AccessResult evaluateAllowToReadyForSign(Utkast utkast) {
+    return draftAccessService.allowToReadyForSign(
+        AccessEvaluationParameters.create(
+            utkast.getIntygsTyp(),
+            utkast.getIntygTypeVersion(),
+            UtkastUtil.getVardenhet(utkast),
+            utkast.getPatientPersonnummer(),
+            utkast.isTestIntyg()));
+  }
 
-    public boolean isAllowedToCopyFromCandidate(Utkast utkast) {
-        return evaluateAllowToCopyFromCandidate(utkast).isAllowed();
-    }
+  public boolean isAllowedToCopyFromCandidate(Utkast utkast) {
+    return evaluateAllowToCopyFromCandidate(utkast).isAllowed();
+  }
 
-    public boolean isAllowedToCopyFromCandidate(AccessEvaluationParameters accessEvaluationParameters) {
-        return draftAccessService.allowToCopyFromCandidate(accessEvaluationParameters).isAllowed();
-    }
+  public boolean isAllowedToCopyFromCandidate(
+      AccessEvaluationParameters accessEvaluationParameters) {
+    return draftAccessService.allowToCopyFromCandidate(accessEvaluationParameters).isAllowed();
+  }
 
-    public void validateAllowToCopyFromCandidate(Utkast utkast) {
-        final AccessResult accessResult = evaluateAllowToCopyFromCandidate(utkast);
+  public void validateAllowToCopyFromCandidate(Utkast utkast) {
+    final AccessResult accessResult = evaluateAllowToCopyFromCandidate(utkast);
 
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
+    accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+  }
 
-    private AccessResult evaluateAllowToCopyFromCandidate(Utkast utkast) {
-        return draftAccessService.allowToCopyFromCandidate(
-            AccessEvaluationParameters.create(
-                utkast.getIntygsTyp(),
-                utkast.getIntygTypeVersion(),
-                UtkastUtil.getVardenhet(utkast),
-                utkast.getPatientPersonnummer(),
-                utkast.isTestIntyg()
-            )
-        );
-    }
+  private AccessResult evaluateAllowToCopyFromCandidate(Utkast utkast) {
+    return draftAccessService.allowToCopyFromCandidate(
+        AccessEvaluationParameters.create(
+            utkast.getIntygsTyp(),
+            utkast.getIntygTypeVersion(),
+            UtkastUtil.getVardenhet(utkast),
+            utkast.getPatientPersonnummer(),
+            utkast.isTestIntyg()));
+  }
 
-    public boolean isAllowToSign(AccessEvaluationParameters accessEvaluationParameters, String certificateId) {
-        return draftAccessService.allowToSignDraft(
+  public boolean isAllowToSign(
+      AccessEvaluationParameters accessEvaluationParameters, String certificateId) {
+    return draftAccessService
+        .allowToSignDraft(
             accessEvaluationParameters.getCertificateType(),
             accessEvaluationParameters.getCertificateTypeVersion(),
             accessEvaluationParameters.getUnit(),
             accessEvaluationParameters.getPatient(),
-            certificateId
-        ).isAllowed();
-    }
+            certificateId)
+        .isAllowed();
+  }
 
-    public boolean isAllowToSignWithConfirmation(AccessEvaluationParameters accessEvaluationParameters) {
-        return draftAccessService.allowToSignWithConfirmation(accessEvaluationParameters).isAllowed();
-    }
+  public boolean isAllowToSignWithConfirmation(
+      AccessEvaluationParameters accessEvaluationParameters) {
+    return draftAccessService.allowToSignWithConfirmation(accessEvaluationParameters).isAllowed();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.infra.testcertificate.dto.TestCertificateEraseResult;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -46,253 +45,269 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @RunWith(MockitoJUnitRunner.class)
 public class TestCertificateServiceTest {
 
-    @Mock
-    private UtkastRepository utkastRepository;
+  @Mock private UtkastRepository utkastRepository;
 
-    @Mock
-    private EraseTestCertificateService eraseTestCertificateService;
+  @Mock private EraseTestCertificateService eraseTestCertificateService;
 
-    @Mock
-    private MonitoringLogService monitoringLogService;
+  @Mock private MonitoringLogService monitoringLogService;
 
-    @InjectMocks
-    private TestCertificateService testCertificateService;
+  @InjectMocks private TestCertificateService testCertificateService;
 
-    private final static LocalDateTime FROM = null;
-    private final static LocalDateTime TO = LocalDateTime.of(2020, 04, 30, 0, 0);
+  private static final LocalDateTime FROM = null;
+  private static final LocalDateTime TO = LocalDateTime.of(2020, 04, 30, 0, 0);
 
-    final Utkast testCertificateRoot = mock(Utkast.class);
-    private final static String TEST_CERTIFICATE_ROOT_ID = "TEST_CERTIFICATE_ROOT_ID";
-    private final static String TEST_CERTIFICATE_ROOT_UNIT_ID = "TEST_CERTIFICATE_ROOT_UNIT_ID";
-    private final static String TEST_CERTIFICATE_ROOT_STAFF_ID = "TEST_CERTIFICATE_ROOT_STAFF_ID";
+  final Utkast testCertificateRoot = mock(Utkast.class);
+  private static final String TEST_CERTIFICATE_ROOT_ID = "TEST_CERTIFICATE_ROOT_ID";
+  private static final String TEST_CERTIFICATE_ROOT_UNIT_ID = "TEST_CERTIFICATE_ROOT_UNIT_ID";
+  private static final String TEST_CERTIFICATE_ROOT_STAFF_ID = "TEST_CERTIFICATE_ROOT_STAFF_ID";
 
-    final Utkast testCertificateBranch = mock(Utkast.class);
-    private final static String TEST_CERTIFICATE_BRANCH_ID = "TEST_CERTIFICATE_BRANCH_ID";
-    private final static String TEST_CERTIFICATE_BRANCH_UNIT_ID = "TEST_CERTIFICATE_BRANCH_UNIT_ID";
-    private final static String TEST_CERTIFICATE_BRANCH_STAFF_ID = "TEST_CERTIFICATE_BRANCH_STAFF_ID";
+  final Utkast testCertificateBranch = mock(Utkast.class);
+  private static final String TEST_CERTIFICATE_BRANCH_ID = "TEST_CERTIFICATE_BRANCH_ID";
+  private static final String TEST_CERTIFICATE_BRANCH_UNIT_ID = "TEST_CERTIFICATE_BRANCH_UNIT_ID";
+  private static final String TEST_CERTIFICATE_BRANCH_STAFF_ID = "TEST_CERTIFICATE_BRANCH_STAFF_ID";
 
-    final Utkast testCertificateLeaf = mock(Utkast.class);
-    private final static String TEST_CERTIFICATE_LEAF_ID = "TEST_CERTIFICATE_LEAF_ID";
-    private final static String TEST_CERTIFICATE_LEAF_UNIT_ID = "TEST_CERTIFICATE_LEAF_UNIT_ID";
-    private final static String TEST_CERTIFICATE_LEAF_STAFF_ID = "TEST_CERTIFICATE_LEAF_STAFF_ID";
+  final Utkast testCertificateLeaf = mock(Utkast.class);
+  private static final String TEST_CERTIFICATE_LEAF_ID = "TEST_CERTIFICATE_LEAF_ID";
+  private static final String TEST_CERTIFICATE_LEAF_UNIT_ID = "TEST_CERTIFICATE_LEAF_UNIT_ID";
+  private static final String TEST_CERTIFICATE_LEAF_STAFF_ID = "TEST_CERTIFICATE_LEAF_STAFF_ID";
 
-    final Utkast testCertificateSingle = mock(Utkast.class);
-    private final static String TEST_CERTIFICATE_SINGLE_ID = "TEST_CERTIFICATE_SINGLE_ID";
-    private final static String TEST_CERTIFICATE_SINGLE_UNIT_ID = "TEST_CERTIFICATE_SINGLE_UNIT_ID";
-    private final static String TEST_CERTIFICATE_SINGLE_STAFF_ID = "TEST_CERTIFICATE_SINGLE_STAFF_ID";
+  final Utkast testCertificateSingle = mock(Utkast.class);
+  private static final String TEST_CERTIFICATE_SINGLE_ID = "TEST_CERTIFICATE_SINGLE_ID";
+  private static final String TEST_CERTIFICATE_SINGLE_UNIT_ID = "TEST_CERTIFICATE_SINGLE_UNIT_ID";
+  private static final String TEST_CERTIFICATE_SINGLE_STAFF_ID = "TEST_CERTIFICATE_SINGLE_STAFF_ID";
 
-    private void setupTestCertificatesWithRelations() {
-        doReturn(TEST_CERTIFICATE_ROOT_ID).when(testCertificateRoot).getIntygsId();
-        doReturn(TEST_CERTIFICATE_ROOT_UNIT_ID).when(testCertificateRoot).getEnhetsId();
-        final var rootStaffReference = mock(VardpersonReferens.class);
-        doReturn(rootStaffReference).when(testCertificateRoot).getSkapadAv();
-        doReturn(TEST_CERTIFICATE_ROOT_STAFF_ID).when(rootStaffReference).getHsaId();
-        doReturn(testCertificateRoot).when(utkastRepository).getOne(TEST_CERTIFICATE_ROOT_ID);
-        final var rootChildrenRelation = mock(WebcertCertificateRelation.class);
-        doReturn(TEST_CERTIFICATE_BRANCH_ID).when(rootChildrenRelation).getIntygsId();
-        doReturn(Collections.emptyList()).when(utkastRepository).findParentRelation(TEST_CERTIFICATE_ROOT_ID);
-        doReturn(Arrays.asList(rootChildrenRelation)).when(utkastRepository).findChildRelations(TEST_CERTIFICATE_ROOT_ID);
+  private void setupTestCertificatesWithRelations() {
+    doReturn(TEST_CERTIFICATE_ROOT_ID).when(testCertificateRoot).getIntygsId();
+    doReturn(TEST_CERTIFICATE_ROOT_UNIT_ID).when(testCertificateRoot).getEnhetsId();
+    final var rootStaffReference = mock(VardpersonReferens.class);
+    doReturn(rootStaffReference).when(testCertificateRoot).getSkapadAv();
+    doReturn(TEST_CERTIFICATE_ROOT_STAFF_ID).when(rootStaffReference).getHsaId();
+    doReturn(testCertificateRoot).when(utkastRepository).getOne(TEST_CERTIFICATE_ROOT_ID);
+    final var rootChildrenRelation = mock(WebcertCertificateRelation.class);
+    doReturn(TEST_CERTIFICATE_BRANCH_ID).when(rootChildrenRelation).getIntygsId();
+    doReturn(Collections.emptyList())
+        .when(utkastRepository)
+        .findParentRelation(TEST_CERTIFICATE_ROOT_ID);
+    doReturn(Arrays.asList(rootChildrenRelation))
+        .when(utkastRepository)
+        .findChildRelations(TEST_CERTIFICATE_ROOT_ID);
 
-        doReturn(TEST_CERTIFICATE_BRANCH_ID).when(testCertificateBranch).getIntygsId();
-        doReturn(TEST_CERTIFICATE_BRANCH_UNIT_ID).when(testCertificateBranch).getEnhetsId();
-        final var branchStaffReference = mock(VardpersonReferens.class);
-        doReturn(branchStaffReference).when(testCertificateBranch).getSkapadAv();
-        doReturn(TEST_CERTIFICATE_BRANCH_STAFF_ID).when(branchStaffReference).getHsaId();
-        doReturn(testCertificateBranch).when(utkastRepository).getOne(TEST_CERTIFICATE_BRANCH_ID);
-        final var branchParentRelation = mock(WebcertCertificateRelation.class);
-        doReturn(TEST_CERTIFICATE_ROOT_ID).when(branchParentRelation).getIntygsId();
-        final var branchChildrenRelation = mock(WebcertCertificateRelation.class);
-        doReturn(TEST_CERTIFICATE_LEAF_ID).when(branchChildrenRelation).getIntygsId();
-        doReturn(Arrays.asList(branchParentRelation)).when(utkastRepository).findParentRelation(TEST_CERTIFICATE_BRANCH_ID);
-        doReturn(Arrays.asList(branchChildrenRelation)).when(utkastRepository).findChildRelations(TEST_CERTIFICATE_BRANCH_ID);
+    doReturn(TEST_CERTIFICATE_BRANCH_ID).when(testCertificateBranch).getIntygsId();
+    doReturn(TEST_CERTIFICATE_BRANCH_UNIT_ID).when(testCertificateBranch).getEnhetsId();
+    final var branchStaffReference = mock(VardpersonReferens.class);
+    doReturn(branchStaffReference).when(testCertificateBranch).getSkapadAv();
+    doReturn(TEST_CERTIFICATE_BRANCH_STAFF_ID).when(branchStaffReference).getHsaId();
+    doReturn(testCertificateBranch).when(utkastRepository).getOne(TEST_CERTIFICATE_BRANCH_ID);
+    final var branchParentRelation = mock(WebcertCertificateRelation.class);
+    doReturn(TEST_CERTIFICATE_ROOT_ID).when(branchParentRelation).getIntygsId();
+    final var branchChildrenRelation = mock(WebcertCertificateRelation.class);
+    doReturn(TEST_CERTIFICATE_LEAF_ID).when(branchChildrenRelation).getIntygsId();
+    doReturn(Arrays.asList(branchParentRelation))
+        .when(utkastRepository)
+        .findParentRelation(TEST_CERTIFICATE_BRANCH_ID);
+    doReturn(Arrays.asList(branchChildrenRelation))
+        .when(utkastRepository)
+        .findChildRelations(TEST_CERTIFICATE_BRANCH_ID);
 
-        doReturn(TEST_CERTIFICATE_LEAF_ID).when(testCertificateLeaf).getIntygsId();
-        doReturn(TEST_CERTIFICATE_LEAF_UNIT_ID).when(testCertificateLeaf).getEnhetsId();
-        final var leafStaffReference = mock(VardpersonReferens.class);
-        doReturn(leafStaffReference).when(testCertificateLeaf).getSkapadAv();
-        doReturn(TEST_CERTIFICATE_LEAF_ID).when(leafStaffReference).getHsaId();
-        doReturn(testCertificateLeaf).when(utkastRepository).getOne(TEST_CERTIFICATE_LEAF_ID);
-        final var leafParentRelation = mock(WebcertCertificateRelation.class);
-        doReturn(TEST_CERTIFICATE_BRANCH_ID).when(leafParentRelation).getIntygsId();
-        doReturn(Arrays.asList(leafParentRelation)).when(utkastRepository).findParentRelation(TEST_CERTIFICATE_LEAF_ID);
-        doReturn(Collections.emptyList()).when(utkastRepository).findChildRelations(TEST_CERTIFICATE_LEAF_ID);
-    }
+    doReturn(TEST_CERTIFICATE_LEAF_ID).when(testCertificateLeaf).getIntygsId();
+    doReturn(TEST_CERTIFICATE_LEAF_UNIT_ID).when(testCertificateLeaf).getEnhetsId();
+    final var leafStaffReference = mock(VardpersonReferens.class);
+    doReturn(leafStaffReference).when(testCertificateLeaf).getSkapadAv();
+    doReturn(TEST_CERTIFICATE_LEAF_ID).when(leafStaffReference).getHsaId();
+    doReturn(testCertificateLeaf).when(utkastRepository).getOne(TEST_CERTIFICATE_LEAF_ID);
+    final var leafParentRelation = mock(WebcertCertificateRelation.class);
+    doReturn(TEST_CERTIFICATE_BRANCH_ID).when(leafParentRelation).getIntygsId();
+    doReturn(Arrays.asList(leafParentRelation))
+        .when(utkastRepository)
+        .findParentRelation(TEST_CERTIFICATE_LEAF_ID);
+    doReturn(Collections.emptyList())
+        .when(utkastRepository)
+        .findChildRelations(TEST_CERTIFICATE_LEAF_ID);
+  }
 
-    private void setupTestCertificatesForSingle() {
-        doReturn(TEST_CERTIFICATE_SINGLE_ID).when(testCertificateSingle).getIntygsId();
-        doReturn(TEST_CERTIFICATE_SINGLE_UNIT_ID).when(testCertificateSingle).getEnhetsId();
-        final var singleStaffReference = mock(VardpersonReferens.class);
-        doReturn(singleStaffReference).when(testCertificateSingle).getSkapadAv();
-        doReturn(TEST_CERTIFICATE_SINGLE_STAFF_ID).when(singleStaffReference).getHsaId();
-        doReturn(testCertificateSingle).when(utkastRepository).getOne(TEST_CERTIFICATE_SINGLE_ID);
-        doReturn(Collections.emptyList()).when(utkastRepository).findParentRelation(TEST_CERTIFICATE_SINGLE_ID);
-        doReturn(Collections.emptyList()).when(utkastRepository).findChildRelations(TEST_CERTIFICATE_SINGLE_ID);
-    }
+  private void setupTestCertificatesForSingle() {
+    doReturn(TEST_CERTIFICATE_SINGLE_ID).when(testCertificateSingle).getIntygsId();
+    doReturn(TEST_CERTIFICATE_SINGLE_UNIT_ID).when(testCertificateSingle).getEnhetsId();
+    final var singleStaffReference = mock(VardpersonReferens.class);
+    doReturn(singleStaffReference).when(testCertificateSingle).getSkapadAv();
+    doReturn(TEST_CERTIFICATE_SINGLE_STAFF_ID).when(singleStaffReference).getHsaId();
+    doReturn(testCertificateSingle).when(utkastRepository).getOne(TEST_CERTIFICATE_SINGLE_ID);
+    doReturn(Collections.emptyList())
+        .when(utkastRepository)
+        .findParentRelation(TEST_CERTIFICATE_SINGLE_ID);
+    doReturn(Collections.emptyList())
+        .when(utkastRepository)
+        .findChildRelations(TEST_CERTIFICATE_SINGLE_ID);
+  }
 
-    @Test
-    public void testEraseTestCertificateSingleCertificate() {
-        setupTestCertificatesForSingle();
+  @Test
+  public void testEraseTestCertificateSingleCertificate() {
+    setupTestCertificatesForSingle();
 
-        final var certificateIds = new ArrayList<String>(1);
-        certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
+    final var certificateIds = new ArrayList<String>(1);
+    certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(1, actualEraseResult.getErasedCount());
-        assertEquals(0, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(1)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(1, actualEraseResult.getErasedCount());
+    assertEquals(0, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(1)).logTestCertificateErased(any(), any(), any());
+  }
 
-    @Test
-    public void testEraseTestCertificateSingleCertificateFailed() {
-        setupTestCertificatesForSingle();
+  @Test
+  public void testEraseTestCertificateSingleCertificateFailed() {
+    setupTestCertificatesForSingle();
 
-        final var certificateIds = new ArrayList<String>(1);
-        certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
+    final var certificateIds = new ArrayList<String>(1);
+    certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        doThrow(new RuntimeException()).when(eraseTestCertificateService).eraseTestCertificates(any());
+    doThrow(new RuntimeException()).when(eraseTestCertificateService).eraseTestCertificates(any());
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(0, actualEraseResult.getErasedCount());
-        assertEquals(1, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(0)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(0, actualEraseResult.getErasedCount());
+    assertEquals(1, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(0)).logTestCertificateErased(any(), any(), any());
+  }
 
-    @Test
-    public void testEraseFullGraphWhenAllMatchFindQuery() {
-        setupTestCertificatesWithRelations();
+  @Test
+  public void testEraseFullGraphWhenAllMatchFindQuery() {
+    setupTestCertificatesWithRelations();
 
-        final var certificateIds = new ArrayList<String>(3);
-        certificateIds.add(TEST_CERTIFICATE_ROOT_ID);
-        certificateIds.add(TEST_CERTIFICATE_BRANCH_ID);
-        certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
+    final var certificateIds = new ArrayList<String>(3);
+    certificateIds.add(TEST_CERTIFICATE_ROOT_ID);
+    certificateIds.add(TEST_CERTIFICATE_BRANCH_ID);
+    certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(3, actualEraseResult.getErasedCount());
-        assertEquals(0, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(3, actualEraseResult.getErasedCount());
+    assertEquals(0, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
+  }
 
-    @Test
-    public void testEraseFullGraphWhenRootMatchFindQuery() {
-        setupTestCertificatesWithRelations();
+  @Test
+  public void testEraseFullGraphWhenRootMatchFindQuery() {
+    setupTestCertificatesWithRelations();
 
-        final var certificateIds = new ArrayList<String>(1);
-        certificateIds.add(TEST_CERTIFICATE_ROOT_ID);
+    final var certificateIds = new ArrayList<String>(1);
+    certificateIds.add(TEST_CERTIFICATE_ROOT_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(3, actualEraseResult.getErasedCount());
-        assertEquals(0, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(3, actualEraseResult.getErasedCount());
+    assertEquals(0, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
+  }
 
-    @Test
-    public void testEraseFullGraphWhenBranchMatchFindQuery() {
-        setupTestCertificatesWithRelations();
+  @Test
+  public void testEraseFullGraphWhenBranchMatchFindQuery() {
+    setupTestCertificatesWithRelations();
 
-        final var certificateIds = new ArrayList<String>(1);
-        certificateIds.add(TEST_CERTIFICATE_BRANCH_ID);
+    final var certificateIds = new ArrayList<String>(1);
+    certificateIds.add(TEST_CERTIFICATE_BRANCH_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(3, actualEraseResult.getErasedCount());
-        assertEquals(0, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(3, actualEraseResult.getErasedCount());
+    assertEquals(0, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
+  }
 
-    @Test
-    public void testEraseFullGraphWhenLeafMatchFindQuery() {
-        setupTestCertificatesWithRelations();
+  @Test
+  public void testEraseFullGraphWhenLeafMatchFindQuery() {
+    setupTestCertificatesWithRelations();
 
-        final var certificateIds = new ArrayList<String>(1);
-        certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
+    final var certificateIds = new ArrayList<String>(1);
+    certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(3, actualEraseResult.getErasedCount());
-        assertEquals(0, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(3, actualEraseResult.getErasedCount());
+    assertEquals(0, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
+  }
 
-    @Test
-    public void testEraseFullGraphAndSingleCertificate() {
-        setupTestCertificatesWithRelations();
-        setupTestCertificatesForSingle();
+  @Test
+  public void testEraseFullGraphAndSingleCertificate() {
+    setupTestCertificatesWithRelations();
+    setupTestCertificatesForSingle();
 
-        final var certificateIds = new ArrayList<String>(2);
-        certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
-        certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
+    final var certificateIds = new ArrayList<String>(2);
+    certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
+    certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(4, actualEraseResult.getErasedCount());
-        assertEquals(0, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(4)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(4, actualEraseResult.getErasedCount());
+    assertEquals(0, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(4)).logTestCertificateErased(any(), any(), any());
+  }
 
-    @Test
-    public void testEraseFullGraphSucessAndSingleCertificateFailed() {
-        setupTestCertificatesWithRelations();
-        setupTestCertificatesForSingle();
+  @Test
+  public void testEraseFullGraphSucessAndSingleCertificateFailed() {
+    setupTestCertificatesWithRelations();
+    setupTestCertificatesForSingle();
 
-        final var certificateIds = new ArrayList<String>(2);
-        certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
-        certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
+    final var certificateIds = new ArrayList<String>(2);
+    certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
+    certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        doThrow(new RuntimeException()).when(eraseTestCertificateService).eraseTestCertificates(argThat(argument -> argument.size() == 1));
+    doThrow(new RuntimeException())
+        .when(eraseTestCertificateService)
+        .eraseTestCertificates(argThat(argument -> argument.size() == 1));
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(3, actualEraseResult.getErasedCount());
-        assertEquals(1, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(3, actualEraseResult.getErasedCount());
+    assertEquals(1, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
+  }
 
-    @Test
-    public void testEraseFullGraphFailedAndSingleCertificateSuccess() {
-        setupTestCertificatesWithRelations();
-        setupTestCertificatesForSingle();
+  @Test
+  public void testEraseFullGraphFailedAndSingleCertificateSuccess() {
+    setupTestCertificatesWithRelations();
+    setupTestCertificatesForSingle();
 
-        final var certificateIds = new ArrayList<String>(2);
-        certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
-        certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
+    final var certificateIds = new ArrayList<String>(2);
+    certificateIds.add(TEST_CERTIFICATE_LEAF_ID);
+    certificateIds.add(TEST_CERTIFICATE_SINGLE_ID);
 
-        doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
+    doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
-        doThrow(new RuntimeException()).when(eraseTestCertificateService).eraseTestCertificates(argThat(argument -> argument.size() == 3));
+    doThrow(new RuntimeException())
+        .when(eraseTestCertificateService)
+        .eraseTestCertificates(argThat(argument -> argument.size() == 3));
 
-        final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
+    final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(1, actualEraseResult.getErasedCount());
-        assertEquals(3, actualEraseResult.getFailedCount());
-        verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
-        verify(monitoringLogService, times(1)).logTestCertificateErased(any(), any(), any());
-    }
+    assertEquals(1, actualEraseResult.getErasedCount());
+    assertEquals(3, actualEraseResult.getFailedCount());
+    verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
+    verify(monitoringLogService, times(1)).logTestCertificateErased(any(), any(), any());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,19 +50,27 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class GrpSignatureServiceImpl extends BaseSignatureService implements GrpSignatureService {
 
-    private final ThreadPoolTaskExecutor taskExecutor;
-    private final GrpCollectPollerFactory grpCollectPollerFactory;
-    private final SignCertificateService signCertificateService;
-    private final GrpRestService grpRestService;
+  private final ThreadPoolTaskExecutor taskExecutor;
+  private final GrpCollectPollerFactory grpCollectPollerFactory;
+  private final SignCertificateService signCertificateService;
+  private final GrpRestService grpRestService;
 
-    @Override
-    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
-        SignMethod signMethod, String ticketId, String userIpAddress, String certificateXml) {
-        final var jsonData = intygJson.orElse(null);
-        final var hash = intygJson.map(this::createHash).orElse(null);
-        final var intygGRPSignature = new IntygGRPSignature(jsonData, hash);
-        final var biljett = SignaturBiljett.SignaturBiljettBuilder
-            .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.PKCS7, signMethod)
+  @Override
+  public SignaturBiljett skapaSigneringsBiljettMedDigest(
+      String intygsId,
+      String intygsTyp,
+      long version,
+      Optional<String> intygJson,
+      SignMethod signMethod,
+      String ticketId,
+      String userIpAddress,
+      String certificateXml) {
+    final var jsonData = intygJson.orElse(null);
+    final var hash = intygJson.map(this::createHash).orElse(null);
+    final var intygGRPSignature = new IntygGRPSignature(jsonData, hash);
+    final var biljett =
+        SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(
+                UUID.randomUUID().toString(), SignaturTyp.PKCS7, signMethod)
             .withIntygsId(intygsId)
             .withVersion(version)
             .withIntygSignature(intygGRPSignature)
@@ -72,99 +80,114 @@ public class GrpSignatureServiceImpl extends BaseSignatureService implements Grp
             .withUserIpAddress(userIpAddress)
             .build();
 
-        redisTicketTracker.trackBiljett(biljett);
-        return biljett;
+    redisTicketTracker.trackBiljett(biljett);
+    return biljett;
+  }
+
+  @Override
+  public void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett) {
+    final var orderResponse = grpRestService.init(personId, signaturBiljett);
+    log.info(
+        "Grp sign initiated for certificateId '{}' with transactionId: '{}'.",
+        signaturBiljett.getIntygsId(),
+        orderResponse.getTransactionId());
+    updateTicketProperties(signaturBiljett, orderResponse);
+    updateTicketTracker(signaturBiljett, orderResponse);
+    validateOrderResponseId(signaturBiljett.getTicketId(), orderResponse.getTransactionId());
+    startAsyncCollectPoller(orderResponse.getRefId(), orderResponse.getTransactionId());
+  }
+
+  private void validateOrderResponseId(String requestId, String responseId) {
+    if (!requestId.equals(responseId)) {
+      throw new IllegalStateException(
+          "GrpOrderResponse transactionId did not match GrpOrderRequest transactionId.");
     }
+  }
 
-    @Override
-    public void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett) {
-        final var orderResponse = grpRestService.init(personId, signaturBiljett);
-        log.info("Grp sign initiated for certificateId '{}' with transactionId: '{}'.", signaturBiljett.getIntygsId(),
-            orderResponse.getTransactionId());
-        updateTicketProperties(signaturBiljett, orderResponse);
-        updateTicketTracker(signaturBiljett, orderResponse);
-        validateOrderResponseId(signaturBiljett.getTicketId(), orderResponse.getTransactionId());
-        startAsyncCollectPoller(orderResponse.getRefId(), orderResponse.getTransactionId());
+  @Override
+  public SignaturBiljett finalizeSignature(
+      SignaturBiljett biljett,
+      byte[] signatur,
+      String certifikat,
+      Utkast utkast,
+      WebCertUser user) {
+    SignaturBiljett sb =
+        finalizePkcs7Signature(user, biljett, new String(signatur, StandardCharsets.UTF_8), utkast);
+    return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
+  }
+
+  @Override
+  public FinalizedCertificateSignature finalizeSignatureForCS(
+      SignaturBiljett ticket, byte[] signatur, String certifikat) {
+    final var certificate =
+        signCertificateService.signWithoutSignature(ticket.getIntygsId(), ticket.getVersion());
+    ticket.setStatus(SignaturStatus.SIGNERAD);
+
+    redisTicketTracker.updateStatus(ticket.getTicketId(), ticket.getStatus());
+
+    return FinalizedCertificateSignature.builder()
+        .certificate(certificate)
+        .signaturBiljett(ticket)
+        .build();
+  }
+
+  private void updateTicketProperties(SignaturBiljett ticket, GrpOrderResponse response) {
+    ticket.setAutoStartToken(response.getAutoStartToken());
+    ticket.setQrStartToken(response.getQrStartToken());
+    ticket.setQrStartSecret(response.getQrStartSecret());
+  }
+
+  private void updateTicketTracker(SignaturBiljett ticket, GrpOrderResponse response) {
+    final var ticketId = ticket.getTicketId();
+    redisTicketTracker.updateAutoStartToken(ticketId, response.getAutoStartToken());
+    redisTicketTracker.updateQrCodeProperties(
+        ticketId, response.getQrStartToken(), response.getQrStartSecret());
+  }
+
+  // Used for BankID / Mobilt BankID.
+  private SignaturBiljett finalizePkcs7Signature(
+      WebCertUser user, SignaturBiljett biljett, String rawSignature, Utkast utkast) {
+    final var payloadJson = biljett.getIntygSignature().getIntygJson();
+    checkIntysId(utkast, biljett);
+    checkVersion(utkast, biljett);
+
+    Signatur signatur =
+        new Signatur(
+            biljett.getSkapad(),
+            user.getHsaId(),
+            biljett.getIntygsId(),
+            payloadJson,
+            biljett.getHash(),
+            rawSignature,
+            SignaturTyp.PKCS7);
+    Utkast savedUtkast = updateAndSaveUtkast(utkast, payloadJson, signatur, user);
+
+    // Send to Intygstjanst
+    intygService.storeIntyg(savedUtkast);
+
+    // If all good, change status of ticket
+    biljett.setStatus(SignaturStatus.SIGNERAD);
+
+    return biljett;
+  }
+
+  private void startAsyncCollectPoller(String refId, String transactionId) {
+    final var collectTask = grpCollectPollerFactory.getInstance();
+    collectTask.setRefId(refId);
+    collectTask.setTransactionId(transactionId);
+    collectTask.setMdcContextMap(MDC.getCopyOfContextMap());
+    collectTask.setSecurityContext(SecurityContextHolder.getContext());
+    taskExecutor.execute(collectTask);
+  }
+
+  private String createHash(String payload) {
+    try {
+      MessageDigest sha = MessageDigest.getInstance("SHA-256");
+      sha.update(payload.getBytes(StandardCharsets.UTF_8));
+      byte[] digest = sha.digest();
+      return new String(Hex.encodeHex(digest));
+    } catch (NoSuchAlgorithmException e) {
+      throw new IllegalStateException(e);
     }
-
-    private void validateOrderResponseId(String requestId, String responseId) {
-        if (!requestId.equals(responseId)) {
-            throw new IllegalStateException("GrpOrderResponse transactionId did not match GrpOrderRequest transactionId.");
-        }
-    }
-
-    @Override
-    public SignaturBiljett finalizeSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
-        WebCertUser user) {
-        SignaturBiljett sb = finalizePkcs7Signature(user, biljett, new String(signatur, StandardCharsets.UTF_8), utkast);
-        return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
-    }
-
-    @Override
-    public FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat) {
-        final var certificate = signCertificateService.signWithoutSignature(ticket.getIntygsId(), ticket.getVersion());
-        ticket.setStatus(SignaturStatus.SIGNERAD);
-
-        redisTicketTracker.updateStatus(
-            ticket.getTicketId(),
-            ticket.getStatus()
-        );
-
-        return FinalizedCertificateSignature.builder()
-            .certificate(certificate)
-            .signaturBiljett(ticket)
-            .build();
-    }
-
-    private void updateTicketProperties(SignaturBiljett ticket, GrpOrderResponse response) {
-        ticket.setAutoStartToken(response.getAutoStartToken());
-        ticket.setQrStartToken(response.getQrStartToken());
-        ticket.setQrStartSecret(response.getQrStartSecret());
-    }
-
-    private void updateTicketTracker(SignaturBiljett ticket, GrpOrderResponse response) {
-        final var ticketId = ticket.getTicketId();
-        redisTicketTracker.updateAutoStartToken(ticketId, response.getAutoStartToken());
-        redisTicketTracker.updateQrCodeProperties(ticketId, response.getQrStartToken(), response.getQrStartSecret());
-    }
-
-    // Used for BankID / Mobilt BankID.
-    private SignaturBiljett finalizePkcs7Signature(WebCertUser user, SignaturBiljett biljett, String rawSignature, Utkast utkast) {
-        final var payloadJson = biljett.getIntygSignature().getIntygJson();
-        checkIntysId(utkast, biljett);
-        checkVersion(utkast, biljett);
-
-        Signatur signatur = new Signatur(biljett.getSkapad(), user.getHsaId(), biljett.getIntygsId(), payloadJson,
-            biljett.getHash(), rawSignature, SignaturTyp.PKCS7);
-        Utkast savedUtkast = updateAndSaveUtkast(utkast, payloadJson, signatur, user);
-
-        // Send to Intygstjanst
-        intygService.storeIntyg(savedUtkast);
-
-        // If all good, change status of ticket
-        biljett.setStatus(SignaturStatus.SIGNERAD);
-
-        return biljett;
-    }
-
-    private void startAsyncCollectPoller(String refId, String transactionId) {
-        final var collectTask = grpCollectPollerFactory.getInstance();
-        collectTask.setRefId(refId);
-        collectTask.setTransactionId(transactionId);
-        collectTask.setMdcContextMap(MDC.getCopyOfContextMap());
-        collectTask.setSecurityContext(SecurityContextHolder.getContext());
-        taskExecutor.execute(collectTask);
-    }
-
-    private String createHash(String payload) {
-        try {
-            MessageDigest sha = MessageDigest.getInstance("SHA-256");
-            sha.update(payload.getBytes(StandardCharsets.UTF_8));
-            byte[] digest = sha.digest();
-            return new String(Hex.encodeHex(digest));
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
+  }
 }

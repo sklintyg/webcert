@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,113 +49,129 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 @ExtendWith(MockitoExtension.class)
 class IntegrationServiceForCSTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String TYPE_VERSION = "typeVersion";
-    private static final String PERSON_ID = "191212121212";
-    private static final Personnummer PERSONAL_NUMBER = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
-    private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST_DTO = GetCertificateRequestDTO.builder().build();
-    @Mock
-    private CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    private WebCertUser user;
-    @Mock
-    private LogSjfService logSjfService;
-    @Mock
-    private CSIntegrationService csIntegrationService;
-    @Mock
-    private CertificateDetailsUpdateService certificateDetailsUpdateService;
-    @InjectMocks
-    private IntegrationServiceForCS integrationServiceForCS;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String TYPE_VERSION = "typeVersion";
+  private static final String PERSON_ID = "191212121212";
+  private static final Personnummer PERSONAL_NUMBER =
+      Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
+  private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST_DTO =
+      GetCertificateRequestDTO.builder().build();
+  @Mock private CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock private WebCertUser user;
+  @Mock private LogSjfService logSjfService;
+  @Mock private CSIntegrationService csIntegrationService;
+  @Mock private CertificateDetailsUpdateService certificateDetailsUpdateService;
+  @InjectMocks private IntegrationServiceForCS integrationServiceForCS;
 
-    private Certificate certificate;
+  private Certificate certificate;
 
-    @BeforeEach
-    void setUp() {
-        certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .id(CERTIFICATE_ID)
-                .type(CERTIFICATE_TYPE)
-                .typeVersion(TYPE_VERSION)
-                .build()
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .id(CERTIFICATE_ID)
+            .type(CERTIFICATE_TYPE)
+            .typeVersion(TYPE_VERSION)
+            .build());
+  }
 
-    @Test
-    void shallReturnNullIfCertificateDontExistInCS() {
-        doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        assertNull(integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user));
-    }
+  @Test
+  void shallReturnNullIfCertificateDontExistInCS() {
+    doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    assertNull(integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user));
+  }
 
-    @Test
-    void shallLogSjfIfActive() {
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
-        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
-        doReturn(true).when(user).isSjfActive();
+  @Test
+  void shallLogSjfIfActive() {
+    doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
+    doReturn(certificate)
+        .when(csIntegrationService)
+        .getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
+    doReturn(true).when(user).isSjfActive();
 
-        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user);
-        verify(logSjfService, times(1)).log(certificate, user);
-    }
+    integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user);
+    verify(logSjfService, times(1)).log(certificate, user);
+  }
 
-    @Test
-    void shallNotLogSjfIfNotActive() {
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
-        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
-        doReturn(false).when(user).isSjfActive();
+  @Test
+  void shallNotLogSjfIfNotActive() {
+    doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
+    doReturn(certificate)
+        .when(csIntegrationService)
+        .getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
+    doReturn(false).when(user).isSjfActive();
 
-        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user);
-        verifyNoInteractions(logSjfService);
-    }
+    integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user);
+    verifyNoInteractions(logSjfService);
+  }
 
-    @Test
-    void shallCallCertificateDetailsUpdateService() {
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
-        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
-        doReturn(false).when(user).isSjfActive();
+  @Test
+  void shallCallCertificateDetailsUpdateService() {
+    doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
+    doReturn(certificate)
+        .when(csIntegrationService)
+        .getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
+    doReturn(false).when(user).isSjfActive();
 
+    integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER);
+    verify(certificateDetailsUpdateService).update(certificate, user, PERSONAL_NUMBER);
+  }
+
+  @Test
+  void shallReturnPrepareRedirectToIntyg() {
+    final var expectedRedirect = new PrepareRedirectToIntyg();
+    expectedRedirect.setIntygTyp(CERTIFICATE_TYPE);
+    expectedRedirect.setIntygId(CERTIFICATE_ID);
+    expectedRedirect.setIntygTypeVersion(TYPE_VERSION);
+
+    doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
+    doReturn(certificate)
+        .when(csIntegrationService)
+        .getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
+    doReturn(false).when(user).isSjfActive();
+
+    final var actualRedirect =
         integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER);
-        verify(certificateDetailsUpdateService).update(certificate, user, PERSONAL_NUMBER);
-    }
+    assertEquals(expectedRedirect, actualRedirect);
+  }
 
-    @Test
-    void shallReturnPrepareRedirectToIntyg() {
-        final var expectedRedirect = new PrepareRedirectToIntyg();
-        expectedRedirect.setIntygTyp(CERTIFICATE_TYPE);
-        expectedRedirect.setIntygId(CERTIFICATE_ID);
-        expectedRedirect.setIntygTypeVersion(TYPE_VERSION);
+  @Test
+  void shallThrowWebcertServiceExceptionForAuthorizationProblemIfStatusCode403FromCS() {
+    doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    doThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN))
+        .when(csIntegrationRequestFactory)
+        .getCertificateRequest();
 
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
-        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
-        doReturn(false).when(user).isSjfActive();
+    final var e =
+        assertThrows(
+            WebCertServiceException.class,
+            () ->
+                integrationServiceForCS.prepareRedirectToIntyg(
+                    CERTIFICATE_ID, user, PERSONAL_NUMBER));
 
-        final var actualRedirect = integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER);
-        assertEquals(expectedRedirect, actualRedirect);
-    }
+    assertEquals(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, e.getErrorCode());
+  }
 
-    @Test
-    void shallThrowWebcertServiceExceptionForAuthorizationProblemIfStatusCode403FromCS() {
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN)).when(csIntegrationRequestFactory).getCertificateRequest();
+  @Test
+  void shallRethrowExceptionIfNotStatusCode403FromCS() {
+    doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    doThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR))
+        .when(csIntegrationRequestFactory)
+        .getCertificateRequest();
 
-        final var e = assertThrows(WebCertServiceException.class, () ->
-            integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER));
+    final var e =
+        assertThrows(
+            HttpClientErrorException.class,
+            () ->
+                integrationServiceForCS.prepareRedirectToIntyg(
+                    CERTIFICATE_ID, user, PERSONAL_NUMBER));
 
-        assertEquals(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, e.getErrorCode());
-    }
-
-    @Test
-    void shallRethrowExceptionIfNotStatusCode403FromCS() {
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR)).when(csIntegrationRequestFactory).getCertificateRequest();
-
-        final var e = assertThrows(HttpClientErrorException.class, () ->
-            integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER));
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
-    }
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
+  }
 }

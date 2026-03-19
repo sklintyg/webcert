@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.patient;
 
 import java.util.Optional;
@@ -30,37 +29,39 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 @Component
 public class CertificateServicePatientHelper {
 
-    private final PatientDetailsResolver patientDetailsResolver;
+  private final PatientDetailsResolver patientDetailsResolver;
 
-    public CertificateServicePatientHelper(PatientDetailsResolver patientDetailsResolver) {
-        this.patientDetailsResolver = patientDetailsResolver;
-    }
+  public CertificateServicePatientHelper(PatientDetailsResolver patientDetailsResolver) {
+    this.patientDetailsResolver = patientDetailsResolver;
+  }
 
-    public CertificateServicePatientDTO get(Personnummer patientId) {
-        final var personSvar = patientDetailsResolver.getPersonFromPUService(patientId);
-        return CertificateServicePatientDTO.builder()
-            .id(getPersonId(patientId))
-            .protectedPerson(personSvar.getPerson().sekretessmarkering())
-            .deceased(personSvar.getPerson().avliden())
-            .firstName(personSvar.getPerson().fornamn())
-            .lastName(personSvar.getPerson().efternamn())
-            .middleName(personSvar.getPerson().mellannamn())
-            .street(personSvar.getPerson().postadress())
-            .zipCode(personSvar.getPerson().postnummer())
-            .city(personSvar.getPerson().postort())
-            .testIndicated(personSvar.getPerson().testIndicator())
-            .build();
-    }
+  public CertificateServicePatientDTO get(Personnummer patientId) {
+    final var personSvar = patientDetailsResolver.getPersonFromPUService(patientId);
+    return CertificateServicePatientDTO.builder()
+        .id(getPersonId(patientId))
+        .protectedPerson(personSvar.getPerson().sekretessmarkering())
+        .deceased(personSvar.getPerson().avliden())
+        .firstName(personSvar.getPerson().fornamn())
+        .lastName(personSvar.getPerson().efternamn())
+        .middleName(personSvar.getPerson().mellannamn())
+        .street(personSvar.getPerson().postadress())
+        .zipCode(personSvar.getPerson().postnummer())
+        .city(personSvar.getPerson().postort())
+        .testIndicated(personSvar.getPerson().testIndicator())
+        .build();
+  }
 
-    private PersonIdDTO getPersonId(Personnummer patientId) {
-        return PersonIdDTO.builder()
-            .type(isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER)
-            .id(patientId.getOriginalPnr())
-            .build();
-    }
+  private PersonIdDTO getPersonId(Personnummer patientId) {
+    return PersonIdDTO.builder()
+        .type(
+            isCoordinationNumber(patientId)
+                ? PersonIdType.COORDINATION_NUMBER
+                : PersonIdType.PERSONAL_IDENTITY_NUMBER)
+        .id(patientId.getOriginalPnr())
+        .build();
+  }
 
-    private boolean isCoordinationNumber(Personnummer personId) {
-        return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
-    }
-
+  private boolean isCoordinationNumber(Personnummer personId) {
+    return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
+  }
 }

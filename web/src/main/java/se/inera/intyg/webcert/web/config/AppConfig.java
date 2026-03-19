@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,27 +38,27 @@ import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
 @Import({LoggingConfig.class, JmsConfig.class, CacheConfig.class, JobConfig.class})
 public class AppConfig implements TransactionManagementConfigurer {
 
-    private final JpaTransactionManager transactionManager;
+  private final JpaTransactionManager transactionManager;
 
-    @Value("${webcert.cookie.domain.name:}")
-    private String webcertCookieDomainName;
+  @Value("${webcert.cookie.domain.name:}")
+  private String webcertCookieDomainName;
 
-    @Override
-    public PlatformTransactionManager annotationDrivenTransactionManager() {
-        return transactionManager;
+  @Override
+  public PlatformTransactionManager annotationDrivenTransactionManager() {
+    return transactionManager;
+  }
+
+  @Bean
+  public CookieSerializer cookieSerializer() {
+    /*
+    This is needed to make IdP functionality work.
+    This will not satisfy all browsers, but it works for IE, Chrome and Edge.
+    Reference: https://auth0.com/blog/browser-behavior-changes-what-developers-need-to-know/
+     */
+    final var ineraCookieSerializer = new IneraCookieSerializer();
+    if (!webcertCookieDomainName.isBlank()) {
+      ineraCookieSerializer.setDomainName(webcertCookieDomainName);
     }
-
-    @Bean
-    public CookieSerializer cookieSerializer() {
-        /*
-        This is needed to make IdP functionality work.
-        This will not satisfy all browsers, but it works for IE, Chrome and Edge.
-        Reference: https://auth0.com/blog/browser-behavior-changes-what-developers-need-to-know/
-         */
-        final var ineraCookieSerializer = new IneraCookieSerializer();
-        if (!webcertCookieDomainName.isBlank()) {
-            ineraCookieSerializer.setDomainName(webcertCookieDomainName);
-        }
-        return ineraCookieSerializer;
-    }
+    return ineraCookieSerializer;
+  }
 }

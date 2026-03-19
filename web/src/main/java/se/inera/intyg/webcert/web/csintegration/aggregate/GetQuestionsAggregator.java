@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import java.util.List;
@@ -31,27 +30,29 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeServ
 @Service
 public class GetQuestionsAggregator implements GetQuestionsFacadeService {
 
-    private final GetQuestionsFacadeService getQuestionsFromWebcert;
-    private final GetQuestionsFromCertificateService getQuestionsFromCertificateService;
+  private final GetQuestionsFacadeService getQuestionsFromWebcert;
+  private final GetQuestionsFromCertificateService getQuestionsFromCertificateService;
 
-    public GetQuestionsAggregator(
-        @Qualifier(value = "GetQuestionsFacadeServiceImpl") GetQuestionsFacadeService getQuestionsFromWebcert,
-        @Qualifier("getQuestionsFromCertificateService") GetQuestionsFromCertificateService getQuestionsFromCertificateService) {
-        this.getQuestionsFromWebcert = getQuestionsFromWebcert;
-        this.getQuestionsFromCertificateService = getQuestionsFromCertificateService;
-    }
+  public GetQuestionsAggregator(
+      @Qualifier(value = "GetQuestionsFacadeServiceImpl") GetQuestionsFacadeService getQuestionsFromWebcert,
+      @Qualifier("getQuestionsFromCertificateService") GetQuestionsFromCertificateService getQuestionsFromCertificateService) {
+    this.getQuestionsFromWebcert = getQuestionsFromWebcert;
+    this.getQuestionsFromCertificateService = getQuestionsFromCertificateService;
+  }
 
-    @Override
-    public List<Question> getComplementQuestions(String certificateId) {
-        return getQuestions(certificateId).stream()
-            .filter(question -> question.getType().equals(QuestionType.COMPLEMENT))
-            .collect(Collectors.toList());
-    }
+  @Override
+  public List<Question> getComplementQuestions(String certificateId) {
+    return getQuestions(certificateId).stream()
+        .filter(question -> question.getType().equals(QuestionType.COMPLEMENT))
+        .collect(Collectors.toList());
+  }
 
-    @Override
-    public List<Question> getQuestions(String certificateId) {
-        final var responseFromCS = getQuestionsFromCertificateService.get(certificateId);
+  @Override
+  public List<Question> getQuestions(String certificateId) {
+    final var responseFromCS = getQuestionsFromCertificateService.get(certificateId);
 
-        return responseFromCS != null ? responseFromCS : getQuestionsFromWebcert.getQuestions(certificateId);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : getQuestionsFromWebcert.getQuestions(certificateId);
+  }
 }

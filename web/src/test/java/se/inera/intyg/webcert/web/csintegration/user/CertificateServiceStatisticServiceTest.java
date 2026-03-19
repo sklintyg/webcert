@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.user;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -47,133 +46,133 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceStatisticServiceTest {
 
-    private static final String UNIT_ID = "unitId";
-    private static final List<String> UNIT_IDS = List.of("unit1", "unit2");
-    private static final List<String> SELECTED_UNIT_IDS = List.of("unit1", "unit2");
-    private static final String SUB_UNIT = "subUnit";
-    @Mock
-    private WebCertUser user;
-    @Mock
-    private CSIntegrationService csIntegrationService;
-    @Mock
-    private CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    private CertificateServiceStatisticService certificateServiceStatisticService;
+  private static final String UNIT_ID = "unitId";
+  private static final List<String> UNIT_IDS = List.of("unit1", "unit2");
+  private static final List<String> SELECTED_UNIT_IDS = List.of("unit1", "unit2");
+  private static final String SUB_UNIT = "subUnit";
+  @Mock private WebCertUser user;
+  @Mock private CSIntegrationService csIntegrationService;
+  @Mock private CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks private CertificateServiceStatisticService certificateServiceStatisticService;
 
-    @Nested
-    class UserHasSelectedVardenhet {
+  @Nested
+  class UserHasSelectedVardenhet {
 
-        @BeforeEach
-        void setUp() {
-            final var vardenhet = new Vardenhet();
-            vardenhet.setId(UNIT_ID);
-            vardenhet.getHsaIds().add(SUB_UNIT);
-            final var statisticsRequestDTO = UnitStatisticsRequestDTO.builder().build();
-            final var statistics = buildStatisticsForUnitDTO();
-            doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS);
-            doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
-            doReturn(vardenhet).when(user).getValdVardenhet();
-            doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
-        }
-
-        @Test
-        void shallIncrementNbrOfDraftsOnSelectedUnit() {
-            final var userStatisticsDTO = buildUserStatisticsDTO();
-            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
-            assertEquals(2, userStatisticsDTO.getNbrOfDraftsOnSelectedUnit());
-        }
-
-        @Test
-        void shallIncrementNbrOfUnhandledQuestionsOnSelectedUnit() {
-            final var userStatisticsDTO = buildUserStatisticsDTO();
-            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
-            assertEquals(2, userStatisticsDTO.getNbrOfUnhandledQuestionsOnSelectedUnit());
-        }
-
-        @Test
-        void shallIncrementTotalDraftsAndUnhandledQuestionsOnOtherUnits() {
-            final var userStatisticsDTO = buildUserStatisticsDTO();
-            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
-            assertEquals(5, userStatisticsDTO.getTotalDraftsAndUnhandledQuestionsOnOtherUnits());
-        }
+    @BeforeEach
+    void setUp() {
+      final var vardenhet = new Vardenhet();
+      vardenhet.setId(UNIT_ID);
+      vardenhet.getHsaIds().add(SUB_UNIT);
+      final var statisticsRequestDTO = UnitStatisticsRequestDTO.builder().build();
+      final var statistics = buildStatisticsForUnitDTO();
+      doReturn(statisticsRequestDTO)
+          .when(csIntegrationRequestFactory)
+          .getStatisticsRequest(UNIT_IDS);
+      doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
+      doReturn(vardenhet).when(user).getValdVardenhet();
+      doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
     }
 
     @Test
-    void shallNotIncrementSubUnitStatisticsIfNoSubUnitIsPresent() {
-        final var vardgivare = new Vardgivare();
-        final var vardenhet = new Vardenhet();
-        vardenhet.setId(UNIT_ID);
-        vardenhet.setMottagningar(Collections.emptyList());
-        vardgivare.getVardenheter().add(vardenhet);
-
-        final var statisticsRequestDTO = UnitStatisticsRequestDTO.builder().build();
-        final var statistics = buildStatisticsForUnitDTO();
-
-        doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS);
-        doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
-        doReturn(List.of(vardgivare)).when(user).getVardgivare();
-        doReturn(vardenhet).when(user).getValdVardenhet();
-        doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
-
-        final var userStatisticsDTO = buildUserStatisticsDTO();
-        certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
-        assertAll(
-            () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnUnit()),
-            () -> assertEquals(1, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnSubUnits()),
-            () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getQuestionsOnUnit()),
-            () -> assertEquals(1, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getQuestionsOnSubUnits())
-        );
+    void shallIncrementNbrOfDraftsOnSelectedUnit() {
+      final var userStatisticsDTO = buildUserStatisticsDTO();
+      certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
+      assertEquals(2, userStatisticsDTO.getNbrOfDraftsOnSelectedUnit());
     }
 
     @Test
-    void shallMergeUnitStatistics() {
-        final var vardgivare = new Vardgivare();
-        final var vardenhet = new Vardenhet();
-        final var mottagning = new Mottagning();
-        mottagning.setId(SUB_UNIT);
-        vardenhet.setId(UNIT_ID);
-        vardenhet.setMottagningar(List.of(mottagning));
-        vardgivare.getVardenheter().add(vardenhet);
-
-        final var statisticsRequestDTO = UnitStatisticsRequestDTO.builder().build();
-        final var statistics = buildStatisticsForUnitDTO();
-
-        doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS);
-        doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
-        doReturn(List.of(vardgivare)).when(user).getVardgivare();
-        doReturn(vardenhet).when(user).getValdVardenhet();
-        doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
-
-        final var userStatisticsDTO = buildUserStatisticsDTO();
-        certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
-        assertAll(
-            () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnUnit()),
-            () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnSubUnits()),
-            () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getQuestionsOnUnit()),
-            () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getQuestionsOnSubUnits())
-        );
+    void shallIncrementNbrOfUnhandledQuestionsOnSelectedUnit() {
+      final var userStatisticsDTO = buildUserStatisticsDTO();
+      certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
+      assertEquals(2, userStatisticsDTO.getNbrOfUnhandledQuestionsOnSelectedUnit());
     }
 
-    private static Map<String, StatisticsForUnitDTO> buildStatisticsForUnitDTO() {
-        return Map.of(
-            UNIT_ID, StatisticsForUnitDTO.builder()
-                .draftCount(1)
-                .unhandledMessageCount(1)
-                .build(),
-            SUB_UNIT, StatisticsForUnitDTO.builder()
-                .draftCount(1)
-                .unhandledMessageCount(1)
-                .build());
+    @Test
+    void shallIncrementTotalDraftsAndUnhandledQuestionsOnOtherUnits() {
+      final var userStatisticsDTO = buildUserStatisticsDTO();
+      certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
+      assertEquals(5, userStatisticsDTO.getTotalDraftsAndUnhandledQuestionsOnOtherUnits());
     }
+  }
 
-    private static UserStatisticsDTO buildUserStatisticsDTO() {
-        final var userStatisticsDTO = new UserStatisticsDTO();
-        userStatisticsDTO.setNbrOfDraftsOnSelectedUnit(1);
-        userStatisticsDTO.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(1);
-        userStatisticsDTO.setNbrOfUnhandledQuestionsOnSelectedUnit(1);
-        userStatisticsDTO.addUnitStatistics(
-            UNIT_ID, new UnitStatisticsDTO(1, 1, 1, 1)
-        );
-        return userStatisticsDTO;
-    }
+  @Test
+  void shallNotIncrementSubUnitStatisticsIfNoSubUnitIsPresent() {
+    final var vardgivare = new Vardgivare();
+    final var vardenhet = new Vardenhet();
+    vardenhet.setId(UNIT_ID);
+    vardenhet.setMottagningar(Collections.emptyList());
+    vardgivare.getVardenheter().add(vardenhet);
+
+    final var statisticsRequestDTO = UnitStatisticsRequestDTO.builder().build();
+    final var statistics = buildStatisticsForUnitDTO();
+
+    doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS);
+    doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
+    doReturn(List.of(vardgivare)).when(user).getVardgivare();
+    doReturn(vardenhet).when(user).getValdVardenhet();
+    doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
+
+    final var userStatisticsDTO = buildUserStatisticsDTO();
+    certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
+    assertAll(
+        () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnUnit()),
+        () ->
+            assertEquals(
+                1, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnSubUnits()),
+        () ->
+            assertEquals(
+                2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getQuestionsOnUnit()),
+        () ->
+            assertEquals(
+                1, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getQuestionsOnSubUnits()));
+  }
+
+  @Test
+  void shallMergeUnitStatistics() {
+    final var vardgivare = new Vardgivare();
+    final var vardenhet = new Vardenhet();
+    final var mottagning = new Mottagning();
+    mottagning.setId(SUB_UNIT);
+    vardenhet.setId(UNIT_ID);
+    vardenhet.setMottagningar(List.of(mottagning));
+    vardgivare.getVardenheter().add(vardenhet);
+
+    final var statisticsRequestDTO = UnitStatisticsRequestDTO.builder().build();
+    final var statistics = buildStatisticsForUnitDTO();
+
+    doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS);
+    doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
+    doReturn(List.of(vardgivare)).when(user).getVardgivare();
+    doReturn(vardenhet).when(user).getValdVardenhet();
+    doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
+
+    final var userStatisticsDTO = buildUserStatisticsDTO();
+    certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
+    assertAll(
+        () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnUnit()),
+        () ->
+            assertEquals(
+                2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnSubUnits()),
+        () ->
+            assertEquals(
+                2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getQuestionsOnUnit()),
+        () ->
+            assertEquals(
+                2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getQuestionsOnSubUnits()));
+  }
+
+  private static Map<String, StatisticsForUnitDTO> buildStatisticsForUnitDTO() {
+    return Map.of(
+        UNIT_ID, StatisticsForUnitDTO.builder().draftCount(1).unhandledMessageCount(1).build(),
+        SUB_UNIT, StatisticsForUnitDTO.builder().draftCount(1).unhandledMessageCount(1).build());
+  }
+
+  private static UserStatisticsDTO buildUserStatisticsDTO() {
+    final var userStatisticsDTO = new UserStatisticsDTO();
+    userStatisticsDTO.setNbrOfDraftsOnSelectedUnit(1);
+    userStatisticsDTO.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(1);
+    userStatisticsDTO.setNbrOfUnhandledQuestionsOnSelectedUnit(1);
+    userStatisticsDTO.addUnitStatistics(UNIT_ID, new UnitStatisticsDTO(1, 1, 1, 1));
+    return userStatisticsDTO;
+  }
 }

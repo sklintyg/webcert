@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,37 +33,40 @@ import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeSe
 @ExtendWith(MockitoExtension.class)
 class CreateQuestionAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String MESSAGE = "message";
-    @Mock
-    CreateQuestionFacadeService createQuestionFromWC;
-    @Mock
-    CreateQuestionFacadeService createQuestionFromCS;
-    CreateQuestionFacadeService createQuestionAggregator;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String MESSAGE = "message";
+  @Mock CreateQuestionFacadeService createQuestionFromWC;
+  @Mock CreateQuestionFacadeService createQuestionFromCS;
+  CreateQuestionFacadeService createQuestionAggregator;
 
-    @BeforeEach
-    void setUp() {
-        createQuestionAggregator = new CreateQuestionAggregator(
-            createQuestionFromWC, createQuestionFromCS
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    createQuestionAggregator =
+        new CreateQuestionAggregator(createQuestionFromWC, createQuestionFromCS);
+  }
 
-    @Test
-    void shallReturnQuestionFromWCIfResponseFromCSIsNull() {
-        final var expectedQuestion = Question.builder().build();
-        doReturn(null).when(createQuestionFromCS).create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
-        doReturn(expectedQuestion).when(createQuestionFromWC).create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
+  @Test
+  void shallReturnQuestionFromWCIfResponseFromCSIsNull() {
+    final var expectedQuestion = Question.builder().build();
+    doReturn(null).when(createQuestionFromCS).create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
+    doReturn(expectedQuestion)
+        .when(createQuestionFromWC)
+        .create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
 
-        final var actualQuestion = createQuestionAggregator.create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
-        assertEquals(expectedQuestion, actualQuestion);
-    }
+    final var actualQuestion =
+        createQuestionAggregator.create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
+    assertEquals(expectedQuestion, actualQuestion);
+  }
 
-    @Test
-    void shallReturnQuestionFromCSIfResponseFromCSIsNotNull() {
-        final var expectedQuestion = Question.builder().build();
-        doReturn(expectedQuestion).when(createQuestionFromCS).create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
+  @Test
+  void shallReturnQuestionFromCSIfResponseFromCSIsNotNull() {
+    final var expectedQuestion = Question.builder().build();
+    doReturn(expectedQuestion)
+        .when(createQuestionFromCS)
+        .create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
 
-        final var actualQuestion = createQuestionAggregator.create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
-        assertEquals(expectedQuestion, actualQuestion);
-    }
+    final var actualQuestion =
+        createQuestionAggregator.create(CERTIFICATE_ID, QuestionType.CONTACT, MESSAGE);
+    assertEquals(expectedQuestion, actualQuestion);
+  }
 }

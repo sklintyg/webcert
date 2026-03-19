@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,23 +25,15 @@ package se.inera.intyg.webcert.persistence.model;
  */
 public enum Status {
 
-    /**
-     * The FragaSvar or Arende has been received from an external entity and needs to be answered.
-     */
-    PENDING_INTERNAL_ACTION,
+  /** The FragaSvar or Arende has been received from an external entity and needs to be answered. */
+  PENDING_INTERNAL_ACTION,
 
-    /**
-     * The FragaSvar or Arende has been sent to an external entity and awaits an answer.
-     */
-    PENDING_EXTERNAL_ACTION,
+  /** The FragaSvar or Arende has been sent to an external entity and awaits an answer. */
+  PENDING_EXTERNAL_ACTION,
 
-    /**
-     * The FragaSvar or Arende has received an answer from the external entity.
-     */
-    ANSWERED,
+  /** The FragaSvar or Arende has received an answer from the external entity. */
+  ANSWERED,
 
-    /**
-     * The FragaSvar or Arende has been handled.
-     */
-    CLOSED;
+  /** The FragaSvar or Arende has been handled. */
+  CLOSED;
 }

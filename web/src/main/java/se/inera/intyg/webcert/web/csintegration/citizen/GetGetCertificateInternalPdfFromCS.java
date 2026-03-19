@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.citizen;
 
 import lombok.RequiredArgsConstructor;
@@ -32,25 +31,24 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfR
 @Service("getCertificateInternalPdfFromCS")
 public class GetGetCertificateInternalPdfFromCS implements GetCertificatePdfService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Override
-    public CertificatePdfResponseDTO get(String customizationId, String certificateId, String personId) {
-        final var exists = csIntegrationService.citizenCertificateExists(certificateId);
-        if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
-
-        final var certificatePdfResponse = csIntegrationService.getCitizenCertificatePdf(
-            csIntegrationRequestFactory.getCitizenCertificatePdfRequest(personId, customizationId),
-            certificateId
-        );
-
-        return CertificatePdfResponseDTO.create(
-            certificatePdfResponse.getFilename(),
-            certificatePdfResponse.getPdfData()
-        );
+  @Override
+  public CertificatePdfResponseDTO get(
+      String customizationId, String certificateId, String personId) {
+    final var exists = csIntegrationService.citizenCertificateExists(certificateId);
+    if (Boolean.FALSE.equals(exists)) {
+      log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
+      return null;
     }
+
+    final var certificatePdfResponse =
+        csIntegrationService.getCitizenCertificatePdf(
+            csIntegrationRequestFactory.getCitizenCertificatePdfRequest(personId, customizationId),
+            certificateId);
+
+    return CertificatePdfResponseDTO.create(
+        certificatePdfResponse.getFilename(), certificatePdfResponse.getPdfData());
+  }
 }

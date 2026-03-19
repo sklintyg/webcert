@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,124 +42,132 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Scope(value = "prototype")
 public class GrpRestCollectPollerImpl implements GrpCollectPoller {
 
-    @Value("${cgi.grp.polling.interval:2000}")
-    private long pollingInterval;
-    @Value("${cgi.grp.polling.timeout:240000}")
-    private long grpPollingTimeout;
+  @Value("${cgi.grp.polling.interval:2000}")
+  private long pollingInterval;
 
-    private final RedisTicketTracker redisTicketTracker;
-    private final UnderskriftService underskriftService;
-    private final GrpRestService grpRestService;
+  @Value("${cgi.grp.polling.timeout:240000}")
+  private long grpPollingTimeout;
 
-    private String refId;
-    private String transactionId;
-    private Map<String, String> mdcContextMap;
-    private SecurityContext securityContext;
+  private final RedisTicketTracker redisTicketTracker;
+  private final UnderskriftService underskriftService;
+  private final GrpRestService grpRestService;
 
-    public static final String STATUS_FAILED = "FAILED";
-    public static final String STATUS_PENDING = "PENDING";
-    public static final String STATUS_COMPLETE = "COMPLETE";
-    public static final String STATUS_CANCELLED = "CANCELLED";
+  private String refId;
+  private String transactionId;
+  private Map<String, String> mdcContextMap;
+  private SecurityContext securityContext;
 
-    public GrpRestCollectPollerImpl(RedisTicketTracker redisTicketTracker,
-        @Qualifier("signAggregator") UnderskriftService underskriftService,
-        GrpRestService grpRestService) {
-        this.redisTicketTracker = redisTicketTracker;
-        this.underskriftService = underskriftService;
-        this.grpRestService = grpRestService;
-    }
+  public static final String STATUS_FAILED = "FAILED";
+  public static final String STATUS_PENDING = "PENDING";
+  public static final String STATUS_COMPLETE = "COMPLETE";
+  public static final String STATUS_CANCELLED = "CANCELLED";
 
-    @Override
-    public void run() {
-        try {
-            applySecurityContextToThreadLocal();
-            MDC.setContextMap(mdcContextMap);
-            final var webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            final var pollingTimeout = Instant.now().plus(Duration.ofMillis(grpPollingTimeout));
-            sleepMilliseconds(pollingInterval);
+  public GrpRestCollectPollerImpl(
+      RedisTicketTracker redisTicketTracker,
+      @Qualifier("signAggregator") UnderskriftService underskriftService,
+      GrpRestService grpRestService) {
+    this.redisTicketTracker = redisTicketTracker;
+    this.underskriftService = underskriftService;
+    this.grpRestService = grpRestService;
+  }
 
-            while (Instant.now().isBefore(pollingTimeout)) {
-                final var collectResponse = grpRestService.collect(refId, transactionId);
+  @Override
+  public void run() {
+    try {
+      applySecurityContextToThreadLocal();
+      MDC.setContextMap(mdcContextMap);
+      final var webCertUser =
+          (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      final var pollingTimeout = Instant.now().plus(Duration.ofMillis(grpPollingTimeout));
+      sleepMilliseconds(pollingInterval);
 
-                if (collectResponse == null) {
-                    return;
-                }
+      while (Instant.now().isBefore(pollingTimeout)) {
+        final var collectResponse = grpRestService.collect(refId, transactionId);
 
-                final var progressStatus = collectResponse.getProgressStatus();
-                log.info("Grp collect response received for transactionId '{}' with progressStatus '{}', subStatus '{}' and message '{}'.",
-                    transactionId, progressStatus.getStatus(), progressStatus.getSubstatus(), progressStatus.getMessage());
-
-                switch (progressStatus.getStatus()) {
-                    case STATUS_COMPLETE:
-                        handleStatusComplete(collectResponse, webCertUser);
-                        return;
-                    case STATUS_PENDING:
-                        redisTicketTracker.updateStatus(transactionId, SignaturStatus.VANTA_SIGN);
-                        break;
-                    case STATUS_FAILED:
-                        redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
-                        return;
-                    case STATUS_CANCELLED:
-                        redisTicketTracker.updateStatus(transactionId, SignaturStatus.AVBRUTEN);
-                        return;
-                }
-
-                sleepMilliseconds(pollingInterval);
-            }
-
-        } finally {
-            MDC.clear();
-            SecurityContextHolder.clearContext();
-        }
-    }
-
-    private void handleStatusComplete(GrpCollectResponse collectResponse, WebCertUser webCertUser) {
-        final var personId = collectResponse.getUserInfo().getTin().replace("-", "");
-        final var userId = webCertUser.getPersonId().replace("-", "");
-
-        if (!personId.equals(userId)) {
-            throw new IllegalStateException(
-                "Grp sign processing aborted. PersonId from collect COMPLETE response does not match userId from the security context.");
+        if (collectResponse == null) {
+          return;
         }
 
-        final var signature = collectResponse.getValidationInfo().getSignature();
-        underskriftService.grpSignature(transactionId, signature.getBytes(StandardCharsets.UTF_8));
-        log.info("Signature was successfully persisted and ticket updated.");
-    }
+        final var progressStatus = collectResponse.getProgressStatus();
+        log.info(
+            "Grp collect response received for transactionId '{}' with progressStatus '{}', subStatus '{}' and message '{}'.",
+            transactionId,
+            progressStatus.getStatus(),
+            progressStatus.getSubstatus(),
+            progressStatus.getMessage());
 
-    private void applySecurityContextToThreadLocal() {
-        if (securityContext == null) {
-            throw new IllegalStateException("SecurityContext is not set. GRP poller thread cannot be started.");
+        switch (progressStatus.getStatus()) {
+          case STATUS_COMPLETE:
+            handleStatusComplete(collectResponse, webCertUser);
+            return;
+          case STATUS_PENDING:
+            redisTicketTracker.updateStatus(transactionId, SignaturStatus.VANTA_SIGN);
+            break;
+          case STATUS_FAILED:
+            redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
+            return;
+          case STATUS_CANCELLED:
+            redisTicketTracker.updateStatus(transactionId, SignaturStatus.AVBRUTEN);
+            return;
         }
-        SecurityContextHolder.setContext(securityContext);
+
+        sleepMilliseconds(pollingInterval);
+      }
+
+    } finally {
+      MDC.clear();
+      SecurityContextHolder.clearContext();
+    }
+  }
+
+  private void handleStatusComplete(GrpCollectResponse collectResponse, WebCertUser webCertUser) {
+    final var personId = collectResponse.getUserInfo().getTin().replace("-", "");
+    final var userId = webCertUser.getPersonId().replace("-", "");
+
+    if (!personId.equals(userId)) {
+      throw new IllegalStateException(
+          "Grp sign processing aborted. PersonId from collect COMPLETE response does not match userId from the security context.");
     }
 
-    private void sleepMilliseconds(long ms) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(ms);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.warn("Sleep was interrupted during while polling Grp.", e);
-        }
-    }
+    final var signature = collectResponse.getValidationInfo().getSignature();
+    underskriftService.grpSignature(transactionId, signature.getBytes(StandardCharsets.UTF_8));
+    log.info("Signature was successfully persisted and ticket updated.");
+  }
 
-    @Override
-    public void setRefId(String refId) {
-        this.refId = refId;
+  private void applySecurityContextToThreadLocal() {
+    if (securityContext == null) {
+      throw new IllegalStateException(
+          "SecurityContext is not set. GRP poller thread cannot be started.");
     }
+    SecurityContextHolder.setContext(securityContext);
+  }
 
-    @Override
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+  private void sleepMilliseconds(long ms) {
+    try {
+      TimeUnit.MILLISECONDS.sleep(ms);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      log.warn("Sleep was interrupted during while polling Grp.", e);
     }
+  }
 
-    @Override
-    public void setMdcContextMap(Map<String, String> mdcContextMap) {
-        this.mdcContextMap = mdcContextMap;
-    }
+  @Override
+  public void setRefId(String refId) {
+    this.refId = refId;
+  }
 
-    @Override
-    public void setSecurityContext(SecurityContext securityContext) {
-        this.securityContext = securityContext;
-    }
+  @Override
+  public void setTransactionId(String transactionId) {
+    this.transactionId = transactionId;
+  }
+
+  @Override
+  public void setMdcContextMap(Map<String, String> mdcContextMap) {
+    this.mdcContextMap = mdcContextMap;
+  }
+
+  @Override
+  public void setSecurityContext(SecurityContext securityContext) {
+    this.securityContext = securityContext;
+  }
 }

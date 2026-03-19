@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,58 +36,66 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @Service
 public class NotificationResultSuccessService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationResultSuccessService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationResultSuccessService.class);
 
-    @Autowired
-    private MonitoringLogService logService;
+  @Autowired private MonitoringLogService logService;
 
-    @Autowired
-    private HandelseRepository handelseRepo;
+  @Autowired private HandelseRepository handelseRepo;
 
-    @Autowired
-    private NotificationRedeliveryRepository notificationRedeliveryRepo;
+  @Autowired private NotificationRedeliveryRepository notificationRedeliveryRepo;
 
-    @Transactional
-    public void process(@NonNull NotificationResultMessage resultMessage) {
-        final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
-        var event = resultMessage.getEvent();
-        var attemptedDeliveries = 1;
-        if (existingRedelivery.isEmpty()) {
-            event = createEvent(event);
-        } else {
-            attemptedDeliveries = getAttemptedDeliveries(existingRedelivery.get());
-            event = updateEvent(existingRedelivery.get().getEventId());
-            deleteNotificationRedelivery(existingRedelivery.get());
-        }
-
-        logService.logStatusUpdateForCareStatusSuccess(event.getId(), event.getCode().name(), event.getIntygsId(),
-            resultMessage.getCorrelationId(), event.getEnhetsId(), attemptedDeliveries);
+  @Transactional
+  public void process(@NonNull NotificationResultMessage resultMessage) {
+    final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
+    var event = resultMessage.getEvent();
+    var attemptedDeliveries = 1;
+    if (existingRedelivery.isEmpty()) {
+      event = createEvent(event);
+    } else {
+      attemptedDeliveries = getAttemptedDeliveries(existingRedelivery.get());
+      event = updateEvent(existingRedelivery.get().getEventId());
+      deleteNotificationRedelivery(existingRedelivery.get());
     }
 
-    private Handelse createEvent(Handelse event) {
-        final var createdEvent = handelseRepo.save(event);
-        LOG.debug("Creating notification event {} with delivery status {}", createdEvent.getId(), createdEvent.getDeliveryStatus());
-        return createdEvent;
-    }
+    logService.logStatusUpdateForCareStatusSuccess(
+        event.getId(),
+        event.getCode().name(),
+        event.getIntygsId(),
+        resultMessage.getCorrelationId(),
+        event.getEnhetsId(),
+        attemptedDeliveries);
+  }
 
-    private Handelse updateEvent(Long eventId) {
-        final var event = handelseRepo.findById(eventId).orElseThrow();
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
-        LOG.debug("Setting delivery status {} on notification event with id {}.", event.getDeliveryStatus(), event.getId());
-        return handelseRepo.save(event);
-    }
+  private Handelse createEvent(Handelse event) {
+    final var createdEvent = handelseRepo.save(event);
+    LOG.debug(
+        "Creating notification event {} with delivery status {}",
+        createdEvent.getId(),
+        createdEvent.getDeliveryStatus());
+    return createdEvent;
+  }
 
-    private Optional<NotificationRedelivery> getExistingRedelivery(String correlationId) {
-        return notificationRedeliveryRepo.findByCorrelationId(correlationId);
-    }
+  private Handelse updateEvent(Long eventId) {
+    final var event = handelseRepo.findById(eventId).orElseThrow();
+    event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
+    LOG.debug(
+        "Setting delivery status {} on notification event with id {}.",
+        event.getDeliveryStatus(),
+        event.getId());
+    return handelseRepo.save(event);
+  }
 
-    private int getAttemptedDeliveries(NotificationRedelivery redelivery) {
-        Integer attemptedDeliveries = redelivery.getAttemptedDeliveries();
-        return attemptedDeliveries != null ? attemptedDeliveries + 1 : 1;
-    }
+  private Optional<NotificationRedelivery> getExistingRedelivery(String correlationId) {
+    return notificationRedeliveryRepo.findByCorrelationId(correlationId);
+  }
 
-    private void deleteNotificationRedelivery(NotificationRedelivery redelivery) {
-        LOG.debug("Deleting Notification Redelivery for event with id {}.", redelivery.getEventId());
-        notificationRedeliveryRepo.delete(redelivery);
-    }
+  private int getAttemptedDeliveries(NotificationRedelivery redelivery) {
+    Integer attemptedDeliveries = redelivery.getAttemptedDeliveries();
+    return attemptedDeliveries != null ? attemptedDeliveries + 1 : 1;
+  }
+
+  private void deleteNotificationRedelivery(NotificationRedelivery redelivery) {
+    LOG.debug("Deleting Notification Redelivery for event with id {}.", redelivery.getEventId());
+    notificationRedeliveryRepo.delete(redelivery);
+  }
 }

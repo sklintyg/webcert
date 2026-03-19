@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,103 +47,98 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class UnitSelectedAssuranceFilterTest {
 
-    private static final String IGNORED_URL = "/test";
-    private static final String REQUEST_URL = "/api/certificate";
+  private static final String IGNORED_URL = "/test";
+  private static final String REQUEST_URL = "/api/certificate";
 
-    @Mock
-    private HttpServletRequest httpServletRequest;
+  @Mock private HttpServletRequest httpServletRequest;
 
-    @Mock
-    private HttpServletResponse httpServletResponse;
+  @Mock private HttpServletResponse httpServletResponse;
 
-    @Mock
-    private FilterChain filterChain;
+  @Mock private FilterChain filterChain;
 
-    @Mock
-    private WebCertUserServiceImpl webCertUserService;
+  @Mock private WebCertUserServiceImpl webCertUserService;
 
-    @InjectMocks
-    private UnitSelectedAssuranceFilter filter = new UnitSelectedAssuranceFilter();
+  @InjectMocks private UnitSelectedAssuranceFilter filter = new UnitSelectedAssuranceFilter();
 
-    @BeforeEach
-    void setup() throws ServletException {
-        filter.setIgnoredUrls(IGNORED_URL);
-        filter.initFilterBean();
-    }
+  @BeforeEach
+  void setup() throws ServletException {
+    filter.setIgnoredUrls(IGNORED_URL);
+    filter.initFilterBean();
+  }
 
-    @Test
-    void testInitiateFilterSettingIgnoredUrls() throws ServletException {
-        filter.initFilterBean();
-        assertNotNull(filter.getIgnoredUrls());
-        assertEquals(IGNORED_URL, filter.getIgnoredUrls());
-    }
+  @Test
+  void testInitiateFilterSettingIgnoredUrls() throws ServletException {
+    filter.initFilterBean();
+    assertNotNull(filter.getIgnoredUrls());
+    assertEquals(IGNORED_URL, filter.getIgnoredUrls());
+  }
 
-    @Test
-    void testUserWithSelectedUnitIsLoggedIn() throws ServletException, IOException {
-        final var user = createUser();
-        when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
-        when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
-        when(webCertUserService.getUser()).thenReturn(user);
+  @Test
+  void testUserWithSelectedUnitIsLoggedIn() throws ServletException, IOException {
+    final var user = createUser();
+    when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
+    when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
+    when(webCertUserService.getUser()).thenReturn(user);
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        assertNotNull(user);
-        assertNotNull(user.getValdVardenhet());
-        assertEquals(REQUEST_URL, httpServletRequest.getRequestURI());
-        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
+    assertNotNull(user);
+    assertNotNull(user.getValdVardenhet());
+    assertEquals(REQUEST_URL, httpServletRequest.getRequestURI());
+    verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  }
 
-    @Test
-    void testUserWithoutSelectedCareUnitIsLoggedIn() throws ServletException, IOException {
-        final var user = new WebCertUser();
-        when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
-        when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
-        when(webCertUserService.getUser()).thenReturn(user);
+  @Test
+  void testUserWithoutSelectedCareUnitIsLoggedIn() throws ServletException, IOException {
+    final var user = new WebCertUser();
+    when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
+    when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
+    when(webCertUserService.getUser()).thenReturn(user);
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(webCertUserService).hasAuthenticationContext();
-        verify(webCertUserService).getUser();
-        assertNotNull(user);
-        assertNull(user.getValdVardenhet());
-        assertNotEquals(IGNORED_URL, httpServletRequest.getRequestURI());
-        verify(filterChain, never()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
+    verify(webCertUserService).hasAuthenticationContext();
+    verify(webCertUserService).getUser();
+    assertNotNull(user);
+    assertNull(user.getValdVardenhet());
+    assertNotEquals(IGNORED_URL, httpServletRequest.getRequestURI());
+    verify(filterChain, never()).doFilter(httpServletRequest, httpServletResponse);
+    verify(httpServletResponse).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  }
 
-    @Test
-    void testIgnoredUrlsShouldNotGiveErrors() throws ServletException, IOException {
-        when(httpServletRequest.getRequestURI()).thenReturn(IGNORED_URL);
-        when(webCertUserService.hasAuthenticationContext()).thenReturn(false);
+  @Test
+  void testIgnoredUrlsShouldNotGiveErrors() throws ServletException, IOException {
+    when(httpServletRequest.getRequestURI()).thenReturn(IGNORED_URL);
+    when(webCertUserService.hasAuthenticationContext()).thenReturn(false);
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        assertNotNull(filter.getIgnoredUrls());
-        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
+    assertNotNull(filter.getIgnoredUrls());
+    verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  }
 
-    @Test
-    void shouldNotGiveErrorsIfUnauthorizedPrivatePractitioner() throws ServletException, IOException {
-        final var user = mock(WebCertUser.class);
-        when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
-        when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
-        when(webCertUserService.getUser()).thenReturn(user);
-        when(user.isUnauthorizedPrivatePractitioner()).thenReturn(true);
+  @Test
+  void shouldNotGiveErrorsIfUnauthorizedPrivatePractitioner() throws ServletException, IOException {
+    final var user = mock(WebCertUser.class);
+    when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
+    when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
+    when(webCertUserService.getUser()).thenReturn(user);
+    when(user.isUnauthorizedPrivatePractitioner()).thenReturn(true);
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
+    verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  }
 
-    private WebCertUser createUser() {
-        final var careGiver = new Vardgivare("cgId", "cgName");
-        final var careUnit = new Vardenhet("cuId", "cuName");
-        careGiver.setVardenheter(List.of(careUnit));
+  private WebCertUser createUser() {
+    final var careGiver = new Vardgivare("cgId", "cgName");
+    final var careUnit = new Vardenhet("cuId", "cuName");
+    careGiver.setVardenheter(List.of(careUnit));
 
-        final var user = new WebCertUser();
-        user.setValdVardgivare(careGiver);
-        user.setValdVardenhet(careUnit);
+    final var user = new WebCertUser();
+    user.setValdVardgivare(careGiver);
+    user.setValdVardenhet(careUnit);
 
-        return user;
-    }
+    return user;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,94 +32,105 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
-/**
- * Created by eriklupander on 2016-07-04.
- */
+/** Created by eriklupander on 2016-07-04. */
 public class NotificationMessageDiscardFilter {
 
-    private ObjectMapper om = new CustomObjectMapper();
+  private ObjectMapper om = new CustomObjectMapper();
 
-    public List<Message> process(List<Message> messageList) {
+  public List<Message> process(List<Message> messageList) {
 
-        Map<String, List<Message>> latestMessage = new HashMap<>();
+    Map<String, List<Message>> latestMessage = new HashMap<>();
 
-        for (Message camelMsg : messageList) {
-            NotificationMessage msg = getNotificationFromBody(camelMsg);
+    for (Message camelMsg : messageList) {
+      NotificationMessage msg = getNotificationFromBody(camelMsg);
 
-            // Always start by adding an empty list for intygsId if necessary
-            if (!latestMessage.containsKey(msg.getIntygsId())) {
-                latestMessage.put(msg.getIntygsId(), new ArrayList<>());
-            }
+      // Always start by adding an empty list for intygsId if necessary
+      if (!latestMessage.containsKey(msg.getIntygsId())) {
+        latestMessage.put(msg.getIntygsId(), new ArrayList<>());
+      }
 
-            switch (msg.getHandelse()) {
-                case SIGNAT:
-                    handleSigneratNotification(latestMessage, camelMsg, msg);
-                    break;
+      switch (msg.getHandelse()) {
+        case SIGNAT:
+          handleSigneratNotification(latestMessage, camelMsg, msg);
+          break;
 
-                case ANDRAT:
-                    handleAndratNotification(latestMessage, camelMsg, msg);
-                    break;
+        case ANDRAT:
+          handleAndratNotification(latestMessage, camelMsg, msg);
+          break;
 
-                default:
-                    // If some unknown type accidently makes its way in here, just forward it.
-                    latestMessage.get(msg.getIntygsId()).add(camelMsg);
-                    break;
-            }
-        }
-
-        // Flatten out the hashmap values and return as list.
-        return latestMessage.values().stream()
-            .flatMap(Collection::stream)
-            .filter(msg -> getNotificationFromBody(msg).getHandelse() != HandelsekodEnum.SIGNAT) // Makes sure no SIGNAT may leave
-            // this filter.
-            .collect(Collectors.toList());
+        default:
+          // If some unknown type accidently makes its way in here, just forward it.
+          latestMessage.get(msg.getIntygsId()).add(camelMsg);
+          break;
+      }
     }
 
-    private void handleAndratNotification(Map<String, List<Message>> latestMessage, Message camelMsg, NotificationMessage msg) {
-        List<Message> existingMessagesForIntygsId = latestMessage.get(msg.getIntygsId());
+    // Flatten out the hashmap values and return as list.
+    return latestMessage.values().stream()
+        .flatMap(Collection::stream)
+        .filter(
+            msg ->
+                getNotificationFromBody(msg).getHandelse()
+                    != HandelsekodEnum.SIGNAT) // Makes sure no SIGNAT may leave
+        // this filter.
+        .collect(Collectors.toList());
+  }
 
-        // If SIGNERAT entry exists, do nothing
-        if (existingMessagesForIntygsId.stream()
-            .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.SIGNAT)
-            .count() > 0) {
-            return;
-        }
+  private void handleAndratNotification(
+      Map<String, List<Message>> latestMessage, Message camelMsg, NotificationMessage msg) {
+    List<Message> existingMessagesForIntygsId = latestMessage.get(msg.getIntygsId());
 
-        // Extract the existing msg of ANDRAT type if it exists (Can never be more than one)
-        Message andratMsg = existingMessagesForIntygsId.stream()
-            .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT)
-            .findFirst().orElse(null);
-
-        // No existing of type, add.
-        if (andratMsg == null) {
-            existingMessagesForIntygsId.add(camelMsg);
-        } else if (getNotificationFromBody(andratMsg).getHandelseTid().compareTo(msg.getHandelseTid()) < 0) {
-            // Exists, but older - replace.
-            existingMessagesForIntygsId.remove(andratMsg);
-            existingMessagesForIntygsId.add(camelMsg);
-        }
+    // If SIGNERAT entry exists, do nothing
+    if (existingMessagesForIntygsId.stream()
+            .filter(
+                existingMsg ->
+                    getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.SIGNAT)
+            .count()
+        > 0) {
+      return;
     }
 
-    private void handleSigneratNotification(Map<String, List<Message>> latestMessage, Message camelMsg, NotificationMessage msg) {
+    // Extract the existing msg of ANDRAT type if it exists (Can never be more than one)
+    Message andratMsg =
+        existingMessagesForIntygsId.stream()
+            .filter(
+                existingMsg ->
+                    getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT)
+            .findFirst()
+            .orElse(null);
 
-        // Add it, we need to have it in the list temporarily in case there are subsequent ANDRAT.
-        latestMessage.get(msg.getIntygsId()).add(camelMsg);
-
-        // Remove any "ANDRAT" messages
-        Iterator<Message> i = latestMessage.get(msg.getIntygsId()).iterator();
-        while (i.hasNext()) {
-            Message existingMsg = i.next();
-            if (getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT) {
-                i.remove();
-            }
-        }
+    // No existing of type, add.
+    if (andratMsg == null) {
+      existingMessagesForIntygsId.add(camelMsg);
+    } else if (getNotificationFromBody(andratMsg).getHandelseTid().compareTo(msg.getHandelseTid())
+        < 0) {
+      // Exists, but older - replace.
+      existingMessagesForIntygsId.remove(andratMsg);
+      existingMessagesForIntygsId.add(camelMsg);
     }
+  }
 
-    private NotificationMessage getNotificationFromBody(Message existingMsg) {
-        try {
-            return om.readValue((String) existingMsg.getBody(), NotificationMessage.class);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+  private void handleSigneratNotification(
+      Map<String, List<Message>> latestMessage, Message camelMsg, NotificationMessage msg) {
+
+    // Add it, we need to have it in the list temporarily in case there are subsequent ANDRAT.
+    latestMessage.get(msg.getIntygsId()).add(camelMsg);
+
+    // Remove any "ANDRAT" messages
+    Iterator<Message> i = latestMessage.get(msg.getIntygsId()).iterator();
+    while (i.hasNext()) {
+      Message existingMsg = i.next();
+      if (getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT) {
+        i.remove();
+      }
     }
+  }
+
+  private NotificationMessage getNotificationFromBody(Message existingMsg) {
+    try {
+      return om.readValue((String) existingMsg.getBody(), NotificationMessage.class);
+    } catch (IOException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
+  }
 }

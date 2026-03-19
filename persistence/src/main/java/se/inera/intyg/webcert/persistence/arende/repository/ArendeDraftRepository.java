@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,25 +26,24 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
 public interface ArendeDraftRepository extends CrudRepository<ArendeDraft, Long> {
 
-    /**
-     * Finds all the {@linkplain ArendeDraft} related to a certificate with id intygId.
-     *
-     * @param intygId The id of the certificate we are interested in.
-     * @return {@linkplain List} of the drafts related to certificate
-     */
-    List<ArendeDraft> findByIntygId(String intygId);
+  /**
+   * Finds all the {@linkplain ArendeDraft} related to a certificate with id intygId.
+   *
+   * @param intygId The id of the certificate we are interested in.
+   * @return {@linkplain List} of the drafts related to certificate
+   */
+  List<ArendeDraft> findByIntygId(String intygId);
 
-    /**
-     * Finds single {@linkplain ArendeDraft} with intygdId and questionId.
-     */
-    ArendeDraft findByIntygIdAndQuestionId(String intygId, String questionId);
+  /** Finds single {@linkplain ArendeDraft} with intygdId and questionId. */
+  ArendeDraft findByIntygIdAndQuestionId(String intygId, String questionId);
 
-    @Query("select ad from ArendeDraft ad where ad.intygId in :certificateIds")
-    List<ArendeDraft> getArendeDraftsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+  @Query("select ad from ArendeDraft ad where ad.intygId in :certificateIds")
+  List<ArendeDraft> getArendeDraftsByCertificateIds(
+      @Param("certificateIds") List<String> certificateIds);
 
-    default int eraseArendeDraftsByCertificateIds(List<String> certificateIds) {
-        final var arendeDrafts = getArendeDraftsByCertificateIds(certificateIds);
-        deleteAll(arendeDrafts);
-        return arendeDrafts.size();
-    }
+  default int eraseArendeDraftsByCertificateIds(List<String> certificateIds) {
+    final var arendeDrafts = getArendeDraftsByCertificateIds(certificateIds);
+    deleteAll(arendeDrafts);
+    return arendeDrafts.size();
+  }
 }

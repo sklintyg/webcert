@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,13 +35,14 @@ import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStub
 @Path("/api/nabia/v2/inera_services/services")
 public class ServiceNowStubRestApi {
 
-    private final ServiceNowStubRestApiService serviceNowStubRestApiService;
+  private final ServiceNowStubRestApiService serviceNowStubRestApiService;
 
-    @POST
-    @Path("/stub")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getSubscriptionPost(@HeaderParam("Authorization") String basicAuth, OrganizationRequest request) {
-        return serviceNowStubRestApiService.createSubscriptionResponse(basicAuth, request);
-    }
+  @POST
+  @Path("/stub")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getSubscriptionPost(
+      @HeaderParam("Authorization") String basicAuth, OrganizationRequest request) {
+    return serviceNowStubRestApiService.createSubscriptionResponse(basicAuth, request);
+  }
 }

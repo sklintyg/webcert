@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,10 +20,8 @@ package se.inera.intyg.webcert.web.service.underskrift.grp.factory;
 
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPoller;
 
-/**
- * Created by eriklupander on 2015-08-25.
- */
+/** Created by eriklupander on 2015-08-25. */
 public interface GrpCollectPollerFactory {
 
-    GrpCollectPoller getInstance();
+  GrpCollectPoller getInstance();
 }

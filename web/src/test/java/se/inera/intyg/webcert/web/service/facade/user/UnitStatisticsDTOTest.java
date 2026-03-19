@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.user;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -26,29 +25,28 @@ import org.junit.jupiter.api.Test;
 
 class UnitStatisticsDTOTest {
 
-    @Test
-    void shallMergeValues() {
-        final var unitStatistics = new UnitStatisticsDTO(1, 1, 1, 1);
-        unitStatistics.merge(new UnitStatisticsDTO(2, 2, 2, 2));
-        assertAll(
-            () -> assertEquals(3, unitStatistics.getDraftsOnSubUnits()),
-            () -> assertEquals(3, unitStatistics.getQuestionsOnSubUnits()),
-            () -> assertEquals(3, unitStatistics.getQuestionsOnUnit()),
-            () -> assertEquals(3, unitStatistics.getDraftsOnSubUnits())
-        );
-    }
+  @Test
+  void shallMergeValues() {
+    final var unitStatistics = new UnitStatisticsDTO(1, 1, 1, 1);
+    unitStatistics.merge(new UnitStatisticsDTO(2, 2, 2, 2));
+    assertAll(
+        () -> assertEquals(3, unitStatistics.getDraftsOnSubUnits()),
+        () -> assertEquals(3, unitStatistics.getQuestionsOnSubUnits()),
+        () -> assertEquals(3, unitStatistics.getQuestionsOnUnit()),
+        () -> assertEquals(3, unitStatistics.getDraftsOnSubUnits()));
+  }
 
-    @Test
-    void shallIncreaseDraftsOnSubUnits() {
-        final var unitStatistics = new UnitStatisticsDTO(1, 1, 1, 1);
-        unitStatistics.addDraftsOnSubUnits(1);
-        assertEquals(2, unitStatistics.getDraftsOnSubUnits());
-    }
+  @Test
+  void shallIncreaseDraftsOnSubUnits() {
+    final var unitStatistics = new UnitStatisticsDTO(1, 1, 1, 1);
+    unitStatistics.addDraftsOnSubUnits(1);
+    assertEquals(2, unitStatistics.getDraftsOnSubUnits());
+  }
 
-    @Test
-    void shallIncreaseQuestionsOnSubUnits() {
-        final var unitStatistics = new UnitStatisticsDTO(1, 1, 1, 1);
-        unitStatistics.addQuestionsOnSubUnits(1);
-        assertEquals(2, unitStatistics.getQuestionsOnSubUnits());
-    }
+  @Test
+  void shallIncreaseQuestionsOnSubUnits() {
+    final var unitStatistics = new UnitStatisticsDTO(1, 1, 1, 1);
+    unitStatistics.addQuestionsOnSubUnits(1);
+    assertEquals(2, unitStatistics.getQuestionsOnSubUnits());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,111 +42,118 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 @RunWith(MockitoJUnitRunner.class)
 public class GetCertificateServiceTest {
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @InjectMocks
-    private GetCertificateServiceImpl getCertificateService;
+  @InjectMocks private GetCertificateServiceImpl getCertificateService;
 
-    @Test
-    public void shallReturnIntygFromWebcertIfExists() throws Exception {
-        final var certificateId = "CERTIFICATE_ID";
-        final var certificateType = "CERTIFICATE_TYPE";
+  @Test
+  public void shallReturnIntygFromWebcertIfExists() throws Exception {
+    final var certificateId = "CERTIFICATE_ID";
+    final var certificateType = "CERTIFICATE_TYPE";
 
-        final var expectedCertificate = mock(Intyg.class);
-        final var utlatande = mock(Utlatande.class);
+    final var expectedCertificate = mock(Intyg.class);
+    final var utlatande = mock(Utlatande.class);
 
-        setupMockToReturnFromWebcert(expectedCertificate, utlatande, true);
+    setupMockToReturnFromWebcert(expectedCertificate, utlatande, true);
 
-        final var actualCertificate = getCertificateService.getCertificateAsIntyg(certificateId, certificateType);
+    final var actualCertificate =
+        getCertificateService.getCertificateAsIntyg(certificateId, certificateType);
 
-        assertEquals(expectedCertificate, actualCertificate);
+    assertEquals(expectedCertificate, actualCertificate);
+  }
+
+  @Test
+  public void shallReturnIntygFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
+    final var certificateId = "CERTIFICATE_ID";
+    final var certificateType = "CERTIFICATE_TYPE";
+
+    final var expectedCertificate = mock(Intyg.class);
+    final var utlatande = mock(Utlatande.class);
+
+    setupMockToThrowExceptionFromWebcert();
+    setupMockToReturnFromIntygstjanst(expectedCertificate, utlatande, true);
+
+    final var actualCertificate =
+        getCertificateService.getCertificateAsIntyg(certificateId, certificateType);
+
+    assertEquals(expectedCertificate, actualCertificate);
+  }
+
+  @Test
+  public void shallReturnUtlatandeFromWebcertIfExists() throws Exception {
+    final var certificateId = "CERTIFICATE_ID";
+    final var certificateType = "CERTIFICATE_TYPE";
+
+    final var expectedCertificate = mock(Utlatande.class);
+
+    setupMockToReturnFromWebcert(null, expectedCertificate, false);
+
+    final var actualCertificate =
+        getCertificateService.getCertificateAsUtlatande(certificateId, certificateType);
+
+    assertEquals(expectedCertificate, actualCertificate);
+  }
+
+  @Test
+  public void shallReturnUtlatandeFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
+    final var certificateId = "CERTIFICATE_ID";
+    final var certificateType = "CERTIFICATE_TYPE";
+
+    final var expectedCertificate = mock(Utlatande.class);
+
+    setupMockToThrowExceptionFromWebcert();
+    setupMockToReturnFromIntygstjanst(null, expectedCertificate, false);
+
+    final var actualCertificate =
+        getCertificateService.getCertificateAsUtlatande(certificateId, certificateType);
+
+    assertEquals(expectedCertificate, actualCertificate);
+  }
+
+  private void setupMockToReturnFromWebcert(Intyg certificate, Utlatande utlatande, boolean asIntyg)
+      throws Exception {
+    final var utkast = mock(Utkast.class);
+    final var modelJson = "MODEL_JSON";
+    doReturn(modelJson).when(utkast).getModel();
+    doReturn("CERTIFICATE_VERSION").when(utkast).getIntygTypeVersion();
+    doReturn(utkast).when(utkastService).getDraft("CERTIFICATE_ID", "CERTIFICATE_TYPE", false);
+    final var moduleApi = mock(ModuleApi.class);
+    doReturn(moduleApi)
+        .when(intygModuleRegistry)
+        .getModuleApi("CERTIFICATE_TYPE", "CERTIFICATE_VERSION");
+    doReturn("CERTIFICATE_TYPE").when(utlatande).getTyp();
+    doReturn("CERTIFICATE_VERSION").when(utlatande).getTextVersion();
+    doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(modelJson);
+    if (asIntyg) {
+      doReturn(certificate).when(moduleApi).getIntygFromUtlatande(utlatande);
     }
+  }
 
-    @Test
-    public void shallReturnIntygFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
-        final var certificateId = "CERTIFICATE_ID";
-        final var certificateType = "CERTIFICATE_TYPE";
+  private void setupMockToThrowExceptionFromWebcert() {
+    doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Missing!"))
+        .when(utkastService)
+        .getDraft("CERTIFICATE_ID", "CERTIFICATE_TYPE", false);
+  }
 
-        final var expectedCertificate = mock(Intyg.class);
-        final var utlatande = mock(Utlatande.class);
-
-        setupMockToThrowExceptionFromWebcert();
-        setupMockToReturnFromIntygstjanst(expectedCertificate, utlatande, true);
-
-        final var actualCertificate = getCertificateService.getCertificateAsIntyg(certificateId, certificateType);
-
-        assertEquals(expectedCertificate, actualCertificate);
+  private void setupMockToReturnFromIntygstjanst(
+      Intyg certificate, Utlatande utlatande, boolean asIntyg) throws Exception {
+    final var certificateContentHolder = mock(IntygContentHolder.class);
+    doReturn(certificateContentHolder)
+        .when(intygService)
+        .fetchIntygDataForInternalUse("CERTIFICATE_ID", true);
+    final var moduleApi = mock(ModuleApi.class);
+    doReturn(moduleApi)
+        .when(intygModuleRegistry)
+        .getModuleApi("CERTIFICATE_TYPE", "CERTIFICATE_VERSION");
+    doReturn("CERTIFICATE_TYPE").when(utlatande).getTyp();
+    doReturn("CERTIFICATE_VERSION").when(utlatande).getTextVersion();
+    doReturn(utlatande).when(certificateContentHolder).getUtlatande();
+    if (asIntyg) {
+      doReturn(certificate).when(moduleApi).getIntygFromUtlatande(utlatande);
     }
-
-    @Test
-    public void shallReturnUtlatandeFromWebcertIfExists() throws Exception {
-        final var certificateId = "CERTIFICATE_ID";
-        final var certificateType = "CERTIFICATE_TYPE";
-
-        final var expectedCertificate = mock(Utlatande.class);
-
-        setupMockToReturnFromWebcert(null, expectedCertificate, false);
-
-        final var actualCertificate = getCertificateService.getCertificateAsUtlatande(certificateId, certificateType);
-
-        assertEquals(expectedCertificate, actualCertificate);
-    }
-
-    @Test
-    public void shallReturnUtlatandeFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
-        final var certificateId = "CERTIFICATE_ID";
-        final var certificateType = "CERTIFICATE_TYPE";
-
-        final var expectedCertificate = mock(Utlatande.class);
-
-        setupMockToThrowExceptionFromWebcert();
-        setupMockToReturnFromIntygstjanst(null, expectedCertificate, false);
-
-        final var actualCertificate = getCertificateService.getCertificateAsUtlatande(certificateId, certificateType);
-
-        assertEquals(expectedCertificate, actualCertificate);
-    }
-
-    private void setupMockToReturnFromWebcert(Intyg certificate, Utlatande utlatande, boolean asIntyg)
-        throws Exception {
-        final var utkast = mock(Utkast.class);
-        final var modelJson = "MODEL_JSON";
-        doReturn(modelJson).when(utkast).getModel();
-        doReturn("CERTIFICATE_VERSION").when(utkast).getIntygTypeVersion();
-        doReturn(utkast).when(utkastService).getDraft("CERTIFICATE_ID", "CERTIFICATE_TYPE", false);
-        final var moduleApi = mock(ModuleApi.class);
-        doReturn(moduleApi).when(intygModuleRegistry).getModuleApi("CERTIFICATE_TYPE", "CERTIFICATE_VERSION");
-        doReturn("CERTIFICATE_TYPE").when(utlatande).getTyp();
-        doReturn("CERTIFICATE_VERSION").when(utlatande).getTextVersion();
-        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(modelJson);
-        if (asIntyg) {
-            doReturn(certificate).when(moduleApi).getIntygFromUtlatande(utlatande);
-        }
-    }
-
-    private void setupMockToThrowExceptionFromWebcert() {
-        doThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Missing!")).when(utkastService)
-            .getDraft("CERTIFICATE_ID", "CERTIFICATE_TYPE", false);
-    }
-
-    private void setupMockToReturnFromIntygstjanst(Intyg certificate, Utlatande utlatande, boolean asIntyg)
-        throws Exception {
-        final var certificateContentHolder = mock(IntygContentHolder.class);
-        doReturn(certificateContentHolder).when(intygService).fetchIntygDataForInternalUse("CERTIFICATE_ID", true);
-        final var moduleApi = mock(ModuleApi.class);
-        doReturn(moduleApi).when(intygModuleRegistry).getModuleApi("CERTIFICATE_TYPE", "CERTIFICATE_VERSION");
-        doReturn("CERTIFICATE_TYPE").when(utlatande).getTyp();
-        doReturn("CERTIFICATE_VERSION").when(utlatande).getTextVersion();
-        doReturn(utlatande).when(certificateContentHolder).getUtlatande();
-        if (asIntyg) {
-            doReturn(certificate).when(moduleApi).getIntygFromUtlatande(utlatande);
-        }
-    }
+  }
 }

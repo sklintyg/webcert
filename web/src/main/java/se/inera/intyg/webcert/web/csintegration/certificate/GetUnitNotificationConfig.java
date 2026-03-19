@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -36,30 +35,32 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class GetUnitNotificationConfig {
 
+  @Value("${unit.notification.config.path:}")
+  private String unitNotificationConfigPath;
 
-    @Value("${unit.notification.config.path:}")
-    private String unitNotificationConfigPath;
-    private List<RegionNotificationConfig> integratedUnitNotificationConfig;
+  private List<RegionNotificationConfig> integratedUnitNotificationConfig;
 
-    public List<RegionNotificationConfig> get() {
-        if (integratedUnitNotificationConfig == null) {
-            integratedUnitNotificationConfig = new ArrayList<>();
-            final var objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule());
-            try (final var resourceAsStream = new FileInputStream(unitNotificationConfigPath)) {
-                integratedUnitNotificationConfig = objectMapper.readValue(
-                    resourceAsStream,
-                    new TypeReference<>() {
-                    });
-                log.info("Integrated Unit Notification was loaded with configuration: {}", integratedUnitNotificationConfig);
-            } catch (FileNotFoundException e) {
-                log.warn("File not found: {}. Returning empty configuration.", unitNotificationConfigPath);
-            } catch (Exception e) {
-                log.error(
-                    String.format("Failed to load Integrated Unit Notification configuration. Reason: %s", e.getMessage()), e
-                );
-            }
-        }
-        return integratedUnitNotificationConfig;
+  public List<RegionNotificationConfig> get() {
+    if (integratedUnitNotificationConfig == null) {
+      integratedUnitNotificationConfig = new ArrayList<>();
+      final var objectMapper = new ObjectMapper();
+      objectMapper.registerModule(new JavaTimeModule());
+      try (final var resourceAsStream = new FileInputStream(unitNotificationConfigPath)) {
+        integratedUnitNotificationConfig =
+            objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
+        log.info(
+            "Integrated Unit Notification was loaded with configuration: {}",
+            integratedUnitNotificationConfig);
+      } catch (FileNotFoundException e) {
+        log.warn("File not found: {}. Returning empty configuration.", unitNotificationConfigPath);
+      } catch (Exception e) {
+        log.error(
+            String.format(
+                "Failed to load Integrated Unit Notification configuration. Reason: %s",
+                e.getMessage()),
+            e);
+      }
     }
+    return integratedUnitNotificationConfig;
+  }
 }

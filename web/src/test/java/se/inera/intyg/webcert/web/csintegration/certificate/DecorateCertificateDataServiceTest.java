@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.mockito.Mockito.mock;
@@ -26,65 +44,56 @@ import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateFacadeServic
 @ExtendWith(MockitoExtension.class)
 class DecorateCertificateDataServiceTest {
 
-    private static final String TYPE = "type";
-    private static final String TYPE_VERSION = "typeVersion";
-    private static final String PARENT_ID = "parentId";
-    private static final Map<String, CertificateDataElement> DATA = Collections.emptyMap();
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    GetCertificateFacadeServiceImpl getCertificateFacadeService;
-    @Mock
-    IntygModuleRegistry intygModuleRegistry;
-    @InjectMocks
-    DecorateCertificateDataService decorateCertificateDataService;
+  private static final String TYPE = "type";
+  private static final String TYPE_VERSION = "typeVersion";
+  private static final String PARENT_ID = "parentId";
+  private static final Map<String, CertificateDataElement> DATA = Collections.emptyMap();
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock GetCertificateFacadeServiceImpl getCertificateFacadeService;
+  @Mock IntygModuleRegistry intygModuleRegistry;
+  @InjectMocks DecorateCertificateDataService decorateCertificateDataService;
 
-    @Test
-    void shouldNotDecorateIfCertificateIsFoundInCS() {
-        final var certificate = createCertificate();
+  @Test
+  void shouldNotDecorateIfCertificateIsFoundInCS() {
+    final var certificate = createCertificate();
 
-        when(csIntegrationService.certificateExists(PARENT_ID)).thenReturn(true);
+    when(csIntegrationService.certificateExists(PARENT_ID)).thenReturn(true);
 
-        decorateCertificateDataService.decorateFromParent(certificate);
+    decorateCertificateDataService.decorateFromParent(certificate);
 
-        verifyNoInteractions(getCertificateFacadeService);
-    }
+    verifyNoInteractions(getCertificateFacadeService);
+  }
 
-    @Test
-    void shouldDecorateCertificateIfCertificateNotFoundInCS() throws ModuleNotFoundException {
-        final var certificate = createCertificate();
-        final var parentCertificate = createCertificate();
-        final var moduleApiV1 = mock(LisjpModuleApiV1.class);
+  @Test
+  void shouldDecorateCertificateIfCertificateNotFoundInCS() throws ModuleNotFoundException {
+    final var certificate = createCertificate();
+    final var parentCertificate = createCertificate();
+    final var moduleApiV1 = mock(LisjpModuleApiV1.class);
 
-        when(csIntegrationService.certificateExists(PARENT_ID)).thenReturn(false);
-        when(getCertificateFacadeService.getCertificate(PARENT_ID, false, false)).thenReturn(parentCertificate);
-        when(intygModuleRegistry.getModuleApi(TYPE, TYPE_VERSION)).thenReturn(moduleApiV1);
+    when(csIntegrationService.certificateExists(PARENT_ID)).thenReturn(false);
+    when(getCertificateFacadeService.getCertificate(PARENT_ID, false, false))
+        .thenReturn(parentCertificate);
+    when(intygModuleRegistry.getModuleApi(TYPE, TYPE_VERSION)).thenReturn(moduleApiV1);
 
-        decorateCertificateDataService.decorateFromParent(certificate);
+    decorateCertificateDataService.decorateFromParent(certificate);
 
-        verify(moduleApiV1).decorate(certificate, DATA);
-    }
+    verify(moduleApiV1).decorate(certificate, DATA);
+  }
 
-    private Certificate createCertificate() {
-        final var certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .type(TYPE)
-                .typeVersion(TYPE_VERSION)
-                .relations(
-                    CertificateRelations.builder()
-                        .parent(
-                            CertificateRelation.builder()
-                                .certificateId(PARENT_ID)
-                                .build()
-                        )
-                        .build()
-                )
-                .build()
-        );
+  private Certificate createCertificate() {
+    final var certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .type(TYPE)
+            .typeVersion(TYPE_VERSION)
+            .relations(
+                CertificateRelations.builder()
+                    .parent(CertificateRelation.builder().certificateId(PARENT_ID).build())
+                    .build())
+            .build());
 
-        certificate.setData(DATA);
+    certificate.setData(DATA);
 
-        return certificate;
-    }
+    return certificate;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,43 +34,44 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.S
 @ImportResource(locations = "classpath:certificates/unit-test-certificate-sender-config.xml")
 public class CertificateCamelTestConfig {
 
-    // Presence of below bean definitions is required during setup of routes for the imported camel context.
-    // Since the beans are mocked during testing the return values have intentionally been set to null to
-    // avoid having to import further dependencies.
+  // Presence of below bean definitions is required during setup of routes for the imported camel
+  // context.
+  // Since the beans are mocked during testing the return values have intentionally been set to null
+  // to
+  // avoid having to import further dependencies.
 
-    @Bean
-    public IntygModuleRegistry intygModuleRegistry() {
-        return null;
-    }
+  @Bean
+  public IntygModuleRegistry intygModuleRegistry() {
+    return null;
+  }
 
-    @Bean
-    public MdcHelper mdcHelper() {
-        return new MdcHelper();
-    }
+  @Bean
+  public MdcHelper mdcHelper() {
+    return new MdcHelper();
+  }
 
-    @Bean
-    public SendMessageToRecipientResponderInterface sendMessageToRecipientResponderInterface() {
-        return null;
-    }
+  @Bean
+  public SendMessageToRecipientResponderInterface sendMessageToRecipientResponderInterface() {
+    return null;
+  }
 
-    @Bean
-    public RegisterApprovedReceiversResponderInterface registerApprovedReceiversResponderInterface() {
-        return null;
-    }
+  @Bean
+  public RegisterApprovedReceiversResponderInterface registerApprovedReceiversResponderInterface() {
+    return null;
+  }
 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        return mock(JmsTransactionManager.class);
-    }
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    return mock(JmsTransactionManager.class);
+  }
 
-    @Bean
-    public SpringTransactionPolicy txTemplate(PlatformTransactionManager transactionManager) {
-        return new SpringTransactionPolicy(transactionManager);
-    }
+  @Bean
+  public SpringTransactionPolicy txTemplate(PlatformTransactionManager transactionManager) {
+    return new SpringTransactionPolicy(transactionManager);
+  }
 
-    @Bean
-    public MockSendCertificateServiceClientImpl mockSendCertificateServiceClient() {
-        return new MockSendCertificateServiceClientImpl();
-    }
-
+  @Bean
+  public MockSendCertificateServiceClientImpl mockSendCertificateServiceClient() {
+    return new MockSendCertificateServiceClientImpl();
+  }
 }

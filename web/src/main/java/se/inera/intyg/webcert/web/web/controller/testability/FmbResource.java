@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,27 +33,24 @@ import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 @Path("/fmb")
 public class FmbResource {
 
-    @Autowired
-    private Optional<FmbService> fmbService;
+  @Autowired private Optional<FmbService> fmbService;
 
-    /**
-     * Populate FMB data using the configured endpoint. Using a GET to update data might
-     * not be recommended. However, it is a very convenient way to populate FMB data from
-     * the browser without waiting for the automatic population that happens once each
-     * day. It is also the only way I could figure out to invoke it from the browser
-     * session in the Fitnesse tests.
-     */
-    @GET
-    @Path("/updatefmbdata")
-    @Produces(MediaType.APPLICATION_JSON)
-    @JsonPropertyDescription("Update FMB data")
-    public Response updateFmbData() {
-        if (fmbService.isPresent()) {
-            fmbService.get().updateData();
-            return Response.ok().build();
-        } else {
-            return Response.serverError().entity("FMB Service not running").build();
-        }
+  /**
+   * Populate FMB data using the configured endpoint. Using a GET to update data might not be
+   * recommended. However, it is a very convenient way to populate FMB data from the browser without
+   * waiting for the automatic population that happens once each day. It is also the only way I
+   * could figure out to invoke it from the browser session in the Fitnesse tests.
+   */
+  @GET
+  @Path("/updatefmbdata")
+  @Produces(MediaType.APPLICATION_JSON)
+  @JsonPropertyDescription("Update FMB data")
+  public Response updateFmbData() {
+    if (fmbService.isPresent()) {
+      fmbService.get().updateData();
+      return Response.ok().build();
+    } else {
+      return Response.serverError().entity("FMB Service not running").build();
     }
-
+  }
 }

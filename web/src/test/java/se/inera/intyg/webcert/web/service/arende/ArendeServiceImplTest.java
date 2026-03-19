@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -60,126 +60,147 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 @ExtendWith(MockitoExtension.class)
 class ArendeServiceImplTest {
 
-    private static final String PATIENT_PERSON_ID = "191212121212";
-    private static final String CERTIFICATE_ID = "certificateId";
+  private static final String PATIENT_PERSON_ID = "191212121212";
+  private static final String CERTIFICATE_ID = "certificateId";
 
-    @InjectMocks
-    private ArendeServiceImpl arendeServiceReal = new ArendeServiceImpl();
+  @InjectMocks private ArendeServiceImpl arendeServiceReal = new ArendeServiceImpl();
 
-    @Mock
-    private WebCertUserService webcertUserService;
+  @Mock private WebCertUserService webcertUserService;
 
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
+  @Mock private AuthoritiesHelper authoritiesHelper;
 
-    @Mock
-    private ArendeRepository arendeRepository;
+  @Mock private ArendeRepository arendeRepository;
 
-    @Mock
-    private FragaSvarService fragaSvarService;
+  @Mock private FragaSvarService fragaSvarService;
 
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
 
-    @Mock
-    private LogService logService;
+  @Mock private LogService logService;
 
-    @Mock
-    private PaginationAndLoggingService paginationAndLoggingService;
+  @Mock private PaginationAndLoggingService paginationAndLoggingService;
 
-    @Mock
-    private MessageImportService messageImportService;
+  @Mock private MessageImportService messageImportService;
+
+  @Test
+  void filterArende() {
+    // Given
+    final ArendeServiceImpl arendeService = Mockito.spy(arendeServiceReal);
+
+    // Names in hsa
+    final HashMap<String, String> hsaNames = new HashMap<>();
+    hsaNames.put("sign1", "D");
+    hsaNames.put("sign2", "F");
+    hsaNames.put("sign3", "E");
+
+    Mockito.doReturn(hsaNames).when(arendeService).getNamesByHsaIds(any());
+    WebCertUser user = Mockito.mock(WebCertUser.class);
+    when(webcertUserService.getUser()).thenReturn(user);
+    when(authoritiesHelper.getIntygstyperForPrivilege(eq(user), anyString()))
+        .thenReturn(new HashSet<>(Arrays.asList("a", "b")));
+
+    final var projection1 =
+        buildArendeListItemProjection(
+            "sign1",
+            "B",
+            Status.PENDING_INTERNAL_ACTION,
+            "SKICKAT_AV",
+            ArendeAmne.OVRIGT,
+            true,
+            LocalDateTime.now(),
+            "meddelande1");
+    final var projection2 =
+        buildArendeListItemProjection(
+            "sign2",
+            "C",
+            Status.PENDING_INTERNAL_ACTION,
+            "SKICKAT_AV",
+            ArendeAmne.OVRIGT,
+            true,
+            LocalDateTime.now(),
+            "meddelande2");
+    final var projection3 =
+        buildArendeListItemProjection(
+            "sign3",
+            "A",
+            Status.PENDING_INTERNAL_ACTION,
+            "SKICKAT_AV",
+            ArendeAmne.OVRIGT,
+            true,
+            LocalDateTime.now(),
+            "meddelande3");
+
+    when(arendeRepository.filterArendeForList(any()))
+        .thenReturn(List.of(projection1, projection3, projection2));
+    when(arendeRepository.findPaminnelseMeddelandeIdByMeddelandeIdIn(any())).thenReturn(List.of());
+
+    final Map<Personnummer, PatientDetailsResolverResponse> statusMap = Mockito.mock(Map.class);
+    PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
+    response.setTestIndicator(false);
+    response.setDeceased(false);
+    response.setProtectedPerson((SekretessStatus.FALSE));
+    when(statusMap.get(any(Personnummer.class))).thenReturn(response);
+    when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
+
+    final QueryFragaSvarParameter filterParameters = new QueryFragaSvarParameter();
+
+    final var arendeListItem1 = new ArendeListItem();
+    arendeListItem1.setSigneratAv(projection1.getSigneratAv());
+    final var arendeListItem2 = new ArendeListItem();
+    arendeListItem2.setSigneratAv(projection2.getSigneratAv());
+    final var arendeListItem3 = new ArendeListItem();
+    arendeListItem3.setSigneratAv(projection3.getSigneratAv());
+
+    final var arendeListItems = List.of(arendeListItem1, arendeListItem2, arendeListItem3);
+    when(paginationAndLoggingService.get(eq(filterParameters), any(), eq(user)))
+        .thenReturn(arendeListItems);
+
+    // When
+    final QueryFragaSvarResponse queryFragaSvarResponse =
+        arendeService.filterArende(filterParameters);
+
+    // Then
+    final List<ArendeListItem> results = queryFragaSvarResponse.getResults();
+    assertEquals(3, results.size());
+    assertEquals(projection1.getSigneratAv(), results.get(0).getSigneratAv());
+    assertEquals(projection2.getSigneratAv(), results.get(1).getSigneratAv());
+    assertEquals(projection3.getSigneratAv(), results.get(2).getSigneratAv());
+  }
+
+  @Nested
+  class GetArendeInternalTests {
 
     @Test
-    void filterArende() {
-        //Given
-        final ArendeServiceImpl arendeService = Mockito.spy(arendeServiceReal);
+    void shouldImportMessageIfNeeded() {
+      when(messageImportService.isImportNeeded(CERTIFICATE_ID)).thenReturn(true);
 
-        //Names in hsa
-        final HashMap<String, String> hsaNames = new HashMap<>();
-        hsaNames.put("sign1", "D");
-        hsaNames.put("sign2", "F");
-        hsaNames.put("sign3", "E");
+      arendeServiceReal.getArendenInternal(CERTIFICATE_ID);
 
-        Mockito.doReturn(hsaNames).when(arendeService).getNamesByHsaIds(any());
-        WebCertUser user = Mockito.mock(WebCertUser.class);
-        when(webcertUserService.getUser()).thenReturn(user);
-        when(authoritiesHelper.getIntygstyperForPrivilege(eq(user), anyString()))
-            .thenReturn(new HashSet<>(Arrays.asList("a", "b")));
-
-        final var projection1 = buildArendeListItemProjection("sign1", "B", Status.PENDING_INTERNAL_ACTION,
-            "SKICKAT_AV", ArendeAmne.OVRIGT, true, LocalDateTime.now(), "meddelande1");
-        final var projection2 = buildArendeListItemProjection("sign2", "C", Status.PENDING_INTERNAL_ACTION,
-            "SKICKAT_AV", ArendeAmne.OVRIGT, true, LocalDateTime.now(), "meddelande2");
-        final var projection3 = buildArendeListItemProjection("sign3", "A", Status.PENDING_INTERNAL_ACTION,
-            "SKICKAT_AV", ArendeAmne.OVRIGT, true, LocalDateTime.now(), "meddelande3");
-
-        when(arendeRepository.filterArendeForList(any())).thenReturn(List.of(projection1, projection3, projection2));
-        when(arendeRepository.findPaminnelseMeddelandeIdByMeddelandeIdIn(any())).thenReturn(List.of());
-
-        final Map<Personnummer, PatientDetailsResolverResponse> statusMap = Mockito.mock(Map.class);
-        PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
-        response.setTestIndicator(false);
-        response.setDeceased(false);
-        response.setProtectedPerson((SekretessStatus.FALSE));
-        when(statusMap.get(any(Personnummer.class))).thenReturn(response);
-        when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
-        
-        final QueryFragaSvarParameter filterParameters = new QueryFragaSvarParameter();
-
-        final var arendeListItem1 = new ArendeListItem();
-        arendeListItem1.setSigneratAv(projection1.getSigneratAv());
-        final var arendeListItem2 = new ArendeListItem();
-        arendeListItem2.setSigneratAv(projection2.getSigneratAv());
-        final var arendeListItem3 = new ArendeListItem();
-        arendeListItem3.setSigneratAv(projection3.getSigneratAv());
-
-        final var arendeListItems = List.of(arendeListItem1, arendeListItem2, arendeListItem3);
-        when(paginationAndLoggingService.get(eq(filterParameters), any(), eq(user))).thenReturn(arendeListItems);
-
-        //When
-        final QueryFragaSvarResponse queryFragaSvarResponse = arendeService.filterArende(filterParameters);
-
-        //Then
-        final List<ArendeListItem> results = queryFragaSvarResponse.getResults();
-        assertEquals(3, results.size());
-        assertEquals(projection1.getSigneratAv(), results.get(0).getSigneratAv());
-        assertEquals(projection2.getSigneratAv(), results.get(1).getSigneratAv());
-        assertEquals(projection3.getSigneratAv(), results.get(2).getSigneratAv());
+      verify(messageImportService).importMessages(CERTIFICATE_ID);
     }
+  }
 
-    @Nested
-    class GetArendeInternalTests {
-
-
-        @Test
-        void shouldImportMessageIfNeeded() {
-            when(messageImportService.isImportNeeded(CERTIFICATE_ID)).thenReturn(true);
-
-            arendeServiceReal.getArendenInternal(CERTIFICATE_ID);
-
-            verify(messageImportService).importMessages(CERTIFICATE_ID);
-        }
-    }
-
-    private ArendeListItemProjection buildArendeListItemProjection(
-        String signeratAv, String signeratAvName, Status status,
-        String skickatAv, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
-        String meddelandeId) {
-        return new se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection(
-            meddelandeId,
-            "INTYG_ID",
-            "INTYG_TYP",
-            signeratAv,
-            signeratAvName,
-            status,
-            PATIENT_PERSON_ID,
-            senasteHandelse,
-            vidarebefordrad,
-            skickatAv,
-            amne,
-            "ENHET_NAME",
-            "VARDGIVARE_NAME"
-        );
-    }
+  private ArendeListItemProjection buildArendeListItemProjection(
+      String signeratAv,
+      String signeratAvName,
+      Status status,
+      String skickatAv,
+      ArendeAmne amne,
+      Boolean vidarebefordrad,
+      LocalDateTime senasteHandelse,
+      String meddelandeId) {
+    return new se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection(
+        meddelandeId,
+        "INTYG_ID",
+        "INTYG_TYP",
+        signeratAv,
+        signeratAvName,
+        status,
+        PATIENT_PERSON_ID,
+        senasteHandelse,
+        vidarebefordrad,
+        skickatAv,
+        amne,
+        "ENHET_NAME",
+        "VARDGIVARE_NAME");
+  }
 }

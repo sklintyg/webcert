@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,36 +22,36 @@ import java.util.Optional;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 public enum ArendeAmne {
-    AVSTMN("Avstämningsmöte"),
-    KONTKT("Kontakt"),
-    OVRIGT("Övrigt"),
-    PAMINN("Påminnelse"),
-    KOMPLT("Komplettering");
+  AVSTMN("Avstämningsmöte"),
+  KONTKT("Kontakt"),
+  OVRIGT("Övrigt"),
+  PAMINN("Påminnelse"),
+  KOMPLT("Komplettering");
 
-    private final String description;
+  private final String description;
 
-    ArendeAmne(String code) {
-        this.description = code;
+  ArendeAmne(String code) {
+    this.description = code;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public static Optional<ArendeAmne> fromAmne(Amne amne) {
+    switch (amne) {
+      case KOMPLETTERING_AV_LAKARINTYG:
+        return Optional.of(KOMPLT);
+      case AVSTAMNINGSMOTE:
+        return Optional.of(AVSTMN);
+      case KONTAKT:
+        return Optional.of(KONTKT);
+      case PAMINNELSE:
+        return Optional.of(PAMINN);
+      case OVRIGT:
+        return Optional.of(OVRIGT);
+      default:
+        return Optional.empty();
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public static Optional<ArendeAmne> fromAmne(Amne amne) {
-        switch (amne) {
-            case KOMPLETTERING_AV_LAKARINTYG:
-                return Optional.of(KOMPLT);
-            case AVSTAMNINGSMOTE:
-                return Optional.of(AVSTMN);
-            case KONTAKT:
-                return Optional.of(KONTKT);
-            case PAMINNELSE:
-                return Optional.of(PAMINN);
-            case OVRIGT:
-                return Optional.of(OVRIGT);
-            default:
-                return Optional.empty();
-        }
-    }
+  }
 }

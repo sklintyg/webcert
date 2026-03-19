@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.stereotype.Service;
@@ -26,20 +25,22 @@ import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeSe
 @Service
 public class HandleQuestionAggregator implements HandleQuestionFacadeService {
 
-    private final HandleQuestionFacadeService handleQuestionFromWC;
-    private final HandleQuestionFacadeService handleQuestionFromCS;
+  private final HandleQuestionFacadeService handleQuestionFromWC;
+  private final HandleQuestionFacadeService handleQuestionFromCS;
 
-    public HandleQuestionAggregator(
-        HandleQuestionFacadeService handleQuestionFromWC,
-        HandleQuestionFacadeService handleQuestionFromCS) {
-        this.handleQuestionFromWC = handleQuestionFromWC;
-        this.handleQuestionFromCS = handleQuestionFromCS;
-    }
+  public HandleQuestionAggregator(
+      HandleQuestionFacadeService handleQuestionFromWC,
+      HandleQuestionFacadeService handleQuestionFromCS) {
+    this.handleQuestionFromWC = handleQuestionFromWC;
+    this.handleQuestionFromCS = handleQuestionFromCS;
+  }
 
-    @Override
-    public Question handle(String questionId, boolean isHandled) {
-        final var responseFromCS = handleQuestionFromCS.handle(questionId, isHandled);
+  @Override
+  public Question handle(String questionId, boolean isHandled) {
+    final var responseFromCS = handleQuestionFromCS.handle(questionId, isHandled);
 
-        return responseFromCS != null ? responseFromCS : handleQuestionFromWC.handle(questionId, isHandled);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : handleQuestionFromWC.handle(questionId, isHandled);
+  }
 }

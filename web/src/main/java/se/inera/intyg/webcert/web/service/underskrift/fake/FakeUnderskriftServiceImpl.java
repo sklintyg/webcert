@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,41 +36,52 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
 @Profile({"!prod"})
-public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implements FakeUnderskriftService {
+public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService
+    implements FakeUnderskriftService {
 
-    @Autowired
-    private FakeSignatureService fakeSignatureService;
+  @Autowired private FakeSignatureService fakeSignatureService;
 
-    @Autowired
-    private MonitoringLogService monitoringLogService;
+  @Autowired private MonitoringLogService monitoringLogService;
 
-    @Override
-    public SignaturBiljett finalizeFakeSignature(String ticketId, Utkast utkast, WebCertUser user) {
+  @Override
+  public SignaturBiljett finalizeFakeSignature(String ticketId, Utkast utkast, WebCertUser user) {
 
-        SignaturBiljett biljett = redisTicketTracker.findBiljett(ticketId);
-        if (biljett == null) {
-            throw new RuntimeException("No biljett found in Redis for " + ticketId);
-        }
-
-        // We fake a signature here so stuff can validate.
-
-        // Encode the <SignedInfo>...</SignedInfo> into a Base64 string.
-        String base64EncodedSignedInfoXml = Base64.getEncoder()
-            .encodeToString(biljett.getIntygSignature().getSigningData().getBytes(Charset.forName("UTF-8")));
-        String fakeSignatureData = fakeSignatureService.createSignature(base64EncodedSignedInfoXml);
-
-        monitoringLogService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
-            utkast.getRelationKod());
-
-        // Pull the X509 from the keystore used for fake signing.
-        X509Certificate x509Certificate = fakeSignatureService.getX509Certificate();
-
-        try {
-            biljett = finalizeXMLDSigSignature(Base64.getEncoder().encodeToString(x509Certificate.getEncoded()), user, biljett,
-                Base64.getDecoder().decode(fakeSignatureData), utkast);
-            return redisTicketTracker.updateStatus(biljett.getTicketId(), biljett.getStatus());
-        } catch (CertificateEncodingException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
-        }
+    SignaturBiljett biljett = redisTicketTracker.findBiljett(ticketId);
+    if (biljett == null) {
+      throw new RuntimeException("No biljett found in Redis for " + ticketId);
     }
+
+    // We fake a signature here so stuff can validate.
+
+    // Encode the <SignedInfo>...</SignedInfo> into a Base64 string.
+    String base64EncodedSignedInfoXml =
+        Base64.getEncoder()
+            .encodeToString(
+                biljett.getIntygSignature().getSigningData().getBytes(Charset.forName("UTF-8")));
+    String fakeSignatureData = fakeSignatureService.createSignature(base64EncodedSignedInfoXml);
+
+    monitoringLogService.logIntygSigned(
+        utkast.getIntygsId(),
+        utkast.getIntygsTyp(),
+        user.getHsaId(),
+        user.getAuthenticationScheme(),
+        utkast.getRelationKod());
+
+    // Pull the X509 from the keystore used for fake signing.
+    X509Certificate x509Certificate = fakeSignatureService.getX509Certificate();
+
+    try {
+      biljett =
+          finalizeXMLDSigSignature(
+              Base64.getEncoder().encodeToString(x509Certificate.getEncoded()),
+              user,
+              biljett,
+              Base64.getDecoder().decode(fakeSignatureData),
+              utkast);
+      return redisTicketTracker.updateStatus(biljett.getTicketId(), biljett.getStatus());
+    } catch (CertificateEncodingException e) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
+    }
+  }
 }

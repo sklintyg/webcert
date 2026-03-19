@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,29 +26,29 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 @Service
 public class QuestionFilterConverterImpl implements QuestionFilterConverter {
 
-    @Override
-    public QueryFragaSvarParameter convert(ListFilter filter) {
-        return convertFilter(filter);
-    }
+  @Override
+  public QueryFragaSvarParameter convert(ListFilter filter) {
+    return convertFilter(filter);
+  }
 
-    private QueryFragaSvarParameter convertFilter(ListFilter filter) {
-        final var convertedFilter = new QueryFragaSvarParameter();
-        final var patientId = ListFilterHelper.getPatientIdWithoutDash(filter);
+  private QueryFragaSvarParameter convertFilter(ListFilter filter) {
+    final var convertedFilter = new QueryFragaSvarParameter();
+    final var patientId = ListFilterHelper.getPatientIdWithoutDash(filter);
 
-        convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter, ListType.QUESTIONS));
-        convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
-        convertedFilter.setPatientPersonId(patientId.length() == 0 ? null : patientId);
-        convertedFilter.setPageSize(ListFilterHelper.getPageSize(filter));
-        convertedFilter.setStartFrom(ListFilterHelper.getStartFrom(filter));
-        convertedFilter.setVidarebefordrad(ListFilterHelper.getForwarded(filter));
-        convertedFilter.setHsaId(ListFilterHelper.getSignedBy(filter));
-        convertedFilter.setChangedFrom(ListFilterHelper.getSentFrom(filter));
-        convertedFilter.setChangedTo(ListFilterHelper.getSentTo(filter));
-        convertedFilter.setVantarPa(ListFilterHelper.getQuestionStatus(filter));
-        convertedFilter.setQuestionFromFK(ListFilterHelper.includeQuestionFromFK(filter));
-        convertedFilter.setQuestionFromWC(ListFilterHelper.includeQuestionFromUnit(filter));
-        convertedFilter.setEnhetId(ListFilterHelper.getUnitId(filter));
+    convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter, ListType.QUESTIONS));
+    convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
+    convertedFilter.setPatientPersonId(patientId.length() == 0 ? null : patientId);
+    convertedFilter.setPageSize(ListFilterHelper.getPageSize(filter));
+    convertedFilter.setStartFrom(ListFilterHelper.getStartFrom(filter));
+    convertedFilter.setVidarebefordrad(ListFilterHelper.getForwarded(filter));
+    convertedFilter.setHsaId(ListFilterHelper.getSignedBy(filter));
+    convertedFilter.setChangedFrom(ListFilterHelper.getSentFrom(filter));
+    convertedFilter.setChangedTo(ListFilterHelper.getSentTo(filter));
+    convertedFilter.setVantarPa(ListFilterHelper.getQuestionStatus(filter));
+    convertedFilter.setQuestionFromFK(ListFilterHelper.includeQuestionFromFK(filter));
+    convertedFilter.setQuestionFromWC(ListFilterHelper.includeQuestionFromUnit(filter));
+    convertedFilter.setEnhetId(ListFilterHelper.getUnitId(filter));
 
-        return convertedFilter;
-    }
+    return convertedFilter;
+  }
 }

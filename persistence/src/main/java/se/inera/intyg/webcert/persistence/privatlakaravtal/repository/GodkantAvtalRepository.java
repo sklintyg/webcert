@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,18 +24,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
-public interface GodkantAvtalRepository extends JpaRepository<GodkantAvtal, Long>, GodkantAvtalRepositoryCustom {
+/** Created by eriklupander on 2015-08-05. */
+public interface GodkantAvtalRepository
+    extends JpaRepository<GodkantAvtal, Long>, GodkantAvtalRepositoryCustom {
 
-    @Query("select ga from GodkantAvtal ga where ga.hsaId = :careProviderId")
-    List<GodkantAvtal> getGodkantAvtalBycareProviderId(@Param("careProviderId") String careProviderId);
+  @Query("select ga from GodkantAvtal ga where ga.hsaId = :careProviderId")
+  List<GodkantAvtal> getGodkantAvtalBycareProviderId(
+      @Param("careProviderId") String careProviderId);
 
-    default int eraseGodkantAvtalByCareProviderId(String careProviderId) {
-        final var godkandaAvtal = getGodkantAvtalBycareProviderId(careProviderId);
-        deleteAll(godkandaAvtal);
-        return godkandaAvtal.size();
-    }
-
+  default int eraseGodkantAvtalByCareProviderId(String careProviderId) {
+    final var godkandaAvtal = getGodkantAvtalBycareProviderId(careProviderId);
+    deleteAll(godkandaAvtal);
+    return godkandaAvtal.size();
+  }
 }

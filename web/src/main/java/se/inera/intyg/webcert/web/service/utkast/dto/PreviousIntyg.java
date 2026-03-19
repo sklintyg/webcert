@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,83 +22,84 @@ import java.time.LocalDateTime;
 
 public class PreviousIntyg {
 
-    private boolean sameVardgivare;
-    private boolean sameEnhet;
-    private boolean enableShowDoiButton;
-    private String enhetName;
-    private String latestIntygsId;
-    private LocalDateTime skapat;
+  private boolean sameVardgivare;
+  private boolean sameEnhet;
+  private boolean enableShowDoiButton;
+  private String enhetName;
+  private String latestIntygsId;
+  private LocalDateTime skapat;
 
-    public PreviousIntyg() {
+  public PreviousIntyg() {}
+
+  private PreviousIntyg(final boolean sameVardgivare, final LocalDateTime skapat) {
+    this.sameVardgivare = sameVardgivare;
+    this.skapat = skapat;
+  }
+
+  private PreviousIntyg(
+      final boolean sameVardgivare,
+      final LocalDateTime skapat,
+      final boolean sameEnhet,
+      final boolean enableShowDoiButton,
+      final String enhetName,
+      final String latestIntygsId) {
+    this.sameVardgivare = sameVardgivare;
+    this.latestIntygsId = latestIntygsId;
+    this.sameEnhet = sameEnhet;
+    this.enableShowDoiButton = enableShowDoiButton;
+    this.enhetName = enhetName;
+    this.skapat = skapat;
+  }
+
+  public static PreviousIntyg of(
+      final boolean sameVardgivare,
+      final boolean sameEnhet,
+      final boolean enableShowDoiButton,
+      final String enhetName,
+      final String latestIntygsId,
+      final LocalDateTime skapat) {
+    return of(
+        sameVardgivare, sameEnhet, enableShowDoiButton, enhetName, latestIntygsId, skapat, true);
+  }
+
+  public static PreviousIntyg of(
+      final boolean sameVardgivare,
+      final boolean sameEnhet,
+      final boolean enableShowDoiButton,
+      final String enhetName,
+      final String latestIntygsId,
+      final LocalDateTime skapat,
+      final boolean hideMetadataIfDifferentVardgivare) {
+
+    if (hideMetadataIfDifferentVardgivare && !sameVardgivare) {
+      return new PreviousIntyg(sameVardgivare, skapat);
+    } else {
+      return new PreviousIntyg(
+          sameVardgivare, skapat, sameEnhet, enableShowDoiButton, enhetName, latestIntygsId);
     }
+  }
 
-    private PreviousIntyg(final boolean sameVardgivare, final LocalDateTime skapat) {
-        this.sameVardgivare = sameVardgivare;
-        this.skapat = skapat;
-    }
+  public boolean isSameVardgivare() {
+    return sameVardgivare;
+  }
 
-    private PreviousIntyg(
-        final boolean sameVardgivare,
-        final LocalDateTime skapat,
-        final boolean sameEnhet,
-        final boolean enableShowDoiButton,
-        final String enhetName,
-        final String latestIntygsId) {
-        this.sameVardgivare = sameVardgivare;
-        this.latestIntygsId = latestIntygsId;
-        this.sameEnhet = sameEnhet;
-        this.enableShowDoiButton = enableShowDoiButton;
-        this.enhetName = enhetName;
-        this.skapat = skapat;
-    }
+  public boolean isSameEnhet() {
+    return sameEnhet;
+  }
 
-    public static PreviousIntyg of(
-        final boolean sameVardgivare,
-        final boolean sameEnhet,
-        final boolean enableShowDoiButton,
-        final String enhetName,
-        final String latestIntygsId,
-        final LocalDateTime skapat) {
-        return of(sameVardgivare, sameEnhet, enableShowDoiButton, enhetName, latestIntygsId, skapat, true);
-    }
+  public boolean isEnableShowDoiButton() {
+    return enableShowDoiButton;
+  }
 
-    public static PreviousIntyg of(
-        final boolean sameVardgivare,
-        final boolean sameEnhet,
-        final boolean enableShowDoiButton,
-        final String enhetName,
-        final String latestIntygsId,
-        final LocalDateTime skapat,
-        final boolean hideMetadataIfDifferentVardgivare) {
+  public String getEnhetName() {
+    return enhetName;
+  }
 
-        if (hideMetadataIfDifferentVardgivare && !sameVardgivare) {
-            return new PreviousIntyg(sameVardgivare, skapat);
-        } else {
-            return new PreviousIntyg(sameVardgivare, skapat, sameEnhet, enableShowDoiButton, enhetName, latestIntygsId);
-        }
-    }
+  public String getLatestIntygsId() {
+    return latestIntygsId;
+  }
 
-    public boolean isSameVardgivare() {
-        return sameVardgivare;
-    }
-
-    public boolean isSameEnhet() {
-        return sameEnhet;
-    }
-
-    public boolean isEnableShowDoiButton() {
-        return enableShowDoiButton;
-    }
-
-    public String getEnhetName() {
-        return enhetName;
-    }
-
-    public String getLatestIntygsId() {
-        return latestIntygsId;
-    }
-
-    public LocalDateTime getSkapat() {
-        return skapat;
-    }
+  public LocalDateTime getSkapat() {
+    return skapat;
+  }
 }
