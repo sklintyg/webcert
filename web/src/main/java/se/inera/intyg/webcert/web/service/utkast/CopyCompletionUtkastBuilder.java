@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,41 +35,47 @@ import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 
 @Component
-public class CopyCompletionUtkastBuilder extends AbstractUtkastBuilder<CreateCompletionCopyRequest> {
+public class CopyCompletionUtkastBuilder
+    extends AbstractUtkastBuilder<CreateCompletionCopyRequest> {
 
-    @Autowired
-    private ArendeService arendeService;
+  @Autowired private ArendeService arendeService;
 
-    @Override
-    public Relation createRelation(CreateCompletionCopyRequest copyRequest) {
-        return createRelation(copyRequest, RelationKod.KOMPLT);
+  @Override
+  public Relation createRelation(CreateCompletionCopyRequest copyRequest) {
+    return createRelation(copyRequest, RelationKod.KOMPLT);
+  }
+
+  private Relation createRelation(CreateCompletionCopyRequest request, RelationKod relationKod) {
+    Relation relation = new Relation();
+    relation.setRelationIntygsId(request.getOriginalIntygId());
+    relation.setRelationKod(relationKod);
+    relation.setMeddelandeId(request.getMeddelandeId());
+    relation.setReferensId(getArendeReferensId(request.getMeddelandeId(), request.getTyp()));
+    return relation;
+  }
+
+  private String getArendeReferensId(String meddelandeId, String intygsTyp) {
+    if (!Strings.isNullOrEmpty(meddelandeId) && !intygsTyp.equals(Fk7263EntryPoint.MODULE_ID)) {
+      Arende arende = arendeService.getArende(meddelandeId);
+      return arende != null ? arende.getReferensId() : null;
     }
+    return null;
+  }
 
-    private Relation createRelation(CreateCompletionCopyRequest request, RelationKod relationKod) {
-        Relation relation = new Relation();
-        relation.setRelationIntygsId(request.getOriginalIntygId());
-        relation.setRelationKod(relationKod);
-        relation.setMeddelandeId(request.getMeddelandeId());
-        relation.setReferensId(getArendeReferensId(request.getMeddelandeId(), request.getTyp()));
-        return relation;
-    }
+  @Override
+  protected String getInternalModel(
+      Utlatande template,
+      ModuleApi moduleApi,
+      AbstractCreateCopyRequest copyRequest,
+      Person person,
+      Relation relation,
+      String newDraftCopyId)
+      throws ModuleException {
+    CreateDraftCopyHolder draftCopyHolder =
+        createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
+    CreateCompletionCopyRequest retyped = (CreateCompletionCopyRequest) copyRequest;
 
-    private String getArendeReferensId(String meddelandeId, String intygsTyp) {
-        if (!Strings.isNullOrEmpty(meddelandeId) && !intygsTyp.equals(Fk7263EntryPoint.MODULE_ID)) {
-            Arende arende = arendeService.getArende(meddelandeId);
-            return arende != null ? arende.getReferensId() : null;
-        }
-        return null;
-    }
-
-    @Override
-    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
-        Person person, Relation relation, String newDraftCopyId) throws ModuleException {
-        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
-        CreateCompletionCopyRequest retyped = (CreateCompletionCopyRequest) copyRequest;
-
-        return moduleApi.createCompletionFromTemplate(draftCopyHolder, template, retyped.getKommentar());
-    }
-
-
+    return moduleApi.createCompletionFromTemplate(
+        draftCopyHolder, template, retyped.getKommentar());
+  }
 }

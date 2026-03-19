@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,34 +27,34 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 
 public abstract class FmbBaseService {
 
-    public static final int MINIMUM_NUMBER_OF_CODE_CHARACTERS = 3;
+  public static final int MINIMUM_NUMBER_OF_CODE_CHARACTERS = 3;
 
-    protected DiagnosInformationRepository repository;
+  protected DiagnosInformationRepository repository;
 
-    protected FmbBaseService(final DiagnosInformationRepository repository) {
-        this.repository = repository;
+  protected FmbBaseService(final DiagnosInformationRepository repository) {
+    this.repository = repository;
+  }
+
+  protected Tuple2<String, Optional<DiagnosInformation>> searchDiagnosInformationByIcd10Kod(
+      final String icd10Kod) {
+
+    final int minCharCount = MINIMUM_NUMBER_OF_CODE_CHARACTERS;
+
+    String choppedCode = icd10Kod;
+    Optional<DiagnosInformation> diagnosInformation = Optional.empty();
+    while (choppedCode.length() >= minCharCount) {
+      diagnosInformation = repository.findFirstByIcd10KodList_kod(choppedCode);
+
+      if (diagnosInformation.isPresent()) {
+        break;
+      } else if (choppedCode.length() > minCharCount) {
+        // Make the icd10-code one position shorter, and thus more general.
+        choppedCode = StringUtils.chop(choppedCode);
+      } else {
+        break;
+      }
     }
 
-    protected Tuple2<String, Optional<DiagnosInformation>> searchDiagnosInformationByIcd10Kod(final String icd10Kod) {
-
-        final int minCharCount = MINIMUM_NUMBER_OF_CODE_CHARACTERS;
-
-        String choppedCode = icd10Kod;
-        Optional<DiagnosInformation> diagnosInformation = Optional.empty();
-        while (choppedCode.length() >= minCharCount) {
-            diagnosInformation = repository.findFirstByIcd10KodList_kod(choppedCode);
-
-            if (diagnosInformation.isPresent()) {
-                break;
-            } else if (choppedCode.length() > minCharCount) {
-                // Make the icd10-code one position shorter, and thus more general.
-                choppedCode = StringUtils.chop(choppedCode);
-            } else {
-                break;
-            }
-        }
-
-        return Tuple.of(choppedCode, diagnosInformation);
-    }
-
+    return Tuple.of(choppedCode, diagnosInformation);
+  }
 }

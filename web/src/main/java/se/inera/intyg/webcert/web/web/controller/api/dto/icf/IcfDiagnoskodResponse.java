@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,96 +22,104 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class IcfDiagnoskodResponse {
 
-    private String icd10Kod;
-    private FunktionsNedsattningsKoder funktionsNedsattningsKoder;
-    private AktivitetsBegransningsKoder aktivitetsBegransningsKoder;
+  private String icd10Kod;
+  private FunktionsNedsattningsKoder funktionsNedsattningsKoder;
+  private AktivitetsBegransningsKoder aktivitetsBegransningsKoder;
 
-    public IcfDiagnoskodResponse() {
+  public IcfDiagnoskodResponse() {}
+
+  private IcfDiagnoskodResponse(
+      final String icd10Kod,
+      final FunktionsNedsattningsKoder funktionsNedsattningsKoder,
+      final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
+    this.icd10Kod = icd10Kod;
+    this.funktionsNedsattningsKoder = funktionsNedsattningsKoder;
+    this.aktivitetsBegransningsKoder = aktivitetsBegransningsKoder;
+  }
+
+  public String getIcd10Kod() {
+    return icd10Kod;
+  }
+
+  public void setIcd10Kod(final String icd10Kod) {
+    this.icd10Kod = icd10Kod;
+  }
+
+  public FunktionsNedsattningsKoder getFunktionsNedsattningsKoder() {
+    return funktionsNedsattningsKoder;
+  }
+
+  public void setFunktionsNedsattningsKoder(
+      final FunktionsNedsattningsKoder funktionsNedsattningsKoder) {
+    this.funktionsNedsattningsKoder = funktionsNedsattningsKoder;
+  }
+
+  public AktivitetsBegransningsKoder getAktivitetsBegransningsKoder() {
+    return aktivitetsBegransningsKoder;
+  }
+
+  public void setAktivitetsBegransningsKoder(
+      final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
+    this.aktivitetsBegransningsKoder = aktivitetsBegransningsKoder;
+  }
+
+  public static IcfDiagnoskodResponse of(
+      final String icf10Kod,
+      final IcfKoder funktionsNedsattningsKoder,
+      final IcfKoder aktivitetsBegransningsKoder) {
+
+    if (funktionsNedsattningsKoder != null
+        && !(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
+      throw new IllegalArgumentException(
+          "funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
     }
 
-    private IcfDiagnoskodResponse(
-        final String icd10Kod,
-        final FunktionsNedsattningsKoder funktionsNedsattningsKoder,
-        final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
-        this.icd10Kod = icd10Kod;
-        this.funktionsNedsattningsKoder = funktionsNedsattningsKoder;
-        this.aktivitetsBegransningsKoder = aktivitetsBegransningsKoder;
+    if (aktivitetsBegransningsKoder != null
+        && !(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
+      throw new IllegalArgumentException(
+          "aktivitetsBegransningsKoder must be of type AktivitetsBegransningsKoder");
     }
 
-    public String getIcd10Kod() {
-        return icd10Kod;
+    if (funktionsNedsattningsKoder == null && aktivitetsBegransningsKoder == null) {
+      return null;
+    }
+    return new IcfDiagnoskodResponse(
+        icf10Kod,
+        (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
+        (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
+  }
+
+  public static IcfDiagnoskodResponse of(
+      final IcfKoder funktionsNedsattningsKoder, final IcfKoder aktivitetsBegransningsKoder) {
+
+    if (funktionsNedsattningsKoder != null
+        && !(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
+      throw new IllegalArgumentException(
+          "funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
     }
 
-    public void setIcd10Kod(final String icd10Kod) {
-        this.icd10Kod = icd10Kod;
+    if (aktivitetsBegransningsKoder != null
+        && !(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
+      throw new IllegalArgumentException(
+          "aktivitetsBegransningsKoder must be of type AktivitetsBegransningsKoder");
     }
 
-    public FunktionsNedsattningsKoder getFunktionsNedsattningsKoder() {
-        return funktionsNedsattningsKoder;
-    }
+    return new IcfDiagnoskodResponse(
+        null,
+        (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
+        (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
+  }
 
-    public void setFunktionsNedsattningsKoder(final FunktionsNedsattningsKoder funktionsNedsattningsKoder) {
-        this.funktionsNedsattningsKoder = funktionsNedsattningsKoder;
-    }
+  public static IcfDiagnoskodResponse empty() {
+    return new IcfDiagnoskodResponse(null, null, null);
+  }
 
-    public AktivitetsBegransningsKoder getAktivitetsBegransningsKoder() {
-        return aktivitetsBegransningsKoder;
-    }
-
-    public void setAktivitetsBegransningsKoder(final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
-        this.aktivitetsBegransningsKoder = aktivitetsBegransningsKoder;
-    }
-
-    public static IcfDiagnoskodResponse of(
-        final String icf10Kod,
-        final IcfKoder funktionsNedsattningsKoder,
-        final IcfKoder aktivitetsBegransningsKoder) {
-
-        if (funktionsNedsattningsKoder != null && !(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
-            throw new IllegalArgumentException("funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
-        }
-
-        if (aktivitetsBegransningsKoder != null && !(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
-            throw new IllegalArgumentException("aktivitetsBegransningsKoder must be of type AktivitetsBegransningsKoder");
-        }
-
-        if (funktionsNedsattningsKoder == null && aktivitetsBegransningsKoder == null) {
-            return null;
-        }
-        return new IcfDiagnoskodResponse(
-            icf10Kod,
-            (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
-            (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
-    }
-
-    public static IcfDiagnoskodResponse of(
-        final IcfKoder funktionsNedsattningsKoder,
-        final IcfKoder aktivitetsBegransningsKoder) {
-
-        if (funktionsNedsattningsKoder != null && !(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
-            throw new IllegalArgumentException("funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
-        }
-
-        if (aktivitetsBegransningsKoder != null && !(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
-            throw new IllegalArgumentException("aktivitetsBegransningsKoder must be of type AktivitetsBegransningsKoder");
-        }
-
-        return new IcfDiagnoskodResponse(
-            null,
-            (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
-            (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
-    }
-
-    public static IcfDiagnoskodResponse empty() {
-        return new IcfDiagnoskodResponse(null, null, null);
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-            .append("icd10Kod", icd10Kod)
-            .append("funktionsNedsattningsKoder", funktionsNedsattningsKoder)
-            .append("aktivitetsBegransningsKoder", aktivitetsBegransningsKoder)
-            .toString();
-    }
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("icd10Kod", icd10Kod)
+        .append("funktionsNedsattningsKoder", funktionsNedsattningsKoder)
+        .append("aktivitetsBegransningsKoder", aktivitetsBegransningsKoder)
+        .toString();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
 import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.CONFIG_PATH;
@@ -44,81 +43,81 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 @RequiredArgsConstructor
 public class PPSIntegrationService {
 
-    private final RestClient ppsRestClient;
+  private final RestClient ppsRestClient;
 
-    public HospInformation getHospInformation(GetHospInformationRequest personalOrHsaIdIdentityNumber) {
-        return ppsRestClient
-            .post()
-            .uri(HOSP_INFO_PATH)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(personalOrHsaIdIdentityNumber)
-            .retrieve()
-            .body(HospInformation.class);
-    }
+  public HospInformation getHospInformation(
+      GetHospInformationRequest personalOrHsaIdIdentityNumber) {
+    return ppsRestClient
+        .post()
+        .uri(HOSP_INFO_PATH)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+        .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+        .body(personalOrHsaIdIdentityNumber)
+        .retrieve()
+        .body(HospInformation.class);
+  }
 
-    public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
-        return ppsRestClient
-            .get()
-            .uri(CONFIG_PATH)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .retrieve()
-            .body(PrivatePractitionerConfiguration.class);
-    }
+  public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
+    return ppsRestClient
+        .get()
+        .uri(CONFIG_PATH)
+        .accept(MediaType.APPLICATION_JSON)
+        .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+        .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+        .retrieve()
+        .body(PrivatePractitionerConfiguration.class);
+  }
 
-    public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
-        return ppsRestClient
-            .post()
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(registrationRequest)
-            .retrieve()
-            .body(PrivatePractitioner.class);
-    }
+  public PrivatePractitioner registerPrivatePractitioner(
+      RegisterPrivatePractitionerRequest registrationRequest) {
+    return ppsRestClient
+        .post()
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+        .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+        .body(registrationRequest)
+        .retrieve()
+        .body(PrivatePractitioner.class);
+  }
 
-    public PrivatePractitionerValidationResponse validatePrivatePractitioner(
-        PrivatePractitionerValidationRequest privatePractitionerValidationRequest) {
-        return ppsRestClient
-            .post()
-            .uri(VALIDATE_PATH)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(privatePractitionerValidationRequest)
-            .retrieve()
-            .body(PrivatePractitionerValidationResponse.class);
-    }
+  public PrivatePractitionerValidationResponse validatePrivatePractitioner(
+      PrivatePractitionerValidationRequest privatePractitionerValidationRequest) {
+    return ppsRestClient
+        .post()
+        .uri(VALIDATE_PATH)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+        .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+        .body(privatePractitionerValidationRequest)
+        .retrieve()
+        .body(PrivatePractitionerValidationResponse.class);
+  }
 
-    public PrivatePractitioner getPrivatePractitioner(String personOrHsaId) {
-        return ppsRestClient
-            .get()
-            .uri(uriBuilder -> uriBuilder
-                .queryParam("personOrHsaId", personOrHsaId)
-                .build()
-            )
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .retrieve()
-            .body(PrivatePractitioner.class);
-    }
+  public PrivatePractitioner getPrivatePractitioner(String personOrHsaId) {
+    return ppsRestClient
+        .get()
+        .uri(uriBuilder -> uriBuilder.queryParam("personOrHsaId", personOrHsaId).build())
+        .accept(MediaType.APPLICATION_JSON)
+        .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+        .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+        .retrieve()
+        .body(PrivatePractitioner.class);
+  }
 
-    public PrivatePractitioner updatePrivatePractitioner(UpdatePrivatePractitionerRequest privatePractitioner) {
-        return ppsRestClient
-            .put()
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(privatePractitioner)
-            .retrieve()
-            .body(PrivatePractitioner.class);
-    }
+  public PrivatePractitioner updatePrivatePractitioner(
+      UpdatePrivatePractitionerRequest privatePractitioner) {
+    return ppsRestClient
+        .put()
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+        .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+        .body(privatePractitioner)
+        .retrieve()
+        .body(PrivatePractitioner.class);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,124 +31,130 @@ import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "diagnoskod",
-    "tillstandsmening",
-    "urvalarbetsbelastning",
-    "urvalatgard",
-    "urvalkomplicerandefaktor",
-    "urvalsamsjuklighet",
-    "urvalsjukdomsforlopp",
-    "urvalsvarighetsgrad"
+  "diagnoskod",
+  "tillstandsmening",
+  "urvalarbetsbelastning",
+  "urvalatgard",
+  "urvalkomplicerandefaktor",
+  "urvalsamsjuklighet",
+  "urvalsjukdomsforlopp",
+  "urvalsvarighetsgrad"
 })
 public class Fmbtillstand {
 
-    @JsonProperty("diagnoskod")
-    private List<Kod> diagnoskod = null;
-    @JsonProperty("tillstandsmening")
-    private String tillstandsmening;
-    @JsonProperty("urvalarbetsbelastning")
-    private List<Urvalarbetsbelastning> urvalarbetsbelastning = null;
-    @JsonProperty("urvalatgard")
-    private List<Urvalatgard> urvalatgard = null;
-    @JsonProperty("urvalkomplicerandefaktor")
-    private List<Urvalkomplicerandefaktor> urvalkomplicerandefaktor = null;
-    @JsonProperty("urvalsamsjuklighet")
-    private List<List<Urvalsamsjuklighet>> urvalsamsjuklighet = null;
-    @JsonProperty("urvalsjukdomsforlopp")
-    private List<Urvalsjukdomsforlopp> urvalsjukdomsforlopp = null;
-    @JsonProperty("urvalsvarighetsgrad")
-    private List<Urvalsvarighetsgrad> urvalsvarighetsgrad = null;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("diagnoskod")
+  private List<Kod> diagnoskod = null;
 
-    @JsonProperty("diagnoskod")
-    public List<Kod> getDiagnoskod() {
-        return diagnoskod;
-    }
+  @JsonProperty("tillstandsmening")
+  private String tillstandsmening;
 
-    @JsonProperty("diagnoskod")
-    public void setDiagnoskod(List<Kod> diagnoskod) {
-        this.diagnoskod = diagnoskod;
-    }
+  @JsonProperty("urvalarbetsbelastning")
+  private List<Urvalarbetsbelastning> urvalarbetsbelastning = null;
 
-    @JsonProperty("tillstandsmening")
-    public String getTillstandsmening() {
-        return tillstandsmening;
-    }
+  @JsonProperty("urvalatgard")
+  private List<Urvalatgard> urvalatgard = null;
 
-    @JsonProperty("tillstandsmening")
-    public void setTillstandsmening(String tillstandsmening) {
-        this.tillstandsmening = tillstandsmening;
-    }
+  @JsonProperty("urvalkomplicerandefaktor")
+  private List<Urvalkomplicerandefaktor> urvalkomplicerandefaktor = null;
 
-    @JsonProperty("urvalarbetsbelastning")
-    public List<Urvalarbetsbelastning> getUrvalarbetsbelastning() {
-        return urvalarbetsbelastning;
-    }
+  @JsonProperty("urvalsamsjuklighet")
+  private List<List<Urvalsamsjuklighet>> urvalsamsjuklighet = null;
 
-    @JsonProperty("urvalarbetsbelastning")
-    public void setUrvalarbetsbelastning(List<Urvalarbetsbelastning> urvalarbetsbelastning) {
-        this.urvalarbetsbelastning = urvalarbetsbelastning;
-    }
+  @JsonProperty("urvalsjukdomsforlopp")
+  private List<Urvalsjukdomsforlopp> urvalsjukdomsforlopp = null;
 
-    @JsonProperty("urvalatgard")
-    public List<Urvalatgard> getUrvalatgard() {
-        return urvalatgard;
-    }
+  @JsonProperty("urvalsvarighetsgrad")
+  private List<Urvalsvarighetsgrad> urvalsvarighetsgrad = null;
 
-    @JsonProperty("urvalatgard")
-    public void setUrvalatgard(List<Urvalatgard> urvalatgard) {
-        this.urvalatgard = urvalatgard;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("urvalkomplicerandefaktor")
-    public List<Urvalkomplicerandefaktor> getUrvalkomplicerandefaktor() {
-        return urvalkomplicerandefaktor;
-    }
+  @JsonProperty("diagnoskod")
+  public List<Kod> getDiagnoskod() {
+    return diagnoskod;
+  }
 
-    @JsonProperty("urvalkomplicerandefaktor")
-    public void setUrvalkomplicerandefaktor(List<Urvalkomplicerandefaktor> urvalkomplicerandefaktor) {
-        this.urvalkomplicerandefaktor = urvalkomplicerandefaktor;
-    }
+  @JsonProperty("diagnoskod")
+  public void setDiagnoskod(List<Kod> diagnoskod) {
+    this.diagnoskod = diagnoskod;
+  }
 
-    @JsonProperty("urvalsamsjuklighet")
-    public List<List<Urvalsamsjuklighet>> getUrvalsamsjuklighet() {
-        return urvalsamsjuklighet;
-    }
+  @JsonProperty("tillstandsmening")
+  public String getTillstandsmening() {
+    return tillstandsmening;
+  }
 
-    @JsonProperty("urvalsamsjuklighet")
-    public void setUrvalsamsjuklighet(List<List<Urvalsamsjuklighet>> urvalsamsjuklighet) {
-        this.urvalsamsjuklighet = urvalsamsjuklighet;
-    }
+  @JsonProperty("tillstandsmening")
+  public void setTillstandsmening(String tillstandsmening) {
+    this.tillstandsmening = tillstandsmening;
+  }
 
-    @JsonProperty("urvalsjukdomsforlopp")
-    public List<Urvalsjukdomsforlopp> getUrvalsjukdomsforlopp() {
-        return urvalsjukdomsforlopp;
-    }
+  @JsonProperty("urvalarbetsbelastning")
+  public List<Urvalarbetsbelastning> getUrvalarbetsbelastning() {
+    return urvalarbetsbelastning;
+  }
 
-    @JsonProperty("urvalsjukdomsforlopp")
-    public void setUrvalsjukdomsforlopp(List<Urvalsjukdomsforlopp> urvalsjukdomsforlopp) {
-        this.urvalsjukdomsforlopp = urvalsjukdomsforlopp;
-    }
+  @JsonProperty("urvalarbetsbelastning")
+  public void setUrvalarbetsbelastning(List<Urvalarbetsbelastning> urvalarbetsbelastning) {
+    this.urvalarbetsbelastning = urvalarbetsbelastning;
+  }
 
-    @JsonProperty("urvalsvarighetsgrad")
-    public List<Urvalsvarighetsgrad> getUrvalsvarighetsgrad() {
-        return urvalsvarighetsgrad;
-    }
+  @JsonProperty("urvalatgard")
+  public List<Urvalatgard> getUrvalatgard() {
+    return urvalatgard;
+  }
 
-    @JsonProperty("urvalsvarighetsgrad")
-    public void setUrvalsvarighetsgrad(List<Urvalsvarighetsgrad> urvalsvarighetsgrad) {
-        this.urvalsvarighetsgrad = urvalsvarighetsgrad;
-    }
+  @JsonProperty("urvalatgard")
+  public void setUrvalatgard(List<Urvalatgard> urvalatgard) {
+    this.urvalatgard = urvalatgard;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("urvalkomplicerandefaktor")
+  public List<Urvalkomplicerandefaktor> getUrvalkomplicerandefaktor() {
+    return urvalkomplicerandefaktor;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("urvalkomplicerandefaktor")
+  public void setUrvalkomplicerandefaktor(List<Urvalkomplicerandefaktor> urvalkomplicerandefaktor) {
+    this.urvalkomplicerandefaktor = urvalkomplicerandefaktor;
+  }
 
+  @JsonProperty("urvalsamsjuklighet")
+  public List<List<Urvalsamsjuklighet>> getUrvalsamsjuklighet() {
+    return urvalsamsjuklighet;
+  }
+
+  @JsonProperty("urvalsamsjuklighet")
+  public void setUrvalsamsjuklighet(List<List<Urvalsamsjuklighet>> urvalsamsjuklighet) {
+    this.urvalsamsjuklighet = urvalsamsjuklighet;
+  }
+
+  @JsonProperty("urvalsjukdomsforlopp")
+  public List<Urvalsjukdomsforlopp> getUrvalsjukdomsforlopp() {
+    return urvalsjukdomsforlopp;
+  }
+
+  @JsonProperty("urvalsjukdomsforlopp")
+  public void setUrvalsjukdomsforlopp(List<Urvalsjukdomsforlopp> urvalsjukdomsforlopp) {
+    this.urvalsjukdomsforlopp = urvalsjukdomsforlopp;
+  }
+
+  @JsonProperty("urvalsvarighetsgrad")
+  public List<Urvalsvarighetsgrad> getUrvalsvarighetsgrad() {
+    return urvalsvarighetsgrad;
+  }
+
+  @JsonProperty("urvalsvarighetsgrad")
+  public void setUrvalsvarighetsgrad(List<Urvalsvarighetsgrad> urvalsvarighetsgrad) {
+    this.urvalsvarighetsgrad = urvalsvarighetsgrad;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.auth.eleg;
 
 import lombok.RequiredArgsConstructor;
@@ -37,38 +36,41 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class UnauthorizedPrivatePractitionerService {
 
-    private final CommonAuthoritiesResolver authoritiesResolver;
-    private final HashUtility hashUtility;
-    private final PUService puService;
+  private final CommonAuthoritiesResolver authoritiesResolver;
+  private final HashUtility hashUtility;
+  private final PUService puService;
 
-    public WebCertUser create(String personId, String origin, String authScheme, AuthenticationMethod authMethod) {
-        final var role = authoritiesResolver.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
-        final var user = new WebCertUser("missing");
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setPersonId(personId);
-        user.setNamn(getUserName(personId));
-        user.setOrigin(origin);
-        user.setAuthenticationScheme(authScheme);
-        user.setAuthenticationMethod(authMethod);
-        return user;
+  public WebCertUser create(
+      String personId, String origin, String authScheme, AuthenticationMethod authMethod) {
+    final var role = authoritiesResolver.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
+    final var user = new WebCertUser("missing");
+    user.setRoles(AuthoritiesResolverUtil.toMap(role));
+    user.setPersonId(personId);
+    user.setNamn(getUserName(personId));
+    user.setOrigin(origin);
+    user.setAuthenticationScheme(authScheme);
+    user.setAuthenticationMethod(authMethod);
+    return user;
+  }
+
+  private String getUserName(String personId) {
+    final var personNummer =
+        Personnummer.createPersonnummer(personId)
+            .orElseThrow(
+                () ->
+                    new WebCertServiceException(
+                        WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        "Can't determine name for invalid personId %s"
+                            .formatted(hashUtility.hash(personId))));
+
+    final var person = puService.getPerson(personNummer);
+    if (person.getStatus() == PersonSvar.Status.FOUND) {
+      return person.getPerson().fornamn() + " " + person.getPerson().efternamn();
+    } else {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.PU_PROBLEM,
+          "PU replied with %s - name cannot be determined for person %s"
+              .formatted(person.getStatus(), hashUtility.hash(personNummer.getPersonnummer())));
     }
-
-    private String getUserName(String personId) {
-        final var personNummer = Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new WebCertServiceException(
-                    WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "Can't determine name for invalid personId %s".formatted(hashUtility.hash(personId))
-                )
-            );
-
-        final var person = puService.getPerson(personNummer);
-        if (person.getStatus() == PersonSvar.Status.FOUND) {
-            return person.getPerson().fornamn() + " " + person.getPerson().efternamn();
-        } else {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                "PU replied with %s - name cannot be determined for person %s"
-                    .formatted(person.getStatus(), hashUtility.hash(personNummer.getPersonnummer()))
-            );
-        }
-    }
+  }
 }

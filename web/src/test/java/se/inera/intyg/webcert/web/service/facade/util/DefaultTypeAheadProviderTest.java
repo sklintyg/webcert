@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,22 +34,20 @@ import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
 @ExtendWith(MockitoExtension.class)
 class DefaultTypeAheadProviderTest {
 
-    @Mock
-    private PostnummerService postnummerService;
+  @Mock private PostnummerService postnummerService;
 
-    @InjectMocks
-    private DefaultTypeAheadProvider defaultTypeAheadProvider;
+  @InjectMocks private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
-    @Test
-    void shallReturnMunicipalitiesWhenAskedFor() {
-        final var expectedValues = List.of("Östersund", "Strömsund", "Stockholm");
-        doReturn(expectedValues).when(postnummerService).getKommunList();
-        final var actualValues = defaultTypeAheadProvider.getValues(TypeAheadEnum.MUNICIPALITIES);
-        assertEquals(expectedValues, actualValues);
-    }
+  @Test
+  void shallReturnMunicipalitiesWhenAskedFor() {
+    final var expectedValues = List.of("Östersund", "Strömsund", "Stockholm");
+    doReturn(expectedValues).when(postnummerService).getKommunList();
+    final var actualValues = defaultTypeAheadProvider.getValues(TypeAheadEnum.MUNICIPALITIES);
+    assertEquals(expectedValues, actualValues);
+  }
 
-    @Test
-    void shallThrowExceptionWhenGivenNullParameter() {
-        assertThrows(IllegalArgumentException.class, () -> defaultTypeAheadProvider.getValues(null));
-    }
+  @Test
+  void shallThrowExceptionWhenGivenNullParameter() {
+    assertThrows(IllegalArgumentException.class, () -> defaultTypeAheadProvider.getValues(null));
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,32 +31,32 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 @Component
 public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigurationManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntygServiceConfigurationManagerImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(IntygServiceConfigurationManagerImpl.class);
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Override
-    public <T> T unmarshallConfig(String configAsJson, Class<T> configClazz) {
-        try {
-            return objectMapper.readValue(configAsJson, configClazz);
-        } catch (IOException e) {
-            LOG.error("Module problems occured when trying to unmarshall configation.", e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
-        }
+  @Override
+  public <T> T unmarshallConfig(String configAsJson, Class<T> configClazz) {
+    try {
+      return objectMapper.readValue(configAsJson, configClazz);
+    } catch (IOException e) {
+      LOG.error("Module problems occured when trying to unmarshall configation.", e);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
     }
+  }
 
-    @Override
-    public String marshallConfig(Object config) {
-        try {
-            return objectMapper.writeValueAsString(config);
-        } catch (JsonProcessingException e) {
-            LOG.error("Module problems occured when trying to create and marshall configuration.", e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
-        }
+  @Override
+  public String marshallConfig(Object config) {
+    try {
+      return objectMapper.writeValueAsString(config);
+    } catch (JsonProcessingException e) {
+      LOG.error("Module problems occured when trying to create and marshall configuration.", e);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
     }
+  }
 
-    public void setObjectMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+  public void setObjectMapper(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
 }

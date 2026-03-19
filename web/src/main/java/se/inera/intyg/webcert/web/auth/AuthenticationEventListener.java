@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.auth;
 
 import java.nio.charset.StandardCharsets;
@@ -40,60 +39,58 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class AuthenticationEventListener {
 
-    private final MonitoringLogService monitoringLogService;
+  private final MonitoringLogService monitoringLogService;
 
-    @EventListener
-    public void onLoginSuccess(InteractiveAuthenticationSuccessEvent success) {
-        updateMDCWithNewSessionId();
+  @EventListener
+  public void onLoginSuccess(InteractiveAuthenticationSuccessEvent success) {
+    updateMDCWithNewSessionId();
 
-        final var webcertUser = getWebcertUser(success.getAuthentication().getPrincipal());
-        webcertUser.ifPresent(user ->
+    final var webcertUser = getWebcertUser(success.getAuthentication().getPrincipal());
+    webcertUser.ifPresent(
+        user ->
             monitoringLogService.logUserLogin(
                 user.getHsaId(),
-                user.getRoles() != null && user.getRoles().size() == 1 ? user.getRoles().keySet().iterator().next()
+                user.getRoles() != null && user.getRoles().size() == 1
+                    ? user.getRoles().keySet().iterator().next()
                     : MdcLogConstants.NO_ROLE,
                 user.getRoleTypeName(),
                 user.getAuthenticationScheme(),
-                user.getOrigin()
-            )
-        );
-    }
+                user.getOrigin()));
+  }
 
-    /**
-     * Spring Security will by default invalidate the old session and create a new one after authentication.
-     * It’s a security feature to protect against session fixation attacks.
-     * Update the MDC with the new session id.
-     */
-    private static void updateMDCWithNewSessionId() {
-        final var attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attrs != null) {
-            final var request = attrs.getRequest();
-            final var session = request.getSession(false);
+  /**
+   * Spring Security will by default invalidate the old session and create a new one after
+   * authentication. It’s a security feature to protect against session fixation attacks. Update the
+   * MDC with the new session id.
+   */
+  private static void updateMDCWithNewSessionId() {
+    final var attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    if (attrs != null) {
+      final var request = attrs.getRequest();
+      final var session = request.getSession(false);
 
-            if (session != null && session.getId() != null) {
-                final var sessionId = session.getId();
-                final var encodedSessionId = Base64.getEncoder().encodeToString(sessionId.getBytes(StandardCharsets.UTF_8));
-                MDC.put(MdcLogConstants.SESSION_ID_KEY, encodedSessionId);
-            }
-        }
+      if (session != null && session.getId() != null) {
+        final var sessionId = session.getId();
+        final var encodedSessionId =
+            Base64.getEncoder().encodeToString(sessionId.getBytes(StandardCharsets.UTF_8));
+        MDC.put(MdcLogConstants.SESSION_ID_KEY, encodedSessionId);
+      }
     }
+  }
 
-    @EventListener
-    public void onLogoutSuccess(LogoutSuccessEvent success) {
-        final var webcertUser = getWebcertUser(success.getAuthentication().getPrincipal());
-        webcertUser.ifPresent(user ->
-            monitoringLogService.logUserLogout(
-                user.getHsaId(),
-                user.getAuthenticationScheme()
-            )
-        );
-    }
+  @EventListener
+  public void onLogoutSuccess(LogoutSuccessEvent success) {
+    final var webcertUser = getWebcertUser(success.getAuthentication().getPrincipal());
+    webcertUser.ifPresent(
+        user ->
+            monitoringLogService.logUserLogout(user.getHsaId(), user.getAuthenticationScheme()));
+  }
 
-    private static Optional<WebCertUser> getWebcertUser(Object principal) {
-        if (principal instanceof WebCertUser webCertUser) {
-            return Optional.of(webCertUser);
-        }
-        log.warn("Invalid principal [{}]", principal.getClass().getSimpleName());
-        return Optional.empty();
+  private static Optional<WebCertUser> getWebcertUser(Object principal) {
+    if (principal instanceof WebCertUser webCertUser) {
+      return Optional.of(webCertUser);
     }
+    log.warn("Invalid principal [{}]", principal.getClass().getSimpleName());
+    return Optional.empty();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,13 +20,13 @@ package se.inera.intyg.webcert.web.service.intyg.converter;
 
 public class IntygModuleFacadeException extends Exception {
 
-    private static final long serialVersionUID = 2971149982983339223L;
+  private static final long serialVersionUID = 2971149982983339223L;
 
-    public IntygModuleFacadeException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public IntygModuleFacadeException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public IntygModuleFacadeException(String message) {
-        super(message);
-    }
+  public IntygModuleFacadeException(String message) {
+    super(message);
+  }
 }

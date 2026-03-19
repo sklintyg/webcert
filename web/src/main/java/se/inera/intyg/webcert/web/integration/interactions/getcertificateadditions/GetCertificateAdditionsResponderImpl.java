@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,110 +45,113 @@ import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.util.StreamUtil;
 
-/**
- * Created by eriklupander on 2017-05-11.
- */
+/** Created by eriklupander on 2017-05-11. */
 @SchemaValidation
-public class GetCertificateAdditionsResponderImpl implements GetCertificateAdditionsResponderInterface {
+public class GetCertificateAdditionsResponderImpl
+    implements GetCertificateAdditionsResponderInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateAdditionsResponderImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(GetCertificateAdditionsResponderImpl.class);
 
-    @Autowired
-    private ArendeService arendeService;
+  @Autowired private ArendeService arendeService;
 
-    @Override
-    @PrometheusTimeMethod
-    public GetCertificateAdditionsResponseType getCertificateAdditions(
-        String logicalAddress,
-        GetCertificateAdditionsType request) {
+  @Override
+  @PrometheusTimeMethod
+  public GetCertificateAdditionsResponseType getCertificateAdditions(
+      String logicalAddress, GetCertificateAdditionsType request) {
 
-        if (isNullOrEmpty(request)) {
-            throw new IllegalArgumentException("Request to GetCertificateType is missing required parameter 'intygs-id'");
-        }
-
-        LocalTime start = LocalTime.now();
-
-        GetCertificateAdditionsResponseType response = new GetCertificateAdditionsResponseType();
-        response.getAdditions().addAll(new ArrayList<>());
-
-        try {
-            List<IntygId> identifiers = request.getIntygsId().stream()
-                .filter(StreamUtil.distinctByKeys(IIType::getExtension))
-                .collect(Collectors.toList());
-
-            List<String> extensions = identifiers.stream()
-                .map(IIType::getExtension)
-                .collect(Collectors.toList());
-
-            List<Arende> arendeList = arendeService.getArendenExternal(extensions);
-            identifiers.forEach(identity -> response.getAdditions().add(buildIntygAdditionsType(identity, arendeList)));
-
-            LOG.debug("GetCertificateAdditionsResponderImpl: Successfully returned {} arenden in {} seconds",
-                response.getAdditions().stream().map(IntygAdditionsType::getAddition).mapToLong(List::size).sum(),
-                getExecutionTime(start));
-            response.setResult(ResultCodeType.OK);
-
-        } catch (Exception e) {
-            LOG.error("GetCertificateAdditionsResponderImpl: Failed returning arenden", e);
-            response.setResult(ResultCodeType.ERROR);
-        }
-
-        return response;
+    if (isNullOrEmpty(request)) {
+      throw new IllegalArgumentException(
+          "Request to GetCertificateType is missing required parameter 'intygs-id'");
     }
 
-    private boolean isNullOrEmpty(GetCertificateAdditionsType request) {
-        return request == null || request.getIntygsId() == null || request.getIntygsId().size() == 0;
+    LocalTime start = LocalTime.now();
+
+    GetCertificateAdditionsResponseType response = new GetCertificateAdditionsResponseType();
+    response.getAdditions().addAll(new ArrayList<>());
+
+    try {
+      List<IntygId> identifiers =
+          request.getIntygsId().stream()
+              .filter(StreamUtil.distinctByKeys(IIType::getExtension))
+              .collect(Collectors.toList());
+
+      List<String> extensions =
+          identifiers.stream().map(IIType::getExtension).collect(Collectors.toList());
+
+      List<Arende> arendeList = arendeService.getArendenExternal(extensions);
+      identifiers.forEach(
+          identity -> response.getAdditions().add(buildIntygAdditionsType(identity, arendeList)));
+
+      LOG.debug(
+          "GetCertificateAdditionsResponderImpl: Successfully returned {} arenden in {} seconds",
+          response.getAdditions().stream()
+              .map(IntygAdditionsType::getAddition)
+              .mapToLong(List::size)
+              .sum(),
+          getExecutionTime(start));
+      response.setResult(ResultCodeType.OK);
+
+    } catch (Exception e) {
+      LOG.error("GetCertificateAdditionsResponderImpl: Failed returning arenden", e);
+      response.setResult(ResultCodeType.ERROR);
     }
 
-    private String getExecutionTime(LocalTime start) {
-        return LocalTime.now()
-            .minus(start.toNanoOfDay(), ChronoUnit.NANOS)
-            .format(DateTimeFormatter.ofPattern("ss.SSS"));
-    }
+    return response;
+  }
 
-    private IntygAdditionsType buildIntygAdditionsType(IntygId intygId,
-        List<Arende> arendeList) {
+  private boolean isNullOrEmpty(GetCertificateAdditionsType request) {
+    return request == null || request.getIntygsId() == null || request.getIntygsId().size() == 0;
+  }
 
-        List<AdditionType> additions = arendeList.stream()
+  private String getExecutionTime(LocalTime start) {
+    return LocalTime.now()
+        .minus(start.toNanoOfDay(), ChronoUnit.NANOS)
+        .format(DateTimeFormatter.ofPattern("ss.SSS"));
+  }
+
+  private IntygAdditionsType buildIntygAdditionsType(IntygId intygId, List<Arende> arendeList) {
+
+    List<AdditionType> additions =
+        arendeList.stream()
             .filter(arende -> arende.getIntygsId().equals(intygId.getExtension()))
             .filter(arende -> !arende.getAmne().equals(ArendeAmne.PAMINN))
             .map(this::mapArende)
             .collect(Collectors.toList());
 
-        IntygAdditionsType intygAdditionsType = new IntygAdditionsType();
-        intygAdditionsType.setIntygsId(intygId);
-        intygAdditionsType.getAddition().addAll(additions);
+    IntygAdditionsType intygAdditionsType = new IntygAdditionsType();
+    intygAdditionsType.setIntygsId(intygId);
+    intygAdditionsType.getAddition().addAll(additions);
 
-        return intygAdditionsType;
+    return intygAdditionsType;
+  }
+
+  private AdditionType mapArende(Arende arende) {
+    AdditionType additionType = new AdditionType();
+    additionType.setId(String.valueOf(arende.getId()));
+    additionType.setSkapad(arende.getTimestamp());
+    additionType.setStatus(mapStatus(arende.getStatus(), arende.getSvarPaId()));
+    additionType.setAmne(mapAmne(arende.getAmne()));
+
+    return additionType;
+  }
+
+  private AmneType mapAmne(ArendeAmne amne) {
+    return AmneType.valueOf(amne.name());
+  }
+
+  private StatusType mapStatus(Status status, String svarPaId) {
+    boolean isAnswerFromExternal =
+        status == Status.ANSWERED && svarPaId != null && !svarPaId.isEmpty();
+    if (isAnswerFromExternal) {
+      return StatusType.BESVARAD;
     }
-
-    private AdditionType mapArende(Arende arende) {
-        AdditionType additionType = new AdditionType();
-        additionType.setId(String.valueOf(arende.getId()));
-        additionType.setSkapad(arende.getTimestamp());
-        additionType.setStatus(mapStatus(arende.getStatus(), arende.getSvarPaId()));
-        additionType.setAmne(mapAmne(arende.getAmne()));
-
-        return additionType;
+    switch (status) {
+      case CLOSED:
+      case PENDING_EXTERNAL_ACTION:
+        return StatusType.BESVARAD;
+      default:
+        return StatusType.OBESVARAD;
     }
-
-    private AmneType mapAmne(ArendeAmne amne) {
-        return AmneType.valueOf(amne.name());
-    }
-
-    private StatusType mapStatus(Status status, String svarPaId) {
-        boolean isAnswerFromExternal = status == Status.ANSWERED && svarPaId != null && !svarPaId.isEmpty();
-        if (isAnswerFromExternal) {
-            return StatusType.BESVARAD;
-        }
-        switch (status) {
-            case CLOSED:
-            case PENDING_EXTERNAL_ACTION:
-                return StatusType.BESVARAD;
-            default:
-                return StatusType.OBESVARAD;
-        }
-    }
-
-
+  }
 }

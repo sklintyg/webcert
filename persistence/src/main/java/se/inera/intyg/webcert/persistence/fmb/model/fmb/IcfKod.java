@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,63 +31,60 @@ import jakarta.persistence.Table;
 @Table(name = "FMB_ICF_KOD")
 public class IcfKod {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID")
+  private Long id;
 
-    @Column(name = "KOD", nullable = false)
+  @Column(name = "KOD", nullable = false)
+  private String kod;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "TYP", nullable = false)
+  private IcfKodTyp icfKodTyp;
+
+  protected IcfKod() {}
+
+  private IcfKod(final String kod, final IcfKodTyp icfKodTyp) {
+    this.kod = kod;
+    this.icfKodTyp = icfKodTyp;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getKod() {
+    return kod;
+  }
+
+  public IcfKodTyp getIcfKodTyp() {
+    return icfKodTyp;
+  }
+
+  public static final class IcfKodBuilder {
+
     private String kod;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TYP", nullable = false)
     private IcfKodTyp icfKodTyp;
 
-    protected IcfKod() {
+    private IcfKodBuilder() {}
+
+    public static IcfKodBuilder anIcfKod() {
+      return new IcfKodBuilder();
     }
 
-    private IcfKod(final String kod, final IcfKodTyp icfKodTyp) {
-        this.kod = kod;
-        this.icfKodTyp = icfKodTyp;
+    public IcfKodBuilder kod(String kod) {
+      this.kod = kod;
+      return this;
     }
 
-    public Long getId() {
-        return id;
+    public IcfKodBuilder icfKodTyp(IcfKodTyp icfKodTyp) {
+      this.icfKodTyp = icfKodTyp;
+      return this;
     }
 
-    public String getKod() {
-        return kod;
+    public IcfKod build() {
+      return new IcfKod(kod, icfKodTyp);
     }
-
-    public IcfKodTyp getIcfKodTyp() {
-        return icfKodTyp;
-    }
-
-
-    public static final class IcfKodBuilder {
-
-        private String kod;
-        private IcfKodTyp icfKodTyp;
-
-        private IcfKodBuilder() {
-        }
-
-        public static IcfKodBuilder anIcfKod() {
-            return new IcfKodBuilder();
-        }
-
-        public IcfKodBuilder kod(String kod) {
-            this.kod = kod;
-            return this;
-        }
-
-        public IcfKodBuilder icfKodTyp(IcfKodTyp icfKodTyp) {
-            this.icfKodTyp = icfKodTyp;
-            return this;
-        }
-
-        public IcfKod build() {
-            return new IcfKod(kod, icfKodTyp);
-        }
-    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,217 +50,213 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Created by eriklupander on 2017-08-30.
- * <p>
- * NOT:
- * Intygen TS-BAS och TS-DIABETES får ej skrivas på patienter som
- * har SekretessStatus.TRUE. De intygen ska med andra ord inte
- * räknas med.
+ *
+ * <p>NOT: Intygen TS-BAS och TS-DIABETES får ej skrivas på patienter som har SekretessStatus.TRUE.
+ * De intygen ska med andra ord inte räknas med.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final String HSA1 = "hsa-1";
-    private static final String HSA2 = "hsa-2";
-    private static final String PNR1 = "191212121212";
-    private static final String PNR2 = "191313131313";
-    private static final String PNR3 = "191414141414";
+  private static final String HSA1 = "hsa-1";
+  private static final String HSA2 = "hsa-2";
+  private static final String PNR1 = "191212121212";
+  private static final String PNR2 = "191313131313";
+  private static final String PNR3 = "191414141414";
 
-    private static final String FK7263 = "fk7263";
-    private static final String TSBAS = "ts-bas";
+  private static final String FK7263 = "fk7263";
+  private static final String TSBAS = "ts-bas";
 
-    private static final String PNR_INVALID = "thiswillnotwork";
+  private static final String PNR_INVALID = "thiswillnotwork";
 
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    private StatisticsGroupByUtil testee;
+  @InjectMocks private StatisticsGroupByUtil testee;
 
-    @Before
-    public void setup() {
-        Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
-        Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
-        Personnummer pnr3 = Personnummer.createPersonnummer(PNR3).get();
+  @Before
+  public void setup() {
+    Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
+    Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
+    Personnummer pnr3 = Personnummer.createPersonnummer(PNR3).get();
 
-        Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
-        sekrMap.put(pnr1, SekretessStatus.FALSE);
-        sekrMap.put(pnr2, SekretessStatus.TRUE);
-        sekrMap.put(pnr3, SekretessStatus.FALSE);
+    Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
+    sekrMap.put(pnr1, SekretessStatus.FALSE);
+    sekrMap.put(pnr2, SekretessStatus.TRUE);
+    sekrMap.put(pnr3, SekretessStatus.FALSE);
 
-        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
-    }
+    when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
+  }
 
-    @Test
-    public void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForLakare() {
+  @Test
+  public void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForLakare() {
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+    when(webCertUserService.getUser()).thenReturn(createUser());
 
-        List<GroupableItem> queryResult = new ArrayList<>();
-        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
+    List<GroupableItem> queryResult = new ArrayList<>();
+    queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
 
-        Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
+    Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
 
-        assertEquals(1, result.size());
-        assertEquals(Long.valueOf(2L), result.get(HSA1));
-    }
+    assertEquals(1, result.size());
+    assertEquals(Long.valueOf(2L), result.get(HSA1));
+  }
 
-    @Test
-    public void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForVardadmin() {
+  @Test
+  public void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForVardadmin() {
 
-        when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
+    when(webCertUserService.getUser())
+        .thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
 
-        Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
-        Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
+    Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
+    Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
 
-        Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
-        sekrMap.put(pnr1, SekretessStatus.FALSE);
-        sekrMap.put(pnr2, SekretessStatus.TRUE);
-        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
+    Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
+    sekrMap.put(pnr1, SekretessStatus.FALSE);
+    sekrMap.put(pnr2, SekretessStatus.TRUE);
+    when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
 
-        List<GroupableItem> queryResult = new ArrayList<>();
-        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
-        queryResult.add(new GroupableItem("id-3", HSA1, PNR2, TSBAS));    // Should be filtered away
+    List<GroupableItem> queryResult = new ArrayList<>();
+    queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
+    queryResult.add(new GroupableItem("id-3", HSA1, PNR2, TSBAS)); // Should be filtered away
 
-        Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
+    Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
 
-        assertEquals(1, result.size());
-        assertEquals(Long.valueOf(1L), result.get(HSA1));
-    }
+    assertEquals(1, result.size());
+    assertEquals(Long.valueOf(1L), result.get(HSA1));
+  }
 
-    @Test
-    public void testFilterAndGroupForThreeResultsOfSameUnitTwoIsSekrForOfWhichOneIsTS() {
+  @Test
+  public void testFilterAndGroupForThreeResultsOfSameUnitTwoIsSekrForOfWhichOneIsTS() {
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+    when(webCertUserService.getUser()).thenReturn(createUser());
 
-        List<GroupableItem> queryResult = new ArrayList<>();
-        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));   // No S. All can see.
-        queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));   // Is S, LAKARE can see.
-        queryResult.add(new GroupableItem("id-3", HSA1, PNR1, TSBAS));    // Should be OK
-        queryResult.add(new GroupableItem("id-4", HSA1, PNR2, TSBAS));    // Should be filtered away
+    List<GroupableItem> queryResult = new ArrayList<>();
+    queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263)); // No S. All can see.
+    queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263)); // Is S, LAKARE can see.
+    queryResult.add(new GroupableItem("id-3", HSA1, PNR1, TSBAS)); // Should be OK
+    queryResult.add(new GroupableItem("id-4", HSA1, PNR2, TSBAS)); // Should be filtered away
 
-        Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
+    Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
 
-        assertEquals(1, result.size());
-        assertEquals(Long.valueOf(3L), result.get(HSA1));
-    }
+    assertEquals(1, result.size());
+    assertEquals(Long.valueOf(3L), result.get(HSA1));
+  }
 
+  @Test
+  public void testFilterAndGroupForMultipleUnitsForLakare() {
 
-    @Test
-    public void testFilterAndGroupForMultipleUnitsForLakare() {
+    when(webCertUserService.getUser()).thenReturn(createUser());
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+    List<GroupableItem> queryResult = new ArrayList<>();
+    queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
+    queryResult.add(new GroupableItem("id-3", HSA1, PNR3, FK7263));
+    queryResult.add(new GroupableItem("id-4", HSA2, PNR3, FK7263));
+    queryResult.add(new GroupableItem("id-5", HSA2, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-6", HSA2, PNR3, FK7263));
+    queryResult.add(new GroupableItem("id-7", HSA2, PNR1, TSBAS));
+    queryResult.add(new GroupableItem("id-8", HSA1, PNR2, TSBAS)); // Never this one.
 
-        List<GroupableItem> queryResult = new ArrayList<>();
-        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
-        queryResult.add(new GroupableItem("id-3", HSA1, PNR3, FK7263));
-        queryResult.add(new GroupableItem("id-4", HSA2, PNR3, FK7263));
-        queryResult.add(new GroupableItem("id-5", HSA2, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-6", HSA2, PNR3, FK7263));
-        queryResult.add(new GroupableItem("id-7", HSA2, PNR1, TSBAS));
-        queryResult.add(new GroupableItem("id-8", HSA1, PNR2, TSBAS));     // Never this one.
+    Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
+    assertEquals(2, result.size());
+    assertEquals(Long.valueOf(3L), result.get(HSA1));
+    assertEquals(Long.valueOf(4L), result.get(HSA2));
+  }
 
-        Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
-        assertEquals(2, result.size());
-        assertEquals(Long.valueOf(3L), result.get(HSA1));
-        assertEquals(Long.valueOf(4L), result.get(HSA2));
-    }
+  @Test
+  public void testFilterAndGroupForMultipleUnitsForVardadmin() {
 
-    @Test
-    public void testFilterAndGroupForMultipleUnitsForVardadmin() {
+    when(webCertUserService.getUser())
+        .thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
 
-        when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
+    List<GroupableItem> queryResult = new ArrayList<>();
+    queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263)); // Not this
+    queryResult.add(new GroupableItem("id-3", HSA1, PNR3, FK7263));
+    queryResult.add(new GroupableItem("id-4", HSA2, PNR3, FK7263));
+    queryResult.add(new GroupableItem("id-5", HSA2, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-6", HSA2, PNR3, FK7263));
+    queryResult.add(new GroupableItem("id-7", HSA2, PNR1, TSBAS));
+    queryResult.add(new GroupableItem("id-8", HSA1, PNR2, TSBAS)); // Never this one.
 
-        List<GroupableItem> queryResult = new ArrayList<>();
-        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));      // Not this
-        queryResult.add(new GroupableItem("id-3", HSA1, PNR3, FK7263));
-        queryResult.add(new GroupableItem("id-4", HSA2, PNR3, FK7263));
-        queryResult.add(new GroupableItem("id-5", HSA2, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-6", HSA2, PNR3, FK7263));
-        queryResult.add(new GroupableItem("id-7", HSA2, PNR1, TSBAS));
-        queryResult.add(new GroupableItem("id-8", HSA1, PNR2, TSBAS));     // Never this one.
+    Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
+    assertEquals(2, result.size());
+    assertEquals(Long.valueOf(2L), result.get(HSA1));
+    assertEquals(Long.valueOf(4L), result.get(HSA2));
+  }
 
-        Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
-        assertEquals(2, result.size());
-        assertEquals(Long.valueOf(2L), result.get(HSA1));
-        assertEquals(Long.valueOf(4L), result.get(HSA2));
-    }
+  @Test
+  public void testAssumeNotSekrWhenPUNotResponding() {
 
-    @Test
-    public void testAssumeNotSekrWhenPUNotResponding() {
+    when(webCertUserService.getUser()).thenReturn(createUser());
 
-        when(webCertUserService.getUser()).thenReturn(createUser());
+    List<GroupableItem> queryResult = new ArrayList<>();
+    queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
 
-        List<GroupableItem> queryResult = new ArrayList<>();
-        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-2", HSA1, PNR2, FK7263));
+    Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
+    assertEquals(1, result.size());
+    assertEquals(Long.valueOf(2L), result.get(HSA1));
+  }
 
-        Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
-        assertEquals(1, result.size());
-        assertEquals(Long.valueOf(2L), result.get(HSA1));
-    }
+  @Test
+  public void testFilterEmptyMap() {
+    Map<String, Long> result = testee.toSekretessFilteredMap(new ArrayList<>());
+    assertEquals(0, result.size());
+  }
 
-    @Test
-    public void testFilterEmptyMap() {
-        Map<String, Long> result = testee.toSekretessFilteredMap(new ArrayList<>());
-        assertEquals(0, result.size());
-    }
+  @Test
+  public void testFilterInvalidPersonnummer() {
+    List<GroupableItem> queryResult = new ArrayList<>();
+    queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
+    queryResult.add(new GroupableItem("id-3", HSA1, null, FK7263));
+    queryResult.add(new GroupableItem("id-4", HSA1, "", TSBAS));
+    queryResult.add(new GroupableItem("id-5", HSA2, "thisisainvalidparameter", FK7263));
 
-    @Test
-    public void testFilterInvalidPersonnummer() {
-        List<GroupableItem> queryResult = new ArrayList<>();
-        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
-        queryResult.add(new GroupableItem("id-3", HSA1, null, FK7263));
-        queryResult.add(new GroupableItem("id-4", HSA1, "", TSBAS));
-        queryResult.add(new GroupableItem("id-5", HSA2, "thisisainvalidparameter", FK7263));
+    List<Personnummer> result = testee.getPersonummerList(queryResult);
 
-        List<Personnummer> result = testee.getPersonummerList(queryResult);
+    assertEquals(2, result.size());
+  }
 
-        assertEquals(2, result.size());
-    }
+  @Test
+  public void testFilterInvalidGroupableItems() {
+    List<GroupableItem> queryResult = new ArrayList<>();
+    queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+    queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
+    queryResult.add(new GroupableItem("id-3", HSA1, null, FK7263));
+    queryResult.add(new GroupableItem("id-4", HSA1, "", TSBAS));
+    queryResult.add(new GroupableItem("id-5", HSA2, "thisisainvalidparameter", FK7263));
 
-    @Test
-    public void testFilterInvalidGroupableItems() {
-        List<GroupableItem> queryResult = new ArrayList<>();
-        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
-        queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
-        queryResult.add(new GroupableItem("id-3", HSA1, null, FK7263));
-        queryResult.add(new GroupableItem("id-4", HSA1, "", TSBAS));
-        queryResult.add(new GroupableItem("id-5", HSA2, "thisisainvalidparameter", FK7263));
+    List<GroupableItem> result = testee.getFilteredGroupableItemList(queryResult);
 
-        List<GroupableItem> result = testee.getFilteredGroupableItemList(queryResult);
+    assertEquals(2, result.size());
+  }
 
-        assertEquals(2, result.size());
-    }
+  private WebCertUser buildUserOfRole(Role role) {
+    WebCertUser user = new WebCertUser();
+    user.setRoles(AuthoritiesResolverUtil.toMap(role));
+    user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+    user.setHsaId("testuser");
+    user.setNamn("test userman");
 
-    private WebCertUser buildUserOfRole(Role role) {
-        WebCertUser user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.setHsaId("testuser");
-        user.setNamn("test userman");
+    Vardenhet vardenhet = new Vardenhet(HSA1, "enhet");
 
-        Vardenhet vardenhet = new Vardenhet(HSA1, "enhet");
+    Vardgivare vardgivare = new Vardgivare("vardgivare", "Vardgivaren");
+    vardgivare.getVardenheter().add(vardenhet);
 
-        Vardgivare vardgivare = new Vardgivare("vardgivare", "Vardgivaren");
-        vardgivare.getVardenheter().add(vardenhet);
+    user.setVardgivare(Collections.singletonList(vardgivare));
+    user.setValdVardenhet(vardenhet);
 
-        user.setVardgivare(Collections.singletonList(vardgivare));
-        user.setValdVardenhet(vardenhet);
+    return user;
+  }
 
-        return user;
-    }
-
-    private WebCertUser createUser() {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-        return buildUserOfRole(role);
-    }
+  private WebCertUser createUser() {
+    Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+    return buildUserOfRole(role);
+  }
 }

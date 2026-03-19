@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,34 +30,31 @@ import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "svarighetsgrad"
-})
+@JsonPropertyOrder({"svarighetsgrad"})
 public class Urvalsvarighetsgrad {
 
-    @JsonProperty("svarighetsgrad")
-    private List<Kod> svarighetsgrad = null;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("svarighetsgrad")
+  private List<Kod> svarighetsgrad = null;
 
-    @JsonProperty("svarighetsgrad")
-    public List<Kod> getSvarighetsgrad() {
-        return svarighetsgrad;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("svarighetsgrad")
-    public void setSvarighetsgrad(List<Kod> svarighetsgrad) {
-        this.svarighetsgrad = svarighetsgrad;
-    }
+  @JsonProperty("svarighetsgrad")
+  public List<Kod> getSvarighetsgrad() {
+    return svarighetsgrad;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("svarighetsgrad")
+  public void setSvarighetsgrad(List<Kod> svarighetsgrad) {
+    this.svarighetsgrad = svarighetsgrad;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
 
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

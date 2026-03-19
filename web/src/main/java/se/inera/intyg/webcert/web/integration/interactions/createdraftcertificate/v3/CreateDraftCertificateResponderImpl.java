@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,79 +39,84 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
 @SchemaValidation
-public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
+public class CreateDraftCertificateResponderImpl
+    implements CreateDraftCertificateResponderInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateDraftCertificateResponderImpl.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(CreateDraftCertificateResponderImpl.class);
 
-    @Autowired
-    private CreateDraftCertificateValidator validator;
+  @Autowired private CreateDraftCertificateValidator validator;
 
-    @Autowired
-    private MonitoringLogService monitoringLogService;
+  @Autowired private MonitoringLogService monitoringLogService;
 
-    @Autowired
-    private WebcertUserDetailsService webcertUserDetailsService;
+  @Autowired private WebcertUserDetailsService webcertUserDetailsService;
 
-    @Autowired
-    @Qualifier("createDraftCertificateAggregator")
-    private CreateDraftCertificate createDraftCertificateAggregator;
+  @Autowired
+  @Qualifier("createDraftCertificateAggregator") private CreateDraftCertificate createDraftCertificateAggregator;
 
-    @Override
-    @PerformanceLogging(eventAction = "create-draft-certificate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-    public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
-        final var utkastsParams = parameters.getIntyg();
-        final var invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
-        final var invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
-        IntygUser user;
-        try {
-            user = webcertUserDetailsService.buildUserPrincipal(invokingUserHsaId, "");
-        } catch (Exception e) {
-            return createMIUErrorResponse(utkastsParams);
-        }
-
-        // Validate draft parameters
-        final var resultsValidator = validator.validate(utkastsParams);
-        if (resultsValidator.hasErrors()) {
-            return createValidationErrorResponse(resultsValidator);
-        }
-
-        // Check if the invoking health personal has MIU rights on care unit
-        if (HoSPersonHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isEmpty()) {
-            return createMIUErrorResponse(utkastsParams);
-        }
-
-        user.changeValdVardenhet(invokingUnitHsaId);
-        // Make sure pilots and features are loaded!
-        webcertUserDetailsService.decorateIntygUserWithAvailableFeatures(user);
-        final var appErrorsValidator = validator.validateApplicationErrors(utkastsParams, user);
-        if (appErrorsValidator.hasErrors()) {
-            return createApplicationErrorResponse(appErrorsValidator);
-        }
-
-        return createDraftCertificateAggregator.create(utkastsParams, user);
+  @Override
+  @PerformanceLogging(
+      eventAction = "create-draft-certificate",
+      eventType = MdcLogConstants.EVENT_TYPE_CREATION)
+  public CreateDraftCertificateResponseType createDraftCertificate(
+      String logicalAddress, CreateDraftCertificateType parameters) {
+    final var utkastsParams = parameters.getIntyg();
+    final var invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
+    final var invokingUnitHsaId =
+        utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
+    IntygUser user;
+    try {
+      user = webcertUserDetailsService.buildUserPrincipal(invokingUserHsaId, "");
+    } catch (Exception e) {
+      return createMIUErrorResponse(utkastsParams);
     }
 
-
-    private CreateDraftCertificateResponseType createMIUErrorResponse(Intyg utkastType) {
-        final var invokingUserHsaId = utkastType.getSkapadAv().getPersonalId().getExtension();
-        final var invokingUnitHsaId = utkastType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
-
-        monitoringLogService.logMissingMedarbetarUppdrag(invokingUserHsaId, invokingUnitHsaId);
-
-        final var errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId,
-            invokingUnitHsaId);
-        return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
+    // Validate draft parameters
+    final var resultsValidator = validator.validate(utkastsParams);
+    if (resultsValidator.hasErrors()) {
+      return createValidationErrorResponse(resultsValidator);
     }
 
-    private CreateDraftCertificateResponseType createValidationErrorResponse(ResultValidator resultsValidator) {
-        final var errMsgs = resultsValidator.getErrorMessagesAsString();
-        LOG.warn("Intyg did not validate correctly: {}", errMsgs);
-        return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
+    // Check if the invoking health personal has MIU rights on care unit
+    if (HoSPersonHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isEmpty()) {
+      return createMIUErrorResponse(utkastsParams);
     }
 
-    private CreateDraftCertificateResponseType createApplicationErrorResponse(ResultValidator resultsValidator) {
-        final var errMsgs = resultsValidator.getErrorMessagesAsString();
-        LOG.warn("Intyg did not pass APPLICATION_ERROR check correctly: {}", errMsgs);
-        return createErrorResponse(errMsgs, ErrorIdType.APPLICATION_ERROR);
+    user.changeValdVardenhet(invokingUnitHsaId);
+    // Make sure pilots and features are loaded!
+    webcertUserDetailsService.decorateIntygUserWithAvailableFeatures(user);
+    final var appErrorsValidator = validator.validateApplicationErrors(utkastsParams, user);
+    if (appErrorsValidator.hasErrors()) {
+      return createApplicationErrorResponse(appErrorsValidator);
     }
+
+    return createDraftCertificateAggregator.create(utkastsParams, user);
+  }
+
+  private CreateDraftCertificateResponseType createMIUErrorResponse(Intyg utkastType) {
+    final var invokingUserHsaId = utkastType.getSkapadAv().getPersonalId().getExtension();
+    final var invokingUnitHsaId = utkastType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
+
+    monitoringLogService.logMissingMedarbetarUppdrag(invokingUserHsaId, invokingUnitHsaId);
+
+    final var errMsg =
+        String.format(
+            "No valid MIU was found for person %s on unit %s, can not create draft!",
+            invokingUserHsaId, invokingUnitHsaId);
+    return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
+  }
+
+  private CreateDraftCertificateResponseType createValidationErrorResponse(
+      ResultValidator resultsValidator) {
+    final var errMsgs = resultsValidator.getErrorMessagesAsString();
+    LOG.warn("Intyg did not validate correctly: {}", errMsgs);
+    return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
+  }
+
+  private CreateDraftCertificateResponseType createApplicationErrorResponse(
+      ResultValidator resultsValidator) {
+    final var errMsgs = resultsValidator.getErrorMessagesAsString();
+    LOG.warn("Intyg did not pass APPLICATION_ERROR check correctly: {}", errMsgs);
+    return createErrorResponse(errMsgs, ErrorIdType.APPLICATION_ERROR);
+  }
 }

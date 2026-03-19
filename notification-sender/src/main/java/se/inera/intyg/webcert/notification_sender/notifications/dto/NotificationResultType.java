@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,44 +23,42 @@ import se.inera.intyg.webcert.notification_sender.notifications.enumerations.Not
 
 public final class NotificationResultType {
 
-    private NotificationResultTypeEnum notificationResult;
-    private String exception;
-    private String notificationResultText;
-    private NotificationErrorTypeEnum notificationErrorType;
+  private NotificationResultTypeEnum notificationResult;
+  private String exception;
+  private String notificationResultText;
+  private NotificationErrorTypeEnum notificationErrorType;
 
-    public NotificationResultType() {
+  public NotificationResultType() {}
 
-    }
+  public NotificationResultTypeEnum getNotificationResult() {
+    return notificationResult;
+  }
 
-    public NotificationResultTypeEnum getNotificationResult() {
-        return notificationResult;
-    }
+  public void setNotificationResult(NotificationResultTypeEnum notificationResult) {
+    this.notificationResult = notificationResult;
+  }
 
-    public void setNotificationResult(NotificationResultTypeEnum notificationResult) {
-        this.notificationResult = notificationResult;
-    }
+  public String getException() {
+    return exception;
+  }
 
-    public String getException() {
-        return exception;
-    }
+  public void setException(String exception) {
+    this.exception = exception;
+  }
 
-    public void setException(String exception) {
-        this.exception = exception;
-    }
+  public String getNotificationResultText() {
+    return notificationResultText;
+  }
 
-    public String getNotificationResultText() {
-        return notificationResultText;
-    }
+  public void setNotificationResultText(String notificationResultText) {
+    this.notificationResultText = notificationResultText;
+  }
 
-    public void setNotificationResultText(String notificationResultText) {
-        this.notificationResultText = notificationResultText;
-    }
+  public NotificationErrorTypeEnum getNotificationErrorType() {
+    return notificationErrorType;
+  }
 
-    public NotificationErrorTypeEnum getNotificationErrorType() {
-        return notificationErrorType;
-    }
-
-    public void setNotificationErrorType(NotificationErrorTypeEnum notificationErrorType) {
-        this.notificationErrorType = notificationErrorType;
-    }
+  public void setNotificationErrorType(NotificationErrorTypeEnum notificationErrorType) {
+    this.notificationErrorType = notificationErrorType;
+  }
 }

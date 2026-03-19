@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -57,368 +57,371 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @ExtendWith(MockitoExtension.class)
 class UserStatisticsServiceImplTest {
 
-    static final String SELECTED_UNIT_ID = "UNITID";
-    static final String NOT_SELECTED_UNIT_ID = "NOT_SELECTED_UNIT_ID";
-    static final String SUB_UNIT_TO_SELECTED = "SUB_UNIT_ID";
+  static final String SELECTED_UNIT_ID = "UNITID";
+  static final String NOT_SELECTED_UNIT_ID = "NOT_SELECTED_UNIT_ID";
+  static final String SUB_UNIT_TO_SELECTED = "SUB_UNIT_ID";
 
-    @Mock
-    private CertificateServiceStatisticService certificateServiceStatisticService;
+  @Mock private CertificateServiceStatisticService certificateServiceStatisticService;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
+  @Mock private AuthoritiesHelper authoritiesHelper;
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @InjectMocks
-    private UserStatisticsServiceImpl userStatisticsService;
+  @InjectMocks private UserStatisticsServiceImpl userStatisticsService;
 
-    private WebCertUser user;
+  private WebCertUser user;
 
-    void setUpUser() {
-        user = mock(WebCertUser.class);
+  void setUpUser() {
+    user = mock(WebCertUser.class);
 
-        doReturn(user)
-            .when(webCertUserService)
-            .getUser();
+    doReturn(user).when(webCertUserService).getUser();
+  }
+
+  void setUpUnit() {
+    final var careProvider = getCareProvider();
+
+    doReturn(List.of(careProvider)).when(user).getVardgivare();
+
+    doReturn(careProvider.getVardenheter().get(1)).when(user).getValdVardenhet();
+
+    doReturn(List.of(SELECTED_UNIT_ID)).when(user).getIdsOfSelectedVardenhet();
+
+    doReturn(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED))
+        .when(user)
+        .getIdsOfAllVardenheter();
+  }
+
+  private Vardgivare getCareProvider() {
+    final var careProvider = new Vardgivare();
+    careProvider.setId("CARE_PROVIDER");
+
+    final var selectedUnit = new Vardenhet(SELECTED_UNIT_ID, SELECTED_UNIT_ID);
+    selectedUnit.setMottagningar(
+        List.of(new Mottagning(SUB_UNIT_TO_SELECTED, SUB_UNIT_TO_SELECTED)));
+
+    careProvider.setVardenheter(
+        List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
+
+    return careProvider;
+  }
+
+  private Vardgivare getCareProviderWithUnitsWithoutId() {
+    final var careProvider = new Vardgivare();
+    careProvider.setId("CARE_PROVIDER");
+
+    final var selectedUnit = new Vardenhet(null, SELECTED_UNIT_ID);
+    selectedUnit.setMottagningar(
+        List.of(new Mottagning(SUB_UNIT_TO_SELECTED, SUB_UNIT_TO_SELECTED)));
+
+    careProvider.setVardenheter(
+        List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
+
+    return careProvider;
+  }
+
+  private Vardgivare getCareProviderWithSubUnitsWithoutId() {
+    final var careProvider = new Vardgivare();
+    careProvider.setId("CARE_PROVIDER");
+
+    final var selectedUnit = new Vardenhet(SELECTED_UNIT_ID, SELECTED_UNIT_ID);
+    selectedUnit.setMottagningar(List.of(new Mottagning(null, SUB_UNIT_TO_SELECTED)));
+
+    careProvider.setVardenheter(
+        List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
+
+    return careProvider;
+  }
+
+  @Nested
+  class ErrorHandling {
+
+    @Test
+    void shouldReturnNullIfUserIsNull() {
+      final var result = userStatisticsService.getUserStatistics();
+      assertNull(result);
     }
 
-    void setUpUnit() {
-        final var careProvider = getCareProvider();
+    @Test
+    void shouldReturnNullIfUserHasOriginIntegrated() {
+      setUpUser();
+      doReturn("DJUPINTEGRATION").when(user).getOrigin();
 
-        doReturn(List.of(careProvider))
-            .when(user).getVardgivare();
+      final var result = userStatisticsService.getUserStatistics();
 
-        doReturn(careProvider.getVardenheter().get(1))
-            .when(user)
-            .getValdVardenhet();
-
-        doReturn(List.of(SELECTED_UNIT_ID))
-            .when(user)
-            .getIdsOfSelectedVardenhet();
-
-        doReturn(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)).when(user).getIdsOfAllVardenheter();
+      assertNull(result);
     }
 
-    private Vardgivare getCareProvider() {
-        final var careProvider = new Vardgivare();
-        careProvider.setId("CARE_PROVIDER");
-
-        final var selectedUnit = new Vardenhet(SELECTED_UNIT_ID, SELECTED_UNIT_ID);
-        selectedUnit.setMottagningar(List.of(new Mottagning(SUB_UNIT_TO_SELECTED, SUB_UNIT_TO_SELECTED)));
-
-        careProvider.setVardenheter(List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
-
-        return careProvider;
+    @Test
+    void shouldReturnNullIfUnitIdsAreNull() {
+      setUpUser();
+      ReflectionTestUtils.setField(userStatisticsService, "maxCommissionsForStatistics", 15);
+      doReturn(List.of()).when(user).getVardgivare();
+      final var result = userStatisticsService.getUserStatistics();
+      assertNull(result);
     }
 
-    private Vardgivare getCareProviderWithUnitsWithoutId() {
-        final var careProvider = new Vardgivare();
-        careProvider.setId("CARE_PROVIDER");
+    @Test
+    void shouldReturnNullIfUnauthorizedPrivatePractitioner() {
+      setUpUser();
+      when(user.isUnauthorizedPrivatePractitioner()).thenReturn(true);
+      final var result = userStatisticsService.getUserStatistics();
+      assertNull(result);
+      verify(user, never()).getVardgivare();
+    }
+  }
 
-        final var selectedUnit = new Vardenhet(null, SELECTED_UNIT_ID);
-        selectedUnit.setMottagningar(List.of(new Mottagning(SUB_UNIT_TO_SELECTED, SUB_UNIT_TO_SELECTED)));
+  @Nested
+  class ValuesForSelectedUnit {
 
-        careProvider.setVardenheter(List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
+    final long expectedValue = 100L;
+    final Map<String, Long> map = new HashMap<String, Long>();
 
-        return careProvider;
+    @BeforeEach
+    void setup() {
+      setUpUser();
+
+      doReturn(new HashSet<String>())
+          .when(authoritiesHelper)
+          .getIntygstyperForPrivilege(any(), any());
+
+      map.put(SELECTED_UNIT_ID, expectedValue);
+      ReflectionTestUtils.setField(userStatisticsService, "maxCommissionsForStatistics", 15);
     }
 
-    private Vardgivare getCareProviderWithSubUnitsWithoutId() {
-        final var careProvider = new Vardgivare();
-        careProvider.setId("CARE_PROVIDER");
+    @Test
+    void shouldReturnNbrOfDraftsForSelectedUnit() {
+      setUpUnit();
+      doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
-        final var selectedUnit = new Vardenhet(SELECTED_UNIT_ID, SELECTED_UNIT_ID);
-        selectedUnit.setMottagningar(List.of(new Mottagning(null, SUB_UNIT_TO_SELECTED)));
+      final var result = userStatisticsService.getUserStatistics().getNbrOfDraftsOnSelectedUnit();
 
-        careProvider.setVardenheter(List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
+      assertEquals(expectedValue, result);
+    }
 
-        return careProvider;
+    @Test
+    void shouldReturnNbrOfQuestionsForSelectedUnit() {
+      setUpUnit();
+      doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
+
+      final var result =
+          userStatisticsService.getUserStatistics().getNbrOfUnhandledQuestionsOnSelectedUnit();
+
+      assertEquals(expectedValue, result);
     }
 
     @Nested
-    class ErrorHandling {
+    class CareProviderStatisticsUnlimited {
+
+      final Map<String, Long> draftsMap = new HashMap<String, Long>();
+      final Map<String, Long> questionsMap = new HashMap<String, Long>();
+
+      final long expectedDraftsSelected = 100;
+      final long expectedQuestionsSelected = 200;
+      final long expectedDraftsNotSelected = 1;
+      final long expectedQuestionsNotSelected = 2;
+      final long expectedDraftsSubUnit = 10;
+      final long expectedQuestionsSubUnit = 10;
+
+      @BeforeEach
+      void setup() {
+        draftsMap.put(SELECTED_UNIT_ID, expectedDraftsSelected);
+        draftsMap.put(NOT_SELECTED_UNIT_ID, expectedDraftsNotSelected);
+        draftsMap.put(SUB_UNIT_TO_SELECTED, expectedDraftsSubUnit);
+
+        questionsMap.put(SELECTED_UNIT_ID, expectedQuestionsSelected);
+        questionsMap.put(NOT_SELECTED_UNIT_ID, expectedQuestionsNotSelected);
+        questionsMap.put(SUB_UNIT_TO_SELECTED, expectedQuestionsSubUnit);
+
+        doReturn(questionsMap)
+            .when(arendeService)
+            .getNbrOfUnhandledArendenForCareUnits(any(), any());
+        doReturn(draftsMap).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
+      }
+
+      @Test
+      void shouldAddStatisticsForAllUnitsAndSubUnits() {
+        doReturn(List.of(getCareProvider())).when(user).getVardgivare();
+
+        final var result = userStatisticsService.getUserStatistics();
+
+        assertEquals(3, result.getUnitStatistics().size());
+      }
+
+      @Nested
+      class CareUnit {
 
         @Test
-        void shouldReturnNullIfUserIsNull() {
-            final var result = userStatisticsService.getUserStatistics();
-            assertNull(result);
+        void shouldAddDrafts() {
+          doReturn(List.of(getCareProvider())).when(user).getVardgivare();
+
+          final var result = userStatisticsService.getUserStatistics();
+
+          assertEquals(
+              expectedDraftsSelected,
+              result.getUnitStatistics().get(SELECTED_UNIT_ID).getDraftsOnUnit());
         }
 
         @Test
-        void shouldReturnNullIfUserHasOriginIntegrated() {
-            setUpUser();
-            doReturn("DJUPINTEGRATION").when(user).getOrigin();
+        void shouldAddQuestions() {
+          doReturn(List.of(getCareProvider())).when(user).getVardgivare();
 
-            final var result = userStatisticsService.getUserStatistics();
+          final var result = userStatisticsService.getUserStatistics();
 
-            assertNull(result);
+          assertEquals(
+              expectedQuestionsSelected,
+              result.getUnitStatistics().get(SELECTED_UNIT_ID).getQuestionsOnUnit());
         }
 
         @Test
-        void shouldReturnNullIfUnitIdsAreNull() {
-            setUpUser();
-            ReflectionTestUtils.setField(userStatisticsService, "maxCommissionsForStatistics", 15);
-            doReturn(List.of()).when(user).getVardgivare();
-            final var result = userStatisticsService.getUserStatistics();
-            assertNull(result);
+        void shouldAddDraftsOfSubUnits() {
+          doReturn(List.of(getCareProvider())).when(user).getVardgivare();
+
+          final var result = userStatisticsService.getUserStatistics();
+
+          assertEquals(
+              expectedDraftsSubUnit,
+              result.getUnitStatistics().get(SELECTED_UNIT_ID).getDraftsOnSubUnits());
         }
 
         @Test
-        void shouldReturnNullIfUnauthorizedPrivatePractitioner() {
-            setUpUser();
-            when(user.isUnauthorizedPrivatePractitioner()).thenReturn(true);
-            final var result = userStatisticsService.getUserStatistics();
-            assertNull(result);
-            verify(user, never()).getVardgivare();
+        void shouldAddQuestionsOfSubUnits() {
+          doReturn(List.of(getCareProvider())).when(user).getVardgivare();
+
+          final var result = userStatisticsService.getUserStatistics();
+
+          assertEquals(
+              expectedQuestionsSubUnit,
+              result.getUnitStatistics().get(SELECTED_UNIT_ID).getQuestionsOnSubUnits());
         }
+
+        @Test
+        void shouldExcludeUnitsWithoutUnitId() {
+          doReturn(List.of(getCareProviderWithUnitsWithoutId())).when(user).getVardgivare();
+          doReturn(List.of(NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED))
+              .when(user)
+              .getIdsOfAllVardenheter();
+          doReturn(List.of()).when(user).getIdsOfSelectedVardenhet();
+
+          final var result = userStatisticsService.getUserStatistics();
+          assertTrue(result.getUnitStatistics().keySet().stream().noneMatch(Objects::isNull));
+        }
+      }
+
+      @Nested
+      class SubUnit {
+
+        @Test
+        void shouldAddDrafts() {
+          doReturn(List.of(getCareProvider())).when(user).getVardgivare();
+
+          final var result = userStatisticsService.getUserStatistics();
+
+          assertEquals(
+              expectedDraftsSubUnit,
+              result.getUnitStatistics().get(SUB_UNIT_TO_SELECTED).getDraftsOnUnit());
+        }
+
+        @Test
+        void shouldAddQuestions() {
+          doReturn(List.of(getCareProvider())).when(user).getVardgivare();
+
+          final var result = userStatisticsService.getUserStatistics();
+
+          assertEquals(
+              expectedQuestionsSubUnit,
+              result.getUnitStatistics().get(SUB_UNIT_TO_SELECTED).getQuestionsOnUnit());
+        }
+
+        @Test
+        void shouldExcludeSubUnitsWithoutUnitId() {
+          doReturn(List.of(getCareProviderWithSubUnitsWithoutId())).when(user).getVardgivare();
+          doReturn(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID))
+              .when(user)
+              .getIdsOfAllVardenheter();
+          doReturn(List.of()).when(user).getIdsOfSelectedVardenhet();
+
+          final var result = userStatisticsService.getUserStatistics();
+          assertTrue(result.getUnitStatistics().keySet().stream().noneMatch(Objects::isNull));
+        }
+      }
     }
 
     @Nested
-    class ValuesForSelectedUnit {
+    class TotalDraftsAndUnhandledQuestionsOnOtherUnits {
 
-        final long expectedValue = 100L;
-        final Map<String, Long> map = new HashMap<String, Long>();
+      @BeforeEach
+      void setup() {
+        setUpUnit();
+      }
 
-        @BeforeEach
-        void setup() {
-            setUpUser();
+      @Test
+      void shouldReturn0IfOnlySelectedUnitStatisticsInMap() {
+        doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
+        doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
-            doReturn(new HashSet<String>())
-                .when(authoritiesHelper)
-                .getIntygstyperForPrivilege(any(), any());
+        final var result =
+            userStatisticsService
+                .getUserStatistics()
+                .getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
 
-            map.put(SELECTED_UNIT_ID, expectedValue);
-            ReflectionTestUtils.setField(userStatisticsService, "maxCommissionsForStatistics", 15);
-        }
+        assertEquals(0L, result);
+      }
 
-        @Test
-        void shouldReturnNbrOfDraftsForSelectedUnit() {
-            setUpUnit();
-            doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
+      @Test
+      void shouldReturnNbrOfDrafts() {
+        map.put(NOT_SELECTED_UNIT_ID, expectedValue);
+        doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
-            final var result = userStatisticsService.getUserStatistics().getNbrOfDraftsOnSelectedUnit();
+        final var result =
+            userStatisticsService
+                .getUserStatistics()
+                .getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
 
-            assertEquals(expectedValue, result);
-        }
+        assertEquals(expectedValue, result);
+      }
 
-        @Test
-        void shouldReturnNbrOfQuestionsForSelectedUnit() {
-            setUpUnit();
-            doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
+      @Test
+      void shouldReturnNbrOfQuestions() {
+        map.put(NOT_SELECTED_UNIT_ID, expectedValue);
+        doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
 
-            final var result = userStatisticsService.getUserStatistics().getNbrOfUnhandledQuestionsOnSelectedUnit();
+        final var result =
+            userStatisticsService
+                .getUserStatistics()
+                .getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
 
-            assertEquals(expectedValue, result);
-        }
+        assertEquals(expectedValue, result);
+      }
 
-        @Nested
-        class CareProviderStatisticsUnlimited {
+      @Test
+      void shouldReturnNbrOfQuestionsPlusDrafts() {
+        map.put(NOT_SELECTED_UNIT_ID, expectedValue);
+        doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
+        doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
-            final Map<String, Long> draftsMap = new HashMap<String, Long>();
-            final Map<String, Long> questionsMap = new HashMap<String, Long>();
+        final var result =
+            userStatisticsService
+                .getUserStatistics()
+                .getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
 
-            final long expectedDraftsSelected = 100;
-            final long expectedQuestionsSelected = 200;
-            final long expectedDraftsNotSelected = 1;
-            final long expectedQuestionsNotSelected = 2;
-            final long expectedDraftsSubUnit = 10;
-            final long expectedQuestionsSubUnit = 10;
-
-            @BeforeEach
-            void setup() {
-                draftsMap.put(SELECTED_UNIT_ID, expectedDraftsSelected);
-                draftsMap.put(NOT_SELECTED_UNIT_ID, expectedDraftsNotSelected);
-                draftsMap.put(SUB_UNIT_TO_SELECTED, expectedDraftsSubUnit);
-
-                questionsMap.put(SELECTED_UNIT_ID, expectedQuestionsSelected);
-                questionsMap.put(NOT_SELECTED_UNIT_ID, expectedQuestionsNotSelected);
-                questionsMap.put(SUB_UNIT_TO_SELECTED, expectedQuestionsSubUnit);
-
-                doReturn(questionsMap).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-                doReturn(draftsMap).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
-            }
-
-            @Test
-            void shouldAddStatisticsForAllUnitsAndSubUnits() {
-                doReturn(List.of(getCareProvider()))
-                    .when(user)
-                    .getVardgivare();
-
-                final var result = userStatisticsService.getUserStatistics();
-
-                assertEquals(3, result.getUnitStatistics().size());
-            }
-
-            @Nested
-            class CareUnit {
-
-                @Test
-                void shouldAddDrafts() {
-                    doReturn(List.of(getCareProvider()))
-                        .when(user)
-                        .getVardgivare();
-
-                    final var result = userStatisticsService.getUserStatistics();
-
-                    assertEquals(expectedDraftsSelected, result.getUnitStatistics().get(SELECTED_UNIT_ID).getDraftsOnUnit());
-                }
-
-                @Test
-                void shouldAddQuestions() {
-                    doReturn(List.of(getCareProvider()))
-                        .when(user)
-                        .getVardgivare();
-
-                    final var result = userStatisticsService.getUserStatistics();
-
-                    assertEquals(expectedQuestionsSelected, result.getUnitStatistics().get(SELECTED_UNIT_ID).getQuestionsOnUnit());
-                }
-
-                @Test
-                void shouldAddDraftsOfSubUnits() {
-                    doReturn(List.of(getCareProvider()))
-                        .when(user)
-                        .getVardgivare();
-
-                    final var result = userStatisticsService.getUserStatistics();
-
-                    assertEquals(expectedDraftsSubUnit, result.getUnitStatistics().get(SELECTED_UNIT_ID).getDraftsOnSubUnits());
-                }
-
-                @Test
-                void shouldAddQuestionsOfSubUnits() {
-                    doReturn(List.of(getCareProvider()))
-                        .when(user)
-                        .getVardgivare();
-
-                    final var result = userStatisticsService.getUserStatistics();
-
-                    assertEquals(expectedQuestionsSubUnit, result.getUnitStatistics().get(SELECTED_UNIT_ID).getQuestionsOnSubUnits());
-                }
-
-                @Test
-                void shouldExcludeUnitsWithoutUnitId() {
-                    doReturn(List.of(getCareProviderWithUnitsWithoutId()))
-                        .when(user)
-                        .getVardgivare();
-                    doReturn(List.of(NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED))
-                        .when(user)
-                        .getIdsOfAllVardenheter();
-                    doReturn(List.of())
-                        .when(user)
-                        .getIdsOfSelectedVardenhet();
-
-                    final var result = userStatisticsService.getUserStatistics();
-                    assertTrue(result.getUnitStatistics().keySet().stream().noneMatch(Objects::isNull));
-                }
-            }
-
-            @Nested
-            class SubUnit {
-
-                @Test
-                void shouldAddDrafts() {
-                    doReturn(List.of(getCareProvider()))
-                        .when(user)
-                        .getVardgivare();
-
-                    final var result = userStatisticsService.getUserStatistics();
-
-                    assertEquals(expectedDraftsSubUnit, result.getUnitStatistics().get(SUB_UNIT_TO_SELECTED).getDraftsOnUnit());
-                }
-
-                @Test
-                void shouldAddQuestions() {
-                    doReturn(List.of(getCareProvider()))
-                        .when(user)
-                        .getVardgivare();
-
-                    final var result = userStatisticsService.getUserStatistics();
-
-                    assertEquals(expectedQuestionsSubUnit, result.getUnitStatistics().get(SUB_UNIT_TO_SELECTED).getQuestionsOnUnit());
-                }
-
-                @Test
-                void shouldExcludeSubUnitsWithoutUnitId() {
-                    doReturn(List.of(getCareProviderWithSubUnitsWithoutId()))
-                        .when(user)
-                        .getVardgivare();
-                    doReturn(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID))
-                        .when(user)
-                        .getIdsOfAllVardenheter();
-                    doReturn(List.of())
-                        .when(user)
-                        .getIdsOfSelectedVardenhet();
-
-                    final var result = userStatisticsService.getUserStatistics();
-                    assertTrue(result.getUnitStatistics().keySet().stream().noneMatch(Objects::isNull));
-                }
-            }
-        }
-
-        @Nested
-        class TotalDraftsAndUnhandledQuestionsOnOtherUnits {
-
-            @BeforeEach
-            void setup() {
-                setUpUnit();
-            }
-
-            @Test
-            void shouldReturn0IfOnlySelectedUnitStatisticsInMap() {
-                doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-                doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
-
-                final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
-
-                assertEquals(0L, result);
-            }
-
-            @Test
-            void shouldReturnNbrOfDrafts() {
-                map.put(NOT_SELECTED_UNIT_ID, expectedValue);
-                doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
-
-                final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
-
-                assertEquals(expectedValue, result);
-            }
-
-            @Test
-            void shouldReturnNbrOfQuestions() {
-                map.put(NOT_SELECTED_UNIT_ID, expectedValue);
-                doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-
-                final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
-
-                assertEquals(expectedValue, result);
-            }
-
-            @Test
-            void shouldReturnNbrOfQuestionsPlusDrafts() {
-                map.put(NOT_SELECTED_UNIT_ID, expectedValue);
-                doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-                doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
-
-                final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
-
-                assertEquals(expectedValue * 2, result);
-            }
-        }
-
-        @Test
-        void shouldAddStatisticsFromCertificateService() {
-            setUpUnit();
-            userStatisticsService.getUserStatistics();
-            verify(certificateServiceStatisticService).add(any(UserStatisticsDTO.class),
-                eq(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)), eq(user), eq(false));
-        }
+        assertEquals(expectedValue * 2, result);
+      }
     }
+
+    @Test
+    void shouldAddStatisticsFromCertificateService() {
+      setUpUnit();
+      userStatisticsService.getUserStatistics();
+      verify(certificateServiceStatisticService)
+          .add(
+              any(UserStatisticsDTO.class),
+              eq(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)),
+              eq(user),
+              eq(false));
+    }
+  }
 }

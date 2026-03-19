@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.times;
@@ -35,69 +34,63 @@ import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeServ
 @ExtendWith(MockitoExtension.class)
 class ComplementCertificateAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String MESSAGE = "message";
-    private static final Certificate CERTIFICATE = new Certificate();
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String MESSAGE = "message";
+  private static final Certificate CERTIFICATE = new Certificate();
 
-    @Mock
-    ComplementCertificateFacadeService complementCertificateFromWC;
-    @Mock
-    ComplementCertificateFacadeService complementCertificateFromCS;
-    ComplementCertificateAggregator complementCertificateAggregator;
+  @Mock ComplementCertificateFacadeService complementCertificateFromWC;
+  @Mock ComplementCertificateFacadeService complementCertificateFromCS;
+  ComplementCertificateAggregator complementCertificateAggregator;
 
-    @BeforeEach
-    void setUp() {
-        complementCertificateAggregator = new ComplementCertificateAggregator(
-            complementCertificateFromWC,
-            complementCertificateFromCS
-        );
+  @BeforeEach
+  void setUp() {
+    complementCertificateAggregator =
+        new ComplementCertificateAggregator(
+            complementCertificateFromWC, complementCertificateFromCS);
+  }
+
+  @Nested
+  class ComplementTests {
+
+    @Test
+    void shouldGetComplementedCertificateFromCSIfResponseFromCSIsNotNull() {
+      when(complementCertificateFromCS.complement(CERTIFICATE_ID, MESSAGE)).thenReturn(CERTIFICATE);
+
+      complementCertificateAggregator.complement(CERTIFICATE_ID, MESSAGE);
+
+      verify(complementCertificateFromWC, times(0)).complement(CERTIFICATE_ID, MESSAGE);
     }
 
-    @Nested
-    class ComplementTests {
+    @Test
+    void shouldGetComplementedCertificateFromWCIfResponseFromCSIsNull() {
+      when(complementCertificateFromCS.complement(CERTIFICATE_ID, MESSAGE)).thenReturn(null);
 
-        @Test
-        void shouldGetComplementedCertificateFromCSIfResponseFromCSIsNotNull() {
-            when(complementCertificateFromCS.complement(CERTIFICATE_ID, MESSAGE))
-                .thenReturn(CERTIFICATE);
+      complementCertificateAggregator.complement(CERTIFICATE_ID, MESSAGE);
 
-            complementCertificateAggregator.complement(CERTIFICATE_ID, MESSAGE);
+      verify(complementCertificateFromWC, times(1)).complement(CERTIFICATE_ID, MESSAGE);
+    }
+  }
 
-            verify(complementCertificateFromWC, times(0)).complement(CERTIFICATE_ID, MESSAGE);
-        }
+  @Nested
+  class AnswerComplementTests {
 
-        @Test
-        void shouldGetComplementedCertificateFromWCIfResponseFromCSIsNull() {
-            when(complementCertificateFromCS.complement(CERTIFICATE_ID, MESSAGE))
-                .thenReturn(null);
+    @Test
+    void shouldGetComplementedCertificateFromCSIfResponseFromCSIsNotNull() {
+      when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
+          .thenReturn(CERTIFICATE);
 
-            complementCertificateAggregator.complement(CERTIFICATE_ID, MESSAGE);
+      complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
 
-            verify(complementCertificateFromWC, times(1)).complement(CERTIFICATE_ID, MESSAGE);
-        }
+      verify(complementCertificateFromWC, times(0)).answerComplement(CERTIFICATE_ID, MESSAGE);
     }
 
-    @Nested
-    class AnswerComplementTests {
+    @Test
+    void shouldGetComplementedCertificateFromWCIfResponseFromCSIsNull() {
+      when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE)).thenReturn(null);
 
-        @Test
-        void shouldGetComplementedCertificateFromCSIfResponseFromCSIsNotNull() {
-            when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
-                .thenReturn(CERTIFICATE);
+      complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
 
-            complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
-
-            verify(complementCertificateFromWC, times(0)).answerComplement(CERTIFICATE_ID, MESSAGE);
-        }
-
-        @Test
-        void shouldGetComplementedCertificateFromWCIfResponseFromCSIsNull() {
-            when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
-                .thenReturn(null);
-
-            complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
-
-            verify(complementCertificateFromWC, times(1)).answerComplement(CERTIFICATE_ID, MESSAGE);
-        }
+      verify(complementCertificateFromWC, times(1)).answerComplement(CERTIFICATE_ID, MESSAGE);
     }
+  }
 }

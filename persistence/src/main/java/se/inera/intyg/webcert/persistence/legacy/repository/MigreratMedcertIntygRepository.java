@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,15 +29,16 @@ import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
  *
  * @author nikpet
  */
-public interface MigreratMedcertIntygRepository extends CrudRepository<MigreratMedcertIntyg, String> {
+public interface MigreratMedcertIntygRepository
+    extends CrudRepository<MigreratMedcertIntyg, String> {
 
-    @Query("select mi from MigreratMedcertIntyg mi where mi.intygsId in :certificateIds")
-    List<MigreratMedcertIntyg> getMigreratMedcertIntygByIntygsIds(@Param("certificateIds") List<String> certificateIds);
+  @Query("select mi from MigreratMedcertIntyg mi where mi.intygsId in :certificateIds")
+  List<MigreratMedcertIntyg> getMigreratMedcertIntygByIntygsIds(
+      @Param("certificateIds") List<String> certificateIds);
 
-    default int eraseMedcertCertificatesByCertificateIds(List<String> certificateIds) {
-        final var certificateList = getMigreratMedcertIntygByIntygsIds(certificateIds);
-        deleteAll(certificateList);
-        return certificateList.size();
-    }
-
+  default int eraseMedcertCertificatesByCertificateIds(List<String> certificateIds) {
+    final var certificateList = getMigreratMedcertIntygByIntygsIds(certificateIds);
+    deleteAll(certificateList);
+    return certificateList.size();
+  }
 }

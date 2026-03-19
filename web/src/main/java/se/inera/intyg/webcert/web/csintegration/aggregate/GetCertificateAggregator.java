@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,22 +26,23 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 @Service("getCertificateAggregator")
 public class GetCertificateAggregator implements GetCertificateFacadeService {
 
-    private final GetCertificateFacadeService getCertificateFromWC;
-    private final GetCertificateFacadeService getCertificateFromCS;
+  private final GetCertificateFacadeService getCertificateFromWC;
+  private final GetCertificateFacadeService getCertificateFromCS;
 
-    public GetCertificateAggregator(
-        @Qualifier("getCertificateFromWC") GetCertificateFacadeService getCertificateFromWC,
-        @Qualifier("getCertificateFromCS") GetCertificateFacadeService getCertificateFromCS) {
-        this.getCertificateFromWC = getCertificateFromWC;
-        this.getCertificateFromCS = getCertificateFromCS;
-    }
+  public GetCertificateAggregator(
+      @Qualifier("getCertificateFromWC") GetCertificateFacadeService getCertificateFromWC,
+      @Qualifier("getCertificateFromCS") GetCertificateFacadeService getCertificateFromCS) {
+    this.getCertificateFromWC = getCertificateFromWC;
+    this.getCertificateFromCS = getCertificateFromCS;
+  }
 
-    @Override
-    public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
-        final var responseFromCS = getCertificateFromCS.getCertificate(certificateId, pdlLog, validateAccess);
+  @Override
+  public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
+    final var responseFromCS =
+        getCertificateFromCS.getCertificate(certificateId, pdlLog, validateAccess);
 
-        return responseFromCS != null
-            ? responseFromCS
-            : getCertificateFromWC.getCertificate(certificateId, pdlLog, validateAccess);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : getCertificateFromWC.getCertificate(certificateId, pdlLog, validateAccess);
+  }
 }

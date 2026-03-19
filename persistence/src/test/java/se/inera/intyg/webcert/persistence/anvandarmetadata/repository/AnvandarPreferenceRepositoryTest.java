@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,85 +35,83 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class AnvandarPreferenceRepositoryTest {
 
-    private static final String HSA_ID = "hsaId1";
-    public static final String KEY_1 = "key1";
-    public static final String VALUE_1 = "value1";
-    public static final String VALUE_2 = "value2";
-    public static final String KEY_2 = "key2";
+  private static final String HSA_ID = "hsaId1";
+  public static final String KEY_1 = "key1";
+  public static final String VALUE_1 = "value1";
+  public static final String VALUE_2 = "value2";
+  public static final String KEY_2 = "key2";
 
-    @Autowired
-    private AnvandarPreferenceRepository anvandarMetadataRepository;
+  @Autowired private AnvandarPreferenceRepository anvandarMetadataRepository;
 
-    @PersistenceContext
-    private EntityManager em;
+  @PersistenceContext private EntityManager em;
 
-    @Test
-    public void testFindOne() {
-        AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
-        anvandarMetadataRepository.save(saved);
-        AnvandarPreference read = anvandarMetadataRepository.findById(saved.getInternReferens())
-            .orElse(null);
+  @Test
+  public void testFindOne() {
+    AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
+    anvandarMetadataRepository.save(saved);
+    AnvandarPreference read =
+        anvandarMetadataRepository.findById(saved.getInternReferens()).orElse(null);
 
-        assertNotNull(read);
-        assertEquals(saved, read);
-    }
+    assertNotNull(read);
+    assertEquals(saved, read);
+  }
 
-    @Test
-    public void testGetAnvandarPreference() {
-        AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
-        anvandarMetadataRepository.save(saved);
-        AnvandarPreference saved2 = buildAnvandarPreference(HSA_ID, KEY_2, VALUE_2);
-        anvandarMetadataRepository.save(saved2);
-        AnvandarPreference savedOther = buildAnvandarPreference("other-id", "key3", "value3");
-        anvandarMetadataRepository.save(savedOther);
+  @Test
+  public void testGetAnvandarPreference() {
+    AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
+    anvandarMetadataRepository.save(saved);
+    AnvandarPreference saved2 = buildAnvandarPreference(HSA_ID, KEY_2, VALUE_2);
+    anvandarMetadataRepository.save(saved2);
+    AnvandarPreference savedOther = buildAnvandarPreference("other-id", "key3", "value3");
+    anvandarMetadataRepository.save(savedOther);
 
-        Map<String, String> anvandarPref = anvandarMetadataRepository.getAnvandarPreference(HSA_ID);
-        assertEquals(2, anvandarPref.size());
-        assertEquals(VALUE_1, anvandarPref.get(KEY_1));
-        assertEquals(VALUE_2, anvandarPref.get(KEY_2));
-    }
+    Map<String, String> anvandarPref = anvandarMetadataRepository.getAnvandarPreference(HSA_ID);
+    assertEquals(2, anvandarPref.size());
+    assertEquals(VALUE_1, anvandarPref.get(KEY_1));
+    assertEquals(VALUE_2, anvandarPref.get(KEY_2));
+  }
 
-    @Test
-    public void testFindByHsaAndKeyWhenNotExists() {
-        AnvandarPreference anvandarPreference = anvandarMetadataRepository.findByHsaIdAndKey(HSA_ID, KEY_1);
-        assertNull(anvandarPreference);
-    }
+  @Test
+  public void testFindByHsaAndKeyWhenNotExists() {
+    AnvandarPreference anvandarPreference =
+        anvandarMetadataRepository.findByHsaIdAndKey(HSA_ID, KEY_1);
+    assertNull(anvandarPreference);
+  }
 
-    @Test
-    public void testFindByHsaAndKey() {
-        AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
-        anvandarMetadataRepository.save(saved);
+  @Test
+  public void testFindByHsaAndKey() {
+    AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
+    anvandarMetadataRepository.save(saved);
 
-        AnvandarPreference anvandarPreference = anvandarMetadataRepository.findByHsaIdAndKey(HSA_ID, KEY_1);
-        assertEquals(saved, anvandarPreference);
-    }
+    AnvandarPreference anvandarPreference =
+        anvandarMetadataRepository.findByHsaIdAndKey(HSA_ID, KEY_1);
+    assertEquals(saved, anvandarPreference);
+  }
 
-    @Test
-    public void testDeleteAnvandarPreferenceThatExists() {
-        AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
-        anvandarMetadataRepository.save(saved);
-        anvandarMetadataRepository.delete(saved);
-        boolean exists = anvandarMetadataRepository.exists(HSA_ID, KEY_1);
-        assertFalse(exists);
-        Map<String, String> anvandarPreferenceMap = anvandarMetadataRepository.getAnvandarPreference(HSA_ID);
-        assertEquals(0, anvandarPreferenceMap.size());
-    }
+  @Test
+  public void testDeleteAnvandarPreferenceThatExists() {
+    AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
+    anvandarMetadataRepository.save(saved);
+    anvandarMetadataRepository.delete(saved);
+    boolean exists = anvandarMetadataRepository.exists(HSA_ID, KEY_1);
+    assertFalse(exists);
+    Map<String, String> anvandarPreferenceMap =
+        anvandarMetadataRepository.getAnvandarPreference(HSA_ID);
+    assertEquals(0, anvandarPreferenceMap.size());
+  }
 
-    private AnvandarPreference buildAnvandarPreference(String hsaId, String key, String value) {
-        AnvandarPreference am = new AnvandarPreference();
-        am.setHsaId(hsaId);
-        am.setKey(key);
-        am.setValue(value);
-        return am;
-    }
-
+  private AnvandarPreference buildAnvandarPreference(String hsaId, String key, String value) {
+    AnvandarPreference am = new AnvandarPreference();
+    am.setHsaId(hsaId);
+    am.setKey(key);
+    am.setValue(value);
+    return am;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,64 +31,65 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 @ExtendWith(MockitoExtension.class)
 class CertificateTypeInfoConverterTest {
 
-    @InjectMocks
-    private static final CertificateTypeInfoConverter certificateTypeInfoConverter = new CertificateTypeInfoConverter();
+  @InjectMocks
+  private static final CertificateTypeInfoConverter certificateTypeInfoConverter =
+      new CertificateTypeInfoConverter();
 
-    private CertificateServiceTypeInfoDTO createTypeInfo() {
-        return CertificateServiceTypeInfoDTO.builder()
-            .name("name")
-            .typeName("typeName")
-            .description("description")
-            .links(List.of(new ResourceLinkDTO()))
-            .type("type")
-            .build();
-    }
+  private CertificateServiceTypeInfoDTO createTypeInfo() {
+    return CertificateServiceTypeInfoDTO.builder()
+        .name("name")
+        .typeName("typeName")
+        .description("description")
+        .links(List.of(new ResourceLinkDTO()))
+        .type("type")
+        .build();
+  }
 
-    @Test
-    void shouldConvertId() {
-        final var typeInfo = createTypeInfo();
-        final var response = certificateTypeInfoConverter.convert(typeInfo);
+  @Test
+  void shouldConvertId() {
+    final var typeInfo = createTypeInfo();
+    final var response = certificateTypeInfoConverter.convert(typeInfo);
 
-        assertEquals(typeInfo.getType(), response.getId());
-    }
+    assertEquals(typeInfo.getType(), response.getId());
+  }
 
-    @Test
-    void shouldConvertLabel() {
-        final var typeInfo = createTypeInfo();
-        final var response = certificateTypeInfoConverter.convert(typeInfo);
+  @Test
+  void shouldConvertLabel() {
+    final var typeInfo = createTypeInfo();
+    final var response = certificateTypeInfoConverter.convert(typeInfo);
 
-        assertEquals(typeInfo.getName(), response.getLabel());
-    }
+    assertEquals(typeInfo.getName(), response.getLabel());
+  }
 
-    @Test
-    void shouldConvertIssuerTypeId() {
-        final var typeInfo = createTypeInfo();
-        final var response = certificateTypeInfoConverter.convert(typeInfo);
+  @Test
+  void shouldConvertIssuerTypeId() {
+    final var typeInfo = createTypeInfo();
+    final var response = certificateTypeInfoConverter.convert(typeInfo);
 
-        assertEquals(typeInfo.getTypeName(), response.getIssuerTypeId());
-    }
+    assertEquals(typeInfo.getTypeName(), response.getIssuerTypeId());
+  }
 
-    @Test
-    void shouldConvertDescription() {
-        final var typeInfo = createTypeInfo();
-        final var response = certificateTypeInfoConverter.convert(typeInfo);
+  @Test
+  void shouldConvertDescription() {
+    final var typeInfo = createTypeInfo();
+    final var response = certificateTypeInfoConverter.convert(typeInfo);
 
-        assertEquals(typeInfo.getDescription(), response.getDescription());
-    }
+    assertEquals(typeInfo.getDescription(), response.getDescription());
+  }
 
-    @Test
-    void shouldConvertDetailedDescription() {
-        final var typeInfo = createTypeInfo();
-        final var response = certificateTypeInfoConverter.convert(typeInfo);
+  @Test
+  void shouldConvertDetailedDescription() {
+    final var typeInfo = createTypeInfo();
+    final var response = certificateTypeInfoConverter.convert(typeInfo);
 
-        assertEquals(typeInfo.getDescription(), response.getDetailedDescription());
-    }
+    assertEquals(typeInfo.getDescription(), response.getDetailedDescription());
+  }
 
-    @Test
-    void shouldConvertLinks() {
-        final var typeInfo = createTypeInfo();
-        final var response = certificateTypeInfoConverter.convert(typeInfo);
+  @Test
+  void shouldConvertLinks() {
+    final var typeInfo = createTypeInfo();
+    final var response = certificateTypeInfoConverter.convert(typeInfo);
 
-        assertEquals(typeInfo.getLinks(), response.getLinks());
-    }
+    assertEquals(typeInfo.getLinks(), response.getLinks());
+  }
 }

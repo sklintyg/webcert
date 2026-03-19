@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import jakarta.transaction.Transactional;
@@ -31,27 +30,29 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 @RequiredArgsConstructor
 public class SendNotificationService {
 
-    private final NotificationRedeliveryRepository notificationRedeliveryRepository;
-    private final SendNotificationRequestValidator sendNotificationRequestValidator;
-    private final SendNotificationCountValidator sendNotificationCountValidator;
-    private static final Logger LOG = LoggerFactory.getLogger(SendNotificationService.class);
+  private final NotificationRedeliveryRepository notificationRedeliveryRepository;
+  private final SendNotificationRequestValidator sendNotificationRequestValidator;
+  private final SendNotificationCountValidator sendNotificationCountValidator;
+  private static final Logger LOG = LoggerFactory.getLogger(SendNotificationService.class);
 
-    @Transactional
-    public SendNotificationResponseDTO send(String notificationId) {
-        LOG.info("Attempting to resend status updates. Using parameters: notificationId '{}'", notificationId);
+  @Transactional
+  public SendNotificationResponseDTO send(String notificationId) {
+    LOG.info(
+        "Attempting to resend status updates. Using parameters: notificationId '{}'",
+        notificationId);
 
-        final var sanitizedNotificationId = SendNotificationRequestSanitizer.sanitize(notificationId);
+    final var sanitizedNotificationId = SendNotificationRequestSanitizer.sanitize(notificationId);
 
-        sendNotificationRequestValidator.validateId(sanitizedNotificationId);
-        sendNotificationCountValidator.notification(sanitizedNotificationId);
+    sendNotificationRequestValidator.validateId(sanitizedNotificationId);
+    sendNotificationCountValidator.notification(sanitizedNotificationId);
 
-        final var response = notificationRedeliveryRepository.sendNotification(sanitizedNotificationId);
+    final var response = notificationRedeliveryRepository.sendNotification(sanitizedNotificationId);
 
-        LOG.info("Successfully resent status updates. Number of updates: '{}'. Using parameters: notificationId '{}'", response,
-            notificationId);
+    LOG.info(
+        "Successfully resent status updates. Number of updates: '{}'. Using parameters: notificationId '{}'",
+        response,
+        notificationId);
 
-        return SendNotificationResponseDTO.builder()
-            .count(response)
-            .build();
-    }
+    return SendNotificationResponseDTO.builder().count(response).build();
+  }
 }

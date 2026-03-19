@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,29 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 import java.util.List;
 
 public class UnansweredCommunicationRequest {
 
-    private List<String> patientIds;
-    private Integer maxDaysOfUnansweredCommunication;
+  private List<String> patientIds;
+  private Integer maxDaysOfUnansweredCommunication;
 
-    public UnansweredCommunicationRequest() {
-    }
+  public UnansweredCommunicationRequest() {}
 
-    public UnansweredCommunicationRequest(List<String> patientIds, Integer maxDaysOfUnansweredCommunication) {
-        this.maxDaysOfUnansweredCommunication = maxDaysOfUnansweredCommunication;
-        this.patientIds = patientIds;
-    }
+  public UnansweredCommunicationRequest(
+      List<String> patientIds, Integer maxDaysOfUnansweredCommunication) {
+    this.maxDaysOfUnansweredCommunication = maxDaysOfUnansweredCommunication;
+    this.patientIds = patientIds;
+  }
 
-    public Integer getMaxDaysOfUnansweredCommunication() {
-        return maxDaysOfUnansweredCommunication;
-    }
+  public Integer getMaxDaysOfUnansweredCommunication() {
+    return maxDaysOfUnansweredCommunication;
+  }
 
-    public List<String> getPatientIds() {
-        return patientIds;
-    }
+  public List<String> getPatientIds() {
+    return patientIds;
+  }
 }

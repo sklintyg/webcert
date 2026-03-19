@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,21 +36,20 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
 @Path("/icf")
 public class IcfController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IcfController.class);
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final Logger LOG = LoggerFactory.getLogger(IcfController.class);
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Autowired
-    private IcfFacadeService icfFacadeService;
+  @Autowired private IcfFacadeService icfFacadeService;
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "icf-get-icf", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getIcf(IcfRequestDTO request) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Getting icf data from icd codes: '{}'", Arrays.toString(request.getIcdCodes()));
-        }
-
-        return Response.ok(icfFacadeService.getIcfInformation(request)).build();
+  @POST
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(eventAction = "icf-get-icf", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getIcf(IcfRequestDTO request) {
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Getting icf data from icd codes: '{}'", Arrays.toString(request.getIcdCodes()));
     }
+
+    return Response.ok(icfFacadeService.getIcfInformation(request)).build();
+  }
 }

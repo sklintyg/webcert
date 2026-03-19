@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,12 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonRawValue;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
@@ -36,217 +34,216 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
  */
 public class DraftHolder {
 
-    private long version;
+  private long version;
 
-    private boolean vidarebefordrad;
+  private boolean vidarebefordrad;
 
-    private UtkastStatus status;
+  private UtkastStatus status;
 
-    private String enhetsNamn;
+  private String enhetsNamn;
 
-    private String vardgivareNamn;
+  private String vardgivareNamn;
 
-    @JsonRawValue
-    private String content;
+  @JsonRawValue private String content;
 
-    private String latestTextVersion;
+  private String latestTextVersion;
 
-    private Relations relations = new Relations();
+  private Relations relations = new Relations();
 
-    private LocalDateTime klartForSigneringDatum;
-    private LocalDateTime aterkalladDatum;
-    private LocalDateTime created;
-    private LocalDateTime revokedAt;
+  private LocalDateTime klartForSigneringDatum;
+  private LocalDateTime aterkalladDatum;
+  private LocalDateTime created;
+  private LocalDateTime revokedAt;
 
-    private boolean patientResolved = false;
-    private boolean validPatientAddressAquiredFromPU = false;
-    private boolean sekretessmarkering = false;
-    private boolean avliden = false;
-    private boolean patientNameChangedInPU = false;
-    private boolean patientAddressChangedInPU = false;
-    private boolean isLatestMajorTextVersion = true;
+  private boolean patientResolved = false;
+  private boolean validPatientAddressAquiredFromPU = false;
+  private boolean sekretessmarkering = false;
+  private boolean avliden = false;
+  private boolean patientNameChangedInPU = false;
+  private boolean patientAddressChangedInPU = false;
+  private boolean isLatestMajorTextVersion = true;
 
-    private List<ActionLink> links = new ArrayList<>();
+  private List<ActionLink> links = new ArrayList<>();
 
-    private UtkastCandidateMetaData candidateMetaData;
+  private UtkastCandidateMetaData candidateMetaData;
 
-    private boolean isTestIntyg = false;
+  private boolean isTestIntyg = false;
 
-    // Getters and Setters
+  // Getters and Setters
 
-    public long getVersion() {
-        return version;
-    }
+  public long getVersion() {
+    return version;
+  }
 
-    public void setVersion(long version) {
-        this.version = version;
-    }
+  public void setVersion(long version) {
+    this.version = version;
+  }
 
-    public boolean isVidarebefordrad() {
-        return vidarebefordrad;
-    }
+  public boolean isVidarebefordrad() {
+    return vidarebefordrad;
+  }
 
-    public void setVidarebefordrad(boolean vidarebefordrad) {
-        this.vidarebefordrad = vidarebefordrad;
-    }
+  public void setVidarebefordrad(boolean vidarebefordrad) {
+    this.vidarebefordrad = vidarebefordrad;
+  }
 
-    public UtkastStatus getStatus() {
-        return status;
-    }
+  public UtkastStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(UtkastStatus status) {
-        this.status = status;
-    }
+  public void setStatus(UtkastStatus status) {
+    this.status = status;
+  }
 
-    public String getContent() {
-        return content;
-    }
+  public String getContent() {
+    return content;
+  }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+  public void setContent(String content) {
+    this.content = content;
+  }
 
-    public String getEnhetsNamn() {
-        return enhetsNamn;
-    }
+  public String getEnhetsNamn() {
+    return enhetsNamn;
+  }
 
-    public void setEnhetsNamn(String enhetsNamn) {
-        this.enhetsNamn = enhetsNamn;
-    }
+  public void setEnhetsNamn(String enhetsNamn) {
+    this.enhetsNamn = enhetsNamn;
+  }
 
-    public String getVardgivareNamn() {
-        return vardgivareNamn;
-    }
+  public String getVardgivareNamn() {
+    return vardgivareNamn;
+  }
 
-    public void setVardgivareNamn(String vardgivareNamn) {
-        this.vardgivareNamn = vardgivareNamn;
-    }
+  public void setVardgivareNamn(String vardgivareNamn) {
+    this.vardgivareNamn = vardgivareNamn;
+  }
 
-    public void setLatestTextVersion(String latestTextVersion) {
-        this.latestTextVersion = latestTextVersion;
-    }
+  public void setLatestTextVersion(String latestTextVersion) {
+    this.latestTextVersion = latestTextVersion;
+  }
 
-    public String getLatestTextVersion() {
-        return latestTextVersion;
-    }
+  public String getLatestTextVersion() {
+    return latestTextVersion;
+  }
 
-    public Relations getRelations() {
-        return relations;
-    }
+  public Relations getRelations() {
+    return relations;
+  }
 
-    public void setRelations(Relations relations) {
-        this.relations = relations;
-    }
+  public void setRelations(Relations relations) {
+    this.relations = relations;
+  }
 
-    public LocalDateTime getKlartForSigneringDatum() {
-        return klartForSigneringDatum;
-    }
+  public LocalDateTime getKlartForSigneringDatum() {
+    return klartForSigneringDatum;
+  }
 
-    public void setKlartForSigneringDatum(LocalDateTime klartForSigneringDatum) {
-        this.klartForSigneringDatum = klartForSigneringDatum;
-    }
+  public void setKlartForSigneringDatum(LocalDateTime klartForSigneringDatum) {
+    this.klartForSigneringDatum = klartForSigneringDatum;
+  }
 
-    public LocalDateTime getAterkalladDatum() {
-        return aterkalladDatum;
-    }
+  public LocalDateTime getAterkalladDatum() {
+    return aterkalladDatum;
+  }
 
-    public void setAterkalladDatum(LocalDateTime aterkalladDatum) {
-        this.aterkalladDatum = aterkalladDatum;
-    }
+  public void setAterkalladDatum(LocalDateTime aterkalladDatum) {
+    this.aterkalladDatum = aterkalladDatum;
+  }
 
-    public boolean isPatientResolved() {
-        return patientResolved;
-    }
+  public boolean isPatientResolved() {
+    return patientResolved;
+  }
 
-    public void setPatientResolved(boolean patientResolved) {
-        this.patientResolved = patientResolved;
-    }
+  public void setPatientResolved(boolean patientResolved) {
+    this.patientResolved = patientResolved;
+  }
 
-    public boolean isSekretessmarkering() {
-        return sekretessmarkering;
-    }
+  public boolean isSekretessmarkering() {
+    return sekretessmarkering;
+  }
 
-    public void setSekretessmarkering(boolean sekretessmarkering) {
-        this.sekretessmarkering = sekretessmarkering;
-    }
+  public void setSekretessmarkering(boolean sekretessmarkering) {
+    this.sekretessmarkering = sekretessmarkering;
+  }
 
-    public boolean isAvliden() {
-        return avliden;
-    }
+  public boolean isAvliden() {
+    return avliden;
+  }
 
-    public void setAvliden(boolean avliden) {
-        this.avliden = avliden;
-    }
+  public void setAvliden(boolean avliden) {
+    this.avliden = avliden;
+  }
 
-    public boolean isPatientAddressChangedInPU() {
-        return patientAddressChangedInPU;
-    }
+  public boolean isPatientAddressChangedInPU() {
+    return patientAddressChangedInPU;
+  }
 
-    public void setPatientAddressChangedInPU(boolean patientAddressChangedInPU) {
-        this.patientAddressChangedInPU = patientAddressChangedInPU;
-    }
+  public void setPatientAddressChangedInPU(boolean patientAddressChangedInPU) {
+    this.patientAddressChangedInPU = patientAddressChangedInPU;
+  }
 
-    public boolean isPatientNameChangedInPU() {
-        return patientNameChangedInPU;
-    }
+  public boolean isPatientNameChangedInPU() {
+    return patientNameChangedInPU;
+  }
 
-    public void setPatientNameChangedInPU(boolean patientNameChangedInPU) {
-        this.patientNameChangedInPU = patientNameChangedInPU;
-    }
+  public void setPatientNameChangedInPU(boolean patientNameChangedInPU) {
+    this.patientNameChangedInPU = patientNameChangedInPU;
+  }
 
-    public boolean isValidPatientAddressAquiredFromPU() {
-        return validPatientAddressAquiredFromPU;
-    }
+  public boolean isValidPatientAddressAquiredFromPU() {
+    return validPatientAddressAquiredFromPU;
+  }
 
-    public void setValidPatientAddressAquiredFromPU(boolean validPatientAddressAquiredFromPU) {
-        this.validPatientAddressAquiredFromPU = validPatientAddressAquiredFromPU;
-    }
+  public void setValidPatientAddressAquiredFromPU(boolean validPatientAddressAquiredFromPU) {
+    this.validPatientAddressAquiredFromPU = validPatientAddressAquiredFromPU;
+  }
 
-    public LocalDateTime getCreated() {
-        return created;
-    }
+  public LocalDateTime getCreated() {
+    return created;
+  }
 
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
+  public void setCreated(LocalDateTime created) {
+    this.created = created;
+  }
 
-    public LocalDateTime getRevokedAt() {
-        return revokedAt;
-    }
+  public LocalDateTime getRevokedAt() {
+    return revokedAt;
+  }
 
-    public void setRevokedAt(LocalDateTime revokedAt) {
-        this.revokedAt = revokedAt;
-    }
+  public void setRevokedAt(LocalDateTime revokedAt) {
+    this.revokedAt = revokedAt;
+  }
 
-    public List<ActionLink> getLinks() {
-        return links;
-    }
+  public List<ActionLink> getLinks() {
+    return links;
+  }
 
-    public void addLink(ActionLink link) {
-        this.links.add(link);
-    }
+  public void addLink(ActionLink link) {
+    this.links.add(link);
+  }
 
-    public UtkastCandidateMetaData getCandidateMetaData() {
-        return candidateMetaData;
-    }
+  public UtkastCandidateMetaData getCandidateMetaData() {
+    return candidateMetaData;
+  }
 
-    public void setCandidateMetaData(UtkastCandidateMetaData candidateMetaData) {
-        this.candidateMetaData = candidateMetaData;
-    }
+  public void setCandidateMetaData(UtkastCandidateMetaData candidateMetaData) {
+    this.candidateMetaData = candidateMetaData;
+  }
 
-    public boolean isTestIntyg() {
-        return isTestIntyg;
-    }
+  public boolean isTestIntyg() {
+    return isTestIntyg;
+  }
 
-    public void setTestIntyg(boolean isTestIntyg) {
-        this.isTestIntyg = isTestIntyg;
-    }
+  public void setTestIntyg(boolean isTestIntyg) {
+    this.isTestIntyg = isTestIntyg;
+  }
 
-    public boolean isLatestMajorTextVersion() {
-        return isLatestMajorTextVersion;
-    }
+  public boolean isLatestMajorTextVersion() {
+    return isLatestMajorTextVersion;
+  }
 
-    public void setLatestMajorTextVersion(boolean latestMajorTextVersion) {
-        isLatestMajorTextVersion = latestMajorTextVersion;
-    }
+  public void setLatestMajorTextVersion(boolean latestMajorTextVersion) {
+    isLatestMajorTextVersion = latestMajorTextVersion;
+  }
 }

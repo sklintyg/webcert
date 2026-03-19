@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,42 +26,46 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public class IntygWithNotificationsResponse {
 
-    private final Intyg intyg;
-    private final List<Handelse> notifications;
-    private final ArendeCount sentQuestions;
-    private final ArendeCount receivedQuestions;
-    private final String ref;
+  private final Intyg intyg;
+  private final List<Handelse> notifications;
+  private final ArendeCount sentQuestions;
+  private final ArendeCount receivedQuestions;
+  private final String ref;
 
-    public IntygWithNotificationsResponse(Intyg intyg, List<Handelse> notifications,
-        ArendeCount sentQuestions, ArendeCount receivedQuestions, String ref) {
-        this.intyg = intyg;
-        if (notifications == null) {
-            this.notifications = new ArrayList<>();
-        } else {
-            this.notifications = notifications;
-        }
-        this.sentQuestions = sentQuestions;
-        this.receivedQuestions = receivedQuestions;
-        this.ref = ref;
+  public IntygWithNotificationsResponse(
+      Intyg intyg,
+      List<Handelse> notifications,
+      ArendeCount sentQuestions,
+      ArendeCount receivedQuestions,
+      String ref) {
+    this.intyg = intyg;
+    if (notifications == null) {
+      this.notifications = new ArrayList<>();
+    } else {
+      this.notifications = notifications;
     }
+    this.sentQuestions = sentQuestions;
+    this.receivedQuestions = receivedQuestions;
+    this.ref = ref;
+  }
 
-    public Intyg getIntyg() {
-        return intyg;
-    }
+  public Intyg getIntyg() {
+    return intyg;
+  }
 
-    public List<Handelse> getNotifications() {
-        return notifications;
-    }
+  public List<Handelse> getNotifications() {
+    return notifications;
+  }
 
-    public ArendeCount getSentQuestions() {
-        return sentQuestions;
-    }
+  public ArendeCount getSentQuestions() {
+    return sentQuestions;
+  }
 
-    public ArendeCount getReceivedQuestions() {
-        return receivedQuestions;
-    }
+  public ArendeCount getReceivedQuestions() {
+    return receivedQuestions;
+  }
 
-    public String getRef() {
-        return ref;
-    }
+  public String getRef() {
+    return ref;
+  }
 }

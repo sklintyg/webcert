@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,9 +21,5 @@ package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
-public interface AvtalRepository extends JpaRepository<Avtal, Integer>, AvtalRepositoryCustom {
-
-}
+/** Created by eriklupander on 2015-08-05. */
+public interface AvtalRepository extends JpaRepository<Avtal, Integer>, AvtalRepositoryCustom {}

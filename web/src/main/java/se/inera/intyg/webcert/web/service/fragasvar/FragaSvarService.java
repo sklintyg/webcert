@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,77 +34,63 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
  */
 public interface FragaSvarService {
 
-    FragaSvar processIncomingQuestion(FragaSvar fragaSvar);
+  FragaSvar processIncomingQuestion(FragaSvar fragaSvar);
 
-    FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum);
+  FragaSvar processIncomingAnswer(
+      Long internId, String svarsText, LocalDateTime svarSigneringsDatum);
 
-    /**
-     * Returns all the question/answer pairs that exist for the given certificate.
-     */
-    List<FragaSvarView> getFragaSvar(String intygId);
+  /** Returns all the question/answer pairs that exist for the given certificate. */
+  List<FragaSvarView> getFragaSvar(String intygId);
 
-    FragaSvar getFragaSvarById(Long fragaSvarId);
+  FragaSvar getFragaSvarById(Long fragaSvarId);
 
-    /**
-     * Create an answer for an existing question.
-     */
-    FragaSvar saveSvar(Long frageSvarId, String svarsText);
+  /** Create an answer for an existing question. */
+  FragaSvar saveSvar(Long frageSvarId, String svarsText);
 
-    List<FragaSvarView> answerKomplettering(String intygsId, String svarsText);
+  List<FragaSvarView> answerKomplettering(String intygsId, String svarsText);
 
-    /**
-     * Create a new FragaSvar instance for a certificate and send it to external receiver (FK).
-     */
-    FragaSvar saveNewQuestion(String intygId, String typ, Amne amne, String frageText);
+  /** Create a new FragaSvar instance for a certificate and send it to external receiver (FK). */
+  FragaSvar saveNewQuestion(String intygId, String typ, Amne amne, String frageText);
 
-    /**
-     * Set the dispatch state for the specified {@link FragaSvar} entity.
-     */
-    List<FragaSvar> setVidareBefordrad(String intygsId);
+  /** Set the dispatch state for the specified {@link FragaSvar} entity. */
+  List<FragaSvar> setVidareBefordrad(String intygsId);
 
-    /**
-     * A FragaSvar is set as handled.
-     * Sets the status of a FragaSvar as "closed"
-     *
-     * @return the FragaSvar-object that has been closed
-     */
-    FragaSvar closeQuestionAsHandled(Long frageSvarId);
+  /**
+   * A FragaSvar is set as handled. Sets the status of a FragaSvar as "closed"
+   *
+   * @return the FragaSvar-object that has been closed
+   */
+  FragaSvar closeQuestionAsHandled(Long frageSvarId);
 
-    /**
-     * Close all Kompletteringsbegäran for the given certificate.
-     */
-    void closeCompletionsAsHandled(String intygId);
+  /** Close all Kompletteringsbegäran for the given certificate. */
+  void closeCompletionsAsHandled(String intygId);
 
-    /**
-     * Close all questions related to a certificate.
-     *
-     * @param intygsId the certificates unique identifier
-     */
-    void closeAllNonClosedQuestions(String intygsId);
+  /**
+   * Close all questions related to a certificate.
+   *
+   * @param intygsId the certificates unique identifier
+   */
+  void closeAllNonClosedQuestions(String intygsId);
 
-    /**
-     * A FragaSvar is set as unhandled.
-     * If it has an answer, the status is set to "ANSWERED"
-     * If it doesn't have an answer, the status is set to "PENDING_EXTERNAL_ACTION"
-     */
-    FragaSvar openQuestionAsUnhandled(Long frageSvarId);
+  /**
+   * A FragaSvar is set as unhandled. If it has an answer, the status is set to "ANSWERED" If it
+   * doesn't have an answer, the status is set to "PENDING_EXTERNAL_ACTION"
+   */
+  FragaSvar openQuestionAsUnhandled(Long frageSvarId);
 
-    /**
-     * Returns all the question/answer matching filter criteria.
-     */
-    QueryFragaSvarResponse filterFragaSvar(Filter filter);
+  /** Returns all the question/answer matching filter criteria. */
+  QueryFragaSvarResponse filterFragaSvar(Filter filter);
 
-    /**
-     * Returns a list of all unique hsaId and name (of vardperson who signed a certificate that a FragaSvar is linked
-     * to) that matches the supplied id.
-     */
-    List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId);
+  /**
+   * Returns a list of all unique hsaId and name (of vardperson who signed a certificate that a
+   * FragaSvar is linked to) that matches the supplied id.
+   */
+  List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId);
 
-    /**
-     * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA id of the care
-     * unit
-     * as key and related to an intyg of one of the specified types.
-     */
-    Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds, Set<String> intygsTyper);
-
+  /**
+   * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA
+   * id of the care unit as key and related to an intyg of one of the specified types.
+   */
+  Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(
+      List<String> vardenheterIds, Set<String> intygsTyper);
 }

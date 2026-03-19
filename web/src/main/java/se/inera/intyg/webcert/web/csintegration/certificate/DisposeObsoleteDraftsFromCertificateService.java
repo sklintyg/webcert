@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDate;
@@ -37,49 +36,50 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @RequiredArgsConstructor
 public class DisposeObsoleteDraftsFromCertificateService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final MonitoringLogService monitoringLogService;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final MonitoringLogService monitoringLogService;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    public int dispose(LocalDateTime disposeObsoleteDraftsDate) {
+  public int dispose(LocalDateTime disposeObsoleteDraftsDate) {
 
-        final var obsoleteDraftIds = csIntegrationService.listObsoleteDrafts(
-            csIntegrationRequestFactory.getListObsoleteDraftsRequestDTO(disposeObsoleteDraftsDate)
-        );
+    final var obsoleteDraftIds =
+        csIntegrationService.listObsoleteDrafts(
+            csIntegrationRequestFactory.getListObsoleteDraftsRequestDTO(disposeObsoleteDraftsDate));
 
-        if (obsoleteDraftIds.isEmpty()) {
-            return 0;
-        }
-
-        return obsoleteDraftIds.stream()
-            .mapToInt(certificateId -> disposeDraft(certificateId, disposeObsoleteDraftsDate))
-            .sum();
+    if (obsoleteDraftIds.isEmpty()) {
+      return 0;
     }
 
-    private int disposeDraft(String certificateId, LocalDateTime disposeObsoleteDraftsDate) {
-        try {
-            final var certificateXml = csIntegrationService.getInternalCertificateXml(certificateId);
+    return obsoleteDraftIds.stream()
+        .mapToInt(certificateId -> disposeDraft(certificateId, disposeObsoleteDraftsDate))
+        .sum();
+  }
 
-            final var disposedCertificate = csIntegrationService.disposeObsoleteDraft(
-                csIntegrationRequestFactory.getDisposeObsoleteDraftRequestDTO(certificateId)
-            );
+  private int disposeDraft(String certificateId, LocalDateTime disposeObsoleteDraftsDate) {
+    try {
+      final var certificateXml = csIntegrationService.getInternalCertificateXml(certificateId);
 
-            publishCertificateStatusUpdateService.publish(disposedCertificate, HandelsekodEnum.RADERA, certificateXml);
+      final var disposedCertificate =
+          csIntegrationService.disposeObsoleteDraft(
+              csIntegrationRequestFactory.getDisposeObsoleteDraftRequestDTO(certificateId));
 
-            monitoringLogService.logUtkastDisposed(
-                disposedCertificate.getMetadata().getId(),
-                disposedCertificate.getMetadata().getType(),
-                ChronoUnit.DAYS.between(disposeObsoleteDraftsDate.toLocalDate(), LocalDate.now())
-            );
+      publishCertificateStatusUpdateService.publish(
+          disposedCertificate, HandelsekodEnum.RADERA, certificateXml);
 
-            publishCertificateAnalyticsMessage.publishEvent(certificateAnalyticsMessageFactory.draftDisposed(disposedCertificate));
-            return 1;
-        } catch (Exception e) {
-            log.error("Failed to dispose obsolete draft with id: {}", certificateId, e);
-            return 0;
-        }
+      monitoringLogService.logUtkastDisposed(
+          disposedCertificate.getMetadata().getId(),
+          disposedCertificate.getMetadata().getType(),
+          ChronoUnit.DAYS.between(disposeObsoleteDraftsDate.toLocalDate(), LocalDate.now()));
+
+      publishCertificateAnalyticsMessage.publishEvent(
+          certificateAnalyticsMessageFactory.draftDisposed(disposedCertificate));
+      return 1;
+    } catch (Exception e) {
+      log.error("Failed to dispose obsolete draft with id: {}", certificateId, e);
+      return 0;
     }
+  }
 }

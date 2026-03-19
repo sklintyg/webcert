@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,39 +30,38 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 @Service(value = "GetQuestionsFacadeServiceImpl")
 public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService {
 
-    private final IntygService intygService;
-    private final GetQuestionsFacadeService arendeToQuestionFacadeService;
-    private final GetQuestionsFacadeService fragaSvarToQuestionFacadeService;
+  private final IntygService intygService;
+  private final GetQuestionsFacadeService arendeToQuestionFacadeService;
+  private final GetQuestionsFacadeService fragaSvarToQuestionFacadeService;
 
-    @Autowired
-    public GetQuestionsFacadeServiceImpl(
-        IntygService intygService,
-        @Qualifier("ArendeToQuestionFacadeService") GetQuestionsFacadeService arendeToQuestionFacadeService,
-        @Qualifier("FragaSvarToQuestionFacadeService") GetQuestionsFacadeService fragaSvarToQuestionFacadeService) {
-        this.intygService = intygService;
-        this.arendeToQuestionFacadeService = arendeToQuestionFacadeService;
-        this.fragaSvarToQuestionFacadeService = fragaSvarToQuestionFacadeService;
-    }
+  @Autowired
+  public GetQuestionsFacadeServiceImpl(
+      IntygService intygService,
+      @Qualifier("ArendeToQuestionFacadeService") GetQuestionsFacadeService arendeToQuestionFacadeService,
+      @Qualifier("FragaSvarToQuestionFacadeService") GetQuestionsFacadeService fragaSvarToQuestionFacadeService) {
+    this.intygService = intygService;
+    this.arendeToQuestionFacadeService = arendeToQuestionFacadeService;
+    this.fragaSvarToQuestionFacadeService = fragaSvarToQuestionFacadeService;
+  }
 
-    @Override
-    public List<Question> getQuestions(String certificateId) {
-        if (useFragaSvarToQuestion(certificateId)) {
-            return fragaSvarToQuestionFacadeService.getQuestions(certificateId);
-        }
-        return arendeToQuestionFacadeService.getQuestions(certificateId);
+  @Override
+  public List<Question> getQuestions(String certificateId) {
+    if (useFragaSvarToQuestion(certificateId)) {
+      return fragaSvarToQuestionFacadeService.getQuestions(certificateId);
     }
+    return arendeToQuestionFacadeService.getQuestions(certificateId);
+  }
 
-    @Override
-    public List<Question> getComplementQuestions(String certificateId) {
-        if (useFragaSvarToQuestion(certificateId)) {
-            return fragaSvarToQuestionFacadeService.getComplementQuestions(certificateId);
-        }
-        return arendeToQuestionFacadeService.getComplementQuestions(certificateId);
+  @Override
+  public List<Question> getComplementQuestions(String certificateId) {
+    if (useFragaSvarToQuestion(certificateId)) {
+      return fragaSvarToQuestionFacadeService.getComplementQuestions(certificateId);
     }
+    return arendeToQuestionFacadeService.getComplementQuestions(certificateId);
+  }
 
-    private boolean useFragaSvarToQuestion(String certificateId) {
-        return Fk7263EntryPoint.MODULE_ID.equals(
-            intygService.getIntygTypeInfo(certificateId).getIntygType()
-        );
-    }
+  private boolean useFragaSvarToQuestion(String certificateId) {
+    return Fk7263EntryPoint.MODULE_ID.equals(
+        intygService.getIntygTypeInfo(certificateId).getIntygType());
+  }
 }

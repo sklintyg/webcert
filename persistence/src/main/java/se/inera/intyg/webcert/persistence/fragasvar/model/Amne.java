@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,11 +19,11 @@
 package se.inera.intyg.webcert.persistence.fragasvar.model;
 
 public enum Amne {
-    KOMPLETTERING_AV_LAKARINTYG,
-    MAKULERING_AV_LAKARINTYG,
-    AVSTAMNINGSMOTE,
-    KONTAKT,
-    ARBETSTIDSFORLAGGNING,
-    PAMINNELSE,
-    OVRIGT
+  KOMPLETTERING_AV_LAKARINTYG,
+  MAKULERING_AV_LAKARINTYG,
+  AVSTAMNINGSMOTE,
+  KONTAKT,
+  ARBETSTIDSFORLAGGNING,
+  PAMINNELSE,
+  OVRIGT
 }

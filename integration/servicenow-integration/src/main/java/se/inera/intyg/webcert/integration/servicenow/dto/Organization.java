@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,14 +31,12 @@ import se.inera.intyg.webcert.integration.servicenow.dto.Organization.Organizati
 @Builder
 public class Organization {
 
-    @JsonProperty("orgNo")
-    String organizationNumber;
+  @JsonProperty("orgNo")
+  String organizationNumber;
 
-    @JsonProperty("serviceCode")
-    List<String> serviceCodes;
+  @JsonProperty("serviceCode")
+  List<String> serviceCodes;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class OrganizationBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class OrganizationBuilder {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.mock;
@@ -36,71 +35,65 @@ import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 
 class RenewCertificateAggregatorTest {
 
-    private static final String ID = "ID";
-    private static final String NEW_ID = "NEW_ID";
-    private static final String TYPE = "TYPE";
-    private Certificate certificate;
+  private static final String ID = "ID";
+  private static final String NEW_ID = "NEW_ID";
+  private static final String TYPE = "TYPE";
+  private Certificate certificate;
 
-    RenewCertificateFacadeService renewCertificateFromWC;
-    RenewCertificateFacadeService renewCertificateFromCS;
-    RenewCertificateFacadeService aggregator;
-    RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService;
-    CSIntegrationService csIntegrationService;
-    GetCertificateAggregator getCertificateAggregator;
+  RenewCertificateFacadeService renewCertificateFromWC;
+  RenewCertificateFacadeService renewCertificateFromCS;
+  RenewCertificateFacadeService aggregator;
+  RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService;
+  CSIntegrationService csIntegrationService;
+  GetCertificateAggregator getCertificateAggregator;
 
-    @BeforeEach
-    void setup() {
-        renewCertificateFromWC = mock(RenewCertificateFacadeService.class);
-        renewCertificateFromCS = mock(RenewCertificateFacadeService.class);
-        renewLegacyCertificateFromCertificateService = mock(RenewLegacyCertificateFromCertificateService.class);
-        csIntegrationService = mock(CSIntegrationService.class);
-        getCertificateAggregator = mock(GetCertificateAggregator.class);
+  @BeforeEach
+  void setup() {
+    renewCertificateFromWC = mock(RenewCertificateFacadeService.class);
+    renewCertificateFromCS = mock(RenewCertificateFacadeService.class);
+    renewLegacyCertificateFromCertificateService =
+        mock(RenewLegacyCertificateFromCertificateService.class);
+    csIntegrationService = mock(CSIntegrationService.class);
+    getCertificateAggregator = mock(GetCertificateAggregator.class);
 
-        certificate = mock(Certificate.class);
-        when(certificate.getMetadata())
-            .thenReturn(CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .build());
+    certificate = mock(Certificate.class);
+    when(certificate.getMetadata())
+        .thenReturn(CertificateMetadata.builder().id(ID).type(TYPE).build());
 
-        aggregator = new RenewCertificateAggregator(
+    aggregator =
+        new RenewCertificateAggregator(
             renewCertificateFromWC,
             renewCertificateFromCS,
             csIntegrationService,
             getCertificateAggregator,
-            renewLegacyCertificateFromCertificateService
-        );
-    }
+            renewLegacyCertificateFromCertificateService);
+  }
 
-    @Test
-    void shouldRenewFromCSIfExists() {
-        when(renewCertificateFromCS.renewCertificate(ID))
-            .thenReturn(NEW_ID);
-        aggregator.renewCertificate(ID);
+  @Test
+  void shouldRenewFromCSIfExists() {
+    when(renewCertificateFromCS.renewCertificate(ID)).thenReturn(NEW_ID);
+    aggregator.renewCertificate(ID);
 
-        Mockito.verify(renewCertificateFromWC, times(0)).renewCertificate(ID);
-    }
+    Mockito.verify(renewCertificateFromWC, times(0)).renewCertificate(ID);
+  }
 
-    @Test
-    void shouldRenewFromWCIfCertificateAndTypeDoesNotExistInCS() {
-        when(getCertificateAggregator.getCertificate(ID, false, true))
-            .thenReturn(certificate);
-        when(csIntegrationService.certificateTypeExists(TYPE))
-            .thenReturn(Optional.empty());
-        aggregator.renewCertificate(ID);
+  @Test
+  void shouldRenewFromWCIfCertificateAndTypeDoesNotExistInCS() {
+    when(getCertificateAggregator.getCertificate(ID, false, true)).thenReturn(certificate);
+    when(csIntegrationService.certificateTypeExists(TYPE)).thenReturn(Optional.empty());
+    aggregator.renewCertificate(ID);
 
-        Mockito.verify(renewCertificateFromWC, times(1)).renewCertificate(ID);
-    }
+    Mockito.verify(renewCertificateFromWC, times(1)).renewCertificate(ID);
+  }
 
-    @Test
-    void shouldRenewFromLegacyServiceCertificateDoesNotExistInCSButTypeDoes() {
-        when(getCertificateAggregator.getCertificate(ID, false, true))
-            .thenReturn(certificate);
-        final var modelIdDTO = CertificateModelIdDTO.builder().build();
-        when(csIntegrationService.certificateTypeExists(TYPE))
-            .thenReturn(Optional.of(modelIdDTO));
-        aggregator.renewCertificate(ID);
+  @Test
+  void shouldRenewFromLegacyServiceCertificateDoesNotExistInCSButTypeDoes() {
+    when(getCertificateAggregator.getCertificate(ID, false, true)).thenReturn(certificate);
+    final var modelIdDTO = CertificateModelIdDTO.builder().build();
+    when(csIntegrationService.certificateTypeExists(TYPE)).thenReturn(Optional.of(modelIdDTO));
+    aggregator.renewCertificate(ID);
 
-        Mockito.verify(renewLegacyCertificateFromCertificateService, times(1)).renewCertificate(certificate, modelIdDTO);
-    }
+    Mockito.verify(renewLegacyCertificateFromCertificateService, times(1))
+        .renewCertificate(certificate, modelIdDTO);
+  }
 }

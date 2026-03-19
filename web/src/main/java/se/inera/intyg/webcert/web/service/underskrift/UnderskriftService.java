@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,13 +23,19 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
 public interface UnderskriftService {
 
-    SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID, String userIpAddress);
+  SignaturBiljett startSigningProcess(
+      String intygsId,
+      String intygsTyp,
+      long version,
+      SignMethod signMethod,
+      String ticketID,
+      String userIpAddress);
 
-    SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId);
+  SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId);
 
-    SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat);
+  SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat);
 
-    SignaturBiljett grpSignature(String biljettId, byte[] signatur);
+  SignaturBiljett grpSignature(String biljettId, byte[] signatur);
 
-    SignaturBiljett signeringsStatus(String ticketId);
+  SignaturBiljett signeringsStatus(String ticketId);
 }

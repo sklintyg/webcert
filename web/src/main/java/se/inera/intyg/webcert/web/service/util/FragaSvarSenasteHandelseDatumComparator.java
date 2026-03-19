@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,16 +28,16 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
  */
 public class FragaSvarSenasteHandelseDatumComparator implements Comparator<FragaSvar> {
 
-    @Override
-    public int compare(FragaSvar f1, FragaSvar f2) {
-        if (f1.getSenasteHandelseDatum() == null && f2.getSenasteHandelseDatum() == null) {
-            return 0;
-        } else if (f1.getSenasteHandelseDatum() == null) {
-            return -1;
-        } else if (f2.getSenasteHandelseDatum() == null) {
-            return 1;
-        } else {
-            return f2.getSenasteHandelseDatum().compareTo(f1.getSenasteHandelseDatum());
-        }
+  @Override
+  public int compare(FragaSvar f1, FragaSvar f2) {
+    if (f1.getSenasteHandelseDatum() == null && f2.getSenasteHandelseDatum() == null) {
+      return 0;
+    } else if (f1.getSenasteHandelseDatum() == null) {
+      return -1;
+    } else if (f2.getSenasteHandelseDatum() == null) {
+      return 1;
+    } else {
+      return f2.getSenasteHandelseDatum().compareTo(f1.getSenasteHandelseDatum());
     }
+  }
 }

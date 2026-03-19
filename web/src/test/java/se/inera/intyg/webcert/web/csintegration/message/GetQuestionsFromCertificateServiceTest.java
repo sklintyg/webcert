@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,48 +42,43 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRe
 @ExtendWith(MockitoExtension.class)
 class GetQuestionsFromCertificateServiceTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String PERSON_ID = "personId";
-    @Mock
-    private CSIntegrationService csIntegrationService;
-    @Mock
-    private CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    private GetQuestionsFromCertificateService getQuestionsFromCertificateService;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String PERSON_ID = "personId";
+  @Mock private CSIntegrationService csIntegrationService;
+  @Mock private CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks private GetQuestionsFromCertificateService getQuestionsFromCertificateService;
 
-    @Test
-    void shallReturnNullIfCertificateDontExistInCertificateService() {
-        doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        assertNull(getQuestionsFromCertificateService.get(CERTIFICATE_ID));
-    }
+  @Test
+  void shallReturnNullIfCertificateDontExistInCertificateService() {
+    doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    assertNull(getQuestionsFromCertificateService.get(CERTIFICATE_ID));
+  }
 
-    @Test
-    void shallReturnListOfQuestionsFromCertificateService() {
-        final var questionDto = Question.builder().build();
-        final var expectedQuestions = new ArrayList<Question>();
-        expectedQuestions.add(questionDto);
-        final var certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .patient(
-                    Patient.builder()
-                        .personId(PersonId.builder()
-                            .id(PERSON_ID)
-                            .build())
-                        .build()
-                )
-                .build()
-        );
-        final var getCertificateRequestDTO = GetCertificateRequestDTO.builder().build();
-        final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
+  @Test
+  void shallReturnListOfQuestionsFromCertificateService() {
+    final var questionDto = Question.builder().build();
+    final var expectedQuestions = new ArrayList<Question>();
+    expectedQuestions.add(questionDto);
+    final var certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .patient(Patient.builder().personId(PersonId.builder().id(PERSON_ID).build()).build())
+            .build());
+    final var getCertificateRequestDTO = GetCertificateRequestDTO.builder().build();
+    final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
 
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(getCertificateRequestDTO).when(csIntegrationRequestFactory).getCertificateRequest();
-        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, getCertificateRequestDTO);
-        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
-        when(csIntegrationService.getQuestions(getCertificateMessageRequestDTO, CERTIFICATE_ID)).thenReturn(expectedQuestions);
+    doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    doReturn(getCertificateRequestDTO).when(csIntegrationRequestFactory).getCertificateRequest();
+    doReturn(certificate)
+        .when(csIntegrationService)
+        .getCertificate(CERTIFICATE_ID, getCertificateRequestDTO);
+    doReturn(getCertificateMessageRequestDTO)
+        .when(csIntegrationRequestFactory)
+        .getCertificateMessageRequest(PERSON_ID);
+    when(csIntegrationService.getQuestions(getCertificateMessageRequestDTO, CERTIFICATE_ID))
+        .thenReturn(expectedQuestions);
 
-        final var actualQuestions = getQuestionsFromCertificateService.get(CERTIFICATE_ID);
-        assertEquals(expectedQuestions, actualQuestions);
-    }
+    final var actualQuestions = getQuestionsFromCertificateService.get(CERTIFICATE_ID);
+    assertEquals(expectedQuestions, actualQuestions);
+  }
 }

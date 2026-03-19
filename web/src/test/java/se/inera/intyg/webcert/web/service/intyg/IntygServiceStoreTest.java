@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,38 +43,41 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceStoreTest extends AbstractIntygServiceTest {
 
-    @Before
-    @Override
-    public void setupMocks() throws Exception {
-        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
-        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
-        CertificateMetaData metaData = buildCertificateMetaData();
-        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-    }
+  @Before
+  @Override
+  public void setupMocks() throws Exception {
+    json =
+        Files.readString(
+            Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
+    utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+    CertificateMetaData metaData = buildCertificateMetaData();
+    certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+  }
 
-    @Test
-    public void testStoreIntyg() throws Exception {
+  @Test
+  public void testStoreIntyg() throws Exception {
 
-        IntygServiceResult res = intygService.storeIntyg(createUtkast());
-        assertEquals(IntygServiceResult.OK, res);
+    IntygServiceResult res = intygService.storeIntyg(createUtkast());
+    assertEquals(IntygServiceResult.OK, res);
 
-        verify(certificateSenderService, times(1)).storeCertificate(INTYG_ID, INTYG_TYP_FK, json);
-        verify(monitoringService).logIntygRegistered(INTYG_ID, INTYG_TYP_FK);
-    }
+    verify(certificateSenderService, times(1)).storeCertificate(INTYG_ID, INTYG_TYP_FK, json);
+    verify(monitoringService).logIntygRegistered(INTYG_ID, INTYG_TYP_FK);
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testStoreIntygThrowsCertificateSenderException() throws Exception {
-        doThrow(new CertificateSenderException("")).when(certificateSenderService)
-            .storeCertificate(eq(INTYG_ID), eq(INTYG_TYP_FK), anyString());
-        intygService.storeIntyg(createUtkast());
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testStoreIntygThrowsCertificateSenderException() throws Exception {
+    doThrow(new CertificateSenderException(""))
+        .when(certificateSenderService)
+        .storeCertificate(eq(INTYG_ID), eq(INTYG_TYP_FK), anyString());
+    intygService.storeIntyg(createUtkast());
+  }
 
-    private Utkast createUtkast() {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(INTYG_ID);
-        utkast.setIntygsTyp(INTYG_TYP_FK);
-        utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setModel(json);
-        return utkast;
-    }
+  private Utkast createUtkast() {
+    Utkast utkast = new Utkast();
+    utkast.setIntygsId(INTYG_ID);
+    utkast.setIntygsTyp(INTYG_TYP_FK);
+    utkast.setStatus(UtkastStatus.SIGNED);
+    utkast.setModel(json);
+    return utkast;
+  }
 }

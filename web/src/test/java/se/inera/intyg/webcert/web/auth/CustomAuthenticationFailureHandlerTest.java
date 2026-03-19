@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,91 +49,102 @@ import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizati
 @ExtendWith(MockitoExtension.class)
 class CustomAuthenticationFailureHandlerTest {
 
-    @Mock
-    private RedirectStrategy redirectStrategy;
-    @Mock
-    private HttpServletRequest request;
-    @Mock
-    private HttpServletResponse response;
+  @Mock private RedirectStrategy redirectStrategy;
+  @Mock private HttpServletRequest request;
+  @Mock private HttpServletResponse response;
 
-    @InjectMocks
-    private CustomAuthenticationFailureHandler handler = new CustomAuthenticationFailureHandler("/ppRegistrationUrl");
+  @InjectMocks
+  private CustomAuthenticationFailureHandler handler =
+      new CustomAuthenticationFailureHandler("/ppRegistrationUrl");
 
-    @Captor
-    private ArgumentCaptor<String> urlCaptor;
+  @Captor private ArgumentCaptor<String> urlCaptor;
 
-    private static final int ONE = 1;
-    private static final BadCredentialsException BAD_CREDENTIALS = new BadCredentialsException("Bad credentials exception");
-    private static final HsaServiceException HSA_SERVICE = new HsaServiceException("Hsa service exception", new Exception());
-    private static final RememberMeAuthenticationException OTHER_AUTH_EXCEPTION = new RememberMeAuthenticationException("Other exception");
-    private static final MissingMedarbetaruppdragException MISSING_ASSIGNMENT =
-        new MissingMedarbetaruppdragException("Missing assignment exception");
-    private static final MissingSubscriptionException MISSING_SUBSCRIPTION =
-        new MissingSubscriptionException("Missing subscription exception");
-    private static final PrivatePractitionerAuthorizationException PP_AUTHORIZATION =
-        new PrivatePractitionerAuthorizationException("Private practitioner exception");
+  private static final int ONE = 1;
+  private static final BadCredentialsException BAD_CREDENTIALS =
+      new BadCredentialsException("Bad credentials exception");
+  private static final HsaServiceException HSA_SERVICE =
+      new HsaServiceException("Hsa service exception", new Exception());
+  private static final RememberMeAuthenticationException OTHER_AUTH_EXCEPTION =
+      new RememberMeAuthenticationException("Other exception");
+  private static final MissingMedarbetaruppdragException MISSING_ASSIGNMENT =
+      new MissingMedarbetaruppdragException("Missing assignment exception");
+  private static final MissingSubscriptionException MISSING_SUBSCRIPTION =
+      new MissingSubscriptionException("Missing subscription exception");
+  private static final PrivatePractitionerAuthorizationException PP_AUTHORIZATION =
+      new PrivatePractitionerAuthorizationException("Private practitioner exception");
 
-    @BeforeEach
-    public void setup() {
-        handler.init();
-    }
+  @BeforeEach
+  public void setup() {
+    handler.init();
+  }
 
-    @Test
-    void shouldRedirectToLoginFailed() throws IOException {
-        handler.onAuthenticationFailure(request, response,
-            new Saml2AuthenticationException(new Saml2Error("error", "description"), BAD_CREDENTIALS)
-        );
+  @Test
+  void shouldRedirectToLoginFailed() throws IOException {
+    handler.onAuthenticationFailure(
+        request,
+        response,
+        new Saml2AuthenticationException(new Saml2Error("error", "description"), BAD_CREDENTIALS));
 
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error?reason=login.failed", urlCaptor.getValue());
-    }
+    verify(redirectStrategy, times(ONE))
+        .sendRedirect(eq(request), eq(response), urlCaptor.capture());
+    assertEquals("/error?reason=login.failed", urlCaptor.getValue());
+  }
 
-    @Test
-    void shouldRedirectToHsaError() throws IOException {
-        handler.onAuthenticationFailure(request, response,
-            new Saml2AuthenticationException(new Saml2Error("error", "description"), HSA_SERVICE)
-        );
+  @Test
+  void shouldRedirectToHsaError() throws IOException {
+    handler.onAuthenticationFailure(
+        request,
+        response,
+        new Saml2AuthenticationException(new Saml2Error("error", "description"), HSA_SERVICE));
 
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error?reason=login.hsaerror", urlCaptor.getValue());
-    }
+    verify(redirectStrategy, times(ONE))
+        .sendRedirect(eq(request), eq(response), urlCaptor.capture());
+    assertEquals("/error?reason=login.hsaerror", urlCaptor.getValue());
+  }
 
-    @Test
-    void shouldRedirectToLoginMedarbetaruppdragError() throws IOException {
-        handler.onAuthenticationFailure(request, response,
-            new Saml2AuthenticationException(new Saml2Error("error", "description"), MISSING_ASSIGNMENT)
-        );
+  @Test
+  void shouldRedirectToLoginMedarbetaruppdragError() throws IOException {
+    handler.onAuthenticationFailure(
+        request,
+        response,
+        new Saml2AuthenticationException(
+            new Saml2Error("error", "description"), MISSING_ASSIGNMENT));
 
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error?reason=login.medarbetaruppdrag", urlCaptor.getValue());
-    }
+    verify(redirectStrategy, times(ONE))
+        .sendRedirect(eq(request), eq(response), urlCaptor.capture());
+    assertEquals("/error?reason=login.medarbetaruppdrag", urlCaptor.getValue());
+  }
 
-    @Test
-    void shouldRedirectToSubscriptionError() throws IOException {
-        handler.onAuthenticationFailure(request, response,
-            new Saml2AuthenticationException(new Saml2Error("error", "description"), MISSING_SUBSCRIPTION)
-        );
+  @Test
+  void shouldRedirectToSubscriptionError() throws IOException {
+    handler.onAuthenticationFailure(
+        request,
+        response,
+        new Saml2AuthenticationException(
+            new Saml2Error("error", "description"), MISSING_SUBSCRIPTION));
 
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error?reason=auth-exception-subscription", urlCaptor.getValue());
-    }
+    verify(redirectStrategy, times(ONE))
+        .sendRedirect(eq(request), eq(response), urlCaptor.capture());
+    assertEquals("/error?reason=auth-exception-subscription", urlCaptor.getValue());
+  }
 
-    @Test
-    void shouldRedirectToPPRegistration() throws IOException {
-        handler.onAuthenticationFailure(request, response, PP_AUTHORIZATION);
+  @Test
+  void shouldRedirectToPPRegistration() throws IOException {
+    handler.onAuthenticationFailure(request, response, PP_AUTHORIZATION);
 
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/ppRegistrationUrl", urlCaptor.getValue());
-    }
+    verify(redirectStrategy, times(ONE))
+        .sendRedirect(eq(request), eq(response), urlCaptor.capture());
+    assertEquals("/ppRegistrationUrl", urlCaptor.getValue());
+  }
 
-    @Test
-    void shouldRedirectToDefaultError() throws IOException {
-        when(request.getSession(false)).thenReturn(new MockHttpSession());
-        when(request.getSession()).thenReturn(new MockHttpSession());
-        handler.onAuthenticationFailure(request, response, OTHER_AUTH_EXCEPTION);
+  @Test
+  void shouldRedirectToDefaultError() throws IOException {
+    when(request.getSession(false)).thenReturn(new MockHttpSession());
+    when(request.getSession()).thenReturn(new MockHttpSession());
+    handler.onAuthenticationFailure(request, response, OTHER_AUTH_EXCEPTION);
 
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error?reason=login.failed", urlCaptor.getValue());
-    }
-
+    verify(redirectStrategy, times(ONE))
+        .sendRedirect(eq(request), eq(response), urlCaptor.capture());
+    assertEquals("/error?reason=login.failed", urlCaptor.getValue());
+  }
 }

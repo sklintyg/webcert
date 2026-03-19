@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,54 +20,48 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.io.Serializable;
 
-/**
- * Created by marced on 09/03/16.
- */
+/** Created by marced on 09/03/16. */
 public class GetSessionStatusResponse implements Serializable {
 
-    private static final long serialVersionUID = 3147429809057414979L;
-    /**
-     * Is this request associated with a session at all?.
-     */
-    private boolean hasSession;
+  private static final long serialVersionUID = 3147429809057414979L;
 
-    /**
-     * Is this request associated with a session that has a Spring securityContext in it?.
-     */
-    private boolean isAuthenticated;
+  /** Is this request associated with a session at all?. */
+  private boolean hasSession;
 
-    /**
-     * How many seconds until the session expires (0 if no session).
-     */
-    private long secondsUntilExpire;
+  /** Is this request associated with a session that has a Spring securityContext in it?. */
+  private boolean isAuthenticated;
 
-    public GetSessionStatusResponse(boolean hasSession, boolean isAuthenticated, long secondsUntilExpire) {
-        this.hasSession = hasSession;
-        this.isAuthenticated = isAuthenticated;
-        this.secondsUntilExpire = secondsUntilExpire;
-    }
+  /** How many seconds until the session expires (0 if no session). */
+  private long secondsUntilExpire;
 
-    public boolean isHasSession() {
-        return hasSession;
-    }
+  public GetSessionStatusResponse(
+      boolean hasSession, boolean isAuthenticated, long secondsUntilExpire) {
+    this.hasSession = hasSession;
+    this.isAuthenticated = isAuthenticated;
+    this.secondsUntilExpire = secondsUntilExpire;
+  }
 
-    public void setHasSession(boolean hasSession) {
-        this.hasSession = hasSession;
-    }
+  public boolean isHasSession() {
+    return hasSession;
+  }
 
-    public boolean isAuthenticated() {
-        return isAuthenticated;
-    }
+  public void setHasSession(boolean hasSession) {
+    this.hasSession = hasSession;
+  }
 
-    public void setAuthenticated(boolean authenticated) {
-        isAuthenticated = authenticated;
-    }
+  public boolean isAuthenticated() {
+    return isAuthenticated;
+  }
 
-    public long getSecondsUntilExpire() {
-        return secondsUntilExpire;
-    }
+  public void setAuthenticated(boolean authenticated) {
+    isAuthenticated = authenticated;
+  }
 
-    public void setSecondsUntilExpire(long secondsUntilExpire) {
-        this.secondsUntilExpire = secondsUntilExpire;
-    }
+  public long getSecondsUntilExpire() {
+    return secondsUntilExpire;
+  }
+
+  public void setSecondsUntilExpire(long secondsUntilExpire) {
+    this.secondsUntilExpire = secondsUntilExpire;
+  }
 }

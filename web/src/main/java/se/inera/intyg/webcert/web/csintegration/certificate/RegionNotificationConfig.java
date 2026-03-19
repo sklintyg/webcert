@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,13 +33,12 @@ import se.inera.intyg.webcert.web.csintegration.certificate.RegionNotificationCo
 @Value
 public class RegionNotificationConfig {
 
-    @JsonProperty("region")
-    String region;
-    @JsonProperty("configuration")
-    List<IntegratedUnitNotificationConfig> configuration;
+  @JsonProperty("region")
+  String region;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class RegionNotificationConfigBuilder {
+  @JsonProperty("configuration")
+  List<IntegratedUnitNotificationConfig> configuration;
 
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class RegionNotificationConfigBuilder {}
 }

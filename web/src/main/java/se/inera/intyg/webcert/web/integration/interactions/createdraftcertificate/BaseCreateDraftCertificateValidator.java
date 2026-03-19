@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,167 +39,175 @@ import se.inera.intyg.webcert.web.integration.validators.PersonnummerChecksumVal
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 
-/**
- * Created by eriklupander on 2017-09-19.
- */
+/** Created by eriklupander on 2017-09-19. */
 public abstract class BaseCreateDraftCertificateValidator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BaseCreateDraftCertificateValidator.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(BaseCreateDraftCertificateValidator.class);
 
-    @Autowired
-    protected IntygModuleRegistry moduleRegistry;
+  @Autowired protected IntygModuleRegistry moduleRegistry;
 
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
+  @Autowired private PatientDetailsResolver patientDetailsResolver;
 
-    @Autowired
-    private AuthoritiesHelper authoritiesHelper;
+  @Autowired private AuthoritiesHelper authoritiesHelper;
 
-    @Autowired
-    private FeaturesHelper featuresHelper;
+  @Autowired private FeaturesHelper featuresHelper;
 
-    protected Optional<Personnummer> createPersonnummer(ResultValidator errors, String personId) {
-        Optional<Personnummer> personnummer = Personnummer.createPersonnummer(personId);
-        if (personnummer.isEmpty()) {
-            errors.addError("Cannot create Personnummer object with invalid personId {0}", personId);
-        }
-        return personnummer;
+  protected Optional<Personnummer> createPersonnummer(ResultValidator errors, String personId) {
+    Optional<Personnummer> personnummer = Personnummer.createPersonnummer(personId);
+    if (personnummer.isEmpty()) {
+      errors.addError("Cannot create Personnummer object with invalid personId {0}", personId);
+    }
+    return personnummer;
+  }
+
+  protected void validatePUServiceResponse(ResultValidator errors, Personnummer personnummer) {
+
+    PersonSvar personSvar = patientDetailsResolver.getPersonFromPUService(personnummer);
+
+    switch (personSvar.getStatus()) {
+      case ERROR:
+        errors.addError(
+            "Cannot issue intyg. The PU-service was unreachable. Please try again later.");
+        break;
+      case NOT_FOUND:
+        String msg =
+            "Personnumret du har angivit finns inte i folkbokföringsregistret."
+                + " Observera att det inte går att ange reservnummer."
+                + " Webcert hanterar enbart person- och samordningsnummer.";
+        errors.addError(msg);
+        break;
+      default:
+        break; // Do nothing
+    }
+  }
+
+  protected void validateBusinessRulesForSekretessmarkeradPatient(
+      ResultValidator errors, Personnummer personnummer, String intygsTyp, IntygUser user) {
+    if (personnummer == null) {
+      return;
     }
 
-    protected void validatePUServiceResponse(ResultValidator errors, Personnummer personnummer) {
-
-        PersonSvar personSvar = patientDetailsResolver.getPersonFromPUService(personnummer);
-
-        switch (personSvar.getStatus()) {
-            case ERROR:
-                errors.addError("Cannot issue intyg. The PU-service was unreachable. Please try again later.");
-                break;
-            case NOT_FOUND:
-                String msg = "Personnumret du har angivit finns inte i folkbokföringsregistret."
-                    + " Observera att det inte går att ange reservnummer."
-                    + " Webcert hanterar enbart person- och samordningsnummer.";
-                errors.addError(msg);
-                break;
-            default:
-                break; // Do nothing
-        }
+    final var sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
+    if (sekretessStatus == SekretessStatus.FALSE) {
+      return;
     }
 
-    protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors, Personnummer personnummer, String intygsTyp,
-        IntygUser user) {
-        if (personnummer == null) {
-            return;
-        }
-
-        final var sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
-        if (sekretessStatus == SekretessStatus.FALSE) {
-            return;
-        }
-
-        if (sekretessStatus == SekretessStatus.UNDEFINED) {
-            errors.addError("Information om skyddade personuppgifter kunde inte hämtas. Intygstypen {0} kan inte utfärdas"
-                + " för patient när uppgift om skyddade personuppgifter ej är tillgänglig.", getCertificateDisplayName(intygsTyp));
-            return;
-        }
-
-        final var certificateAllowedForSekretess = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp);
-        if (!certificateAllowedForSekretess) {
-            errors.addError("Intygstypen {0} kan inte utfärdas för patienter med skyddade personuppgifter.",
-                getCertificateDisplayName(intygsTyp));
-            return;
-        }
-
-        validateHsaUserMayCreateDraftForSekretessmarkerad(errors, user);
+    if (sekretessStatus == SekretessStatus.UNDEFINED) {
+      errors.addError(
+          "Information om skyddade personuppgifter kunde inte hämtas. Intygstypen {0} kan inte utfärdas"
+              + " för patient när uppgift om skyddade personuppgifter ej är tillgänglig.",
+          getCertificateDisplayName(intygsTyp));
+      return;
     }
 
-    protected void validateCreateForAvlidenPatientAllowed(
-        ResultValidator errors,
-        Personnummer personnummer,
-        String typAvIntyg) {
-
-        String intygsTyp = moduleRegistry.getModuleIdFromExternalId(typAvIntyg);
-
-        if (personnummer == null) {
-            errors.addError("Cannot issue intyg type {0} for personnummer that is null", intygsTyp);
-            return;
-        }
-
-        if (patientDetailsResolver.isAvliden(personnummer) && !authoritiesHelper.getIntygstyperAllowedForAvliden().contains(intygsTyp)) {
-            errors.addError("Cannot issue intyg type {0} for deceased patient {1}", intygsTyp, personnummer.getPersonnummerWithDash());
-        }
+    final var certificateAllowedForSekretess =
+        authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp);
+    if (!certificateAllowedForSekretess) {
+      errors.addError(
+          "Intygstypen {0} kan inte utfärdas för patienter med skyddade personuppgifter.",
+          getCertificateDisplayName(intygsTyp));
+      return;
     }
 
-    protected void validateModuleSupport(ResultValidator errors, String moduleId) {
-        if (!moduleRegistry.moduleExists(moduleId)) {
-            errors.addError("Intyg {0} is not supported", moduleId);
-        }
+    validateHsaUserMayCreateDraftForSekretessmarkerad(errors, user);
+  }
 
-        if (featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, moduleId)) {
-            errors.addError("Intyg of type {0} has been deprecated and is no longer possible to issue.", moduleId);
-        }
+  protected void validateCreateForAvlidenPatientAllowed(
+      ResultValidator errors, Personnummer personnummer, String typAvIntyg) {
+
+    String intygsTyp = moduleRegistry.getModuleIdFromExternalId(typAvIntyg);
+
+    if (personnummer == null) {
+      errors.addError("Cannot issue intyg type {0} for personnummer that is null", intygsTyp);
+      return;
     }
 
-    protected void validatePatient(ResultValidator errors, List<String> fornamn, String efternamn, String personId) {
-        if (Strings.nullToEmpty(efternamn).trim().isEmpty()) {
-            errors.addError("efternamn is required");
-        }
-        if (isNullOrEmpty(fornamn)) {
-            errors.addError("At least one fornamn is required");
-        }
-        if (Strings.nullToEmpty(personId).trim().isEmpty()) {
-            errors.addError("personId is required");
-        } else {
-            validatePersonnummer(errors, personId);
-        }
+    if (patientDetailsResolver.isAvliden(personnummer)
+        && !authoritiesHelper.getIntygstyperAllowedForAvliden().contains(intygsTyp)) {
+      errors.addError(
+          "Cannot issue intyg type {0} for deceased patient {1}",
+          intygsTyp, personnummer.getPersonnummerWithDash());
+    }
+  }
+
+  protected void validateModuleSupport(ResultValidator errors, String moduleId) {
+    if (!moduleRegistry.moduleExists(moduleId)) {
+      errors.addError("Intyg {0} is not supported", moduleId);
     }
 
-    protected void validateSkapadAv(ResultValidator errors, String fullstandigtNamn, String personId) {
-        if (Strings.nullToEmpty(fullstandigtNamn).trim().isEmpty()) {
-            errors.addError("Physicians full name is required");
-        }
-        if (Strings.nullToEmpty(personId).trim().isEmpty()) {
-            errors.addError("Physicians hsaId is required");
-        }
+    if (featuresHelper.isFeatureActive(
+        AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, moduleId)) {
+      errors.addError(
+          "Intyg of type {0} has been deprecated and is no longer possible to issue.", moduleId);
     }
+  }
 
-    protected void validateEnhet(ResultValidator errors, String enhetsnamn, String enhetsId) {
-        if (Strings.nullToEmpty(enhetsnamn).trim().isEmpty()) {
-            errors.addError("enhetsnamn is required");
-        }
-        if (Strings.nullToEmpty(enhetsId).trim().isEmpty()) {
-            errors.addError("enhetsId is required");
-        }
+  protected void validatePatient(
+      ResultValidator errors, List<String> fornamn, String efternamn, String personId) {
+    if (Strings.nullToEmpty(efternamn).trim().isEmpty()) {
+      errors.addError("efternamn is required");
     }
+    if (isNullOrEmpty(fornamn)) {
+      errors.addError("At least one fornamn is required");
+    }
+    if (Strings.nullToEmpty(personId).trim().isEmpty()) {
+      errors.addError("personId is required");
+    } else {
+      validatePersonnummer(errors, personId);
+    }
+  }
 
-    private void validatePersonnummer(ResultValidator errors, String personId) {
-        Personnummer pnr = createPersonnummer(errors, personId).orElse(null);
-        PersonnummerChecksumValidator.validate(pnr, errors);
+  protected void validateSkapadAv(
+      ResultValidator errors, String fullstandigtNamn, String personId) {
+    if (Strings.nullToEmpty(fullstandigtNamn).trim().isEmpty()) {
+      errors.addError("Physicians full name is required");
     }
+    if (Strings.nullToEmpty(personId).trim().isEmpty()) {
+      errors.addError("Physicians hsaId is required");
+    }
+  }
 
-    private void validateHsaUserMayCreateDraftForSekretessmarkerad(ResultValidator errors, IntygUser user) {
-        AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-        if (!authoritiesValidator.given(user)
-            .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-            .isVerified()) {
-            errors.addError(
-                "Du saknar behörighet. För att hantera intyg för patienter med skyddade personuppgifter krävs "
-                    + "att du har befattningen läkare eller tandläkare.");
-        }
+  protected void validateEnhet(ResultValidator errors, String enhetsnamn, String enhetsId) {
+    if (Strings.nullToEmpty(enhetsnamn).trim().isEmpty()) {
+      errors.addError("enhetsnamn is required");
     }
+    if (Strings.nullToEmpty(enhetsId).trim().isEmpty()) {
+      errors.addError("enhetsId is required");
+    }
+  }
 
-    private boolean isNullOrEmpty(List<?> list) {
-        if (list == null || list.isEmpty()) {
-            return true;
-        }
-        return list.parallelStream().allMatch(Objects::isNull);
-    }
+  private void validatePersonnummer(ResultValidator errors, String personId) {
+    Personnummer pnr = createPersonnummer(errors, personId).orElse(null);
+    PersonnummerChecksumValidator.validate(pnr, errors);
+  }
 
-    private String getCertificateDisplayName(String certificateType) {
-        try {
-            return moduleRegistry.getModuleEntryPoint(certificateType).getModuleName();
-        } catch (ModuleNotFoundException e) {
-            LOG.warn("Failure getting certificate display name from module {}.", certificateType, e);
-            return certificateType;
-        }
+  private void validateHsaUserMayCreateDraftForSekretessmarkerad(
+      ResultValidator errors, IntygUser user) {
+    AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+    if (!authoritiesValidator
+        .given(user)
+        .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+        .isVerified()) {
+      errors.addError(
+          "Du saknar behörighet. För att hantera intyg för patienter med skyddade personuppgifter krävs "
+              + "att du har befattningen läkare eller tandläkare.");
     }
+  }
+
+  private boolean isNullOrEmpty(List<?> list) {
+    if (list == null || list.isEmpty()) {
+      return true;
+    }
+    return list.parallelStream().allMatch(Objects::isNull);
+  }
+
+  private String getCertificateDisplayName(String certificateType) {
+    try {
+      return moduleRegistry.getModuleEntryPoint(certificateType).getModuleName();
+    } catch (ModuleNotFoundException e) {
+      LOG.warn("Failure getting certificate display name from module {}.", certificateType, e);
+      return certificateType;
+    }
+  }
 }

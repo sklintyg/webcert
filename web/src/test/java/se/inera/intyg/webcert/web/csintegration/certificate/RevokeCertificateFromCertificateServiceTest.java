@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,156 +54,154 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class RevokeCertificateFromCertificateServiceTest {
 
-    private static final CertificateRelations CERTIFICATE_RELATIONS = CertificateRelations.builder().build();
-    @Mock
-    HandleMessageNotificationForParentService handleMessageNotificationForParentService;
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    PDLLogService pdlLogService;
-    @Mock
-    MonitoringLogService monitoringLogService;
-    @Mock
-    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private static final CertificateRelations CERTIFICATE_RELATIONS =
+      CertificateRelations.builder().build();
+  @Mock HandleMessageNotificationForParentService handleMessageNotificationForParentService;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock PDLLogService pdlLogService;
+  @Mock MonitoringLogService monitoringLogService;
 
-    @InjectMocks
-    RevokeCertificateFromCertificateService revokeCertificateFromCertificateService;
+  @Mock
+  DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
-    private static final String ID = "ID";
-    private static final String TYPE = "TYPE";
-    private static final String REASON = "REASON";
-    private static final String MESSAGE = "MESSAGE";
-    private static final String REVOKED_BY_STAFF_ID = "REVOKED_BY_STAFF_ID";
-    private static final Certificate CERTIFICATE_AFTER_REVOKE = new Certificate();
-    private static final Certificate CERTIFICATE_BEFORE_REVOKE = new Certificate();
-    private static final GetCertificateRequestDTO GET_REQUEST = GetCertificateRequestDTO.builder().build();
-    private static final RevokeCertificateRequestDTO REVOKE_REQUEST = RevokeCertificateRequestDTO.builder().build();
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        final var response = revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+  @InjectMocks RevokeCertificateFromCertificateService revokeCertificateFromCertificateService;
 
-        assertNull(response);
+  private static final String ID = "ID";
+  private static final String TYPE = "TYPE";
+  private static final String REASON = "REASON";
+  private static final String MESSAGE = "MESSAGE";
+  private static final String REVOKED_BY_STAFF_ID = "REVOKED_BY_STAFF_ID";
+  private static final Certificate CERTIFICATE_AFTER_REVOKE = new Certificate();
+  private static final Certificate CERTIFICATE_BEFORE_REVOKE = new Certificate();
+  private static final GetCertificateRequestDTO GET_REQUEST =
+      GetCertificateRequestDTO.builder().build();
+  private static final RevokeCertificateRequestDTO REVOKE_REQUEST =
+      RevokeCertificateRequestDTO.builder().build();
+
+  @Test
+  void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    final var response =
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+
+    assertNull(response);
+  }
+
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+
+      CERTIFICATE_BEFORE_REVOKE.setMetadata(
+          CertificateMetadata.builder().id(ID).type(TYPE).status(CertificateStatus.SIGNED).build());
+
+      CERTIFICATE_AFTER_REVOKE.setMetadata(
+          CertificateMetadata.builder()
+              .id(ID)
+              .type(TYPE)
+              .status(CertificateStatus.REVOKED)
+              .revokedBy(Staff.builder().personId(REVOKED_BY_STAFF_ID).build())
+              .relations(CERTIFICATE_RELATIONS)
+              .build());
+
+      when(csIntegrationService.certificateExists(ID)).thenReturn(true);
+
+      when(csIntegrationRequestFactory.getCertificateRequest()).thenReturn(GET_REQUEST);
     }
 
     @Nested
-    class CertificateExistsInCS {
+    class CertificateIsRevokedFromCS {
 
-        @BeforeEach
-        void setup() {
+      @BeforeEach
+      void setup() {
+        when(csIntegrationService.getCertificate(ID, GET_REQUEST))
+            .thenReturn(CERTIFICATE_BEFORE_REVOKE);
+        when(csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST))
+            .thenReturn(CERTIFICATE_AFTER_REVOKE);
+        when(csIntegrationRequestFactory.revokeCertificateRequest(REASON, MESSAGE))
+            .thenReturn(REVOKE_REQUEST);
+      }
 
-            CERTIFICATE_BEFORE_REVOKE.setMetadata(CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .status(CertificateStatus.SIGNED)
-                .build());
+      @Test
+      void shouldCallRevokeWithId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
 
-            CERTIFICATE_AFTER_REVOKE.setMetadata(CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .status(CertificateStatus.REVOKED)
-                .revokedBy(
-                    Staff.builder()
-                        .personId(REVOKED_BY_STAFF_ID)
-                        .build()
-                )
-                .relations(CERTIFICATE_RELATIONS)
-                .build());
+        verify(csIntegrationService)
+            .revokeCertificate(captor.capture(), any(RevokeCertificateRequestDTO.class));
+        assertEquals(ID, captor.getValue());
+      }
 
-            when(csIntegrationService.certificateExists(ID))
-                .thenReturn(true);
+      @Test
+      void shouldCallRevokeWithRequest() {
+        final var captor = ArgumentCaptor.forClass(RevokeCertificateRequestDTO.class);
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
 
-            when(csIntegrationRequestFactory.getCertificateRequest()).thenReturn(GET_REQUEST);
-        }
+        verify(csIntegrationService).revokeCertificate(anyString(), captor.capture());
+        assertEquals(REVOKE_REQUEST, captor.getValue());
+      }
 
-        @Nested
-        class CertificateIsRevokedFromCS {
+      @Test
+      void shouldPdlLogRevoke() {
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+        verify(pdlLogService).logRevoke(CERTIFICATE_AFTER_REVOKE);
+      }
 
-            @BeforeEach
-            void setup() {
-                when(csIntegrationService.getCertificate(ID, GET_REQUEST)).thenReturn(CERTIFICATE_BEFORE_REVOKE);
-                when(csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST)).thenReturn(CERTIFICATE_AFTER_REVOKE);
-                when(csIntegrationRequestFactory.revokeCertificateRequest(REASON, MESSAGE)).thenReturn(REVOKE_REQUEST);
-            }
+      @Test
+      void shouldMonitorLogRevokeLockedDraft() {
+        CERTIFICATE_BEFORE_REVOKE.getMetadata().setStatus(CertificateStatus.LOCKED);
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+        verify(monitoringLogService).logUtkastRevoked(ID, REVOKED_BY_STAFF_ID, REASON);
+      }
 
-            @Test
-            void shouldCallRevokeWithId() {
-                final var captor = ArgumentCaptor.forClass(String.class);
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+      @Test
+      void shouldMonitorLogRevokeCertificate() {
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+        verify(monitoringLogService).logIntygRevoked(ID, TYPE, REVOKED_BY_STAFF_ID, REASON);
+      }
 
-                verify(csIntegrationService).revokeCertificate(captor.capture(), any(RevokeCertificateRequestDTO.class));
-                assertEquals(ID, captor.getValue());
-            }
+      @Test
+      void shouldPublishCertificateStatusUpdate() {
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+        verify(publishCertificateStatusUpdateService)
+            .publish(CERTIFICATE_AFTER_REVOKE, HandelsekodEnum.MAKULE);
+      }
 
-            @Test
-            void shouldCallRevokeWithRequest() {
-                final var captor = ArgumentCaptor.forClass(RevokeCertificateRequestDTO.class);
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+      @Test
+      void shouldDecorateCertificateFromCSWithInformationFromWC() {
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+        verify(decorateCertificateFromCSWithInformationFromWC, times(1))
+            .decorate(CERTIFICATE_AFTER_REVOKE);
+      }
 
-                verify(csIntegrationService).revokeCertificate(anyString(), captor.capture());
-                assertEquals(REVOKE_REQUEST, captor.getValue());
-            }
+      @Test
+      void shouldPublishAnalyticsMessageWhenCertificateIsRevoked() {
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateRevoked(CERTIFICATE_AFTER_REVOKE))
+            .thenReturn(analyticsMessage);
 
-            @Test
-            void shouldPdlLogRevoke() {
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(pdlLogService).logRevoke(CERTIFICATE_AFTER_REVOKE);
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
 
-            }
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+      }
 
-            @Test
-            void shouldMonitorLogRevokeLockedDraft() {
-                CERTIFICATE_BEFORE_REVOKE.getMetadata().setStatus(CertificateStatus.LOCKED);
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(monitoringLogService).logUtkastRevoked(ID, REVOKED_BY_STAFF_ID, REASON);
-            }
-
-            @Test
-            void shouldMonitorLogRevokeCertificate() {
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(monitoringLogService).logIntygRevoked(ID, TYPE, REVOKED_BY_STAFF_ID, REASON);
-            }
-
-            @Test
-            void shouldPublishCertificateStatusUpdate() {
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE_AFTER_REVOKE, HandelsekodEnum.MAKULE);
-            }
-
-            @Test
-            void shouldDecorateCertificateFromCSWithInformationFromWC() {
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE_AFTER_REVOKE);
-            }
-
-            @Test
-            void shouldPublishAnalyticsMessageWhenCertificateIsRevoked() {
-                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.certificateRevoked(CERTIFICATE_AFTER_REVOKE)).thenReturn(analyticsMessage);
-
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-
-                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-            }
-
-            @Test
-            void shouldHandleMessageNotificationForParentService() {
-                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(handleMessageNotificationForParentService, times(1)).notify(CERTIFICATE_RELATIONS);
-            }
-        }
-
-        @Test
-        void shouldThrowExceptionIfReturnedCertificateIsNull() {
-            assertThrows(IllegalStateException.class, () -> revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE));
-        }
+      @Test
+      void shouldHandleMessageNotificationForParentService() {
+        revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+        verify(handleMessageNotificationForParentService, times(1)).notify(CERTIFICATE_RELATIONS);
+      }
     }
+
+    @Test
+    void shouldThrowExceptionIfReturnedCertificateIsNull() {
+      assertThrows(
+          IllegalStateException.class,
+          () -> revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE));
+    }
+  }
 }

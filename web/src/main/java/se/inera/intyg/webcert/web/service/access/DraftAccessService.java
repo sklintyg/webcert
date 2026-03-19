@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,24 +23,28 @@ import se.inera.intyg.schemas.contract.Personnummer;
 
 public interface DraftAccessService {
 
-    AccessResult allowToCreateDraft(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToCreateDraft(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToReadDraft(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToReadDraft(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToEditDraft(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToEditDraft(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToDeleteDraft(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToDeleteDraft(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToSignDraft(String certificateType, String certificateTypeVersion, Vardenhet careUnit, Personnummer patient,
-        String certificateId);
+  AccessResult allowToSignDraft(
+      String certificateType,
+      String certificateTypeVersion,
+      Vardenhet careUnit,
+      Personnummer patient,
+      String certificateId);
 
-    AccessResult allowToPrintDraft(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToPrintDraft(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToForwardDraft(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToForwardDraft(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToReadyForSign(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToReadyForSign(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToCopyFromCandidate(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToCopyFromCandidate(AccessEvaluationParameters accessEvaluationParameters);
 
-    AccessResult allowToSignWithConfirmation(AccessEvaluationParameters accessEvaluationParameters);
+  AccessResult allowToSignWithConfirmation(AccessEvaluationParameters accessEvaluationParameters);
 }

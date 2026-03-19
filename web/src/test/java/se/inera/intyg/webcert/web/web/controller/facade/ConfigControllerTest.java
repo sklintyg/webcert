@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,94 +41,86 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 @ExtendWith(MockitoExtension.class)
 public class ConfigControllerTest {
 
-    @Mock
-    private DynamicLinkService dynamicLinkService;
+  @Mock private DynamicLinkService dynamicLinkService;
 
-    @Mock
-    private IABannerService iaBannerService;
+  @Mock private IABannerService iaBannerService;
 
-    @InjectMocks
-    private ConfigController configController;
+  @InjectMocks private ConfigController configController;
 
-    @Nested
-    class ConfigControllerTests {
+  @Nested
+  class ConfigControllerTests {
 
-        @Test
-        void getConfigurationReturnsVersion() {
-            final String version = "1.0";
-            ReflectionTestUtils.setField(configController, "version", version);
-            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(version, response.getVersion());
-        }
-
-        @Test
-        void getDynamicLinksReturnsLinks() {
-            final var links = Map.of("Test", new DynamicLink());
-
-            doReturn(links)
-                .when(dynamicLinkService)
-                .getAllAsMap();
-
-            final var response = configController.getDynamicLinks();
-            assertTrue(response.containsKey("Test"));
-        }
-
-        @Test
-        void getConfigurationReturnsBanners() {
-            final var banner = new Banner();
-            banner.setApplication(Application.WEBCERT);
-            final var banners = List.of(banner);
-
-            doReturn(banners)
-                .when(iaBannerService)
-                .getCurrentBanners();
-
-            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(1, response.getBanners().size());
-        }
-
-        @Test
-        void getConfigurationReturnsOnlyWCBanners() {
-            final var banner = new Banner();
-            banner.setApplication(Application.INTYGSSTATISTIK);
-            final var banners = List.of(banner);
-
-            doReturn(banners)
-                .when(iaBannerService)
-                .getCurrentBanners();
-
-            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(0, response.getBanners().size());
-        }
-
-        @Test
-        void getConfigurationReturnsPrivatePractitionerHost() {
-            final String ppHost = "min_sida";
-            ReflectionTestUtils.setField(configController, "ppHost", ppHost);
-            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(ppHost, response.getPpHost());
-        }
-
-        @Test
-        void shouldReturnIdpConnectUrlsAsEmptyListWhenConfigIsNull() {
-            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(List.of(), response.getIdpConnectUrls());
-        }
-
-        @Test
-        void shouldReturnIdpConnectUrlsAsEmptyListWhenConfigIsEmpty() {
-            ReflectionTestUtils.setField(configController, "idpConnectUrls", "");
-            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(List.of(), response.getIdpConnectUrls());
-        }
-
-        @Test
-        void shouldReturnIdpConnectUrlsWhenConfigExists() {
-            final var expected = List.of("https://idp1.example.com", "https://idp2.example.com");
-
-            ReflectionTestUtils.setField(configController, "idpConnectUrls", "https://idp1.example.com,https://idp2.example.com");
-            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(expected, response.getIdpConnectUrls());
-        }
+    @Test
+    void getConfigurationReturnsVersion() {
+      final String version = "1.0";
+      ReflectionTestUtils.setField(configController, "version", version);
+      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      assertEquals(version, response.getVersion());
     }
+
+    @Test
+    void getDynamicLinksReturnsLinks() {
+      final var links = Map.of("Test", new DynamicLink());
+
+      doReturn(links).when(dynamicLinkService).getAllAsMap();
+
+      final var response = configController.getDynamicLinks();
+      assertTrue(response.containsKey("Test"));
+    }
+
+    @Test
+    void getConfigurationReturnsBanners() {
+      final var banner = new Banner();
+      banner.setApplication(Application.WEBCERT);
+      final var banners = List.of(banner);
+
+      doReturn(banners).when(iaBannerService).getCurrentBanners();
+
+      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      assertEquals(1, response.getBanners().size());
+    }
+
+    @Test
+    void getConfigurationReturnsOnlyWCBanners() {
+      final var banner = new Banner();
+      banner.setApplication(Application.INTYGSSTATISTIK);
+      final var banners = List.of(banner);
+
+      doReturn(banners).when(iaBannerService).getCurrentBanners();
+
+      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      assertEquals(0, response.getBanners().size());
+    }
+
+    @Test
+    void getConfigurationReturnsPrivatePractitionerHost() {
+      final String ppHost = "min_sida";
+      ReflectionTestUtils.setField(configController, "ppHost", ppHost);
+      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      assertEquals(ppHost, response.getPpHost());
+    }
+
+    @Test
+    void shouldReturnIdpConnectUrlsAsEmptyListWhenConfigIsNull() {
+      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      assertEquals(List.of(), response.getIdpConnectUrls());
+    }
+
+    @Test
+    void shouldReturnIdpConnectUrlsAsEmptyListWhenConfigIsEmpty() {
+      ReflectionTestUtils.setField(configController, "idpConnectUrls", "");
+      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      assertEquals(List.of(), response.getIdpConnectUrls());
+    }
+
+    @Test
+    void shouldReturnIdpConnectUrlsWhenConfigExists() {
+      final var expected = List.of("https://idp1.example.com", "https://idp2.example.com");
+
+      ReflectionTestUtils.setField(
+          configController, "idpConnectUrls", "https://idp1.example.com,https://idp2.example.com");
+      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      assertEquals(expected, response.getIdpConnectUrls());
+    }
+  }
 }

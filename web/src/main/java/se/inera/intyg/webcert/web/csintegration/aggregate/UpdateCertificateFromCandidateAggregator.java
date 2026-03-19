@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,25 +23,24 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.UpdateCertificateFromCandidateFacadeService;
 
 @Service("updateCertificateFromCandidateAggregator")
-public class UpdateCertificateFromCandidateAggregator implements UpdateCertificateFromCandidateFacadeService {
+public class UpdateCertificateFromCandidateAggregator
+    implements UpdateCertificateFromCandidateFacadeService {
 
-    private final UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromWC;
-    private final UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromCS;
+  private final UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromWC;
+  private final UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromCS;
 
-    public UpdateCertificateFromCandidateAggregator(
-        @Qualifier("updateCertificateFromCandidateFromWC")
-        UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromWC,
-        @Qualifier("updateCertificateFromCandidateFromCS")
-        UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromCS) {
-        this.updateCertificateFromCandidateFromWC = updateCertificateFromCandidateFromWC;
-        this.updateCertificateFromCandidateFromCS = updateCertificateFromCandidateFromCS;
-    }
+  public UpdateCertificateFromCandidateAggregator(
+      @Qualifier("updateCertificateFromCandidateFromWC") UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromWC,
+      @Qualifier("updateCertificateFromCandidateFromCS") UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFromCS) {
+    this.updateCertificateFromCandidateFromWC = updateCertificateFromCandidateFromWC;
+    this.updateCertificateFromCandidateFromCS = updateCertificateFromCandidateFromCS;
+  }
 
-    @Override
-    public String update(String certificateId) {
-        final var responseFromCS = updateCertificateFromCandidateFromCS.update(certificateId);
-        return responseFromCS != null
-            ? responseFromCS
-            : updateCertificateFromCandidateFromWC.update(certificateId);
-    }
+  @Override
+  public String update(String certificateId) {
+    final var responseFromCS = updateCertificateFromCandidateFromCS.update(certificateId);
+    return responseFromCS != null
+        ? responseFromCS
+        : updateCertificateFromCandidateFromWC.update(certificateId);
+  }
 }

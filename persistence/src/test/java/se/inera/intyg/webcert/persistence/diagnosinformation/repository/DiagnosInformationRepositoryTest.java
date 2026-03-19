@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,36 +49,35 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 @Transactional
 public class DiagnosInformationRepositoryTest {
 
-    private DiagnosInformation diagnosInfoA10B10;
+  private DiagnosInformation diagnosInfoA10B10;
 
-    @Autowired
-    private DiagnosInformationRepository repo;
+  @Autowired private DiagnosInformationRepository repo;
 
-    @After
-    public void clean() {
-        repo.deleteAll();
-    }
+  @After
+  public void clean() {
+    repo.deleteAll();
+  }
 
-    @Before
-    public void setup() {
-        final String diagnosRubrik = "diagnosRubrik";
-        final String forsakringsmedicinskInformation = "forsakringsmedicinskInformation";
-        final String symptomPrognosBehandling = "symptomPrognosBehandling";
-        final String informationOmRehabilitering = "informationOmRehabilitering";
-        final List<Beskrivning> beskrivningList = Arrays.asList(new Beskrivning(BeskrivningTyp.FUNKTIONSNEDSATTNING,
-            "beskrivningText", null));
+  @Before
+  public void setup() {
+    final String diagnosRubrik = "diagnosRubrik";
+    final String forsakringsmedicinskInformation = "forsakringsmedicinskInformation";
+    final String symptomPrognosBehandling = "symptomPrognosBehandling";
+    final String informationOmRehabilitering = "informationOmRehabilitering";
+    final List<Beskrivning> beskrivningList =
+        Arrays.asList(
+            new Beskrivning(BeskrivningTyp.FUNKTIONSNEDSATTNING, "beskrivningText", null));
 
-        final List<Icd10Kod> icd10KodList = Arrays
-            .asList(createIcd10Item("A10", Arrays.asList(
-                    createTypFall(14, "2", "wk"),
-                    createTypFall(10, "10", "d"))),
-                createIcd10Item("B10", Arrays.asList(
-                    createTypFall(9, "9", "d"),
-                    createTypFall(61, "2", "mo"))));
-        final LocalDateTime senastUppdaterad = LocalDateTime.now();
+    final List<Icd10Kod> icd10KodList =
+        Arrays.asList(
+            createIcd10Item(
+                "A10", Arrays.asList(createTypFall(14, "2", "wk"), createTypFall(10, "10", "d"))),
+            createIcd10Item(
+                "B10", Arrays.asList(createTypFall(9, "9", "d"), createTypFall(61, "2", "mo"))));
+    final LocalDateTime senastUppdaterad = LocalDateTime.now();
 
-        DiagnosInformation.DiagnosInformationBuilder diagnosInformationBuilder = DiagnosInformation.DiagnosInformationBuilder
-            .aDiagnosInformation()
+    DiagnosInformation.DiagnosInformationBuilder diagnosInformationBuilder =
+        DiagnosInformation.DiagnosInformationBuilder.aDiagnosInformation()
             .diagnosRubrik(diagnosRubrik)
             .forsakringsmedicinskInformation(forsakringsmedicinskInformation)
             .symptomPrognosBehandling(symptomPrognosBehandling)
@@ -87,81 +86,82 @@ public class DiagnosInformationRepositoryTest {
             .icd10KodList(icd10KodList)
             .senastUppdaterad(senastUppdaterad);
 
-        diagnosInfoA10B10 = repo.save(diagnosInformationBuilder.build());
-    }
+    diagnosInfoA10B10 = repo.save(diagnosInformationBuilder.build());
+  }
 
-    private TypFall createTypFall(int maxRekDagar, String sourceValue, String sourceUnit) {
-        return TypFall.TypFallBuilder.aTypFall()
-            .typfallsMening("Beskrivning " + maxRekDagar)
-            .maximalSjukrivningstidDagar(maxRekDagar)
-            .maximalSjukrivningstidSourceValue(sourceValue)
-            .maximalSjukrivningstidSourceUnit(sourceUnit)
-            .build();
+  private TypFall createTypFall(int maxRekDagar, String sourceValue, String sourceUnit) {
+    return TypFall.TypFallBuilder.aTypFall()
+        .typfallsMening("Beskrivning " + maxRekDagar)
+        .maximalSjukrivningstidDagar(maxRekDagar)
+        .maximalSjukrivningstidSourceValue(sourceValue)
+        .maximalSjukrivningstidSourceUnit(sourceUnit)
+        .build();
+  }
 
-    }
+  private Icd10Kod createIcd10Item(String kod, List<TypFall> typfallsList) {
+    return Icd10Kod.Icd10KodBuilder.anIcd10Kod().kod(kod).typFallList(typfallsList).build();
+  }
 
-    private Icd10Kod createIcd10Item(String kod, List<TypFall> typfallsList) {
-        return Icd10Kod.Icd10KodBuilder.anIcd10Kod().kod(kod).typFallList(typfallsList).build();
-    }
+  @Test
+  public void testFindFirstByIcd10KodListkod() {
+    DiagnosInformation read = repo.findFirstByIcd10KodList_kod("A10").get();
+    assertEquals(diagnosInfoA10B10, read);
+  }
 
-    @Test
-    public void testFindFirstByIcd10KodListkod() {
-        DiagnosInformation read = repo.findFirstByIcd10KodList_kod("A10").get();
-        assertEquals(diagnosInfoA10B10, read);
-    }
+  @Test
+  public void testFindFirstByIcd10KodListkodNotFound() {
+    assertFalse(repo.findFirstByIcd10KodList_kod("A11").isPresent());
+  }
 
-    @Test
-    public void testFindFirstByIcd10KodListkodNotFound() {
-        assertFalse(repo.findFirstByIcd10KodList_kod("A11").isPresent());
-    }
+  @Test
+  public void testFindMaximalSjukrivningstidDagarByIcd10KoderA10() {
 
-    @Test
-    public void testFindMaximalSjukrivningstidDagarByIcd10KoderA10() {
+    Set<String> diagnoser = new HashSet<>();
+    diagnoser.add("A10");
 
-        Set<String> diagnoser = new HashSet<>();
-        diagnoser.add("A10");
+    final List<MaximalSjukskrivningstidDagar> result =
+        repo.findMaximalSjukrivningstidDagarByIcd10Koder(diagnoser);
+    assertEquals(2, result.size());
+    assertEquals("A10", result.get(0).getIcd10Kod());
+    assertEquals(14, result.get(0).getMaximalSjukrivningstidDagar());
+    assertEquals("2", result.get(0).getMaximalSjukrivningstidSourceValue());
+    assertEquals("wk", result.get(0).getMaximalSjukrivningstidSourceUnit());
 
-        final List<MaximalSjukskrivningstidDagar> result = repo.findMaximalSjukrivningstidDagarByIcd10Koder(diagnoser);
-        assertEquals(2, result.size());
-        assertEquals("A10", result.get(0).getIcd10Kod());
-        assertEquals(14, result.get(0).getMaximalSjukrivningstidDagar());
-        assertEquals("2", result.get(0).getMaximalSjukrivningstidSourceValue());
-        assertEquals("wk", result.get(0).getMaximalSjukrivningstidSourceUnit());
+    assertEquals("A10", result.get(1).getIcd10Kod());
+    assertEquals(10, result.get(1).getMaximalSjukrivningstidDagar());
+    assertEquals("10", result.get(1).getMaximalSjukrivningstidSourceValue());
+    assertEquals("d", result.get(1).getMaximalSjukrivningstidSourceUnit());
+  }
 
-        assertEquals("A10", result.get(1).getIcd10Kod());
-        assertEquals(10, result.get(1).getMaximalSjukrivningstidDagar());
-        assertEquals("10", result.get(1).getMaximalSjukrivningstidSourceValue());
-        assertEquals("d", result.get(1).getMaximalSjukrivningstidSourceUnit());
-    }
+  @Test
+  public void testFindMaximalSjukrivningstidDagarByIcd10KoderA10B10() {
 
-    @Test
-    public void testFindMaximalSjukrivningstidDagarByIcd10KoderA10B10() {
+    Set<String> diagnoser = new HashSet<>();
+    diagnoser.add("A10");
+    diagnoser.add("B10");
 
-        Set<String> diagnoser = new HashSet<>();
-        diagnoser.add("A10");
-        diagnoser.add("B10");
+    final List<MaximalSjukskrivningstidDagar> result =
+        repo.findMaximalSjukrivningstidDagarByIcd10Koder(diagnoser);
+    assertEquals(4, result.size());
 
-        final List<MaximalSjukskrivningstidDagar> result = repo.findMaximalSjukrivningstidDagarByIcd10Koder(diagnoser);
-        assertEquals(4, result.size());
+    assertEquals("B10", result.get(0).getIcd10Kod());
+    assertEquals(61, result.get(0).getMaximalSjukrivningstidDagar());
+    assertEquals("2", result.get(0).getMaximalSjukrivningstidSourceValue());
+    assertEquals("mo", result.get(0).getMaximalSjukrivningstidSourceUnit());
 
-        assertEquals("B10", result.get(0).getIcd10Kod());
-        assertEquals(61, result.get(0).getMaximalSjukrivningstidDagar());
-        assertEquals("2", result.get(0).getMaximalSjukrivningstidSourceValue());
-        assertEquals("mo", result.get(0).getMaximalSjukrivningstidSourceUnit());
+    assertEquals("A10", result.get(1).getIcd10Kod());
+    assertEquals(14, result.get(1).getMaximalSjukrivningstidDagar());
+    assertEquals("2", result.get(1).getMaximalSjukrivningstidSourceValue());
+    assertEquals("wk", result.get(1).getMaximalSjukrivningstidSourceUnit());
 
-        assertEquals("A10", result.get(1).getIcd10Kod());
-        assertEquals(14, result.get(1).getMaximalSjukrivningstidDagar());
-        assertEquals("2", result.get(1).getMaximalSjukrivningstidSourceValue());
-        assertEquals("wk", result.get(1).getMaximalSjukrivningstidSourceUnit());
+    assertEquals("A10", result.get(2).getIcd10Kod());
+    assertEquals(10, result.get(2).getMaximalSjukrivningstidDagar());
+    assertEquals("10", result.get(2).getMaximalSjukrivningstidSourceValue());
+    assertEquals("d", result.get(2).getMaximalSjukrivningstidSourceUnit());
 
-        assertEquals("A10", result.get(2).getIcd10Kod());
-        assertEquals(10, result.get(2).getMaximalSjukrivningstidDagar());
-        assertEquals("10", result.get(2).getMaximalSjukrivningstidSourceValue());
-        assertEquals("d", result.get(2).getMaximalSjukrivningstidSourceUnit());
-
-        assertEquals("B10", result.get(3).getIcd10Kod());
-        assertEquals(9, result.get(3).getMaximalSjukrivningstidDagar());
-        assertEquals("9", result.get(3).getMaximalSjukrivningstidSourceValue());
-        assertEquals("d", result.get(3).getMaximalSjukrivningstidSourceUnit());
-    }
+    assertEquals("B10", result.get(3).getIcd10Kod());
+    assertEquals(9, result.get(3).getMaximalSjukrivningstidDagar());
+    assertEquals("9", result.get(3).getMaximalSjukrivningstidSourceValue());
+    assertEquals("d", result.get(3).getMaximalSjukrivningstidSourceUnit());
+  }
 }

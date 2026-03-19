@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,35 +37,37 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 @Service
 public class UtkastModelToXMLConverter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UtkastModelToXMLConverter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UtkastModelToXMLConverter.class);
 
-    @Autowired
-    private IntygModuleRegistry intygModuleRegistry;
+  @Autowired private IntygModuleRegistry intygModuleRegistry;
 
-    public String utkastToXml(String json, String intygsTyp) {
-        Intyg intyg = utkastToJAXBObject(intygsTyp, json);
-        return handleAsRegisterCertificate3(intyg);
+  public String utkastToXml(String json, String intygsTyp) {
+    Intyg intyg = utkastToJAXBObject(intygsTyp, json);
+    return handleAsRegisterCertificate3(intyg);
+  }
+
+  private String handleAsRegisterCertificate3(Intyg intyg) {
+    RegisterCertificateType registerCertificateType = new RegisterCertificateType();
+    registerCertificateType.setIntyg(intyg);
+
+    // This context may need to be created dynamically based on the Intygstyp, given that not all
+    // intygstyper
+    // are based on the same contract / domain version. Get from ModuleApi?
+    JAXBElement<RegisterCertificateType> root =
+        new ObjectFactory().createRegisterCertificate(registerCertificateType);
+    return XmlMarshallerHelper.marshal(root);
+  }
+
+  private Intyg utkastToJAXBObject(String intygsTyp, String json) {
+    try {
+      ModuleApi moduleApi =
+          intygModuleRegistry.getModuleApi(
+              intygsTyp, intygModuleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json));
+      Utlatande utlatandeFromJson = moduleApi.getUtlatandeFromJson(json);
+      return moduleApi.getIntygFromUtlatande(utlatandeFromJson);
+    } catch (ModuleNotFoundException | IOException | ModuleException e) {
+      LOG.error("Error building Intyg JAXB object from Utkast. Message: {}", e.getMessage());
+      throw new IllegalArgumentException(e.getMessage());
     }
-
-    private String handleAsRegisterCertificate3(Intyg intyg) {
-        RegisterCertificateType registerCertificateType = new RegisterCertificateType();
-        registerCertificateType.setIntyg(intyg);
-
-        // This context may need to be created dynamically based on the Intygstyp, given that not all intygstyper
-        // are based on the same contract / domain version. Get from ModuleApi?
-        JAXBElement<RegisterCertificateType> root = new ObjectFactory().createRegisterCertificate(registerCertificateType);
-        return XmlMarshallerHelper.marshal(root);
-    }
-
-    private Intyg utkastToJAXBObject(String intygsTyp, String json) {
-        try {
-            ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp,
-                intygModuleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json));
-            Utlatande utlatandeFromJson = moduleApi.getUtlatandeFromJson(json);
-            return moduleApi.getIntygFromUtlatande(utlatandeFromJson);
-        } catch (ModuleNotFoundException | IOException | ModuleException e) {
-            LOG.error("Error building Intyg JAXB object from Utkast. Message: {}", e.getMessage());
-            throw new IllegalArgumentException(e.getMessage());
-        }
-    }
+  }
 }

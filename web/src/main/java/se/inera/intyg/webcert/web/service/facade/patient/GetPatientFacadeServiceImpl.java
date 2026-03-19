@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,70 +33,69 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @Service
 public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
 
-    private final PUService puService;
-    private final MonitoringLogService monitoringService;
-    private final HashUtility hashUtility;
+  private final PUService puService;
+  private final MonitoringLogService monitoringService;
+  private final HashUtility hashUtility;
 
-    @Autowired
-    public GetPatientFacadeServiceImpl(PUService puService, MonitoringLogService monitoringService, HashUtility hashUtility) {
-        this.puService = puService;
-        this.monitoringService = monitoringService;
-        this.hashUtility = hashUtility;
+  @Autowired
+  public GetPatientFacadeServiceImpl(
+      PUService puService, MonitoringLogService monitoringService, HashUtility hashUtility) {
+    this.puService = puService;
+    this.monitoringService = monitoringService;
+    this.hashUtility = hashUtility;
+  }
+
+  @Override
+  public Patient getPatient(String patientId)
+      throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+    Personnummer formattedPatientId = formatPatientId(patientId);
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "Getting patient info for: {}", hashUtility.hash(formattedPatientId.getPersonnummer()));
     }
 
-    @Override
-    public Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
-        Personnummer formattedPatientId = formatPatientId(patientId);
-        if (log.isDebugEnabled()) {
-            log.debug("Getting patient info for: {}", hashUtility.hash(formattedPatientId.getPersonnummer()));
-        }
+    PersonSvar personSvar = puService.getPerson(formattedPatientId);
+    monitoringService.logPULookup(formattedPatientId, personSvar.getStatus().name());
 
-        PersonSvar personSvar = puService.getPerson(formattedPatientId);
-        monitoringService.logPULookup(formattedPatientId, personSvar.getStatus().name());
+    if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
+      throw new PatientSearchErrorException();
+    }
 
-        if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
-            throw new PatientSearchErrorException();
-        }
-
-        if (personSvar.getPerson() != null && (personSvar.getPerson().fornamn() == null
+    if (personSvar.getPerson() != null
+        && (personSvar.getPerson().fornamn() == null
             || personSvar.getPerson().efternamn() == null)) {
-            throw new PatientNoNameException();
-        }
-
-        return convertPatient(personSvar, patientId);
+      throw new PatientNoNameException();
     }
 
-    private Patient convertPatient(PersonSvar personSvar, String patientId) {
-        if (personSvar.getPerson() == null) {
-            return null;
-        }
+    return convertPatient(personSvar, patientId);
+  }
 
-        return Patient.builder()
-            .personId(
-                PersonId.builder()
-                    .id(patientId)
-                    .type("")
-                    .build()
-            )
-            .firstName(personSvar.getPerson().fornamn())
-            .lastName(personSvar.getPerson().efternamn())
-            .middleName(personSvar.getPerson().mellannamn())
-            .fullName(getFullName(personSvar))
-            .deceased(personSvar.getPerson().avliden())
-            .protectedPerson(personSvar.getPerson().sekretessmarkering())
-            .testIndicated(personSvar.getPerson().testIndicator())
-            .build();
+  private Patient convertPatient(PersonSvar personSvar, String patientId) {
+    if (personSvar.getPerson() == null) {
+      return null;
     }
 
-    private String getFullName(PersonSvar personSvar) {
-        final var patient = personSvar.getPerson();
-        if (patient.mellannamn() == null || patient.mellannamn().isEmpty()) {
-            return patient.fornamn() + " " + patient.efternamn();
-        }
-        return patient.fornamn() + " " + patient.mellannamn() + " " + patient.efternamn();
-    }
+    return Patient.builder()
+        .personId(PersonId.builder().id(patientId).type("").build())
+        .firstName(personSvar.getPerson().fornamn())
+        .lastName(personSvar.getPerson().efternamn())
+        .middleName(personSvar.getPerson().mellannamn())
+        .fullName(getFullName(personSvar))
+        .deceased(personSvar.getPerson().avliden())
+        .protectedPerson(personSvar.getPerson().sekretessmarkering())
+        .testIndicated(personSvar.getPerson().testIndicator())
+        .build();
+  }
 
-    private Personnummer formatPatientId(String personId) throws InvalidPatientIdException {
-        return Personnummer.createPersonnummer(personId).orElseThrow(InvalidPatientIdException::new);
+  private String getFullName(PersonSvar personSvar) {
+    final var patient = personSvar.getPerson();
+    if (patient.mellannamn() == null || patient.mellannamn().isEmpty()) {
+      return patient.fornamn() + " " + patient.efternamn();
     }
+    return patient.fornamn() + " " + patient.mellannamn() + " " + patient.efternamn();
+  }
+
+  private Personnummer formatPatientId(String personId) throws InvalidPatientIdException {
+    return Personnummer.createPersonnummer(personId).orElseThrow(InvalidPatientIdException::new);
+  }
 }

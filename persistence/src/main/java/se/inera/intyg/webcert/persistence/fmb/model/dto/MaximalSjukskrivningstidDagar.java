@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,38 +20,47 @@ package se.inera.intyg.webcert.persistence.fmb.model.dto;
 
 public class MaximalSjukskrivningstidDagar {
 
-    private String icd10Kod;
-    private Integer maximalSjukrivningstidDagar;
-    private String maximalSjukrivningstidSourceValue;
-    private String maximalSjukrivningstidSourceUnit;
+  private String icd10Kod;
+  private Integer maximalSjukrivningstidDagar;
+  private String maximalSjukrivningstidSourceValue;
+  private String maximalSjukrivningstidSourceUnit;
 
-    public MaximalSjukskrivningstidDagar(final String icd10Kod, final int maximalSjukrivningstidDagar,
-        final String maximalSjukrivningstidSourceValue, final String maximalSjukrivningstidSourceUnit) {
-        this.icd10Kod = icd10Kod;
-        this.maximalSjukrivningstidDagar = maximalSjukrivningstidDagar;
-        this.maximalSjukrivningstidSourceValue = maximalSjukrivningstidSourceValue;
-        this.maximalSjukrivningstidSourceUnit = maximalSjukrivningstidSourceUnit;
-    }
+  public MaximalSjukskrivningstidDagar(
+      final String icd10Kod,
+      final int maximalSjukrivningstidDagar,
+      final String maximalSjukrivningstidSourceValue,
+      final String maximalSjukrivningstidSourceUnit) {
+    this.icd10Kod = icd10Kod;
+    this.maximalSjukrivningstidDagar = maximalSjukrivningstidDagar;
+    this.maximalSjukrivningstidSourceValue = maximalSjukrivningstidSourceValue;
+    this.maximalSjukrivningstidSourceUnit = maximalSjukrivningstidSourceUnit;
+  }
 
-    public static MaximalSjukskrivningstidDagar of(final String icd10Kod, final Integer maximalSjukrivningstidDagar,
-        final String maximalSjukrivningstidSourceValue, final String maximalSjukrivningstidSourceUnit) {
-        return new MaximalSjukskrivningstidDagar(icd10Kod, maximalSjukrivningstidDagar, maximalSjukrivningstidSourceValue,
-            maximalSjukrivningstidSourceUnit);
-    }
+  public static MaximalSjukskrivningstidDagar of(
+      final String icd10Kod,
+      final Integer maximalSjukrivningstidDagar,
+      final String maximalSjukrivningstidSourceValue,
+      final String maximalSjukrivningstidSourceUnit) {
+    return new MaximalSjukskrivningstidDagar(
+        icd10Kod,
+        maximalSjukrivningstidDagar,
+        maximalSjukrivningstidSourceValue,
+        maximalSjukrivningstidSourceUnit);
+  }
 
-    public String getIcd10Kod() {
-        return icd10Kod;
-    }
+  public String getIcd10Kod() {
+    return icd10Kod;
+  }
 
-    public int getMaximalSjukrivningstidDagar() {
-        return maximalSjukrivningstidDagar;
-    }
+  public int getMaximalSjukrivningstidDagar() {
+    return maximalSjukrivningstidDagar;
+  }
 
-    public String getMaximalSjukrivningstidSourceValue() {
-        return maximalSjukrivningstidSourceValue;
-    }
+  public String getMaximalSjukrivningstidSourceValue() {
+    return maximalSjukrivningstidSourceValue;
+  }
 
-    public String getMaximalSjukrivningstidSourceUnit() {
-        return maximalSjukrivningstidSourceUnit;
-    }
+  public String getMaximalSjukrivningstidSourceUnit() {
+    return maximalSjukrivningstidSourceUnit;
+  }
 }

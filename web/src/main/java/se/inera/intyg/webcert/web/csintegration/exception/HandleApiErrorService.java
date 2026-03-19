@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,14 +27,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class HandleApiErrorService {
 
-    private final ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
-    public String handle(String responseBodyAsString) {
-        try {
-            final var apiError = objectMapper.readValue(responseBodyAsString, ApiError.class);
-            return apiError.getMessage();
-        } catch (JsonProcessingException e) {
-            return responseBodyAsString;
-        }
+  public String handle(String responseBodyAsString) {
+    try {
+      final var apiError = objectMapper.readValue(responseBodyAsString, ApiError.class);
+      return apiError.getMessage();
+    } catch (JsonProcessingException e) {
+      return responseBodyAsString;
     }
+  }
 }

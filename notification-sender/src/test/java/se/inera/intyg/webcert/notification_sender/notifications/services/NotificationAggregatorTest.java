@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,81 +45,80 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 @ExtendWith(MockitoExtension.class)
 class NotificationAggregatorTest {
 
-    @Spy
-    private MdcHelper mdcHelper;
+  @Spy private MdcHelper mdcHelper;
 
-    @InjectMocks
-    private final NotificationAggregator aggregator = new NotificationAggregator();
+  @InjectMocks private final NotificationAggregator aggregator = new NotificationAggregator();
 
-    final ObjectMapper objectMapper = new CustomObjectMapper();
+  final ObjectMapper objectMapper = new CustomObjectMapper();
 
-    private static final String INTYGS_ID = "intyg1";
+  private static final String INTYGS_ID = "intyg1";
 
-    @Test
-    void testProcessNoGroupedExchange() {
-        Exchange exchange = mock(Exchange.class);
-        when(exchange.getIn()).thenReturn(mock(Message.class));
-        List<Message> res = aggregator.process(exchange);
+  @Test
+  void testProcessNoGroupedExchange() {
+    Exchange exchange = mock(Exchange.class);
+    when(exchange.getIn()).thenReturn(mock(Message.class));
+    List<Message> res = aggregator.process(exchange);
 
-        assertNotNull(res);
-        assertTrue(res.isEmpty());
-    }
+    assertNotNull(res);
+    assertTrue(res.isEmpty());
+  }
 
-    @Test
-    void testProcessGroupedExchangeEmpty() {
-        final var messages = Collections.<Message>emptyList();
-        final var groupedExchange = buildGroupedExchange(messages);
-        List<Message> res = aggregator.process(groupedExchange);
+  @Test
+  void testProcessGroupedExchangeEmpty() {
+    final var messages = Collections.<Message>emptyList();
+    final var groupedExchange = buildGroupedExchange(messages);
+    List<Message> res = aggregator.process(groupedExchange);
 
-        assertNotNull(res);
-        assertTrue(res.isEmpty());
-    }
+    assertNotNull(res);
+    assertTrue(res.isEmpty());
+  }
 
-    @Test
-    void testProcess() throws Exception {
-        final var messages = List.of(
+  @Test
+  void testProcess() throws Exception {
+    final var messages =
+        List.of(
             buildMessage(INTYGS_ID, HandelsekodEnum.ANDRAT, LocalDateTime.now()),
             buildMessage(INTYGS_ID, HandelsekodEnum.SIGNAT, LocalDateTime.now()),
-            buildMessage("anotherintyg", HandelsekodEnum.ANDRAT, LocalDateTime.now())
-        );
+            buildMessage("anotherintyg", HandelsekodEnum.ANDRAT, LocalDateTime.now()));
 
-        List<Message> res = aggregator.process(buildGroupedExchange(messages));
+    List<Message> res = aggregator.process(buildGroupedExchange(messages));
 
-        assertNotNull(res);
-        assertEquals(1, res.size()); // result is filtered through NotificationMessageDiscardFilter
+    assertNotNull(res);
+    assertEquals(1, res.size()); // result is filtered through NotificationMessageDiscardFilter
+  }
+
+  private Exchange buildGroupedExchange(List<Message> messages) {
+    Exchange exchange = mock(Exchange.class);
+    Message outerMessage = buildOuterMessage(messages);
+    when(exchange.getIn()).thenReturn(outerMessage);
+    return exchange;
+  }
+
+  private Message buildOuterMessage(List<Message> messages) {
+    Message outerMsg = mock(Message.class);
+    List<Exchange> outerBody = buildOuterBody(messages);
+    when(outerMsg.getBody(List.class)).thenReturn(outerBody);
+    return outerMsg;
+  }
+
+  private List<Exchange> buildOuterBody(List<Message> messages) {
+    List<Exchange> groupedMessages = new ArrayList<>();
+    for (Message message : messages) {
+      Exchange innerExchange = mock(Exchange.class);
+      when(innerExchange.getIn()).thenReturn(message);
+      groupedMessages.add(innerExchange);
     }
+    return groupedMessages;
+  }
 
-    private Exchange buildGroupedExchange(List<Message> messages) {
-        Exchange exchange = mock(Exchange.class);
-        Message outerMessage = buildOuterMessage(messages);
-        when(exchange.getIn()).thenReturn(outerMessage);
-        return exchange;
-    }
-
-    private Message buildOuterMessage(List<Message> messages) {
-        Message outerMsg = mock(Message.class);
-        List<Exchange> outerBody = buildOuterBody(messages);
-        when(outerMsg.getBody(List.class)).thenReturn(outerBody);
-        return outerMsg;
-    }
-
-    private List<Exchange> buildOuterBody(List<Message> messages) {
-        List<Exchange> groupedMessages = new ArrayList<>();
-        for (Message message : messages) {
-            Exchange innerExchange = mock(Exchange.class);
-            when(innerExchange.getIn()).thenReturn(message);
-            groupedMessages.add(innerExchange);
-        }
-        return groupedMessages;
-    }
-
-    private Message buildMessage(String intygsId, HandelsekodEnum ht, LocalDateTime tid) throws JsonProcessingException {
-        Message message = mock(Message.class);
-        NotificationMessage nf = new NotificationMessage();
-        nf.setIntygsId(intygsId);
-        nf.setHandelse(ht);
-        nf.setHandelseTid(tid);
-        when(message.getBody()).thenReturn(objectMapper.writeValueAsString(nf));
-        return message;
-    }
+  private Message buildMessage(String intygsId, HandelsekodEnum ht, LocalDateTime tid)
+      throws JsonProcessingException {
+    Message message = mock(Message.class);
+    NotificationMessage nf = new NotificationMessage();
+    nf.setIntygsId(intygsId);
+    nf.setHandelse(ht);
+    nf.setHandelseTid(tid);
+    when(message.getBody()).thenReturn(objectMapper.writeValueAsString(nf));
+    return message;
+  }
 }

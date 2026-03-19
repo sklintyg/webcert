@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,17 +33,18 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 @Path("/v1/certificates")
 public class EraseApiController extends AbstractApiController {
 
-    @Value("${erase.certificates.page.size:1000}")
-    private int eraseCertificatesPageSize;
+  @Value("${erase.certificates.page.size:1000}")
+  private int eraseCertificatesPageSize;
 
-    @Autowired
-    private EraseService eraseService;
+  @Autowired private EraseService eraseService;
 
-    @DELETE
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @PerformanceLogging(eventAction = "erase-erase-data-for-care-provider", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-    public void eraseDataForCareProvider(@PathParam("id") String careProviderId) {
-        eraseService.eraseCertificates(careProviderId, eraseCertificatesPageSize);
-    }
+  @DELETE
+  @Path("/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @PerformanceLogging(
+      eventAction = "erase-erase-data-for-care-provider",
+      eventType = MdcLogConstants.EVENT_TYPE_DELETION)
+  public void eraseDataForCareProvider(@PathParam("id") String careProviderId) {
+    eraseService.eraseCertificates(careProviderId, eraseCertificatesPageSize);
+  }
 }

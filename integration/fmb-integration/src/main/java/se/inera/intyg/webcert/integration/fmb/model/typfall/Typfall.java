@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,74 +34,71 @@ import se.inera.intyg.webcert.integration.fmb.model.Links;
 import se.inera.intyg.webcert.integration.fmb.model.Meta;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "data",
-    "included",
-    "links",
-    "meta"
-})
+@JsonPropertyOrder({"data", "included", "links", "meta"})
 public class Typfall implements FmInfo {
 
-    @JsonProperty("data")
-    private List<TypfallData> data = null;
-    @JsonProperty("included")
-    private List<Included> included = null;
-    @JsonProperty("links")
-    private Links links;
-    @JsonProperty("meta")
-    private Meta meta;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("data")
+  private List<TypfallData> data = null;
 
-    @JsonProperty("data")
-    public List<TypfallData> getData() {
-        return data != null ? data : Lists.newArrayList();
-    }
+  @JsonProperty("included")
+  private List<Included> included = null;
 
-    @JsonProperty("data")
-    public void setData(List<TypfallData> data) {
-        this.data = data;
-    }
+  @JsonProperty("links")
+  private Links links;
 
-    @JsonProperty("included")
-    public List<Included> getIncluded() {
-        return included;
-    }
+  @JsonProperty("meta")
+  private Meta meta;
 
-    @JsonProperty("included")
-    public void setIncluded(List<Included> included) {
-        this.included = included;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("links")
-    public Links getLinks() {
-        return links;
-    }
+  @JsonProperty("data")
+  public List<TypfallData> getData() {
+    return data != null ? data : Lists.newArrayList();
+  }
 
-    @JsonProperty("links")
-    public void setLinks(Links links) {
-        this.links = links;
-    }
+  @JsonProperty("data")
+  public void setData(List<TypfallData> data) {
+    this.data = data;
+  }
 
-    @Override
-    @JsonProperty("meta")
-    public Optional<Meta> getOptionalMeta() {
-        return Optional.ofNullable(meta);
-    }
+  @JsonProperty("included")
+  public List<Included> getIncluded() {
+    return included;
+  }
 
-    @JsonProperty("meta")
-    public void setMeta(Meta meta) {
-        this.meta = meta;
-    }
+  @JsonProperty("included")
+  public void setIncluded(List<Included> included) {
+    this.included = included;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("links")
+  public Links getLinks() {
+    return links;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("links")
+  public void setLinks(Links links) {
+    this.links = links;
+  }
 
+  @Override
+  @JsonProperty("meta")
+  public Optional<Meta> getOptionalMeta() {
+    return Optional.ofNullable(meta);
+  }
+
+  @JsonProperty("meta")
+  public void setMeta(Meta meta) {
+    this.meta = meta;
+  }
+
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

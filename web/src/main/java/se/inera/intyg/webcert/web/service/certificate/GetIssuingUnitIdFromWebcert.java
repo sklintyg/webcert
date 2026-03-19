@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -27,11 +26,11 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 @RequiredArgsConstructor
 public class GetIssuingUnitIdFromWebcert {
 
-    private final IntygService intygService;
+  private final IntygService intygService;
 
-    public String get(String certificateId) {
-        final var intygTypeInfo = intygService.getIntygTypeInfo(certificateId);
-        final var certificateType = intygTypeInfo.getIntygType();
-        return intygService.getIssuingVardenhetHsaId(certificateId, certificateType);
-    }
+  public String get(String certificateId) {
+    final var intygTypeInfo = intygService.getIntygTypeInfo(certificateId);
+    final var certificateType = intygTypeInfo.getIntygType();
+    return intygService.getIssuingVardenhetHsaId(certificateId, certificateType);
+  }
 }

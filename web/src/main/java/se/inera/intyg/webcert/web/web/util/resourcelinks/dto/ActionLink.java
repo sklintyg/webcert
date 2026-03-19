@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,61 +20,55 @@ package se.inera.intyg.webcert.web.web.util.resourcelinks.dto;
 
 import java.util.Objects;
 
-/**
- * DTO for available actions.
- */
+/** DTO for available actions. */
 public class ActionLink {
 
-    private ActionLinkType type;
+  private ActionLinkType type;
 
-    /**
-     * Empty action link. Type will be null.
-     */
-    public ActionLink() {
+  /** Empty action link. Type will be null. */
+  public ActionLink() {}
 
+  /**
+   * New action link.
+   *
+   * @param type Type of action link.
+   */
+  public ActionLink(ActionLinkType type) {
+    this.type = type;
+  }
+
+  /**
+   * Get the type of the link.
+   *
+   * @return Type of link. Can be null.
+   */
+  public ActionLinkType getType() {
+    return type;
+  }
+
+  /**
+   * Set the type of the link.
+   *
+   * @param type Type of link.
+   */
+  public void setType(ActionLinkType type) {
+    this.type = type;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    /**
-     * New action link.
-     *
-     * @param type Type of action link.
-     */
-    public ActionLink(ActionLinkType type) {
-        this.type = type;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    ActionLink that = (ActionLink) o;
+    return type == that.type;
+  }
 
-    /**
-     * Get the type of the link.
-     *
-     * @return Type of link. Can be null.
-     */
-    public ActionLinkType getType() {
-        return type;
-    }
-
-    /**
-     * Set the type of the link.
-     *
-     * @param type Type of link.
-     */
-    public void setType(ActionLinkType type) {
-        this.type = type;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ActionLink that = (ActionLink) o;
-        return type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(type);
+  }
 }

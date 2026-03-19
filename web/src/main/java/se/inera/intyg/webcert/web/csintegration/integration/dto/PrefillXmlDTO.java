@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import jakarta.xml.bind.JAXBContext;
@@ -45,17 +44,19 @@ public class PrefillXmlDTO {
       final var element = new ObjectFactory().createForifyllnad(forifyllnad);
 
       final var stringWriter = new StringWriter();
-      final var jaxbContext = JAXBContext.newInstance(
-          Forifyllnad.class,
-          se.riv.clinicalprocess.healthcond.certificate.types.v3.ObjectFactory.class);
+      final var jaxbContext =
+          JAXBContext.newInstance(
+              Forifyllnad.class,
+              se.riv.clinicalprocess.healthcond.certificate.types.v3.ObjectFactory.class);
       final var marshaller = jaxbContext.createMarshaller();
 
       marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
       marshaller.marshal(element, stringWriter);
 
-      final var xml = Base64.getEncoder()
-          .encodeToString(stringWriter.toString().getBytes(StandardCharsets.UTF_8));
+      final var xml =
+          Base64.getEncoder()
+              .encodeToString(stringWriter.toString().getBytes(StandardCharsets.UTF_8));
       return new PrefillXmlDTO(xml);
     } catch (Exception e) {
       log.error("Failed to marshal Forifyllnad to XML", e);

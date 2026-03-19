@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,17 +25,16 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.S
 
 public final class SendMessageToRecipientTypeConverter {
 
-    private SendMessageToRecipientTypeConverter() {
-    }
+  private SendMessageToRecipientTypeConverter() {}
 
-    public static String toXml(SendMessageToRecipientType request) {
-        JAXBElement<SendMessageToRecipientType> requestElement = new ObjectFactory()
-            .createSendMessageToRecipient(request);
-        return XmlMarshallerHelper.marshal(requestElement);
-    }
+  public static String toXml(SendMessageToRecipientType request) {
+    JAXBElement<SendMessageToRecipientType> requestElement =
+        new ObjectFactory().createSendMessageToRecipient(request);
+    return XmlMarshallerHelper.marshal(requestElement);
+  }
 
-    public static SendMessageToRecipientType fromXml(String xml) {
-        JAXBElement<SendMessageToRecipientType> unmarshalledObject = XmlMarshallerHelper.unmarshal(xml);
-        return unmarshalledObject.getValue();
-    }
+  public static SendMessageToRecipientType fromXml(String xml) {
+    JAXBElement<SendMessageToRecipientType> unmarshalledObject = XmlMarshallerHelper.unmarshal(xml);
+    return unmarshalledObject.getValue();
+  }
 }

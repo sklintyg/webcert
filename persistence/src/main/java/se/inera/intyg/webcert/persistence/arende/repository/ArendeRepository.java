@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,15 +27,15 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 
 public interface ArendeRepository extends JpaRepository<Arende, Long>, ArendeRepositoryCustom {
 
-    @Query("select a from Arende a where a.intygsId in :certificateIds")
-    List<Arende> getArendenByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+  @Query("select a from Arende a where a.intygsId in :certificateIds")
+  List<Arende> getArendenByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
-    List<Arende> findByPatientPersonIdInAndTimestampAfter(List<String> patientIds, LocalDateTime earliestValidDate);
+  List<Arende> findByPatientPersonIdInAndTimestampAfter(
+      List<String> patientIds, LocalDateTime earliestValidDate);
 
-    default int eraseArendenByCertificateIds(List<String> certificateIds) {
-        final var arenden = getArendenByCertificateIds(certificateIds);
-        deleteAll(arenden);
-        return arenden.size();
-    }
-
+  default int eraseArendenByCertificateIds(List<String> certificateIds) {
+    final var arenden = getArendenByCertificateIds(certificateIds);
+    deleteAll(arenden);
+    return arenden.size();
+  }
 }

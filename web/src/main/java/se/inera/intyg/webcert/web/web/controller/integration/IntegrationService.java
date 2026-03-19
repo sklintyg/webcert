@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,9 +27,8 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
  */
 public interface IntegrationService {
 
-    PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user);
+  PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user);
 
-    PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
-
-
+  PrepareRedirectToIntyg prepareRedirectToIntyg(
+      String intygId, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
 }

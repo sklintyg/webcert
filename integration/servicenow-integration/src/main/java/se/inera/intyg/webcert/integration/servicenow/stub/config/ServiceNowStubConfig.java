@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,24 +36,25 @@ import se.inera.intyg.webcert.integration.servicenow.stub.settings.api.ServiceNo
 @Slf4j
 @RequiredArgsConstructor
 @Profile("(dev | wc-all-stubs | servicenow-integration-stub-v2) & !servicenow-integration-stub")
-@ComponentScan(basePackages = {
-    "se.inera.intyg.webcert.integration.servicenow.stub",
-    "se.inera.intyg.webcert.integration.servicenow.stub.settings"})
+@ComponentScan(
+    basePackages = {
+      "se.inera.intyg.webcert.integration.servicenow.stub",
+      "se.inera.intyg.webcert.integration.servicenow.stub.settings"
+    })
 public class ServiceNowStubConfig {
 
-    private final ServiceNowStubRestApi servicenowStubRestApi;
-    private final ServiceNowStubSettingsApi servicenowStubSettingsApi;
+  private final ServiceNowStubRestApi servicenowStubRestApi;
+  private final ServiceNowStubSettingsApi servicenowStubSettingsApi;
 
-    @Bean
-    public Server server(JacksonJsonProvider jacksonJsonProvider, SpringBus springBus) {
-        final var providers = List.of(jacksonJsonProvider);
-        final var endpoint = new JAXRSServerFactoryBean();
-        endpoint.setProviders(providers);
-        endpoint.setBus(springBus);
-        endpoint.setAddress("/stubs/servicenowstub");
-        endpoint.setServiceBeans(List.of(servicenowStubRestApi, servicenowStubSettingsApi));
-        log.info("Activating servicenow-integration-v2-stub for subscription queries");
-        return endpoint.create();
-    }
-
+  @Bean
+  public Server server(JacksonJsonProvider jacksonJsonProvider, SpringBus springBus) {
+    final var providers = List.of(jacksonJsonProvider);
+    final var endpoint = new JAXRSServerFactoryBean();
+    endpoint.setProviders(providers);
+    endpoint.setBus(springBus);
+    endpoint.setAddress("/stubs/servicenowstub");
+    endpoint.setServiceBeans(List.of(servicenowStubRestApi, servicenowStubSettingsApi));
+    log.info("Activating servicenow-integration-v2-stub for subscription queries");
+    return endpoint.create();
+  }
 }

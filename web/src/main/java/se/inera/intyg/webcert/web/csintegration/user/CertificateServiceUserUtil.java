@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,34 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.user;
 
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 public class CertificateServiceUserUtil {
 
-    private CertificateServiceUserUtil() {
-        throw new IllegalStateException("Utility class");
-    }
+  private CertificateServiceUserUtil() {
+    throw new IllegalStateException("Utility class");
+  }
 
-    public static CertificateServiceUserRole convertRole(String role) {
-        switch (role.toUpperCase()) {
-            case AuthoritiesConstants.ROLE_LAKARE:
-                return CertificateServiceUserRole.DOCTOR;
-            case AuthoritiesConstants.ROLE_PRIVATLAKARE:
-                return CertificateServiceUserRole.PRIVATE_DOCTOR;
-            case AuthoritiesConstants.ROLE_TANDLAKARE:
-                return CertificateServiceUserRole.DENTIST;
-            case AuthoritiesConstants.ROLE_ADMIN:
-                return CertificateServiceUserRole.CARE_ADMIN;
-            case AuthoritiesConstants.ROLE_SJUKSKOTERSKA:
-                return CertificateServiceUserRole.NURSE;
-            case AuthoritiesConstants.ROLE_BARNMORSKA:
-                return CertificateServiceUserRole.MIDWIFE;
-            default:
-                throw new IllegalArgumentException("Role is not recognized: " + role);
-        }
+  public static CertificateServiceUserRole convertRole(String role) {
+    switch (role.toUpperCase()) {
+      case AuthoritiesConstants.ROLE_LAKARE:
+        return CertificateServiceUserRole.DOCTOR;
+      case AuthoritiesConstants.ROLE_PRIVATLAKARE:
+        return CertificateServiceUserRole.PRIVATE_DOCTOR;
+      case AuthoritiesConstants.ROLE_TANDLAKARE:
+        return CertificateServiceUserRole.DENTIST;
+      case AuthoritiesConstants.ROLE_ADMIN:
+        return CertificateServiceUserRole.CARE_ADMIN;
+      case AuthoritiesConstants.ROLE_SJUKSKOTERSKA:
+        return CertificateServiceUserRole.NURSE;
+      case AuthoritiesConstants.ROLE_BARNMORSKA:
+        return CertificateServiceUserRole.MIDWIFE;
+      default:
+        throw new IllegalArgumentException("Role is not recognized: " + role);
     }
-
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,160 +40,194 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Slf4j
 public class UserStatisticsServiceImpl implements UserStatisticsService {
 
-    @Value("${max.number.of.commissions.for.statistics:15}")
-    private Integer maxCommissionsForStatistics;
+  @Value("${max.number.of.commissions.for.statistics:15}")
+  private Integer maxCommissionsForStatistics;
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserStatisticsServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UserStatisticsServiceImpl.class);
 
-    private final WebCertUserService webCertUserService;
-    private final UtkastService utkastService;
-    private final AuthoritiesHelper authoritiesHelper;
-    private final ArendeService arendeService;
-    private final CertificateServiceStatisticService certificateServiceStatisticService;
+  private final WebCertUserService webCertUserService;
+  private final UtkastService utkastService;
+  private final AuthoritiesHelper authoritiesHelper;
+  private final ArendeService arendeService;
+  private final CertificateServiceStatisticService certificateServiceStatisticService;
 
-    @Autowired
-    public UserStatisticsServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
-        AuthoritiesHelper authoritiesHelper, ArendeService arendeService,
-        CertificateServiceStatisticService certificateServiceStatisticService) {
-        this.webCertUserService = webCertUserService;
-        this.utkastService = utkastService;
-        this.authoritiesHelper = authoritiesHelper;
-        this.arendeService = arendeService;
-        this.certificateServiceStatisticService = certificateServiceStatisticService;
+  @Autowired
+  public UserStatisticsServiceImpl(
+      WebCertUserService webCertUserService,
+      UtkastService utkastService,
+      AuthoritiesHelper authoritiesHelper,
+      ArendeService arendeService,
+      CertificateServiceStatisticService certificateServiceStatisticService) {
+    this.webCertUserService = webCertUserService;
+    this.utkastService = utkastService;
+    this.authoritiesHelper = authoritiesHelper;
+    this.arendeService = arendeService;
+    this.certificateServiceStatisticService = certificateServiceStatisticService;
+  }
+
+  @Override
+  public UserStatisticsDTO getUserStatistics() {
+    final var user = webCertUserService.getUser();
+
+    if (!validateUser(user)) {
+      return null;
     }
 
-    @Override
-    public UserStatisticsDTO getUserStatistics() {
-        final var user = webCertUserService.getUser();
+    final var careUnitContext = CareUnitContext.build(user, maxCommissionsForStatistics);
 
-        if (!validateUser(user)) {
-            return null;
-        }
-
-        final var careUnitContext = CareUnitContext.build(user, maxCommissionsForStatistics);
-
-        if (careUnitContext == null) {
-            return null;
-        }
-
-        if (careUnitContext.maxCommissionsExceeded() && user.getValdVardenhet() == null) {
-            log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
-                + "be collected.", careUnitContext.careUnitIds().size(), maxCommissionsForStatistics);
-            return null;
-        }
-
-        final var unitIds = careUnitContext.allUnitIds();
-
-        if (careUnitContext.maxCommissionsExceeded()) {
-            log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
-                + "for selected care unit only.", careUnitContext.careUnitIds().size(), maxCommissionsForStatistics);
-        }
-
-        final var statistics = new UserStatisticsDTO();
-        final var certificateTypes = getCertificateTypesAllowedForUser(user);
-        final var questionsMap = arendeService.getNbrOfUnhandledArendenForCareUnits(unitIds, certificateTypes);
-        final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
-
-        if (user.getValdVardenhet() != null) {
-            statistics.setNbrOfDraftsOnSelectedUnit(
-                getNumberOfDraftsOnSelectedUnit(user, draftsMap)
-            );
-            statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
-                getNumberOfUnhandledQuestionsOnSelectedUnit(careUnitContext.selectedUnitIds(), questionsMap)
-            );
-            statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
-                getTotalDraftsAndUnhandledQuestionsOnOtherUnits(careUnitContext, draftsMap, questionsMap)
-            );
-        }
-
-        if (!careUnitContext.maxCommissionsExceeded()) {
-            addCareProviderStatistics(statistics, careUnitContext, draftsMap, questionsMap);
-        }
-
-        certificateServiceStatisticService.add(statistics, unitIds, user, careUnitContext.maxCommissionsExceeded());
-        return statistics;
+    if (careUnitContext == null) {
+      return null;
     }
 
-    private void addCareProviderStatistics(UserStatisticsDTO statistics, CareUnitContext context, Map<String, Long> draftMap,
-        Map<String, Long> questionMap) {
-        for (String careUnitId : context.careUnitIds()) {
-            final var careProviderId = context.getCareProviderIdFor(careUnitId);
-            final var subUnitIds = context.getSubUnitsFor(careUnitId);
-            addUnitStatistics(statistics, careUnitId, subUnitIds, draftMap, questionMap, careProviderId);
-            addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap, careProviderId, careUnitId);
-        }
+    if (careUnitContext.maxCommissionsExceeded() && user.getValdVardenhet() == null) {
+      log.info(
+          "Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
+              + "be collected.",
+          careUnitContext.careUnitIds().size(),
+          maxCommissionsForStatistics);
+      return null;
     }
 
-    private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String, Long> draftMap,
-        Map<String, Long> questionMap, String careProviderId) {
-        if (unitId == null) {
-            LOG.warn("Care provider with id '{}' includes care unit without id. Statistics will not be included for unit.", careProviderId);
-            return;
-        }
-        final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
-        final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionMap);
-        final var draftsOnUnit = getFromMap(unitId, draftMap);
-        final var questionsOnUnit = getFromMap(unitId, questionMap);
-        statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(draftsOnUnit, questionsOnUnit, draftsOnSubUnits, questionsOnSubUnits));
+    final var unitIds = careUnitContext.allUnitIds();
+
+    if (careUnitContext.maxCommissionsExceeded()) {
+      log.info(
+          "Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
+              + "for selected care unit only.",
+          careUnitContext.careUnitIds().size(),
+          maxCommissionsForStatistics);
     }
 
-    private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap,
-        Map<String, Long> questionMap, String careProviderId, String careUnitId) {
-        for (String unitId : unitIds) {
-            if (unitId == null) {
-                LOG.warn(
-                    "Care provider with id '{}' & care unit with id '{}' includes sub unit without id. Statistics will not be included for"
-                        + " sub unit.", careProviderId, careUnitId);
-                continue;
-            }
-            final var nbrOfDrafts = getFromMap(unitId, draftMap);
-            final var nbrOfQuestions = getFromMap(unitId, questionMap);
-            statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(nbrOfDrafts, nbrOfQuestions));
-        }
+    final var statistics = new UserStatisticsDTO();
+    final var certificateTypes = getCertificateTypesAllowedForUser(user);
+    final var questionsMap =
+        arendeService.getNbrOfUnhandledArendenForCareUnits(unitIds, certificateTypes);
+    final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
+
+    if (user.getValdVardenhet() != null) {
+      statistics.setNbrOfDraftsOnSelectedUnit(getNumberOfDraftsOnSelectedUnit(user, draftsMap));
+      statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
+          getNumberOfUnhandledQuestionsOnSelectedUnit(
+              careUnitContext.selectedUnitIds(), questionsMap));
+      statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
+          getTotalDraftsAndUnhandledQuestionsOnOtherUnits(
+              careUnitContext, draftsMap, questionsMap));
     }
 
-    private Set<String> getCertificateTypesAllowedForUser(WebCertUser user) {
-        return authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+    if (!careUnitContext.maxCommissionsExceeded()) {
+      addCareProviderStatistics(statistics, careUnitContext, draftsMap, questionsMap);
     }
 
-    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(CareUnitContext context, Map<String, Long> draftStats,
-        Map<String, Long> questionsStats) {
-        final var notSelectedUnitIds = context.getNotSelectedUnitIds();
-        return sumStatisticsForUnits(notSelectedUnitIds, draftStats) + sumStatisticsForUnits(notSelectedUnitIds, questionsStats);
-    }
+    certificateServiceStatisticService.add(
+        statistics, unitIds, user, careUnitContext.maxCommissionsExceeded());
+    return statistics;
+  }
 
-    private long getNumberOfDraftsOnSelectedUnit(WebCertUser user, Map<String, Long> draftsMap) {
-        return getFromMap(user.getValdVardenhet().getId(), draftsMap);
+  private void addCareProviderStatistics(
+      UserStatisticsDTO statistics,
+      CareUnitContext context,
+      Map<String, Long> draftMap,
+      Map<String, Long> questionMap) {
+    for (String careUnitId : context.careUnitIds()) {
+      final var careProviderId = context.getCareProviderIdFor(careUnitId);
+      final var subUnitIds = context.getSubUnitsFor(careUnitId);
+      addUnitStatistics(statistics, careUnitId, subUnitIds, draftMap, questionMap, careProviderId);
+      addSubUnitsStatistics(
+          statistics, subUnitIds, draftMap, questionMap, careProviderId, careUnitId);
     }
+  }
 
-    private long getNumberOfUnhandledQuestionsOnSelectedUnit(Set<String> unitIds, Map<String, Long> statisticsMap) {
-        return sumStatisticsForUnits(unitIds, statisticsMap);
+  private void addUnitStatistics(
+      UserStatisticsDTO statistics,
+      String unitId,
+      List<String> subUnitIds,
+      Map<String, Long> draftMap,
+      Map<String, Long> questionMap,
+      String careProviderId) {
+    if (unitId == null) {
+      LOG.warn(
+          "Care provider with id '{}' includes care unit without id. Statistics will not be included for unit.",
+          careProviderId);
+      return;
     }
+    final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
+    final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionMap);
+    final var draftsOnUnit = getFromMap(unitId, draftMap);
+    final var questionsOnUnit = getFromMap(unitId, questionMap);
+    statistics.addUnitStatistics(
+        unitId,
+        new UnitStatisticsDTO(
+            draftsOnUnit, questionsOnUnit, draftsOnSubUnits, questionsOnSubUnits));
+  }
 
-    private long sumStatisticsForUnits(Iterable<String> unitIds, Map<String, Long> statistics) {
-        long sum = 0;
-        for (String unitId : unitIds) {
-            sum += getFromMap(unitId, statistics);
-        }
-        return sum;
+  private void addSubUnitsStatistics(
+      UserStatisticsDTO statistics,
+      List<String> unitIds,
+      Map<String, Long> draftMap,
+      Map<String, Long> questionMap,
+      String careProviderId,
+      String careUnitId) {
+    for (String unitId : unitIds) {
+      if (unitId == null) {
+        LOG.warn(
+            "Care provider with id '{}' & care unit with id '{}' includes sub unit without id. Statistics will not be included for"
+                + " sub unit.",
+            careProviderId,
+            careUnitId);
+        continue;
+      }
+      final var nbrOfDrafts = getFromMap(unitId, draftMap);
+      final var nbrOfQuestions = getFromMap(unitId, questionMap);
+      statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(nbrOfDrafts, nbrOfQuestions));
     }
+  }
 
-    private boolean validateUser(WebCertUser user) {
-        if (user == null) {
-            LOG.warn("getStatistics was called, but webcertUser was null!");
-            return false;
-        } else if (UserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
-            LOG.debug("getStatistics was called, but webcertUser origin is DJUPINTEGRATION - returning empty answer");
-            return false;
-        } else if (user.isUnauthorizedPrivatePractitioner()) {
-            LOG.debug("getStatistics was called, but webcertUser is unauthorized private practitioner - returning empty answer");
-            return false;
-        }
-        return true;
+  private Set<String> getCertificateTypesAllowedForUser(WebCertUser user) {
+    return authoritiesHelper.getIntygstyperForPrivilege(
+        user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+  }
+
+  private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(
+      CareUnitContext context, Map<String, Long> draftStats, Map<String, Long> questionsStats) {
+    final var notSelectedUnitIds = context.getNotSelectedUnitIds();
+    return sumStatisticsForUnits(notSelectedUnitIds, draftStats)
+        + sumStatisticsForUnits(notSelectedUnitIds, questionsStats);
+  }
+
+  private long getNumberOfDraftsOnSelectedUnit(WebCertUser user, Map<String, Long> draftsMap) {
+    return getFromMap(user.getValdVardenhet().getId(), draftsMap);
+  }
+
+  private long getNumberOfUnhandledQuestionsOnSelectedUnit(
+      Set<String> unitIds, Map<String, Long> statisticsMap) {
+    return sumStatisticsForUnits(unitIds, statisticsMap);
+  }
+
+  private long sumStatisticsForUnits(Iterable<String> unitIds, Map<String, Long> statistics) {
+    long sum = 0;
+    for (String unitId : unitIds) {
+      sum += getFromMap(unitId, statistics);
     }
+    return sum;
+  }
 
-
-    private long getFromMap(String id, Map<String, Long> statsMap) {
-        return statsMap.getOrDefault(id, 0L);
+  private boolean validateUser(WebCertUser user) {
+    if (user == null) {
+      LOG.warn("getStatistics was called, but webcertUser was null!");
+      return false;
+    } else if (UserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
+      LOG.debug(
+          "getStatistics was called, but webcertUser origin is DJUPINTEGRATION - returning empty answer");
+      return false;
+    } else if (user.isUnauthorizedPrivatePractitioner()) {
+      LOG.debug(
+          "getStatistics was called, but webcertUser is unauthorized private practitioner - returning empty answer");
+      return false;
     }
+    return true;
+  }
+
+  private long getFromMap(String id, Map<String, Long> statsMap) {
+    return statsMap.getOrDefault(id, 0L);
+  }
 }

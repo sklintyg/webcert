@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.persistence.legacy.model;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.Type;
+import java.time.LocalDateTime;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 /**
@@ -36,137 +35,136 @@ import se.inera.intyg.schemas.contract.Personnummer;
 @Table(name = "MIGRERADE_INTYG_FRAN_MEDCERT")
 public class MigreratMedcertIntyg {
 
-    @Id
-    @Column(name = "INTYG_ID", nullable = false)
-    private String intygsId;
+  @Id
+  @Column(name = "INTYG_ID", nullable = false)
+  private String intygsId;
 
-    @Column(name = "ENHETS_ID", nullable = false)
-    private String enhetsId;
+  @Column(name = "ENHETS_ID", nullable = false)
+  private String enhetsId;
 
-    @Column(name = "INTYGS_TYP")
-    private String intygsTyp;
+  @Column(name = "INTYGS_TYP")
+  private String intygsTyp;
 
-    @Column(name = "URSPRUNG")
-    private String ursprung;
+  @Column(name = "URSPRUNG")
+  private String ursprung;
 
-    @Column(name = "PATIENT_NAMN", nullable = false)
-    private String patientNamn;
+  @Column(name = "PATIENT_NAMN", nullable = false)
+  private String patientNamn;
 
-    @Column(name = "PATIENT_SSN", nullable = false)
-    private String patientPersonnummer;
+  @Column(name = "PATIENT_SSN", nullable = false)
+  private String patientPersonnummer;
 
-    @Column(name = "SKAPAD_DATUM", nullable = false)
-    private LocalDateTime skapad;
+  @Column(name = "SKAPAD_DATUM", nullable = false)
+  private LocalDateTime skapad;
 
-    @Column(name = "SKICKAD_DATUM")
-    private LocalDateTime skickad;
+  @Column(name = "SKICKAD_DATUM")
+  private LocalDateTime skickad;
 
-    @Column(name = "MIGRERAD_DATUM", nullable = false)
-    private LocalDateTime migrerad;
+  @Column(name = "MIGRERAD_DATUM", nullable = false)
+  private LocalDateTime migrerad;
 
-    @Column(name = "MIGRERAD_FRAN", nullable = false)
-    private String migreradFran;
+  @Column(name = "MIGRERAD_FRAN", nullable = false)
+  private String migreradFran;
 
-    @Column(name = "INTYGS_DATA")
-    private byte[] intygsData;
+  @Column(name = "INTYGS_DATA")
+  private byte[] intygsData;
 
-    public MigreratMedcertIntyg() {
-        // Default constructor for hibernate
+  public MigreratMedcertIntyg() {
+    // Default constructor for hibernate
+  }
+
+  @PrePersist
+  void onPrePersist() {
+    if (getMigrerad() == null) {
+      setMigrerad(LocalDateTime.now());
     }
+  }
 
-    @PrePersist
-    void onPrePersist() {
-        if (getMigrerad() == null) {
-            setMigrerad(LocalDateTime.now());
-        }
-    }
+  public String getIntygsId() {
+    return intygsId;
+  }
 
-    public String getIntygsId() {
-        return intygsId;
-    }
+  public void setIntygsId(String intygsId) {
+    this.intygsId = intygsId;
+  }
 
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
-    }
+  public String getEnhetsId() {
+    return enhetsId;
+  }
 
-    public String getEnhetsId() {
-        return enhetsId;
-    }
+  public void setEnhetsId(String enhetsId) {
+    this.enhetsId = enhetsId;
+  }
 
-    public void setEnhetsId(String enhetsId) {
-        this.enhetsId = enhetsId;
-    }
+  public String getIntygsTyp() {
+    return intygsTyp;
+  }
 
-    public String getIntygsTyp() {
-        return intygsTyp;
-    }
+  public void setIntygsTyp(String intygsTyp) {
+    this.intygsTyp = intygsTyp;
+  }
 
-    public void setIntygsTyp(String intygsTyp) {
-        this.intygsTyp = intygsTyp;
-    }
+  public String getUrsprung() {
+    return ursprung;
+  }
 
-    public String getUrsprung() {
-        return ursprung;
-    }
+  public void setUrsprung(String ursprung) {
+    this.ursprung = ursprung;
+  }
 
-    public void setUrsprung(String ursprung) {
-        this.ursprung = ursprung;
-    }
+  public String getPatientNamn() {
+    return patientNamn;
+  }
 
-    public String getPatientNamn() {
-        return patientNamn;
-    }
+  public void setPatientNamn(String patientNamn) {
+    this.patientNamn = patientNamn;
+  }
 
-    public void setPatientNamn(String patientNamn) {
-        this.patientNamn = patientNamn;
-    }
+  public Personnummer getPatientPersonnummer() {
+    return Personnummer.createPersonnummer(patientPersonnummer).orElse(null);
+  }
 
-    public Personnummer getPatientPersonnummer() {
-        return Personnummer.createPersonnummer(patientPersonnummer).orElse(null);
-    }
+  public void setPatientPersonnummer(Personnummer patientPersonnummer) {
+    this.patientPersonnummer = patientPersonnummer.getPersonnummer();
+  }
 
-    public void setPatientPersonnummer(Personnummer patientPersonnummer) {
-        this.patientPersonnummer = patientPersonnummer.getPersonnummer();
-    }
+  public LocalDateTime getSkapad() {
+    return skapad;
+  }
 
-    public LocalDateTime getSkapad() {
-        return skapad;
-    }
+  public void setSkapad(LocalDateTime skapad) {
+    this.skapad = skapad;
+  }
 
-    public void setSkapad(LocalDateTime skapad) {
-        this.skapad = skapad;
-    }
+  public LocalDateTime getSkickad() {
+    return skickad;
+  }
 
-    public LocalDateTime getSkickad() {
-        return skickad;
-    }
+  public void setSkickad(LocalDateTime skickad) {
+    this.skickad = skickad;
+  }
 
-    public void setSkickad(LocalDateTime skickad) {
-        this.skickad = skickad;
-    }
+  public LocalDateTime getMigrerad() {
+    return migrerad;
+  }
 
-    public LocalDateTime getMigrerad() {
-        return migrerad;
-    }
+  public void setMigrerad(LocalDateTime migrerad) {
+    this.migrerad = migrerad;
+  }
 
-    public void setMigrerad(LocalDateTime migrerad) {
-        this.migrerad = migrerad;
-    }
+  public String getMigreradFran() {
+    return migreradFran;
+  }
 
-    public String getMigreradFran() {
-        return migreradFran;
-    }
+  public void setMigreradFran(String migreradFran) {
+    this.migreradFran = migreradFran;
+  }
 
-    public void setMigreradFran(String migreradFran) {
-        this.migreradFran = migreradFran;
-    }
+  public byte[] getIntygsData() {
+    return intygsData;
+  }
 
-    public byte[] getIntygsData() {
-        return intygsData;
-    }
-
-    public void setIntygsData(byte[] intygsData) {
-        this.intygsData = intygsData;
-    }
-
+  public void setIntygsData(byte[] intygsData) {
+    this.intygsData = intygsData;
+  }
 }

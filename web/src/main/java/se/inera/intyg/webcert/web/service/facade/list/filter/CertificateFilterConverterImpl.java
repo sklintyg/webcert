@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,23 +26,23 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @Service
 public class CertificateFilterConverterImpl implements CertificateFilterConverter {
 
-    @Override
-    public QueryIntygParameter convert(ListFilter filter, String hsaId, String[] units) {
-        return convertFilter(filter, hsaId, units);
-    }
+  @Override
+  public QueryIntygParameter convert(ListFilter filter, String hsaId, String[] units) {
+    return convertFilter(filter, hsaId, units);
+  }
 
-    private QueryIntygParameter convertFilter(ListFilter filter, String hsaId, String[] units) {
-        final var convertedFilter = new QueryIntygParameter();
+  private QueryIntygParameter convertFilter(ListFilter filter, String hsaId, String[] units) {
+    final var convertedFilter = new QueryIntygParameter();
 
-        convertedFilter.setHsaId(hsaId);
-        convertedFilter.setUnitIds(units);
-        convertedFilter.setSignedFrom(ListFilterHelper.getSignedFrom(filter));
-        convertedFilter.setSignedTo(ListFilterHelper.getSignedTo(filter));
-        convertedFilter.setPatientId(ListFilterHelper.getPatientId(filter));
-        convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter, ListType.CERTIFICATES));
-        convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
-        convertedFilter.setStartFrom(ListFilterHelper.getStartFrom(filter));
-        convertedFilter.setPageSize(ListFilterHelper.getPageSize(filter));
-        return convertedFilter;
-    }
+    convertedFilter.setHsaId(hsaId);
+    convertedFilter.setUnitIds(units);
+    convertedFilter.setSignedFrom(ListFilterHelper.getSignedFrom(filter));
+    convertedFilter.setSignedTo(ListFilterHelper.getSignedTo(filter));
+    convertedFilter.setPatientId(ListFilterHelper.getPatientId(filter));
+    convertedFilter.setOrderBy(ListFilterHelper.convertOrderBy(filter, ListType.CERTIFICATES));
+    convertedFilter.setOrderAscending(ListFilterHelper.getAscending(filter));
+    convertedFilter.setStartFrom(ListFilterHelper.getStartFrom(filter));
+    convertedFilter.setPageSize(ListFilterHelper.getPageSize(filter));
+    return convertedFilter;
+  }
 }

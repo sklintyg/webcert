@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,57 +31,52 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @Component
 public class SrsFunctionImpl implements SrsFunction {
 
-    @Override
-    public Optional<ResourceLinkDTO> getSRSFullView(Certificate certificate, WebCertUser user) {
-        return isDraft(certificate) && isSRSActive(certificate, user) ? Optional.of(getResourceLink(true)) : Optional.empty();
+  @Override
+  public Optional<ResourceLinkDTO> getSRSFullView(Certificate certificate, WebCertUser user) {
+    return isDraft(certificate) && isSRSActive(certificate, user)
+        ? Optional.of(getResourceLink(true))
+        : Optional.empty();
+  }
+
+  @Override
+  public Optional<ResourceLinkDTO> getSRSMinimizedView(Certificate certificate, WebCertUser user) {
+    return isSignedCertificate(certificate) && isSRSActive(certificate, user)
+        ? Optional.of(getSRSRecommendationsResourceLink(true))
+        : Optional.empty();
+  }
+
+  private ResourceLinkDTO getResourceLink(boolean enabled) {
+    return ResourceLinkDTO.create(
+        ResourceLinkTypeDTO.SRS_FULL_VIEW, "Risk och råd", "Risk och råd", enabled);
+  }
+
+  private ResourceLinkDTO getSRSRecommendationsResourceLink(boolean enabled) {
+    return ResourceLinkDTO.create(
+        ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW, "Risk och råd", "Risk och råd", enabled);
+  }
+
+  private boolean isSRSActive(Certificate certificate, WebCertUser user) {
+    final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_SRS);
+    if (feature == null) {
+      return false;
     }
 
-    @Override
-    public Optional<ResourceLinkDTO> getSRSMinimizedView(Certificate certificate, WebCertUser user) {
-        return isSignedCertificate(certificate) && isSRSActive(certificate, user)
-            ? Optional.of(getSRSRecommendationsResourceLink(true)) : Optional.empty();
-    }
+    return isFeatureActive(certificate.getMetadata().getType(), feature);
+  }
 
-    private ResourceLinkDTO getResourceLink(boolean enabled) {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.SRS_FULL_VIEW,
-            "Risk och råd",
-            "Risk och råd",
-            enabled
-        );
-    }
+  private static boolean isDraft(Certificate certificate) {
+    return certificate.getMetadata().getStatus() == CertificateStatus.UNSIGNED;
+  }
 
-    private ResourceLinkDTO getSRSRecommendationsResourceLink(boolean enabled) {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW,
-            "Risk och råd",
-            "Risk och råd",
-            enabled
-        );
-    }
+  private static boolean isSignedCertificate(Certificate certificate) {
+    return certificate.getMetadata().getStatus() == CertificateStatus.SIGNED;
+  }
 
-    private boolean isSRSActive(Certificate certificate, WebCertUser user) {
-        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_SRS);
-        if (feature == null) {
-            return false;
-        }
+  private static boolean isFeatureActive(String certificateType, Feature feature) {
+    return isCertificateTypeDefined(certificateType, feature) && feature.getGlobal();
+  }
 
-        return isFeatureActive(certificate.getMetadata().getType(), feature);
-    }
-
-    private static boolean isDraft(Certificate certificate) {
-        return certificate.getMetadata().getStatus() == CertificateStatus.UNSIGNED;
-    }
-
-    private static boolean isSignedCertificate(Certificate certificate) {
-        return certificate.getMetadata().getStatus() == CertificateStatus.SIGNED;
-    }
-
-    private static boolean isFeatureActive(String certificateType, Feature feature) {
-        return isCertificateTypeDefined(certificateType, feature) && feature.getGlobal();
-    }
-
-    private static boolean isCertificateTypeDefined(String certificateType, Feature feature) {
-        return feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType);
-    }
+  private static boolean isCertificateTypeDefined(String certificateType, Feature feature) {
+    return feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType);
+  }
 }

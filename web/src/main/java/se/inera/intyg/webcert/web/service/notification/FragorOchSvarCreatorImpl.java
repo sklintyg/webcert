@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,167 +43,181 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 @Transactional(readOnly = true)
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
-    private static final String FRAGESTALLARE_FK = FrageStallare.FORSAKRINGSKASSAN.getKod();
-    private static final String FRAGESTALLARE_WEBCERT = FrageStallare.WEBCERT.getKod();
+  private static final String FRAGESTALLARE_FK = FrageStallare.FORSAKRINGSKASSAN.getKod();
+  private static final String FRAGESTALLARE_WEBCERT = FrageStallare.WEBCERT.getKod();
 
-    private static final Logger LOG = LoggerFactory.getLogger(FragorOchSvarCreatorImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FragorOchSvarCreatorImpl.class);
 
-    @Autowired
-    private FragaSvarRepository fragaSvarRepository;
+  @Autowired private FragaSvarRepository fragaSvarRepository;
 
-    @Autowired
-    private ArendeRepository arendeRepository;
+  @Autowired private ArendeRepository arendeRepository;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator#
-     * createFragorOchSvar(java.lang.String)
-     */
-    @Override
-    public FragorOchSvar createFragorOchSvar(String intygsId) {
-        FragorOchSvar fs = performCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator#
+   * createFragorOchSvar(java.lang.String)
+   */
+  @Override
+  public FragorOchSvar createFragorOchSvar(String intygsId) {
+    FragorOchSvar fs = performCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
 
-        LOG.debug("Created FragorOchSvar ({}) for intyg {}", fs.toString(), intygsId);
+    LOG.debug("Created FragorOchSvar ({}) for intyg {}", fs.toString(), intygsId);
 
-        return fs;
+    return fs;
+  }
+
+  @Override
+  public Pair<ArendeCount, ArendeCount> createArenden(String intygsId, String intygstyp) {
+    Pair<ArendeCount, ArendeCount> fragor;
+
+    if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygstyp)) {
+      fragor = performFragorCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
+    } else {
+      fragor = performArendeCount(arendeRepository.findByIntygsId(intygsId));
     }
 
-    @Override
-    public Pair<ArendeCount, ArendeCount> createArenden(String intygsId, String intygstyp) {
-        Pair<ArendeCount, ArendeCount> fragor;
+    LOG.debug("Created SkickadeFragor ({}) for intyg {}", fragor.getLeft().toString(), intygsId);
+    LOG.debug("Created MottagnaFragor ({}) for intyg {}", fragor.getRight().toString(), intygsId);
 
-        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygstyp)) {
-            fragor = performFragorCount(fragaSvarRepository.findFragaSvarStatusesForIntyg(intygsId));
+    return fragor;
+  }
+
+  private Pair<ArendeCount, ArendeCount> performFragorCount(List<FragaSvarStatus> fsStatuses) {
+    int skickadeFragorTotalt = 0;
+    int skickadeFragorBesvarade = 0;
+    int skickadeFragorEjBesvarade = 0;
+    int skickadeFragorHanterade = 0;
+    int mottagnaFragorTotalt = 0;
+    int mottagnaFragorBesvarade = 0;
+    int mottagnaFragorEjBesvarade = 0;
+    int mottagnaFragorHanterade = 0;
+
+    for (FragaSvarStatus fsStatus : fsStatuses) {
+      if (isFromWebcert(fsStatus)) {
+        skickadeFragorTotalt++;
+        if (fsStatus.isClosed()) {
+          skickadeFragorHanterade++;
+        } else if (fsStatus.hasAnswerSet()) {
+          skickadeFragorBesvarade++;
         } else {
-            fragor = performArendeCount(arendeRepository.findByIntygsId(intygsId));
+          skickadeFragorEjBesvarade++;
         }
-
-        LOG.debug("Created SkickadeFragor ({}) for intyg {}", fragor.getLeft().toString(), intygsId);
-        LOG.debug("Created MottagnaFragor ({}) for intyg {}", fragor.getRight().toString(), intygsId);
-
-        return fragor;
-    }
-
-    private Pair<ArendeCount, ArendeCount> performFragorCount(List<FragaSvarStatus> fsStatuses) {
-        int skickadeFragorTotalt = 0;
-        int skickadeFragorBesvarade = 0;
-        int skickadeFragorEjBesvarade = 0;
-        int skickadeFragorHanterade = 0;
-        int mottagnaFragorTotalt = 0;
-        int mottagnaFragorBesvarade = 0;
-        int mottagnaFragorEjBesvarade = 0;
-        int mottagnaFragorHanterade = 0;
-
-        for (FragaSvarStatus fsStatus : fsStatuses) {
-            if (isFromWebcert(fsStatus)) {
-                skickadeFragorTotalt++;
-                if (fsStatus.isClosed()) {
-                    skickadeFragorHanterade++;
-                } else if (fsStatus.hasAnswerSet()) {
-                    skickadeFragorBesvarade++;
-                } else {
-                    skickadeFragorEjBesvarade++;
-                }
-            } else if (isFromFK(fsStatus)) {
-                mottagnaFragorTotalt++;
-                if (fsStatus.isClosed()) {
-                    mottagnaFragorHanterade++;
-                } else if (fsStatus.hasAnswerSet()) {
-                    mottagnaFragorBesvarade++;
-                } else {
-                    mottagnaFragorEjBesvarade++;
-                }
-            }
+      } else if (isFromFK(fsStatus)) {
+        mottagnaFragorTotalt++;
+        if (fsStatus.isClosed()) {
+          mottagnaFragorHanterade++;
+        } else if (fsStatus.hasAnswerSet()) {
+          mottagnaFragorBesvarade++;
+        } else {
+          mottagnaFragorEjBesvarade++;
         }
-
-        return Pair.of(new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
-            new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
+      }
     }
 
-    private Pair<ArendeCount, ArendeCount> performArendeCount(List<Arende> arenden) {
-        int skickadeFragorTotalt = 0;
-        int skickadeFragorBesvarade = 0;
-        int skickadeFragorEjBesvarade = 0;
-        int skickadeFragorHanterade = 0;
-        int mottagnaFragorTotalt = 0;
-        int mottagnaFragorBesvarade = 0;
-        int mottagnaFragorEjBesvarade = 0;
-        int mottagnaFragorHanterade = 0;
-        Set<String> isAnswered = new HashSet<>();
+    return Pair.of(
+        new ArendeCount(
+            skickadeFragorTotalt,
+            skickadeFragorEjBesvarade,
+            skickadeFragorBesvarade,
+            skickadeFragorHanterade),
+        new ArendeCount(
+            mottagnaFragorTotalt,
+            mottagnaFragorEjBesvarade,
+            mottagnaFragorBesvarade,
+            mottagnaFragorHanterade));
+  }
 
-        for (Arende arende : arenden) {
-            if (!Strings.nullToEmpty(arende.getSvarPaId()).trim().isEmpty()) {
-                isAnswered.add(arende.getSvarPaId());
-            }
+  private Pair<ArendeCount, ArendeCount> performArendeCount(List<Arende> arenden) {
+    int skickadeFragorTotalt = 0;
+    int skickadeFragorBesvarade = 0;
+    int skickadeFragorEjBesvarade = 0;
+    int skickadeFragorHanterade = 0;
+    int mottagnaFragorTotalt = 0;
+    int mottagnaFragorBesvarade = 0;
+    int mottagnaFragorEjBesvarade = 0;
+    int mottagnaFragorHanterade = 0;
+    Set<String> isAnswered = new HashSet<>();
+
+    for (Arende arende : arenden) {
+      if (!Strings.nullToEmpty(arende.getSvarPaId()).trim().isEmpty()) {
+        isAnswered.add(arende.getSvarPaId());
+      }
+    }
+
+    for (Arende arende : arenden) {
+      if (ArendeAmne.PAMINN == arende.getAmne()
+          || !Strings.nullToEmpty(arende.getSvarPaId()).trim().isEmpty()) {
+        // skip answers and reminders
+        continue;
+      }
+      if (FRAGESTALLARE_WEBCERT.equalsIgnoreCase(arende.getSkickatAv())) {
+        skickadeFragorTotalt++;
+        if (Status.CLOSED.equals(arende.getStatus())) {
+          skickadeFragorHanterade++;
+        } else if (isAnswered.contains(arende.getMeddelandeId())) {
+          skickadeFragorBesvarade++;
+        } else {
+          skickadeFragorEjBesvarade++;
         }
-
-        for (Arende arende : arenden) {
-            if (ArendeAmne.PAMINN == arende.getAmne() || !Strings.nullToEmpty(arende.getSvarPaId()).trim().isEmpty()) {
-                // skip answers and reminders
-                continue;
-            }
-            if (FRAGESTALLARE_WEBCERT.equalsIgnoreCase(arende.getSkickatAv())) {
-                skickadeFragorTotalt++;
-                if (Status.CLOSED.equals(arende.getStatus())) {
-                    skickadeFragorHanterade++;
-                } else if (isAnswered.contains(arende.getMeddelandeId())) {
-                    skickadeFragorBesvarade++;
-                } else {
-                    skickadeFragorEjBesvarade++;
-                }
-            } else if (FRAGESTALLARE_FK.equalsIgnoreCase(arende.getSkickatAv())) {
-                mottagnaFragorTotalt++;
-                if (Status.CLOSED.equals(arende.getStatus())) {
-                    mottagnaFragorHanterade++;
-                } else if (isAnswered.contains(arende.getMeddelandeId())) {
-                    mottagnaFragorBesvarade++;
-                } else {
-                    mottagnaFragorEjBesvarade++;
-                }
-            }
+      } else if (FRAGESTALLARE_FK.equalsIgnoreCase(arende.getSkickatAv())) {
+        mottagnaFragorTotalt++;
+        if (Status.CLOSED.equals(arende.getStatus())) {
+          mottagnaFragorHanterade++;
+        } else if (isAnswered.contains(arende.getMeddelandeId())) {
+          mottagnaFragorBesvarade++;
+        } else {
+          mottagnaFragorEjBesvarade++;
         }
-        return Pair.of(new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
-            new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
+      }
     }
+    return Pair.of(
+        new ArendeCount(
+            skickadeFragorTotalt,
+            skickadeFragorEjBesvarade,
+            skickadeFragorBesvarade,
+            skickadeFragorHanterade),
+        new ArendeCount(
+            mottagnaFragorTotalt,
+            mottagnaFragorEjBesvarade,
+            mottagnaFragorBesvarade,
+            mottagnaFragorHanterade));
+  }
 
-    private FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {
+  private FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {
 
-        int antalFragor = 0;
-        int antalSvar = 0;
-        int antalHanteradeFragor = 0;
-        int antalHanteradeSvar = 0;
+    int antalFragor = 0;
+    int antalSvar = 0;
+    int antalHanteradeFragor = 0;
+    int antalHanteradeSvar = 0;
 
-        for (FragaSvarStatus fsStatus : fsStatuses) {
+    for (FragaSvarStatus fsStatus : fsStatuses) {
 
-            // WEBCERT-2001: Vi vill endast öka antalet hanteradeSvar på
-            // faktiska svar från FK.
-            if (isFromWebcert(fsStatus)) {
-                if (fsStatus.hasAnswerSet()) {
-                    antalSvar++;
-                    if (fsStatus.isClosed()) {
-                        antalHanteradeSvar++;
-                    }
-                }
-            } else if (isFromFK(fsStatus)) {
-                antalFragor++;
-                if (fsStatus.isClosed()) {
-                    antalHanteradeFragor++;
-                }
-            }
+      // WEBCERT-2001: Vi vill endast öka antalet hanteradeSvar på
+      // faktiska svar från FK.
+      if (isFromWebcert(fsStatus)) {
+        if (fsStatus.hasAnswerSet()) {
+          antalSvar++;
+          if (fsStatus.isClosed()) {
+            antalHanteradeSvar++;
+          }
         }
-
-        return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor,
-            antalHanteradeSvar);
+      } else if (isFromFK(fsStatus)) {
+        antalFragor++;
+        if (fsStatus.isClosed()) {
+          antalHanteradeFragor++;
+        }
+      }
     }
 
-    public boolean isFromFK(FragaSvarStatus fsStatus) {
-        return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_FK);
-    }
+    return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
+  }
 
-    public boolean isFromWebcert(FragaSvarStatus fsStatus) {
-        return fsStatus.getFrageStallare().equalsIgnoreCase(
-            FRAGESTALLARE_WEBCERT);
-    }
+  public boolean isFromFK(FragaSvarStatus fsStatus) {
+    return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_FK);
+  }
 
+  public boolean isFromWebcert(FragaSvarStatus fsStatus) {
+    return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_WEBCERT);
+  }
 }

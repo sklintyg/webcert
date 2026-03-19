@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -66,243 +66,278 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationRedeliveryServiceTest {
 
-    @Mock
-    private NotificationRedeliveryRepository notificationRedeliveryRepo;
+  @Mock private NotificationRedeliveryRepository notificationRedeliveryRepo;
 
-    @Mock
-    private JmsTemplate jmsTemplate;
+  @Mock private JmsTemplate jmsTemplate;
 
-    @Mock
-    private NotificationResultMessageCreator notificationResultMessageCreator;
+  @Mock private NotificationResultMessageCreator notificationResultMessageCreator;
 
-    @Mock
-    private NotificationResultMessageSender notificationResultMessageSender;
+  @Mock private NotificationResultMessageSender notificationResultMessageSender;
 
-    @InjectMocks
-    private NotificationRedeliveryService notificationRedeliveryService;
+  @InjectMocks private NotificationRedeliveryService notificationRedeliveryService;
 
-    @Test
-    public void shallReturnNotificationRedeliveriesScheduledToBeResend() {
-        final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedNotificationRedeliveryList = Collections.singletonList(expectedNotificationRedelivery);
+  @Test
+  public void shallReturnNotificationRedeliveriesScheduledToBeResend() {
+    final var expectedNotificationRedelivery = createNotificationRedelivery();
+    final var expectedNotificationRedeliveryList =
+        Collections.singletonList(expectedNotificationRedelivery);
 
-        doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
+    doReturn(expectedNotificationRedeliveryList)
+        .when(notificationRedeliveryRepo)
+        .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
 
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(100);
-
-        assertNotNull(actualNotificationRedeliveryList);
-        assertEquals(expectedNotificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
-        for (var actualNotificationRedelivery : actualNotificationRedeliveryList) {
-            assertTrue("Doesn't contain actual notification redelivery",
-                expectedNotificationRedeliveryList.contains(actualNotificationRedelivery));
-        }
-    }
-
-    @Test
-    public void shallClearRedeliveryTimeOnNotificationRedeliveriesScheduledToBeResend() {
-        final var now = LocalDateTime.now();
-        final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(3000L, now);
-        final var expectedNotificationRedeliveryMiddle = createNotificationRedelivery(1000L, now.plus(1, SECONDS));
-        final var expectedNotificationRedeliveryLast = createNotificationRedelivery(2000L, now.plus(2, SECONDS));
-        final var expectedNotificationRedeliveryList = Arrays
-            .asList(expectedNotificationRedeliveryFirst, expectedNotificationRedeliveryMiddle, expectedNotificationRedeliveryLast);
-
-        final var captureEventIds = ArgumentCaptor.forClass(List.class);
-
-        doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
-
+    final var actualNotificationRedeliveryList =
         notificationRedeliveryService.getNotificationsForRedelivery(100);
 
-        verify(notificationRedeliveryRepo).clearRedeliveryTime(captureEventIds.capture());
+    assertNotNull(actualNotificationRedeliveryList);
+    assertEquals(
+        expectedNotificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
+    for (var actualNotificationRedelivery : actualNotificationRedeliveryList) {
+      assertTrue(
+          "Doesn't contain actual notification redelivery",
+          expectedNotificationRedeliveryList.contains(actualNotificationRedelivery));
+    }
+  }
 
-        assertEquals(expectedNotificationRedeliveryList.size(), captureEventIds.getValue().size());
+  @Test
+  public void shallClearRedeliveryTimeOnNotificationRedeliveriesScheduledToBeResend() {
+    final var now = LocalDateTime.now();
+    final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(3000L, now);
+    final var expectedNotificationRedeliveryMiddle =
+        createNotificationRedelivery(1000L, now.plus(1, SECONDS));
+    final var expectedNotificationRedeliveryLast =
+        createNotificationRedelivery(2000L, now.plus(2, SECONDS));
+    final var expectedNotificationRedeliveryList =
+        Arrays.asList(
+            expectedNotificationRedeliveryFirst,
+            expectedNotificationRedeliveryMiddle,
+            expectedNotificationRedeliveryLast);
+
+    final var captureEventIds = ArgumentCaptor.forClass(List.class);
+
+    doReturn(expectedNotificationRedeliveryList)
+        .when(notificationRedeliveryRepo)
+        .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
+
+    notificationRedeliveryService.getNotificationsForRedelivery(100);
+
+    verify(notificationRedeliveryRepo).clearRedeliveryTime(captureEventIds.capture());
+
+    assertEquals(expectedNotificationRedeliveryList.size(), captureEventIds.getValue().size());
+  }
+
+  @Test
+  public void shallReturnNotificationRedeliveriesBasedOnEventInChronologicalAscendingOrder() {
+    final var now = LocalDateTime.now();
+    final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(3000L, now);
+    final var expectedNotificationRedeliveryMiddle =
+        createNotificationRedelivery(1000L, now.plus(1, SECONDS));
+    final var expectedNotificationRedeliveryLast =
+        createNotificationRedelivery(2000L, now.plus(2, SECONDS));
+    final var expectedNotificationRedeliveryList =
+        Arrays.asList(
+            expectedNotificationRedeliveryFirst,
+            expectedNotificationRedeliveryMiddle,
+            expectedNotificationRedeliveryLast);
+
+    doReturn(expectedNotificationRedeliveryList)
+        .when(notificationRedeliveryRepo)
+        .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
+
+    final var actualNotificationRedeliveryList =
+        notificationRedeliveryService.getNotificationsForRedelivery(100);
+
+    assertNotNull(actualNotificationRedeliveryList);
+    assertEquals(
+        expectedNotificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
+    for (int i = 0; i < expectedNotificationRedeliveryList.size(); i++) {
+      assertEquals(
+          expectedNotificationRedeliveryList.get(i).getEventId(),
+          actualNotificationRedeliveryList.get(i).getEventId());
+    }
+  }
+
+  @Test
+  public void shallAddCorrelationIdIfMissingInNotificationRedelivery() {
+    final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(1000L);
+    final var expectedNotificationRedeliveryMiddle =
+        createNotificationRedelivery(2000L, (String) null);
+    final var expectedNotificationRedeliveryLast = createNotificationRedelivery(3000L);
+    final var expectedNotificationRedeliveryList =
+        Arrays.asList(
+            expectedNotificationRedeliveryFirst,
+            expectedNotificationRedeliveryMiddle,
+            expectedNotificationRedeliveryLast);
+
+    doReturn(expectedNotificationRedeliveryList)
+        .when(notificationRedeliveryRepo)
+        .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
+
+    final var actualNotificationRedeliveryList =
+        notificationRedeliveryService.getNotificationsForRedelivery(100);
+
+    assertNotNull(actualNotificationRedeliveryList);
+    for (var notificationRedelivery : actualNotificationRedeliveryList) {
+      assertNotNull("Missing correlation id", notificationRedelivery.getCorrelationId());
+    }
+  }
+
+  @Test
+  public void shallAddMessageOnJmsWhenResend() {
+    final var expectedNotificationRedelivery = createNotificationRedelivery();
+    final var expectedEvent = createEvent();
+    final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
+
+    final var captureMessage = ArgumentCaptor.forClass(byte[].class);
+    final var capturePostProcessor = ArgumentCaptor.forClass(MessagePostProcessor.class);
+
+    notificationRedeliveryService.resend(
+        expectedNotificationRedelivery, expectedEvent, expectedMessage);
+
+    verify(jmsTemplate).convertAndSend(captureMessage.capture(), capturePostProcessor.capture());
+
+    assertEquals(expectedMessage, captureMessage.getValue());
+  }
+
+  @Test
+  public void shallAddPropertiesOnJmsMessageWhenResend() throws JMSException {
+    final var expectedNotificationRedelivery = createNotificationRedelivery();
+    final var expectedEvent = createEvent();
+    final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
+
+    final var captureMessage = ArgumentCaptor.forClass(byte[].class);
+    final var capturePostProcessor = ArgumentCaptor.forClass(MessagePostProcessor.class);
+
+    notificationRedeliveryService.resend(
+        expectedNotificationRedelivery, expectedEvent, expectedMessage);
+
+    verify(jmsTemplate).convertAndSend(captureMessage.capture(), capturePostProcessor.capture());
+
+    final var mockMessage = mock(Message.class);
+    capturePostProcessor.getValue().postProcessMessage(mockMessage);
+
+    verify(mockMessage)
+        .setStringProperty(CORRELATION_ID, expectedNotificationRedelivery.getCorrelationId());
+    verify(mockMessage).setStringProperty(INTYGS_ID, expectedEvent.getIntygsId());
+    verify(mockMessage).setStringProperty(LOGISK_ADRESS, expectedEvent.getEnhetsId());
+    verify(mockMessage).setStringProperty(USER_ID, expectedEvent.getHanteratAv());
+    verify(mockMessage).setLongProperty(eq(JMS_TIMESTAMP), any(Long.class));
+  }
+
+  @Test
+  public void shallThrowExceptionIfAddingMessageOnJmsFails() {
+    final var expectedNotificationRedelivery = createNotificationRedelivery();
+    final var expectedEvent = createEvent();
+    final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
+
+    final var mockedException = mock(JmsException.class);
+    doThrow(mockedException)
+        .when(jmsTemplate)
+        .convertAndSend(any(byte[].class), any(MessagePostProcessor.class));
+
+    try {
+      notificationRedeliveryService.resend(
+          expectedNotificationRedelivery, expectedEvent, expectedMessage);
+      fail("Expected an exception to be thrown when sending message failed!");
+    } catch (Exception ex) {
+      assertTrue(true);
+    }
+  }
+
+  @Test
+  public void shallFetchEventBeforeCallingResendIfNeeded() {
+    final var notificationRedelivery = createNotificationRedelivery();
+    final var event = createEvent();
+    final var message = "MESSAGE_AS_BYTES".getBytes();
+
+    notificationRedeliveryService.resend(notificationRedelivery, event, message);
+
+    verify(jmsTemplate).convertAndSend(eq(message), any(MessagePostProcessor.class));
+  }
+
+  @Test
+  public void shallReturnEmptyListIfBatchSizeIsZero() {
+    final var expectedBatchSize = 0;
+
+    final var actualNotificationRedeliveryList =
+        notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
+
+    assertEquals(expectedBatchSize, actualNotificationRedeliveryList.size());
+  }
+
+  @Test
+  public void shallLimitBatchWhenRetrievingRedeliveriesUpForRedelivery() {
+    final var expectedBatchSize = 10;
+    final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>(9);
+    for (int i = 0; i < 9; i++) {
+      notificationRedeliveryList.add(createNotificationRedelivery());
     }
 
-    @Test
-    public void shallReturnNotificationRedeliveriesBasedOnEventInChronologicalAscendingOrder() {
-        final var now = LocalDateTime.now();
-        final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(3000L, now);
-        final var expectedNotificationRedeliveryMiddle = createNotificationRedelivery(1000L, now.plus(1, SECONDS));
-        final var expectedNotificationRedeliveryLast = createNotificationRedelivery(2000L, now.plus(2, SECONDS));
-        final var expectedNotificationRedeliveryList = Arrays
-            .asList(expectedNotificationRedeliveryFirst, expectedNotificationRedeliveryMiddle, expectedNotificationRedeliveryLast);
+    doReturn(notificationRedeliveryList)
+        .when(notificationRedeliveryRepo)
+        .findRedeliveryUpForDelivery(any(LocalDateTime.class), eq(expectedBatchSize));
 
-        doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
+    final var actualNotificationRedeliveryList =
+        notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
 
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(100);
+    assertEquals(notificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
+  }
 
-        assertNotNull(actualNotificationRedeliveryList);
-        assertEquals(expectedNotificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
-        for (int i = 0; i < expectedNotificationRedeliveryList.size(); i++) {
-            assertEquals(expectedNotificationRedeliveryList.get(i).getEventId(), actualNotificationRedeliveryList.get(i).getEventId());
-        }
-    }
+  @Test
+  public void shouldSendResultMessageToPostProcessor() {
+    final var event = createEvent();
+    final var notificationRedelivery = createNotificationRedelivery();
+    final var notificationResultMessage = createNotificationResultMessage();
+    final var exception =
+        new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
 
-    @Test
-    public void shallAddCorrelationIdIfMissingInNotificationRedelivery() {
-        final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(1000L);
-        final var expectedNotificationRedeliveryMiddle = createNotificationRedelivery(2000L, (String) null);
-        final var expectedNotificationRedeliveryLast = createNotificationRedelivery(3000L);
-        final var expectedNotificationRedeliveryList = Arrays
-            .asList(expectedNotificationRedeliveryFirst, expectedNotificationRedeliveryMiddle, expectedNotificationRedeliveryLast);
+    doReturn(notificationResultMessage)
+        .when(notificationResultMessageCreator)
+        .createFailureMessage(event, notificationRedelivery, exception);
 
-        doReturn(expectedNotificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findRedeliveryUpForDelivery(any(LocalDateTime.class), anyInt());
+    notificationRedeliveryService.handleErrors(notificationRedelivery, event, exception);
 
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(100);
+    verify(notificationResultMessageSender).sendResultMessage(notificationResultMessage);
+  }
 
-        assertNotNull(actualNotificationRedeliveryList);
-        for (var notificationRedelivery : actualNotificationRedeliveryList) {
-            assertNotNull("Missing correlation id", notificationRedelivery.getCorrelationId());
-        }
-    }
+  private NotificationRedelivery createNotificationRedelivery() {
+    return createNotificationRedelivery(1000L);
+  }
 
-    @Test
-    public void shallAddMessageOnJmsWhenResend() {
-        final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedEvent = createEvent();
-        final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
+  private NotificationRedelivery createNotificationRedelivery(Long eventId) {
+    return createNotificationRedelivery(eventId, "CORRELATION_ID");
+  }
 
-        final var captureMessage = ArgumentCaptor.forClass(byte[].class);
-        final var capturePostProcessor = ArgumentCaptor.forClass(MessagePostProcessor.class);
+  private NotificationRedelivery createNotificationRedelivery(
+      Long eventId, LocalDateTime redeliveryTime) {
+    return createNotificationRedelivery(eventId, "CORRELATION_ID", redeliveryTime);
+  }
 
-        notificationRedeliveryService.resend(expectedNotificationRedelivery, expectedEvent, expectedMessage);
+  private NotificationRedelivery createNotificationRedelivery(Long eventId, String correlationId) {
+    return createNotificationRedelivery(eventId, correlationId, LocalDateTime.now());
+  }
 
-        verify(jmsTemplate).convertAndSend(captureMessage.capture(), capturePostProcessor.capture());
+  private NotificationRedelivery createNotificationRedelivery(
+      Long eventId, String correlationId, LocalDateTime redeliveryTime) {
+    final var notificationRedelivery = new NotificationRedelivery();
+    notificationRedelivery.setCorrelationId(correlationId);
+    notificationRedelivery.setEventId(eventId);
+    notificationRedelivery.setMessage("MESSAGE".getBytes());
+    notificationRedelivery.setRedeliveryTime(redeliveryTime);
+    return notificationRedelivery;
+  }
 
-        assertEquals(expectedMessage, captureMessage.getValue());
-    }
+  private Handelse createEvent() {
+    final var event = new Handelse();
+    event.setId(1000L);
+    event.setCode(HandelsekodEnum.SKAPAT);
+    event.setIntygsId("INTYGS_ID");
+    event.setEnhetsId("ENHETS_ID");
+    event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
+    return event;
+  }
 
-    @Test
-    public void shallAddPropertiesOnJmsMessageWhenResend() throws JMSException {
-        final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedEvent = createEvent();
-        final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
-
-        final var captureMessage = ArgumentCaptor.forClass(byte[].class);
-        final var capturePostProcessor = ArgumentCaptor.forClass(MessagePostProcessor.class);
-
-        notificationRedeliveryService.resend(expectedNotificationRedelivery, expectedEvent, expectedMessage);
-
-        verify(jmsTemplate).convertAndSend(captureMessage.capture(), capturePostProcessor.capture());
-
-        final var mockMessage = mock(Message.class);
-        capturePostProcessor.getValue().postProcessMessage(mockMessage);
-
-        verify(mockMessage).setStringProperty(CORRELATION_ID, expectedNotificationRedelivery.getCorrelationId());
-        verify(mockMessage).setStringProperty(INTYGS_ID, expectedEvent.getIntygsId());
-        verify(mockMessage).setStringProperty(LOGISK_ADRESS, expectedEvent.getEnhetsId());
-        verify(mockMessage).setStringProperty(USER_ID, expectedEvent.getHanteratAv());
-        verify(mockMessage).setLongProperty(eq(JMS_TIMESTAMP), any(Long.class));
-    }
-
-    @Test
-    public void shallThrowExceptionIfAddingMessageOnJmsFails() {
-        final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedEvent = createEvent();
-        final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
-
-        final var mockedException = mock(JmsException.class);
-        doThrow(mockedException).when(jmsTemplate).convertAndSend(any(byte[].class), any(MessagePostProcessor.class));
-
-        try {
-            notificationRedeliveryService.resend(expectedNotificationRedelivery, expectedEvent, expectedMessage);
-            fail("Expected an exception to be thrown when sending message failed!");
-        } catch (Exception ex) {
-            assertTrue(true);
-        }
-    }
-
-    @Test
-    public void shallFetchEventBeforeCallingResendIfNeeded() {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var event = createEvent();
-        final var message = "MESSAGE_AS_BYTES".getBytes();
-
-        notificationRedeliveryService.resend(notificationRedelivery, event, message);
-
-        verify(jmsTemplate).convertAndSend(eq(message), any(MessagePostProcessor.class));
-    }
-
-    @Test
-    public void shallReturnEmptyListIfBatchSizeIsZero() {
-        final var expectedBatchSize = 0;
-
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
-
-        assertEquals(expectedBatchSize, actualNotificationRedeliveryList.size());
-    }
-
-    @Test
-    public void shallLimitBatchWhenRetrievingRedeliveriesUpForRedelivery() {
-        final var expectedBatchSize = 10;
-        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>(9);
-        for (int i = 0; i < 9; i++) {
-            notificationRedeliveryList.add(createNotificationRedelivery());
-        }
-
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryRepo)
-            .findRedeliveryUpForDelivery(any(LocalDateTime.class), eq(expectedBatchSize));
-
-        final var actualNotificationRedeliveryList = notificationRedeliveryService.getNotificationsForRedelivery(expectedBatchSize);
-
-        assertEquals(notificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
-    }
-
-    @Test
-    public void shouldSendResultMessageToPostProcessor() {
-        final var event = createEvent();
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var exception = new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "EXCEPTION");
-
-        doReturn(notificationResultMessage).when(notificationResultMessageCreator).createFailureMessage(event,
-            notificationRedelivery, exception);
-
-        notificationRedeliveryService.handleErrors(notificationRedelivery, event, exception);
-
-        verify(notificationResultMessageSender).sendResultMessage(notificationResultMessage);
-    }
-
-    private NotificationRedelivery createNotificationRedelivery() {
-        return createNotificationRedelivery(1000L);
-    }
-
-    private NotificationRedelivery createNotificationRedelivery(Long eventId) {
-        return createNotificationRedelivery(eventId, "CORRELATION_ID");
-    }
-
-    private NotificationRedelivery createNotificationRedelivery(Long eventId, LocalDateTime redeliveryTime) {
-        return createNotificationRedelivery(eventId, "CORRELATION_ID", redeliveryTime);
-    }
-
-    private NotificationRedelivery createNotificationRedelivery(Long eventId, String correlationId) {
-        return createNotificationRedelivery(eventId, correlationId, LocalDateTime.now());
-    }
-
-    private NotificationRedelivery createNotificationRedelivery(Long eventId, String correlationId, LocalDateTime redeliveryTime) {
-        final var notificationRedelivery = new NotificationRedelivery();
-        notificationRedelivery.setCorrelationId(correlationId);
-        notificationRedelivery.setEventId(eventId);
-        notificationRedelivery.setMessage("MESSAGE".getBytes());
-        notificationRedelivery.setRedeliveryTime(redeliveryTime);
-        return notificationRedelivery;
-    }
-
-    private Handelse createEvent() {
-        final var event = new Handelse();
-        event.setId(1000L);
-        event.setCode(HandelsekodEnum.SKAPAT);
-        event.setIntygsId("INTYGS_ID");
-        event.setEnhetsId("ENHETS_ID");
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
-        return event;
-    }
-
-    private NotificationResultMessage createNotificationResultMessage() {
-        return new NotificationResultMessage();
-    }
+  private NotificationResultMessage createNotificationResultMessage() {
+    return new NotificationResultMessage();
+  }
 }

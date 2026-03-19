@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,49 +22,49 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 
 public class CreateQuestionRequestDTO {
 
-    private QuestionType type;
-    private String message;
-    private String answer;
-    private boolean answerAsDraft;
-    private boolean reminded;
+  private QuestionType type;
+  private String message;
+  private String answer;
+  private boolean answerAsDraft;
+  private boolean reminded;
 
-    public QuestionType getType() {
-        return type;
-    }
+  public QuestionType getType() {
+    return type;
+  }
 
-    public void setType(QuestionType type) {
-        this.type = type;
-    }
+  public void setType(QuestionType type) {
+    this.type = type;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public String getAnswer() {
-        return answer;
-    }
+  public String getAnswer() {
+    return answer;
+  }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
+  public void setAnswer(String answer) {
+    this.answer = answer;
+  }
 
-    public boolean isAnswerAsDraft() {
-        return answerAsDraft;
-    }
+  public boolean isAnswerAsDraft() {
+    return answerAsDraft;
+  }
 
-    public void setAnswerAsDraft(boolean answerAsDraft) {
-        this.answerAsDraft = answerAsDraft;
-    }
+  public void setAnswerAsDraft(boolean answerAsDraft) {
+    this.answerAsDraft = answerAsDraft;
+  }
 
-    public boolean isReminded() {
-        return reminded;
-    }
+  public boolean isReminded() {
+    return reminded;
+  }
 
-    public void setReminded(boolean reminded) {
-        this.reminded = reminded;
-    }
+  public void setReminded(boolean reminded) {
+    this.reminded = reminded;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,5 +22,6 @@ import se.inera.intyg.common.support.facade.model.Patient;
 
 public interface GetPatientFacadeService {
 
-    Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException;
+  Patient getPatient(String patientId)
+      throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException;
 }

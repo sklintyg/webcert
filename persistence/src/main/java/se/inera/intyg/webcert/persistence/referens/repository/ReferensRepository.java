@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,14 +26,14 @@ import se.inera.intyg.webcert.persistence.referens.model.Referens;
 
 public interface ReferensRepository extends CrudRepository<Referens, Long> {
 
-    Referens findByIntygId(String intygsId);
+  Referens findByIntygId(String intygsId);
 
-    @Query("select r from Referens r where r.intygId in :certificateIds")
-    List<Referens> getReferenserByIntygsIds(@Param("certificateIds") List<String> certificateIds);
+  @Query("select r from Referens r where r.intygId in :certificateIds")
+  List<Referens> getReferenserByIntygsIds(@Param("certificateIds") List<String> certificateIds);
 
-    default int eraseReferenserByCertificateIds(List<String> certificateIds) {
-        final var referensList = getReferenserByIntygsIds(certificateIds);
-        deleteAll(referensList);
-        return referensList.size();
-    }
+  default int eraseReferenserByCertificateIds(List<String> certificateIds) {
+    final var referensList = getReferenserByIntygsIds(certificateIds);
+    deleteAll(referensList);
+    return referensList.size();
+  }
 }

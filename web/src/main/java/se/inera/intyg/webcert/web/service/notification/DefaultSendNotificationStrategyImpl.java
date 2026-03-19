@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,31 +31,39 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 @Component
 public class DefaultSendNotificationStrategyImpl implements SendNotificationStrategy {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SendNotificationStrategy.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SendNotificationStrategy.class);
 
-    @Autowired
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    @Override
-    public Optional<SchemaVersion> decideNotificationForIntyg(Utkast utkast) {
+  @Override
+  public Optional<SchemaVersion> decideNotificationForIntyg(Utkast utkast) {
 
-        Optional<SchemaVersion> schemaVersion = integreradeEnheterRegistry.getSchemaVersion(utkast.getEnhetsId(), utkast.getIntygsTyp());
-        if (!schemaVersion.isPresent()) {
-            LOG.debug("Utkast '{}' (type = '{}', unit = '{}') will not spawn notifications", utkast.getIntygsId(), utkast.getIntygsTyp(),
-                utkast.getEnhetsId());
-        }
-        return schemaVersion;
+    Optional<SchemaVersion> schemaVersion =
+        integreradeEnheterRegistry.getSchemaVersion(utkast.getEnhetsId(), utkast.getIntygsTyp());
+    if (!schemaVersion.isPresent()) {
+      LOG.debug(
+          "Utkast '{}' (type = '{}', unit = '{}') will not spawn notifications",
+          utkast.getIntygsId(),
+          utkast.getIntygsTyp(),
+          utkast.getEnhetsId());
     }
+    return schemaVersion;
+  }
 
-    @Override
-    public Optional<SchemaVersion> decideNotificationForIntyg(Utlatande certificate) {
-        final var unitId = certificate.getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
-        final var certificateId = certificate.getId();
-        final var certificateType = certificate.getTyp();
-        final Optional<SchemaVersion> schemaVersion = integreradeEnheterRegistry.getSchemaVersion(unitId, certificateType);
-        if (!schemaVersion.isPresent()) {
-            LOG.debug("Certificate '{}' (type = '{}', unit = '{}') will not spawn notifications", certificateId, certificateType, unitId);
-        }
-        return schemaVersion;
+  @Override
+  public Optional<SchemaVersion> decideNotificationForIntyg(Utlatande certificate) {
+    final var unitId = certificate.getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
+    final var certificateId = certificate.getId();
+    final var certificateType = certificate.getTyp();
+    final Optional<SchemaVersion> schemaVersion =
+        integreradeEnheterRegistry.getSchemaVersion(unitId, certificateType);
+    if (!schemaVersion.isPresent()) {
+      LOG.debug(
+          "Certificate '{}' (type = '{}', unit = '{}') will not spawn notifications",
+          certificateId,
+          certificateType,
+          unitId);
     }
+    return schemaVersion;
+  }
 }

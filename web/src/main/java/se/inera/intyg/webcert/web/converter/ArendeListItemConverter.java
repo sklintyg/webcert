@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,67 +26,69 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 public final class ArendeListItemConverter {
 
-    private ArendeListItemConverter() {
-    }
+  private ArendeListItemConverter() {}
 
-    public static ArendeListItem convert(FragaSvar fragaSvar) {
-        if (fragaSvar.getIntygsReferens() == null || fragaSvar.getVardperson() == null) {
-            return null;
-        }
-        ArendeListItem res = new ArendeListItem();
-        res.setFragestallare(fragaSvar.getFrageStallare());
-        res.setIntygId(fragaSvar.getIntygsReferens().getIntygsId());
-        res.setIntygTyp(fragaSvar.getIntygsReferens().getIntygsTyp());
-        res.setMeddelandeId(Long.toString(fragaSvar.getInternReferens()));
-        res.setReceivedDate(fragaSvar.getSenasteHandelseDatum());
-        res.setPatientId(fragaSvar.getIntygsReferens().getPatientId().getPersonnummer());
-        res.setSigneratAvNamn(fragaSvar.getVardperson().getNamn());
-        res.setSigneratAv(fragaSvar.getVardperson().getHsaId());
-        res.setStatus(fragaSvar.getStatus());
-        res.setVidarebefordrad(fragaSvar.getVidarebefordrad());
-        res.setAmne(ArendeAmne.fromAmne(fragaSvar.getAmne()).map(ArendeAmne::name).orElse(fragaSvar.getAmne().name()));
-        res.setEnhetsnamn(fragaSvar.getVardperson().getEnhetsnamn());
-        res.setVardgivarnamn(fragaSvar.getVardperson().getVardgivarnamn());
-        return res;
+  public static ArendeListItem convert(FragaSvar fragaSvar) {
+    if (fragaSvar.getIntygsReferens() == null || fragaSvar.getVardperson() == null) {
+      return null;
     }
+    ArendeListItem res = new ArendeListItem();
+    res.setFragestallare(fragaSvar.getFrageStallare());
+    res.setIntygId(fragaSvar.getIntygsReferens().getIntygsId());
+    res.setIntygTyp(fragaSvar.getIntygsReferens().getIntygsTyp());
+    res.setMeddelandeId(Long.toString(fragaSvar.getInternReferens()));
+    res.setReceivedDate(fragaSvar.getSenasteHandelseDatum());
+    res.setPatientId(fragaSvar.getIntygsReferens().getPatientId().getPersonnummer());
+    res.setSigneratAvNamn(fragaSvar.getVardperson().getNamn());
+    res.setSigneratAv(fragaSvar.getVardperson().getHsaId());
+    res.setStatus(fragaSvar.getStatus());
+    res.setVidarebefordrad(fragaSvar.getVidarebefordrad());
+    res.setAmne(
+        ArendeAmne.fromAmne(fragaSvar.getAmne())
+            .map(ArendeAmne::name)
+            .orElse(fragaSvar.getAmne().name()));
+    res.setEnhetsnamn(fragaSvar.getVardperson().getEnhetsnamn());
+    res.setVardgivarnamn(fragaSvar.getVardperson().getVardgivarnamn());
+    return res;
+  }
 
-    public static ArendeListItem convert(Arende arende) {
-        ArendeListItem res = new ArendeListItem();
-        res.setAmne(arende.getAmne().name());
-        res.setFragestallare(arende.getSkickatAv());
-        res.setIntygId(arende.getIntygsId());
-        res.setIntygTyp(arende.getIntygTyp());
-        res.setMeddelandeId(arende.getMeddelandeId());
-        res.setPatientId(arende.getPatientPersonId());
-        res.setReceivedDate(arende.getSenasteHandelse());
-        res.setSigneratAvNamn(arende.getSigneratAvName());
-        res.setSigneratAv(arende.getSigneratAv());
-        res.setStatus(arende.getStatus());
-        res.setVidarebefordrad(getSafeBooleanValue(arende.getVidarebefordrad()));
-        res.setEnhetsnamn(arende.getEnhetName());
-        res.setVardgivarnamn(arende.getVardgivareName());
-        return res;
-    }
+  public static ArendeListItem convert(Arende arende) {
+    ArendeListItem res = new ArendeListItem();
+    res.setAmne(arende.getAmne().name());
+    res.setFragestallare(arende.getSkickatAv());
+    res.setIntygId(arende.getIntygsId());
+    res.setIntygTyp(arende.getIntygTyp());
+    res.setMeddelandeId(arende.getMeddelandeId());
+    res.setPatientId(arende.getPatientPersonId());
+    res.setReceivedDate(arende.getSenasteHandelse());
+    res.setSigneratAvNamn(arende.getSigneratAvName());
+    res.setSigneratAv(arende.getSigneratAv());
+    res.setStatus(arende.getStatus());
+    res.setVidarebefordrad(getSafeBooleanValue(arende.getVidarebefordrad()));
+    res.setEnhetsnamn(arende.getEnhetName());
+    res.setVardgivarnamn(arende.getVardgivareName());
+    return res;
+  }
 
-    public static ArendeListItem convert(ArendeListItemProjection projection) {
-        final var res = new ArendeListItem();
-        res.setAmne(projection.getAmne().name());
-        res.setFragestallare(projection.getSkickatAv());
-        res.setIntygId(projection.getIntygId());
-        res.setIntygTyp(projection.getIntygTyp());
-        res.setMeddelandeId(projection.getMeddelandeId());
-        res.setPatientId(projection.getPatientPersonId());
-        res.setReceivedDate(projection.getSenasteHandelse());
-        res.setSigneratAvNamn(projection.getSigneratAvName());
-        res.setSigneratAv(projection.getSigneratAv());
-        res.setStatus(projection.getStatus());
-        res.setVidarebefordrad(getSafeBooleanValue(projection.getVidarebefordrad()));
-        res.setEnhetsnamn(projection.getEnhetName());
-        res.setVardgivarnamn(projection.getVardgivareName());
-        return res;
-    }
+  public static ArendeListItem convert(ArendeListItemProjection projection) {
+    final var res = new ArendeListItem();
+    res.setAmne(projection.getAmne().name());
+    res.setFragestallare(projection.getSkickatAv());
+    res.setIntygId(projection.getIntygId());
+    res.setIntygTyp(projection.getIntygTyp());
+    res.setMeddelandeId(projection.getMeddelandeId());
+    res.setPatientId(projection.getPatientPersonId());
+    res.setReceivedDate(projection.getSenasteHandelse());
+    res.setSigneratAvNamn(projection.getSigneratAvName());
+    res.setSigneratAv(projection.getSigneratAv());
+    res.setStatus(projection.getStatus());
+    res.setVidarebefordrad(getSafeBooleanValue(projection.getVidarebefordrad()));
+    res.setEnhetsnamn(projection.getEnhetName());
+    res.setVardgivarnamn(projection.getVardgivareName());
+    return res;
+  }
 
-    private static boolean getSafeBooleanValue(Boolean booleanObj) {
-        return booleanObj != null && booleanObj;
-    }
+  private static boolean getSafeBooleanValue(Boolean booleanObj) {
+    return booleanObj != null && booleanObj;
+  }
 }

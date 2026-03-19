@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,90 +46,99 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 @RunWith(MockitoJUnitRunner.class)
 public class SendMessageToRecipientProcessorTest {
 
-    private static final String INTYG_ID = "intyg-id";
-    private static final String LOGICAL_ADDRESS = "logicalAddress";
-    private static final String MESSAGE_ID = "b7360a70-80a3-4d24-b10e-621c3c0c826a";
-    private static final String XML_BODY =
-        "<SendMessageToRecipient xmlns=\"urn:riv:clinicalprocess:healthcond:certificate:SendMessageToRecipientResponder:2\"><meddelande-id>"
-            + MESSAGE_ID + "</meddelande-id></SendMessageToRecipient>";
+  private static final String INTYG_ID = "intyg-id";
+  private static final String LOGICAL_ADDRESS = "logicalAddress";
+  private static final String MESSAGE_ID = "b7360a70-80a3-4d24-b10e-621c3c0c826a";
+  private static final String XML_BODY =
+      "<SendMessageToRecipient xmlns=\"urn:riv:clinicalprocess:healthcond:certificate:SendMessageToRecipientResponder:2\"><meddelande-id>"
+          + MESSAGE_ID
+          + "</meddelande-id></SendMessageToRecipient>";
 
-    @Spy
-    private MdcHelper mdcHelper;
-    @Mock
-    private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
+  @Spy private MdcHelper mdcHelper;
+  @Mock private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
 
-    @InjectMocks
-    private SendMessageToRecipientProcessor sendMessageProcessor;
+  @InjectMocks private SendMessageToRecipientProcessor sendMessageProcessor;
 
-    @Test
-    public void processTest() throws Exception {
-        when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
-            .thenReturn(buildResponse(ResultTypeUtil.okResult()));
-        sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  @Test
+  public void processTest() throws Exception {
+    when(sendMessageToRecipientResponder.sendMessageToRecipient(
+            anyString(), any(SendMessageToRecipientType.class)))
+        .thenReturn(buildResponse(ResultTypeUtil.okResult()));
+    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
 
-        ArgumentCaptor<SendMessageToRecipientType> requestCaptor = ArgumentCaptor.forClass(SendMessageToRecipientType.class);
-        verify(sendMessageToRecipientResponder).sendMessageToRecipient(eq(LOGICAL_ADDRESS), requestCaptor.capture());
+    ArgumentCaptor<SendMessageToRecipientType> requestCaptor =
+        ArgumentCaptor.forClass(SendMessageToRecipientType.class);
+    verify(sendMessageToRecipientResponder)
+        .sendMessageToRecipient(eq(LOGICAL_ADDRESS), requestCaptor.capture());
 
-        assertNotNull(requestCaptor.getValue());
-        assertEquals(MESSAGE_ID, requestCaptor.getValue().getMeddelandeId());
-    }
+    assertNotNull(requestCaptor.getValue());
+    assertEquals(MESSAGE_ID, requestCaptor.getValue().getMeddelandeId());
+  }
 
-    @Test
-    public void processInfoResponseTest() throws Exception {
-        when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
-            .thenReturn(buildResponse(ResultTypeUtil.infoResult("info")));
-        sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  @Test
+  public void processInfoResponseTest() throws Exception {
+    when(sendMessageToRecipientResponder.sendMessageToRecipient(
+            anyString(), any(SendMessageToRecipientType.class)))
+        .thenReturn(buildResponse(ResultTypeUtil.infoResult("info")));
+    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
 
-        ArgumentCaptor<SendMessageToRecipientType> requestCaptor = ArgumentCaptor.forClass(SendMessageToRecipientType.class);
-        verify(sendMessageToRecipientResponder).sendMessageToRecipient(eq(LOGICAL_ADDRESS), requestCaptor.capture());
+    ArgumentCaptor<SendMessageToRecipientType> requestCaptor =
+        ArgumentCaptor.forClass(SendMessageToRecipientType.class);
+    verify(sendMessageToRecipientResponder)
+        .sendMessageToRecipient(eq(LOGICAL_ADDRESS), requestCaptor.capture());
 
-        assertNotNull(requestCaptor.getValue());
-        assertEquals(MESSAGE_ID, requestCaptor.getValue().getMeddelandeId());
-    }
+    assertNotNull(requestCaptor.getValue());
+    assertEquals(MESSAGE_ID, requestCaptor.getValue().getMeddelandeId());
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void processJaxbExceptionTest() throws Exception {
-        sendMessageProcessor.process("invalid-xml", INTYG_ID, LOGICAL_ADDRESS);
-    }
+  @Test(expected = TemporaryException.class)
+  public void processJaxbExceptionTest() throws Exception {
+    sendMessageProcessor.process("invalid-xml", INTYG_ID, LOGICAL_ADDRESS);
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void processWebServiceExceptionTest() throws Exception {
-        when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
-            .thenThrow(new WebServiceException());
-        sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
-    }
+  @Test(expected = TemporaryException.class)
+  public void processWebServiceExceptionTest() throws Exception {
+    when(sendMessageToRecipientResponder.sendMessageToRecipient(
+            anyString(), any(SendMessageToRecipientType.class)))
+        .thenThrow(new WebServiceException());
+    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void processErrorIdRevokedTest() throws Exception {
-        when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
-            .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.REVOKED, "")));
-        sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
-    }
+  @Test(expected = TemporaryException.class)
+  public void processErrorIdRevokedTest() throws Exception {
+    when(sendMessageToRecipientResponder.sendMessageToRecipient(
+            anyString(), any(SendMessageToRecipientType.class)))
+        .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.REVOKED, "")));
+    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void processErrorIdValidationErrorTest() throws Exception {
-        when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
-            .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.VALIDATION_ERROR, "")));
-        sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
-    }
+  @Test(expected = TemporaryException.class)
+  public void processErrorIdValidationErrorTest() throws Exception {
+    when(sendMessageToRecipientResponder.sendMessageToRecipient(
+            anyString(), any(SendMessageToRecipientType.class)))
+        .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.VALIDATION_ERROR, "")));
+    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void processErrorIdApplicationErrorTest() throws Exception {
-        when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
-            .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.APPLICATION_ERROR, "")));
-        sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
-    }
+  @Test(expected = TemporaryException.class)
+  public void processErrorIdApplicationErrorTest() throws Exception {
+    when(sendMessageToRecipientResponder.sendMessageToRecipient(
+            anyString(), any(SendMessageToRecipientType.class)))
+        .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.APPLICATION_ERROR, "")));
+    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  }
 
-    @Test(expected = TemporaryException.class)
-    public void processErrorIdTechnicalErrorTest() throws Exception {
-        when(sendMessageToRecipientResponder.sendMessageToRecipient(anyString(), any(SendMessageToRecipientType.class)))
-            .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "")));
-        sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
-    }
+  @Test(expected = TemporaryException.class)
+  public void processErrorIdTechnicalErrorTest() throws Exception {
+    when(sendMessageToRecipientResponder.sendMessageToRecipient(
+            anyString(), any(SendMessageToRecipientType.class)))
+        .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "")));
+    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  }
 
-    private SendMessageToRecipientResponseType buildResponse(ResultType result) {
-        SendMessageToRecipientResponseType response = new SendMessageToRecipientResponseType();
-        response.setResult(result);
-        return response;
-    }
+  private SendMessageToRecipientResponseType buildResponse(ResultType result) {
+    SendMessageToRecipientResponseType response = new SendMessageToRecipientResponseType();
+    response.setResult(result);
+    return response;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -37,48 +36,46 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @RequiredArgsConstructor
 public class RenewCertificateFromCertificateService implements RenewCertificateFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final MonitoringLogService monitoringLogService;
-    private final WebCertUserService webCertUserService;
-    private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PDLLogService pdlLogService;
+  private final MonitoringLogService monitoringLogService;
+  private final WebCertUserService webCertUserService;
+  private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Override
-    public String renewCertificate(String certificateId) {
-        log.debug("Attempting to renew certificate '{}' from Certificate Service", certificateId);
+  @Override
+  public String renewCertificate(String certificateId) {
+    log.debug("Attempting to renew certificate '{}' from Certificate Service", certificateId);
 
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
+    }
 
-        final var certificateToRenew = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
+    final var certificateToRenew =
+        csIntegrationService.getCertificate(
+            certificateId, csIntegrationRequestFactory.getCertificateRequest());
 
-        final var renewalCertificate = csIntegrationService.renewCertificate(
+    final var renewalCertificate =
+        csIntegrationService.renewCertificate(
             certificateId,
             csIntegrationRequestFactory.renewCertificateRequest(
                 certificateToRenew.getMetadata().getPatient(),
-                webCertUserService.getUser().getParameters()
-            )
-        );
+                webCertUserService.getUser().getParameters()));
 
-        integratedUnitRegistryHelper.addUnitForCopy(certificateToRenew, renewalCertificate);
+    integratedUnitRegistryHelper.addUnitForCopy(certificateToRenew, renewalCertificate);
 
-        log.debug("Renewed certificate '{}' from Certificate Service", certificateId);
-        monitoringLogService.logIntygCopiedRenewal(renewalCertificate.getMetadata().getId(), certificateId);
-        pdlLogService.logCreated(renewalCertificate);
-        publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.certificateRenewed(renewalCertificate)
-        );
+    log.debug("Renewed certificate '{}' from Certificate Service", certificateId);
+    monitoringLogService.logIntygCopiedRenewal(
+        renewalCertificate.getMetadata().getId(), certificateId);
+    pdlLogService.logCreated(renewalCertificate);
+    publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.certificateRenewed(renewalCertificate));
 
-        return renewalCertificate.getMetadata().getId();
-    }
+    return renewalCertificate.getMetadata().getId();
+  }
 }

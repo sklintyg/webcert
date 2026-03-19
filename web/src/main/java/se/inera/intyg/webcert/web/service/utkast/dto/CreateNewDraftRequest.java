@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,44 +30,56 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 @Setter
 public class CreateNewDraftRequest {
 
-    private String intygId;
+  private String intygId;
 
-    private String intygType;
+  private String intygType;
 
-    private String intygTypeVersion;
+  private String intygTypeVersion;
 
-    private String referens;
+  private String referens;
 
-    private UtkastStatus status;
+  private UtkastStatus status;
 
-    private Patient patient;
+  private Patient patient;
 
-    private HoSPersonal hosPerson;
+  private HoSPersonal hosPerson;
 
-    private Optional<Forifyllnad> forifyllnad = Optional.empty();
+  private Optional<Forifyllnad> forifyllnad = Optional.empty();
 
-    private boolean testability = false;
+  private boolean testability = false;
 
-    public CreateNewDraftRequest() {
-        // Needed for deserialization
-    }
+  public CreateNewDraftRequest() {
+    // Needed for deserialization
+  }
 
-    public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
-        Patient patient) {
-        this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null, Optional.empty());
-    }
+  public CreateNewDraftRequest(
+      String intygId,
+      String intygType,
+      String intygTypeVersion,
+      UtkastStatus status,
+      HoSPersonal hosPerson,
+      Patient patient) {
+    this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null, Optional.empty());
+  }
 
-    // CHECKSTYLE:OFF ParameterNumber
-    public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
-        Patient patient, String referens, Optional<Forifyllnad> forifyllnad) {
-        this.intygId = intygId;
-        this.intygType = intygType;
-        this.intygTypeVersion = intygTypeVersion;
-        this.referens = referens;
-        this.status = status;
-        this.hosPerson = hosPerson;
-        this.patient = patient;
-        this.forifyllnad = forifyllnad;
-    }
-    // CHECKSTYLE:ON ParameterNumber
+  // CHECKSTYLE:OFF ParameterNumber
+  public CreateNewDraftRequest(
+      String intygId,
+      String intygType,
+      String intygTypeVersion,
+      UtkastStatus status,
+      HoSPersonal hosPerson,
+      Patient patient,
+      String referens,
+      Optional<Forifyllnad> forifyllnad) {
+    this.intygId = intygId;
+    this.intygType = intygType;
+    this.intygTypeVersion = intygTypeVersion;
+    this.referens = referens;
+    this.status = status;
+    this.hosPerson = hosPerson;
+    this.patient = patient;
+    this.forifyllnad = forifyllnad;
+  }
+  // CHECKSTYLE:ON ParameterNumber
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,65 +32,64 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @Component
 public class CertificatesQueryCriteriaFactory {
 
-    public CertificatesQueryCriteriaDTO create(ListFilter filter) {
-        final var from = ListFilterHelper.getSavedFrom(filter);
-        final var to = ListFilterHelper.getSavedTo(filter);
-        final var status = ListFilterHelper.getDraftStatus(filter);
-        final var patientId = ListFilterHelper.getPatientId(filter);
-        final var staffId = ListFilterHelper.getSavedBy(filter);
+  public CertificatesQueryCriteriaDTO create(ListFilter filter) {
+    final var from = ListFilterHelper.getSavedFrom(filter);
+    final var to = ListFilterHelper.getSavedTo(filter);
+    final var status = ListFilterHelper.getDraftStatus(filter);
+    final var patientId = ListFilterHelper.getPatientId(filter);
+    final var staffId = ListFilterHelper.getSavedBy(filter);
 
-        return CertificatesQueryCriteriaDTO.builder()
-            .from(from)
-            .to(to)
-            .statuses(statuses(status))
-            .personId(personId(patientId))
-            .issuedByStaffId(issuedByStaffId(staffId))
-            .validForSign(validForSign(status))
-            .build();
+    return CertificatesQueryCriteriaDTO.builder()
+        .from(from)
+        .to(to)
+        .statuses(statuses(status))
+        .personId(personId(patientId))
+        .issuedByStaffId(issuedByStaffId(staffId))
+        .validForSign(validForSign(status))
+        .build();
+  }
+
+  public CertificatesQueryCriteriaDTO create(QueryIntygParameter filter) {
+    return CertificatesQueryCriteriaDTO.builder()
+        .from(filter.getSignedFrom())
+        .to(filter.getSignedTo())
+        .statuses(List.of(CertificateStatus.SIGNED))
+        .personId(personId(filter.getPatientId()))
+        .issuedByStaffId(issuedByStaffId(filter.getHsaId()))
+        .build();
+  }
+
+  @javax.annotation.Nullable private Boolean validForSign(List<UtkastStatus> status) {
+    if (status.contains(UtkastStatus.DRAFT_INCOMPLETE)
+        && status.contains(UtkastStatus.DRAFT_COMPLETE)) {
+      return null;
     }
 
-    public CertificatesQueryCriteriaDTO create(QueryIntygParameter filter) {
-        return CertificatesQueryCriteriaDTO.builder()
-            .from(filter.getSignedFrom())
-            .to(filter.getSignedTo())
-            .statuses(List.of(CertificateStatus.SIGNED))
-            .personId(personId(filter.getPatientId()))
-            .issuedByStaffId(issuedByStaffId(filter.getHsaId()))
-            .build();
+    if (status.contains(UtkastStatus.DRAFT_COMPLETE)) {
+      return Boolean.TRUE;
     }
 
-    @javax.annotation.Nullable
-    private Boolean validForSign(List<UtkastStatus> status) {
-        if (status.contains(UtkastStatus.DRAFT_INCOMPLETE) && status.contains(UtkastStatus.DRAFT_COMPLETE)) {
-            return null;
-        }
-
-        if (status.contains(UtkastStatus.DRAFT_COMPLETE)) {
-            return Boolean.TRUE;
-        }
-
-        if (status.contains(UtkastStatus.DRAFT_INCOMPLETE)) {
-            return Boolean.FALSE;
-        }
-
-        return null;
+    if (status.contains(UtkastStatus.DRAFT_INCOMPLETE)) {
+      return Boolean.FALSE;
     }
 
-    private static List<CertificateStatus> statuses(List<UtkastStatus> status) {
-        return status.contains(UtkastStatus.DRAFT_INCOMPLETE) || status.contains(UtkastStatus.DRAFT_COMPLETE)
-            ? List.of(CertificateStatus.UNSIGNED)
-            : List.of(CertificateStatus.LOCKED);
-    }
+    return null;
+  }
 
-    private static PersonIdDTO personId(String patientId) {
-        return patientId == null || patientId.isBlank() ? null
-            : PersonIdDTO.builder()
-                .id(patientId)
-                .type(PersonIdType.PERSONAL_IDENTITY_NUMBER)
-                .build();
-    }
+  private static List<CertificateStatus> statuses(List<UtkastStatus> status) {
+    return status.contains(UtkastStatus.DRAFT_INCOMPLETE)
+            || status.contains(UtkastStatus.DRAFT_COMPLETE)
+        ? List.of(CertificateStatus.UNSIGNED)
+        : List.of(CertificateStatus.LOCKED);
+  }
 
-    private static String issuedByStaffId(String staffId) {
-        return staffId == null || staffId.isBlank() ? null : staffId;
-    }
+  private static PersonIdDTO personId(String patientId) {
+    return patientId == null || patientId.isBlank()
+        ? null
+        : PersonIdDTO.builder().id(patientId).type(PersonIdType.PERSONAL_IDENTITY_NUMBER).build();
+  }
+
+  private static String issuedByStaffId(String staffId) {
+    return staffId == null || staffId.isBlank() ? null : staffId;
+  }
 }

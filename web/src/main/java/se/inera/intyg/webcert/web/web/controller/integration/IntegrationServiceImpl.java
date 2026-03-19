@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,79 +42,87 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 @Service
 public abstract class IntegrationServiceImpl implements IntegrationService {
 
-    protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+  protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @Autowired
-    private IntygService intygService;
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
-    @Autowired
-    private UtkastRepository utkastRepository;
-    @Autowired
-    private ReferensService referensService;
+  @Autowired private IntygService intygService;
+  @Autowired private PatientDetailsResolver patientDetailsResolver;
+  @Autowired private UtkastRepository utkastRepository;
+  @Autowired private ReferensService referensService;
 
-    // api
+  // api
 
-    @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user) {
-        return prepareRedirectToIntyg(intygId, user, null);
+  @Override
+  public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user) {
+    return prepareRedirectToIntyg(intygId, user, null);
+  }
+
+  @Override
+  public PrepareRedirectToIntyg prepareRedirectToIntyg(
+      final String intygId, final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
+
+    if (user.getParameters() != null) {
+      handleReference(intygId, user.getParameters().getReference());
     }
 
-    @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(final String intygId,
-        final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
+    Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
-        if (user.getParameters() != null) {
-            handleReference(intygId, user.getParameters().getReference());
-        }
+    // INTYG-7088: since we now always need intygTypeVersion we always fetch intygTypeInfo for the
+    // intyg,
+    // either from WC or IT.
+    final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId, utkast);
 
-        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
+    ensurePreparation(
+        intygTypeInfo.getIntygType(), intygId, utkast, user, prepareBeforeAlternateSsn);
 
-        // INTYG-7088: since we now always need intygTypeVersion we always fetch intygTypeInfo for the intyg,
-        // either from WC or IT.
-        final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId, utkast);
+    return createPrepareRedirectToIntyg(intygTypeInfo, UtkastServiceImpl.isUtkast(utkast));
+  }
 
-        ensurePreparation(intygTypeInfo.getIntygType(), intygId, utkast, user, prepareBeforeAlternateSsn);
+  private void handleReference(String intygId, String reference) {
+    if (reference != null && !referensService.referensExists(intygId)) {
+      referensService.saveReferens(intygId, reference);
+    }
+  }
 
-        return createPrepareRedirectToIntyg(intygTypeInfo, UtkastServiceImpl.isUtkast(utkast));
+  // protected scope
+
+  abstract void ensurePreparation(
+      String intygTyp,
+      String intygId,
+      Utkast utkast,
+      WebCertUser user,
+      Personnummer prepareBeforeAlternateSsn);
+
+  // default scope
+
+  void verifySekretessmarkering(Utkast utkast, WebCertUser user) {
+    SekretessStatus sekretessStatus =
+        patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
+    if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.PU_PROBLEM,
+          "Could not fetch sekretesstatus for patient from PU service");
     }
 
-    private void handleReference(String intygId, String reference) {
-        if (reference != null && !referensService.referensExists(intygId)) {
-            referensService.saveReferens(intygId, reference);
-        }
-    }
-
-    // protected scope
-
-    abstract void ensurePreparation(
-        String intygTyp, String intygId, Utkast utkast, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
-
-    // default scope
-
-    void verifySekretessmarkering(Utkast utkast, WebCertUser user) {
-        SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
-        if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                "Could not fetch sekretesstatus for patient from PU service");
-        }
-
-        authoritiesValidator.given(user, utkast.getIntygsTyp())
-            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                sekretessStatus == SekretessStatus.TRUE)
-            .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+    authoritiesValidator
+        .given(user, utkast.getIntygsTyp())
+        .privilegeIf(
+            AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+            sekretessStatus == SekretessStatus.TRUE)
+        .orThrow(
+            new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
                 "User missing required privilege or cannot handle sekretessmarkerad patient"));
-    }
+  }
 
-    // private scope
+  // private scope
 
-    private PrepareRedirectToIntyg createPrepareRedirectToIntyg(IntygTypeInfo intygTypeInfo, boolean isUtkast) {
-        PrepareRedirectToIntyg prepareRedirectToIntyg = new PrepareRedirectToIntyg();
-        prepareRedirectToIntyg.setIntygTyp(intygTypeInfo.getIntygType());
-        prepareRedirectToIntyg.setIntygTypeVersion(intygTypeInfo.getIntygTypeVersion());
-        prepareRedirectToIntyg.setIntygId(intygTypeInfo.getIntygId());
-        prepareRedirectToIntyg.setUtkast(isUtkast);
-        return prepareRedirectToIntyg;
-    }
-
+  private PrepareRedirectToIntyg createPrepareRedirectToIntyg(
+      IntygTypeInfo intygTypeInfo, boolean isUtkast) {
+    PrepareRedirectToIntyg prepareRedirectToIntyg = new PrepareRedirectToIntyg();
+    prepareRedirectToIntyg.setIntygTyp(intygTypeInfo.getIntygType());
+    prepareRedirectToIntyg.setIntygTypeVersion(intygTypeInfo.getIntygTypeVersion());
+    prepareRedirectToIntyg.setIntygId(intygTypeInfo.getIntygId());
+    prepareRedirectToIntyg.setUtkast(isUtkast);
+    return prepareRedirectToIntyg;
+  }
 }

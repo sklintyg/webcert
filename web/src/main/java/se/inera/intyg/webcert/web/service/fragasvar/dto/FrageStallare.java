@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,40 +19,39 @@
 package se.inera.intyg.webcert.web.service.fragasvar.dto;
 
 public enum FrageStallare {
+  FORSAKRINGSKASSAN("FK", "Försäkringskassan"),
+  WEBCERT("WC", "Webcert");
 
-    FORSAKRINGSKASSAN("FK", "Försäkringskassan"),
-    WEBCERT("WC", "Webcert");
+  private final String kod;
+  private final String name;
 
-    private final String kod;
-    private final String name;
+  FrageStallare(String kod, String name) {
+    this.kod = kod;
+    this.name = name;
+  }
 
-    FrageStallare(String kod, String name) {
-        this.kod = kod;
-        this.name = name;
+  public boolean isKodEqual(String kodValue) {
+    return this.kod.equalsIgnoreCase(kodValue);
+  }
+
+  public boolean isNameEqual(String nameValue) {
+    return this.name.equalsIgnoreCase(nameValue);
+  }
+
+  public String getKod() {
+    return this.kod;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public static FrageStallare getByKod(String kodVal) {
+    for (FrageStallare f : values()) {
+      if (f.getKod().equals(kodVal)) {
+        return f;
+      }
     }
-
-    public boolean isKodEqual(String kodValue) {
-        return this.kod.equalsIgnoreCase(kodValue);
-    }
-
-    public boolean isNameEqual(String nameValue) {
-        return this.name.equalsIgnoreCase(nameValue);
-    }
-
-    public String getKod() {
-        return this.kod;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public static FrageStallare getByKod(String kodVal) {
-        for (FrageStallare f : values()) {
-            if (f.getKod().equals(kodVal)) {
-                return f;
-            }
-        }
-        return null;
-    }
+    return null;
+  }
 }

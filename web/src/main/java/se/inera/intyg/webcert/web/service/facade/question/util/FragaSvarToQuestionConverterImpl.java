@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,66 +46,77 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 @Component
 public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConverter {
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    public FragaSvarToQuestionConverterImpl(GetCertificateFacadeService getCertificateFacadeService) {
-        this.getCertificateFacadeService = getCertificateFacadeService;
+  public FragaSvarToQuestionConverterImpl(GetCertificateFacadeService getCertificateFacadeService) {
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
+
+  @Override
+  public Question convert(FragaSvar fragaSvar) {
+    if (fragaSvar == null) {
+      return null;
     }
 
-    @Override
-    public Question convert(FragaSvar fragaSvar) {
-        if (fragaSvar == null) {
-            return null;
-        }
+    return Question.builder()
+        .id(String.valueOf(fragaSvar.getInternReferens()))
+        .author(getAuthor(fragaSvar.getFrageStallare(), fragaSvar.getVardperson().getNamn()))
+        .sent(fragaSvar.getFrageSkickadDatum())
+        .lastUpdate(getLastUpdate(fragaSvar))
+        .message(getMessage(fragaSvar))
+        .subject(getSubject(fragaSvar))
+        .type(getType(fragaSvar.getAmne()))
+        .isHandled(fragaSvar.getStatus() == Status.CLOSED)
+        .isForwarded(fragaSvar.getVidarebefordrad())
+        .complements(new Complement[0])
+        .reminders(new Reminder[0])
+        .answeredByCertificate(
+            fragaSvar.getAmne() == Amne.KOMPLETTERING_AV_LAKARINTYG
+                ? getAnsweredByCertificate(
+                    fragaSvar,
+                    getAnswersByCertificate(
+                        fragaSvar.getIntygsReferens().getIntygsId(),
+                        fragaSvar.getKompletteringar()))
+                : null)
+        .certificateId(fragaSvar.getIntygsReferens().getIntygsId())
+        .build();
+  }
 
-        return Question.builder()
-            .id(String.valueOf(fragaSvar.getInternReferens()))
-            .author(getAuthor(fragaSvar.getFrageStallare(), fragaSvar.getVardperson().getNamn()))
-            .sent(fragaSvar.getFrageSkickadDatum())
-            .lastUpdate(getLastUpdate(fragaSvar))
-            .message(getMessage(fragaSvar))
-            .subject(getSubject(fragaSvar))
-            .type(getType(fragaSvar.getAmne()))
-            .isHandled(fragaSvar.getStatus() == Status.CLOSED)
-            .isForwarded(fragaSvar.getVidarebefordrad())
-            .complements(new Complement[0])
-            .reminders(new Reminder[0])
-            .answeredByCertificate(
-                fragaSvar.getAmne() == Amne.KOMPLETTERING_AV_LAKARINTYG ? getAnsweredByCertificate(fragaSvar,
-                    getAnswersByCertificate(fragaSvar.getIntygsReferens().getIntygsId(),
-                        fragaSvar.getKompletteringar())) : null)
-            .certificateId(fragaSvar.getIntygsReferens().getIntygsId())
-            .build();
+  private List<CertificateRelation> getAnswersByCertificate(
+      String certificateId, Set<Komplettering> kompletteringSet) {
+    if (kompletteringSet.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    private List<CertificateRelation> getAnswersByCertificate(String certificateId, Set<Komplettering> kompletteringSet) {
-        if (kompletteringSet.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        final var certificateRelations = getCertificateFacadeService
+    final var certificateRelations =
+        getCertificateFacadeService
             .getCertificate(certificateId, false, true)
             .getMetadata()
             .getRelations();
-        if (certificateRelations == null) {
-            return Collections.emptyList();
-        }
-
-        final var childrenRelations = certificateRelations.getChildren();
-        if (childrenRelations == null) {
-            return Collections.emptyList();
-        }
-
-        return Stream.of(childrenRelations)
-            .filter(childRelation -> childRelation.getType() == CertificateRelationType.COMPLEMENTED
-                && childRelation.getStatus() != CertificateStatus.REVOKED)
-            .collect(Collectors.toList());
+    if (certificateRelations == null) {
+      return Collections.emptyList();
     }
 
-    private CertificateRelation getAnsweredByCertificate(FragaSvar question, List<CertificateRelation> answersByCertificate) {
-        return answersByCertificate.stream()
-            .filter(certificateRelation -> certificateRelation.getCreated().isAfter(question.getSvarSkickadDatum()))
-            .min(comparing(CertificateRelation::getCreated))
-            .orElse(null);
+    final var childrenRelations = certificateRelations.getChildren();
+    if (childrenRelations == null) {
+      return Collections.emptyList();
     }
+
+    return Stream.of(childrenRelations)
+        .filter(
+            childRelation ->
+                childRelation.getType() == CertificateRelationType.COMPLEMENTED
+                    && childRelation.getStatus() != CertificateStatus.REVOKED)
+        .collect(Collectors.toList());
+  }
+
+  private CertificateRelation getAnsweredByCertificate(
+      FragaSvar question, List<CertificateRelation> answersByCertificate) {
+    return answersByCertificate.stream()
+        .filter(
+            certificateRelation ->
+                certificateRelation.getCreated().isAfter(question.getSvarSkickadDatum()))
+        .min(comparing(CertificateRelation::getCreated))
+        .orElse(null);
+  }
 }

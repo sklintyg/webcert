@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -36,39 +35,37 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @Service("readyForSignForCS")
 public class ReadyForSignForCertificateService implements ReadyForSignFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final MonitoringLogService monitoringLogService;
-    private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final MonitoringLogService monitoringLogService;
+  private final DecorateCertificateFromCSWithInformationFromWC
+      decorateCertificateFromCSWithInformationFromWC;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Override
-    public Certificate readyForSign(String certificateId) {
-        log.debug("Attempting to mark certificate '{}' as ready for sign", certificateId);
+  @Override
+  public Certificate readyForSign(String certificateId) {
+    log.debug("Attempting to mark certificate '{}' as ready for sign", certificateId);
 
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
-
-        final var certificate = csIntegrationService.markCertificateReadyForSign(
-            certificateId,
-            csIntegrationRequestFactory.readyForSignRequest()
-        );
-
-        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftReadyForSign(certificate)
-        );
-
-        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.KFSIGN);
-        monitoringLogService.logUtkastMarkedAsReadyToSignNotificationSent(
-            certificateId, certificate.getMetadata().getType()
-        );
-
-        return certificate;
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
     }
+
+    final var certificate =
+        csIntegrationService.markCertificateReadyForSign(
+            certificateId, csIntegrationRequestFactory.readyForSignRequest());
+
+    decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.draftReadyForSign(certificate));
+
+    publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.KFSIGN);
+    monitoringLogService.logUtkastMarkedAsReadyToSignNotificationSent(
+        certificateId, certificate.getMetadata().getType());
+
+    return certificate;
+  }
 }

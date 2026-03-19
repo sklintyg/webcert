@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,51 +39,39 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertific
 @ExtendWith(MockitoExtension.class)
 class ValidateCertificateFromCertificateServiceTest {
 
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    ValidateCertificateFromCertificateService validateCertificateService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks ValidateCertificateFromCertificateService validateCertificateService;
 
-    private static final String CERTIFICATE_ID = "ID";
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final ValidationErrorDTO[] VALIDATION_ERRORS = {new ValidationErrorDTO()};
-    private static final ValidateCertificateRequestDTO REQUEST = ValidateCertificateRequestDTO.builder().build();
+  private static final String CERTIFICATE_ID = "ID";
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final ValidationErrorDTO[] VALIDATION_ERRORS = {new ValidationErrorDTO()};
+  private static final ValidateCertificateRequestDTO REQUEST =
+      ValidateCertificateRequestDTO.builder().build();
 
-    static {
-        CERTIFICATE.setMetadata(
-            CertificateMetadata.builder()
-                .id(CERTIFICATE_ID)
-                .build()
-        );
+  static {
+    CERTIFICATE.setMetadata(CertificateMetadata.builder().id(CERTIFICATE_ID).build());
+  }
+
+  @Test
+  void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    assertNull(validateCertificateService.validate(CERTIFICATE));
+  }
+
+  @Nested
+  class CertificateServiceHasCertificate {
+
+    @BeforeEach
+    void setup() {
+      when(csIntegrationService.certificateExists(CERTIFICATE_ID)).thenReturn(true);
+      when(csIntegrationService.validateCertificate(REQUEST)).thenReturn(VALIDATION_ERRORS);
+      when(csIntegrationRequestFactory.getValidateCertificateRequest(CERTIFICATE))
+          .thenReturn(REQUEST);
     }
 
     @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        assertNull(
-            validateCertificateService.validate(CERTIFICATE)
-        );
+    void shouldReturnValidationErrors() {
+      assertEquals(VALIDATION_ERRORS, validateCertificateService.validate(CERTIFICATE));
     }
-
-    @Nested
-    class CertificateServiceHasCertificate {
-
-        @BeforeEach
-        void setup() {
-            when(csIntegrationService.certificateExists(CERTIFICATE_ID))
-                .thenReturn(true);
-            when(csIntegrationService.validateCertificate(REQUEST))
-                .thenReturn(VALIDATION_ERRORS);
-            when(csIntegrationRequestFactory.getValidateCertificateRequest(CERTIFICATE))
-                .thenReturn(REQUEST);
-        }
-
-        @Test
-        void shouldReturnValidationErrors() {
-            assertEquals(VALIDATION_ERRORS, validateCertificateService.validate(CERTIFICATE)
-            );
-        }
-    }
-
+  }
 }

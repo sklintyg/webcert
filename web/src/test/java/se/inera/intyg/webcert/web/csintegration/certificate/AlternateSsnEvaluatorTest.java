@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,150 +43,149 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class AlternateSsnEvaluatorTest {
 
-    private static final Patient PATIENT = Patient.builder()
-        .personId(
-            PersonId.builder()
-                .id("191212121212")
-                .build()
-        )
-        .build();
-    private static final String VALID_PERSONAL_NUMER = "201212121212";
-    @Mock
-    private IntegrationParameters integrationParameters;
-    @Mock
-    private WebCertUser webCertUser;
-    @Mock
-    private Certificate certificate;
-    @Mock
-    private CertificateMetadata certificateMetadata;
-    @InjectMocks
-    private AlternateSsnEvaluator alternateSsnEvaluator;
+  private static final Patient PATIENT =
+      Patient.builder().personId(PersonId.builder().id("191212121212").build()).build();
+  private static final String VALID_PERSONAL_NUMER = "201212121212";
+  @Mock private IntegrationParameters integrationParameters;
+  @Mock private WebCertUser webCertUser;
+  @Mock private Certificate certificate;
+  @Mock private CertificateMetadata certificateMetadata;
+  @InjectMocks private AlternateSsnEvaluator alternateSsnEvaluator;
+
+  @BeforeEach
+  void setUp() {
+    doReturn(certificateMetadata).when(certificate).getMetadata();
+  }
+
+  @Test
+  void shallReturnFalseIfCertificateIsNotDraft() {
+    doReturn(CertificateStatus.SIGNED).when(certificateMetadata).getStatus();
+    assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+  }
+
+  @Nested
+  class CertificateIsDraftTests {
 
     @BeforeEach
     void setUp() {
-        doReturn(certificateMetadata).when(certificate).getMetadata();
+      doReturn(CertificateStatus.UNSIGNED).when(certificateMetadata).getStatus();
     }
 
     @Test
-    void shallReturnFalseIfCertificateIsNotDraft() {
-        doReturn(CertificateStatus.SIGNED).when(certificateMetadata).getStatus();
-        assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+    void shallReturnTrueWhenAlternateSsnIsProvidedAndDoesNotMatchPatientId() {
+      doReturn(PATIENT).when(certificateMetadata).getPatient();
+      doReturn(integrationParameters).when(webCertUser).getParameters();
+      doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
+      doReturn(
+              List.of(
+                  ResourceLink.builder()
+                      .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
+                      .enabled(true)
+                      .build()))
+          .when(certificate)
+          .getLinks();
+
+      assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
     }
 
-    @Nested
-    class CertificateIsDraftTests {
+    @Test
+    void shallReturnTrueWhenAlternateSsnIsProvidedAndDoesNotMatchPatientIdWithoutDash() {
+      doReturn(PATIENT).when(certificateMetadata).getPatient();
+      doReturn(integrationParameters).when(webCertUser).getParameters();
+      doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
+      doReturn(
+              List.of(
+                  ResourceLink.builder()
+                      .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
+                      .enabled(true)
+                      .build()))
+          .when(certificate)
+          .getLinks();
 
-        @BeforeEach
-        void setUp() {
-            doReturn(CertificateStatus.UNSIGNED).when(certificateMetadata).getStatus();
-        }
-
-        @Test
-        void shallReturnTrueWhenAlternateSsnIsProvidedAndDoesNotMatchPatientId() {
-            doReturn(PATIENT).when(certificateMetadata).getPatient();
-            doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
-            doReturn(List.of(
-                ResourceLink.builder()
-                    .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
-                    .enabled(true)
-                    .build())
-            ).when(certificate).getLinks();
-
-            assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-        @Test
-        void shallReturnTrueWhenAlternateSsnIsProvidedAndDoesNotMatchPatientIdWithoutDash() {
-            doReturn(PATIENT).when(certificateMetadata).getPatient();
-            doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
-            doReturn(List.of(
-                ResourceLink.builder()
-                    .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
-                    .enabled(true)
-                    .build())
-            ).when(certificate).getLinks();
-
-            assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-        @Test
-        void shouldReturnFalseWhenAlternateSsnIsProvidedAndMatchesPatientId() {
-            doReturn(PATIENT).when(certificateMetadata).getPatient();
-            doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn("191212121212").when(integrationParameters).getAlternateSsn();
-
-            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-        @Test
-        void shouldReturnFalseWhenAlternateSsnIsNotProvided() {
-            doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn(null).when(integrationParameters).getAlternateSsn();
-
-            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-
-        @Test
-        void shouldReturnFalseWhenAlternateSsnIsEmpty() {
-            doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn("").when(integrationParameters).getAlternateSsn();
-
-            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-        @Test
-        void shouldReturnFalseWhenIntegrationParametersIsNull() {
-            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-        @Test
-        void shallReturnFalseIfAlternateSsnIsInvalidFormat() {
-            doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn("invalidPersonal").when(integrationParameters).getAlternateSsn();
-            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
+      assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
     }
 
-    @Nested
-    class CertificateIsDraftAndAlternateSsnIsNotMatching {
+    @Test
+    void shouldReturnFalseWhenAlternateSsnIsProvidedAndMatchesPatientId() {
+      doReturn(PATIENT).when(certificateMetadata).getPatient();
+      doReturn(integrationParameters).when(webCertUser).getParameters();
+      doReturn("191212121212").when(integrationParameters).getAlternateSsn();
 
-        @BeforeEach
-        void setUp() {
-            doReturn(CertificateStatus.UNSIGNED).when(certificateMetadata).getStatus();
-            doReturn(PATIENT).when(certificateMetadata).getPatient();
-            doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
-        }
-
-        @Test
-        void shallReturnTrueIfUserHasRightToEditAndEnabledIsTrue() {
-            doReturn(List.of(
-                ResourceLink.builder()
-                    .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
-                    .enabled(true)
-                    .build())
-            ).when(certificate).getLinks();
-            assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-        @Test
-        void shallReturnFalseIfUserHasRightToEditAndEnabledIsFalse() {
-            doReturn(List.of(
-                ResourceLink.builder()
-                    .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
-                    .enabled(false)
-                    .build())
-            ).when(certificate).getLinks();
-            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-        @Test
-        void shallReturnFalseIfUserDontHaveRightToEdit() {
-            doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.SEND_CERTIFICATE).build())).when(certificate).getLinks();
-            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
+      assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
     }
+
+    @Test
+    void shouldReturnFalseWhenAlternateSsnIsNotProvided() {
+      doReturn(integrationParameters).when(webCertUser).getParameters();
+      doReturn(null).when(integrationParameters).getAlternateSsn();
+
+      assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+    }
+
+    @Test
+    void shouldReturnFalseWhenAlternateSsnIsEmpty() {
+      doReturn(integrationParameters).when(webCertUser).getParameters();
+      doReturn("").when(integrationParameters).getAlternateSsn();
+
+      assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+    }
+
+    @Test
+    void shouldReturnFalseWhenIntegrationParametersIsNull() {
+      assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+    }
+
+    @Test
+    void shallReturnFalseIfAlternateSsnIsInvalidFormat() {
+      doReturn(integrationParameters).when(webCertUser).getParameters();
+      doReturn("invalidPersonal").when(integrationParameters).getAlternateSsn();
+      assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+    }
+  }
+
+  @Nested
+  class CertificateIsDraftAndAlternateSsnIsNotMatching {
+
+    @BeforeEach
+    void setUp() {
+      doReturn(CertificateStatus.UNSIGNED).when(certificateMetadata).getStatus();
+      doReturn(PATIENT).when(certificateMetadata).getPatient();
+      doReturn(integrationParameters).when(webCertUser).getParameters();
+      doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
+    }
+
+    @Test
+    void shallReturnTrueIfUserHasRightToEditAndEnabledIsTrue() {
+      doReturn(
+              List.of(
+                  ResourceLink.builder()
+                      .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
+                      .enabled(true)
+                      .build()))
+          .when(certificate)
+          .getLinks();
+      assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+    }
+
+    @Test
+    void shallReturnFalseIfUserHasRightToEditAndEnabledIsFalse() {
+      doReturn(
+              List.of(
+                  ResourceLink.builder()
+                      .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
+                      .enabled(false)
+                      .build()))
+          .when(certificate)
+          .getLinks();
+      assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+    }
+
+    @Test
+    void shallReturnFalseIfUserDontHaveRightToEdit() {
+      doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.SEND_CERTIFICATE).build()))
+          .when(certificate)
+          .getLinks();
+      assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+    }
+  }
 }

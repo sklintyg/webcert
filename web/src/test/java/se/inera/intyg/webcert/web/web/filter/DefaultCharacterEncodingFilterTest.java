@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,35 +37,30 @@ import org.mockito.junit.MockitoJUnitRunner;
  * These tests check if {@link DefaultCharacterEncodingFilter} correctly sets encoding to requests.
  * When no encoding is set the filter should set request character encoding to UTF-8.
  */
-
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultCharacterEncodingFilterTest {
 
-    @Mock
-    private HttpServletRequest httpServletRequest;
+  @Mock private HttpServletRequest httpServletRequest;
 
-    @Mock
-    private HttpServletResponse httpServletResponse;
+  @Mock private HttpServletResponse httpServletResponse;
 
-    @Mock
-    private FilterChain filterChain;
+  @Mock private FilterChain filterChain;
 
-    @InjectMocks
-    private DefaultCharacterEncodingFilter testee = new DefaultCharacterEncodingFilter();
+  @InjectMocks private DefaultCharacterEncodingFilter testee = new DefaultCharacterEncodingFilter();
 
-    @Test
-    public void testNoEncodingSet() throws ServletException, IOException {
-        testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+  @Test
+  public void testNoEncodingSet() throws ServletException, IOException {
+    testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(httpServletRequest, times(1)).setCharacterEncoding("UTF-8");
-    }
+    verify(httpServletRequest, times(1)).setCharacterEncoding("UTF-8");
+  }
 
-    @Test
-    public void testEncodingSet() throws IOException, ServletException {
-        when(httpServletRequest.getCharacterEncoding()).thenReturn("UTF-8");
+  @Test
+  public void testEncodingSet() throws IOException, ServletException {
+    when(httpServletRequest.getCharacterEncoding()).thenReturn("UTF-8");
 
-        testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(httpServletRequest, times(0)).setCharacterEncoding("UTF-8");
-    }
+    verify(httpServletRequest, times(0)).setCharacterEncoding("UTF-8");
+  }
 }

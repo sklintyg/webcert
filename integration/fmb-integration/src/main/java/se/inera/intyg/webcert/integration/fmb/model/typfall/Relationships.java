@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,34 +29,32 @@ import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "forsakringsmedicinskdiagnosinformation"
-})
+@JsonPropertyOrder({"forsakringsmedicinskdiagnosinformation"})
 public class Relationships {
 
-    @JsonProperty("forsakringsmedicinskdiagnosinformation")
-    private FmdxInformation forsakringsmedicinskdiagnosinformation;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("forsakringsmedicinskdiagnosinformation")
+  private FmdxInformation forsakringsmedicinskdiagnosinformation;
 
-    @JsonProperty("forsakringsmedicinskdiagnosinformation")
-    public FmdxInformation getForsakringsmedicinskdiagnosinformation() {
-        return forsakringsmedicinskdiagnosinformation;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("forsakringsmedicinskdiagnosinformation")
-    public void setForsakringsmedicinskdiagnosinformation(FmdxInformation forsakringsmedicinskdiagnosinformation) {
-        this.forsakringsmedicinskdiagnosinformation = forsakringsmedicinskdiagnosinformation;
-    }
+  @JsonProperty("forsakringsmedicinskdiagnosinformation")
+  public FmdxInformation getForsakringsmedicinskdiagnosinformation() {
+    return forsakringsmedicinskdiagnosinformation;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("forsakringsmedicinskdiagnosinformation")
+  public void setForsakringsmedicinskdiagnosinformation(
+      FmdxInformation forsakringsmedicinskdiagnosinformation) {
+    this.forsakringsmedicinskdiagnosinformation = forsakringsmedicinskdiagnosinformation;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
 
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

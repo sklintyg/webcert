@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,7 +22,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 
 public interface ComplementCertificateFacadeService {
 
-    Certificate complement(String certificateId, String message);
+  Certificate complement(String certificateId, String message);
 
-    Certificate answerComplement(String certificateId, String message);
+  Certificate answerComplement(String certificateId, String message);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,121 +19,126 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public abstract class AbstractCreateCopyRequest {
 
-    private String originalIntygId;
+  private String originalIntygId;
 
-    private String originalIntygTyp;
+  private String originalIntygTyp;
 
-    private String typ;
+  private String typ;
 
-    private String typVersion;
+  private String typVersion;
 
-    private Personnummer nyttPatientPersonnummer;
+  private Personnummer nyttPatientPersonnummer;
 
-    private Patient patient;
+  private Patient patient;
 
-    private HoSPersonal hosPerson;
+  private HoSPersonal hosPerson;
 
-    private boolean djupintegrerad = false;
+  private boolean djupintegrerad = false;
 
-    private boolean isTestIntyg;
+  private boolean isTestIntyg;
 
-    public AbstractCreateCopyRequest(String originalIntygId, String intygTyp, Patient patient, HoSPersonal hosPerson) {
-        this(originalIntygId, intygTyp, patient, hosPerson, intygTyp);
-    }
+  public AbstractCreateCopyRequest(
+      String originalIntygId, String intygTyp, Patient patient, HoSPersonal hosPerson) {
+    this(originalIntygId, intygTyp, patient, hosPerson, intygTyp);
+  }
 
-    public AbstractCreateCopyRequest(String originalIntygId, String intygTyp, Patient patient, HoSPersonal hosPerson,
-        String originalIntygTyp) {
-        this.originalIntygId = originalIntygId;
-        this.typ = intygTyp;
-        this.patient = patient;
-        this.hosPerson = hosPerson;
-        this.originalIntygTyp = originalIntygTyp;
-    }
+  public AbstractCreateCopyRequest(
+      String originalIntygId,
+      String intygTyp,
+      Patient patient,
+      HoSPersonal hosPerson,
+      String originalIntygTyp) {
+    this.originalIntygId = originalIntygId;
+    this.typ = intygTyp;
+    this.patient = patient;
+    this.hosPerson = hosPerson;
+    this.originalIntygTyp = originalIntygTyp;
+  }
 
-    public AbstractCreateCopyRequest() {
-        // Needed for deserialization
-    }
+  public AbstractCreateCopyRequest() {
+    // Needed for deserialization
+  }
 
-    public boolean containsNyttPatientPersonnummer() {
-        return nyttPatientPersonnummer != null && !Strings.nullToEmpty(nyttPatientPersonnummer.getPersonnummer()).trim().isEmpty();
-    }
+  public boolean containsNyttPatientPersonnummer() {
+    return nyttPatientPersonnummer != null
+        && !Strings.nullToEmpty(nyttPatientPersonnummer.getPersonnummer()).trim().isEmpty();
+  }
 
-    public String getOriginalIntygId() {
-        return originalIntygId;
-    }
+  public String getOriginalIntygId() {
+    return originalIntygId;
+  }
 
-    public void setOriginalIntygId(String originalIntygId) {
-        this.originalIntygId = originalIntygId;
-    }
+  public void setOriginalIntygId(String originalIntygId) {
+    this.originalIntygId = originalIntygId;
+  }
 
-    public String getOriginalIntygTyp() {
-        return originalIntygTyp;
-    }
+  public String getOriginalIntygTyp() {
+    return originalIntygTyp;
+  }
 
-    public void setOriginalIntygTyp(String originalIntygTyp) {
-        this.originalIntygTyp = originalIntygTyp;
-    }
+  public void setOriginalIntygTyp(String originalIntygTyp) {
+    this.originalIntygTyp = originalIntygTyp;
+  }
 
-    public String getTyp() {
-        return typ;
-    }
+  public String getTyp() {
+    return typ;
+  }
 
-    public void setTyp(String typ) {
-        this.typ = typ;
-    }
+  public void setTyp(String typ) {
+    this.typ = typ;
+  }
 
-    public Personnummer getNyttPatientPersonnummer() {
-        return nyttPatientPersonnummer;
-    }
+  public Personnummer getNyttPatientPersonnummer() {
+    return nyttPatientPersonnummer;
+  }
 
-    public void setNyttPatientPersonnummer(Personnummer nyttPatientPersonnummer) {
-        this.nyttPatientPersonnummer = nyttPatientPersonnummer;
-    }
+  public void setNyttPatientPersonnummer(Personnummer nyttPatientPersonnummer) {
+    this.nyttPatientPersonnummer = nyttPatientPersonnummer;
+  }
 
-    public Patient getPatient() {
-        return patient;
-    }
+  public Patient getPatient() {
+    return patient;
+  }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
+  public void setPatient(Patient patient) {
+    this.patient = patient;
+  }
 
-    public HoSPersonal getHosPerson() {
-        return hosPerson;
-    }
+  public HoSPersonal getHosPerson() {
+    return hosPerson;
+  }
 
-    public void setHosPerson(HoSPersonal hosPerson) {
-        this.hosPerson = hosPerson;
-    }
+  public void setHosPerson(HoSPersonal hosPerson) {
+    this.hosPerson = hosPerson;
+  }
 
-    public boolean isDjupintegrerad() {
-        return djupintegrerad;
-    }
+  public boolean isDjupintegrerad() {
+    return djupintegrerad;
+  }
 
-    public void setDjupintegrerad(boolean djupintegrerad) {
-        this.djupintegrerad = djupintegrerad;
-    }
+  public void setDjupintegrerad(boolean djupintegrerad) {
+    this.djupintegrerad = djupintegrerad;
+  }
 
-    public String getTypVersion() {
-        return typVersion;
-    }
+  public String getTypVersion() {
+    return typVersion;
+  }
 
-    public void setTypVersion(String typVersion) {
-        this.typVersion = typVersion;
-    }
+  public void setTypVersion(String typVersion) {
+    this.typVersion = typVersion;
+  }
 
-    public void setTestIntyg(boolean isTestIntyg) {
-        this.isTestIntyg = isTestIntyg;
-    }
+  public void setTestIntyg(boolean isTestIntyg) {
+    this.isTestIntyg = isTestIntyg;
+  }
 
-    public boolean isTestIntyg() {
-        return isTestIntyg;
-    }
+  public boolean isTestIntyg() {
+    return isTestIntyg;
+  }
 }

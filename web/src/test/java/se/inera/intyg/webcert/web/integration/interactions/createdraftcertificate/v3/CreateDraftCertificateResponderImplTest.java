@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,133 +50,142 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
-    private static final String LOGICAL_ADDR = "1234567890";
-    private static final String USER_HSAID = "SE1234567890";
-    private static final String UNIT_HSAID = "SE0987654321";
-    private static final String FULL_NAME = "fullName";
-    protected static final String AUTH_METHOD = "http://id.sambi.se/loa/loa3";
+  private static final String LOGICAL_ADDR = "1234567890";
+  private static final String USER_HSAID = "SE1234567890";
+  private static final String UNIT_HSAID = "SE0987654321";
+  private static final String FULL_NAME = "fullName";
+  protected static final String AUTH_METHOD = "http://id.sambi.se/loa/loa3";
 
-    @Mock
-    private CreateDraftCertificateValidator createDraftCertificateValidator;
-    @Mock
-    private MonitoringLogService mockMonitoringLogService;
-    @Mock
-    private CreateDraftCertificateAggregator createDraftCertificateAggregator;
-    @InjectMocks
-    private CreateDraftCertificateResponderImpl responder;
+  @Mock private CreateDraftCertificateValidator createDraftCertificateValidator;
+  @Mock private MonitoringLogService mockMonitoringLogService;
+  @Mock private CreateDraftCertificateAggregator createDraftCertificateAggregator;
+  @InjectMocks private CreateDraftCertificateResponderImpl responder;
 
-    @Before
-    public void setup() throws ModuleNotFoundException {
-        super.setup();
-    }
+  @Before
+  public void setup() throws ModuleNotFoundException {
+    super.setup();
+  }
 
-    @Test
-    public void shallReturnMIUErrorIfWebcertUserDetailsServiceThrows() {
-        doThrow(IllegalStateException.class).when(webcertUserDetailsService).buildUserPrincipal(anyString(), anyString());
-        final var result = responder.createDraftCertificate(LOGICAL_ADDR, createCertificateType());
-        assertEquals(ErrorIdType.VALIDATION_ERROR, result.getResult().getErrorId());
-        assertTrue(result.getResult().getResultText().contains("No valid MIU was found for person"));
-    }
+  @Test
+  public void shallReturnMIUErrorIfWebcertUserDetailsServiceThrows() {
+    doThrow(IllegalStateException.class)
+        .when(webcertUserDetailsService)
+        .buildUserPrincipal(anyString(), anyString());
+    final var result = responder.createDraftCertificate(LOGICAL_ADDR, createCertificateType());
+    assertEquals(ErrorIdType.VALIDATION_ERROR, result.getResult().getErrorId());
+    assertTrue(result.getResult().getResultText().contains("No valid MIU was found for person"));
+  }
 
-    @Test
-    public void shallReturnValidationErrorIfDraftParametersValidationHasErrors() {
-        final var expectedErrorMessage = "expected error message";
-        final var resultValidator = mock(ResultValidator.class);
-        final var certificateType = createCertificateType();
+  @Test
+  public void shallReturnValidationErrorIfDraftParametersValidationHasErrors() {
+    final var expectedErrorMessage = "expected error message";
+    final var resultValidator = mock(ResultValidator.class);
+    final var certificateType = createCertificateType();
 
-        doReturn(resultValidator).when(createDraftCertificateValidator).validate(certificateType.getIntyg());
-        doReturn(true).when(resultValidator).hasErrors();
-        doReturn(expectedErrorMessage).when(resultValidator).getErrorMessagesAsString();
+    doReturn(resultValidator)
+        .when(createDraftCertificateValidator)
+        .validate(certificateType.getIntyg());
+    doReturn(true).when(resultValidator).hasErrors();
+    doReturn(expectedErrorMessage).when(resultValidator).getErrorMessagesAsString();
 
-        final var result = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+    final var result = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
-        assertEquals(ErrorIdType.VALIDATION_ERROR, result.getResult().getErrorId());
-        assertEquals(expectedErrorMessage, result.getResult().getResultText());
-    }
+    assertEquals(ErrorIdType.VALIDATION_ERROR, result.getResult().getErrorId());
+    assertEquals(expectedErrorMessage, result.getResult().getResultText());
+  }
 
-    @Test
-    public void shallReturnMIUErrorIfHealthPersonalDontHaveMIURightsOnCareUnit() {
-        final var certificateType = createCertificateType();
-        final var resultValidator = mock(ResultValidator.class);
-        final var webCertUser = buildWebCertUser();
-        webCertUser.setVardgivare(Collections.emptyList());
+  @Test
+  public void shallReturnMIUErrorIfHealthPersonalDontHaveMIURightsOnCareUnit() {
+    final var certificateType = createCertificateType();
+    final var resultValidator = mock(ResultValidator.class);
+    final var webCertUser = buildWebCertUser();
+    webCertUser.setVardgivare(Collections.emptyList());
 
-        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(webCertUser);
-        doReturn(resultValidator).when(createDraftCertificateValidator).validate(certificateType.getIntyg());
-        doReturn(false).when(resultValidator).hasErrors();
+    when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString()))
+        .thenReturn(webCertUser);
+    doReturn(resultValidator)
+        .when(createDraftCertificateValidator)
+        .validate(certificateType.getIntyg());
+    doReturn(false).when(resultValidator).hasErrors();
 
-        final var result = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+    final var result = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
-        assertEquals(ErrorIdType.VALIDATION_ERROR, result.getResult().getErrorId());
-        assertTrue(result.getResult().getResultText().contains("No valid MIU was found for person"));
-    }
+    assertEquals(ErrorIdType.VALIDATION_ERROR, result.getResult().getErrorId());
+    assertTrue(result.getResult().getResultText().contains("No valid MIU was found for person"));
+  }
 
-    @Test
-    public void shallReturnApplicationErrorsIfHasErrorsIsTrue() {
-        final var expectedErrorMessage = "expected error message";
+  @Test
+  public void shallReturnApplicationErrorsIfHasErrorsIsTrue() {
+    final var expectedErrorMessage = "expected error message";
 
-        final var certificateType = createCertificateType();
-        final var validationErrors = mock(ResultValidator.class);
-        final var applicationErrors = mock(ResultValidator.class);
-        final var webCertUser = buildWebCertUser();
+    final var certificateType = createCertificateType();
+    final var validationErrors = mock(ResultValidator.class);
+    final var applicationErrors = mock(ResultValidator.class);
+    final var webCertUser = buildWebCertUser();
 
-        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(webCertUser);
-        doReturn(validationErrors).when(createDraftCertificateValidator).validate(any(Intyg.class));
-        doReturn(applicationErrors).when(createDraftCertificateValidator)
-            .validateApplicationErrors(certificateType.getIntyg(), webCertUser);
-        doReturn(false).when(validationErrors).hasErrors();
-        doReturn(true).when(applicationErrors).hasErrors();
-        doReturn(expectedErrorMessage).when(applicationErrors).getErrorMessagesAsString();
+    when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString()))
+        .thenReturn(webCertUser);
+    doReturn(validationErrors).when(createDraftCertificateValidator).validate(any(Intyg.class));
+    doReturn(applicationErrors)
+        .when(createDraftCertificateValidator)
+        .validateApplicationErrors(certificateType.getIntyg(), webCertUser);
+    doReturn(false).when(validationErrors).hasErrors();
+    doReturn(true).when(applicationErrors).hasErrors();
+    doReturn(expectedErrorMessage).when(applicationErrors).getErrorMessagesAsString();
 
-        final var result = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+    final var result = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
-        assertEquals(ErrorIdType.APPLICATION_ERROR, result.getResult().getErrorId());
-        assertEquals(expectedErrorMessage, result.getResult().getResultText());
-    }
+    assertEquals(ErrorIdType.APPLICATION_ERROR, result.getResult().getErrorId());
+    assertEquals(expectedErrorMessage, result.getResult().getResultText());
+  }
 
-    @Test
-    public void shallReturnCreateDraftCertificateResponseType() {
-        final var expectedResponse = new CreateDraftCertificateResponseType();
-        final var certificateType = createCertificateType();
-        final var validationErrors = mock(ResultValidator.class);
-        final var applicationErrors = mock(ResultValidator.class);
-        final var webCertUser = buildWebCertUser();
+  @Test
+  public void shallReturnCreateDraftCertificateResponseType() {
+    final var expectedResponse = new CreateDraftCertificateResponseType();
+    final var certificateType = createCertificateType();
+    final var validationErrors = mock(ResultValidator.class);
+    final var applicationErrors = mock(ResultValidator.class);
+    final var webCertUser = buildWebCertUser();
 
-        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(webCertUser);
-        doReturn(validationErrors).when(createDraftCertificateValidator).validate(any(Intyg.class));
-        doReturn(applicationErrors).when(createDraftCertificateValidator)
-            .validateApplicationErrors(certificateType.getIntyg(), webCertUser);
-        doReturn(false).when(validationErrors).hasErrors();
-        doReturn(false).when(applicationErrors).hasErrors();
-        doReturn(expectedResponse).when(createDraftCertificateAggregator).create(certificateType.getIntyg(), webCertUser);
+    when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString()))
+        .thenReturn(webCertUser);
+    doReturn(validationErrors).when(createDraftCertificateValidator).validate(any(Intyg.class));
+    doReturn(applicationErrors)
+        .when(createDraftCertificateValidator)
+        .validateApplicationErrors(certificateType.getIntyg(), webCertUser);
+    doReturn(false).when(validationErrors).hasErrors();
+    doReturn(false).when(applicationErrors).hasErrors();
+    doReturn(expectedResponse)
+        .when(createDraftCertificateAggregator)
+        .create(certificateType.getIntyg(), webCertUser);
 
-        final var result = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
+    final var result = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
-        assertEquals(expectedResponse, result);
-    }
+    assertEquals(expectedResponse, result);
+  }
 
-    private CreateDraftCertificateType createCertificateType() {
-        HsaId userHsaId = new HsaId();
-        userHsaId.setExtension(USER_HSAID);
-        userHsaId.setRoot("USERHSAID");
+  private CreateDraftCertificateType createCertificateType() {
+    HsaId userHsaId = new HsaId();
+    userHsaId.setExtension(USER_HSAID);
+    userHsaId.setRoot("USERHSAID");
 
-        HsaId unitHsaId = new HsaId();
-        unitHsaId.setExtension(UNIT_HSAID);
-        unitHsaId.setRoot("UNITHSAID");
+    HsaId unitHsaId = new HsaId();
+    unitHsaId.setExtension(UNIT_HSAID);
+    unitHsaId.setRoot("UNITHSAID");
 
-        Enhet hosEnhet = new Enhet();
-        hosEnhet.setEnhetsId(unitHsaId);
+    Enhet hosEnhet = new Enhet();
+    hosEnhet.setEnhetsId(unitHsaId);
 
-        HosPersonal hosPerson = new HosPersonal();
-        hosPerson.setFullstandigtNamn(FULL_NAME);
-        hosPerson.setPersonalId(userHsaId);
-        hosPerson.setEnhet(hosEnhet);
+    HosPersonal hosPerson = new HosPersonal();
+    hosPerson.setFullstandigtNamn(FULL_NAME);
+    hosPerson.setPersonalId(userHsaId);
+    hosPerson.setEnhet(hosEnhet);
 
-        Intyg utlatande = new Intyg();
-        utlatande.setSkapadAv(hosPerson);
+    Intyg utlatande = new Intyg();
+    utlatande.setSkapadAv(hosPerson);
 
-        CreateDraftCertificateType certificateType = new CreateDraftCertificateType();
-        certificateType.setIntyg(utlatande);
-        return certificateType;
-    }
+    CreateDraftCertificateType certificateType = new CreateDraftCertificateType();
+    certificateType.setIntyg(utlatande);
+    return certificateType;
+  }
 }

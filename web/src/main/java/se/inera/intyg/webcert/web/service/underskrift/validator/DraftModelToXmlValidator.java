@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,38 +34,41 @@ import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLCo
 @Service
 public class DraftModelToXmlValidator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DraftModelToXmlValidator.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DraftModelToXmlValidator.class);
 
-    @Autowired
-    private UtkastModelToXMLConverter draftModelToXMLConverter;
+  @Autowired private UtkastModelToXMLConverter draftModelToXMLConverter;
 
-    @Autowired
-    private IntygModuleRegistry intygModuleRegistry;
+  @Autowired private IntygModuleRegistry intygModuleRegistry;
 
-    public ValidateXmlResponse validateDraftModelAsXml(Utkast draft)
-        throws ModuleException, ModuleNotFoundException {
-        String xml = draftModelToXMLConverter.utkastToXml(draft.getModel(), draft.getIntygsTyp());
+  public ValidateXmlResponse validateDraftModelAsXml(Utkast draft)
+      throws ModuleException, ModuleNotFoundException {
+    String xml = draftModelToXMLConverter.utkastToXml(draft.getModel(), draft.getIntygsTyp());
 
-        return validateXml(draft, xml);
+    return validateXml(draft, xml);
+  }
+
+  public void assertResponse(String certificateId, ValidateXmlResponse validationResponse)
+      throws ModuleValidationException {
+    if (validationResponse.hasErrorMessages()) {
+      String validationErrors = String.join(";", validationResponse.getValidationErrors());
+      LOG.error(
+          LogMarkers.VALIDATION,
+          "Schematron validation failed for certificate: {}. Validation errors: {}",
+          certificateId,
+          validationErrors);
+      throw new ModuleValidationException(validationResponse.getValidationErrors());
     }
+  }
 
-    public void assertResponse(String certificateId, ValidateXmlResponse validationResponse) throws ModuleValidationException {
-        if (validationResponse.hasErrorMessages()) {
-            String validationErrors = String.join(";", validationResponse.getValidationErrors());
-            LOG.error(LogMarkers.VALIDATION, "Schematron validation failed for certificate: {}. Validation errors: {}",
-                certificateId, validationErrors);
-            throw new ModuleValidationException(validationResponse.getValidationErrors());
-        }
+  private ValidateXmlResponse validateXml(Utkast draft, String xml)
+      throws ModuleNotFoundException, ModuleException {
+    try {
+      return intygModuleRegistry
+          .getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion())
+          .validateXml(xml);
+    } catch (ModuleNotFoundException | ModuleException e) {
+      LOG.error("Certificate with id {} could not be validated.", draft.getIntygsId());
+      throw e;
     }
-
-    private ValidateXmlResponse validateXml(Utkast draft, String xml)
-        throws ModuleNotFoundException, ModuleException {
-        try {
-            return intygModuleRegistry.getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion()).validateXml(xml);
-        } catch (ModuleNotFoundException | ModuleException e) {
-            LOG.error("Certificate with id {} could not be validated.", draft.getIntygsId());
-            throw e;
-        }
-    }
-
+  }
 }

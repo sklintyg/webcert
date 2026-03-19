@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,20 @@
  */
 package se.inera.intyg.webcert.web.integration.util;
 
+import static se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil.CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS;
+import static se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil.CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS_OVERRIDE;
+import static se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil.CERTIFICATE_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS;
+import static se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil.CERTIFICATE_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS;
+import static se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil.DRAFT_FROM_OTHER_CARE_PROVIDER_EXISTS;
+import static se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil.DRAFT_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS;
+import static se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil.DRAFT_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,280 +44,351 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class AuthoritiesHelperUtilTest {
 
-    private static final String DB = "db";
-    private static final String DOI = "doi";
-    private static final String DRAFT = "utkast";
-    private static final String CERTIFICATE = "intyg";
+  private static final String DB = "db";
+  private static final String DOI = "doi";
+  private static final String DRAFT = "utkast";
+  private static final String CERTIFICATE = "intyg";
 
-    private DoiModuleApiV1 doiModuleApiV1 = new DoiModuleApiV1();
-    private DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
+  private DoiModuleApiV1 doiModuleApiV1 = new DoiModuleApiV1();
+  private DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
 
-    @Test
-    public void testCreateDraftAllowed() {
-        Assert.assertNull(AuthoritiesHelperUtil.performUniqueAndModuleValidation(new IntygUser(""), DB,
-            createEmptyPreviousDraftAndCertificates(), dbModuleApiV1));
-    }
+  @Test
+  public void testCreateDraftAllowed() {
+    Assert.assertNull(
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+            new IntygUser(""), DB, createEmptyPreviousDraftAndCertificates(), dbModuleApiV1));
+  }
 
-    @Test
-    public void testDBDraftExistsOnSameCareProviderAndSameUnit() {
-        var user = new IntygUser("");
-        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG, AuthoritiesConstants.FEATURE_UNIKT_INTYG).collect(
-            Collectors.toMap(Function.identity(), s -> {
-                Feature feature = new Feature();
-                feature.setName(s);
-                feature.setIntygstyper(Collections.singletonList(DB));
-                feature.setGlobal(true);
-                return feature;
-            })));
+  @Test
+  public void testDBDraftExistsOnSameCareProviderAndSameUnit() {
+    var user = new IntygUser("");
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(Collections.singletonList(DB));
+                      feature.setGlobal(true);
+                      return feature;
+                    })));
 
-        var previousDraftCertificates = createDBDraftOnSameCareProviderAndSameUnit();
+    var previousDraftCertificates = createDBDraftOnSameCareProviderAndSameUnit();
 
-        Assert.assertEquals(
-            String.format(DRAFT_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS, KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
-            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, DB, previousDraftCertificates, dbModuleApiV1).getMessage());
-    }
+    Assert.assertEquals(
+        String.format(
+            DRAFT_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS,
+            KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+                user, DB, previousDraftCertificates, dbModuleApiV1)
+            .getMessage());
+  }
 
-    @Test
-    public void testDBDraftExistsOnSameCareProviderAndOtherUnit() {
-        IntygUser user = new IntygUser("");
-        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG, AuthoritiesConstants.FEATURE_UNIKT_INTYG).collect(
-            Collectors.toMap(Function.identity(), s -> {
-                Feature feature = new Feature();
-                feature.setName(s);
-                feature.setIntygstyper(Collections.singletonList(DB));
-                feature.setGlobal(true);
-                return feature;
-            })));
+  @Test
+  public void testDBDraftExistsOnSameCareProviderAndOtherUnit() {
+    IntygUser user = new IntygUser("");
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(Collections.singletonList(DB));
+                      feature.setGlobal(true);
+                      return feature;
+                    })));
 
-        var previousDraftCertificates = createDBDraftOnSameCareProviderAndOtherUnit();
+    var previousDraftCertificates = createDBDraftOnSameCareProviderAndOtherUnit();
 
-        Assert.assertEquals(
-            String.format(DRAFT_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS, KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
-            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, DB, previousDraftCertificates, dbModuleApiV1).getMessage());
-    }
+    Assert.assertEquals(
+        String.format(
+            DRAFT_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS,
+            KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+                user, DB, previousDraftCertificates, dbModuleApiV1)
+            .getMessage());
+  }
 
-    @Test
-    public void testDBDraftExistsOnOtherCareProvider() {
-        IntygUser user = new IntygUser("");
-        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG, AuthoritiesConstants.FEATURE_UNIKT_INTYG).collect(
-            Collectors.toMap(Function.identity(), s -> {
-                Feature feature = new Feature();
-                feature.setName(s);
-                feature.setIntygstyper(Collections.singletonList(DB));
-                feature.setGlobal(true);
-                return feature;
-            })));
+  @Test
+  public void testDBDraftExistsOnOtherCareProvider() {
+    IntygUser user = new IntygUser("");
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(Collections.singletonList(DB));
+                      feature.setGlobal(true);
+                      return feature;
+                    })));
 
-        var previousDraftCertificates = createDBDraftOnOtherCareProvider();
+    var previousDraftCertificates = createDBDraftOnOtherCareProvider();
 
-        Assert.assertEquals(
-            String.format(DRAFT_FROM_OTHER_CARE_PROVIDER_EXISTS, KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
-            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, DB, previousDraftCertificates, dbModuleApiV1).getMessage());
-    }
+    Assert.assertEquals(
+        String.format(
+            DRAFT_FROM_OTHER_CARE_PROVIDER_EXISTS,
+            KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+                user, DB, previousDraftCertificates, dbModuleApiV1)
+            .getMessage());
+  }
 
-    @Test
-    public void testDBCertificateExistsOnSameCareProviderAndSameUnit() {
-        IntygUser user = new IntygUser("");
-        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG, AuthoritiesConstants.FEATURE_UNIKT_INTYG).collect(
-            Collectors.toMap(Function.identity(), s -> {
-                Feature feature = new Feature();
-                feature.setName(s);
-                feature.setIntygstyper(Collections.singletonList(DB));
-                feature.setGlobal(true);
-                return feature;
-            })));
+  @Test
+  public void testDBCertificateExistsOnSameCareProviderAndSameUnit() {
+    IntygUser user = new IntygUser("");
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(Collections.singletonList(DB));
+                      feature.setGlobal(true);
+                      return feature;
+                    })));
 
-        var previousDraftCertificates = createDBDraftAndCertificateOnSameCareProviderAndSameUnit();
+    var previousDraftCertificates = createDBDraftAndCertificateOnSameCareProviderAndSameUnit();
 
-        Assert.assertEquals(
-            String.format(CERTIFICATE_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS, KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
-            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, DB, previousDraftCertificates, dbModuleApiV1).getMessage());
-    }
+    Assert.assertEquals(
+        String.format(
+            CERTIFICATE_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS,
+            KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+                user, DB, previousDraftCertificates, dbModuleApiV1)
+            .getMessage());
+  }
 
-    @Test
-    public void testDBCertificateExistsOnSameCareProviderAndOtherUnit() {
-        IntygUser user = new IntygUser("");
-        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG, AuthoritiesConstants.FEATURE_UNIKT_INTYG).collect(
-            Collectors.toMap(Function.identity(), s -> {
-                Feature feature = new Feature();
-                feature.setName(s);
-                feature.setIntygstyper(Collections.singletonList(DB));
-                feature.setGlobal(true);
-                return feature;
-            })));
+  @Test
+  public void testDBCertificateExistsOnSameCareProviderAndOtherUnit() {
+    IntygUser user = new IntygUser("");
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(Collections.singletonList(DB));
+                      feature.setGlobal(true);
+                      return feature;
+                    })));
 
-        var previousDraftCertificates = createDBDraftAndCertificateOnSameCareProviderAndOtherUnit();
+    var previousDraftCertificates = createDBDraftAndCertificateOnSameCareProviderAndOtherUnit();
 
-        Assert.assertEquals(
-            String.format(CERTIFICATE_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS,
-                KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
-            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, DB, previousDraftCertificates, dbModuleApiV1).getMessage());
-    }
+    Assert.assertEquals(
+        String.format(
+            CERTIFICATE_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS,
+            KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+                user, DB, previousDraftCertificates, dbModuleApiV1)
+            .getMessage());
+  }
 
-    @Test
-    public void testDBCertificateExistsOnOtherCareProvider() {
-        IntygUser user = new IntygUser("");
-        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG, AuthoritiesConstants.FEATURE_UNIKT_INTYG).collect(
-            Collectors.toMap(Function.identity(), s -> {
-                Feature feature = new Feature();
-                feature.setName(s);
-                feature.setIntygstyper(Collections.singletonList(DB));
-                feature.setGlobal(true);
-                return feature;
-            })));
+  @Test
+  public void testDBCertificateExistsOnOtherCareProvider() {
+    IntygUser user = new IntygUser("");
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(Collections.singletonList(DB));
+                      feature.setGlobal(true);
+                      return feature;
+                    })));
 
-        var previousDraftCertificates = createDBDraftAndCertificateOnOtherCareProvider();
+    var previousDraftCertificates = createDBDraftAndCertificateOnOtherCareProvider();
 
-        Assert.assertEquals(
-            String.format(CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS, KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
-            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, DB, previousDraftCertificates, dbModuleApiV1).getMessage());
-    }
+    Assert.assertEquals(
+        String.format(
+            CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS,
+            KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+                user, DB, previousDraftCertificates, dbModuleApiV1)
+            .getMessage());
+  }
 
-    @Test
-    public void testDOICertificateExistsOnOtherCareProvider() {
-        IntygUser user = new IntygUser("");
-        user.setFeatures(
-            Stream.of(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).collect(
-                Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setIntygstyper(Collections.singletonList(DOI));
-                    feature.setGlobal(true);
-                    return feature;
-                })));
+  @Test
+  public void testDOICertificateExistsOnOtherCareProvider() {
+    IntygUser user = new IntygUser("");
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(Collections.singletonList(DOI));
+                      feature.setGlobal(true);
+                      return feature;
+                    })));
 
-        var previousDraftCertificates = createDOICertificateOnOtherCareProvider();
+    var previousDraftCertificates = createDOICertificateOnOtherCareProvider();
 
-        Assert.assertEquals(
-            String.format(CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS_OVERRIDE, KvIntygstyp.getDisplayNameFromCodeValue(DOI).toLowerCase()),
-            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, DOI, previousDraftCertificates, doiModuleApiV1).getMessage());
-    }
+    Assert.assertEquals(
+        String.format(
+            CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS_OVERRIDE,
+            KvIntygstyp.getDisplayNameFromCodeValue(DOI).toLowerCase()),
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+                user, DOI, previousDraftCertificates, doiModuleApiV1)
+            .getMessage());
+  }
 
-    @Test
-    public void testDOIDraftButNoDBCertificateExists() {
-        IntygUser user = new IntygUser("");
-        user.setFeatures(
-            Stream.of(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).collect(
-                Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setIntygstyper(Collections.singletonList(DOI));
-                    feature.setGlobal(true);
-                    return feature;
-                })));
+  @Test
+  public void testDOIDraftButNoDBCertificateExists() {
+    IntygUser user = new IntygUser("");
+    user.setFeatures(
+        Stream.of(
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG)
+            .collect(
+                Collectors.toMap(
+                    Function.identity(),
+                    s -> {
+                      Feature feature = new Feature();
+                      feature.setName(s);
+                      feature.setIntygstyper(Collections.singletonList(DOI));
+                      feature.setGlobal(true);
+                      return feature;
+                    })));
 
-        var previousDraftCertificates = createEmptyPreviousDraftAndCertificates();
+    var previousDraftCertificates = createEmptyPreviousDraftAndCertificates();
 
-        Assert.assertEquals("Det finns inget dödsbevis i nuläget inom vårdgivaren. Dödsorsaksintyget bör alltid skapas efter dödsbeviset.",
-            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, DOI, previousDraftCertificates, doiModuleApiV1).getMessage());
-    }
+    Assert.assertEquals(
+        "Det finns inget dödsbevis i nuläget inom vårdgivaren. Dödsorsaksintyget bör alltid skapas efter dödsbeviset.",
+        AuthoritiesHelperUtil.performUniqueAndModuleValidation(
+                user, DOI, previousDraftCertificates, doiModuleApiV1)
+            .getMessage());
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> createEmptyPreviousDraftAndCertificates() {
-        Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
-        map.put(DRAFT, new HashMap<>());
-        map.put(CERTIFICATE, new HashMap<>());
-        return map;
-    }
+  private Map<String, Map<String, PreviousIntyg>> createEmptyPreviousDraftAndCertificates() {
+    Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
+    map.put(DRAFT, new HashMap<>());
+    map.put(CERTIFICATE, new HashMap<>());
+    return map;
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> createDBDraftOnSameCareProviderAndSameUnit() {
-        Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
-        PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
-        Map<String, PreviousIntyg> draftMap = new HashMap<>();
-        draftMap.put(DB, draft);
-        map.put(DRAFT, draftMap);
-        map.put(CERTIFICATE, new HashMap<>());
-        return map;
-    }
+  private Map<String, Map<String, PreviousIntyg>> createDBDraftOnSameCareProviderAndSameUnit() {
+    Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
+    PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
+    Map<String, PreviousIntyg> draftMap = new HashMap<>();
+    draftMap.put(DB, draft);
+    map.put(DRAFT, draftMap);
+    map.put(CERTIFICATE, new HashMap<>());
+    return map;
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> createDBDraftOnSameCareProviderAndOtherUnit() {
-        Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
-        PreviousIntyg draft = PreviousIntyg.of(true, false, false, "", "", null);
-        Map<String, PreviousIntyg> draftMap = new HashMap<>();
-        draftMap.put(DB, draft);
-        map.put(DRAFT, draftMap);
-        map.put(CERTIFICATE, new HashMap<>());
-        return map;
-    }
+  private Map<String, Map<String, PreviousIntyg>> createDBDraftOnSameCareProviderAndOtherUnit() {
+    Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
+    PreviousIntyg draft = PreviousIntyg.of(true, false, false, "", "", null);
+    Map<String, PreviousIntyg> draftMap = new HashMap<>();
+    draftMap.put(DB, draft);
+    map.put(DRAFT, draftMap);
+    map.put(CERTIFICATE, new HashMap<>());
+    return map;
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> createDBDraftOnOtherCareProvider() {
-        Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
-        PreviousIntyg draft = PreviousIntyg.of(false, false, false, "", "", null);
-        Map<String, PreviousIntyg> draftMap = new HashMap<>();
-        draftMap.put(DB, draft);
-        map.put(DRAFT, draftMap);
-        map.put(CERTIFICATE, new HashMap<>());
-        return map;
-    }
+  private Map<String, Map<String, PreviousIntyg>> createDBDraftOnOtherCareProvider() {
+    Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
+    PreviousIntyg draft = PreviousIntyg.of(false, false, false, "", "", null);
+    Map<String, PreviousIntyg> draftMap = new HashMap<>();
+    draftMap.put(DB, draft);
+    map.put(DRAFT, draftMap);
+    map.put(CERTIFICATE, new HashMap<>());
+    return map;
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> createDBDraftAndCertificateOnSameCareProviderAndSameUnit() {
-        Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
+  private Map<String, Map<String, PreviousIntyg>>
+      createDBDraftAndCertificateOnSameCareProviderAndSameUnit() {
+    Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
 
-        PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
-        Map<String, PreviousIntyg> draftMap = new HashMap<>();
-        draftMap.put(DB, draft);
-        map.put(DRAFT, draftMap);
+    PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
+    Map<String, PreviousIntyg> draftMap = new HashMap<>();
+    draftMap.put(DB, draft);
+    map.put(DRAFT, draftMap);
 
-        PreviousIntyg certificate = PreviousIntyg.of(true, true, true, "", "", null);
-        Map<String, PreviousIntyg> certificateMap = new HashMap<>();
-        certificateMap.put(DB, certificate);
-        map.put(CERTIFICATE, certificateMap);
+    PreviousIntyg certificate = PreviousIntyg.of(true, true, true, "", "", null);
+    Map<String, PreviousIntyg> certificateMap = new HashMap<>();
+    certificateMap.put(DB, certificate);
+    map.put(CERTIFICATE, certificateMap);
 
-        return map;
-    }
+    return map;
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> createDBDraftAndCertificateOnSameCareProviderAndOtherUnit() {
-        Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
+  private Map<String, Map<String, PreviousIntyg>>
+      createDBDraftAndCertificateOnSameCareProviderAndOtherUnit() {
+    Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
 
-        PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
-        Map<String, PreviousIntyg> draftMap = new HashMap<>();
-        draftMap.put(DB, draft);
-        map.put(DRAFT, draftMap);
+    PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
+    Map<String, PreviousIntyg> draftMap = new HashMap<>();
+    draftMap.put(DB, draft);
+    map.put(DRAFT, draftMap);
 
-        PreviousIntyg certificate = PreviousIntyg.of(true, false, false, "", "", null);
-        Map<String, PreviousIntyg> certificateMap = new HashMap<>();
-        certificateMap.put(DB, certificate);
-        map.put(CERTIFICATE, certificateMap);
+    PreviousIntyg certificate = PreviousIntyg.of(true, false, false, "", "", null);
+    Map<String, PreviousIntyg> certificateMap = new HashMap<>();
+    certificateMap.put(DB, certificate);
+    map.put(CERTIFICATE, certificateMap);
 
-        return map;
-    }
+    return map;
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> createDBDraftAndCertificateOnOtherCareProvider() {
-        Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
+  private Map<String, Map<String, PreviousIntyg>> createDBDraftAndCertificateOnOtherCareProvider() {
+    Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
 
-        PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
-        Map<String, PreviousIntyg> draftMap = new HashMap<>();
-        draftMap.put(DB, draft);
-        map.put(DRAFT, draftMap);
+    PreviousIntyg draft = PreviousIntyg.of(true, true, true, "", "", null);
+    Map<String, PreviousIntyg> draftMap = new HashMap<>();
+    draftMap.put(DB, draft);
+    map.put(DRAFT, draftMap);
 
-        PreviousIntyg certificate = PreviousIntyg.of(false, false, false, "", "", null);
-        Map<String, PreviousIntyg> certificateMap = new HashMap<>();
-        certificateMap.put(DB, certificate);
-        map.put(CERTIFICATE, certificateMap);
+    PreviousIntyg certificate = PreviousIntyg.of(false, false, false, "", "", null);
+    Map<String, PreviousIntyg> certificateMap = new HashMap<>();
+    certificateMap.put(DB, certificate);
+    map.put(CERTIFICATE, certificateMap);
 
-        return map;
-    }
+    return map;
+  }
 
-    private Map<String, Map<String, PreviousIntyg>> createDOICertificateOnOtherCareProvider() {
-        Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
+  private Map<String, Map<String, PreviousIntyg>> createDOICertificateOnOtherCareProvider() {
+    Map<String, Map<String, PreviousIntyg>> map = new HashMap<>();
 
-        map.put(DRAFT, new HashMap<>());
+    map.put(DRAFT, new HashMap<>());
 
-        PreviousIntyg certificate = PreviousIntyg.of(false, false, false, "", "", null);
-        Map<String, PreviousIntyg> certificateMap = new HashMap<>();
-        certificateMap.put(DOI, certificate);
-        map.put(CERTIFICATE, certificateMap);
+    PreviousIntyg certificate = PreviousIntyg.of(false, false, false, "", "", null);
+    Map<String, PreviousIntyg> certificateMap = new HashMap<>();
+    certificateMap.put(DOI, certificate);
+    map.put(CERTIFICATE, certificateMap);
 
-        return map;
-    }
-
+    return map;
+  }
 }

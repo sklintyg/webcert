@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import lombok.RequiredArgsConstructor;
@@ -28,12 +27,13 @@ import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFaca
 @RequiredArgsConstructor
 public class SendAnswerAggregator implements SendQuestionAnswerFacadeService {
 
-    private final SendQuestionAnswerFacadeService sendAnswerFromWC;
-    private final SendQuestionAnswerFacadeService sendAnswerFromCS;
-    @Override
-    public Question send(String questionId, String message) {
-        final var responseFromCS = sendAnswerFromCS.send(questionId, message);
+  private final SendQuestionAnswerFacadeService sendAnswerFromWC;
+  private final SendQuestionAnswerFacadeService sendAnswerFromCS;
 
-        return responseFromCS != null ? responseFromCS : sendAnswerFromWC.send(questionId, message);
-    }
+  @Override
+  public Question send(String questionId, String message) {
+    final var responseFromCS = sendAnswerFromCS.send(questionId, message);
+
+    return responseFromCS != null ? responseFromCS : sendAnswerFromWC.send(questionId, message);
+  }
 }

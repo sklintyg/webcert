@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,133 +39,123 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceUnitHelperTest {
 
-    private static final CertificateServiceUnitDTO CONVERTED_UNIT = CertificateServiceUnitDTO.builder().build();
-    private static final CertificateServiceUnitDTO CONVERTED_CARE_UNIT = CertificateServiceUnitDTO.builder().build();
+  private static final CertificateServiceUnitDTO CONVERTED_UNIT =
+      CertificateServiceUnitDTO.builder().build();
+  private static final CertificateServiceUnitDTO CONVERTED_CARE_UNIT =
+      CertificateServiceUnitDTO.builder().build();
 
-    private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
-    private static final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";
-    private static final String CARE_UNIT_ID = "CARE_UNIT_ID";
-    private static final String CARE_UNIT_NAME = "CARE_UNIT_NAME";
-    private static final String SUB_UNIT_ID = "SUB_UNIT_ID";
-    private static final String SUB_UNIT_NAME = "SUB_UNIT_NAME";
+  private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
+  private static final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";
+  private static final String CARE_UNIT_ID = "CARE_UNIT_ID";
+  private static final String CARE_UNIT_NAME = "CARE_UNIT_NAME";
+  private static final String SUB_UNIT_ID = "SUB_UNIT_ID";
+  private static final String SUB_UNIT_NAME = "SUB_UNIT_NAME";
 
-    @Mock
-    IntegrationParameters integrationParameters;
+  @Mock IntegrationParameters integrationParameters;
 
-    @Mock
-    WebCertUserService webCertUserService;
+  @Mock WebCertUserService webCertUserService;
 
-    @Mock
-    WebCertUser user;
+  @Mock WebCertUser user;
 
-    @Mock
-    CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
+  @Mock CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
 
-    @InjectMocks
-    CertificateServiceUnitHelper certificateServiceUnitHelper;
+  @InjectMocks CertificateServiceUnitHelper certificateServiceUnitHelper;
 
-    private final Vardenhet chosenCareUnit = new Vardenhet(CARE_UNIT_ID, CARE_UNIT_NAME);
-    private final Vardgivare chosenCareProvider = new Vardgivare(CARE_PROVIDER_ID, CARE_PROVIDER_NAME);
-    private final Mottagning chosenSubUnit = new Mottagning(SUB_UNIT_ID, SUB_UNIT_NAME);
+  private final Vardenhet chosenCareUnit = new Vardenhet(CARE_UNIT_ID, CARE_UNIT_NAME);
+  private final Vardgivare chosenCareProvider =
+      new Vardgivare(CARE_PROVIDER_ID, CARE_PROVIDER_NAME);
+  private final Mottagning chosenSubUnit = new Mottagning(SUB_UNIT_ID, SUB_UNIT_NAME);
 
+  @BeforeEach
+  void setup() {
+    when(webCertUserService.getUser()).thenReturn(user);
+    chosenCareProvider.setVardenheter(List.of(chosenCareUnit, new Vardenhet("NOT_IT", "NOT_IT")));
+
+    chosenSubUnit.setParentHsaId(CARE_UNIT_ID);
+  }
+
+  @Nested
+  class TestCareProvider {
 
     @BeforeEach
     void setup() {
-        when(webCertUserService.getUser())
-            .thenReturn(user);
-        chosenCareProvider.setVardenheter(
-            List.of(
-                chosenCareUnit,
-                new Vardenhet("NOT_IT", "NOT_IT")
-            )
-        );
-
-        chosenSubUnit.setParentHsaId(CARE_UNIT_ID);
+      when(user.getValdVardgivare()).thenReturn(chosenCareProvider);
     }
 
-    @Nested
-    class TestCareProvider {
+    @Test
+    void shouldReturnLoggedInCareProviderId() {
+      final var response = certificateServiceUnitHelper.getCareProvider();
 
-        @BeforeEach
-        void setup() {
-            when(user.getValdVardgivare())
-                .thenReturn(chosenCareProvider);
-        }
-
-        @Test
-        void shouldReturnLoggedInCareProviderId() {
-            final var response = certificateServiceUnitHelper.getCareProvider();
-
-            assertEquals(CARE_PROVIDER_ID, response.getId());
-        }
-
-        @Test
-        void shouldReturnLoggedInCareProviderName() {
-            final var response = certificateServiceUnitHelper.getCareProvider();
-
-            assertEquals(CARE_PROVIDER_NAME, response.getName());
-        }
+      assertEquals(CARE_PROVIDER_ID, response.getId());
     }
 
-    @Nested
-    class LoggedIntoCareUnit {
+    @Test
+    void shouldReturnLoggedInCareProviderName() {
+      final var response = certificateServiceUnitHelper.getCareProvider();
 
-        @BeforeEach
-        void setup() {
-            when(user.getParameters()).thenReturn(integrationParameters);
-            when(integrationParameters.isInactiveUnit()).thenReturn(false);
-            when(user.getValdVardenhet())
-                .thenReturn(chosenCareUnit);
-            when(certificateServiceVardenhetConverter.convert(chosenCareUnit, user.getParameters().isInactiveUnit()))
-                .thenReturn(CONVERTED_CARE_UNIT);
-        }
+      assertEquals(CARE_PROVIDER_NAME, response.getName());
+    }
+  }
 
-        @Test
-        void shouldReturnConvertedChosenCareUnitAsCareUnit() {
-            final var response = certificateServiceUnitHelper.getCareUnit();
+  @Nested
+  class LoggedIntoCareUnit {
 
-            assertEquals(CONVERTED_CARE_UNIT, response);
-        }
-
-        @Test
-        void shouldReturnConvertedChosenCareUnitAsUnit() {
-            final var response = certificateServiceUnitHelper.getUnit();
-
-            assertEquals(CONVERTED_CARE_UNIT, response);
-        }
+    @BeforeEach
+    void setup() {
+      when(user.getParameters()).thenReturn(integrationParameters);
+      when(integrationParameters.isInactiveUnit()).thenReturn(false);
+      when(user.getValdVardenhet()).thenReturn(chosenCareUnit);
+      when(certificateServiceVardenhetConverter.convert(
+              chosenCareUnit, user.getParameters().isInactiveUnit()))
+          .thenReturn(CONVERTED_CARE_UNIT);
     }
 
-    @Nested
-    class LoggedIntoSubUnit {
+    @Test
+    void shouldReturnConvertedChosenCareUnitAsCareUnit() {
+      final var response = certificateServiceUnitHelper.getCareUnit();
 
-        @BeforeEach
-        void setup() {
-            when(user.getValdVardenhet())
-                .thenReturn(chosenSubUnit);
-            when(user.getParameters()).thenReturn(integrationParameters);
-            when(integrationParameters.isInactiveUnit()).thenReturn(false);
-        }
-
-        @Test
-        void shouldReturnConvertedCareUnitOfChosenSubUnitAsCareUnit() {
-            when(user.getValdVardgivare())
-                .thenReturn(chosenCareProvider);
-            when(certificateServiceVardenhetConverter.convert(chosenCareUnit, user.getParameters().isInactiveUnit()))
-                .thenReturn(CONVERTED_CARE_UNIT);
-
-            final var response = certificateServiceUnitHelper.getCareUnit();
-
-            assertEquals(CONVERTED_CARE_UNIT, response);
-        }
-
-        @Test
-        void shouldReturnConvertedChosenSubUnitAsUnit() {
-            when(certificateServiceVardenhetConverter.convert(chosenSubUnit, user.getParameters().isInactiveUnit()))
-                .thenReturn(CONVERTED_UNIT);
-
-            final var response = certificateServiceUnitHelper.getUnit();
-
-            assertEquals(CONVERTED_UNIT, response);
-        }
+      assertEquals(CONVERTED_CARE_UNIT, response);
     }
+
+    @Test
+    void shouldReturnConvertedChosenCareUnitAsUnit() {
+      final var response = certificateServiceUnitHelper.getUnit();
+
+      assertEquals(CONVERTED_CARE_UNIT, response);
+    }
+  }
+
+  @Nested
+  class LoggedIntoSubUnit {
+
+    @BeforeEach
+    void setup() {
+      when(user.getValdVardenhet()).thenReturn(chosenSubUnit);
+      when(user.getParameters()).thenReturn(integrationParameters);
+      when(integrationParameters.isInactiveUnit()).thenReturn(false);
+    }
+
+    @Test
+    void shouldReturnConvertedCareUnitOfChosenSubUnitAsCareUnit() {
+      when(user.getValdVardgivare()).thenReturn(chosenCareProvider);
+      when(certificateServiceVardenhetConverter.convert(
+              chosenCareUnit, user.getParameters().isInactiveUnit()))
+          .thenReturn(CONVERTED_CARE_UNIT);
+
+      final var response = certificateServiceUnitHelper.getCareUnit();
+
+      assertEquals(CONVERTED_CARE_UNIT, response);
+    }
+
+    @Test
+    void shouldReturnConvertedChosenSubUnitAsUnit() {
+      when(certificateServiceVardenhetConverter.convert(
+              chosenSubUnit, user.getParameters().isInactiveUnit()))
+          .thenReturn(CONVERTED_UNIT);
+
+      final var response = certificateServiceUnitHelper.getUnit();
+
+      assertEquals(CONVERTED_UNIT, response);
+    }
+  }
 }

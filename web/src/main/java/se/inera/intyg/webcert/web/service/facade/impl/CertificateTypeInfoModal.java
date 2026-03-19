@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,8 +25,7 @@ import lombok.Value;
 @Builder
 public class CertificateTypeInfoModal {
 
-    String title;
-    String description;
-    String link;
+  String title;
+  String description;
+  String link;
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,19 +26,18 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 /**
  * Controller to enable a landsting user to access certificates directly from a link.
  *
- * This controller inherits from the FragaSvarUthoppController which manages
- * request for UTHOPP links. This inheritance is somewhat confusing but it make
- * sense if we look at it from a functional perspective.
+ * <p>This controller inherits from the FragaSvarUthoppController which manages request for UTHOPP
+ * links. This inheritance is somewhat confusing but it make sense if we look at it from a
+ * functional perspective.
  */
 // CHECKSTYLE:OFF LineLength
 @Path("/basic-certificate")
 @Api(value = "/webcert/web/user/basic-certificate", produces = MediaType.APPLICATION_JSON)
 public class CertificateIntegrationController extends FragaSvarUthoppController {
-    // CHECKSTYLE:ON LineLength
+  // CHECKSTYLE:ON LineLength
 
-    @Override
-    protected UserOriginType getGrantedRequestOrigin() {
-        return UserOriginType.NORMAL;
-    }
-
+  @Override
+  protected UserOriginType getGrantedRequestOrigin() {
+    return UserOriginType.NORMAL;
+  }
 }

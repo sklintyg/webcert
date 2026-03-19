@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,85 +24,85 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 
 public class CreateCertificateRequestDTO {
 
-    private String certificateType;
-    private String certificateTypeVersion;
-    private String patientId;
-    private String personId;
-    private String unitId;
-    private boolean isSent;
-    private CertificateStatus status;
-    private CreateCertificateFillType fillType;
-    private Map<String, CertificateDataValue> values;
+  private String certificateType;
+  private String certificateTypeVersion;
+  private String patientId;
+  private String personId;
+  private String unitId;
+  private boolean isSent;
+  private CertificateStatus status;
+  private CreateCertificateFillType fillType;
+  private Map<String, CertificateDataValue> values;
 
-    public String getCertificateType() {
-        return certificateType;
-    }
+  public String getCertificateType() {
+    return certificateType;
+  }
 
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
-    }
+  public void setCertificateType(String certificateType) {
+    this.certificateType = certificateType;
+  }
 
-    public String getCertificateTypeVersion() {
-        return certificateTypeVersion;
-    }
+  public String getCertificateTypeVersion() {
+    return certificateTypeVersion;
+  }
 
-    public void setCertificateTypeVersion(String certificateTypeVersion) {
-        this.certificateTypeVersion = certificateTypeVersion;
-    }
+  public void setCertificateTypeVersion(String certificateTypeVersion) {
+    this.certificateTypeVersion = certificateTypeVersion;
+  }
 
-    public String getPatientId() {
-        return patientId;
-    }
+  public String getPatientId() {
+    return patientId;
+  }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
+  public void setPatientId(String patientId) {
+    this.patientId = patientId;
+  }
 
-    public String getPersonId() {
-        return personId;
-    }
+  public String getPersonId() {
+    return personId;
+  }
 
-    public void setPersonId(String personId) {
-        this.personId = personId;
-    }
+  public void setPersonId(String personId) {
+    this.personId = personId;
+  }
 
-    public String getUnitId() {
-        return unitId;
-    }
+  public String getUnitId() {
+    return unitId;
+  }
 
-    public void setUnitId(String unitId) {
-        this.unitId = unitId;
-    }
+  public void setUnitId(String unitId) {
+    this.unitId = unitId;
+  }
 
-    public boolean isSent() {
-        return isSent;
-    }
+  public boolean isSent() {
+    return isSent;
+  }
 
-    public void setSent(boolean sent) {
-        isSent = sent;
-    }
+  public void setSent(boolean sent) {
+    isSent = sent;
+  }
 
-    public CertificateStatus getStatus() {
-        return status;
-    }
+  public CertificateStatus getStatus() {
+    return status;
+  }
 
-    public void setStatus(CertificateStatus status) {
-        this.status = status;
-    }
+  public void setStatus(CertificateStatus status) {
+    this.status = status;
+  }
 
-    public CreateCertificateFillType getFillType() {
-        return fillType;
-    }
+  public CreateCertificateFillType getFillType() {
+    return fillType;
+  }
 
-    public void setFillType(CreateCertificateFillType fillType) {
-        this.fillType = fillType;
-    }
+  public void setFillType(CreateCertificateFillType fillType) {
+    this.fillType = fillType;
+  }
 
-    public Map<String, CertificateDataValue> getValues() {
-        return values;
-    }
+  public Map<String, CertificateDataValue> getValues() {
+    return values;
+  }
 
-    public void setValues(Map<String, CertificateDataValue> values) {
-        this.values = values;
-    }
+  public void setValues(Map<String, CertificateDataValue> values) {
+    this.values = values;
+  }
 }

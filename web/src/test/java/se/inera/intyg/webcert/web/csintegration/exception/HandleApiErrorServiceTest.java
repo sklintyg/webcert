@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.exception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,32 +32,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class HandleApiErrorServiceTest {
 
-    @InjectMocks
-    private HandleApiErrorService service;
-    @Mock
-    private ObjectMapper objectMapper;
+  @InjectMocks private HandleApiErrorService service;
+  @Mock private ObjectMapper objectMapper;
 
-    @Test
-    void shouldReturnApiErrorMessageWhenParsingSucceeds() throws Exception {
-        final var expectedMessage = "Resource not found";
-        final var json = "{\"message\":\"Resource not found\"}";
-        final var apiError = ApiError.builder()
-            .message(expectedMessage)
-            .build();
+  @Test
+  void shouldReturnApiErrorMessageWhenParsingSucceeds() throws Exception {
+    final var expectedMessage = "Resource not found";
+    final var json = "{\"message\":\"Resource not found\"}";
+    final var apiError = ApiError.builder().message(expectedMessage).build();
 
-        when(objectMapper.readValue(json, ApiError.class)).thenReturn(apiError);
+    when(objectMapper.readValue(json, ApiError.class)).thenReturn(apiError);
 
-        final var result = service.handle(json);
-        assertEquals(expectedMessage, result);
-    }
+    final var result = service.handle(json);
+    assertEquals(expectedMessage, result);
+  }
 
-    @Test
-    void shouldReturnExceptionMessageWhenParsingFails() throws Exception {
-        final var json = "{\"message\":\"Resource not found\"}";
-        when(objectMapper.readValue(json, ApiError.class)).thenThrow(new JsonProcessingException("Error parsing JSON") {
-        });
+  @Test
+  void shouldReturnExceptionMessageWhenParsingFails() throws Exception {
+    final var json = "{\"message\":\"Resource not found\"}";
+    when(objectMapper.readValue(json, ApiError.class))
+        .thenThrow(new JsonProcessingException("Error parsing JSON") {});
 
-        final var result = service.handle(json);
-        assertEquals(json, result);
-    }
+    final var result = service.handle(json);
+    assertEquals(json, result);
+  }
 }

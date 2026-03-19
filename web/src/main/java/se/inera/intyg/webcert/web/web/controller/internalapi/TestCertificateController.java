@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,37 +33,35 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.testcertificate.TestCertificateService;
 
-/**
- * Internal REST endpoint for managing test certificates.
- */
+/** Internal REST endpoint for managing test certificates. */
 @Path("/testCertificate")
 @Api(value = "/internalapi/testCertificate", produces = MediaType.APPLICATION_JSON)
 public class TestCertificateController {
 
-    @Autowired
-    private TestCertificateService testCertificateService;
+  @Autowired private TestCertificateService testCertificateService;
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @PrometheusTimeMethod
-    @POST
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Path("/erase")
-    @PerformanceLogging(eventAction = "test-certificate-erase", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-    public Response eraseTestCertificates(@RequestBody TestCertificateEraseRequest eraseRequest) {
+  @PrometheusTimeMethod
+  @POST
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @Path("/erase")
+  @PerformanceLogging(
+      eventAction = "test-certificate-erase",
+      eventType = MdcLogConstants.EVENT_TYPE_DELETION)
+  public Response eraseTestCertificates(@RequestBody TestCertificateEraseRequest eraseRequest) {
 
-        if (eraseRequest.getTo() == null) {
-            return Response.status(400, "Missing date to").build();
-        }
-
-        if (eraseRequest.getFrom() != null && eraseRequest.getFrom().isAfter(eraseRequest.getTo())) {
-            return Response.status(400, "From date is after to date").build();
-        }
-
-        final TestCertificateEraseResult eraseResult =
-            testCertificateService.eraseTestCertificates(eraseRequest.getFrom(), eraseRequest.getTo());
-
-        return Response.ok(eraseResult).build();
+    if (eraseRequest.getTo() == null) {
+      return Response.status(400, "Missing date to").build();
     }
 
+    if (eraseRequest.getFrom() != null && eraseRequest.getFrom().isAfter(eraseRequest.getTo())) {
+      return Response.status(400, "From date is after to date").build();
+    }
+
+    final TestCertificateEraseResult eraseResult =
+        testCertificateService.eraseTestCertificates(eraseRequest.getFrom(), eraseRequest.getTo());
+
+    return Response.ok(eraseResult).build();
+  }
 }

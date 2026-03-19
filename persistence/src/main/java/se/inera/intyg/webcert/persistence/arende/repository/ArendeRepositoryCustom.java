@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,136 +30,141 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 // CHECKSTYLE:OFF LineLength
 public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
 
-    /**
-     * Returns a List of GroupableItem instances for the given parameters. Typically used for aggregation of number
-     * of Q/A on a given unit or units with sekretessmarkering taken into account.
-     *
-     * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities.
-     * @param intygsTyper Set of intygstyper that arendens related intyg must be of.
-     */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(a.id, a.enhetId, a.patientPersonId, a.intygTyp) "
-        + "FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId IS NULL "
-        + "AND a.intygTyp IN (:intygsTyper)")
-    List<GroupableItem> getUnhandledByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
-        @Param("intygsTyper") Set<String> intygsTyper);
+  /**
+   * Returns a List of GroupableItem instances for the given parameters. Typically used for
+   * aggregation of number of Q/A on a given unit or units with sekretessmarkering taken into
+   * account.
+   *
+   * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities.
+   * @param intygsTyper Set of intygstyper that arendens related intyg must be of.
+   */
+  @Query(
+      "SELECT new se.inera.intyg.webcert.common.model.GroupableItem(a.id, a.enhetId, a.patientPersonId, a.intygTyp) "
+          + "FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId IS NULL "
+          + "AND a.intygTyp IN (:intygsTyper)")
+  List<GroupableItem> getUnhandledByEnhetIdsAndIntygstyper(
+      @Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
 
-    /**
-     * List all unique signing doctors for the supplied units.
-     *
-     * @return a list of names
-     */
-    @Query("SELECT DISTINCT signeratAv, signeratAvName FROM Arende WHERE enhetId IN (:idList) ORDER BY signeratAv ASC")
-    List<Object[]> findSigneratAvByEnhet(@Param("idList") List<String> enhetsIds);
+  /**
+   * List all unique signing doctors for the supplied units.
+   *
+   * @return a list of names
+   */
+  @Query(
+      "SELECT DISTINCT signeratAv, signeratAvName FROM Arende WHERE enhetId IN (:idList) ORDER BY signeratAv ASC")
+  List<Object[]> findSigneratAvByEnhet(@Param("idList") List<String> enhetsIds);
 
-    /**
-     * List {@link Arende} entities in the repository with an enhet matching one of the
-     * supplied list of id's, that are not of status CLOSED {@link se.inera.intyg.webcert.persistence.model.Status}.
-     * The result is NOT ordered.
-     *
-     * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
-     */
-    @Query("SELECT a FROM Arende AS a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED'")
-    List<Arende> findByEnhet(@Param("idList") List<String> enhetsIds);
+  /**
+   * List {@link Arende} entities in the repository with an enhet matching one of the supplied list
+   * of id's, that are not of status CLOSED {@link se.inera.intyg.webcert.persistence.model.Status}.
+   * The result is NOT ordered.
+   *
+   * @return A list of {@link Arende} matching the search criteria. If no entities are found, this
+   *     method returns an empty list.
+   */
+  @Query("SELECT a FROM Arende AS a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED'")
+  List<Arende> findByEnhet(@Param("idList") List<String> enhetsIds);
 
-    /**
-     * Should return a list of {@link Arende} entities in the repository related to the specified intygsId.
-     *
-     * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
-     */
-    List<Arende> findByIntygsId(String intygsId);
+  /**
+   * Should return a list of {@link Arende} entities in the repository related to the specified
+   * intygsId.
+   *
+   * @return A list of {@link Arende} matching the search criteria. If no entities are found, this
+   *     method returns an empty list.
+   */
+  List<Arende> findByIntygsId(String intygsId);
 
-    /**
-     * Should return a list of {@link Arende} entities in the repository related to the
-     * list of specified certificate identifiers.
-     *
-     * @param intygsIds The certificate identifiers we are interested of
-     * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
-     */
-    @Query("SELECT ar FROM Arende ar WHERE ar.intygsId IN (:idList)")
-    List<Arende> findByIntygsIds(
-        @Param("idList") List<String> intygsIds);
+  /**
+   * Should return a list of {@link Arende} entities in the repository related to the list of
+   * specified certificate identifiers.
+   *
+   * @param intygsIds The certificate identifiers we are interested of
+   * @return A list of {@link Arende} matching the search criteria. If no entities are found, this
+   *     method returns an empty list.
+   */
+  @Query("SELECT ar FROM Arende ar WHERE ar.intygsId IN (:idList)")
+  List<Arende> findByIntygsIds(@Param("idList") List<String> intygsIds);
 
-    /**
-     * Should return a list of {@link Arende} entities in the repository related to the
-     * list of specified certificate identifiers and a specific type.
-     *
-     * @param intygsIds The certificate identifiers we are interested of
-     * @param amne The type of amne we are interested of
-     * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
-     */
-    @Query("SELECT ar FROM Arende ar WHERE ar.intygsId IN (:idList) AND ar.amne = (:amne)")
-    List<Arende> findByIntygsIdAndType(
-        @Param("idList") List<String> intygsIds,
-        @Param("amne") ArendeAmne amne);
+  /**
+   * Should return a list of {@link Arende} entities in the repository related to the list of
+   * specified certificate identifiers and a specific type.
+   *
+   * @param intygsIds The certificate identifiers we are interested of
+   * @param amne The type of amne we are interested of
+   * @return A list of {@link Arende} matching the search criteria. If no entities are found, this
+   *     method returns an empty list.
+   */
+  @Query("SELECT ar FROM Arende ar WHERE ar.intygsId IN (:idList) AND ar.amne = (:amne)")
+  List<Arende> findByIntygsIdAndType(
+      @Param("idList") List<String> intygsIds, @Param("amne") ArendeAmne amne);
 
-    /**
-     * Should return a list of {@link FragaSvar} entities in the repository that has an enhetsId matching one of the
-     * supplied list of id's. Is also discards any entity with status CLOSED {@link se.inera.intyg.webcert.persistence.model.Status}.
-     * The result is NOT ordered.
-     *
-     * @return A list of {@link FragaSvar} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
-     */
-    @Query("SELECT fs FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED'")
-    List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
+  /**
+   * Should return a list of {@link FragaSvar} entities in the repository that has an enhetsId
+   * matching one of the supplied list of id's. Is also discards any entity with status CLOSED
+   * {@link se.inera.intyg.webcert.persistence.model.Status}. The result is NOT ordered.
+   *
+   * @return A list of {@link FragaSvar} matching the search criteria. If no entities are found,
+   *     this method returns an empty list.
+   */
+  @Query(
+      "SELECT fs FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED'")
+  List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
 
-    /**
-     * Returns the {@link Arende} with the sought for meddelandeId.
-     *
-     * @param meddelandeId the meddelandeId which specifies the {@link Arende}
-     * @return the {@link Arende}
-     */
-    Arende findOneByMeddelandeId(String meddelandeId);
+  /**
+   * Returns the {@link Arende} with the sought for meddelandeId.
+   *
+   * @param meddelandeId the meddelandeId which specifies the {@link Arende}
+   * @return the {@link Arende}
+   */
+  Arende findOneByMeddelandeId(String meddelandeId);
 
-    /**
-     * Returns the {@link Arende} with the sought for referenceId.
-     *
-     * @param referenceId the referenceId which specifies the {@link Arende}
-     * @return the {@link Arende}
-     */
-    Arende findOneByReferensId(String referenceId);
+  /**
+   * Returns the {@link Arende} with the sought for referenceId.
+   *
+   * @param referenceId the referenceId which specifies the {@link Arende}
+   * @return the {@link Arende}
+   */
+  Arende findOneByReferensId(String referenceId);
 
-    /**
-     * Returns all answers to the {@link Arende} of the given meddelandeId.
-     *
-     * @param svarPaId the meddelandeId to find answers to
-     * @return a list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
-     */
-    List<Arende> findBySvarPaId(String svarPaId);
+  /**
+   * Returns all answers to the {@link Arende} of the given meddelandeId.
+   *
+   * @param svarPaId the meddelandeId to find answers to
+   * @return a list of {@link Arende} matching the search criteria. If no entities are found, this
+   *     method returns an empty list.
+   */
+  List<Arende> findBySvarPaId(String svarPaId);
 
-    /**
-     * Returns all reminders to the {@link Arende} of the given meddelandeId.
-     *
-     * @param paminnelseMeddelandeId the meddelandeId to find reminders to
-     * @return a list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     * an empty list.
-     */
-    List<Arende> findByPaminnelseMeddelandeId(String paminnelseMeddelandeId);
+  /**
+   * Returns all reminders to the {@link Arende} of the given meddelandeId.
+   *
+   * @param paminnelseMeddelandeId the meddelandeId to find reminders to
+   * @return a list of {@link Arende} matching the search criteria. If no entities are found, this
+   *     method returns an empty list.
+   */
+  List<Arende> findByPaminnelseMeddelandeId(String paminnelseMeddelandeId);
 
-    /**
-     * Returns all messageIds that exists.
-     *
-     * @param messageIds the messageIds to see if they exists
-     * @return a list of messageIds matching the search criteria. If none are found, this method returns
-     * an empty list.
-     */
-    @Query("SELECT ar.meddelandeId FROM Arende ar WHERE ar.meddelandeId IN (:meddelandeIds)")
-    List<String> findMeddelandeIdByMeddelandeId(@Param("meddelandeIds") List<String> messageIds);
+  /**
+   * Returns all messageIds that exists.
+   *
+   * @param messageIds the messageIds to see if they exists
+   * @return a list of messageIds matching the search criteria. If none are found, this method
+   *     returns an empty list.
+   */
+  @Query("SELECT ar.meddelandeId FROM Arende ar WHERE ar.meddelandeId IN (:meddelandeIds)")
+  List<String> findMeddelandeIdByMeddelandeId(@Param("meddelandeIds") List<String> messageIds);
 
-    /**
-     * Returns all paminnelseMeddelandeId (reminder message IDs) that exist for the given message IDs.
-     * This method checks if any Arende has a paminnelseMeddelandeId matching the provided message IDs,
-     * which indicates that reminders exist for those messages.
-     *
-     * @param messageIds the message IDs to check for existing reminders
-     * @return a list of paminnelseMeddelandeId values that match the search criteria.
-     * If no reminders are found, this method returns an empty list.
-     */
-    @Query("SELECT ar.paminnelseMeddelandeId FROM Arende ar WHERE ar.paminnelseMeddelandeId IN (:meddelandeIds)")
-    List<String> findPaminnelseMeddelandeIdByMeddelandeIdIn(@Param("meddelandeIds") List<String> messageIds);
+  /**
+   * Returns all paminnelseMeddelandeId (reminder message IDs) that exist for the given message IDs.
+   * This method checks if any Arende has a paminnelseMeddelandeId matching the provided message
+   * IDs, which indicates that reminders exist for those messages.
+   *
+   * @param messageIds the message IDs to check for existing reminders
+   * @return a list of paminnelseMeddelandeId values that match the search criteria. If no reminders
+   *     are found, this method returns an empty list.
+   */
+  @Query(
+      "SELECT ar.paminnelseMeddelandeId FROM Arende ar WHERE ar.paminnelseMeddelandeId IN (:meddelandeIds)")
+  List<String> findPaminnelseMeddelandeIdByMeddelandeIdIn(
+      @Param("meddelandeIds") List<String> messageIds);
 }

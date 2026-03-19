@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,149 +36,143 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class AvtalRepositoryTest {
 
-    private static final String AVTAL_TEXT = "En väldigt lång avtalstext";
-    private static final String HSA_ID = "userId1234";
+  private static final String AVTAL_TEXT = "En väldigt lång avtalstext";
+  private static final String HSA_ID = "userId1234";
 
-    @Autowired
-    private AvtalRepository avtalRepository;
+  @Autowired private AvtalRepository avtalRepository;
 
-    @Autowired
-    private GodkantAvtalRepository godkantAvtalRepository;
+  @Autowired private GodkantAvtalRepository godkantAvtalRepository;
 
-    @PersistenceContext
-    private EntityManager em;
+  @PersistenceContext private EntityManager em;
 
-    @Before
-    public void before() {
-        avtalRepository.deleteAll();
-    }
+  @Before
+  public void before() {
+    avtalRepository.deleteAll();
+  }
 
-    @Test
-    public void testFindById() {
-        Avtal saved = buildAvtal(1, AVTAL_TEXT);
-        avtalRepository.save(saved);
-        Avtal read = avtalRepository.findById(saved.getAvtalVersion()).orElse(null);
-        assertNotNull(read);
-        assertEquals(read.getAvtalText(), AVTAL_TEXT);
-    }
+  @Test
+  public void testFindById() {
+    Avtal saved = buildAvtal(1, AVTAL_TEXT);
+    avtalRepository.save(saved);
+    Avtal read = avtalRepository.findById(saved.getAvtalVersion()).orElse(null);
+    assertNotNull(read);
+    assertEquals(read.getAvtalText(), AVTAL_TEXT);
+  }
 
-    @Test
-    public void testGetLatestAvtalVersion() {
-        Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
-        Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
-        Avtal saved3 = buildAvtal(3, AVTAL_TEXT);
-        avtalRepository.save(saved2);
-        avtalRepository.save(saved3);
-        avtalRepository.save(saved1);
+  @Test
+  public void testGetLatestAvtalVersion() {
+    Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
+    Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
+    Avtal saved3 = buildAvtal(3, AVTAL_TEXT);
+    avtalRepository.save(saved2);
+    avtalRepository.save(saved3);
+    avtalRepository.save(saved1);
 
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        assertEquals(3, latestAvtalVersion.intValue());
-    }
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    assertEquals(3, latestAvtalVersion.intValue());
+  }
 
-    @Test
-    public void testGetLatestAvtalVersionNoAvtalStored() {
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        assertEquals(-1, latestAvtalVersion.intValue());
-    }
+  @Test
+  public void testGetLatestAvtalVersionNoAvtalStored() {
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    assertEquals(-1, latestAvtalVersion.intValue());
+  }
 
-    @Test
-    public void testUserHasNotApprovedAvtal() {
-        Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
-        avtalRepository.save(saved1);
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
-        assertFalse(approved);
-    }
+  @Test
+  public void testUserHasNotApprovedAvtal() {
+    Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
+    avtalRepository.save(saved1);
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
+    assertFalse(approved);
+  }
 
-    @Test
-    public void testUserHasApprovedOldAvtal() {
-        Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
-        Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
+  @Test
+  public void testUserHasApprovedOldAvtal() {
+    Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
+    Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
 
-        avtalRepository.save(saved1);
-        avtalRepository.save(saved2);
+    avtalRepository.save(saved1);
+    avtalRepository.save(saved2);
 
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
 
-        godkantAvtalRepository.approveAvtal(HSA_ID, 1);
+    godkantAvtalRepository.approveAvtal(HSA_ID, 1);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
-        assertFalse(approved);
-    }
+    boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
+    assertFalse(approved);
+  }
 
-    @Test
-    public void testApproveAvtal() {
-        Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
-        avtalRepository.save(saved1);
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+  @Test
+  public void testApproveAvtal() {
+    Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
+    avtalRepository.save(saved1);
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
 
-        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
+    godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
-        assertTrue(approved);
-    }
+    boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
+    assertTrue(approved);
+  }
 
-    @Test
-    public void testApproveSameAvtalTwice() {
-        Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
-        avtalRepository.save(saved1);
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+  @Test
+  public void testApproveSameAvtalTwice() {
+    Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
+    avtalRepository.save(saved1);
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
 
-        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
+    godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        // Applicaton code should stop this from triggering unique constraint
-        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
+    // Applicaton code should stop this from triggering unique constraint
+    godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
-        assertTrue(approved);
-    }
+    boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
+    assertTrue(approved);
+  }
 
-    @Test
-    public void testRemoveApprovedAvtal() {
-        Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
-        avtalRepository.save(saved1);
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
+  @Test
+  public void testRemoveApprovedAvtal() {
+    Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
+    avtalRepository.save(saved1);
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        godkantAvtalRepository.removeUserApprovement(HSA_ID, latestAvtalVersion);
+    godkantAvtalRepository.removeUserApprovement(HSA_ID, latestAvtalVersion);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
-        assertFalse(approved);
-    }
+    boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
+    assertFalse(approved);
+  }
 
-    @Test
-    public void testRemoveAllApprovedAvtalForUser() {
-        Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
-        Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
-        Avtal saved3 = buildAvtal(3, AVTAL_TEXT);
-        avtalRepository.save(saved1);
-        avtalRepository.save(saved2);
-        avtalRepository.save(saved3);
+  @Test
+  public void testRemoveAllApprovedAvtalForUser() {
+    Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
+    Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
+    Avtal saved3 = buildAvtal(3, AVTAL_TEXT);
+    avtalRepository.save(saved1);
+    avtalRepository.save(saved2);
+    avtalRepository.save(saved3);
 
-        Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
+    Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
+    godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        godkantAvtalRepository.removeAllUserApprovments(HSA_ID);
+    godkantAvtalRepository.removeAllUserApprovments(HSA_ID);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
-        assertFalse(approved);
-    }
+    boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
+    assertFalse(approved);
+  }
 
-    private Avtal buildAvtal(int version, String avtalText) {
-        Avtal avtal = new Avtal();
-        avtal.setAvtalVersion(version);
-        avtal.setAvtalText(avtalText);
-        avtal.setVersionDatum(LocalDateTime.now());
-        return avtal;
-    }
-
+  private Avtal buildAvtal(int version, String avtalText) {
+    Avtal avtal = new Avtal();
+    avtal.setAvtalVersion(version);
+    avtal.setAvtalText(avtalText);
+    avtal.setVersionDatum(LocalDateTime.now());
+    return avtal;
+  }
 }

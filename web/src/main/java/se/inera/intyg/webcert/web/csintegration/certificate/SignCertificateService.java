@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -29,18 +28,18 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 @RequiredArgsConstructor
 public class SignCertificateService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    public Certificate sign(String certificateId, String signatureXml, long version) {
-        return csIntegrationService.signCertificate(
-            csIntegrationRequestFactory.signCertificateRequest(signatureXml), certificateId, version
-        );
-    }
+  public Certificate sign(String certificateId, String signatureXml, long version) {
+    return csIntegrationService.signCertificate(
+        csIntegrationRequestFactory.signCertificateRequest(signatureXml), certificateId, version);
+  }
 
-    public Certificate signWithoutSignature(String certificateId, long version) {
-        return csIntegrationService.signCertificateWithoutSignature(
-            csIntegrationRequestFactory.signCertificateWithoutSignatureRequest(), certificateId, version
-        );
-    }
+  public Certificate signWithoutSignature(String certificateId, long version) {
+    return csIntegrationService.signCertificateWithoutSignature(
+        csIntegrationRequestFactory.signCertificateWithoutSignatureRequest(),
+        certificateId,
+        version);
+  }
 }

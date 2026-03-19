@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,17 +20,17 @@ package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
 
 public class CreateQuestionResponseDTO {
 
-    private String questionId;
+  private String questionId;
 
-    public CreateQuestionResponseDTO(String questionId) {
-        this.questionId = questionId;
-    }
+  public CreateQuestionResponseDTO(String questionId) {
+    this.questionId = questionId;
+  }
 
-    public String getQuestionId() {
-        return questionId;
-    }
+  public String getQuestionId() {
+    return questionId;
+  }
 
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
-    }
+  public void setQuestionId(String questionId) {
+    this.questionId = questionId;
+  }
 }

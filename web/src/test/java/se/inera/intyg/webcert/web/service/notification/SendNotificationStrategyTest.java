@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,98 +42,106 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 @RunWith(MockitoJUnitRunner.class)
 public class SendNotificationStrategyTest {
 
-    private static final String INTYG_ID_1 = "intyg-1";
-    private static final String INTYG_ID_2 = "intyg-2";
-    private static final String INTYG_ID_3 = "intyg-3";
-    private static final String INTYG_ID_4 = "intyg-4";
+  private static final String INTYG_ID_1 = "intyg-1";
+  private static final String INTYG_ID_2 = "intyg-2";
+  private static final String INTYG_ID_3 = "intyg-3";
+  private static final String INTYG_ID_4 = "intyg-4";
 
-    private static final String INTYG_FK = "fk7263";
-    private static final String INTYG_LUSE = "luse";
-    private static final String INTYG_TS = "ts-bas";
+  private static final String INTYG_FK = "fk7263";
+  private static final String INTYG_LUSE = "luse";
+  private static final String INTYG_TS = "ts-bas";
 
-    private static final String ENHET_1 = "SE12345678-1000";
-    private static final String ENHET_2 = "SE12345678-2000";
-    private static final String ENHET_3 = "SE12345678-3000";
-    private static final String ENHET_4 = "SE12345678-4000";
+  private static final String ENHET_1 = "SE12345678-1000";
+  private static final String ENHET_2 = "SE12345678-2000";
+  private static final String ENHET_3 = "SE12345678-3000";
+  private static final String ENHET_4 = "SE12345678-4000";
 
-    @Mock
-    private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
+  @Mock private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
 
-    @Mock
-    private UtkastRepository mockUtkastRepository;
+  @Mock private UtkastRepository mockUtkastRepository;
 
-    @InjectMocks
-    private SendNotificationStrategy sendStrategy = new DefaultSendNotificationStrategyImpl();
+  @InjectMocks
+  private SendNotificationStrategy sendStrategy = new DefaultSendNotificationStrategyImpl();
 
-    @Before
-    public void setupIntegreradeEnheter() {
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_FK)).thenReturn(Optional.of(SchemaVersion.VERSION_1));
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2, INTYG_FK)).thenReturn(Optional.empty());
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE)).thenReturn(Optional.of(SchemaVersion.VERSION_3));
-    }
+  @Before
+  public void setupIntegreradeEnheter() {
+    when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_FK))
+        .thenReturn(Optional.of(SchemaVersion.VERSION_1));
+    when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2, INTYG_FK))
+        .thenReturn(Optional.empty());
+    when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE))
+        .thenReturn(Optional.of(SchemaVersion.VERSION_3));
+  }
 
-    @Test
-    public void testUtkastOk() {
+  @Test
+  public void testUtkastOk() {
 
-        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
-        assertTrue(res.isPresent());
-        assertEquals(SchemaVersion.VERSION_1, res.get());
+    Optional<SchemaVersion> res =
+        sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
+    assertTrue(res.isPresent());
+    assertEquals(SchemaVersion.VERSION_1, res.get());
 
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1, INTYG_FK);
-    }
+    verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1, INTYG_FK);
+  }
 
-    @Test
-    public void testUtkastUnitNotIntegrated() {
-        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
-        assertFalse(res.isPresent());
+  @Test
+  public void testUtkastUnitNotIntegrated() {
+    Optional<SchemaVersion> res =
+        sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
+    assertFalse(res.isPresent());
 
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_2, INTYG_FK);
-    }
+    verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_2, INTYG_FK);
+  }
 
-    @Test
-    public void testUtkastWrongType() {
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_TS)).thenReturn(Optional.empty());
-        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
-        assertFalse(res.isPresent());
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1, INTYG_TS);
-    }
+  @Test
+  public void testUtkastWrongType() {
+    when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_TS))
+        .thenReturn(Optional.empty());
+    Optional<SchemaVersion> res =
+        sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_TS, ENHET_1));
+    assertFalse(res.isPresent());
+    verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_1, INTYG_TS);
+  }
 
-    @Test
-    public void testUtkastWrongSchemaVersionLuse() {
-        when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE)).thenReturn(Optional.empty());
-        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
-        assertFalse(res.isPresent());
+  @Test
+  public void testUtkastWrongSchemaVersionLuse() {
+    when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE))
+        .thenReturn(Optional.empty());
+    Optional<SchemaVersion> res =
+        sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
+    assertFalse(res.isPresent());
 
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4, INTYG_LUSE);
-    }
+    verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4, INTYG_LUSE);
+  }
 
-    @Test
-    public void testUtkastVersion2() {
-        Optional<SchemaVersion> res = sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
-        assertTrue(res.isPresent());
-        assertEquals(SchemaVersion.VERSION_3, res.get());
-        verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4, INTYG_LUSE);
-    }
+  @Test
+  public void testUtkastVersion2() {
+    Optional<SchemaVersion> res =
+        sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
+    assertTrue(res.isPresent());
+    assertEquals(SchemaVersion.VERSION_3, res.get());
+    verify(mockIntegreradeEnheterRegistry).getSchemaVersion(ENHET_4, INTYG_LUSE);
+  }
 
-    private Utkast createUtkast(String intygId, String intygsTyp, String enhetsId) {
+  private Utkast createUtkast(String intygId, String intygsTyp, String enhetsId) {
 
-        VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId("SE12345678-0000");
-        vardperson.setNamn("Dr Börje Dengroth");
+    VardpersonReferens vardperson = new VardpersonReferens();
+    vardperson.setHsaId("SE12345678-0000");
+    vardperson.setNamn("Dr Börje Dengroth");
 
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(intygId);
-        utkast.setIntygsTyp(intygsTyp);
-        utkast.setEnhetsId(enhetsId);
-        utkast.setEnhetsNamn("Vårdenheten");
-        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
-        utkast.setPatientFornamn("Tolvan");
-        utkast.setPatientEfternamn("Tolvansson");
-        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-        utkast.setModel("{model}");
-        utkast.setSkapadAv(vardperson);
-        utkast.setSenastSparadAv(vardperson);
+    Utkast utkast = new Utkast();
+    utkast.setIntygsId(intygId);
+    utkast.setIntygsTyp(intygsTyp);
+    utkast.setEnhetsId(enhetsId);
+    utkast.setEnhetsNamn("Vårdenheten");
+    utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
+    utkast.setPatientFornamn("Tolvan");
+    utkast.setPatientEfternamn("Tolvansson");
+    utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+    utkast.setModel("{model}");
+    utkast.setSkapadAv(vardperson);
+    utkast.setSenastSparadAv(vardperson);
 
-        return utkast;
-    }
+    return utkast;
+  }
 }

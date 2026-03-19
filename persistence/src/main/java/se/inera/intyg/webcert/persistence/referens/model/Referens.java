@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,61 +30,60 @@ import java.util.Objects;
 @Table(name = "REFERENS")
 public class Referens {
 
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @Column(name = "ID")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "REFERENS")
-    private String referens;
+  @Column(name = "REFERENS")
+  private String referens;
 
-    @Column(name = "INTYG_ID")
-    private String intygId;
+  @Column(name = "INTYG_ID")
+  private String intygId;
 
-    public Long getId() {
-        return id;
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getReferens() {
+    return referens;
+  }
+
+  public void setReferens(String referens) {
+    this.referens = referens;
+  }
+
+  public String getIntygsId() {
+    return intygId;
+  }
+
+  public void setIntygsId(String intygsId) {
+    this.intygId = intygsId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    if (!(o instanceof Referens)) {
+      return false;
     }
 
-    public String getReferens() {
-        return referens;
-    }
+    Referens referens1 = (Referens) o;
+    return Objects.equals(id, referens1.id)
+        && Objects.equals(referens, referens1.referens)
+        && Objects.equals(intygId, referens1.intygId);
+  }
 
-    public void setReferens(String referens) {
-        this.referens = referens;
-    }
+  @Override
+  public int hashCode() {
 
-    public String getIntygsId() {
-        return intygId;
-    }
-
-    public void setIntygsId(String intygsId) {
-        this.intygId = intygsId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof Referens)) {
-            return false;
-        }
-
-        Referens referens1 = (Referens) o;
-        return Objects.equals(id, referens1.id)
-            && Objects.equals(referens, referens1.referens)
-            && Objects.equals(intygId, referens1.intygId);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, referens, intygId);
-    }
-
+    return Objects.hash(id, referens, intygId);
+  }
 }

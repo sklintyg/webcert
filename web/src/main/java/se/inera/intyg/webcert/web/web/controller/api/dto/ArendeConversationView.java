@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,10 +27,10 @@ import lombok.Value;
 @Builder
 public class ArendeConversationView {
 
-    ArendeView fraga;
-    ArendeView svar;
-    AnsweredWithIntyg answeredWithIntyg;
-    LocalDateTime senasteHandelse;
-    ImmutableList<ArendeView> paminnelser;
-    String draftText;
+  ArendeView fraga;
+  ArendeView svar;
+  AnsweredWithIntyg answeredWithIntyg;
+  LocalDateTime senasteHandelse;
+  ImmutableList<ArendeView> paminnelser;
+  String draftText;
 }

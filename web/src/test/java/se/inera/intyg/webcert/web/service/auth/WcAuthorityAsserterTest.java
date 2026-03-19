@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,103 +49,105 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RunWith(MockitoJUnitRunner.class)
 public class WcAuthorityAsserterTest {
 
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
+  @Mock private PatientDetailsResolver patientDetailsResolver;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    private WcAuthorityAsserter authorityAsserter;
+  @InjectMocks private WcAuthorityAsserter authorityAsserter;
 
-    @Test
-    public void assertIsAuthorizedOK() {
+  @Test
+  public void assertIsAuthorizedOK() {
 
-        WebCertUser webCertUser = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+    WebCertUser webCertUser = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
-        doReturn(webCertUser)
-            .when(webCertUserService).getUser();
+    doReturn(webCertUser).when(webCertUserService).getUser();
 
-        doReturn(SekretessStatus.FALSE)
-            .when(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+    doReturn(SekretessStatus.FALSE)
+        .when(patientDetailsResolver)
+        .getSekretessStatus(any(Personnummer.class));
 
-        authorityAsserter.assertIsAuthorized(
-            Personnummer.createPersonnummer("191212121212").get(),
-            AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+    authorityAsserter.assertIsAuthorized(
+        Personnummer.createPersonnummer("191212121212").get(),
+        AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+  }
 
-    }
+  @Test
+  public void assertIsAuthorizedNOK() {
 
-    @Test
-    public void assertIsAuthorizedNOK() {
+    WebCertUser webCertUser =
+        createDefaultUser(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG); // Not correct privilegie
 
-        WebCertUser webCertUser = createDefaultUser(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG); //Not correct privilegie
+    doReturn(webCertUser).when(webCertUserService).getUser();
 
-        doReturn(webCertUser)
-            .when(webCertUserService).getUser();
+    assertThatThrownBy(
+            () ->
+                authorityAsserter.assertIsAuthorized(
+                    Personnummer.createPersonnummer("191212121212").get(),
+                    AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG))
+        .isExactlyInstanceOf(WebCertServiceException.class);
+  }
 
-        assertThatThrownBy(() -> authorityAsserter.assertIsAuthorized(
-            Personnummer.createPersonnummer("191212121212").get(),
-            AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)).isExactlyInstanceOf(WebCertServiceException.class);
+  private WebCertUser createDefaultUser(final String privilegie) {
+    Map<String, Feature> featureMap = new HashMap<>();
 
-    }
+    Feature feature1 = new Feature();
+    feature1.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+    feature1.setIntygstyper(Collections.singletonList("fk7263"));
+    feature1.setGlobal(true);
+    featureMap.put(feature1.getName(), feature1);
 
-    private WebCertUser createDefaultUser(final String privilegie) {
-        Map<String, Feature> featureMap = new HashMap<>();
+    Feature feature2 = new Feature();
+    feature2.setName("base_feature");
+    feature2.setIntygstyper(Collections.emptyList());
+    feature2.setGlobal(true);
+    featureMap.put(feature2.getName(), feature2);
 
-        Feature feature1 = new Feature();
-        feature1.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        feature1.setIntygstyper(Collections.singletonList("fk7263"));
-        feature1.setGlobal(true);
-        featureMap.put(feature1.getName(), feature1);
+    return createUser(
+        AuthoritiesConstants.ROLE_LAKARE,
+        createPrivilege(
+            privilegie,
+            Collections.emptyList(),
+            Lists.newArrayList(
+                createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")),
+                createRequestOrigin(
+                    UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+        featureMap,
+        UserOriginType.NORMAL.name());
+  }
 
-        Feature feature2 = new Feature();
-        feature2.setName("base_feature");
-        feature2.setIntygstyper(Collections.emptyList());
-        feature2.setGlobal(true);
-        featureMap.put(feature2.getName(), feature2);
+  private WebCertUser createUser(
+      String roleName, Privilege p, Map<String, Feature> features, String origin) {
+    WebCertUser user = new WebCertUser();
 
-        return createUser(AuthoritiesConstants.ROLE_LAKARE,
-            createPrivilege(privilegie,
-                Collections.emptyList(),
-                Lists.newArrayList(
-                    createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")),
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-            featureMap,
-            UserOriginType.NORMAL.name());
-    }
+    HashMap<String, Privilege> privilegeHashMap = new HashMap<>();
+    privilegeHashMap.put(p.getName(), p);
+    user.setAuthorities(privilegeHashMap);
 
-    private WebCertUser createUser(String roleName, Privilege p, Map<String, Feature> features, String origin) {
-        WebCertUser user = new WebCertUser();
+    user.setOrigin(origin);
+    user.setFeatures(features);
 
-        HashMap<String, Privilege> privilegeHashMap = new HashMap<>();
-        privilegeHashMap.put(p.getName(), p);
-        user.setAuthorities(privilegeHashMap);
+    HashMap<String, Role> roleHashMap = new HashMap<>();
+    Role role = new Role();
+    role.setName(roleName);
+    roleHashMap.put(roleName, role);
 
-        user.setOrigin(origin);
-        user.setFeatures(features);
+    user.setRoles(roleHashMap);
+    return user;
+  }
 
-        HashMap<String, Role> roleHashMap = new HashMap<>();
-        Role role = new Role();
-        role.setName(roleName);
-        roleHashMap.put(roleName, role);
+  private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
+    RequestOrigin requestOrigin = new RequestOrigin();
+    requestOrigin.setName(name);
+    requestOrigin.setIntygstyper(intygstyper);
+    return requestOrigin;
+  }
 
-        user.setRoles(roleHashMap);
-        return user;
-    }
-
-    private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
-        RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(name);
-        requestOrigin.setIntygstyper(intygstyper);
-        return requestOrigin;
-    }
-
-    private Privilege createPrivilege(String name, List<String> intygsTyper, List<RequestOrigin> requestOrigins) {
-        Privilege privilege = new Privilege();
-        privilege.setName(name);
-        privilege.setIntygstyper(intygsTyper);
-        privilege.setRequestOrigins(requestOrigins);
-        return privilege;
-    }
-
+  private Privilege createPrivilege(
+      String name, List<String> intygsTyper, List<RequestOrigin> requestOrigins) {
+    Privilege privilege = new Privilege();
+    privilege.setName(name);
+    privilege.setIntygstyper(intygsTyper);
+    privilege.setRequestOrigins(requestOrigins);
+    return privilege;
+  }
 }

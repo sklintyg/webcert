@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -51,102 +51,110 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 @Slf4j
 public class DiagnosRepositoryImpl implements DiagnosRepository {
 
-    private static final String SEARCH_FAILURE_EXCEPTION_MESSAGE = "Failure in lucene index search";
-    private final ByteBuffersDirectory index = new ByteBuffersDirectory();
-    private IndexReader indexReader;
-    private IndexSearcher indexSearcher;
+  private static final String SEARCH_FAILURE_EXCEPTION_MESSAGE = "Failure in lucene index search";
+  private final ByteBuffersDirectory index = new ByteBuffersDirectory();
+  private IndexReader indexReader;
+  private IndexSearcher indexSearcher;
 
-    @Override
-    public List<Diagnos> getDiagnosesByCode(String code) {
-        String codeSanitized = sanitizeCodeValue(code);
-        if (codeSanitized == null) {
-            return new ArrayList<>();
-        }
-        try {
-            int freq = indexReader.docFreq(new Term(CODE, codeSanitized));
-            TermQuery query = new TermQuery(new Term(CODE, codeSanitized));
-            return searchDiagnosisByQuery(query, Math.max(1, freq));
-        } catch (IOException e) {
-            throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
-        }
+  @Override
+  public List<Diagnos> getDiagnosesByCode(String code) {
+    String codeSanitized = sanitizeCodeValue(code);
+    if (codeSanitized == null) {
+      return new ArrayList<>();
+    }
+    try {
+      int freq = indexReader.docFreq(new Term(CODE, codeSanitized));
+      TermQuery query = new TermQuery(new Term(CODE, codeSanitized));
+      return searchDiagnosisByQuery(query, Math.max(1, freq));
+    } catch (IOException e) {
+      throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.inera.intyg.webcert.web.service.diagnos.model.DiagnosRepository#searchDiagnosisByCode(java.lang.String)
+   */
+  @Override
+  public List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults) {
+    String codeFragmentSanitized = sanitizeCodeValue(codeFragment);
+    if (codeFragmentSanitized == null) {
+      return new ArrayList<>();
+    }
+    PrefixQuery query = new PrefixQuery(new Term(CODE, codeFragmentSanitized));
+    return searchDiagnosisByQuery(query, nbrOfResults);
+  }
+
+  public ByteBuffersDirectory getLuceneIndex() {
+    return index;
+  }
+
+  @Override
+  public void openLuceneIndexReader() throws IOException {
+    indexReader = DirectoryReader.open(index);
+    indexSearcher = new IndexSearcher(indexReader);
+  }
+
+  @Override
+  public List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults) {
+    if (Strings.isNullOrEmpty(searchString)) {
+      return Collections.emptyList();
+    }
+    BooleanQuery.Builder query = new BooleanQuery.Builder();
+    try (StandardAnalyzer analyzer = new StandardAnalyzer()) {
+      TokenStream tokenStream = analyzer.tokenStream(DESC, searchString);
+      CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
+      tokenStream.reset();
+      while (tokenStream.incrementToken()) {
+        String term =
+            WildcardQuery.WILDCARD_STRING
+                + charTermAttribute.toString()
+                + WildcardQuery.WILDCARD_STRING;
+        query.add(new WildcardQuery(new Term(DESC, term)), BooleanClause.Occur.MUST);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
+    }
+    return searchDiagnosisByQuery(query.build(), nbrOfResults);
+  }
+
+  private List<Diagnos> searchDiagnosisByQuery(Query query, int nbrOfResults) {
+    List<Diagnos> matches = new ArrayList<>();
+
+    try {
+      if (indexSearcher == null) {
+        throw new IllegalStateException("Lucene index searcher is not opened");
+      }
+
+      TopDocs results = indexSearcher.search(query, nbrOfResults);
+      for (ScoreDoc hit : results.scoreDocs) {
+        Diagnos d = new Diagnos();
+        d.setKod(
+            indexSearcher
+                .getIndexReader()
+                .storedFields()
+                .document(hit.doc)
+                .get(CODE)
+                .toUpperCase());
+        d.setBeskrivning(indexSearcher.storedFields().document(hit.doc).get(DESC));
+        matches.add(d);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.webcert.web.service.diagnos.model.DiagnosRepository#searchDiagnosisByCode(java.lang.String)
-     */
-    @Override
-    public List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults) {
-        String codeFragmentSanitized = sanitizeCodeValue(codeFragment);
-        if (codeFragmentSanitized == null) {
-            return new ArrayList<>();
-        }
-        PrefixQuery query = new PrefixQuery(new Term(CODE, codeFragmentSanitized));
-        return searchDiagnosisByQuery(query, nbrOfResults);
-    }
+    return matches;
+  }
 
-    public ByteBuffersDirectory getLuceneIndex() {
-        return index;
-    }
+  public String sanitizeCodeValue(String codeValueParam) {
+    String codeValue = Strings.nullToEmpty(codeValueParam);
+    codeValue = CharMatcher.is('.').or(CharMatcher.whitespace()).removeFrom(codeValue);
 
-    @Override
-    public void openLuceneIndexReader() throws IOException {
-        indexReader = DirectoryReader.open(index);
-        indexSearcher = new IndexSearcher(indexReader);
-    }
+    return codeValue.trim().isEmpty() ? null : codeValue.toUpperCase();
+  }
 
-    @Override
-    public List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults) {
-        if (Strings.isNullOrEmpty(searchString)) {
-            return Collections.emptyList();
-        }
-        BooleanQuery.Builder query = new BooleanQuery.Builder();
-        try (StandardAnalyzer analyzer = new StandardAnalyzer()) {
-            TokenStream tokenStream = analyzer.tokenStream(DESC, searchString);
-            CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-            tokenStream.reset();
-            while (tokenStream.incrementToken()) {
-                String term = WildcardQuery.WILDCARD_STRING + charTermAttribute.toString() + WildcardQuery.WILDCARD_STRING;
-                query.add(new WildcardQuery(new Term(DESC, term)), BooleanClause.Occur.MUST);
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
-        }
-        return searchDiagnosisByQuery(query.build(), nbrOfResults);
-    }
-
-    private List<Diagnos> searchDiagnosisByQuery(Query query, int nbrOfResults) {
-        List<Diagnos> matches = new ArrayList<>();
-
-        try {
-            if (indexSearcher == null) {
-                throw new IllegalStateException("Lucene index searcher is not opened");
-            }
-
-            TopDocs results = indexSearcher.search(query, nbrOfResults);
-            for (ScoreDoc hit : results.scoreDocs) {
-                Diagnos d = new Diagnos();
-                d.setKod(indexSearcher.getIndexReader().storedFields().document(hit.doc).get(CODE).toUpperCase());
-                d.setBeskrivning(indexSearcher.storedFields().document(hit.doc).get(DESC));
-                matches.add(d);
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
-        }
-
-        return matches;
-    }
-
-    public String sanitizeCodeValue(String codeValueParam) {
-        String codeValue = Strings.nullToEmpty(codeValueParam);
-        codeValue = CharMatcher.is('.').or(CharMatcher.whitespace()).removeFrom(codeValue);
-
-        return codeValue.trim().isEmpty() ? null : codeValue.toUpperCase();
-    }
-
-    public int nbrOfDiagosis() {
-        return indexReader.numDocs();
-    }
-
+  public int nbrOfDiagosis() {
+    return indexReader.numDocs();
+  }
 }

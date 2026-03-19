@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,50 +45,55 @@ import se.inera.intyg.common.ts_bas.v6.rest.TsBasModuleApiV6;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {BefattningService.class, UnitMappingConfigLoader.class, UnitMapperUtil.class, InternalConverterUtil.class})
+@ContextConfiguration(
+    classes = {
+      BefattningService.class,
+      UnitMappingConfigLoader.class,
+      UnitMapperUtil.class,
+      InternalConverterUtil.class
+    })
 public class UtkastModelToXMLConverterTest {
 
-    @Mock
-    private IntygModuleRegistry intygModuleRegistry;
+  @Mock private IntygModuleRegistry intygModuleRegistry;
 
-    @InjectMocks
-    private UtkastModelToXMLConverter testee;
+  @InjectMocks private UtkastModelToXMLConverter testee;
 
-    private String jsonModel;
+  private String jsonModel;
 
+  public UtkastModelToXMLConverterTest() {
+    MockitoAnnotations.initMocks(this);
+  }
 
-    public UtkastModelToXMLConverterTest() {
-        MockitoAnnotations.initMocks(this);
-    }
+  @Test
+  public void testConvertDb() throws ModuleNotFoundException, IOException {
+    loadJsonModel("UtkastModelToXMLConverter/db.json");
 
-    @Test
-    public void testConvertDb() throws ModuleNotFoundException, IOException {
-        loadJsonModel("UtkastModelToXMLConverter/db.json");
+    DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
+    ReflectionTestUtils.setField(dbModuleApiV1, "objectMapper", new CustomObjectMapper());
 
-        DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
-        ReflectionTestUtils.setField(dbModuleApiV1, "objectMapper", new CustomObjectMapper());
+    when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApiV1);
+    when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString()))
+        .thenReturn("1.0");
+    String xml = testee.utkastToXml(jsonModel, "DB");
+    assertNotNull(xml);
+  }
 
-        when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApiV1);
-        when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn("1.0");
-        String xml = testee.utkastToXml(jsonModel, "DB");
-        assertNotNull(xml);
-    }
+  @Test
+  public void testConvertTsBasConcrete() throws IOException, ModuleNotFoundException {
+    loadJsonModel("UtkastModelToXMLConverter/ts-bas.json");
 
-    @Test
-    public void testConvertTsBasConcrete() throws IOException, ModuleNotFoundException {
-        loadJsonModel("UtkastModelToXMLConverter/ts-bas.json");
+    TsBasModuleApiV6 tsBaModuleApi = new TsBasModuleApiV6();
+    ReflectionTestUtils.setField(tsBaModuleApi, "objectMapper", new CustomObjectMapper());
 
-        TsBasModuleApiV6 tsBaModuleApi = new TsBasModuleApiV6();
-        ReflectionTestUtils.setField(tsBaModuleApi, "objectMapper", new CustomObjectMapper());
+    when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(tsBaModuleApi);
+    when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString()))
+        .thenReturn("1.0");
+    String xml = testee.utkastToXml(jsonModel, "ts-bas");
+    assertNotNull(xml);
+  }
 
-        when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(tsBaModuleApi);
-        when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn("1.0");
-        String xml = testee.utkastToXml(jsonModel, "ts-bas");
-        assertNotNull(xml);
-    }
-
-    private void loadJsonModel(String s) throws IOException {
-        ClassPathResource classPathResource = new ClassPathResource(s);
-        jsonModel = IOUtils.toString(classPathResource.getInputStream(), Charset.forName("UTF-8"));
-    }
+  private void loadJsonModel(String s) throws IOException {
+    ClassPathResource classPathResource = new ClassPathResource(s);
+    jsonModel = IOUtils.toString(classPathResource.getInputStream(), Charset.forName("UTF-8"));
+  }
 }

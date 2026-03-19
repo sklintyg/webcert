@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,21 +19,21 @@
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 public enum QuestionStatusType {
-    NOT_HANDLED("Alla ej hanterade"),
-    HANDLED("Alla hanterade"),
-    COMPLEMENT("Komplettera"),
-    ANSWER("Svara"),
-    READ_ANSWER("Läs inkommet svar"),
-    WAIT("Invänta svar"),
-    SHOW_ALL("Visa alla");
+  NOT_HANDLED("Alla ej hanterade"),
+  HANDLED("Alla hanterade"),
+  COMPLEMENT("Komplettera"),
+  ANSWER("Svara"),
+  READ_ANSWER("Läs inkommet svar"),
+  WAIT("Invänta svar"),
+  SHOW_ALL("Visa alla");
 
-    private final String text;
+  private final String text;
 
-    QuestionStatusType(String text) {
-        this.text = text;
-    }
+  QuestionStatusType(String text) {
+    this.text = text;
+  }
 
-    public String getName() {
-        return text;
-    }
+  public String getName() {
+    return text;
+  }
 }

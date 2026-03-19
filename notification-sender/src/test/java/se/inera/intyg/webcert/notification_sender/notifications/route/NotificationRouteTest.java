@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -80,375 +80,414 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 @ContextConfiguration(classes = NotificationCamelTestConfig.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @MockEndpoints("bean:notificationAggregator|direct:signatWireTap")
-@MockEndpointsAndSkip("bean:notificationTransformer|bean:notificationWSSender|bean:notificationPostProcessor|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
+@MockEndpointsAndSkip(
+    "bean:notificationTransformer|bean:notificationWSSender|bean:notificationPostProcessor|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class NotificationRouteTest {
 
-    @Autowired
-    private CamelContext camelContext;
+  @Autowired private CamelContext camelContext;
 
-    @Produce("direct:receiveNotificationForAggregationRequestEndpoint")
-    protected ProducerTemplate producerTemplateAggregation;
+  @Produce("direct:receiveNotificationForAggregationRequestEndpoint")
+  protected ProducerTemplate producerTemplateAggregation;
 
-    @EndpointInject("mock:direct:signatWireTap")
-    protected MockEndpoint signatWireTap;
+  @EndpointInject("mock:direct:signatWireTap")
+  protected MockEndpoint signatWireTap;
 
-    @EndpointInject("mock:bean:notificationAggregator")
-    protected MockEndpoint notificationAggregator;
+  @EndpointInject("mock:bean:notificationAggregator")
+  protected MockEndpoint notificationAggregator;
 
-    @EndpointInject("mock:bean:notificationTransformer")
-    protected MockEndpoint notificationTransformer;
+  @EndpointInject("mock:bean:notificationTransformer")
+  protected MockEndpoint notificationTransformer;
 
-    @EndpointInject("mock:bean:notificationWSSender")
-    protected MockEndpoint notificationWSSender;
+  @EndpointInject("mock:bean:notificationWSSender")
+  protected MockEndpoint notificationWSSender;
 
-    @Produce("direct:notificationPostProcessing")
-    protected ProducerTemplate producerTemplatePostProcessing;
+  @Produce("direct:notificationPostProcessing")
+  protected ProducerTemplate producerTemplatePostProcessing;
 
-    @EndpointInject("mock:bean:notificationPostProcessor")
-    protected MockEndpoint notificationPostProcessor;
+  @EndpointInject("mock:bean:notificationPostProcessor")
+  protected MockEndpoint notificationPostProcessor;
 
-    @EndpointInject("mock:direct:permanentErrorHandlerEndpoint")
-    protected MockEndpoint permanentErrorHandlerEndpoint;
+  @EndpointInject("mock:direct:permanentErrorHandlerEndpoint")
+  protected MockEndpoint permanentErrorHandlerEndpoint;
 
-    @EndpointInject("mock:direct:temporaryErrorHandlerEndpoint")
-    protected MockEndpoint temporaryErrorHandlerEndpoint;
+  @EndpointInject("mock:direct:temporaryErrorHandlerEndpoint")
+  protected MockEndpoint temporaryErrorHandlerEndpoint;
 
-    private final ObjectMapper objectMapper = new CustomObjectMapper();
-    private final SortedMap<Integer, Exchange> messagesToSend = new TreeMap<>();
-    private static final SchemaVersion SCHEMA_VERSION = SchemaVersion.VERSION_3;
-    private static final String CERTIFICATE_ID_1 = UUID.randomUUID().toString();
-    private static final String CERTIFICATE_ID_2 = UUID.randomUUID().toString();
-    private static final String VERSION_1_2 = "1.2";
-    private static final String LOGICAL_ADDRESS = "SE12345678-1234";
-    private static final String ROUTE_START_ENDPOINT = "direct:receiveNotificationForAggregationRequestEndpoint";
-    private static final Long ENDPOINT_REASSERT_PERIOD = 100L;
+  private final ObjectMapper objectMapper = new CustomObjectMapper();
+  private final SortedMap<Integer, Exchange> messagesToSend = new TreeMap<>();
+  private static final SchemaVersion SCHEMA_VERSION = SchemaVersion.VERSION_3;
+  private static final String CERTIFICATE_ID_1 = UUID.randomUUID().toString();
+  private static final String CERTIFICATE_ID_2 = UUID.randomUUID().toString();
+  private static final String VERSION_1_2 = "1.2";
+  private static final String LOGICAL_ADDRESS = "SE12345678-1234";
+  private static final String ROUTE_START_ENDPOINT =
+      "direct:receiveNotificationForAggregationRequestEndpoint";
+  private static final Long ENDPOINT_REASSERT_PERIOD = 100L;
 
-    @BeforeEach
-    public void setup() {
-        setupMockedEndpoints();
-    }
+  @BeforeEach
+  public void setup() {
+    setupMockedEndpoints();
+  }
 
-    @AfterEach
-    public void finish() {
-        messagesToSend.clear();
-    }
+  @AfterEach
+  public void finish() {
+    messagesToSend.clear();
+  }
 
-    @Test
-    public void testRoutingForCreateEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForCreateEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForChangeEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(1, 1, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForChangeEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(1, 1, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForSignEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(1, 1, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SIGNAT);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForSignEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(1, 1, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SIGNAT);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForSendEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKICKA);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForSendEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKICKA);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForDeleteEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, RADERA);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForDeleteEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, RADERA);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForRevokeEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, MAKULE);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForRevokeEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, MAKULE);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForReadyForSignEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, KFSIGN);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForReadyForSignEvent()
+      throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, KFSIGN);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForQuestionEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, NYFRFM);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForQuestionEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, NYFRFM);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForAnswerEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, NYSVFM);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForAnswerEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, NYSVFM);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingForHandledEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, HANFRFM);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  @Test
+  public void testRoutingForHandledEvent() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, HANFRFM);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingWhenAggregatorException() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(1, 1, 0, 0, 0, 0, 1);
+  @Test
+  public void testRoutingWhenAggregatorException()
+      throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(1, 1, 0, 0, 0, 0, 1);
 
-        notificationAggregator.whenAnyExchangeReceived((exchange) -> {
-            throw new RuntimeException("Test exception in NotificationAggregator");
+    notificationAggregator.whenAnyExchangeReceived(
+        (exchange) -> {
+          throw new RuntimeException("Test exception in NotificationAggregator");
         });
 
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingWhenTransformerException() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 0, 0, 1, 0);
+  @Test
+  public void testRoutingWhenTransformerException()
+      throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 0, 0, 1, 0);
 
-        notificationTransformer.whenAnyExchangeReceived((exchange) -> {
-            throw new RuntimeException("Test exception in NotificationTransformer");
+    notificationTransformer.whenAnyExchangeReceived(
+        (exchange) -> {
+          throw new RuntimeException("Test exception in NotificationTransformer");
         });
 
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
 
-    @Test
-    public void testRoutingWhenSenderException() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 1, 1, 0, 1, 0);
+  @Test
+  public void testRoutingWhenSenderException()
+      throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 1, 1, 0, 1, 0);
 
-        notificationWSSender.whenAnyExchangeReceived((exchange) -> {
-            throw new RuntimeException("Test exception in NotificationSender");
+    notificationWSSender.whenAnyExchangeReceived(
+        (exchange) -> {
+          throw new RuntimeException("Test exception in NotificationSender");
         });
 
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
+
+  @Test
+  public void testAggregationOfChangedEvents()
+      throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
+    setEndpointReassertPeriod();
+
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
+    addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(4, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
+
+  @Test
+  public void testAggregatorPassesOnLatestChangedEvent()
+      throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(3, 1, 1, 1, 1, 0, 0);
+    setEndpointReassertPeriod();
+
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    assertDifferentTimestamps();
+    addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    assertDifferentTimestamps();
+    addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+
+    final var lastChangedEventCorrelationId =
+        (String)
+            messagesToSend
+                .get(messagesToSend.lastKey())
+                .getMessage()
+                .getHeader(NotificationRouteHeaders.CORRELATION_ID);
+
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+
+    final var changedEventCorrelationIdFromTransformer =
+        (String)
+            notificationTransformer
+                .getExchanges()
+                .getLast()
+                .getMessage()
+                .getHeader(NotificationRouteHeaders.CORRELATION_ID);
+
+    assertEquals(lastChangedEventCorrelationId, changedEventCorrelationIdFromTransformer);
+  }
+
+  @Test
+  public void testRoutingForFk7263() throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(0, 0, 5, 5, 5, 0, 0);
+    setEndpointReassertPeriod();
+
+    addMessageToSend(1, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, SKAPAT);
+    addMessageToSend(2, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(3, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(4, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(5, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, SIGNAT);
+
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
+
+  @Test
+  public void testSignEventFromDifferentCertificatIdShouldNotCancelAggregatedChangedEvents()
+      throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(4, 1, 3, 3, 3, 0, 0);
+    setEndpointReassertPeriod();
+
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
+    addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(4, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+
+    addMessageToSend(5, CERTIFICATE_ID_2, LisjpEntryPoint.MODULE_ID, SIGNAT);
+
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
+
+  @Test
+  public void testSignEventCancelsAggregatedChangedEvents()
+      throws JsonProcessingException, InterruptedException {
+    setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
+    setEndpointReassertPeriod();
+
+    addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
+    addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+    addMessageToSend(4, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SIGNAT);
+
+    sendMessagesToNotificationRoute(messagesToSend);
+    verifyMessageCount();
+  }
+
+  private void sendMessagesToNotificationRoute(SortedMap<Integer, Exchange> messagesToSend) {
+    for (var exchange : messagesToSend.values()) {
+      producerTemplateAggregation.asyncSend(ROUTE_START_ENDPOINT, exchange);
     }
+  }
 
-    @Test
-    public void testAggregationOfChangedEvents() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
-        setEndpointReassertPeriod();
+  private void addMessageToSend(
+      int order, String certificateId, String certificateType, HandelsekodEnum event)
+      throws JsonProcessingException {
+    messagesToSend.put(order, createExchange(certificateId, certificateType, event));
+  }
 
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(4, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+  private void assertDifferentTimestamps() throws InterruptedException {
+    TimeUnit.MILLISECONDS.sleep(10);
+  }
 
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  private Exchange createExchange(
+      String certificateId, String certificateType, HandelsekodEnum event)
+      throws JsonProcessingException {
+    final var message = new DefaultMessage(camelContext);
+    message.setHeaders(getMessageHeaders(certificateType, event));
+    message.setBody(createNotificationMessage(certificateId, certificateType, event));
 
-    @Test
-    public void testAggregatorPassesOnLatestChangedEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(3, 1, 1, 1, 1, 0, 0);
-        setEndpointReassertPeriod();
+    final var exchange = new DefaultExchange(camelContext);
+    exchange.setMessage(message);
+    return exchange;
+  }
 
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        assertDifferentTimestamps();
-        addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        assertDifferentTimestamps();
-        addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
+  private Map<String, Object> getMessageHeaders(String certificateType, HandelsekodEnum eventCode) {
+    Map<String, Object> headers = new HashMap<>();
+    headers.put(NotificationRouteHeaders.INTYGS_TYP, certificateType);
+    headers.put(NotificationRouteHeaders.INTYG_TYPE_VERSION, VERSION_1_2);
+    headers.put(NotificationRouteHeaders.HANDELSE, eventCode.name());
+    headers.put(NotificationRouteHeaders.CORRELATION_ID, UUID.randomUUID().toString());
+    return headers;
+  }
 
-        final var lastChangedEventCorrelationId = (String) messagesToSend.get(messagesToSend.lastKey()).getMessage()
-            .getHeader(NotificationRouteHeaders.CORRELATION_ID);
+  private void setExpectedMessageCount(
+      int wiretap,
+      int aggregator,
+      int transformer,
+      int sender,
+      int postprocessor,
+      int permanent,
+      int temporary) {
+    signatWireTap.expectedMessageCount(wiretap);
+    notificationAggregator.expectedMessageCount(aggregator);
+    notificationTransformer.expectedMessageCount(transformer);
+    notificationWSSender.expectedMessageCount(sender);
+    notificationPostProcessor.expectedMessageCount(postprocessor);
+    permanentErrorHandlerEndpoint.expectedMessageCount(permanent);
+    temporaryErrorHandlerEndpoint.expectedMessageCount(temporary);
+  }
 
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
+  private void setEndpointReassertPeriod() {
+    signatWireTap.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
+    notificationAggregator.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
+    notificationTransformer.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
+    notificationWSSender.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
+    notificationPostProcessor.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
+    permanentErrorHandlerEndpoint.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
+    temporaryErrorHandlerEndpoint.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
+  }
 
-        final var changedEventCorrelationIdFromTransformer = (String) notificationTransformer.getExchanges()
-            .getLast().getMessage().getHeader(NotificationRouteHeaders.CORRELATION_ID);
+  private void verifyMessageCount() throws InterruptedException {
+    assertIsSatisfied(
+        signatWireTap,
+        notificationAggregator,
+        notificationTransformer,
+        notificationWSSender,
+        notificationPostProcessor,
+        permanentErrorHandlerEndpoint,
+        temporaryErrorHandlerEndpoint);
+  }
 
-        assertEquals(lastChangedEventCorrelationId, changedEventCorrelationIdFromTransformer);
-    }
+  private void setupMockedEndpoints() {
+    notificationWSSender.whenAnyExchangeReceived(
+        exchange -> producerTemplatePostProcessing.send(exchange));
+    notificationTransformer.whenAnyExchangeReceived(
+        exchange -> exchange.getMessage().setBody(createStatusUpdate()));
+  }
 
-    @Test
-    public void testRoutingForFk7263() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0, 5, 5, 5, 0, 0);
-        setEndpointReassertPeriod();
+  private String createNotificationMessage(
+      String certificateId, String certificateType, HandelsekodEnum eventEnum)
+      throws JsonProcessingException {
+    final var notificationMessage = new NotificationMessage();
+    notificationMessage.setIntygsId(certificateId);
+    notificationMessage.setIntygsTyp(certificateType);
+    notificationMessage.setHandelse(eventEnum);
+    notificationMessage.setHandelseTid(LocalDateTime.now());
+    notificationMessage.setLogiskAdress(LOGICAL_ADDRESS);
+    notificationMessage.setMottagnaFragor(ArendeCount.getEmpty());
+    notificationMessage.setSkickadeFragor(ArendeCount.getEmpty());
+    notificationMessage.setVersion(SCHEMA_VERSION);
+    notificationMessage.setUtkast(
+        objectMapper.convertValue(createDraft(certificateId, certificateType), JsonNode.class));
+    return objectMapper.writeValueAsString(notificationMessage);
+  }
 
-        addMessageToSend(1, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, SKAPAT);
-        addMessageToSend(2, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(3, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(4, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(5, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, SIGNAT);
+  private Utkast createDraft(String certificateId, String certificateType) {
+    final var draft = new Utkast();
+    draft.setIntygsId(certificateId);
+    draft.setIntygsTyp(certificateType);
+    draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
+    draft.setModel("draftModel");
+    return draft;
+  }
 
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
+  private CertificateStatusUpdateForCareType createStatusUpdate() {
+    final var statusUpdate = new CertificateStatusUpdateForCareType();
+    statusUpdate.setIntyg(
+        NotificationTestHelper.createIntyg(
+            LisjpEntryPoint.MODULE_ID, VERSION_1_2, CERTIFICATE_ID_1));
+    statusUpdate.setHandelse(createEvent());
+    statusUpdate.setSkickadeFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
+    statusUpdate.setMottagnaFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
+    statusUpdate.setRef(null);
+    statusUpdate.setHanteratAv(null);
+    return statusUpdate;
+  }
 
-    @Test
-    public void testSignEventFromDifferentCertificatIdShouldNotCancelAggregatedChangedEvents()
-        throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(4, 1, 3, 3, 3, 0, 0);
-        setEndpointReassertPeriod();
+  private Handelse createEvent() {
+    final var event = new Handelse();
+    event.setHandelsekod(createEventCode());
+    event.setTidpunkt(LocalDateTime.now());
+    return event;
+  }
 
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(4, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-
-        addMessageToSend(5, CERTIFICATE_ID_2, LisjpEntryPoint.MODULE_ID, SIGNAT);
-
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
-
-    @Test
-    public void testSignEventCancelsAggregatedChangedEvents() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
-        setEndpointReassertPeriod();
-
-        addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
-        addMessageToSend(2, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(3, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
-        addMessageToSend(4, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SIGNAT);
-
-        sendMessagesToNotificationRoute(messagesToSend);
-        verifyMessageCount();
-    }
-
-    private void sendMessagesToNotificationRoute(SortedMap<Integer, Exchange> messagesToSend) {
-        for (var exchange : messagesToSend.values()) {
-            producerTemplateAggregation.asyncSend(ROUTE_START_ENDPOINT, exchange);
-        }
-    }
-
-    private void addMessageToSend(int order, String certificateId, String certificateType, HandelsekodEnum event)
-        throws JsonProcessingException {
-        messagesToSend.put(order, createExchange(certificateId, certificateType, event));
-    }
-
-    private void assertDifferentTimestamps() throws InterruptedException {
-        TimeUnit.MILLISECONDS.sleep(10);
-
-    }
-
-    private Exchange createExchange(String certificateId, String certificateType, HandelsekodEnum event)
-        throws JsonProcessingException {
-        final var message = new DefaultMessage(camelContext);
-        message.setHeaders(getMessageHeaders(certificateType, event));
-        message.setBody(createNotificationMessage(certificateId, certificateType, event));
-
-        final var exchange = new DefaultExchange(camelContext);
-        exchange.setMessage(message);
-        return exchange;
-    }
-
-    private Map<String, Object> getMessageHeaders(String certificateType, HandelsekodEnum eventCode) {
-        Map<String, Object> headers = new HashMap<>();
-        headers.put(NotificationRouteHeaders.INTYGS_TYP, certificateType);
-        headers.put(NotificationRouteHeaders.INTYG_TYPE_VERSION, VERSION_1_2);
-        headers.put(NotificationRouteHeaders.HANDELSE, eventCode.name());
-        headers.put(NotificationRouteHeaders.CORRELATION_ID, UUID.randomUUID().toString());
-        return headers;
-    }
-
-    private void setExpectedMessageCount(int wiretap, int aggregator, int transformer, int sender, int postprocessor, int permanent,
-        int temporary) {
-        signatWireTap.expectedMessageCount(wiretap);
-        notificationAggregator.expectedMessageCount(aggregator);
-        notificationTransformer.expectedMessageCount(transformer);
-        notificationWSSender.expectedMessageCount(sender);
-        notificationPostProcessor.expectedMessageCount(postprocessor);
-        permanentErrorHandlerEndpoint.expectedMessageCount(permanent);
-        temporaryErrorHandlerEndpoint.expectedMessageCount(temporary);
-    }
-
-    private void setEndpointReassertPeriod() {
-        signatWireTap.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
-        notificationAggregator.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
-        notificationTransformer.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
-        notificationWSSender.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
-        notificationPostProcessor.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
-        permanentErrorHandlerEndpoint.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
-        temporaryErrorHandlerEndpoint.setAssertPeriod(ENDPOINT_REASSERT_PERIOD);
-    }
-
-    private void verifyMessageCount() throws InterruptedException {
-        assertIsSatisfied(signatWireTap, notificationAggregator, notificationTransformer, notificationWSSender,
-            notificationPostProcessor, permanentErrorHandlerEndpoint, temporaryErrorHandlerEndpoint);
-    }
-
-    private void setupMockedEndpoints() {
-        notificationWSSender.whenAnyExchangeReceived(exchange -> producerTemplatePostProcessing.send(exchange));
-        notificationTransformer.whenAnyExchangeReceived(exchange -> exchange.getMessage().setBody(createStatusUpdate()));
-    }
-
-    private String createNotificationMessage(String certificateId, String certificateType, HandelsekodEnum eventEnum)
-        throws JsonProcessingException {
-        final var notificationMessage = new NotificationMessage();
-        notificationMessage.setIntygsId(certificateId);
-        notificationMessage.setIntygsTyp(certificateType);
-        notificationMessage.setHandelse(eventEnum);
-        notificationMessage.setHandelseTid(LocalDateTime.now());
-        notificationMessage.setLogiskAdress(LOGICAL_ADDRESS);
-        notificationMessage.setMottagnaFragor(ArendeCount.getEmpty());
-        notificationMessage.setSkickadeFragor(ArendeCount.getEmpty());
-        notificationMessage.setVersion(SCHEMA_VERSION);
-        notificationMessage.setUtkast(objectMapper.convertValue(createDraft(certificateId, certificateType), JsonNode.class));
-        return objectMapper.writeValueAsString(notificationMessage);
-    }
-
-    private Utkast createDraft(String certificateId, String certificateType) {
-        final var draft = new Utkast();
-        draft.setIntygsId(certificateId);
-        draft.setIntygsTyp(certificateType);
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
-        draft.setModel("draftModel");
-        return draft;
-    }
-
-    private CertificateStatusUpdateForCareType createStatusUpdate() {
-        final var statusUpdate = new CertificateStatusUpdateForCareType();
-        statusUpdate.setIntyg(NotificationTestHelper.createIntyg(LisjpEntryPoint.MODULE_ID, VERSION_1_2, CERTIFICATE_ID_1));
-        statusUpdate.setHandelse(createEvent());
-        statusUpdate.setSkickadeFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
-        statusUpdate.setMottagnaFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
-        statusUpdate.setRef(null);
-        statusUpdate.setHanteratAv(null);
-        return statusUpdate;
-    }
-
-    private Handelse createEvent() {
-        final var event = new Handelse();
-        event.setHandelsekod(createEventCode());
-        event.setTidpunkt(LocalDateTime.now());
-        return event;
-    }
-
-    private Handelsekod createEventCode() {
-        final var eventCode = new Handelsekod();
-        eventCode.setCode(SKAPAT.value());
-        eventCode.setCodeSystem("dfd7bbad-dbe5-4a2f-ba25-f7b9b2cc6b14");
-        eventCode.setDisplayName(SKAPAT.description());
-        return eventCode;
-    }
+  private Handelsekod createEventCode() {
+    final var eventCode = new Handelsekod();
+    eventCode.setCode(SKAPAT.value());
+    eventCode.setCodeSystem("dfd7bbad-dbe5-4a2f-ba25-f7b9b2cc6b14");
+    eventCode.setDisplayName(SKAPAT.description());
+    return eventCode;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,46 +38,35 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 @ExtendWith(MockitoExtension.class)
 class GetIntygInfoFromCertificateServiceTest {
 
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CertificateToIntygInfoConverter certificateToIntygInfoConverter;
-    @InjectMocks
-    GetIntygInfoFromCertificateService getIntygInfoFromCertificateService;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CertificateToIntygInfoConverter certificateToIntygInfoConverter;
+  @InjectMocks GetIntygInfoFromCertificateService getIntygInfoFromCertificateService;
 
-    private static final String CERTIFICATE_ID = "ID";
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final WcIntygInfo INTYG_INFO = new WcIntygInfo();
-    private static final List<Question> QUESTIONS = List.of(Question.builder().build());
+  private static final String CERTIFICATE_ID = "ID";
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final WcIntygInfo INTYG_INFO = new WcIntygInfo();
+  private static final List<Question> QUESTIONS = List.of(Question.builder().build());
+
+  @Test
+  void shouldReturnOptionalEmptyIfCertificateDoesNotExistInCS() {
+    assertTrue(getIntygInfoFromCertificateService.getIntygInfo(CERTIFICATE_ID).isEmpty());
+  }
+
+  @Nested
+  class CertificateServiceHasCertificate {
+
+    @BeforeEach
+    void setup() {
+      when(csIntegrationService.certificateExists(CERTIFICATE_ID)).thenReturn(true);
+      when(csIntegrationService.getInternalCertificate(CERTIFICATE_ID)).thenReturn(CERTIFICATE);
+      when(csIntegrationService.getQuestions(CERTIFICATE_ID)).thenReturn(QUESTIONS);
+      when(certificateToIntygInfoConverter.convert(CERTIFICATE, QUESTIONS)).thenReturn(INTYG_INFO);
+    }
 
     @Test
-    void shouldReturnOptionalEmptyIfCertificateDoesNotExistInCS() {
-        assertTrue(
-            getIntygInfoFromCertificateService.getIntygInfo(CERTIFICATE_ID).isEmpty()
-        );
+    void shouldReturnCertificate() {
+      assertEquals(
+          INTYG_INFO, getIntygInfoFromCertificateService.getIntygInfo(CERTIFICATE_ID).get());
     }
-
-    @Nested
-    class CertificateServiceHasCertificate {
-
-        @BeforeEach
-        void setup() {
-            when(csIntegrationService.certificateExists(CERTIFICATE_ID))
-                .thenReturn(true);
-            when(csIntegrationService.getInternalCertificate(CERTIFICATE_ID))
-                .thenReturn(CERTIFICATE);
-            when(csIntegrationService.getQuestions(CERTIFICATE_ID))
-                .thenReturn(QUESTIONS);
-            when(certificateToIntygInfoConverter.convert(CERTIFICATE, QUESTIONS))
-                .thenReturn(INTYG_INFO);
-        }
-
-        @Test
-        void shouldReturnCertificate() {
-            assertEquals(INTYG_INFO,
-                getIntygInfoFromCertificateService.getIntygInfo(CERTIFICATE_ID).get()
-            );
-        }
-    }
-
+  }
 }

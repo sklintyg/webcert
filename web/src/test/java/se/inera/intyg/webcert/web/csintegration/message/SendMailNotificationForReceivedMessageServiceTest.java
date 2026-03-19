@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,69 +40,57 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 @ExtendWith(MockitoExtension.class)
 class SendMailNotificationForReceivedMessageServiceTest {
 
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String UNIT_ID = "unitId";
-    private static final String UNIT_NAME = "unitName";
-    private static final String ISSUED_BY_PERSON_ID = "issuedByPersonId";
-    private Certificate certificate;
-    private static final String CERTIFICATE_ID = "certificateId";
-    private SendMessageToCareType sendMessageToCareType;
-    @Mock
-    MailNotificationService mailNotificationService;
-    @InjectMocks
-    SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String UNIT_ID = "unitId";
+  private static final String UNIT_NAME = "unitName";
+  private static final String ISSUED_BY_PERSON_ID = "issuedByPersonId";
+  private Certificate certificate;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private SendMessageToCareType sendMessageToCareType;
+  @Mock MailNotificationService mailNotificationService;
 
-    @BeforeEach
-    void setUp() {
-        certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .id(CERTIFICATE_ID)
-                .type(CERTIFICATE_TYPE)
-                .unit(
-                    Unit.builder()
-                        .unitId(UNIT_ID)
-                        .unitName(UNIT_NAME)
-                        .build()
-                )
-                .issuedBy(
-                    Staff.builder()
-                        .personId(ISSUED_BY_PERSON_ID)
-                        .build()
-                )
-                .build()
-        );
+  @InjectMocks
+  SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
 
-        sendMessageToCareType = new SendMessageToCareType();
+  @BeforeEach
+  void setUp() {
+    certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .id(CERTIFICATE_ID)
+            .type(CERTIFICATE_TYPE)
+            .unit(Unit.builder().unitId(UNIT_ID).unitName(UNIT_NAME).build())
+            .issuedBy(Staff.builder().personId(ISSUED_BY_PERSON_ID).build())
+            .build());
 
-    }
+    sendMessageToCareType = new SendMessageToCareType();
+  }
 
+  @Test
+  void shallSendMailForIncomingQuestionIfQuestionTypeIsReminder() {
+    sendMessageToCareType.setAmne(new Amneskod());
+    sendMessageToCareType.getAmne().setCode("PAMINN");
 
-    @Test
-    void shallSendMailForIncomingQuestionIfQuestionTypeIsReminder() {
-        sendMessageToCareType.setAmne(new Amneskod());
-        sendMessageToCareType.getAmne().setCode("PAMINN");
+    sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
+    verify(mailNotificationService).sendMailForIncomingQuestion(any(MailNotification.class));
+  }
 
-        sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
-        verify(mailNotificationService).sendMailForIncomingQuestion(any(MailNotification.class));
-    }
+  @Test
+  void shallSendMailForIncomingQuestionIfQuestionIsNotAnswer() {
+    sendMessageToCareType.setAmne(new Amneskod());
+    sendMessageToCareType.getAmne().setCode("KOMPLT");
 
-    @Test
-    void shallSendMailForIncomingQuestionIfQuestionIsNotAnswer() {
-        sendMessageToCareType.setAmne(new Amneskod());
-        sendMessageToCareType.getAmne().setCode("KOMPLT");
+    sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
+    verify(mailNotificationService).sendMailForIncomingQuestion(any(MailNotification.class));
+  }
 
-        sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
-        verify(mailNotificationService).sendMailForIncomingQuestion(any(MailNotification.class));
-    }
+  @Test
+  void shallSendMailForIncomingAnswerIfQuestionIsAnswer() {
+    sendMessageToCareType.setAmne(new Amneskod());
+    sendMessageToCareType.getAmne().setCode("KOMPLT");
+    sendMessageToCareType.setSvarPa(new MeddelandeReferens());
 
-    @Test
-    void shallSendMailForIncomingAnswerIfQuestionIsAnswer() {
-        sendMessageToCareType.setAmne(new Amneskod());
-        sendMessageToCareType.getAmne().setCode("KOMPLT");
-        sendMessageToCareType.setSvarPa(new MeddelandeReferens());
-
-        sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
-        verify(mailNotificationService).sendMailForIncomingAnswer(any(MailNotification.class));
-    }
+    sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
+    verify(mailNotificationService).sendMailForIncomingAnswer(any(MailNotification.class));
+  }
 }

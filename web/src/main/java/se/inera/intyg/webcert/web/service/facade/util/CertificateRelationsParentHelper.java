@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,12 +22,13 @@ import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 
 public interface CertificateRelationsParentHelper {
 
-    /**
-     * Checks if the certificate has a parent relation and retrieves the parent information
-     * from Intygstjanst (IT).
-     *
-     * @param certificateId Id of certificate
-     * @return If parent relation exits a {@link WebcertCertificateRelation} is returned. If not it returns null.
-     */
-    WebcertCertificateRelation getParentFromITIfExists(String certificateId);
+  /**
+   * Checks if the certificate has a parent relation and retrieves the parent information from
+   * Intygstjanst (IT).
+   *
+   * @param certificateId Id of certificate
+   * @return If parent relation exits a {@link WebcertCertificateRelation} is returned. If not it
+   *     returns null.
+   */
+  WebcertCertificateRelation getParentFromITIfExists(String certificateId);
 }

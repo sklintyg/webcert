@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,17 +22,16 @@ import java.util.List;
 
 public final class AktivitetsBegransningsKoder extends IcfKoder {
 
-    private AktivitetsBegransningsKoder(
-        final List<String> icd10Koder, final List<IcfKod> icfKoder) {
-        super(icd10Koder, icfKoder);
-    }
+  private AktivitetsBegransningsKoder(final List<String> icd10Koder, final List<IcfKod> icfKoder) {
+    super(icd10Koder, icfKoder);
+  }
 
-    public static AktivitetsBegransningsKoder of(final List<IcfKod> kompletterandeKoder) {
-        return new AktivitetsBegransningsKoder(null, kompletterandeKoder);
-    }
+  public static AktivitetsBegransningsKoder of(final List<IcfKod> kompletterandeKoder) {
+    return new AktivitetsBegransningsKoder(null, kompletterandeKoder);
+  }
 
-    public static AktivitetsBegransningsKoder of(
-        final List<String> icd10Koder, final List<IcfKod> kompletterandeKoder) {
-        return new AktivitetsBegransningsKoder(icd10Koder, kompletterandeKoder);
-    }
+  public static AktivitetsBegransningsKoder of(
+      final List<String> icd10Koder, final List<IcfKod> kompletterandeKoder) {
+    return new AktivitetsBegransningsKoder(icd10Koder, kompletterandeKoder);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,147 +50,131 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class PrintCertificateFromCertificateServiceTest {
 
-    private static final String ID = "ID";
-    private static final String TYPE = "TYPE";
-    private static final boolean EMPLOYER_COPY = true;
-    private static final String PATIENT_ID = "191212121212";
-    private static final PrintCertificateRequestDTO REQUEST = PrintCertificateRequestDTO.builder().build();
-    private static final GetCertificateRequestDTO GET_REQUEST = GetCertificateRequestDTO.builder().build();
-    private static final Certificate certificate = new Certificate();
+  private static final String ID = "ID";
+  private static final String TYPE = "TYPE";
+  private static final boolean EMPLOYER_COPY = true;
+  private static final String PATIENT_ID = "191212121212";
+  private static final PrintCertificateRequestDTO REQUEST =
+      PrintCertificateRequestDTO.builder().build();
+  private static final GetCertificateRequestDTO GET_REQUEST =
+      GetCertificateRequestDTO.builder().build();
+  private static final Certificate certificate = new Certificate();
 
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationService csIntegrationService;
 
-    @Mock
-    PDLLogService pdlLogService;
+  @Mock PDLLogService pdlLogService;
 
-    @Mock
-    MonitoringLogService monitoringLogService;
+  @Mock MonitoringLogService monitoringLogService;
 
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Mock
-    IntygPdf responseFromCS;
+  @Mock IntygPdf responseFromCS;
 
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    PrintCertificateFromCertificateService printCertificateFromCertificateService;
+  @InjectMocks PrintCertificateFromCertificateService printCertificateFromCertificateService;
 
-    @Test
-    void shouldReturnNullIfCertificateDoesntExistInCS() {
-        final var response = printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
+  @Test
+  void shouldReturnNullIfCertificateDoesntExistInCS() {
+    final var response = printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
 
-        assertNull(response);
+    assertNull(response);
+  }
+
+  @Test
+  void shouldPerformPDLLogIfCertificateDoesntExistInCS() {
+    printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
+
+    verify(pdlLogService, times(0)).logPrinted(certificate);
+  }
+
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+      when(csIntegrationService.certificateExists(ID)).thenReturn(true);
+      when(csIntegrationService.getCertificate(ID, GET_REQUEST)).thenReturn(certificate);
+
+      when(csIntegrationRequestFactory.getPrintCertificateRequest(
+              "Intyget är utskrivet från Webcert.", PATIENT_ID))
+          .thenReturn(REQUEST);
+      when(csIntegrationRequestFactory.getCertificateRequest()).thenReturn(GET_REQUEST);
+      when(csIntegrationService.printCertificate(ID, REQUEST)).thenReturn(responseFromCS);
     }
 
     @Test
-    void shouldPerformPDLLogIfCertificateDoesntExistInCS() {
-        printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
+    void shouldReturnResponseFromCSIfCertificateExistsInCS() {
+      certificate.setMetadata(getMetadata(CertificateStatus.UNSIGNED));
+      final var response = printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
 
-        verify(pdlLogService, times(0)).logPrinted(certificate);
+      assertEquals(responseFromCS, response);
+    }
+
+    @Test
+    void shouldPerformPDLLog() {
+      certificate.setMetadata(getMetadata(CertificateStatus.REVOKED));
+      printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
+
+      verify(pdlLogService, times(1)).logPrinted(certificate);
+    }
+
+    @Test
+    void shouldPublishAnalyticsMessageWhenCertificateIsPrinted() {
+      certificate.setMetadata(getMetadata(CertificateStatus.UNSIGNED));
+      final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+      when(certificateAnalyticsMessageFactory.certificatePrinted(certificate))
+          .thenReturn(analyticsMessage);
+
+      printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
+
+      verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Nested
-    class CertificateExistsInCS {
+    class TestMonitoringLogService {
 
-        @BeforeEach
-        void setup() {
-            when(csIntegrationService.certificateExists(ID))
-                .thenReturn(true);
-            when(csIntegrationService.getCertificate(ID, GET_REQUEST))
-                .thenReturn(certificate);
+      @Test
+      void shouldLogPrintedDraft() {
+        certificate.setMetadata(getMetadata(CertificateStatus.UNSIGNED));
+        printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
 
-            when(csIntegrationRequestFactory.getPrintCertificateRequest("Intyget är utskrivet från Webcert.", PATIENT_ID))
-                .thenReturn(REQUEST);
-            when(csIntegrationRequestFactory.getCertificateRequest())
-                .thenReturn(GET_REQUEST);
-            when(csIntegrationService.printCertificate(ID, REQUEST))
-                .thenReturn(responseFromCS);
-        }
+        verify(monitoringLogService, times(1)).logUtkastPrint(ID, TYPE);
+      }
 
-        @Test
-        void shouldReturnResponseFromCSIfCertificateExistsInCS() {
-            certificate.setMetadata(getMetadata(CertificateStatus.UNSIGNED));
-            final var response = printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
+      @Test
+      void shouldLogPrintedLocked() {
+        certificate.setMetadata(getMetadata(CertificateStatus.LOCKED));
+        printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
 
-            assertEquals(responseFromCS, response);
-        }
+        verify(monitoringLogService, times(1)).logUtkastPrint(ID, TYPE);
+      }
 
-        @Test
-        void shouldPerformPDLLog() {
-            certificate.setMetadata(getMetadata(CertificateStatus.REVOKED));
-            printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
+      @Test
+      void shouldLogPrintedRevoked() {
+        certificate.setMetadata(getMetadata(CertificateStatus.REVOKED));
+        printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
 
-            verify(pdlLogService, times(1)).logPrinted(certificate);
-        }
+        verify(monitoringLogService, times(1)).logRevokedPrint(ID, TYPE);
+      }
 
-        @Test
-        void shouldPublishAnalyticsMessageWhenCertificateIsPrinted() {
-            certificate.setMetadata(getMetadata(CertificateStatus.UNSIGNED));
-            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-            when(certificateAnalyticsMessageFactory.certificatePrinted(certificate)).thenReturn(analyticsMessage);
+      @Test
+      void shouldLogPrintedSigned() {
+        certificate.setMetadata(getMetadata(CertificateStatus.SIGNED));
+        printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
 
-            printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
-
-            verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-        }
-
-        @Nested
-        class TestMonitoringLogService {
-
-            @Test
-            void shouldLogPrintedDraft() {
-                certificate.setMetadata(getMetadata(CertificateStatus.UNSIGNED));
-                printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
-
-                verify(monitoringLogService, times(1)).logUtkastPrint(ID, TYPE);
-            }
-
-            @Test
-            void shouldLogPrintedLocked() {
-                certificate.setMetadata(getMetadata(CertificateStatus.LOCKED));
-                printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
-
-                verify(monitoringLogService, times(1)).logUtkastPrint(ID, TYPE);
-            }
-
-            @Test
-            void shouldLogPrintedRevoked() {
-                certificate.setMetadata(getMetadata(CertificateStatus.REVOKED));
-                printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
-
-                verify(monitoringLogService, times(1)).logRevokedPrint(ID, TYPE);
-            }
-
-            @Test
-            void shouldLogPrintedSigned() {
-                certificate.setMetadata(getMetadata(CertificateStatus.SIGNED));
-                printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
-
-                verify(monitoringLogService, times(1)).logIntygPrintPdf(ID, TYPE, EMPLOYER_COPY);
-            }
-        }
+        verify(monitoringLogService, times(1)).logIntygPrintPdf(ID, TYPE, EMPLOYER_COPY);
+      }
     }
+  }
 
-    private CertificateMetadata getMetadata(CertificateStatus status) {
-        return CertificateMetadata.builder()
-            .status(status)
-            .type(TYPE)
-            .patient(
-                Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id(PATIENT_ID)
-                            .build()
-                    )
-                    .build()
-            )
-            .build();
-    }
+  private CertificateMetadata getMetadata(CertificateStatus status) {
+    return CertificateMetadata.builder()
+        .status(status)
+        .type(TYPE)
+        .patient(Patient.builder().personId(PersonId.builder().id(PATIENT_ID).build()).build())
+        .build();
+  }
 }

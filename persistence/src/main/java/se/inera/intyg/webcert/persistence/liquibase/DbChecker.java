@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,37 +34,46 @@ import org.slf4j.LoggerFactory;
 
 public class DbChecker {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DbChecker.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DbChecker.class);
 
-    private DataSource dataSource;
+  private DataSource dataSource;
 
-    private String script;
+  private String script;
 
-    public DbChecker(DataSource dataSource, String script) {
-        super();
-        this.dataSource = dataSource;
-        this.script = script;
-    }
+  public DbChecker(DataSource dataSource, String script) {
+    super();
+    this.dataSource = dataSource;
+    this.script = script;
+  }
 
-    @PostConstruct
-    public void checkDb() {
-        try {
-            DatabaseConnection connection = new JdbcConnection(dataSource.getConnection());
-            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
-            Liquibase liquibase = new Liquibase(script, new ClassLoaderResourceAccessor(), database);
-            LOG.info("Checking database: {} URL:{}", database.getDatabaseProductName(), database.getConnection().getURL());
-            List<ChangeSet> changeSets = liquibase.listUnrunChangeSets(null, liquibase.getChangeLogParameters().getLabels());
-            if (!changeSets.isEmpty()) {
-                StringBuilder errors = new StringBuilder();
-                for (ChangeSet changeSet : changeSets) {
-                    errors.append('>').append(changeSet.toString()).append('\n');
-                }
-                throw new Error("Database version mismatch. Check liquibase status. Errors:\n" + errors.toString()
-                    + database.getDatabaseProductName() + ", " + database);
-            }
-        } catch (liquibase.exception.LiquibaseException | SQLException e) {
-            throw new Error("Database not ok, aborting startup.", e);
+  @PostConstruct
+  public void checkDb() {
+    try {
+      DatabaseConnection connection = new JdbcConnection(dataSource.getConnection());
+      Database database =
+          DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+      Liquibase liquibase = new Liquibase(script, new ClassLoaderResourceAccessor(), database);
+      LOG.info(
+          "Checking database: {} URL:{}",
+          database.getDatabaseProductName(),
+          database.getConnection().getURL());
+      List<ChangeSet> changeSets =
+          liquibase.listUnrunChangeSets(null, liquibase.getChangeLogParameters().getLabels());
+      if (!changeSets.isEmpty()) {
+        StringBuilder errors = new StringBuilder();
+        for (ChangeSet changeSet : changeSets) {
+          errors.append('>').append(changeSet.toString()).append('\n');
         }
-        LOG.info("Liquibase ok");
+        throw new Error(
+            "Database version mismatch. Check liquibase status. Errors:\n"
+                + errors.toString()
+                + database.getDatabaseProductName()
+                + ", "
+                + database);
+      }
+    } catch (liquibase.exception.LiquibaseException | SQLException e) {
+      throw new Error("Database not ok, aborting startup.", e);
     }
+    LOG.info("Liquibase ok");
+  }
 }

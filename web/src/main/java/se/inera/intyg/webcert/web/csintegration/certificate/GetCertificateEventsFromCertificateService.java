@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -30,26 +29,32 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeServi
 @Service("getCertificateEventsFromCertificateService")
 @Slf4j
 @RequiredArgsConstructor
-public class GetCertificateEventsFromCertificateService implements GetCertificateEventsFacadeService {
+public class GetCertificateEventsFromCertificateService
+    implements GetCertificateEventsFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Override
-    public CertificateEventDTO[] getCertificateEvents(String certificateId) {
-        log.debug("Attempting to retrieve events for certificate '{}' from Certificate Service", certificateId);
+  @Override
+  public CertificateEventDTO[] getCertificateEvents(String certificateId) {
+    log.debug(
+        "Attempting to retrieve events for certificate '{}' from Certificate Service",
+        certificateId);
 
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
-
-        final var events = csIntegrationService.getCertificateEvents(
-            certificateId, csIntegrationRequestFactory.getCertificateEventsRequest()
-        );
-
-        log.debug("Got '{}' events for certificate '{}' from Certificate Service", events.length, certificateId);
-
-        return events;
+    if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+      log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+      return null;
     }
+
+    final var events =
+        csIntegrationService.getCertificateEvents(
+            certificateId, csIntegrationRequestFactory.getCertificateEventsRequest());
+
+    log.debug(
+        "Got '{}' events for certificate '{}' from Certificate Service",
+        events.length,
+        certificateId);
+
+    return events;
+  }
 }

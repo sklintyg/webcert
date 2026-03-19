@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,39 +25,41 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 
-/**
- * Implementation of AccessResultExceptionHelper.
- */
+/** Implementation of AccessResultExceptionHelper. */
 @Component
 public class AccessResultExceptionHelperImpl implements AccessResultExceptionHelper {
 
-    @Override
-    public void throwException(AccessResult accessResult) {
-        if (accessResult.getCode() == AccessResultCode.PU_PROBLEM) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, accessResult.getMessage());
-        }
-
-        if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_VALIDATION) {
-            throw new AuthoritiesException(accessResult.getMessage());
-        }
-
-        if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                accessResult.getMessage());
-        }
-
-        if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
-                accessResult.getMessage());
-        }
-
-        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, accessResult.getMessage());
+  @Override
+  public void throwException(AccessResult accessResult) {
+    if (accessResult.getCode() == AccessResultCode.PU_PROBLEM) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.PU_PROBLEM, accessResult.getMessage());
     }
 
-    @Override
-    public void throwExceptionIfDenied(AccessResult accessResult) {
-        if (accessResult.isDenied()) {
-            throwException(accessResult);
-        }
+    if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_VALIDATION) {
+      throw new AuthoritiesException(accessResult.getMessage());
     }
+
+    if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+          accessResult.getMessage());
+    }
+
+    if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
+          accessResult.getMessage());
+    }
+
+    throw new WebCertServiceException(
+        WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, accessResult.getMessage());
+  }
+
+  @Override
+  public void throwExceptionIfDenied(AccessResult accessResult) {
+    if (accessResult.isDenied()) {
+      throwException(accessResult);
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -92,665 +92,660 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateR
 @ExtendWith(MockitoExtension.class)
 public class CertificateControllerTest {
 
-    private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
-    private static final long CERTIFICATE_VERSION = 1L;
-    public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
-    @Mock
-    private SaveCertificateFacadeService saveCertificateFacadeService;
-    @Mock
-    private ValidateCertificateFacadeService validationCertificateFacadeService;
-    @Mock
-    private SignCertificateFacadeService signCertificateFacadeService;
-    @Mock
-    private DeleteCertificateFacadeService deleteCertificateFacadeService;
-    @Mock
-    private RevokeCertificateFacadeService revokeCertificateFacadeService;
-    @Mock
-    private ReplaceCertificateFacadeService replaceCertificateFacadeService;
-    @Mock
-    private CopyCertificateFacadeService copyCertificateFacadeService;
-    @Mock
-    private RenewCertificateFacadeService renewCertificateFacadeService;
-    @Mock
-    private ForwardCertificateFacadeService forwardCertificateFacadeService;
-    @Mock
-    private ReadyForSignFacadeService readyForSignFacadeService;
-    @Mock
-    private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
-    @Mock
-    private GetCertificateResourceLinks getCertificateResourceLinks;
-    @Mock
-    private SendCertificateFacadeService sendCertificateFacadeService;
-    @Mock
-    private ComplementCertificateFacadeService complementCertificateFacadeService;
-    @Mock
-    private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
-    @Mock
-    private UpdateCertificateFromCandidateFacadeService createCertificateFromCandiateFacadeService;
+  private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
+  private static final long CERTIFICATE_VERSION = 1L;
+  public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock private SaveCertificateFacadeService saveCertificateFacadeService;
+  @Mock private ValidateCertificateFacadeService validationCertificateFacadeService;
+  @Mock private SignCertificateFacadeService signCertificateFacadeService;
+  @Mock private DeleteCertificateFacadeService deleteCertificateFacadeService;
+  @Mock private RevokeCertificateFacadeService revokeCertificateFacadeService;
+  @Mock private ReplaceCertificateFacadeService replaceCertificateFacadeService;
+  @Mock private CopyCertificateFacadeService copyCertificateFacadeService;
+  @Mock private RenewCertificateFacadeService renewCertificateFacadeService;
+  @Mock private ForwardCertificateFacadeService forwardCertificateFacadeService;
+  @Mock private ReadyForSignFacadeService readyForSignFacadeService;
+  @Mock private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
+  @Mock private GetCertificateResourceLinks getCertificateResourceLinks;
+  @Mock private SendCertificateFacadeService sendCertificateFacadeService;
+  @Mock private ComplementCertificateFacadeService complementCertificateFacadeService;
 
-    @Mock
-    private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
-    @Mock
-    private GetCandidateMesssageForCertificateFacadeService getCandidateMesssageForCertificateFacadeService;
-    @Mock
-    private CreateCertificateFacadeService createCertificateFacadeService;
-    @Mock
-    private HttpServletRequest httpServletRequest;
+  @Mock
+  private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
 
-    @InjectMocks
-    private CertificateController certificateController;
+  @Mock
+  private UpdateCertificateFromCandidateFacadeService createCertificateFromCandiateFacadeService;
 
-    private Certificate createCertificate() {
-        return CertificateBuilder.create()
-            .metadata(
-                CertificateMetadata.builder()
-                    .id("certificateId")
-                    .type("certificateType")
-                    .typeVersion("certificateTypeVersion")
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id("191212121212")
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .unit(
-                        Unit.builder()
-                            .unitId("unitId")
-                            .unitName("unitName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
-                            .build()
-                    )
-                    .careProvider(
-                        Unit.builder()
-                            .unitId("careProviderId")
-                            .unitName("careProviderName")
-                            .address("address")
-                            .zipCode("zipCode")
-                            .city("city")
-                            .email("email")
-                            .phoneNumber("phoneNumber")
-                            .build()
-                    )
-                    .build()
-            )
-            .build();
+  @Mock private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
+
+  @Mock
+  private GetCandidateMesssageForCertificateFacadeService
+      getCandidateMesssageForCertificateFacadeService;
+
+  @Mock private CreateCertificateFacadeService createCertificateFacadeService;
+  @Mock private HttpServletRequest httpServletRequest;
+
+  @InjectMocks private CertificateController certificateController;
+
+  private Certificate createCertificate() {
+    return CertificateBuilder.create()
+        .metadata(
+            CertificateMetadata.builder()
+                .id("certificateId")
+                .type("certificateType")
+                .typeVersion("certificateTypeVersion")
+                .patient(
+                    Patient.builder()
+                        .personId(PersonId.builder().id("191212121212").build())
+                        .build())
+                .unit(
+                    Unit.builder()
+                        .unitId("unitId")
+                        .unitName("unitName")
+                        .address("address")
+                        .zipCode("zipCode")
+                        .city("city")
+                        .email("email")
+                        .phoneNumber("phoneNumber")
+                        .build())
+                .careProvider(
+                    Unit.builder()
+                        .unitId("careProviderId")
+                        .unitName("careProviderName")
+                        .address("address")
+                        .zipCode("zipCode")
+                        .city("city")
+                        .email("email")
+                        .phoneNumber("phoneNumber")
+                        .build())
+                .build())
+        .build();
+  }
+
+  @Nested
+  class GetCertificate {
+
+    private Certificate certificate;
+    private ResourceLinkDTO[] resourceLinks;
+
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
+
+      doReturn(certificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(anyString(), anyBoolean(), eq(true));
+
+      resourceLinks = new ResourceLinkDTO[0];
+
+      doReturn(resourceLinks).when(getCertificateResourceLinks).get(certificate);
     }
 
-    @Nested
-    class GetCertificate {
+    @Test
+    void shallPdlLog() {
+      certificateController.getCertificate(CERTIFICATE_ID);
 
-        private Certificate certificate;
-        private ResourceLinkDTO[] resourceLinks;
+      final var pdlLogCaptor = ArgumentCaptor.forClass(Boolean.class);
+      verify(getCertificateFacadeService)
+          .getCertificate(anyString(), pdlLogCaptor.capture(), eq(true));
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
-
-            doReturn(certificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(anyString(), anyBoolean(), eq(true));
-
-            resourceLinks = new ResourceLinkDTO[0];
-
-            doReturn(resourceLinks)
-                .when(getCertificateResourceLinks)
-                .get(certificate);
-        }
-
-        @Test
-        void shallPdlLog() {
-            certificateController.getCertificate(CERTIFICATE_ID);
-
-            final var pdlLogCaptor = ArgumentCaptor.forClass(Boolean.class);
-            verify(getCertificateFacadeService).getCertificate(anyString(), pdlLogCaptor.capture(), eq(true));
-
-            assertTrue(pdlLogCaptor.getValue(), "Should fetch certificate with pdlLog == true");
-        }
-
-        @Test
-        void shallIncludeResourceLinks() {
-            final var response = (CertificateResponseDTO) certificateController.getCertificate(CERTIFICATE_ID).getEntity();
-            assertEquals(resourceLinks, response.getCertificate().getLinks());
-        }
+      assertTrue(pdlLogCaptor.getValue(), "Should fetch certificate with pdlLog == true");
     }
 
-    @Nested
-    class SaveCertificate {
+    @Test
+    void shallIncludeResourceLinks() {
+      final var response =
+          (CertificateResponseDTO) certificateController.getCertificate(CERTIFICATE_ID).getEntity();
+      assertEquals(resourceLinks, response.getCertificate().getLinks());
+    }
+  }
 
-        private Certificate certificate;
-        private HttpServletRequest requestMock;
-        private HttpSession sessionMock;
+  @Nested
+  class SaveCertificate {
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .id(CERTIFICATE_ID)
-                    .build()
-            );
+    private Certificate certificate;
+    private HttpServletRequest requestMock;
+    private HttpSession sessionMock;
 
-            requestMock = mock(HttpServletRequest.class);
-            sessionMock = mock(HttpSession.class);
-            doReturn(sessionMock)
-                .when(requestMock)
-                .getSession(true);
-        }
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
+      certificate.setMetadata(CertificateMetadata.builder().id(CERTIFICATE_ID).build());
 
-        @Test
-        void shallPdlLogFirstSave() {
-            doReturn(null).when(sessionMock).getAttribute(LAST_SAVED_DRAFT);
-
-            certificateController.saveCertificate(CERTIFICATE_ID, certificate, requestMock);
-
-            final var pdlLogCaptor = ArgumentCaptor.forClass(Boolean.class);
-            verify(saveCertificateFacadeService).saveCertificate(eq(certificate), pdlLogCaptor.capture());
-
-            assertTrue(pdlLogCaptor.getValue(), "Should save certificate with pdlLog == true");
-        }
-
-        @Test
-        void shallUpdateSessionOnFirstSave() {
-            certificateController.saveCertificate(CERTIFICATE_ID, certificate, requestMock);
-
-            final var pdlLogCaptor = ArgumentCaptor.forClass(String.class);
-            verify(sessionMock).setAttribute(eq(LAST_SAVED_DRAFT), pdlLogCaptor.capture());
-
-            assertEquals(CERTIFICATE_ID, pdlLogCaptor.getValue());
-        }
-
-        @Test
-        void shallNotPdlLogSubsequentSaves() {
-            doReturn(CERTIFICATE_ID).when(sessionMock).getAttribute(LAST_SAVED_DRAFT);
-
-            certificateController.saveCertificate(CERTIFICATE_ID, certificate, requestMock);
-
-            final var pdlLogCaptor = ArgumentCaptor.forClass(Boolean.class);
-            verify(saveCertificateFacadeService).saveCertificate(eq(certificate), pdlLogCaptor.capture());
-
-            assertFalse(pdlLogCaptor.getValue(), "Should save certificate with pdlLog == true");
-        }
+      requestMock = mock(HttpServletRequest.class);
+      sessionMock = mock(HttpSession.class);
+      doReturn(sessionMock).when(requestMock).getSession(true);
     }
 
-    @Nested
-    class ValidateCertificate {
+    @Test
+    void shallPdlLogFirstSave() {
+      doReturn(null).when(sessionMock).getAttribute(LAST_SAVED_DRAFT);
 
-        private Certificate certificate;
-        private ValidationErrorDTO[] validationErrors;
+      certificateController.saveCertificate(CERTIFICATE_ID, certificate, requestMock);
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
+      final var pdlLogCaptor = ArgumentCaptor.forClass(Boolean.class);
+      verify(saveCertificateFacadeService).saveCertificate(eq(certificate), pdlLogCaptor.capture());
 
-            doReturn(validationErrors)
-                .when(validationCertificateFacadeService)
-                .validate(certificate);
-        }
-
-        @Test
-        void shallReturnValidationErrors() {
-            final var response = (ValidateCertificateResponseDTO) certificateController.validateCertificate(CERTIFICATE_ID, certificate)
-                .getEntity();
-            assertEquals(validationErrors, response.getValidationErrors());
-        }
+      assertTrue(pdlLogCaptor.getValue(), "Should save certificate with pdlLog == true");
     }
 
-    @Nested
-    class SignCertificate {
+    @Test
+    void shallUpdateSessionOnFirstSave() {
+      certificateController.saveCertificate(CERTIFICATE_ID, certificate, requestMock);
 
-        private Certificate certificate;
-        private ResourceLinkDTO[] resourceLinks;
+      final var pdlLogCaptor = ArgumentCaptor.forClass(String.class);
+      verify(sessionMock).setAttribute(eq(LAST_SAVED_DRAFT), pdlLogCaptor.capture());
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
-
-            doReturn(certificate)
-                .when(signCertificateFacadeService)
-                .signCertificate(certificate, "userIpAddress");
-
-            resourceLinks = new ResourceLinkDTO[0];
-
-            doReturn(resourceLinks)
-                .when(getCertificateResourceLinks)
-                .get(certificate);
-        }
-
-        @Test
-        void shallIncludeResourceLinks() {
-            when(httpServletRequest.getRemoteAddr()).thenReturn("userIpAddress");
-            try (final var response = certificateController.signCertificate(CERTIFICATE_ID, certificate, httpServletRequest)) {
-                final var entity = (CertificateResponseDTO) response.getEntity();
-                assertEquals(resourceLinks, entity.getCertificate().getLinks());
-            }
-        }
+      assertEquals(CERTIFICATE_ID, pdlLogCaptor.getValue());
     }
 
-    @Nested
-    class DeleteCertificate {
+    @Test
+    void shallNotPdlLogSubsequentSaves() {
+      doReturn(CERTIFICATE_ID).when(sessionMock).getAttribute(LAST_SAVED_DRAFT);
 
-        @Test
-        void shallDeleteCertificate() {
-            certificateController.deleteCertificate(CERTIFICATE_ID, CERTIFICATE_VERSION);
+      certificateController.saveCertificate(CERTIFICATE_ID, certificate, requestMock);
 
-            final var certificateIdCaptor = ArgumentCaptor.forClass(String.class);
-            final var certificateVersionCaptor = ArgumentCaptor.forClass(Long.class);
+      final var pdlLogCaptor = ArgumentCaptor.forClass(Boolean.class);
+      verify(saveCertificateFacadeService).saveCertificate(eq(certificate), pdlLogCaptor.capture());
 
-            verify(deleteCertificateFacadeService).deleteCertificate(certificateIdCaptor.capture(), certificateVersionCaptor.capture());
+      assertFalse(pdlLogCaptor.getValue(), "Should save certificate with pdlLog == true");
+    }
+  }
 
-            assertEquals(CERTIFICATE_ID, certificateIdCaptor.getValue());
-            assertEquals(CERTIFICATE_VERSION, certificateVersionCaptor.getValue());
-        }
+  @Nested
+  class ValidateCertificate {
+
+    private Certificate certificate;
+    private ValidationErrorDTO[] validationErrors;
+
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
+
+      doReturn(validationErrors).when(validationCertificateFacadeService).validate(certificate);
     }
 
-    @Nested
-    class RevokeCertificate {
+    @Test
+    void shallReturnValidationErrors() {
+      final var response =
+          (ValidateCertificateResponseDTO)
+              certificateController.validateCertificate(CERTIFICATE_ID, certificate).getEntity();
+      assertEquals(validationErrors, response.getValidationErrors());
+    }
+  }
 
-        private Certificate certificate;
-        private ResourceLinkDTO[] resourceLinks;
+  @Nested
+  class SignCertificate {
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
+    private Certificate certificate;
+    private ResourceLinkDTO[] resourceLinks;
 
-            doReturn(certificate)
-                .when(revokeCertificateFacadeService)
-                .revokeCertificate(anyString(), anyString(), anyString());
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
 
-            resourceLinks = new ResourceLinkDTO[0];
+      doReturn(certificate)
+          .when(signCertificateFacadeService)
+          .signCertificate(certificate, "userIpAddress");
 
-            doReturn(resourceLinks)
-                .when(getCertificateResourceLinks)
-                .get(certificate);
-        }
+      resourceLinks = new ResourceLinkDTO[0];
 
-        @Test
-        void shallIncludeResourceLinks() {
-            final var revokeCertificateRequestDTO = new RevokeCertificateRequestDTO();
-            revokeCertificateRequestDTO.setReason("Reason");
-            revokeCertificateRequestDTO.setMessage("Message");
-
-            final var response = (CertificateResponseDTO) certificateController
-                .revokeCertificate(CERTIFICATE_ID, revokeCertificateRequestDTO).getEntity();
-
-            assertEquals(resourceLinks, response.getCertificate().getLinks());
-        }
+      doReturn(resourceLinks).when(getCertificateResourceLinks).get(certificate);
     }
 
-    @Nested
-    class ReplaceCertificate {
+    @Test
+    void shallIncludeResourceLinks() {
+      when(httpServletRequest.getRemoteAddr()).thenReturn("userIpAddress");
+      try (final var response =
+          certificateController.signCertificate(CERTIFICATE_ID, certificate, httpServletRequest)) {
+        final var entity = (CertificateResponseDTO) response.getEntity();
+        assertEquals(resourceLinks, entity.getCertificate().getLinks());
+      }
+    }
+  }
 
-        private Certificate certificate;
+  @Nested
+  class DeleteCertificate {
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
-        }
+    @Test
+    void shallDeleteCertificate() {
+      certificateController.deleteCertificate(CERTIFICATE_ID, CERTIFICATE_VERSION);
 
-        @Test
-        void shallReturnIdOfNewCertificate() {
-            final var expectedId = "newCertificateId";
+      final var certificateIdCaptor = ArgumentCaptor.forClass(String.class);
+      final var certificateVersionCaptor = ArgumentCaptor.forClass(Long.class);
 
-            doReturn(expectedId)
-                .when(replaceCertificateFacadeService)
-                .replaceCertificate(anyString());
+      verify(deleteCertificateFacadeService)
+          .deleteCertificate(certificateIdCaptor.capture(), certificateVersionCaptor.capture());
 
-            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
-            newCertificateRequestDTO.setCertificateType("certificateType");
-            newCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
+      assertEquals(CERTIFICATE_ID, certificateIdCaptor.getValue());
+      assertEquals(CERTIFICATE_VERSION, certificateVersionCaptor.getValue());
+    }
+  }
 
-            final var response = (ReplaceCertificateResponseDTO) certificateController
-                .replaceCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
-                .getEntity();
+  @Nested
+  class RevokeCertificate {
 
-            assertEquals(expectedId, response.getCertificateId());
-        }
+    private Certificate certificate;
+    private ResourceLinkDTO[] resourceLinks;
+
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
+
+      doReturn(certificate)
+          .when(revokeCertificateFacadeService)
+          .revokeCertificate(anyString(), anyString(), anyString());
+
+      resourceLinks = new ResourceLinkDTO[0];
+
+      doReturn(resourceLinks).when(getCertificateResourceLinks).get(certificate);
     }
 
-    @Nested
-    class RenewCertificate {
+    @Test
+    void shallIncludeResourceLinks() {
+      final var revokeCertificateRequestDTO = new RevokeCertificateRequestDTO();
+      revokeCertificateRequestDTO.setReason("Reason");
+      revokeCertificateRequestDTO.setMessage("Message");
 
-        private Certificate certificate;
+      final var response =
+          (CertificateResponseDTO)
+              certificateController
+                  .revokeCertificate(CERTIFICATE_ID, revokeCertificateRequestDTO)
+                  .getEntity();
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
-        }
+      assertEquals(resourceLinks, response.getCertificate().getLinks());
+    }
+  }
 
-        @Test
-        void shallReturnIdOfNewCertificate() {
-            final var expectedId = "newCertificateId";
+  @Nested
+  class ReplaceCertificate {
 
-            doReturn(expectedId)
-                .when(renewCertificateFacadeService)
-                .renewCertificate(anyString());
+    private Certificate certificate;
 
-            final var response = (RenewCertificateResponseDTO) certificateController.renewCertificate(CERTIFICATE_ID).getEntity();
-
-            assertEquals(expectedId, response.getCertificateId());
-        }
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
     }
 
-    @Nested
-    class ComplementCertificate {
+    @Test
+    void shallReturnIdOfNewCertificate() {
+      final var expectedId = "newCertificateId";
 
-        private Certificate certificate;
-        private ResourceLinkDTO[] resourceLinks;
-        private ComplementCertificateRequestDTO complementCertificateRequest;
+      doReturn(expectedId).when(replaceCertificateFacadeService).replaceCertificate(anyString());
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
+      final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+      newCertificateRequestDTO.setCertificateType("certificateType");
+      newCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
 
-            complementCertificateRequest = new ComplementCertificateRequestDTO();
-            complementCertificateRequest.setMessage("Message");
+      final var response =
+          (ReplaceCertificateResponseDTO)
+              certificateController
+                  .replaceCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
+                  .getEntity();
 
-            doReturn(certificate)
-                .when(complementCertificateFacadeService)
-                .complement(CERTIFICATE_ID, complementCertificateRequest.getMessage());
+      assertEquals(expectedId, response.getCertificateId());
+    }
+  }
 
-            resourceLinks = new ResourceLinkDTO[0];
+  @Nested
+  class RenewCertificate {
 
-            doReturn(resourceLinks)
-                .when(getCertificateResourceLinks)
-                .get(certificate);
-        }
+    private Certificate certificate;
 
-        @Test
-        void shallReturnCertificate() {
-            final var response = (CertificateResponseDTO) certificateController
-                .complementCertificate(CERTIFICATE_ID, complementCertificateRequest).getEntity();
-
-            assertNotNull(response.getCertificate());
-        }
-
-        @Test
-        void shallReturnResourceLinks() {
-            final var response = (CertificateResponseDTO) certificateController
-                .complementCertificate(CERTIFICATE_ID, complementCertificateRequest).getEntity();
-
-            assertEquals(resourceLinks, response.getCertificate().getLinks());
-        }
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
     }
 
-    @Nested
-    class AnswerComplementCertificate {
+    @Test
+    void shallReturnIdOfNewCertificate() {
+      final var expectedId = "newCertificateId";
 
-        private Certificate certificate;
-        private ResourceLinkDTO[] resourceLinks;
-        private ComplementCertificateRequestDTO complementCertificateRequest;
+      doReturn(expectedId).when(renewCertificateFacadeService).renewCertificate(anyString());
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
+      final var response =
+          (RenewCertificateResponseDTO)
+              certificateController.renewCertificate(CERTIFICATE_ID).getEntity();
 
-            complementCertificateRequest = new ComplementCertificateRequestDTO();
-            complementCertificateRequest.setMessage("Det går inte att komplettera");
+      assertEquals(expectedId, response.getCertificateId());
+    }
+  }
 
-            doReturn(certificate)
-                .when(complementCertificateFacadeService)
-                .answerComplement(CERTIFICATE_ID, complementCertificateRequest.getMessage());
+  @Nested
+  class ComplementCertificate {
 
-            resourceLinks = new ResourceLinkDTO[0];
+    private Certificate certificate;
+    private ResourceLinkDTO[] resourceLinks;
+    private ComplementCertificateRequestDTO complementCertificateRequest;
 
-            doReturn(resourceLinks)
-                .when(getCertificateResourceLinks)
-                .get(certificate);
-        }
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
 
-        @Test
-        void shallReturnCertificate() {
-            final var response = (CertificateResponseDTO) certificateController
-                .answerComplementCertificate(CERTIFICATE_ID, complementCertificateRequest).getEntity();
+      complementCertificateRequest = new ComplementCertificateRequestDTO();
+      complementCertificateRequest.setMessage("Message");
 
-            assertNotNull(response.getCertificate());
-        }
+      doReturn(certificate)
+          .when(complementCertificateFacadeService)
+          .complement(CERTIFICATE_ID, complementCertificateRequest.getMessage());
 
-        @Test
-        void shallReturnResourceLinks() {
-            final var response = (CertificateResponseDTO) certificateController
-                .answerComplementCertificate(CERTIFICATE_ID, complementCertificateRequest).getEntity();
+      resourceLinks = new ResourceLinkDTO[0];
 
-            assertEquals(resourceLinks, response.getCertificate().getLinks());
-        }
+      doReturn(resourceLinks).when(getCertificateResourceLinks).get(certificate);
     }
 
-    @Nested
-    class CopyCertificate {
+    @Test
+    void shallReturnCertificate() {
+      final var response =
+          (CertificateResponseDTO)
+              certificateController
+                  .complementCertificate(CERTIFICATE_ID, complementCertificateRequest)
+                  .getEntity();
 
-        private Certificate certificate;
-
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
-        }
-
-        @Test
-        void shallReturnIdOfNewCertificate() {
-            final var expectedId = "newCertificateId";
-
-            doReturn(expectedId)
-                .when(copyCertificateFacadeService)
-                .copyCertificate(anyString());
-
-            final var newCertificateRequestDTO = new NewCertificateRequestDTO();
-            newCertificateRequestDTO.setCertificateType("certificateType");
-            newCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
-
-            final var response = (CopyCertificateResponseDTO) certificateController
-                .copyCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
-                .getEntity();
-
-            assertEquals(expectedId, response.getCertificateId());
-        }
+      assertNotNull(response.getCertificate());
     }
 
-    @Nested
-    class CreateCertificateFromTemplate {
+    @Test
+    void shallReturnResourceLinks() {
+      final var response =
+          (CertificateResponseDTO)
+              certificateController
+                  .complementCertificate(CERTIFICATE_ID, complementCertificateRequest)
+                  .getEntity();
 
-        @Test
-        void shallReturnIdOfNewCertificate() {
-            final var expectedId = "newCertificateId";
+      assertEquals(resourceLinks, response.getCertificate().getLinks());
+    }
+  }
 
-            doReturn(expectedId)
-                .when(createCertificateFromTemplateFacadeService)
-                .createCertificateFromTemplate(anyString());
+  @Nested
+  class AnswerComplementCertificate {
 
-            final var response = (CreateCertificateFromTemplateResponseDTO) certificateController
-                .createCertificateFromTemplate(CERTIFICATE_ID).getEntity();
+    private Certificate certificate;
+    private ResourceLinkDTO[] resourceLinks;
+    private ComplementCertificateRequestDTO complementCertificateRequest;
 
-            assertEquals(expectedId, response.getCertificateId());
-        }
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
+
+      complementCertificateRequest = new ComplementCertificateRequestDTO();
+      complementCertificateRequest.setMessage("Det går inte att komplettera");
+
+      doReturn(certificate)
+          .when(complementCertificateFacadeService)
+          .answerComplement(CERTIFICATE_ID, complementCertificateRequest.getMessage());
+
+      resourceLinks = new ResourceLinkDTO[0];
+
+      doReturn(resourceLinks).when(getCertificateResourceLinks).get(certificate);
     }
 
-    @Nested
-    class CreateCertificateFromCandidate {
+    @Test
+    void shallReturnCertificate() {
+      final var response =
+          (CertificateResponseDTO)
+              certificateController
+                  .answerComplementCertificate(CERTIFICATE_ID, complementCertificateRequest)
+                  .getEntity();
 
-        @Test
-        void shallReturnIdOfNewCertificate() {
-            final var expectedId = "newCertificateId";
-
-            doReturn(expectedId)
-                .when(createCertificateFromCandiateFacadeService)
-                .update(anyString());
-
-            final var response = (CreateCertificateFromCandidateResponseDTO) certificateController
-                .updateCertificateFromCandidate(CERTIFICATE_ID).getEntity();
-
-            assertEquals(expectedId, response.getCertificateId());
-        }
+      assertNotNull(response.getCertificate());
     }
 
-    @Nested
-    class ForwardCertificate {
+    @Test
+    void shallReturnResourceLinks() {
+      final var response =
+          (CertificateResponseDTO)
+              certificateController
+                  .answerComplementCertificate(CERTIFICATE_ID, complementCertificateRequest)
+                  .getEntity();
 
-        private Certificate certificate;
-        private ResourceLinkDTO[] resourceLinks;
+      assertEquals(resourceLinks, response.getCertificate().getLinks());
+    }
+  }
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
+  @Nested
+  class CopyCertificate {
 
-            doReturn(certificate)
-                .when(forwardCertificateFacadeService)
-                .forwardCertificate(anyString(), anyBoolean());
+    private Certificate certificate;
 
-            resourceLinks = new ResourceLinkDTO[0];
-
-            doReturn(resourceLinks)
-                .when(getCertificateResourceLinks)
-                .get(certificate);
-        }
-
-        @Test
-        void shallIncludeResourceLinks() {
-            final var forwardCertificateRequestDTO = new ForwardCertificateRequestDTO();
-            forwardCertificateRequestDTO.setForward(true);
-
-            final var response = (CertificateResponseDTO) certificateController
-                .forwardCertificate(CERTIFICATE_ID, forwardCertificateRequestDTO).getEntity();
-
-            assertEquals(resourceLinks, response.getCertificate().getLinks());
-        }
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
     }
 
-    @Nested
-    class ReadyForSign {
+    @Test
+    void shallReturnIdOfNewCertificate() {
+      final var expectedId = "newCertificateId";
 
-        private Certificate certificate;
-        private ResourceLinkDTO[] resourceLinks;
+      doReturn(expectedId).when(copyCertificateFacadeService).copyCertificate(anyString());
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
+      final var newCertificateRequestDTO = new NewCertificateRequestDTO();
+      newCertificateRequestDTO.setCertificateType("certificateType");
+      newCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
 
-            doReturn(certificate)
-                .when(readyForSignFacadeService)
-                .readyForSign(anyString());
+      final var response =
+          (CopyCertificateResponseDTO)
+              certificateController
+                  .copyCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
+                  .getEntity();
 
-            resourceLinks = new ResourceLinkDTO[0];
+      assertEquals(expectedId, response.getCertificateId());
+    }
+  }
 
-            doReturn(resourceLinks)
-                .when(getCertificateResourceLinks)
-                .get(certificate);
-        }
+  @Nested
+  class CreateCertificateFromTemplate {
 
-        @Test
-        void shallIncludeResourceLinks() {
-            final var response = (CertificateResponseDTO) certificateController.readyForSign(CERTIFICATE_ID).getEntity();
+    @Test
+    void shallReturnIdOfNewCertificate() {
+      final var expectedId = "newCertificateId";
 
-            assertEquals(resourceLinks, response.getCertificate().getLinks());
-        }
+      doReturn(expectedId)
+          .when(createCertificateFromTemplateFacadeService)
+          .createCertificateFromTemplate(anyString());
+
+      final var response =
+          (CreateCertificateFromTemplateResponseDTO)
+              certificateController.createCertificateFromTemplate(CERTIFICATE_ID).getEntity();
+
+      assertEquals(expectedId, response.getCertificateId());
+    }
+  }
+
+  @Nested
+  class CreateCertificateFromCandidate {
+
+    @Test
+    void shallReturnIdOfNewCertificate() {
+      final var expectedId = "newCertificateId";
+
+      doReturn(expectedId).when(createCertificateFromCandiateFacadeService).update(anyString());
+
+      final var response =
+          (CreateCertificateFromCandidateResponseDTO)
+              certificateController.updateCertificateFromCandidate(CERTIFICATE_ID).getEntity();
+
+      assertEquals(expectedId, response.getCertificateId());
+    }
+  }
+
+  @Nested
+  class ForwardCertificate {
+
+    private Certificate certificate;
+    private ResourceLinkDTO[] resourceLinks;
+
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
+
+      doReturn(certificate)
+          .when(forwardCertificateFacadeService)
+          .forwardCertificate(anyString(), anyBoolean());
+
+      resourceLinks = new ResourceLinkDTO[0];
+
+      doReturn(resourceLinks).when(getCertificateResourceLinks).get(certificate);
     }
 
-    @Nested
-    class GetCertificateEvents {
+    @Test
+    void shallIncludeResourceLinks() {
+      final var forwardCertificateRequestDTO = new ForwardCertificateRequestDTO();
+      forwardCertificateRequestDTO.setForward(true);
 
-        private Certificate certificate;
-        private CertificateEventDTO[] certificateEvents;
+      final var response =
+          (CertificateResponseDTO)
+              certificateController
+                  .forwardCertificate(CERTIFICATE_ID, forwardCertificateRequestDTO)
+                  .getEntity();
 
-        @BeforeEach
-        void setup() {
-            certificate = createCertificate();
+      assertEquals(resourceLinks, response.getCertificate().getLinks());
+    }
+  }
 
-            doReturn(certificateEvents)
-                .when(getCertificateEventsFacadeService)
-                .getCertificateEvents(anyString());
-        }
+  @Nested
+  class ReadyForSign {
 
-        @Test
-        void shallReturnCertificateEvents() {
-            final var response = (CertificateEventResponseDTO) certificateController.getCertificateEvents(CERTIFICATE_ID).getEntity();
-            assertEquals(certificateEvents, response.getCertificateEvents());
-        }
+    private Certificate certificate;
+    private ResourceLinkDTO[] resourceLinks;
+
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
+
+      doReturn(certificate).when(readyForSignFacadeService).readyForSign(anyString());
+
+      resourceLinks = new ResourceLinkDTO[0];
+
+      doReturn(resourceLinks).when(getCertificateResourceLinks).get(certificate);
     }
 
-    @Nested
-    class SendCertificate {
+    @Test
+    void shallIncludeResourceLinks() {
+      final var response =
+          (CertificateResponseDTO) certificateController.readyForSign(CERTIFICATE_ID).getEntity();
 
-        @BeforeEach
-        void setup() {
-            when(sendCertificateFacadeService.sendCertificate(eq(CERTIFICATE_ID))).thenReturn(IntygServiceResult.OK.toString());
-        }
+      assertEquals(resourceLinks, response.getCertificate().getLinks());
+    }
+  }
 
-        @Test
-        void shallSendCertificate() {
-            var result = (SendCertificateResponseDTO) certificateController.sendCertificate(CERTIFICATE_ID).getEntity();
-            verify(sendCertificateFacadeService).sendCertificate(CERTIFICATE_ID);
-            assertEquals(IntygServiceResult.OK.toString(), result.getResult());
-            assertEquals(CERTIFICATE_ID, result.getCertificateId());
-        }
+  @Nested
+  class GetCertificateEvents {
+
+    private Certificate certificate;
+    private CertificateEventDTO[] certificateEvents;
+
+    @BeforeEach
+    void setup() {
+      certificate = createCertificate();
+
+      doReturn(certificateEvents)
+          .when(getCertificateEventsFacadeService)
+          .getCertificateEvents(anyString());
     }
 
-    @Nested
-    class GetRelatedCertificate {
+    @Test
+    void shallReturnCertificateEvents() {
+      final var response =
+          (CertificateEventResponseDTO)
+              certificateController.getCertificateEvents(CERTIFICATE_ID).getEntity();
+      assertEquals(certificateEvents, response.getCertificateEvents());
+    }
+  }
 
-        @Test
-        void shallReturnRelatedCertificateIdIfExists() {
-            final var expectedRelatedCertificateId = "relatedCertificateId";
-            doReturn(expectedRelatedCertificateId).when(getRelatedCertificateFacadeService).get(CERTIFICATE_ID);
-            final var actualResponse = (GetRelatedCertificateDTO) certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
-            assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
-        }
+  @Nested
+  class SendCertificate {
 
-        @Test
-        void shallReturnNullRelatedCertificateIdIfDoesntExists() {
-            final String expectedRelatedCertificateId = null;
-            doReturn(expectedRelatedCertificateId).when(getRelatedCertificateFacadeService).get(CERTIFICATE_ID);
-            final var actualResponse = (GetRelatedCertificateDTO) certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
-            assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
-        }
+    @BeforeEach
+    void setup() {
+      when(sendCertificateFacadeService.sendCertificate(eq(CERTIFICATE_ID)))
+          .thenReturn(IntygServiceResult.OK.toString());
     }
 
-    @Nested
-    class GetCertificateUnit {
+    @Test
+    void shallSendCertificate() {
+      var result =
+          (SendCertificateResponseDTO)
+              certificateController.sendCertificate(CERTIFICATE_ID).getEntity();
+      verify(sendCertificateFacadeService).sendCertificate(CERTIFICATE_ID);
+      assertEquals(IntygServiceResult.OK.toString(), result.getResult());
+      assertEquals(CERTIFICATE_ID, result.getCertificateId());
+    }
+  }
 
-        @Test
-        void shallReturnCorrectDtoMessage() {
-            final var expectedDto =
-                GetCandidateMessageForCertificateDTO.create("message", "title");
-            doReturn(expectedDto).when(getCandidateMesssageForCertificateFacadeService).get(CERTIFICATE_ID);
-            final var actualDto = (GetCandidateMessageForCertificateDTO) certificateController.getCandidateMessageForCertificate(
-                    CERTIFICATE_ID)
-                .getEntity();
-            assertEquals(expectedDto.getMessage(), actualDto.getMessage());
-        }
+  @Nested
+  class GetRelatedCertificate {
 
-        @Test
-        void shallReturnCorrectDtoTitle() {
-            final var expectedDto =
-                GetCandidateMessageForCertificateDTO.create("message", "title");
-            doReturn(expectedDto).when(getCandidateMesssageForCertificateFacadeService).get(CERTIFICATE_ID);
-            final var actualDto = (GetCandidateMessageForCertificateDTO) certificateController.getCandidateMessageForCertificate(
-                    CERTIFICATE_ID)
-                .getEntity();
-            assertEquals(expectedDto.getTitle(), actualDto.getTitle());
-        }
+    @Test
+    void shallReturnRelatedCertificateIdIfExists() {
+      final var expectedRelatedCertificateId = "relatedCertificateId";
+      doReturn(expectedRelatedCertificateId)
+          .when(getRelatedCertificateFacadeService)
+          .get(CERTIFICATE_ID);
+      final var actualResponse =
+          (GetRelatedCertificateDTO)
+              certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
+      assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
     }
 
-    @Nested
-    class CreateCertificateTest {
-
-        @Test
-        void shallReturnResponse() throws CreateCertificateException {
-            final var expectedDto = new CreateCertificateResponseDTO("certificateId");
-            doReturn("certificateId")
-                .when(createCertificateFacadeService)
-                .create("certificateType", "patientId");
-            final var actualDto = (CreateCertificateResponseDTO) certificateController.createCertificate(
-                    new CreateCertificateRequestDTO("certificateType", "patientId")
-                )
-                .getEntity();
-            assertEquals(expectedDto, actualDto);
-        }
+    @Test
+    void shallReturnNullRelatedCertificateIdIfDoesntExists() {
+      final String expectedRelatedCertificateId = null;
+      doReturn(expectedRelatedCertificateId)
+          .when(getRelatedCertificateFacadeService)
+          .get(CERTIFICATE_ID);
+      final var actualResponse =
+          (GetRelatedCertificateDTO)
+              certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
+      assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
     }
+  }
+
+  @Nested
+  class GetCertificateUnit {
+
+    @Test
+    void shallReturnCorrectDtoMessage() {
+      final var expectedDto = GetCandidateMessageForCertificateDTO.create("message", "title");
+      doReturn(expectedDto)
+          .when(getCandidateMesssageForCertificateFacadeService)
+          .get(CERTIFICATE_ID);
+      final var actualDto =
+          (GetCandidateMessageForCertificateDTO)
+              certificateController.getCandidateMessageForCertificate(CERTIFICATE_ID).getEntity();
+      assertEquals(expectedDto.getMessage(), actualDto.getMessage());
+    }
+
+    @Test
+    void shallReturnCorrectDtoTitle() {
+      final var expectedDto = GetCandidateMessageForCertificateDTO.create("message", "title");
+      doReturn(expectedDto)
+          .when(getCandidateMesssageForCertificateFacadeService)
+          .get(CERTIFICATE_ID);
+      final var actualDto =
+          (GetCandidateMessageForCertificateDTO)
+              certificateController.getCandidateMessageForCertificate(CERTIFICATE_ID).getEntity();
+      assertEquals(expectedDto.getTitle(), actualDto.getTitle());
+    }
+  }
+
+  @Nested
+  class CreateCertificateTest {
+
+    @Test
+    void shallReturnResponse() throws CreateCertificateException {
+      final var expectedDto = new CreateCertificateResponseDTO("certificateId");
+      doReturn("certificateId")
+          .when(createCertificateFacadeService)
+          .create("certificateType", "patientId");
+      final var actualDto =
+          (CreateCertificateResponseDTO)
+              certificateController
+                  .createCertificate(
+                      new CreateCertificateRequestDTO("certificateType", "patientId"))
+                  .getEntity();
+      assertEquals(expectedDto, actualDto);
+    }
+  }
 }

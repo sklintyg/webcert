@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVAILABLE_FUNCTION_CUSTOMIZE_BODY;
@@ -43,71 +42,53 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationType
 
 public final class AvailableFunctionFactory {
 
-    private AvailableFunctionFactory() {
-        throw new IllegalStateException("Utility class!");
-    }
+  private AvailableFunctionFactory() {
+    throw new IllegalStateException("Utility class!");
+  }
 
-    public static AvailableFunctionDTO avstangningSmittskydd(boolean enabled) {
-        return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.ATTENTION,
-            AVSTANGNING_SMITTSKYDD_INFO_TITLE,
-            AVSTANGNING_SMITTSKYDD_INFO_NAME,
-            AVSTANGNING_SMITTSKYDD_INFO_BODY,
-            enabled);
-    }
+  public static AvailableFunctionDTO avstangningSmittskydd(boolean enabled) {
+    return AvailableFunctionDTO.create(
+        AvailableFunctionTypeDTO.ATTENTION,
+        AVSTANGNING_SMITTSKYDD_INFO_TITLE,
+        AVSTANGNING_SMITTSKYDD_INFO_NAME,
+        AVSTANGNING_SMITTSKYDD_INFO_BODY,
+        enabled);
+  }
 
-    public static AvailableFunctionDTO customizePrint(boolean enabled, String fileName) {
-        return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE,
-            AVAILABLE_FUNCTION_CUSTOMIZE_TITLE,
-            AVAILABLE_FUNCTION_CUSTOMIZE_NAME,
-            AVAILABLE_FUNCTION_CUSTOMIZE_BODY,
-            AVAILABLE_FUNCTION_CUSTOMIZE_DESCRIPTION,
-            List.of(
-                InformationDTO.create(
-                    fileName,
-                    InformationTypeDto.FILENAME
-                ),
-                InformationDTO.create(
-                    SHOW_DIAGNOSIS_TEXT,
-                    InformationTypeDto.OPTIONS
-                ),
-                InformationDTO.create(
-                    OPTIONAL_FIELD_DIAGNOSER_HIDE_ID,
-                    HIDE_DIAGNOSIS_TEXT,
-                    InformationTypeDto.OPTIONS
-                )
-            ),
-            enabled
-        );
-    }
+  public static AvailableFunctionDTO customizePrint(boolean enabled, String fileName) {
+    return AvailableFunctionDTO.create(
+        AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE,
+        AVAILABLE_FUNCTION_CUSTOMIZE_TITLE,
+        AVAILABLE_FUNCTION_CUSTOMIZE_NAME,
+        AVAILABLE_FUNCTION_CUSTOMIZE_BODY,
+        AVAILABLE_FUNCTION_CUSTOMIZE_DESCRIPTION,
+        List.of(
+            InformationDTO.create(fileName, InformationTypeDto.FILENAME),
+            InformationDTO.create(SHOW_DIAGNOSIS_TEXT, InformationTypeDto.OPTIONS),
+            InformationDTO.create(
+                OPTIONAL_FIELD_DIAGNOSER_HIDE_ID, HIDE_DIAGNOSIS_TEXT, InformationTypeDto.OPTIONS)),
+        enabled);
+  }
 
-    public static AvailableFunctionDTO print(boolean enabled, String fileName) {
-        return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.PRINT_CERTIFICATE,
-            "",
-            AVAILABLE_FUNCTION_PRINT_NAME,
-            "",
-            "",
-            List.of(
-                InformationDTO.create(
-                    fileName,
-                    InformationTypeDto.FILENAME
-                )
-            ),
-            enabled
-        );
-    }
+  public static AvailableFunctionDTO print(boolean enabled, String fileName) {
+    return AvailableFunctionDTO.create(
+        AvailableFunctionTypeDTO.PRINT_CERTIFICATE,
+        "",
+        AVAILABLE_FUNCTION_PRINT_NAME,
+        "",
+        "",
+        List.of(InformationDTO.create(fileName, InformationTypeDto.FILENAME)),
+        enabled);
+  }
 
-    public static AvailableFunctionDTO send(boolean enabled) {
-        return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.SEND_CERTIFICATE,
-            SEND_CERTIFICATE_TITLE,
-            SEND_CERTIFICATE_NAME,
-            SEND_CERTIFICATE_BODY,
-            "",
-            Collections.emptyList(),
-            enabled
-        );
-    }
+  public static AvailableFunctionDTO send(boolean enabled) {
+    return AvailableFunctionDTO.create(
+        AvailableFunctionTypeDTO.SEND_CERTIFICATE,
+        SEND_CERTIFICATE_TITLE,
+        SEND_CERTIFICATE_NAME,
+        SEND_CERTIFICATE_BODY,
+        "",
+        Collections.emptyList(),
+        enabled);
+  }
 }

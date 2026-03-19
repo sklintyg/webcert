@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,35 +22,34 @@ import java.time.LocalDateTime;
 
 public class ListFilterDateRangeValue implements ListFilterValue {
 
-    private LocalDateTime to;
-    private LocalDateTime from;
+  private LocalDateTime to;
+  private LocalDateTime from;
 
-    public ListFilterDateRangeValue() {
-    }
+  public ListFilterDateRangeValue() {}
 
-    public ListFilterDateRangeValue(LocalDateTime to, LocalDateTime from) {
-        this.to = to;
-        this.from = from;
-    }
+  public ListFilterDateRangeValue(LocalDateTime to, LocalDateTime from) {
+    this.to = to;
+    this.from = from;
+  }
 
-    public LocalDateTime getTo() {
-        return to;
-    }
+  public LocalDateTime getTo() {
+    return to;
+  }
 
-    public void setTo(LocalDateTime to) {
-        this.to = to;
-    }
+  public void setTo(LocalDateTime to) {
+    this.to = to;
+  }
 
-    public LocalDateTime getFrom() {
-        return from;
-    }
+  public LocalDateTime getFrom() {
+    return from;
+  }
 
-    public void setFrom(LocalDateTime from) {
-        this.from = from;
-    }
+  public void setFrom(LocalDateTime from) {
+    this.from = from;
+  }
 
-    @Override
-    public ListFilterType getType() {
-        return ListFilterType.DATE_RANGE;
-    }
+  @Override
+  public ListFilterType getType() {
+    return ListFilterType.DATE_RANGE;
+  }
 }

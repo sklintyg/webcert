@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,9 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
-
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -32,10 +30,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFr
 @Builder
 public class GetCertificateFromMessageResponseDTO {
 
-    Certificate certificate;
+  Certificate certificate;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class GetCertificateFromMessageResponseDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class GetCertificateFromMessageResponseDTOBuilder {}
 }

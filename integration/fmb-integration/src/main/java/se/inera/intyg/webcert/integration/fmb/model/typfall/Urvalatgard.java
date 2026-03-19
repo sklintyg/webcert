@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,47 +30,44 @@ import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "kod",
-    "status"
-})
+@JsonPropertyOrder({"kod", "status"})
 public class Urvalatgard {
 
-    @JsonProperty("kod")
-    private List<Kod> kod = null;
-    @JsonProperty("status")
-    private Kod status;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("kod")
+  private List<Kod> kod = null;
 
-    @JsonProperty("kod")
-    public List<Kod> getKod() {
-        return kod;
-    }
+  @JsonProperty("status")
+  private Kod status;
 
-    @JsonProperty("kod")
-    public void setKod(List<Kod> kod) {
-        this.kod = kod;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("status")
-    public Kod getStatus() {
-        return status;
-    }
+  @JsonProperty("kod")
+  public List<Kod> getKod() {
+    return kod;
+  }
 
-    @JsonProperty("status")
-    public void setStatus(Kod status) {
-        this.status = status;
-    }
+  @JsonProperty("kod")
+  public void setKod(List<Kod> kod) {
+    this.kod = kod;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("status")
+  public Kod getStatus() {
+    return status;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("status")
+  public void setStatus(Kod status) {
+    this.status = status;
+  }
 
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

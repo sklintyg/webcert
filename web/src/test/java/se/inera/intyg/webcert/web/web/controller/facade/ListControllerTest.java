@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,83 +38,72 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-
 @ExtendWith(MockitoExtension.class)
 public class ListControllerTest {
 
-    @Mock
-    private ListDraftsFacadeServiceImpl listDraftsFacadeService;
-    @Mock
-    private ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;
-    @InjectMocks
-    private ListController listController;
+  @Mock private ListDraftsFacadeServiceImpl listDraftsFacadeService;
+  @Mock private ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;
+  @InjectMocks private ListController listController;
 
-    @Nested
-    class ListDrafts {
+  @Nested
+  class ListDrafts {
 
-        ListInfo listInfo = new ListInfo();
-        final List<CertificateListItem> list = List.of(new CertificateListItem());
+    ListInfo listInfo = new ListInfo();
+    final List<CertificateListItem> list = List.of(new CertificateListItem());
 
-        @BeforeEach
-        void setup() {
-            listInfo.setList(list);
-            listInfo.setTotalCount(1);
-            doReturn(listInfo)
-                .when(listDraftsFacadeService)
-                .get(any());
-        }
-
-        @Test
-        void shallIncludeListInResponse() {
-            final var request = new ListRequestDTO();
-            request.setFilter(new ListFilter());
-            final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
-            assertEquals(list, response.getList());
-        }
-
-        @Test
-        void shallIncludeTotalCountInResponse() {
-            final var request = new ListRequestDTO();
-            request.setFilter(new ListFilter());
-            final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
-            assertEquals(1, response.getTotalCount());
-        }
+    @BeforeEach
+    void setup() {
+      listInfo.setList(list);
+      listInfo.setTotalCount(1);
+      doReturn(listInfo).when(listDraftsFacadeService).get(any());
     }
 
-    @Nested
-    class ListSignedCertificates {
-
-        ListInfo listInfo = new ListInfo();
-        final List<CertificateListItem> list = List.of(new CertificateListItem());
-
-        @BeforeEach
-        void setup() {
-            listInfo.setList(list);
-            listInfo.setTotalCount(1);
-            doReturn(listInfo)
-                .when(listSignedCertificatesFacadeService)
-                .get(any());
-        }
-
-        @Test
-        void shallIncludeListInResponse() {
-            final var request = new ListRequestDTO();
-            request.setFilter(new ListFilter());
-            final var response = (ListResponseDTO) listController.getListOfSignedCertificates(request).getEntity();
-            assertEquals(list, response.getList());
-        }
-
-        @Test
-        void shallIncludeTotalCountInResponse() {
-            final var request = new ListRequestDTO();
-            request.setFilter(new ListFilter());
-            final var response = (ListResponseDTO) listController.getListOfSignedCertificates(request).getEntity();
-            assertEquals(1, response.getTotalCount());
-        }
+    @Test
+    void shallIncludeListInResponse() {
+      final var request = new ListRequestDTO();
+      request.setFilter(new ListFilter());
+      final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
+      assertEquals(list, response.getList());
     }
+
+    @Test
+    void shallIncludeTotalCountInResponse() {
+      final var request = new ListRequestDTO();
+      request.setFilter(new ListFilter());
+      final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
+      assertEquals(1, response.getTotalCount());
+    }
+  }
+
+  @Nested
+  class ListSignedCertificates {
+
+    ListInfo listInfo = new ListInfo();
+    final List<CertificateListItem> list = List.of(new CertificateListItem());
+
+    @BeforeEach
+    void setup() {
+      listInfo.setList(list);
+      listInfo.setTotalCount(1);
+      doReturn(listInfo).when(listSignedCertificatesFacadeService).get(any());
+    }
+
+    @Test
+    void shallIncludeListInResponse() {
+      final var request = new ListRequestDTO();
+      request.setFilter(new ListFilter());
+      final var response =
+          (ListResponseDTO) listController.getListOfSignedCertificates(request).getEntity();
+      assertEquals(list, response.getList());
+    }
+
+    @Test
+    void shallIncludeTotalCountInResponse() {
+      final var request = new ListRequestDTO();
+      request.setFilter(new ListFilter());
+      final var response =
+          (ListResponseDTO) listController.getListOfSignedCertificates(request).getEntity();
+      assertEquals(1, response.getTotalCount());
+    }
+  }
 }

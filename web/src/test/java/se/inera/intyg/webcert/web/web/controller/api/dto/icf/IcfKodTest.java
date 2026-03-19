@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,60 +23,57 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-/**
- * Created by marced on 2019-02-07.
- */
+/** Created by marced on 2019-02-07. */
 public class IcfKodTest {
 
-    private static final String KOD = "kod";
-    private static final String BENAMNING = "benamning";
-    private static final String BESKRIVNING = "beskrivning";
-    private static final String INNEFATTAR = "innefattar";
+  private static final String KOD = "kod";
+  private static final String BENAMNING = "benamning";
+  private static final String BESKRIVNING = "beskrivning";
+  private static final String INNEFATTAR = "innefattar";
 
-    @Test
-    public void testEqualsWhenEqual() {
-        IcfKod icfKod = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
-        IcfKod icfKod2 = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
-        IcfCentralKod icfCentralKod = new IcfCentralKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
-        IcfKompletterandeKod icfKompletterandeKod = new IcfKompletterandeKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
+  @Test
+  public void testEqualsWhenEqual() {
+    IcfKod icfKod = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
+    IcfKod icfKod2 = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
+    IcfCentralKod icfCentralKod = new IcfCentralKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
+    IcfKompletterandeKod icfKompletterandeKod =
+        new IcfKompletterandeKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
 
-        // Equals same class
-        assertTrue(icfKod.equals(icfKod2));
+    // Equals same class
+    assertTrue(icfKod.equals(icfKod2));
 
-        // Equals subclass (symmetric)
-        assertTrue(icfKod.equals(icfCentralKod));
-        assertTrue(icfCentralKod.equals(icfKod));
+    // Equals subclass (symmetric)
+    assertTrue(icfKod.equals(icfCentralKod));
+    assertTrue(icfCentralKod.equals(icfKod));
 
-        assertTrue(icfKod.equals(icfKompletterandeKod));
-        assertTrue(icfKompletterandeKod.equals(icfKod));
+    assertTrue(icfKod.equals(icfKompletterandeKod));
+    assertTrue(icfKompletterandeKod.equals(icfKod));
 
-        // subclasses symmetric
-        assertTrue(icfKompletterandeKod.equals(icfCentralKod));
-        assertTrue(icfCentralKod.equals(icfKompletterandeKod));
+    // subclasses symmetric
+    assertTrue(icfKompletterandeKod.equals(icfCentralKod));
+    assertTrue(icfCentralKod.equals(icfKompletterandeKod));
+  }
 
-    }
+  @Test
+  public void testNotEqualsWhenNotEqual() {
+    IcfKod icfKod = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
+    IcfKod icfKod2 = new IcfKod(KOD, BENAMNING, BESKRIVNING, "");
+    IcfCentralKod icfCentralKod = new IcfCentralKod(KOD, "", BESKRIVNING, INNEFATTAR);
+    IcfKompletterandeKod icfKompletterandeKod =
+        new IcfKompletterandeKod(KOD, BENAMNING, "", INNEFATTAR);
 
-    @Test
-    public void testNotEqualsWhenNotEqual() {
-        IcfKod icfKod = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
-        IcfKod icfKod2 = new IcfKod(KOD, BENAMNING, BESKRIVNING, "");
-        IcfCentralKod icfCentralKod = new IcfCentralKod(KOD, "", BESKRIVNING, INNEFATTAR);
-        IcfKompletterandeKod icfKompletterandeKod = new IcfKompletterandeKod(KOD, BENAMNING, "", INNEFATTAR);
+    // same class
+    assertFalse(icfKod.equals(icfKod2));
 
-        // same class
-        assertFalse(icfKod.equals(icfKod2));
+    // super <--> subclass (symmetric)
+    assertFalse(icfKod.equals(icfCentralKod));
+    assertFalse(icfCentralKod.equals(icfKod));
 
-        // super <--> subclass (symmetric)
-        assertFalse(icfKod.equals(icfCentralKod));
-        assertFalse(icfCentralKod.equals(icfKod));
+    assertFalse(icfKod.equals(icfKompletterandeKod));
+    assertFalse(icfKompletterandeKod.equals(icfKod));
 
-        assertFalse(icfKod.equals(icfKompletterandeKod));
-        assertFalse(icfKompletterandeKod.equals(icfKod));
-
-        // subclasses symmetric
-        assertFalse(icfKompletterandeKod.equals(icfCentralKod));
-        assertFalse(icfCentralKod.equals(icfKompletterandeKod));
-
-    }
-
+    // subclasses symmetric
+    assertFalse(icfKompletterandeKod.equals(icfCentralKod));
+    assertFalse(icfCentralKod.equals(icfKompletterandeKod));
+  }
 }

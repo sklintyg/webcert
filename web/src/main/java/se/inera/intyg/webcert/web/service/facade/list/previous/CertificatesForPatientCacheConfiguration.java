@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,16 +28,17 @@ import se.inera.intyg.infra.rediscache.core.RedisCacheOptionsSetter;
 @Configuration
 public class CertificatesForPatientCacheConfiguration {
 
-    @Value("${app.name:webcert}")
-    private String appName;
-    @Value("${certificatesForPatientCache.cache.expiry}")
-    private String cacheExpirySeconds;
+  @Value("${app.name:webcert}")
+  private String appName;
 
-    @Autowired
-    private RedisCacheOptionsSetter redisCacheOptionsSetter;
+  @Value("${certificatesForPatientCache.cache.expiry}")
+  private String cacheExpirySeconds;
 
-    @Bean
-    public Cache certificatesForPatientCache() {
-        return redisCacheOptionsSetter.createCache("certificatesForPatientCache:" + appName, cacheExpirySeconds);
-    }
+  @Autowired private RedisCacheOptionsSetter redisCacheOptionsSetter;
+
+  @Bean
+  public Cache certificatesForPatientCache() {
+    return redisCacheOptionsSetter.createCache(
+        "certificatesForPatientCache:" + appName, cacheExpirySeconds);
+  }
 }

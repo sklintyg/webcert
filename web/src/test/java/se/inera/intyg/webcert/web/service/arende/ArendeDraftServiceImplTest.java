@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,226 +43,226 @@ import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepositor
 @ExtendWith(MockitoExtension.class)
 class ArendeDraftServiceImplTest {
 
-    @Mock
-    private ArendeDraftRepository repo;
+  @Mock private ArendeDraftRepository repo;
 
-    @InjectMocks
-    private ArendeDraftServiceImpl arendeDraftService;
+  @InjectMocks private ArendeDraftServiceImpl arendeDraftService;
 
-    private static final Long draftId = 9999L;
-    private static final String intygId = "intygId";
-    private static final String questionId = "questionId";
-    private static final String text = "text";
-    private static final String amne = "amne";
-    private static final String originalText = "original text";
-    private static final String originalAmne = "original amne";
-    private final ArendeDraft originalDraft = buildArendeDraft(intygId, questionId, originalText, originalAmne);
-    private final ArendeDraft updatedDraft = buildArendeDraft(intygId, questionId, text, amne);
+  private static final Long draftId = 9999L;
+  private static final String intygId = "intygId";
+  private static final String questionId = "questionId";
+  private static final String text = "text";
+  private static final String amne = "amne";
+  private static final String originalText = "original text";
+  private static final String originalAmne = "original amne";
+  private final ArendeDraft originalDraft =
+      buildArendeDraft(intygId, questionId, originalText, originalAmne);
+  private final ArendeDraft updatedDraft = buildArendeDraft(intygId, questionId, text, amne);
 
-    @Nested
-    class NewDraft {
+  @Nested
+  class NewDraft {
 
-        @BeforeEach
-        void setup() {
-            updatedDraft.setId(draftId);
-            when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
-            when(repo.save(any())).thenReturn(updatedDraft);
-        }
-
-        @Test
-        void testSaveDraftNew() {
-            boolean res = arendeDraftService.saveDraft(intygId, questionId, text, amne);
-
-            assertTrue(res);
-            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-
-            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-            verify(repo).save(captor.capture());
-            assertEquals(intygId, captor.getValue().getIntygId());
-            assertEquals(questionId, captor.getValue().getQuestionId());
-            assertEquals(text, captor.getValue().getText());
-            assertEquals(amne, captor.getValue().getAmne());
-            verifyNoMoreInteractions(repo);
-        }
-
-        @Test
-        void testCreateCallsRepoCorrectly() {
-            arendeDraftService.create(intygId, amne, text, questionId);
-
-            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-            verify(repo).save(captor.capture());
-            assertEquals(intygId, captor.getValue().getIntygId());
-            assertEquals(questionId, captor.getValue().getQuestionId());
-            assertEquals(text, captor.getValue().getText());
-            assertEquals(amne, captor.getValue().getAmne());
-            verifyNoMoreInteractions(repo);
-        }
-
-        @Test
-        void testCreateSetsQuestionId() {
-            final var result = arendeDraftService.create(intygId, amne, text, questionId);
-
-            assertEquals(questionId, result.getQuestionId());
-        }
-
-        @Test
-        void testCreateSetsText() {
-            final var result = arendeDraftService.create(intygId, amne, text, questionId);
-
-            assertEquals(text, result.getText());
-        }
-
-        @Test
-        void testCreateSetsSubject() {
-            final var result = arendeDraftService.create(intygId, amne, text, questionId);
-
-            assertEquals(amne, result.getAmne());
-        }
-
-        @Test
-        void shouldReturnSavedArendeDraftFromCreate() {
-            final var result = arendeDraftService.create(intygId, amne, text, questionId);
-
-            assertEquals(updatedDraft, result);
-        }
-    }
-
-    @Nested
-    class UpdateDraft {
-
-        @BeforeEach
-        void setup() {
-            originalDraft.setId(draftId);
-            updatedDraft.setId(draftId);
-            when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(originalDraft);
-            when(repo.save(any())).thenReturn(updatedDraft);
-        }
-
-        @Test
-        void testSaveDraftUpdate() {
-            boolean res = arendeDraftService.saveDraft(intygId, questionId, text, amne);
-
-            assertTrue(res);
-            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-
-            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-            verify(repo).save(captor.capture());
-            assertEquals(intygId, captor.getValue().getIntygId());
-            assertEquals(questionId, captor.getValue().getQuestionId());
-            assertEquals(text, captor.getValue().getText());
-            assertEquals(amne, captor.getValue().getAmne());
-            verifyNoMoreInteractions(repo);
-        }
-
-        @Test
-        void testCreateCallsRepoCorrectly() {
-            arendeDraftService.create(intygId, amne, text, questionId);
-
-            verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-            ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
-            verify(repo).save(captor.capture());
-            assertEquals(intygId, captor.getValue().getIntygId());
-            assertEquals(questionId, captor.getValue().getQuestionId());
-            assertEquals(text, captor.getValue().getText());
-            assertEquals(amne, captor.getValue().getAmne());
-            verifyNoMoreInteractions(repo);
-        }
-
-        @Test
-        void testCreateSetsQuestionId() {
-            final var result = arendeDraftService.create(intygId, amne, text, questionId);
-
-            assertEquals(questionId, result.getQuestionId());
-        }
-
-        @Test
-        void testCreateSetsText() {
-            final var result = arendeDraftService.create(intygId, amne, text, questionId);
-
-            assertEquals(text, result.getText());
-        }
-
-        @Test
-        void testCreateSetsSubject() {
-            final var result = arendeDraftService.create(intygId, amne, text, questionId);
-
-            assertEquals(amne, result.getAmne());
-        }
-
-
-        @Test
-        void shouldReturnSavedArendeDraftFromCreate() {
-            final var result = arendeDraftService.create(intygId, amne, text, questionId);
-
-            assertEquals(updatedDraft, result);
-        }
+    @BeforeEach
+    void setup() {
+      updatedDraft.setId(draftId);
+      when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
+      when(repo.save(any())).thenReturn(updatedDraft);
     }
 
     @Test
-    void testDeleteExisting() {
-        final String intygId = "intygId";
-        final String questionId = "questionId";
-        ArendeDraft draft = buildArendeDraft(intygId, questionId, null, null);
-        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(draft);
+    void testSaveDraftNew() {
+      boolean res = arendeDraftService.saveDraft(intygId, questionId, text, amne);
 
-        boolean res = arendeDraftService.delete(intygId, questionId);
+      assertTrue(res);
+      verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
 
-        assertTrue(res);
-        verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-        verify(repo).delete(draft);
-        verifyNoMoreInteractions(repo);
+      ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+      verify(repo).save(captor.capture());
+      assertEquals(intygId, captor.getValue().getIntygId());
+      assertEquals(questionId, captor.getValue().getQuestionId());
+      assertEquals(text, captor.getValue().getText());
+      assertEquals(amne, captor.getValue().getAmne());
+      verifyNoMoreInteractions(repo);
     }
 
     @Test
-    void testDeleteNotExisting() {
-        final String intygId = "intygId";
-        final String questionId = "questionId";
-        when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
+    void testCreateCallsRepoCorrectly() {
+      arendeDraftService.create(intygId, amne, text, questionId);
 
-        boolean res = arendeDraftService.delete(intygId, questionId);
-
-        assertFalse(res);
-        verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
-        verifyNoMoreInteractions(repo);
+      verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+      ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+      verify(repo).save(captor.capture());
+      assertEquals(intygId, captor.getValue().getIntygId());
+      assertEquals(questionId, captor.getValue().getQuestionId());
+      assertEquals(text, captor.getValue().getText());
+      assertEquals(amne, captor.getValue().getAmne());
+      verifyNoMoreInteractions(repo);
     }
 
     @Test
-    void testListAnswerDraft() {
-        final String intygId = "intygId";
-        final String questionId = "questionId";
-        when(repo.findByIntygId(intygId)).thenReturn(Collections.singletonList(buildArendeDraft(intygId, questionId, null, null)));
+    void testCreateSetsQuestionId() {
+      final var result = arendeDraftService.create(intygId, amne, text, questionId);
 
-        List<ArendeDraft> res = arendeDraftService.listAnswerDrafts(intygId);
-
-        assertNotNull(res);
-        assertEquals(1, res.size());
-        assertEquals(intygId, res.get(0).getIntygId());
-        assertEquals(questionId, res.get(0).getQuestionId());
-        verify(repo).findByIntygId(intygId);
-        verifyNoMoreInteractions(repo);
+      assertEquals(questionId, result.getQuestionId());
     }
 
     @Test
-    void testGetQuestionDraft() {
-        final String intygId = "intygId";
-        when(repo.findByIntygIdAndQuestionId(intygId, null)).thenReturn(buildArendeDraft(intygId, null, null, null));
+    void testCreateSetsText() {
+      final var result = arendeDraftService.create(intygId, amne, text, questionId);
 
-        ArendeDraft res = arendeDraftService.getQuestionDraft(intygId);
-
-        assertNotNull(res);
-        assertEquals(intygId, res.getIntygId());
-        verify(repo).findByIntygIdAndQuestionId(intygId, null);
-        verifyNoMoreInteractions(repo);
-
+      assertEquals(text, result.getText());
     }
 
-    private ArendeDraft buildArendeDraft(String intygId, String questionId, String text, String amne) {
-        final var draft = new ArendeDraft();
-        draft.setIntygId(intygId);
-        draft.setQuestionId(questionId);
-        draft.setText(text);
-        draft.setAmne(amne);
-        return draft;
+    @Test
+    void testCreateSetsSubject() {
+      final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+      assertEquals(amne, result.getAmne());
     }
+
+    @Test
+    void shouldReturnSavedArendeDraftFromCreate() {
+      final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+      assertEquals(updatedDraft, result);
+    }
+  }
+
+  @Nested
+  class UpdateDraft {
+
+    @BeforeEach
+    void setup() {
+      originalDraft.setId(draftId);
+      updatedDraft.setId(draftId);
+      when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(originalDraft);
+      when(repo.save(any())).thenReturn(updatedDraft);
+    }
+
+    @Test
+    void testSaveDraftUpdate() {
+      boolean res = arendeDraftService.saveDraft(intygId, questionId, text, amne);
+
+      assertTrue(res);
+      verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+
+      ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+      verify(repo).save(captor.capture());
+      assertEquals(intygId, captor.getValue().getIntygId());
+      assertEquals(questionId, captor.getValue().getQuestionId());
+      assertEquals(text, captor.getValue().getText());
+      assertEquals(amne, captor.getValue().getAmne());
+      verifyNoMoreInteractions(repo);
+    }
+
+    @Test
+    void testCreateCallsRepoCorrectly() {
+      arendeDraftService.create(intygId, amne, text, questionId);
+
+      verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+      ArgumentCaptor<ArendeDraft> captor = ArgumentCaptor.forClass(ArendeDraft.class);
+      verify(repo).save(captor.capture());
+      assertEquals(intygId, captor.getValue().getIntygId());
+      assertEquals(questionId, captor.getValue().getQuestionId());
+      assertEquals(text, captor.getValue().getText());
+      assertEquals(amne, captor.getValue().getAmne());
+      verifyNoMoreInteractions(repo);
+    }
+
+    @Test
+    void testCreateSetsQuestionId() {
+      final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+      assertEquals(questionId, result.getQuestionId());
+    }
+
+    @Test
+    void testCreateSetsText() {
+      final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+      assertEquals(text, result.getText());
+    }
+
+    @Test
+    void testCreateSetsSubject() {
+      final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+      assertEquals(amne, result.getAmne());
+    }
+
+    @Test
+    void shouldReturnSavedArendeDraftFromCreate() {
+      final var result = arendeDraftService.create(intygId, amne, text, questionId);
+
+      assertEquals(updatedDraft, result);
+    }
+  }
+
+  @Test
+  void testDeleteExisting() {
+    final String intygId = "intygId";
+    final String questionId = "questionId";
+    ArendeDraft draft = buildArendeDraft(intygId, questionId, null, null);
+    when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(draft);
+
+    boolean res = arendeDraftService.delete(intygId, questionId);
+
+    assertTrue(res);
+    verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+    verify(repo).delete(draft);
+    verifyNoMoreInteractions(repo);
+  }
+
+  @Test
+  void testDeleteNotExisting() {
+    final String intygId = "intygId";
+    final String questionId = "questionId";
+    when(repo.findByIntygIdAndQuestionId(intygId, questionId)).thenReturn(null);
+
+    boolean res = arendeDraftService.delete(intygId, questionId);
+
+    assertFalse(res);
+    verify(repo).findByIntygIdAndQuestionId(intygId, questionId);
+    verifyNoMoreInteractions(repo);
+  }
+
+  @Test
+  void testListAnswerDraft() {
+    final String intygId = "intygId";
+    final String questionId = "questionId";
+    when(repo.findByIntygId(intygId))
+        .thenReturn(Collections.singletonList(buildArendeDraft(intygId, questionId, null, null)));
+
+    List<ArendeDraft> res = arendeDraftService.listAnswerDrafts(intygId);
+
+    assertNotNull(res);
+    assertEquals(1, res.size());
+    assertEquals(intygId, res.get(0).getIntygId());
+    assertEquals(questionId, res.get(0).getQuestionId());
+    verify(repo).findByIntygId(intygId);
+    verifyNoMoreInteractions(repo);
+  }
+
+  @Test
+  void testGetQuestionDraft() {
+    final String intygId = "intygId";
+    when(repo.findByIntygIdAndQuestionId(intygId, null))
+        .thenReturn(buildArendeDraft(intygId, null, null, null));
+
+    ArendeDraft res = arendeDraftService.getQuestionDraft(intygId);
+
+    assertNotNull(res);
+    assertEquals(intygId, res.getIntygId());
+    verify(repo).findByIntygIdAndQuestionId(intygId, null);
+    verifyNoMoreInteractions(repo);
+  }
+
+  private ArendeDraft buildArendeDraft(
+      String intygId, String questionId, String text, String amne) {
+    final var draft = new ArendeDraft();
+    draft.setIntygId(intygId);
+    draft.setQuestionId(questionId);
+    draft.setText(text);
+    draft.setAmne(amne);
+    return draft;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import jakarta.transaction.Transactional;
@@ -25,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationResponseDTO;
@@ -37,68 +35,66 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 @RequiredArgsConstructor
 public class SendNotificationsForCertificatesService {
 
-    private final NotificationRedeliveryRepository notificationRedeliveryRepository;
-    private final HandelseRepository handelseRepository;
-    private final SendNotificationRequestValidator sendNotificationRequestValidator;
-    private final SendNotificationCountValidator sendNotificationCountValidator;
-    private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForCertificatesService.class);
+  private final NotificationRedeliveryRepository notificationRedeliveryRepository;
+  private final HandelseRepository handelseRepository;
+  private final SendNotificationRequestValidator sendNotificationRequestValidator;
+  private final SendNotificationCountValidator sendNotificationCountValidator;
+  private static final Logger LOG =
+      LoggerFactory.getLogger(SendNotificationsForCertificatesService.class);
 
-    @Value("${max.allowed.notification.send}")
-    private int maxAllowedNotificationSend;
+  @Value("${max.allowed.notification.send}")
+  private int maxAllowedNotificationSend;
 
-    @Transactional
-    public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
-        LOG.info(
-            "Attempting to resend Certificate status updates. Using parameters: certificateIds '{}', statuses '{}'",
-            request.getCertificateIds(), request.getStatuses()
-        );
+  @Transactional
+  public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
+    LOG.info(
+        "Attempting to resend Certificate status updates. Using parameters: certificateIds '{}', statuses '{}'",
+        request.getCertificateIds(),
+        request.getStatuses());
 
-        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
-        final var stringStatuses = SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
+    final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+    final var stringStatuses =
+        SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
 
+    sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
+    sendNotificationCountValidator.certificates(sanitizedRequest);
 
-        sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
-        sendNotificationCountValidator.certificates(sanitizedRequest);
+    final var response =
+        notificationRedeliveryRepository.sendNotificationsForCertificates(
+            sanitizedRequest.getCertificateIds(), stringStatuses);
 
-        final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
-            sanitizedRequest.getCertificateIds(),
-            stringStatuses
-        );
+    LOG.info(
+        "Successfully resent status updates. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}'",
+        response,
+        request.getCertificateIds(),
+        request.getStatuses());
 
-        LOG.info(
-            "Successfully resent status updates. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}'",
-            response, request.getCertificateIds(), request.getStatuses()
-        );
+    return SendNotificationResponseDTO.builder().count(response).build();
+  }
 
-        return SendNotificationResponseDTO.builder()
-            .count(response)
-            .build();
-    }
+  public CountNotificationResponseDTO count(CountNotificationsForCertificatesRequestDTO request) {
+    LOG.info(
+        "Attempting to count status updates. Using parameters: statuses '{}'",
+        request.getStatuses());
 
-    public CountNotificationResponseDTO count(CountNotificationsForCertificatesRequestDTO request) {
-        LOG.info(
-            "Attempting to count status updates. Using parameters: statuses '{}'",
-             request.getStatuses()
-        );
+    final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+    final var stringStatuses =
+        SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
 
-        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
-        final var stringStatuses = SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
+    sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
 
-        sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
+    final var response =
+        handelseRepository.countNotificationsForCertificates(
+            sanitizedRequest.getCertificateIds(), stringStatuses);
 
-        final var response = handelseRepository.countNotificationsForCertificates(
-            sanitizedRequest.getCertificateIds(),
-            stringStatuses
-        );
+    LOG.info(
+        "Successfully counted certificate status updates. Number of updates: '{}'. Using parameters: statuses '{}'",
+        response,
+        request.getStatuses());
 
-        LOG.info(
-            "Successfully counted certificate status updates. Number of updates: '{}'. Using parameters: statuses '{}'",
-            response, request.getStatuses()
-        );
-
-        return CountNotificationResponseDTO.builder()
-            .count(response)
-            .max(maxAllowedNotificationSend)
-            .build();
-    }
+    return CountNotificationResponseDTO.builder()
+        .count(response)
+        .max(maxAllowedNotificationSend)
+        .build();
+  }
 }

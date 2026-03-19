@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,44 +35,39 @@ import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 @ExtendWith(MockitoExtension.class)
 class IntygInfoAggregatorTest {
 
-    private static final String ID = "ID";
-    private static final WcIntygInfo CERTIFICATE_FROM_CS = new WcIntygInfo();
-    private static final WcIntygInfo CERTIFICATE_FROM_WC = new WcIntygInfo();
+  private static final String ID = "ID";
+  private static final WcIntygInfo CERTIFICATE_FROM_CS = new WcIntygInfo();
+  private static final WcIntygInfo CERTIFICATE_FROM_WC = new WcIntygInfo();
 
-    IntygInfoServiceInterface getCertificateFromWC;
-    IntygInfoServiceInterface getCertificateFromCS;
-    IntygInfoServiceInterface aggregator;
+  IntygInfoServiceInterface getCertificateFromWC;
+  IntygInfoServiceInterface getCertificateFromCS;
+  IntygInfoServiceInterface aggregator;
 
-    @BeforeEach
-    void setup() {
-        getCertificateFromWC = mock(IntygInfoServiceInterface.class);
-        getCertificateFromCS = mock(IntygInfoServiceInterface.class);
+  @BeforeEach
+  void setup() {
+    getCertificateFromWC = mock(IntygInfoServiceInterface.class);
+    getCertificateFromCS = mock(IntygInfoServiceInterface.class);
 
-        aggregator = new IntygInfoAggregator(
-            getCertificateFromWC,
-            getCertificateFromCS
-        );
-    }
+    aggregator = new IntygInfoAggregator(getCertificateFromWC, getCertificateFromCS);
+  }
 
-    @Test
-    void shouldReturnCertificateFromCSIIfCertificateExistsInCS() {
-        when(getCertificateFromCS.getIntygInfo(ID))
-            .thenReturn(Optional.of(CERTIFICATE_FROM_CS));
+  @Test
+  void shouldReturnCertificateFromCSIIfCertificateExistsInCS() {
+    when(getCertificateFromCS.getIntygInfo(ID)).thenReturn(Optional.of(CERTIFICATE_FROM_CS));
 
-        final var response = aggregator.getIntygInfo(ID);
-        verify(getCertificateFromCS, times(1)).getIntygInfo(ID);
+    final var response = aggregator.getIntygInfo(ID);
+    verify(getCertificateFromCS, times(1)).getIntygInfo(ID);
 
-        assertEquals(CERTIFICATE_FROM_CS, response.get());
-    }
+    assertEquals(CERTIFICATE_FROM_CS, response.get());
+  }
 
-    @Test
-    void shouldReturnCertificateFromWCIfCertificateDoesNotExistInCS() {
-        when(getCertificateFromWC.getIntygInfo(ID))
-            .thenReturn(Optional.of(CERTIFICATE_FROM_WC));
+  @Test
+  void shouldReturnCertificateFromWCIfCertificateDoesNotExistInCS() {
+    when(getCertificateFromWC.getIntygInfo(ID)).thenReturn(Optional.of(CERTIFICATE_FROM_WC));
 
-        final var response = aggregator.getIntygInfo(ID);
-        verify(getCertificateFromWC, times(1)).getIntygInfo(ID);
+    final var response = aggregator.getIntygInfo(ID);
+    verify(getCertificateFromWC, times(1)).getIntygInfo(ID);
 
-        assertEquals(CERTIFICATE_FROM_WC, response.get());
-    }
+    assertEquals(CERTIFICATE_FROM_WC, response.get());
+  }
 }

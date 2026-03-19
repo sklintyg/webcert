@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,25 +34,25 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 @ContextConfiguration(classes = {IcfTextResourceImpl.class})
 public class IcfTextResourceImplTest {
 
-    @Autowired
-    private IcfTextResource icfTextResource;
+  @Autowired private IcfTextResource icfTextResource;
 
-    @Test
-    public void testReadFromFileAndLookupMatchingKod() {
+  @Test
+  public void testReadFromFileAndLookupMatchingKod() {
 
-        final String matchingCode = "b114"; //den här koden finns i testfilen
+    final String matchingCode = "b114"; // den här koden finns i testfilen
 
-        final String expectedBenamning = "Orientering";
-        final String expectedBeskrivning = "Allmänna psykiska funktioner av att känna till och fastställa sin relation till tid, rum, sig själv och andra, till föremål och närmaste omgivning";
-        final String expectedInnefattar = "funktioner av orientering till tid, rum och person; orientering till sig själv och andra; desorientering till tid, rum och person";
+    final String expectedBenamning = "Orientering";
+    final String expectedBeskrivning =
+        "Allmänna psykiska funktioner av att känna till och fastställa sin relation till tid, rum, sig själv och andra, till föremål och närmaste omgivning";
+    final String expectedInnefattar =
+        "funktioner av orientering till tid, rum och person; orientering till sig själv och andra; desorientering till tid, rum och person";
 
-        final Optional<IcfKod> icfKod = icfTextResource.lookupTextByIcfKod(matchingCode);
+    final Optional<IcfKod> icfKod = icfTextResource.lookupTextByIcfKod(matchingCode);
 
-        assertThat(icfKod).isPresent();
-        assertThat(icfKod.get().getKod()).isEqualTo(matchingCode);
-        assertThat(icfKod.get().getBenamning()).isEqualTo(expectedBenamning);
-        assertThat(icfKod.get().getBeskrivning()).isEqualTo(expectedBeskrivning);
-        assertThat(icfKod.get().getInnefattar()).isEqualTo(expectedInnefattar);
-    }
-
+    assertThat(icfKod).isPresent();
+    assertThat(icfKod.get().getKod()).isEqualTo(matchingCode);
+    assertThat(icfKod.get().getBenamning()).isEqualTo(expectedBenamning);
+    assertThat(icfKod.get().getBeskrivning()).isEqualTo(expectedBeskrivning);
+    assertThat(icfKod.get().getInnefattar()).isEqualTo(expectedInnefattar);
+  }
 }

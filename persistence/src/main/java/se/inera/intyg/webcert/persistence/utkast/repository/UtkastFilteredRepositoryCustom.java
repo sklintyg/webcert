@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,19 +24,19 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface UtkastFilteredRepositoryCustom {
 
-    /**
-     * Filtrera på utkast givet ett utkastfilter och tillåtna intygstyper.
-     *
-     * @param filter Ett filter med värden som satts av användaren
-     * @param authorizedIntygstyper Användarens tillåtna intygstyper
-     */
-    List<Utkast> filterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper);
+  /**
+   * Filtrera på utkast givet ett utkastfilter och tillåtna intygstyper.
+   *
+   * @param filter Ett filter med värden som satts av användaren
+   * @param authorizedIntygstyper Användarens tillåtna intygstyper
+   */
+  List<Utkast> filterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper);
 
-    /**
-     * Returnera antalet filtrerade utkast givet ett utkastfilter och tillåtna intygstyper.
-     *
-     * @param filter Ett filter med värden som satts av användaren
-     * @param authorizedIntygstyper Användarens tillåtna intygstyper
-     */
-    int countFilterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper);
+  /**
+   * Returnera antalet filtrerade utkast givet ett utkastfilter och tillåtna intygstyper.
+   *
+   * @param filter Ett filter med värden som satts av användaren
+   * @param authorizedIntygstyper Användarens tillåtna intygstyper
+   */
+  int countFilterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper);
 }

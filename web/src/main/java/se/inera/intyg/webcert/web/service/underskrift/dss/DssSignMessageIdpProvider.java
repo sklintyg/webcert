@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import org.slf4j.Logger;
@@ -27,38 +26,38 @@ import org.springframework.stereotype.Component;
 @Component
 public class DssSignMessageIdpProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DssSignMessageIdpProvider.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DssSignMessageIdpProvider.class);
 
-    private final String defaultIdpUrl;
-    private final boolean useSameAsAuth;
-    private final String identityProviderForSignMtlsSuffix;
+  private final String defaultIdpUrl;
+  private final boolean useSameAsAuth;
+  private final String identityProviderForSignMtlsSuffix;
 
-    public DssSignMessageIdpProvider(
-        @Value("${dss.service.idpurl}") String defaultIdpUrl,
-        @Value("${dss.service.idpurl.sameAsAuth}") boolean useSameAsAuth,
-        @Value("${dss.service.idpurl.suffix.mtls}") String identityProviderForSignMtlsSuffix) {
-        this.defaultIdpUrl = defaultIdpUrl;
-        this.useSameAsAuth = useSameAsAuth;
-        this.identityProviderForSignMtlsSuffix = identityProviderForSignMtlsSuffix;
+  public DssSignMessageIdpProvider(
+      @Value("${dss.service.idpurl}") String defaultIdpUrl,
+      @Value("${dss.service.idpurl.sameAsAuth}") boolean useSameAsAuth,
+      @Value("${dss.service.idpurl.suffix.mtls}") String identityProviderForSignMtlsSuffix) {
+    this.defaultIdpUrl = defaultIdpUrl;
+    this.useSameAsAuth = useSameAsAuth;
+    this.identityProviderForSignMtlsSuffix = identityProviderForSignMtlsSuffix;
+  }
+
+  public String get(String identityProviderForSign) {
+    if (useIdentityProviderForSign(identityProviderForSign)) {
+      return identityProviderForSign;
+    }
+    return defaultIdpUrl;
+  }
+
+  private boolean useIdentityProviderForSign(String identityProviderForSign) {
+    if (!useSameAsAuth) {
+      return false;
     }
 
-    public String get(String identityProviderForSign) {
-        if (useIdentityProviderForSign(identityProviderForSign)) {
-            return identityProviderForSign;
-        }
-        return defaultIdpUrl;
+    if (identityProviderForSign == null || identityProviderForSign.isEmpty()) {
+      LOG.warn("IdentityProviderForSign-attribute is missing! Default idp is used instead.");
+      return false;
     }
 
-    private boolean useIdentityProviderForSign(String identityProviderForSign) {
-        if (!useSameAsAuth) {
-            return false;
-        }
-
-        if (identityProviderForSign == null || identityProviderForSign.isEmpty()) {
-            LOG.warn("IdentityProviderForSign-attribute is missing! Default idp is used instead.");
-            return false;
-        }
-
-        return !identityProviderForSign.endsWith(identityProviderForSignMtlsSuffix);
-    }
+    return !identityProviderForSign.endsWith(identityProviderForSignMtlsSuffix);
+  }
 }

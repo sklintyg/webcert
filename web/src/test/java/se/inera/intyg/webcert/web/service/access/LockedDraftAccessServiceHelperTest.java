@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.access;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -40,215 +40,270 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelperImp
 @RunWith(MockitoJUnitRunner.class)
 public class LockedDraftAccessServiceHelperTest {
 
-    @Mock
-    private LockedDraftAccessService lockedDraftAccessService;
+  @Mock private LockedDraftAccessService lockedDraftAccessService;
 
-    @Spy
-    private AccessResultExceptionHelper accessResultExceptionHelper = new AccessResultExceptionHelperImpl();
+  @Spy
+  private AccessResultExceptionHelper accessResultExceptionHelper =
+      new AccessResultExceptionHelperImpl();
 
-    @InjectMocks
-    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
+  @InjectMocks private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
-    private Utkast draft;
+  private Utkast draft;
 
-    @Before
-    public void setup() {
-        draft = new Utkast();
-        draft.setIntygsTyp("certificateType");
-        draft.setIntygTypeVersion("certificateTypeVersion");
-        draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").get());
-        draft.setTestIntyg(false);
+  @Before
+  public void setup() {
+    draft = new Utkast();
+    draft.setIntygsTyp("certificateType");
+    draft.setIntygTypeVersion("certificateTypeVersion");
+    draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").get());
+    draft.setTestIntyg(false);
+  }
+
+  @Test
+  public void shallThrowExceptionIfNoAccessToRead() {
+    try {
+      doReturn(createNoAccessResult())
+          .when(lockedDraftAccessService)
+          .allowToRead(any(AccessEvaluationParameters.class));
+      lockedDraftAccessServiceHelper.validateAccessToRead(draft);
+      assertTrue("Should throw exception if no access", false);
+    } catch (AuthoritiesException ex) {
+      assertTrue(true);
     }
+  }
 
-    @Test
-    public void shallThrowExceptionIfNoAccessToRead() {
-        try {
-            doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToRead(any(AccessEvaluationParameters.class));
-            lockedDraftAccessServiceHelper.validateAccessToRead(draft);
-            assertTrue("Should throw exception if no access", false);
-        } catch (AuthoritiesException ex) {
-            assertTrue(true);
-        }
-    }
+  @Test
+  public void shallNotThrowExeptionIfAllowAccessToRead() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToRead(any(AccessEvaluationParameters.class));
+    lockedDraftAccessServiceHelper.validateAccessToRead(draft);
+    assertTrue(true);
+  }
 
-    @Test
-    public void shallNotThrowExeptionIfAllowAccessToRead() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToRead(any(AccessEvaluationParameters.class));
-        lockedDraftAccessServiceHelper.validateAccessToRead(draft);
-        assertTrue(true);
-    }
+  @Test
+  public void shallAllowIfAllowAccessToRead() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToRead(any(AccessEvaluationParameters.class));
+    final var actualResult = lockedDraftAccessServiceHelper.isAllowToRead(draft);
+    assertEquals(true, actualResult);
+  }
 
-    @Test
-    public void shallAllowIfAllowAccessToRead() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToRead(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToRead(draft);
-        assertEquals(true, actualResult);
-    }
+  @Test
+  public void shallNotAllowIfNoAccessToRead() {
+    doReturn(createNoAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToRead(any(AccessEvaluationParameters.class));
+    final var actualResult = lockedDraftAccessServiceHelper.isAllowToRead(draft);
+    assertEquals(false, actualResult);
+  }
 
-    @Test
-    public void shallNotAllowIfNoAccessToRead() {
-        doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToRead(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToRead(draft);
-        assertEquals(false, actualResult);
-    }
+  @Test
+  public void shallAllowIfAllowAccessToReadPassingAccessEvaluationParameters() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToRead(any(AccessEvaluationParameters.class));
+    final var actualResult =
+        lockedDraftAccessServiceHelper.isAllowToRead(mock(AccessEvaluationParameters.class));
+    assertEquals(true, actualResult);
+  }
 
-    @Test
-    public void shallAllowIfAllowAccessToReadPassingAccessEvaluationParameters() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToRead(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToRead(mock(AccessEvaluationParameters.class));
-        assertEquals(true, actualResult);
-    }
+  @Test
+  public void shallNotAllowIfNoAccessToReadPassingAccessEvaluationParameters() {
+    doReturn(createNoAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToRead(any(AccessEvaluationParameters.class));
+    final var actualResult =
+        lockedDraftAccessServiceHelper.isAllowToRead(mock(AccessEvaluationParameters.class));
+    assertEquals(false, actualResult);
+  }
 
-    @Test
-    public void shallNotAllowIfNoAccessToReadPassingAccessEvaluationParameters() {
-        doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToRead(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToRead(mock(AccessEvaluationParameters.class));
-        assertEquals(false, actualResult);
+  @Test
+  public void shallThrowExceptionIfNoAccessToCopy() {
+    try {
+      doReturn(createNoAccessResult())
+          .when(lockedDraftAccessService)
+          .allowToCopy(any(AccessEvaluationParameters.class));
+      lockedDraftAccessServiceHelper.validateAccessToCopy(draft);
+      assertTrue("Should throw exception if no access", false);
+    } catch (AuthoritiesException ex) {
+      assertTrue(true);
     }
+  }
 
-    @Test
-    public void shallThrowExceptionIfNoAccessToCopy() {
-        try {
-            doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToCopy(any(AccessEvaluationParameters.class));
-            lockedDraftAccessServiceHelper.validateAccessToCopy(draft);
-            assertTrue("Should throw exception if no access", false);
-        } catch (AuthoritiesException ex) {
-            assertTrue(true);
-        }
-    }
+  @Test
+  public void shallNotThrowExeptionIfAllowAccessToCopy() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToCopy(any(AccessEvaluationParameters.class));
+    lockedDraftAccessServiceHelper.validateAccessToCopy(draft);
+    assertTrue(true);
+  }
 
-    @Test
-    public void shallNotThrowExeptionIfAllowAccessToCopy() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToCopy(any(AccessEvaluationParameters.class));
-        lockedDraftAccessServiceHelper.validateAccessToCopy(draft);
-        assertTrue(true);
-    }
+  @Test
+  public void shallAllowIfAllowAccessToCopy() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToCopy(any(AccessEvaluationParameters.class));
+    final var actualResult = lockedDraftAccessServiceHelper.isAllowToCopy(draft);
+    assertEquals(true, actualResult);
+  }
 
-    @Test
-    public void shallAllowIfAllowAccessToCopy() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToCopy(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToCopy(draft);
-        assertEquals(true, actualResult);
-    }
+  @Test
+  public void shallNotAllowIfNoAccessToCopy() {
+    doReturn(createNoAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToCopy(any(AccessEvaluationParameters.class));
+    final var actualResult = lockedDraftAccessServiceHelper.isAllowToCopy(draft);
+    assertEquals(false, actualResult);
+  }
 
-    @Test
-    public void shallNotAllowIfNoAccessToCopy() {
-        doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToCopy(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToCopy(draft);
-        assertEquals(false, actualResult);
-    }
+  @Test
+  public void shallAllowIfAllowAccessToCopyPassingAccessEvaluationParameters() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToCopy(any(AccessEvaluationParameters.class));
+    final var actualResult =
+        lockedDraftAccessServiceHelper.isAllowToCopy(mock(AccessEvaluationParameters.class));
+    assertEquals(true, actualResult);
+  }
 
-    @Test
-    public void shallAllowIfAllowAccessToCopyPassingAccessEvaluationParameters() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToCopy(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToCopy(mock(AccessEvaluationParameters.class));
-        assertEquals(true, actualResult);
-    }
+  @Test
+  public void shallNotAllowIfNoAccessToCopyPassingAccessEvaluationParameters() {
+    doReturn(createNoAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToCopy(any(AccessEvaluationParameters.class));
+    final var actualResult =
+        lockedDraftAccessServiceHelper.isAllowToCopy(mock(AccessEvaluationParameters.class));
+    assertEquals(false, actualResult);
+  }
 
-    @Test
-    public void shallNotAllowIfNoAccessToCopyPassingAccessEvaluationParameters() {
-        doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToCopy(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToCopy(mock(AccessEvaluationParameters.class));
-        assertEquals(false, actualResult);
+  @Test
+  public void shallThrowExceptionIfNoAccessToInvalidate() {
+    try {
+      doReturn(createNoAccessResult())
+          .when(lockedDraftAccessService)
+          .allowToInvalidate(any(AccessEvaluationParameters.class));
+      lockedDraftAccessServiceHelper.validateAccessToInvalidate(draft);
+      assertTrue("Should throw exception if no access", false);
+    } catch (AuthoritiesException ex) {
+      assertTrue(true);
     }
+  }
 
-    @Test
-    public void shallThrowExceptionIfNoAccessToInvalidate() {
-        try {
-            doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToInvalidate(any(AccessEvaluationParameters.class));
-            lockedDraftAccessServiceHelper.validateAccessToInvalidate(draft);
-            assertTrue("Should throw exception if no access", false);
-        } catch (AuthoritiesException ex) {
-            assertTrue(true);
-        }
-    }
+  @Test
+  public void shallNotThrowExeptionIfAllowAccessToInvalidate() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToInvalidate(any(AccessEvaluationParameters.class));
+    lockedDraftAccessServiceHelper.validateAccessToInvalidate(draft);
+    assertTrue(true);
+  }
 
-    @Test
-    public void shallNotThrowExeptionIfAllowAccessToInvalidate() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToInvalidate(any(AccessEvaluationParameters.class));
-        lockedDraftAccessServiceHelper.validateAccessToInvalidate(draft);
-        assertTrue(true);
-    }
+  @Test
+  public void shallAllowIfAllowAccessToInvalidate() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToInvalidate(any(AccessEvaluationParameters.class));
+    final var actualResult = lockedDraftAccessServiceHelper.isAllowToInvalidate(draft);
+    assertEquals(true, actualResult);
+  }
 
-    @Test
-    public void shallAllowIfAllowAccessToInvalidate() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToInvalidate(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToInvalidate(draft);
-        assertEquals(true, actualResult);
-    }
+  @Test
+  public void shallNotAllowIfNoAccessToInvalidate() {
+    doReturn(createNoAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToInvalidate(any(AccessEvaluationParameters.class));
+    final var actualResult = lockedDraftAccessServiceHelper.isAllowToInvalidate(draft);
+    assertEquals(false, actualResult);
+  }
 
-    @Test
-    public void shallNotAllowIfNoAccessToInvalidate() {
-        doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToInvalidate(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToInvalidate(draft);
-        assertEquals(false, actualResult);
-    }
+  @Test
+  public void shallAllowIfAllowAccessToInvalidatePassingAccessEvaluationParameters() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToInvalidate(any(AccessEvaluationParameters.class));
+    final var actualResult =
+        lockedDraftAccessServiceHelper.isAllowToInvalidate(mock(AccessEvaluationParameters.class));
+    assertEquals(true, actualResult);
+  }
 
-    @Test
-    public void shallAllowIfAllowAccessToInvalidatePassingAccessEvaluationParameters() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToInvalidate(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToInvalidate(mock(AccessEvaluationParameters.class));
-        assertEquals(true, actualResult);
-    }
+  @Test
+  public void shallNotAllowIfNoAccessToInvalidatePassingAccessEvaluationParameters() {
+    doReturn(createNoAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToInvalidate(any(AccessEvaluationParameters.class));
+    final var actualResult =
+        lockedDraftAccessServiceHelper.isAllowToInvalidate(mock(AccessEvaluationParameters.class));
+    assertEquals(false, actualResult);
+  }
 
-    @Test
-    public void shallNotAllowIfNoAccessToInvalidatePassingAccessEvaluationParameters() {
-        doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToInvalidate(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToInvalidate(mock(AccessEvaluationParameters.class));
-        assertEquals(false, actualResult);
+  @Test
+  public void shallThrowExceptionIfNoAccessToPrint() {
+    try {
+      doReturn(createNoAccessResult())
+          .when(lockedDraftAccessService)
+          .allowToPrint(any(AccessEvaluationParameters.class));
+      lockedDraftAccessServiceHelper.validateAccessToPrint(draft);
+      assertTrue("Should throw exception if no access", false);
+    } catch (AuthoritiesException ex) {
+      assertTrue(true);
     }
+  }
 
-    @Test
-    public void shallThrowExceptionIfNoAccessToPrint() {
-        try {
-            doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToPrint(any(AccessEvaluationParameters.class));
-            lockedDraftAccessServiceHelper.validateAccessToPrint(draft);
-            assertTrue("Should throw exception if no access", false);
-        } catch (AuthoritiesException ex) {
-            assertTrue(true);
-        }
-    }
+  @Test
+  public void shallNotThrowExeptionIfAllowAccessToPrint() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToPrint(any(AccessEvaluationParameters.class));
+    lockedDraftAccessServiceHelper.validateAccessToPrint(draft);
+    assertTrue(true);
+  }
 
-    @Test
-    public void shallNotThrowExeptionIfAllowAccessToPrint() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToPrint(any(AccessEvaluationParameters.class));
-        lockedDraftAccessServiceHelper.validateAccessToPrint(draft);
-        assertTrue(true);
-    }
+  @Test
+  public void shallAllowIfAllowAccessToPrint() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToPrint(any(AccessEvaluationParameters.class));
+    final var actualResult = lockedDraftAccessServiceHelper.isAllowToPrint(draft);
+    assertEquals(true, actualResult);
+  }
 
-    @Test
-    public void shallAllowIfAllowAccessToPrint() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToPrint(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToPrint(draft);
-        assertEquals(true, actualResult);
-    }
+  @Test
+  public void shallNotAllowIfNoAccessToPrint() {
+    doReturn(createNoAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToPrint(any(AccessEvaluationParameters.class));
+    final var actualResult = lockedDraftAccessServiceHelper.isAllowToPrint(draft);
+    assertEquals(false, actualResult);
+  }
 
-    @Test
-    public void shallNotAllowIfNoAccessToPrint() {
-        doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToPrint(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToPrint(draft);
-        assertEquals(false, actualResult);
-    }
+  @Test
+  public void shallAllowIfAllowAccessToPrintPassingAccessEvaluationParameters() {
+    doReturn(createAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToPrint(any(AccessEvaluationParameters.class));
+    final var actualResult =
+        lockedDraftAccessServiceHelper.isAllowToPrint(mock(AccessEvaluationParameters.class));
+    assertEquals(true, actualResult);
+  }
 
-    @Test
-    public void shallAllowIfAllowAccessToPrintPassingAccessEvaluationParameters() {
-        doReturn(createAccessResult()).when(lockedDraftAccessService).allowToPrint(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToPrint(mock(AccessEvaluationParameters.class));
-        assertEquals(true, actualResult);
-    }
+  @Test
+  public void shallNotAllowIfNoAccessToPrintPassingAccessEvaluationParameters() {
+    doReturn(createNoAccessResult())
+        .when(lockedDraftAccessService)
+        .allowToPrint(any(AccessEvaluationParameters.class));
+    final var actualResult =
+        lockedDraftAccessServiceHelper.isAllowToPrint(mock(AccessEvaluationParameters.class));
+    assertEquals(false, actualResult);
+  }
 
-    @Test
-    public void shallNotAllowIfNoAccessToPrintPassingAccessEvaluationParameters() {
-        doReturn(createNoAccessResult()).when(lockedDraftAccessService).allowToPrint(any(AccessEvaluationParameters.class));
-        final var actualResult = lockedDraftAccessServiceHelper.isAllowToPrint(mock(AccessEvaluationParameters.class));
-        assertEquals(false, actualResult);
-    }
+  private AccessResult createAccessResult() {
+    return AccessResult.noProblem();
+  }
 
-    private AccessResult createAccessResult() {
-        return AccessResult.noProblem();
-    }
-
-    private AccessResult createNoAccessResult() {
-        return AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No Access");
-    }
+  private AccessResult createNoAccessResult() {
+    return AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No Access");
+  }
 }

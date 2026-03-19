@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,66 +41,61 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEv
 @ExtendWith(MockitoExtension.class)
 class GetCertificateEventsFromCertificateServiceTest {
 
-    private static final GetCertificateEventsRequestDTO REQUEST = GetCertificateEventsRequestDTO.builder().build();
-    private static final String ID = "ID";
-    private static final CertificateEventDTO[] EVENTS = {new CertificateEventDTO()};
+  private static final GetCertificateEventsRequestDTO REQUEST =
+      GetCertificateEventsRequestDTO.builder().build();
+  private static final String ID = "ID";
+  private static final CertificateEventDTO[] EVENTS = {new CertificateEventDTO()};
 
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationService csIntegrationService;
 
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
+  @InjectMocks
+  GetCertificateEventsFromCertificateService getCertificateEventsFromCertificateService;
 
-    @InjectMocks
-    GetCertificateEventsFromCertificateService getCertificateEventsFromCertificateService;
+  @Test
+  void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    final var response = getCertificateEventsFromCertificateService.getCertificateEvents(ID);
 
-    @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        final var response = getCertificateEventsFromCertificateService.getCertificateEvents(ID);
+    assertNull(response);
+  }
 
-        assertNull(response);
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+      when(csIntegrationService.certificateExists(ID)).thenReturn(true);
+
+      when(csIntegrationRequestFactory.getCertificateEventsRequest()).thenReturn(REQUEST);
     }
 
     @Nested
-    class CertificateExistsInCS {
+    class CertificateIsForwardFromCS {
 
-        @BeforeEach
-        void setup() {
-            when(csIntegrationService.certificateExists(ID))
-                .thenReturn(true);
+      @BeforeEach
+      void setup() {
+        when(csIntegrationService.getCertificateEvents(ID, REQUEST)).thenReturn(EVENTS);
+      }
 
-            when(csIntegrationRequestFactory.getCertificateEventsRequest())
-                .thenReturn(REQUEST);
-        }
+      @Test
+      void shouldCallMethodWithId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        getCertificateEventsFromCertificateService.getCertificateEvents(ID);
 
-        @Nested
-        class CertificateIsForwardFromCS {
+        verify(csIntegrationService)
+            .getCertificateEvents(captor.capture(), any(GetCertificateEventsRequestDTO.class));
+        assertEquals(ID, captor.getValue());
+      }
 
-            @BeforeEach
-            void setup() {
-                when(csIntegrationService.getCertificateEvents(ID, REQUEST))
-                    .thenReturn(EVENTS);
-            }
+      @Test
+      void shouldCallMethodWithRequest() {
+        final var captor = ArgumentCaptor.forClass(GetCertificateEventsRequestDTO.class);
+        getCertificateEventsFromCertificateService.getCertificateEvents(ID);
 
-            @Test
-            void shouldCallMethodWithId() {
-                final var captor = ArgumentCaptor.forClass(String.class);
-                getCertificateEventsFromCertificateService.getCertificateEvents(ID);
-
-                verify(csIntegrationService).getCertificateEvents(captor.capture(), any(GetCertificateEventsRequestDTO.class));
-                assertEquals(ID, captor.getValue());
-            }
-
-            @Test
-            void shouldCallMethodWithRequest() {
-                final var captor = ArgumentCaptor.forClass(GetCertificateEventsRequestDTO.class);
-                getCertificateEventsFromCertificateService.getCertificateEvents(ID);
-
-                verify(csIntegrationService).getCertificateEvents(anyString(), captor.capture());
-                assertEquals(REQUEST, captor.getValue());
-            }
-
-        }
+        verify(csIntegrationService).getCertificateEvents(anyString(), captor.capture());
+        assertEquals(REQUEST, captor.getValue());
+      }
     }
+  }
 }

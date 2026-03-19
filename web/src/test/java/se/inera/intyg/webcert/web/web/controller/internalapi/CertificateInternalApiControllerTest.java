@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,72 +39,68 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 @ExtendWith(MockitoExtension.class)
 class CertificateInternalApiControllerTest {
 
-    private static final byte[] EXPECTED_PDF_DATA = new byte[0];
-    private static final String EXPECTED_FILENAME = "filename";
-    private static final CertificatePdfResponseDTO EXPECTED_PDL_RESPONSE = CertificatePdfResponseDTO.create(
-        EXPECTED_FILENAME,
-        EXPECTED_PDF_DATA
-    );
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CUSTOMIZATION_ID = "customizationId";
+  private static final byte[] EXPECTED_PDF_DATA = new byte[0];
+  private static final String EXPECTED_FILENAME = "filename";
+  private static final CertificatePdfResponseDTO EXPECTED_PDL_RESPONSE =
+      CertificatePdfResponseDTO.create(EXPECTED_FILENAME, EXPECTED_PDF_DATA);
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CUSTOMIZATION_ID = "customizationId";
+  private static final String PERSON_ID = "personId";
+  @Mock private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
+
+  @Mock private GetCertificateInternalAggregator certificateInternalAggregator;
+
+  @InjectMocks private CertificateInternalApiController certificateInternalApiController;
+
+  @Nested
+  class GetCertificate {
+
     private static final String PERSON_ID = "personId";
-    @Mock
-    private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
 
-    @Mock
-    private GetCertificateInternalAggregator certificateInternalAggregator;
+    @Test
+    void shallReturnGetCertificateResponse() {
+      final var expectedResponse = GetCertificateResponse.create(new Certificate());
+      final var getCertificateIntegrationRequestDTO =
+          GetCertificateIntegrationRequestDTO.builder().personId(PERSON_ID).build();
 
-    @InjectMocks
-    private CertificateInternalApiController certificateInternalApiController;
+      doReturn(expectedResponse).when(certificateInternalAggregator).get(CERTIFICATE_ID, PERSON_ID);
 
-    @Nested
-    class GetCertificate {
+      final var getCertificateResponse =
+          certificateInternalApiController.getCertificate(
+              getCertificateIntegrationRequestDTO, CERTIFICATE_ID);
 
-        private static final String PERSON_ID = "personId";
-
-        @Test
-        void shallReturnGetCertificateResponse() {
-            final var expectedResponse = GetCertificateResponse.create(new Certificate());
-            final var getCertificateIntegrationRequestDTO = GetCertificateIntegrationRequestDTO.builder()
-                .personId(PERSON_ID)
-                .build();
-
-            doReturn(expectedResponse).when(certificateInternalAggregator).get(CERTIFICATE_ID, PERSON_ID);
-
-            final var getCertificateResponse = certificateInternalApiController.getCertificate(
-                getCertificateIntegrationRequestDTO,
-                CERTIFICATE_ID
-            );
-
-            assertEquals(expectedResponse, getCertificateResponse);
-        }
+      assertEquals(expectedResponse, getCertificateResponse);
     }
+  }
 
-    @Nested
-    class GetPdfData {
+  @Nested
+  class GetPdfData {
 
-        private final CertificatePdfRequestDTO printCertificateRequest = CertificatePdfRequestDTO.builder()
+    private final CertificatePdfRequestDTO printCertificateRequest =
+        CertificatePdfRequestDTO.builder()
             .customizationId(CUSTOMIZATION_ID)
             .personId(PERSON_ID)
             .build();
 
-        @BeforeEach
-        void setUp() {
-            doReturn(EXPECTED_PDL_RESPONSE)
-                .when(getCertificateInternalPdfAggregator)
-                .get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
-        }
-
-        @Test
-        void shallReturnPrintCertificateResponseWithFileName() {
-            final var actualPrintCertificateResponse = certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
-            assertEquals(EXPECTED_FILENAME, actualPrintCertificateResponse.getFilename());
-        }
-
-        @Test
-        void shallReturnPrintCertificateResponseWithPdfData() {
-            final var actualPrintCertificateResponse = certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
-            assertEquals(EXPECTED_PDF_DATA, actualPrintCertificateResponse.getPdfData());
-        }
+    @BeforeEach
+    void setUp() {
+      doReturn(EXPECTED_PDL_RESPONSE)
+          .when(getCertificateInternalPdfAggregator)
+          .get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
     }
+
+    @Test
+    void shallReturnPrintCertificateResponseWithFileName() {
+      final var actualPrintCertificateResponse =
+          certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
+      assertEquals(EXPECTED_FILENAME, actualPrintCertificateResponse.getFilename());
+    }
+
+    @Test
+    void shallReturnPrintCertificateResponseWithPdfData() {
+      final var actualPrintCertificateResponse =
+          certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
+      assertEquals(EXPECTED_PDF_DATA, actualPrintCertificateResponse.getPdfData());
+    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,91 +42,102 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 @Service
 public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
-    private static final ListType LIST_TYPE = ListType.DRAFTS;
+  private static final ListType LIST_TYPE = ListType.DRAFTS;
 
-    private final WebCertUserService webCertUserService;
-    private final UtkastService utkastService;
-    private final LogService logService;
-    private final DraftFilterConverter draftFilterConverter;
-    private final ListPaginationHelper listPaginationHelper;
-    private final ListSortHelper listSortHelper;
-    private final ListDecorator listDecorator;
-    private final CertificateListItemConverter certificateListItemConverter;
-    private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-    private final ListCertificatesAggregator listCertificatesAggregator;
+  private final WebCertUserService webCertUserService;
+  private final UtkastService utkastService;
+  private final LogService logService;
+  private final DraftFilterConverter draftFilterConverter;
+  private final ListPaginationHelper listPaginationHelper;
+  private final ListSortHelper listSortHelper;
+  private final ListDecorator listDecorator;
+  private final CertificateListItemConverter certificateListItemConverter;
+  private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+  private final ListCertificatesAggregator listCertificatesAggregator;
 
-    @Autowired
-    public ListDraftsFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
-        LogService logService, DraftFilterConverter draftFilterConverter,
-        ListPaginationHelper listPaginationHelper, ListSortHelper listSortHelper,
-        ListDecorator listDecorator, CertificateListItemConverter certificateListItemConverter,
-        ListCertificatesAggregator listCertificatesAggregator) {
-        this.webCertUserService = webCertUserService;
-        this.utkastService = utkastService;
-        this.logService = logService;
-        this.draftFilterConverter = draftFilterConverter;
-        this.listPaginationHelper = listPaginationHelper;
-        this.listSortHelper = listSortHelper;
-        this.listDecorator = listDecorator;
-        this.certificateListItemConverter = certificateListItemConverter;
-        this.listCertificatesAggregator = listCertificatesAggregator;
-    }
+  @Autowired
+  public ListDraftsFacadeServiceImpl(
+      WebCertUserService webCertUserService,
+      UtkastService utkastService,
+      LogService logService,
+      DraftFilterConverter draftFilterConverter,
+      ListPaginationHelper listPaginationHelper,
+      ListSortHelper listSortHelper,
+      ListDecorator listDecorator,
+      CertificateListItemConverter certificateListItemConverter,
+      ListCertificatesAggregator listCertificatesAggregator) {
+    this.webCertUserService = webCertUserService;
+    this.utkastService = utkastService;
+    this.logService = logService;
+    this.draftFilterConverter = draftFilterConverter;
+    this.listPaginationHelper = listPaginationHelper;
+    this.listSortHelper = listSortHelper;
+    this.listDecorator = listDecorator;
+    this.certificateListItemConverter = certificateListItemConverter;
+    this.listCertificatesAggregator = listCertificatesAggregator;
+  }
 
-    @Override
-    public ListInfo get(ListFilter filter) {
-        final var user = webCertUserService.getUser();
-        checkUserAccess(user);
+  @Override
+  public ListInfo get(ListFilter filter) {
+    final var user = webCertUserService.getUser();
+    checkUserAccess(user);
 
-        final var convertedFilter = draftFilterConverter.convert(filter);
+    final var convertedFilter = draftFilterConverter.convert(filter);
 
-        final var intygEntryList = getIntygEntryList(convertedFilter);
-        final var decoratedAndFilteredList = decorateList(intygEntryList);
+    final var intygEntryList = getIntygEntryList(convertedFilter);
+    final var decoratedAndFilteredList = decorateList(intygEntryList);
 
-        final var listFromCertificateService = listCertificatesAggregator.listCertificatesForUnit(filter);
-        final var mergedList = Stream
-            .concat(
-                decoratedAndFilteredList.stream(),
-                listFromCertificateService.stream()
-            )
+    final var listFromCertificateService =
+        listCertificatesAggregator.listCertificatesForUnit(filter);
+    final var mergedList =
+        Stream.concat(decoratedAndFilteredList.stream(), listFromCertificateService.stream())
             .collect(Collectors.toList());
 
-        final var totalListCount = mergedList.size();
+    final var totalListCount = mergedList.size();
 
-        final var convertedList = convertList(mergedList);
-        final var sortedList = listSortHelper.sort(convertedList, convertedFilter.getOrderBy(), convertedFilter.getOrderAscending());
-        final var paginatedList = listPaginationHelper.paginate(sortedList, filter);
+    final var convertedList = convertList(mergedList);
+    final var sortedList =
+        listSortHelper.sort(
+            convertedList, convertedFilter.getOrderBy(), convertedFilter.getOrderAscending());
+    final var paginatedList = listPaginationHelper.paginate(sortedList, filter);
 
-        logListUsage(user, paginatedList);
-        return new ListInfo(totalListCount, paginatedList);
-    }
+    logListUsage(user, paginatedList);
+    return new ListInfo(totalListCount, paginatedList);
+  }
 
-    private void checkUserAccess(WebCertUser user) {
-        authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
-    }
+  private void checkUserAccess(WebCertUser user) {
+    authoritiesValidator
+        .given(user)
+        .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .orThrow();
+  }
 
-    private List<ListIntygEntry> decorateList(List<ListIntygEntry> list) {
-        listDecorator.decorateWithCertificateTypeName(list);
-        listDecorator.decorateWithStaffName(list);
-        listDecorator.decorateWithResourceLinks(list);
-        return listDecorator.decorateAndFilterProtectedPerson(list);
-    }
+  private List<ListIntygEntry> decorateList(List<ListIntygEntry> list) {
+    listDecorator.decorateWithCertificateTypeName(list);
+    listDecorator.decorateWithStaffName(list);
+    listDecorator.decorateWithResourceLinks(list);
+    return listDecorator.decorateAndFilterProtectedPerson(list);
+  }
 
-    private void logListUsage(WebCertUser user, List<CertificateListItem> paginatedList) {
-        paginatedList.stream().map(CertificateListItem::valueAsPatientId).distinct().forEach(
-            id -> performPDLLogging(user, id)
-        );
-    }
+  private void logListUsage(WebCertUser user, List<CertificateListItem> paginatedList) {
+    paginatedList.stream()
+        .map(CertificateListItem::valueAsPatientId)
+        .distinct()
+        .forEach(id -> performPDLLogging(user, id));
+  }
 
-    private List<CertificateListItem> convertList(List<ListIntygEntry> intygEntryList) {
-        return intygEntryList.stream().map(item -> certificateListItemConverter.convert(item, LIST_TYPE)).collect(Collectors.toList());
-    }
+  private List<CertificateListItem> convertList(List<ListIntygEntry> intygEntryList) {
+    return intygEntryList.stream()
+        .map(item -> certificateListItemConverter.convert(item, LIST_TYPE))
+        .collect(Collectors.toList());
+  }
 
-    private List<ListIntygEntry> getIntygEntryList(UtkastFilter filter) {
-        final var list = utkastService.filterIntyg(filter);
-        return IntygDraftsConverter.convertUtkastsToListIntygEntries(list);
-    }
+  private List<ListIntygEntry> getIntygEntryList(UtkastFilter filter) {
+    final var list = utkastService.filterIntyg(filter);
+    return IntygDraftsConverter.convertUtkastsToListIntygEntries(list);
+  }
 
-    private void performPDLLogging(WebCertUser user, String patientId) {
-        logService.logReadLevelTwo(user, patientId);
-    }
+  private void performPDLLogging(WebCertUser user, String patientId) {
+    logService.logReadLevelTwo(user, patientId);
+  }
 }

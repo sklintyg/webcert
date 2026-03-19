@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,19 +30,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class CreateCsrfTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private CookieCsrfTokenRepository csrfTokenRepository;
+  @Autowired private CookieCsrfTokenRepository csrfTokenRepository;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
-        boolean missingToken = csrfTokenRepository.loadToken(request) == null;
-        if (missingToken) {
-            CsrfToken csrfToken = csrfTokenRepository.generateToken(request);
-            csrfTokenRepository.saveToken(csrfToken, request, response);
-        }
-
-        // Proceed with other filters
-        filterChain.doFilter(request, response);
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    boolean missingToken = csrfTokenRepository.loadToken(request) == null;
+    if (missingToken) {
+      CsrfToken csrfToken = csrfTokenRepository.generateToken(request);
+      csrfTokenRepository.saveToken(csrfToken, request, response);
     }
+
+    // Proceed with other filters
+    filterChain.doFilter(request, response);
+  }
 }

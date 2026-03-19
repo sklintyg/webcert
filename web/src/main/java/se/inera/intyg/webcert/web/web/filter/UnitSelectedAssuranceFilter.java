@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,69 +35,78 @@ import se.inera.intyg.webcert.web.logging.HashPatientIdHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-
 @Component(value = "unitSelectedAssuranceFilter")
 public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UnitSelectedAssuranceFilter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UnitSelectedAssuranceFilter.class);
 
-    @Autowired
-    private WebCertUserService userService;
+  @Autowired private WebCertUserService userService;
 
-    private String ignoredUrls;
+  private String ignoredUrls;
 
-    private List<String> ignoredUrlsList;
+  private List<String> ignoredUrlsList;
 
-    @Override
-    protected void initFilterBean() throws ServletException {
-        if (ignoredUrls == null) {
-            LOG.warn("No ignored urls are configured!");
-        } else {
-            ignoredUrlsList = Arrays.asList(ignoredUrls.split(","));
-            LOG.info("Configured ignored urls as:" + ignoredUrlsList.stream().map(Object::toString).collect(Collectors.joining(", ")));
-        }
+  @Override
+  protected void initFilterBean() throws ServletException {
+    if (ignoredUrls == null) {
+      LOG.warn("No ignored urls are configured!");
+    } else {
+      ignoredUrlsList = Arrays.asList(ignoredUrls.split(","));
+      LOG.info(
+          "Configured ignored urls as:"
+              + ignoredUrlsList.stream().map(Object::toString).collect(Collectors.joining(", ")));
     }
+  }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
-        final var user = getUser();
-        final var continueRequestIf = user == null
+    final var user = getUser();
+    final var continueRequestIf =
+        user == null
             || user.getValdVardenhet() != null
             || isIgnoredUrl(request)
             || user.isUnauthorizedPrivatePractitioner();
 
-        LOG.debug("continueRequestIf " + HashPatientIdHelper.fromUrl(request.getRequestURI()) + " = " + continueRequestIf);
+    LOG.debug(
+        "continueRequestIf "
+            + HashPatientIdHelper.fromUrl(request.getRequestURI())
+            + " = "
+            + continueRequestIf);
 
-        if (continueRequestIf) {
-            filterChain.doFilter(request, response);
-        } else {
-            LOG.error("User accessed " + HashPatientIdHelper.fromUrl(request.getRequestURI()) + " but has not selected a care unit");
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+    if (continueRequestIf) {
+      filterChain.doFilter(request, response);
+    } else {
+      LOG.error(
+          "User accessed "
+              + HashPatientIdHelper.fromUrl(request.getRequestURI())
+              + " but has not selected a care unit");
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
 
-    private boolean isIgnoredUrl(HttpServletRequest request) {
-        final var url = request.getRequestURI();
-        final var continueRequestIf = ignoredUrlsList.stream().anyMatch(url::contains);
-        LOG.debug("continueRequestIf " + url + " = " + continueRequestIf);
-        return continueRequestIf;
-    }
+  private boolean isIgnoredUrl(HttpServletRequest request) {
+    final var url = request.getRequestURI();
+    final var continueRequestIf = ignoredUrlsList.stream().anyMatch(url::contains);
+    LOG.debug("continueRequestIf " + url + " = " + continueRequestIf);
+    return continueRequestIf;
+  }
 
-    public String getIgnoredUrls() {
-        return ignoredUrls;
-    }
+  public String getIgnoredUrls() {
+    return ignoredUrls;
+  }
 
-    public void setIgnoredUrls(String ignoredUrls) {
-        this.ignoredUrls = ignoredUrls;
-    }
+  public void setIgnoredUrls(String ignoredUrls) {
+    this.ignoredUrls = ignoredUrls;
+  }
 
-    private WebCertUser getUser() {
-        if (userService.hasAuthenticationContext()) {
-            return userService.getUser();
-        } else {
-            return null;
-        }
+  private WebCertUser getUser() {
+    if (userService.hasAuthenticationContext()) {
+      return userService.getUser();
+    } else {
+      return null;
     }
+  }
 }

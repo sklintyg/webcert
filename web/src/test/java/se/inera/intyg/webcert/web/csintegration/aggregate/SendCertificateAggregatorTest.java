@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.mock;
@@ -33,35 +32,32 @@ import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 @ExtendWith(MockitoExtension.class)
 class SendCertificateAggregatorTest {
 
-    private static final String ID = "ID";
+  private static final String ID = "ID";
 
-    SendCertificateFacadeService sendCertificateFromWC;
-    SendCertificateFacadeService sendCertificateFromCS;
-    SendCertificateFacadeService aggregator;
+  SendCertificateFacadeService sendCertificateFromWC;
+  SendCertificateFacadeService sendCertificateFromCS;
+  SendCertificateFacadeService aggregator;
 
-    @BeforeEach
-    void setup() {
-        sendCertificateFromWC = mock(SendCertificateFacadeService.class);
-        sendCertificateFromCS = mock(SendCertificateFacadeService.class);
+  @BeforeEach
+  void setup() {
+    sendCertificateFromWC = mock(SendCertificateFacadeService.class);
+    sendCertificateFromCS = mock(SendCertificateFacadeService.class);
 
-        aggregator = new SendCertificateAggregator(
-            sendCertificateFromWC,
-            sendCertificateFromCS);
-    }
+    aggregator = new SendCertificateAggregator(sendCertificateFromWC, sendCertificateFromCS);
+  }
 
-    @Test
-    void shouldSendFromCSIfExists() {
-        when(sendCertificateFromCS.sendCertificate(ID))
-            .thenReturn(ID);
-        aggregator.sendCertificate(ID);
+  @Test
+  void shouldSendFromCSIfExists() {
+    when(sendCertificateFromCS.sendCertificate(ID)).thenReturn(ID);
+    aggregator.sendCertificate(ID);
 
-        Mockito.verify(sendCertificateFromWC, times(0)).sendCertificate(ID);
-    }
+    Mockito.verify(sendCertificateFromWC, times(0)).sendCertificate(ID);
+  }
 
-    @Test
-    void shouldSendFromWCIfCertificateDoesNotExistInCS() {
-        aggregator.sendCertificate(ID);
+  @Test
+  void shouldSendFromWCIfCertificateDoesNotExistInCS() {
+    aggregator.sendCertificate(ID);
 
-        Mockito.verify(sendCertificateFromWC, times(1)).sendCertificate(ID);
-    }
+    Mockito.verify(sendCertificateFromWC, times(1)).sendCertificate(ID);
+  }
 }

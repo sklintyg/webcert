@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -52,73 +52,59 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 @ExtendWith(MockitoExtension.class)
 class ListDraftsFacadeServiceImplTest {
 
-    private static final ListFilter LIST_FILTER = new ListFilter();
-    @Mock
-    ListCertificatesAggregator listCertificatesAggregator;
-    @Mock
-    WebCertUserService webCertUserService;
-    @Mock
-    UtkastService utkastService;
-    @Mock
-    LogService logService;
-    @Mock
-    DraftFilterConverter draftFilterConverter;
-    @Mock
-    ListPaginationHelper listPaginationHelper;
-    @Mock
-    ListSortHelper listSortHelper;
-    @Mock
-    ListDecorator listDecorator;
-    @Mock
-    CertificateListItemConverter certificateListItemConverter;
-    @Mock
-    AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-    @InjectMocks
-    ListDraftsFacadeServiceImpl listDraftsFacadeService;
+  private static final ListFilter LIST_FILTER = new ListFilter();
+  @Mock ListCertificatesAggregator listCertificatesAggregator;
+  @Mock WebCertUserService webCertUserService;
+  @Mock UtkastService utkastService;
+  @Mock LogService logService;
+  @Mock DraftFilterConverter draftFilterConverter;
+  @Mock ListPaginationHelper listPaginationHelper;
+  @Mock ListSortHelper listSortHelper;
+  @Mock ListDecorator listDecorator;
+  @Mock CertificateListItemConverter certificateListItemConverter;
+  @Mock AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+  @InjectMocks ListDraftsFacadeServiceImpl listDraftsFacadeService;
 
-    private static final List<ListIntygEntry> CS_LIST = List.of(new ListIntygEntry());
-    private static final List<ListIntygEntry> WC_LIST = List.of(new ListIntygEntry());
+  private static final List<ListIntygEntry> CS_LIST = List.of(new ListIntygEntry());
+  private static final List<ListIntygEntry> WC_LIST = List.of(new ListIntygEntry());
 
-    @BeforeEach
-    void setup() {
-        final var user = new WebCertUser();
-        when(webCertUserService.getUser()).thenReturn(user);
+  @BeforeEach
+  void setup() {
+    final var user = new WebCertUser();
+    when(webCertUserService.getUser()).thenReturn(user);
 
-        final var features = new HashMap<String, Feature>();
-        final var feature = new Feature();
-        feature.setGlobal(true);
-        features.put(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, feature);
-        user.setFeatures(features);
+    final var features = new HashMap<String, Feature>();
+    final var feature = new Feature();
+    feature.setGlobal(true);
+    features.put(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, feature);
+    user.setFeatures(features);
 
-        when(listDecorator.decorateAndFilterProtectedPerson(anyList())).thenReturn(WC_LIST);
-        when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
+    when(listDecorator.decorateAndFilterProtectedPerson(anyList())).thenReturn(WC_LIST);
+    when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
 
-        final var convertedFilter = new UtkastFilter("HSA_ID");
-        convertedFilter.setOrderBy("ORDER_BY");
-        convertedFilter.setPatientId("PATIENT_ID");
-        convertedFilter.setOrderAscending(false);
-        when(draftFilterConverter.convert(any(ListFilter.class)))
-            .thenReturn(convertedFilter);
-    }
+    final var convertedFilter = new UtkastFilter("HSA_ID");
+    convertedFilter.setOrderBy("ORDER_BY");
+    convertedFilter.setPatientId("PATIENT_ID");
+    convertedFilter.setOrderAscending(false);
+    when(draftFilterConverter.convert(any(ListFilter.class))).thenReturn(convertedFilter);
+  }
 
-    @Test
-    void shouldMergeListWithCertificateServiceBeforeConverting() {
-        when(listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER))
-            .thenReturn(CS_LIST);
+  @Test
+  void shouldMergeListWithCertificateServiceBeforeConverting() {
+    when(listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER)).thenReturn(CS_LIST);
 
-        listDraftsFacadeService.get(LIST_FILTER);
+    listDraftsFacadeService.get(LIST_FILTER);
 
-        verify(certificateListItemConverter, times(2)).convert(any(ListIntygEntry.class), eq(ListType.DRAFTS));
-    }
+    verify(certificateListItemConverter, times(2))
+        .convert(any(ListIntygEntry.class), eq(ListType.DRAFTS));
+  }
 
-    @Test
-    void shouldSetTotalCount() {
-        when(listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER))
-            .thenReturn(CS_LIST);
+  @Test
+  void shouldSetTotalCount() {
+    when(listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER)).thenReturn(CS_LIST);
 
-        final var response = listDraftsFacadeService.get(LIST_FILTER);
+    final var response = listDraftsFacadeService.get(LIST_FILTER);
 
-        assertEquals(2, response.getTotalCount());
-    }
-
+    assertEquals(2, response.getTotalCount());
+  }
 }

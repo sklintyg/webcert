@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,51 +26,52 @@ import java.util.stream.Collectors;
 
 public class Icd10KoderRequest {
 
-    private String icd10Kod1;
-    private String icd10Kod2;
-    private String icd10Kod3;
+  private String icd10Kod1;
+  private String icd10Kod2;
+  private String icd10Kod3;
 
-    public Icd10KoderRequest() {
-    }
+  public Icd10KoderRequest() {}
 
-    private Icd10KoderRequest(final String icd10Kod1, final String icd10Kod2, final String icd10Kod3) {
-        this.icd10Kod1 = icd10Kod1;
-        this.icd10Kod2 = icd10Kod2;
-        this.icd10Kod3 = icd10Kod3;
-    }
+  private Icd10KoderRequest(
+      final String icd10Kod1, final String icd10Kod2, final String icd10Kod3) {
+    this.icd10Kod1 = icd10Kod1;
+    this.icd10Kod2 = icd10Kod2;
+    this.icd10Kod3 = icd10Kod3;
+  }
 
-    public String getIcd10Kod1() {
-        return icd10Kod1;
-    }
+  public String getIcd10Kod1() {
+    return icd10Kod1;
+  }
 
-    public void setIcd10Kod1(final String icd10Kod1) {
-        this.icd10Kod1 = icd10Kod1;
-    }
+  public void setIcd10Kod1(final String icd10Kod1) {
+    this.icd10Kod1 = icd10Kod1;
+  }
 
-    public String getIcd10Kod2() {
-        return icd10Kod2;
-    }
+  public String getIcd10Kod2() {
+    return icd10Kod2;
+  }
 
-    public void setIcd10Kod2(final String icd10Kod2) {
-        this.icd10Kod2 = icd10Kod2;
-    }
+  public void setIcd10Kod2(final String icd10Kod2) {
+    this.icd10Kod2 = icd10Kod2;
+  }
 
-    public String getIcd10Kod3() {
-        return icd10Kod3;
-    }
+  public String getIcd10Kod3() {
+    return icd10Kod3;
+  }
 
-    public void setIcd10Kod3(final String icd10Kod3) {
-        this.icd10Kod3 = icd10Kod3;
-    }
+  public void setIcd10Kod3(final String icd10Kod3) {
+    this.icd10Kod3 = icd10Kod3;
+  }
 
-    public Set<String> getIcd10Codes() {
-        Set<String> set = new LinkedHashSet<>(Arrays.asList(icd10Kod1, icd10Kod2, icd10Kod3));
-        return set.stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
+  public Set<String> getIcd10Codes() {
+    Set<String> set = new LinkedHashSet<>(Arrays.asList(icd10Kod1, icd10Kod2, icd10Kod3));
+    return set.stream()
+        .filter(Objects::nonNull)
+        .collect(Collectors.toCollection(LinkedHashSet::new));
+  }
 
-    public static Icd10KoderRequest of(final String icd10Code1, final String icd10Code2, final String icd10Code3) {
-        return new Icd10KoderRequest(icd10Code1, icd10Code2, icd10Code3);
-    }
+  public static Icd10KoderRequest of(
+      final String icd10Code1, final String icd10Code2, final String icd10Code3) {
+    return new Icd10KoderRequest(icd10Code1, icd10Code2, icd10Code3);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,22 +26,22 @@ import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException
 @Service("createCertificateAggregator")
 public class CreateCertificateAggregator implements CreateCertificateFacadeService {
 
-    private final CreateCertificateFacadeService createCertificateFromWC;
-    private final CreateCertificateFacadeService createCertificateFromCS;
+  private final CreateCertificateFacadeService createCertificateFromWC;
+  private final CreateCertificateFacadeService createCertificateFromCS;
 
-    public CreateCertificateAggregator(
-        @Qualifier("createCertificateFromWC") CreateCertificateFacadeService createCertificateFromWC,
-        @Qualifier("createCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS) {
-        this.createCertificateFromWC = createCertificateFromWC;
-        this.createCertificateFromCS = createCertificateFromCS;
-    }
+  public CreateCertificateAggregator(
+      @Qualifier("createCertificateFromWC") CreateCertificateFacadeService createCertificateFromWC,
+      @Qualifier("createCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS) {
+    this.createCertificateFromWC = createCertificateFromWC;
+    this.createCertificateFromCS = createCertificateFromCS;
+  }
 
-    @Override
-    public String create(String certificateType, String patientId) throws CreateCertificateException {
-        final var responseFromCS = createCertificateFromCS.create(certificateType, patientId);
+  @Override
+  public String create(String certificateType, String patientId) throws CreateCertificateException {
+    final var responseFromCS = createCertificateFromCS.create(certificateType, patientId);
 
-        return responseFromCS != null
-            ? responseFromCS
-            : createCertificateFromWC.create(certificateType, patientId);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : createCertificateFromWC.create(certificateType, patientId);
+  }
 }

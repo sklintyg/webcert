@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,36 +20,38 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 
 public class CreateCompletionCopyResponse {
 
-    private String newDraftIntygType;
+  private String newDraftIntygType;
 
-    private String newDraftIntygTypeVersion;
+  private String newDraftIntygTypeVersion;
 
-    private String newDraftIntygId;
+  private String newDraftIntygId;
 
-    private String originalIntygId;
+  private String originalIntygId;
 
-    public CreateCompletionCopyResponse(String newDraftIntygType, String newDraftIntygTypeVersion, String newDraftIntygId,
-        String originalIntygId) {
-        this.newDraftIntygId = newDraftIntygId;
-        this.newDraftIntygType = newDraftIntygType;
-        this.newDraftIntygTypeVersion = newDraftIntygTypeVersion;
-        this.originalIntygId = originalIntygId;
-    }
+  public CreateCompletionCopyResponse(
+      String newDraftIntygType,
+      String newDraftIntygTypeVersion,
+      String newDraftIntygId,
+      String originalIntygId) {
+    this.newDraftIntygId = newDraftIntygId;
+    this.newDraftIntygType = newDraftIntygType;
+    this.newDraftIntygTypeVersion = newDraftIntygTypeVersion;
+    this.originalIntygId = originalIntygId;
+  }
 
-    public String getNewDraftIntygType() {
-        return newDraftIntygType;
-    }
+  public String getNewDraftIntygType() {
+    return newDraftIntygType;
+  }
 
-    public String getNewDraftIntygTypeVersion() {
-        return newDraftIntygTypeVersion;
-    }
+  public String getNewDraftIntygTypeVersion() {
+    return newDraftIntygTypeVersion;
+  }
 
-    public String getNewDraftIntygId() {
-        return newDraftIntygId;
-    }
+  public String getNewDraftIntygId() {
+    return newDraftIntygId;
+  }
 
-    public String getOriginalIntygId() {
-        return originalIntygId;
-    }
-
+  public String getOriginalIntygId() {
+    return originalIntygId;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,139 +52,137 @@ import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 @ExtendWith(MockitoExtension.class)
 class LaunchIntegrationControllerTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String UNIT_ID = "unitId";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String UNIT_ID = "unitId";
 
-    @Mock
-    private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
+  @Mock private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @Mock
-    private ReactUriFactory reactUriFactory;
+  @Mock private ReactUriFactory reactUriFactory;
 
-    @Mock
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  @Mock private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
-    @InjectMocks
-    private LaunchIntegrationController launchIntegrationController;
+  @InjectMocks private LaunchIntegrationController launchIntegrationController;
 
-    private UriInfo uriInfo;
-    private WebCertUser webcertUser;
-    private static final String ORIGIN = "normal";
+  private UriInfo uriInfo;
+  private WebCertUser webcertUser;
+  private static final String ORIGIN = "normal";
 
+  @Test
+  void shouldReturnArrayOfGrantedRoles() {
+    final var expectedRoles =
+        List.of(
+            AuthoritiesConstants.ROLE_ADMIN,
+            AuthoritiesConstants.ROLE_LAKARE,
+            AuthoritiesConstants.ROLE_TANDLAKARE,
+            AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
+            AuthoritiesConstants.ROLE_BARNMORSKA);
+    final var grantedRoles = launchIntegrationController.getGrantedRoles();
+    expectedRoles.forEach(role -> assertTrue(Arrays.asList(grantedRoles).contains(role)));
+  }
 
-    @Test
-    void shouldReturnArrayOfGrantedRoles() {
-        final var expectedRoles = List.of(
-            AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE,
-            AuthoritiesConstants.ROLE_SJUKSKOTERSKA, AuthoritiesConstants.ROLE_BARNMORSKA);
-        final var grantedRoles = launchIntegrationController.getGrantedRoles();
-        expectedRoles.forEach(role -> assertTrue(Arrays.asList(grantedRoles).contains(role)));
+  @Nested
+  class TestRedirect {
+
+    @BeforeEach
+    void setup() {
+      final var roles = new HashMap<>();
+      roles.put("LAKARE", new Role());
+      webcertUser = mock(WebCertUser.class);
+      doReturn("NORMAL").when(webcertUser).getOrigin();
+      doReturn(roles).when(webcertUser).getRoles();
+      doReturn(webcertUser).when(webCertUserService).getUser();
+      doReturn(UNIT_ID).when(getIssuingUnitIdAggregator).get(CERTIFICATE_ID);
     }
-
 
     @Nested
-    class TestRedirect {
+    class ReactCertificateTest {
+
+      @BeforeEach
+      void setup() {
+        doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
+        doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
+        doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
+        doReturn(true).when(webcertUser).changeValdVardenhet(any());
+      }
+
+      @Test
+      void shouldUseReactIfFeatureIsActivated() {
+        launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
+
+        verify(reactUriFactory).uriForCertificate(any(), any());
+      }
+
+      @Test
+      void shouldSetLaunchFromOriginOnUser() {
+        launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
+
+        verify(webcertUser).setLaunchFromOrigin(ORIGIN);
+      }
+    }
+
+    @Nested
+    class ChangeUnit {
+
+      @Nested
+      class SuccessfullyChangedUnit {
 
         @BeforeEach
-        void setup() {
-            final var roles = new HashMap<>();
-            roles.put("LAKARE", new Role());
-            webcertUser = mock(WebCertUser.class);
-            doReturn("NORMAL").when(webcertUser).getOrigin();
-            doReturn(roles).when(webcertUser).getRoles();
-            doReturn(webcertUser).when(webCertUserService).getUser();
-            doReturn(UNIT_ID).when(getIssuingUnitIdAggregator).get(CERTIFICATE_ID);
+        void setUp() {
+          doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
+          doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
+          doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
+          doReturn(true).when(webcertUser).changeValdVardenhet(any());
         }
 
-        @Nested
-        class ReactCertificateTest {
-
-            @BeforeEach
-            void setup() {
-                doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
-                doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
-                doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
-                doReturn(true).when(webcertUser).changeValdVardenhet(any());
-            }
-
-            @Test
-            void shouldUseReactIfFeatureIsActivated() {
-                launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
-
-                verify(reactUriFactory).uriForCertificate(any(), any());
-            }
-
-            @Test
-            void shouldSetLaunchFromOriginOnUser() {
-                launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
-
-                verify(webcertUser).setLaunchFromOrigin(ORIGIN);
-            }
+        @Test
+        void shallChangeToCorrectUnit() {
+          final var unitIdCaptor = ArgumentCaptor.forClass(String.class);
+          launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
+          verify(webcertUser).changeValdVardenhet(unitIdCaptor.capture());
+          assertEquals(UNIT_ID, unitIdCaptor.getValue());
         }
 
-        @Nested
-        class ChangeUnit {
-
-            @Nested
-            class SuccessfullyChangedUnit {
-
-                @BeforeEach
-                void setUp() {
-                    doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
-                    doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
-                    doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
-                    doReturn(true).when(webcertUser).changeValdVardenhet(any());
-                }
-
-                @Test
-                void shallChangeToCorrectUnit() {
-                    final var unitIdCaptor = ArgumentCaptor.forClass(String.class);
-                    launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
-                    verify(webcertUser).changeValdVardenhet(unitIdCaptor.capture());
-                    assertEquals(UNIT_ID, unitIdCaptor.getValue());
-                }
-
-                @Test
-                void shallUpdateFeatures() {
-                    launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
-                    verify(webcertUser).setFeatures(any());
-                }
-            }
-
-
-            @Nested
-            class FailedChangedUnit {
-
-                @Test
-                void shallThrowExceptionIfChangeUnitFails() {
-                    doReturn(false).when(webcertUser).changeValdVardenhet(any());
-                    assertThrows(WebCertServiceException.class, () ->
-                        launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN)
-                    );
-                }
-            }
+        @Test
+        void shallUpdateFeatures() {
+          launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
+          verify(webcertUser).setFeatures(any());
         }
+      }
 
-        @Nested
-        class QuestionsTest {
+      @Nested
+      class FailedChangedUnit {
 
-            @BeforeEach
-            void setup() {
-                doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificateQuestions(any(), any());
-                doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
-                doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
-                doReturn(true).when(webcertUser).changeValdVardenhet(any());
-            }
-
-            @Test
-            void shouldDirectToCertificateQuestions() {
-                launchIntegrationController.directToCertificateQuestions(uriInfo, CERTIFICATE_ID);
-
-                verify(reactUriFactory).uriForCertificateQuestions(any(), any());
-            }
+        @Test
+        void shallThrowExceptionIfChangeUnitFails() {
+          doReturn(false).when(webcertUser).changeValdVardenhet(any());
+          assertThrows(
+              WebCertServiceException.class,
+              () ->
+                  launchIntegrationController.redirectToCertificate(
+                      uriInfo, CERTIFICATE_ID, ORIGIN));
         }
+      }
     }
+
+    @Nested
+    class QuestionsTest {
+
+      @BeforeEach
+      void setup() {
+        doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificateQuestions(any(), any());
+        doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
+        doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
+        doReturn(true).when(webcertUser).changeValdVardenhet(any());
+      }
+
+      @Test
+      void shouldDirectToCertificateQuestions() {
+        launchIntegrationController.directToCertificateQuestions(uriInfo, CERTIFICATE_ID);
+
+        verify(reactUriFactory).uriForCertificateQuestions(any(), any());
+      }
+    }
+  }
 }

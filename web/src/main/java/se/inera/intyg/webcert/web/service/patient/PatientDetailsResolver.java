@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,26 +25,25 @@ import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 
-/**
- * Created by eriklupander on 2017-08-14.
- */
+/** Created by eriklupander on 2017-08-14. */
 public interface PatientDetailsResolver {
 
-    PersonSvar getPersonFromPUService(Personnummer personnummer);
+  PersonSvar getPersonFromPUService(Personnummer personnummer);
 
-    Patient resolvePatient(Personnummer personnummer, String intygsTyp, String intygsTypVersion);
+  Patient resolvePatient(Personnummer personnummer, String intygsTyp, String intygsTypVersion);
 
-    SekretessStatus getSekretessStatus(Personnummer personNummer);
+  SekretessStatus getSekretessStatus(Personnummer personNummer);
 
-    boolean isAvliden(Personnummer personnummer);
+  boolean isAvliden(Personnummer personnummer);
 
-    boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient);
+  boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient);
 
-    boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient);
+  boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient);
 
-    Map<Personnummer, SekretessStatus> getSekretessStatusForList(List<Personnummer> personnummerList);
+  Map<Personnummer, SekretessStatus> getSekretessStatusForList(List<Personnummer> personnummerList);
 
-    boolean isTestIndicator(Personnummer personnummer);
+  boolean isTestIndicator(Personnummer personnummer);
 
-    Map<Personnummer, PatientDetailsResolverResponse> getPersonStatusesForList(List<Personnummer> personnummerList);
+  Map<Personnummer, PatientDetailsResolverResponse> getPersonStatusesForList(
+      List<Personnummer> personnummerList);
 }

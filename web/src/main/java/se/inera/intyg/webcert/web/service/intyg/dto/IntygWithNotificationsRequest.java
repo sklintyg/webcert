@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,80 +24,85 @@ import se.inera.intyg.schemas.contract.Personnummer;
 
 public final class IntygWithNotificationsRequest {
 
-    private final LocalDateTime startDate;
-    private final LocalDateTime endDate;
-    private final List<String> enhetId;
-    private final String vardgivarId;
-    private final Personnummer personnummer;
+  private final LocalDateTime startDate;
+  private final LocalDateTime endDate;
+  private final List<String> enhetId;
+  private final String vardgivarId;
+  private final Personnummer personnummer;
 
-    public IntygWithNotificationsRequest(LocalDateTime startDate, LocalDateTime endDate, List<String> enhetId, String vardgivarId,
-        Personnummer personnummer) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.enhetId = enhetId;
-        this.vardgivarId = vardgivarId;
-        this.personnummer = personnummer;
+  public IntygWithNotificationsRequest(
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      List<String> enhetId,
+      String vardgivarId,
+      Personnummer personnummer) {
+    this.startDate = startDate;
+    this.endDate = endDate;
+    this.enhetId = enhetId;
+    this.vardgivarId = vardgivarId;
+    this.personnummer = personnummer;
+  }
+
+  public LocalDateTime getStartDate() {
+    return startDate;
+  }
+
+  public LocalDateTime getEndDate() {
+    return endDate;
+  }
+
+  public List<String> getEnhetId() {
+    return enhetId;
+  }
+
+  public String getVardgivarId() {
+    return vardgivarId;
+  }
+
+  public Personnummer getPersonnummer() {
+    return personnummer;
+  }
+
+  public boolean shouldUseEnhetId() {
+    return enhetId != null && !enhetId.isEmpty();
+  }
+
+  public static class Builder {
+
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private List<String> enhetId;
+    private String vardgivarId;
+    private Personnummer personnummer;
+
+    public Builder setStartDate(LocalDateTime startDate) {
+      this.startDate = startDate;
+      return this;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public Builder setEndDate(LocalDateTime endDate) {
+      this.endDate = endDate;
+      return this;
     }
 
-    public LocalDateTime getEndDate() {
-        return endDate;
+    public Builder setEnhetId(List<String> enhetId) {
+      this.enhetId = enhetId;
+      return this;
     }
 
-    public List<String> getEnhetId() {
-        return enhetId;
+    public Builder setVardgivarId(String vardgivarId) {
+      this.vardgivarId = vardgivarId;
+      return this;
     }
 
-    public String getVardgivarId() {
-        return vardgivarId;
+    public Builder setPersonnummer(Personnummer personnummer) {
+      this.personnummer = personnummer;
+      return this;
     }
 
-    public Personnummer getPersonnummer() {
-        return personnummer;
+    public IntygWithNotificationsRequest build() {
+      return new IntygWithNotificationsRequest(
+          startDate, endDate, enhetId, vardgivarId, personnummer);
     }
-
-    public boolean shouldUseEnhetId() {
-        return enhetId != null && !enhetId.isEmpty();
-    }
-
-    public static class Builder {
-
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
-        private List<String> enhetId;
-        private String vardgivarId;
-        private Personnummer personnummer;
-
-        public Builder setStartDate(LocalDateTime startDate) {
-            this.startDate = startDate;
-            return this;
-        }
-
-        public Builder setEndDate(LocalDateTime endDate) {
-            this.endDate = endDate;
-            return this;
-        }
-
-        public Builder setEnhetId(List<String> enhetId) {
-            this.enhetId = enhetId;
-            return this;
-        }
-
-        public Builder setVardgivarId(String vardgivarId) {
-            this.vardgivarId = vardgivarId;
-            return this;
-        }
-
-        public Builder setPersonnummer(Personnummer personnummer) {
-            this.personnummer = personnummer;
-            return this;
-        }
-
-        public IntygWithNotificationsRequest build() {
-            return new IntygWithNotificationsRequest(startDate, endDate, enhetId, vardgivarId, personnummer);
-        }
-    }
+  }
 }

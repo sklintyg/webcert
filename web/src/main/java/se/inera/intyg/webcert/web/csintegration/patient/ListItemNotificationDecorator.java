@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.patient;
 
 import java.util.List;
@@ -32,26 +31,26 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 @RequiredArgsConstructor
 public class ListItemNotificationDecorator {
 
-    public void decorate(List<ListItem> listItems, List<Handelse> notifications) {
-        if (listItems.isEmpty()) {
-            return;
-        }
-
-        final var notificationMap = notifications.stream()
-            .collect(Collectors.groupingBy(Handelse::getIntygsId));
-
-        listItems.forEach(
-            listItem -> decorateWithNotification(listItem, notificationMap.get(listItem.getIntyg().getIntygsId().getExtension()))
-        );
+  public void decorate(List<ListItem> listItems, List<Handelse> notifications) {
+    if (listItems.isEmpty()) {
+      return;
     }
 
-    private void decorateWithNotification(ListItem listItem, List<Handelse> notifications) {
-        final var eventList = new HandelseList();
-        eventList.getHandelse().addAll(
-            notifications.stream()
-                .map(HandelseFactory::toHandelse)
-                .collect(Collectors.toList())
-        );
-        listItem.setHandelser(eventList);
-    }
+    final var notificationMap =
+        notifications.stream().collect(Collectors.groupingBy(Handelse::getIntygsId));
+
+    listItems.forEach(
+        listItem ->
+            decorateWithNotification(
+                listItem, notificationMap.get(listItem.getIntyg().getIntygsId().getExtension())));
+  }
+
+  private void decorateWithNotification(ListItem listItem, List<Handelse> notifications) {
+    final var eventList = new HandelseList();
+    eventList
+        .getHandelse()
+        .addAll(
+            notifications.stream().map(HandelseFactory::toHandelse).collect(Collectors.toList()));
+    listItem.setHandelser(eventList);
+  }
 }

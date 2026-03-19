@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,219 +45,228 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @ExtendWith(MockitoExtension.class)
 class CertificateSendFunctionTest {
 
-    private static final String TYPE = "type";
+  private static final String TYPE = "type";
 
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
+  @Mock private AuthoritiesHelper authoritiesHelper;
 
-    @InjectMocks
-    private CertificateSendFunction certificateSendFunction;
+  @InjectMocks private CertificateSendFunction certificateSendFunction;
 
-    @Nested
-    class TestFeatureSend {
+  @Nested
+  class TestFeatureSend {
 
-        @Test
-        void shouldReturnFunctionIfFeatureIsActive() {
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
+    @Test
+    void shouldReturnFunctionIfFeatureIsActive() {
+      doReturn(true)
+          .when(authoritiesHelper)
+          .isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
 
-            final var response = certificateSendFunction.get(getCertificate());
+      final var response = certificateSendFunction.get(getCertificate());
 
-            assertEquals(1, response.size());
-            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
-        }
+      assertEquals(1, response.size());
+      assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+    }
 
-        @Test
-        void shouldReturnEmptyIfFeatureIsInactive() {
-            final var response = certificateSendFunction.get(getCertificate());
+    @Test
+    void shouldReturnEmptyIfFeatureIsInactive() {
+      final var response = certificateSendFunction.get(getCertificate());
 
-            assertEquals(Collections.emptyList(), response);
-        }
+      assertEquals(Collections.emptyList(), response);
+    }
+  }
+
+  @Nested
+  class TestFeatureInactiveOlderMajorVersions {
+
+    @BeforeEach
+    void setup() {
+      doReturn(true)
+          .when(authoritiesHelper)
+          .isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
     }
 
     @Nested
-    class TestFeatureInactiveOlderMajorVersions {
+    class FeatureInactive {
 
-        @BeforeEach
-        void setup() {
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
-        }
+      @Test
+      void shouldReturnFunctionIfLatestVersion() {
+        final var response =
+            certificateSendFunction.get(getCertificateWithLatestMajorVersion(true));
 
-        @Nested
-        class FeatureInactive {
+        assertEquals(1, response.size());
+        assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+      }
 
-            @Test
-            void shouldReturnFunctionIfLatestVersion() {
-                final var response = certificateSendFunction.get(getCertificateWithLatestMajorVersion(true));
+      @Test
+      void shouldReturnFunctionIfOlderVersion() {
+        final var response =
+            certificateSendFunction.get(getCertificateWithLatestMajorVersion(false));
 
-                assertEquals(1, response.size());
-                assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
-            }
-
-            @Test
-            void shouldReturnFunctionIfOlderVersion() {
-                final var response = certificateSendFunction.get(getCertificateWithLatestMajorVersion(false));
-
-                assertEquals(1, response.size());
-                assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
-            }
-        }
-
-        @Nested
-        class FeatureActive {
-
-            @Test
-            void shouldReturnFunctionIfLatestVersion() {
-                final var response = certificateSendFunction.get(getCertificateWithLatestMajorVersion(true));
-
-                assertEquals(1, response.size());
-                assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
-            }
-
-            @Test
-            void shouldReturnEmptyIfOlderVersion() {
-                doReturn(true)
-                    .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, TYPE);
-
-                final var response = certificateSendFunction.get(getCertificateWithLatestMajorVersion(false));
-
-                assertEquals(Collections.emptyList(), response);
-            }
-        }
+        assertEquals(1, response.size());
+        assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+      }
     }
 
     @Nested
-    class TestCertificateSent {
+    class FeatureActive {
 
-        @BeforeEach
-        void setup() {
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
-        }
+      @Test
+      void shouldReturnFunctionIfLatestVersion() {
+        final var response =
+            certificateSendFunction.get(getCertificateWithLatestMajorVersion(true));
 
-        @Test
-        void shouldReturnDisabledFunctionIfSent() {
-            final var response = certificateSendFunction.get(getCertificateWithSent(true));
+        assertEquals(1, response.size());
+        assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+      }
 
-            assertFalse(response.get(0).isEnabled());
-            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
-        }
+      @Test
+      void shouldReturnEmptyIfOlderVersion() {
+        doReturn(true)
+            .when(authoritiesHelper)
+            .isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, TYPE);
 
-        @Test
-        void shouldReturnFunctionEnabledIfNotSent() {
-            final var response = certificateSendFunction.get(getCertificateWithSent(false));
+        final var response =
+            certificateSendFunction.get(getCertificateWithLatestMajorVersion(false));
 
-            assertTrue(response.get(0).isEnabled());
-            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
-        }
+        assertEquals(Collections.emptyList(), response);
+      }
+    }
+  }
+
+  @Nested
+  class TestCertificateSent {
+
+    @BeforeEach
+    void setup() {
+      doReturn(true)
+          .when(authoritiesHelper)
+          .isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
     }
 
-    @Nested
-    class TestCertificateRecipient {
+    @Test
+    void shouldReturnDisabledFunctionIfSent() {
+      final var response = certificateSendFunction.get(getCertificateWithSent(true));
 
-        @BeforeEach
-        void setup() {
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
-        }
-
-        @Test
-        void shouldReturnEmptyIfNoRecipient() {
-            final var response = certificateSendFunction.get(getCertificateWithRecipient(false));
-
-            assertEquals(Collections.emptyList(), response);
-        }
-
-        @Test
-        void shouldReturnFunctionIfRecipient() {
-            final var response = certificateSendFunction.get(getCertificateWithRecipient(true));
-
-            assertEquals(1, response.size());
-            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
-        }
+      assertFalse(response.get(0).isEnabled());
+      assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
     }
 
-    @Nested
-    class TestChildRelation {
+    @Test
+    void shouldReturnFunctionEnabledIfNotSent() {
+      final var response = certificateSendFunction.get(getCertificateWithSent(false));
 
-        @BeforeEach
-        void setup() {
-            doReturn(true)
-                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
-        }
+      assertTrue(response.get(0).isEnabled());
+      assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+    }
+  }
 
-        @Test
-        void shouldReturnEmptyIfReplaced() {
-            final var response = certificateSendFunction.get(getCertificateWithRelation(CertificateRelationType.REPLACED));
+  @Nested
+  class TestCertificateRecipient {
 
-            assertEquals(Collections.emptyList(), response);
-        }
-
-        @Test
-        void shouldReturnEmptyIfComplemented() {
-            final var response = certificateSendFunction.get(getCertificateWithRelation(CertificateRelationType.COMPLEMENTED));
-
-            assertEquals(Collections.emptyList(), response);
-        }
-
-        @Test
-        void shouldReturnFunctionIfCopied() {
-            final var response = certificateSendFunction.get(getCertificateWithRelation(CertificateRelationType.COPIED));
-
-            assertEquals(1, response.size());
-            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
-        }
+    @BeforeEach
+    void setup() {
+      doReturn(true)
+          .when(authoritiesHelper)
+          .isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
     }
 
-    private static Certificate getCertificate() {
-        return getCertificate(true, false, true, null);
+    @Test
+    void shouldReturnEmptyIfNoRecipient() {
+      final var response = certificateSendFunction.get(getCertificateWithRecipient(false));
+
+      assertEquals(Collections.emptyList(), response);
     }
 
-    private static Certificate getCertificateWithLatestMajorVersion(boolean isLatestMajorVersion) {
-        return getCertificate(isLatestMajorVersion, false, true, null);
+    @Test
+    void shouldReturnFunctionIfRecipient() {
+      final var response = certificateSendFunction.get(getCertificateWithRecipient(true));
+
+      assertEquals(1, response.size());
+      assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+    }
+  }
+
+  @Nested
+  class TestChildRelation {
+
+    @BeforeEach
+    void setup() {
+      doReturn(true)
+          .when(authoritiesHelper)
+          .isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
     }
 
-    private static Certificate getCertificateWithSent(boolean sent) {
-        return getCertificate(true, sent, true, null);
+    @Test
+    void shouldReturnEmptyIfReplaced() {
+      final var response =
+          certificateSendFunction.get(getCertificateWithRelation(CertificateRelationType.REPLACED));
+
+      assertEquals(Collections.emptyList(), response);
     }
 
-    private static Certificate getCertificateWithRecipient(boolean hasRecipient) {
-        return getCertificate(true, false, hasRecipient, null);
+    @Test
+    void shouldReturnEmptyIfComplemented() {
+      final var response =
+          certificateSendFunction.get(
+              getCertificateWithRelation(CertificateRelationType.COMPLEMENTED));
+
+      assertEquals(Collections.emptyList(), response);
     }
 
-    private static Certificate getCertificateWithRelation(CertificateRelationType relationType) {
-        return getCertificate(true, false, true, relationType);
+    @Test
+    void shouldReturnFunctionIfCopied() {
+      final var response =
+          certificateSendFunction.get(getCertificateWithRelation(CertificateRelationType.COPIED));
+
+      assertEquals(1, response.size());
+      assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
     }
+  }
 
-    private static Certificate getCertificate(boolean isLatestMajorVersion,
-        boolean sent,
-        boolean hasRecipient,
-        CertificateRelationType relationType) {
-        CertificateRelation[] relationChildren = {
-            CertificateRelation.builder()
-                .type(relationType)
-                .status(CertificateStatus.SIGNED)
-                .build()
-        };
+  private static Certificate getCertificate() {
+    return getCertificate(true, false, true, null);
+  }
 
-        final var certificateMetadata = CertificateMetadata.builder()
+  private static Certificate getCertificateWithLatestMajorVersion(boolean isLatestMajorVersion) {
+    return getCertificate(isLatestMajorVersion, false, true, null);
+  }
+
+  private static Certificate getCertificateWithSent(boolean sent) {
+    return getCertificate(true, sent, true, null);
+  }
+
+  private static Certificate getCertificateWithRecipient(boolean hasRecipient) {
+    return getCertificate(true, false, hasRecipient, null);
+  }
+
+  private static Certificate getCertificateWithRelation(CertificateRelationType relationType) {
+    return getCertificate(true, false, true, relationType);
+  }
+
+  private static Certificate getCertificate(
+      boolean isLatestMajorVersion,
+      boolean sent,
+      boolean hasRecipient,
+      CertificateRelationType relationType) {
+    CertificateRelation[] relationChildren = {
+      CertificateRelation.builder().type(relationType).status(CertificateStatus.SIGNED).build()
+    };
+
+    final var certificateMetadata =
+        CertificateMetadata.builder()
             .type(TYPE)
             .latestMajorVersion(isLatestMajorVersion)
             .sent(sent)
             .recipient(
-                hasRecipient ? CertificateRecipient.builder()
-                    .id("ID")
-                    .name("NAME")
-                    .build() : null
-            )
-            .relations(relationType != null ? CertificateRelations.builder().children(relationChildren).build() : null
-            )
+                hasRecipient ? CertificateRecipient.builder().id("ID").name("NAME").build() : null)
+            .relations(
+                relationType != null
+                    ? CertificateRelations.builder().children(relationChildren).build()
+                    : null)
             .build();
 
-        final var certificate = new Certificate();
-        certificate.setMetadata(certificateMetadata);
+    final var certificate = new Certificate();
+    certificate.setMetadata(certificateMetadata);
 
-        return certificate;
-    }
+    return certificate;
+  }
 }

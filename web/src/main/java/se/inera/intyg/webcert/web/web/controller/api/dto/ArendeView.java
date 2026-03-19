@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,30 +30,30 @@ import se.inera.intyg.webcert.persistence.model.Status;
 @Builder
 public class ArendeView {
 
-    public enum ArendeType {
-        FRAGA,
-        SVAR,
-        PAMINNELSE
-    }
-    
-    ImmutableList<MedicinsktArendeView> kompletteringar;
-    String internReferens;
-    Status status;
-    ArendeAmne amne;
-    String meddelandeRubrik;
-    LocalDate sistaDatumForSvar;
-    Boolean vidarebefordrad;
-    String frageStallare;
-    ImmutableList<String> externaKontakter;
-    String meddelande;
-    String signeratAv;
-    LocalDateTime svarSkickadDatum;
-    String intygId;
-    String enhetsnamn;
-    String vardgivarnamn;
-    LocalDateTime timestamp;
-    ArendeType arendeType;
-    String svarPaId;
-    String paminnelseMeddelandeId;
-    String vardaktorNamn;
+  public enum ArendeType {
+    FRAGA,
+    SVAR,
+    PAMINNELSE
+  }
+
+  ImmutableList<MedicinsktArendeView> kompletteringar;
+  String internReferens;
+  Status status;
+  ArendeAmne amne;
+  String meddelandeRubrik;
+  LocalDate sistaDatumForSvar;
+  Boolean vidarebefordrad;
+  String frageStallare;
+  ImmutableList<String> externaKontakter;
+  String meddelande;
+  String signeratAv;
+  LocalDateTime svarSkickadDatum;
+  String intygId;
+  String enhetsnamn;
+  String vardgivarnamn;
+  LocalDateTime timestamp;
+  ArendeType arendeType;
+  String svarPaId;
+  String paminnelseMeddelandeId;
+  String vardaktorNamn;
 }

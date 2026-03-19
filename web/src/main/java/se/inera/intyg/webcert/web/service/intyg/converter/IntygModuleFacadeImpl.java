@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,100 +45,132 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 @Component
 public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntygModuleFacadeImpl.class);
-    private static final String HSVARD_RECIPIENT_ID = "HSVARD";
+  private static final Logger LOG = LoggerFactory.getLogger(IntygModuleFacadeImpl.class);
+  private static final String HSVARD_RECIPIENT_ID = "HSVARD";
 
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
+  @Autowired private IntygModuleRegistry moduleRegistry;
 
-    @Value("${intygstjanst.logicaladdress}")
-    private String logicalAddress;
+  @Value("${intygstjanst.logicaladdress}")
+  private String logicalAddress;
 
-    @Override
-    public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses,
-        UtkastStatus utkastStatus, boolean isEmployer)
-        throws IntygModuleFacadeException {
+  @Override
+  public IntygPdf convertFromInternalToPdfDocument(
+      String intygType,
+      String internalIntygJsonModel,
+      List<Status> statuses,
+      UtkastStatus utkastStatus,
+      boolean isEmployer)
+      throws IntygModuleFacadeException {
 
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
-                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
-            PdfResponse pdfResponse;
-            if (!isEmployer) {
-                pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, utkastStatus);
-            } else {
-                pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, Collections.emptyList(),
-                    utkastStatus);
-            }
-            return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
-        } catch (ModuleException me) {
-            LOG.error("ModuleException occured when when generating PDF document from internal");
-            throw new IntygModuleFacadeException("ModuleException occured when generating PDF document from internal", me);
-        } catch (ModuleNotFoundException e) {
-            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when generating PDF document from internal", intygType);
-            throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
-        }
+    try {
+      ModuleApi moduleApi =
+          moduleRegistry.getModuleApi(
+              intygType,
+              moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
+      PdfResponse pdfResponse;
+      if (!isEmployer) {
+        pdfResponse =
+            moduleApi.pdf(
+                internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, utkastStatus);
+      } else {
+        pdfResponse =
+            moduleApi.pdfEmployer(
+                internalIntygJsonModel,
+                statuses,
+                ApplicationOrigin.WEBCERT,
+                Collections.emptyList(),
+                utkastStatus);
+      }
+      return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
+    } catch (ModuleException me) {
+      LOG.error("ModuleException occured when when generating PDF document from internal");
+      throw new IntygModuleFacadeException(
+          "ModuleException occured when generating PDF document from internal", me);
+    } catch (ModuleNotFoundException e) {
+      LOG.error(
+          "ModuleNotFoundException occured for intygstyp '{}' when generating PDF document from internal",
+          intygType);
+      throw new IntygModuleFacadeException(
+          "ModuleNotFoundException occured when registering certificate", e);
     }
+  }
 
-    @Override
-    public CertificateResponse getCertificate(String certificateId, String intygType, String intygTypeVersion)
-        throws IntygModuleFacadeException {
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, intygTypeVersion);
-            return moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
-        } catch (ModuleException me) {
-            throw new IntygModuleFacadeException(me.getMessage(), me);
-        } catch (ModuleNotFoundException e) {
-            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
-            throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
-        }
+  @Override
+  public CertificateResponse getCertificate(
+      String certificateId, String intygType, String intygTypeVersion)
+      throws IntygModuleFacadeException {
+    try {
+      ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, intygTypeVersion);
+      return moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
+    } catch (ModuleException me) {
+      throw new IntygModuleFacadeException(me.getMessage(), me);
+    } catch (ModuleNotFoundException e) {
+      LOG.error(
+          "ModuleNotFoundException occured for intygstyp '{}' when registering certificate",
+          intygType);
+      throw new IntygModuleFacadeException(
+          "ModuleNotFoundException occured when registering certificate", e);
     }
+  }
 
-    @Override
-    public void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException {
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
-                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
-            moduleApi.registerCertificate(internalIntygJsonModel, logicalAddress);
-        } catch (ModuleNotFoundException e) {
-            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
-            throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
-        }
+  @Override
+  public void registerCertificate(String intygType, String internalIntygJsonModel)
+      throws ModuleException, IntygModuleFacadeException {
+    try {
+      ModuleApi moduleApi =
+          moduleRegistry.getModuleApi(
+              intygType,
+              moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
+      moduleApi.registerCertificate(internalIntygJsonModel, logicalAddress);
+    } catch (ModuleNotFoundException e) {
+      LOG.error(
+          "ModuleNotFoundException occured for intygstyp '{}' when registering certificate",
+          intygType);
+      throw new IntygModuleFacadeException(
+          "ModuleNotFoundException occured when registering certificate", e);
     }
+  }
 
-    @Override
-    public String getRevokeCertificateRequest(String intygType, Utlatande utlatande, HoSPersonal skapatAv, String message)
-        throws ModuleException, IntygModuleFacadeException {
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, utlatande.getTextVersion());
-            return moduleApi.createRevokeRequest(utlatande, skapatAv, message);
-        } catch (ModuleNotFoundException e) {
-            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when revoking certificate", intygType);
-            throw new IntygModuleFacadeException("ModuleNotFoundException occured when revoking certificate", e);
-        }
+  @Override
+  public String getRevokeCertificateRequest(
+      String intygType, Utlatande utlatande, HoSPersonal skapatAv, String message)
+      throws ModuleException, IntygModuleFacadeException {
+    try {
+      ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, utlatande.getTextVersion());
+      return moduleApi.createRevokeRequest(utlatande, skapatAv, message);
+    } catch (ModuleNotFoundException e) {
+      LOG.error(
+          "ModuleNotFoundException occured for intygstyp '{}' when revoking certificate",
+          intygType);
+      throw new IntygModuleFacadeException(
+          "ModuleNotFoundException occured when revoking certificate", e);
     }
+  }
 
-    @Override
-    public Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel) {
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
-                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalModel));
-            return moduleApi.getUtlatandeFromJson(internalModel);
-        } catch (IOException | ModuleNotFoundException | ModuleException e) {
-            LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
-        }
+  @Override
+  public Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel) {
+    try {
+      ModuleApi moduleApi =
+          moduleRegistry.getModuleApi(
+              intygType, moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalModel));
+      return moduleApi.getUtlatandeFromJson(internalModel);
+    } catch (IOException | ModuleNotFoundException | ModuleException e) {
+      LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
     }
+  }
 
-    @Override
-    public Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel, LocalDateTime created) {
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
-                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalModel));
-            return moduleApi.getUtlatandeFromJson(internalModel, created);
-        } catch (IOException | ModuleNotFoundException | ModuleException e) {
-            LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
-        }
+  @Override
+  public Utlatande getUtlatandeFromInternalModel(
+      String intygType, String internalModel, LocalDateTime created) {
+    try {
+      ModuleApi moduleApi =
+          moduleRegistry.getModuleApi(
+              intygType, moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalModel));
+      return moduleApi.getUtlatandeFromJson(internalModel, created);
+    } catch (IOException | ModuleNotFoundException | ModuleException e) {
+      LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
     }
-
+  }
 }

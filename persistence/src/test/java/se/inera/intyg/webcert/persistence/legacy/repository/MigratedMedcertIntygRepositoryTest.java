@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,32 +38,31 @@ import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
 @Transactional
 public class MigratedMedcertIntygRepositoryTest {
 
-    @Autowired
-    private MigreratMedcertIntygRepository medcertIntygRepository;
+  @Autowired private MigreratMedcertIntygRepository medcertIntygRepository;
 
-    @Test
-    public void testSaveMigreratIntyg() {
+  @Test
+  public void testSaveMigreratIntyg() {
 
-        MigreratMedcertIntyg intyg1 = new MigreratMedcertIntyg();
+    MigreratMedcertIntyg intyg1 = new MigreratMedcertIntyg();
 
-        intyg1.setIntygsId("intyg1");
-        intyg1.setEnhetsId("enhet1");
-        intyg1.setIntygsTyp("fk7263");
-        intyg1.setMigreradFran("landtinget");
-        intyg1.setPatientNamn("Test Testsson");
-        intyg1.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
-        intyg1.setSkapad(LocalDateTime.parse("2013-03-01T11:11:11"));
-        intyg1.setSkickad(LocalDateTime.parse("2013-03-01T12:34:56"));
-        intyg1.setUrsprung("APPLICATION");
-        intyg1.setIntygsData("VGhpcyBpcyBhIGxlZ2FjeSBjZXJ0aWZpY2F0ZQ==".getBytes());
+    intyg1.setIntygsId("intyg1");
+    intyg1.setEnhetsId("enhet1");
+    intyg1.setIntygsTyp("fk7263");
+    intyg1.setMigreradFran("landtinget");
+    intyg1.setPatientNamn("Test Testsson");
+    intyg1.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
+    intyg1.setSkapad(LocalDateTime.parse("2013-03-01T11:11:11"));
+    intyg1.setSkickad(LocalDateTime.parse("2013-03-01T12:34:56"));
+    intyg1.setUrsprung("APPLICATION");
+    intyg1.setIntygsData("VGhpcyBpcyBhIGxlZ2FjeSBjZXJ0aWZpY2F0ZQ==".getBytes());
 
-        medcertIntygRepository.save(intyg1);
+    medcertIntygRepository.save(intyg1);
 
-        MigreratMedcertIntyg intyg2 = medcertIntygRepository.findById("intyg1").orElse(null);
-        assertNotNull(intyg2);
-        assertEquals("intyg1", intyg2.getIntygsId());
-        assertEquals("Test Testsson", intyg2.getPatientNamn());
-        assertEquals(LocalDateTime.parse("2013-03-01T12:34:56"), intyg2.getSkickad());
-        assertNotNull(intyg2.getIntygsData());
-    }
+    MigreratMedcertIntyg intyg2 = medcertIntygRepository.findById("intyg1").orElse(null);
+    assertNotNull(intyg2);
+    assertEquals("intyg1", intyg2.getIntygsId());
+    assertEquals("Test Testsson", intyg2.getPatientNamn());
+    assertEquals(LocalDateTime.parse("2013-03-01T12:34:56"), intyg2.getSkickad());
+    assertNotNull(intyg2.getIntygsData());
+  }
 }

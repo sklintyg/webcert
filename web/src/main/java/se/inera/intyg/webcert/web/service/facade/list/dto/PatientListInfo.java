@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,47 +20,48 @@ package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 public class PatientListInfo {
 
-    private String id;
-    private boolean protectedPerson;
-    private boolean deceased;
-    private boolean testIndicated;
+  private String id;
+  private boolean protectedPerson;
+  private boolean deceased;
+  private boolean testIndicated;
 
-    public PatientListInfo(String id, boolean protectedPerson, boolean deceased, boolean testIndicated) {
-        this.id = id;
-        this.protectedPerson = protectedPerson;
-        this.deceased = deceased;
-        this.testIndicated = testIndicated;
-    }
+  public PatientListInfo(
+      String id, boolean protectedPerson, boolean deceased, boolean testIndicated) {
+    this.id = id;
+    this.protectedPerson = protectedPerson;
+    this.deceased = deceased;
+    this.testIndicated = testIndicated;
+  }
 
-    public boolean isProtectedPerson() {
-        return protectedPerson;
-    }
+  public boolean isProtectedPerson() {
+    return protectedPerson;
+  }
 
-    public void setProtectedPerson(boolean protectedPerson) {
-        this.protectedPerson = protectedPerson;
-    }
+  public void setProtectedPerson(boolean protectedPerson) {
+    this.protectedPerson = protectedPerson;
+  }
 
-    public boolean isDeceased() {
-        return deceased;
-    }
+  public boolean isDeceased() {
+    return deceased;
+  }
 
-    public void setDeceased(boolean deceased) {
-        this.deceased = deceased;
-    }
+  public void setDeceased(boolean deceased) {
+    this.deceased = deceased;
+  }
 
-    public boolean isTestIndicated() {
-        return testIndicated;
-    }
+  public boolean isTestIndicated() {
+    return testIndicated;
+  }
 
-    public void setTestIndicated(boolean testIndicated) {
-        this.testIndicated = testIndicated;
-    }
+  public void setTestIndicated(boolean testIndicated) {
+    this.testIndicated = testIndicated;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 }

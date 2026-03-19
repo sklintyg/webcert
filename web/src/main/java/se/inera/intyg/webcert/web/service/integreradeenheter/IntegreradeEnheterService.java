@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,29 +30,32 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 @Service
 public class IntegreradeEnheterService {
 
-    @Autowired
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    public Optional<IntegratedUnitDTO> getIntegratedUnit(String hsaId) {
-        IntegreradEnhet enhet = integreradeEnheterRegistry.getIntegreradEnhet(hsaId);
+  public Optional<IntegratedUnitDTO> getIntegratedUnit(String hsaId) {
+    IntegreradEnhet enhet = integreradeEnheterRegistry.getIntegreradEnhet(hsaId);
 
-        if (enhet == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(convert(enhet));
+    if (enhet == null) {
+      return Optional.empty();
     }
 
-    public List<IntegratedUnitDTO> getAllIntegratedUnits() {
-        List<IntegreradEnhet> enheter = integreradeEnheterRegistry.getAllIntegreradEnhet();
+    return Optional.of(convert(enhet));
+  }
 
-        return enheter.stream().map(this::convert).collect(Collectors.toList());
-    }
+  public List<IntegratedUnitDTO> getAllIntegratedUnits() {
+    List<IntegreradEnhet> enheter = integreradeEnheterRegistry.getAllIntegreradEnhet();
 
-    private IntegratedUnitDTO convert(IntegreradEnhet enhet) {
+    return enheter.stream().map(this::convert).collect(Collectors.toList());
+  }
 
-        return new IntegratedUnitDTO(enhet.getEnhetsId(), enhet.getEnhetsNamn(), enhet.getVardgivarId(), enhet.getVardgivarNamn(),
-            enhet.getSkapadDatum(), enhet.getSenasteKontrollDatum());
-    }
+  private IntegratedUnitDTO convert(IntegreradEnhet enhet) {
 
+    return new IntegratedUnitDTO(
+        enhet.getEnhetsId(),
+        enhet.getEnhetsNamn(),
+        enhet.getVardgivarId(),
+        enhet.getVardgivarNamn(),
+        enhet.getSkapadDatum(),
+        enhet.getSenasteKontrollDatum());
+  }
 }

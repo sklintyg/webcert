@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,181 +42,193 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 @Component
 public class IntygDraftsConverter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
-    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdatedSigned()
-        .compareTo(ie1.getLastUpdatedSigned());
+  private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC =
+      (ie1, ie2) -> ie2.getLastUpdatedSigned().compareTo(ie1.getLastUpdatedSigned());
 
-    private static final Comparator<IntygsStatus> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTidpunkt().compareTo(c2.getTidpunkt());
+  private static final Comparator<IntygsStatus> INTYG_STATUS_COMPARATOR =
+      (c1, c2) -> c1.getTidpunkt().compareTo(c2.getTidpunkt());
 
-    private static final List<String> ARCHIVED_STATUSES = Arrays.asList(StatusKod.DELETE.name(), StatusKod.RESTOR.name());
+  private static final List<String> ARCHIVED_STATUSES =
+      Arrays.asList(StatusKod.DELETE.name(), StatusKod.RESTOR.name());
 
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
+  @Autowired private IntygModuleRegistry moduleRegistry;
 
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
+  @Autowired private PatientDetailsResolver patientDetailsResolver;
 
-    public static List<ListIntygEntry> merge(List<ListIntygEntry> intygList, List<Utkast> utkastList) {
+  public static List<ListIntygEntry> merge(
+      List<ListIntygEntry> intygList, List<Utkast> utkastList) {
 
-        LOG.debug("Merging intyg, signed {}, drafts {}", intygList.size(), utkastList.size());
+    LOG.debug("Merging intyg, signed {}, drafts {}", intygList.size(), utkastList.size());
 
-        return Stream.concat(
-                intygList.stream(),
-                utkastList.stream()
-                    .map(IntygDraftsConverter::convertUtkastToListIntygEntry))
-            .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
-            .collect(Collectors.toList());
+    return Stream.concat(
+            intygList.stream(),
+            utkastList.stream().map(IntygDraftsConverter::convertUtkastToListIntygEntry))
+        .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+        .collect(Collectors.toList());
+  }
+
+  public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
+    return utkastList.stream()
+        .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
+        .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+        .collect(Collectors.toList());
+  }
+
+  public static ListIntygEntry convertUtkastToListIntygEntry(Utkast utkast) {
+
+    ListIntygEntry entry = new ListIntygEntry();
+    entry.setIntygId(utkast.getIntygsId());
+    entry.setIntygType(utkast.getIntygsTyp());
+    entry.setIntygTypeVersion(utkast.getIntygTypeVersion());
+    entry.setSource(IntygSource.WC);
+    entry.setUpdatedSignedBy(resolvedSignedBy(utkast));
+    entry.setUpdatedSignedById(resolvedSignedById(utkast));
+    entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
+    entry.setLastUpdated(utkast.getSenastSparadDatum());
+    entry.setSigned(utkast.getSenastSparadDatum());
+    entry.setPatientId(utkast.getPatientPersonnummer());
+    entry.setVidarebefordrad(utkast.getVidarebefordrad());
+    entry.setStatus(resolveStatus(utkast));
+    entry.setVersion(utkast.getVersion());
+    entry.setVardenhetId(utkast.getEnhetsId());
+    entry.setVardgivarId(utkast.getVardgivarId());
+    entry.setTestIntyg(utkast.isTestIntyg());
+
+    return entry;
+  }
+
+  public static CertificateState findLatestStatus(List<IntygsStatus> intygStatuses) {
+    return intygStatuses.stream()
+        .filter(s -> !ARCHIVED_STATUSES.contains(s.getStatus().getCode()))
+        .max(INTYG_STATUS_COMPARATOR)
+        .map(s -> StatusKod.valueOf(s.getStatus().getCode()).toCertificateState())
+        .orElse(CertificateState.UNHANDLED);
+  }
+
+  /**
+   * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId, we return the
+   * Name instead of the HSA ID.
+   */
+  private static String resolvedSignedBy(Utkast utkast) {
+    if (utkast.getSignatur() == null) {
+      return utkast.getSenastSparadAv().getNamn();
+    } else if (utkast.getSkapadAv() != null
+        && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+      return utkast.getSkapadAv().getNamn();
+    } else if (utkast.getSenastSparadAv() != null
+        && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+      return utkast.getSenastSparadAv().getNamn();
+    } else {
+      return utkast.getSignatur().getSigneradAv();
+    }
+  }
+
+  /**
+   * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId, we return the
+   * Name instead of the HSA ID.
+   */
+  private static String resolvedSignedById(Utkast utkast) {
+    if (utkast.getSignatur() == null) {
+      return utkast.getSenastSparadAv().getHsaId();
+    } else if (utkast.getSkapadAv() != null
+        && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+      return utkast.getSkapadAv().getHsaId();
+    } else if (utkast.getSenastSparadAv() != null
+        && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+      return utkast.getSenastSparadAv().getHsaId();
+    } else {
+      return utkast.getSignatur().getSigneradAv();
+    }
+  }
+
+  public static String resolveStatus(Utkast draft) {
+    if (draft.getAterkalladDatum() != null && draft.getStatus().equals(UtkastStatus.DRAFT_LOCKED)) {
+      return draft.getStatus().name() + "_" + CertificateState.CANCELLED.name();
+    }
+    if (draft.getAterkalladDatum() != null) {
+      return CertificateState.CANCELLED.name();
+    }
+    if (draft.getSkickadTillMottagareDatum() != null) {
+      return CertificateState.SENT.name();
+    }
+    if (draft.getSignatur() != null && draft.getSignatur().getSigneringsDatum() != null) {
+      return CertificateState.RECEIVED.name();
+    }
+    return draft.getStatus().name();
+  }
+
+  public List<ListIntygEntry> convertIntygToListIntygEntries(
+      List<Intyg> intygList, List<ListIntygEntry> webcertIntyg) {
+    return intygList.stream()
+        .map(
+            intyg ->
+                convertIntygToListIntygEntry(
+                    intyg,
+                    webcertIntyg.stream()
+                        .filter(it -> it.getIntygId().equals(intyg.getIntygsId().getExtension()))
+                        .findFirst()
+                        .orElse(null)))
+        .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+        .collect(Collectors.toList());
+  }
+
+  public ListIntygEntry convertIntygToListIntygEntry(Intyg source, ListIntygEntry altSource) {
+    ListIntygEntry entry = new ListIntygEntry();
+    entry.setIntygId(source.getIntygsId().getExtension());
+    entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
+    entry.setIntygTypeVersion(source.getVersion());
+    entry.setSource(IntygSource.IT);
+
+    final Personnummer personnummer = createPnr(source.getPatient().getPersonId().getExtension());
+
+    if (altSource == null) {
+      entry.setStatus(findLatestStatus(source.getStatus()).name());
+      entry.setTestIntyg(patientDetailsResolver.isTestIndicator(personnummer));
+    } else {
+      entry.setStatus(
+          determineMostRelevantStatus(
+              findLatestStatus(source.getStatus()),
+              CertificateState.valueOf(altSource.getStatus())));
+      entry.setTestIntyg(altSource.isTestIntyg());
     }
 
-    public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
-        return utkastList.stream()
-            .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
-            .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
-            .collect(Collectors.toList());
+    entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
+    entry.setUpdatedSignedById(source.getSkapadAv().getPersonalId().toString());
+    entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
+    entry.setSigned(source.getSigneringstidpunkt());
+    entry.setLastUpdated(source.getSigneringstidpunkt());
+    entry.setPatientId(personnummer);
+    entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());
+    entry.setVardgivarId(
+        source.getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
+
+    return entry;
+  }
+
+  /**
+   * This looks funky, it is because a corner case exists where statuses in Intygstjänsten might not
+   * be up to date with the actual situation because of the asynchronous nature of the connection
+   * between IT and WC. Thus, we need to establish a hierarchy of precedence between statuses
+   * depending on their origin.
+   */
+  private String determineMostRelevantStatus(CertificateState itStatus, CertificateState wcStatus) {
+    if (wcStatus == CertificateState.CANCELLED) {
+      return wcStatus.name();
     }
-
-    public static ListIntygEntry convertUtkastToListIntygEntry(Utkast utkast) {
-
-        ListIntygEntry entry = new ListIntygEntry();
-        entry.setIntygId(utkast.getIntygsId());
-        entry.setIntygType(utkast.getIntygsTyp());
-        entry.setIntygTypeVersion(utkast.getIntygTypeVersion());
-        entry.setSource(IntygSource.WC);
-        entry.setUpdatedSignedBy(resolvedSignedBy(utkast));
-        entry.setUpdatedSignedById(resolvedSignedById(utkast));
-        entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
-        entry.setLastUpdated(utkast.getSenastSparadDatum());
-        entry.setSigned(utkast.getSenastSparadDatum());
-        entry.setPatientId(utkast.getPatientPersonnummer());
-        entry.setVidarebefordrad(utkast.getVidarebefordrad());
-        entry.setStatus(resolveStatus(utkast));
-        entry.setVersion(utkast.getVersion());
-        entry.setVardenhetId(utkast.getEnhetsId());
-        entry.setVardgivarId(utkast.getVardgivarId());
-        entry.setTestIntyg(utkast.isTestIntyg());
-
-        return entry;
+    if (itStatus == CertificateState.CANCELLED || itStatus == CertificateState.SENT) {
+      return itStatus.name();
     }
-
-    public static CertificateState findLatestStatus(List<IntygsStatus> intygStatuses) {
-        return intygStatuses.stream()
-            .filter(s -> !ARCHIVED_STATUSES.contains(s.getStatus().getCode()))
-            .max(INTYG_STATUS_COMPARATOR)
-            .map(s -> StatusKod.valueOf(s.getStatus().getCode()).toCertificateState())
-            .orElse(CertificateState.UNHANDLED);
+    if (wcStatus == CertificateState.SENT) {
+      return wcStatus.name();
     }
+    return itStatus.name();
+  }
 
-    /**
-     * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId,
-     * we return the Name instead of the HSA ID.
-     */
-    private static String resolvedSignedBy(Utkast utkast) {
-        if (utkast.getSignatur() == null) {
-            return utkast.getSenastSparadAv().getNamn();
-        } else if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
-            return utkast.getSkapadAv().getNamn();
-        } else if (utkast.getSenastSparadAv() != null
-            && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
-            return utkast.getSenastSparadAv().getNamn();
-        } else {
-            return utkast.getSignatur().getSigneradAv();
-        }
-    }
-
-    /**
-     * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId,
-     * we return the Name instead of the HSA ID.
-     */
-    private static String resolvedSignedById(Utkast utkast) {
-        if (utkast.getSignatur() == null) {
-            return utkast.getSenastSparadAv().getHsaId();
-        } else if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
-            return utkast.getSkapadAv().getHsaId();
-        } else if (utkast.getSenastSparadAv() != null
-            && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
-            return utkast.getSenastSparadAv().getHsaId();
-        } else {
-            return utkast.getSignatur().getSigneradAv();
-        }
-    }
-
-    public static String resolveStatus(Utkast draft) {
-        if (draft.getAterkalladDatum() != null && draft.getStatus().equals(UtkastStatus.DRAFT_LOCKED)) {
-            return draft.getStatus().name() + "_" + CertificateState.CANCELLED.name();
-        }
-        if (draft.getAterkalladDatum() != null) {
-            return CertificateState.CANCELLED.name();
-        }
-        if (draft.getSkickadTillMottagareDatum() != null) {
-            return CertificateState.SENT.name();
-        }
-        if (draft.getSignatur() != null && draft.getSignatur().getSigneringsDatum() != null) {
-            return CertificateState.RECEIVED.name();
-        }
-        return draft.getStatus().name();
-    }
-
-    public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList, List<ListIntygEntry> webcertIntyg) {
-        return intygList.stream()
-            .map(intyg -> convertIntygToListIntygEntry(intyg,
-                webcertIntyg.stream().filter(it -> it.getIntygId().equals(intyg.getIntygsId().getExtension())).findFirst()
-                    .orElse(null)))
-            .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
-            .collect(Collectors.toList());
-    }
-
-    public ListIntygEntry convertIntygToListIntygEntry(Intyg source, ListIntygEntry altSource) {
-        ListIntygEntry entry = new ListIntygEntry();
-        entry.setIntygId(source.getIntygsId().getExtension());
-        entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
-        entry.setIntygTypeVersion(source.getVersion());
-        entry.setSource(IntygSource.IT);
-
-        final Personnummer personnummer = createPnr(source.getPatient().getPersonId().getExtension());
-
-        if (altSource == null) {
-            entry.setStatus(findLatestStatus(source.getStatus()).name());
-            entry.setTestIntyg(patientDetailsResolver.isTestIndicator(personnummer));
-        } else {
-            entry.setStatus(determineMostRelevantStatus(findLatestStatus(source.getStatus()),
-                CertificateState.valueOf(altSource.getStatus())));
-            entry.setTestIntyg(altSource.isTestIntyg());
-        }
-
-        entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
-        entry.setUpdatedSignedById(source.getSkapadAv().getPersonalId().toString());
-        entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
-        entry.setSigned(source.getSigneringstidpunkt());
-        entry.setLastUpdated(source.getSigneringstidpunkt());
-        entry.setPatientId(personnummer);
-        entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());
-        entry.setVardgivarId(source.getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
-
-        return entry;
-    }
-
-    /**
-     * This looks funky, it is because a corner case exists where statuses in Intygstjänsten might not be up
-     * to date with the actual situation because of the asynchronous nature of the connection between IT and WC.
-     * Thus, we need to establish a hierarchy of precedence between statuses depending on their origin.
-     */
-    private String determineMostRelevantStatus(CertificateState itStatus, CertificateState wcStatus) {
-        if (wcStatus == CertificateState.CANCELLED) {
-            return wcStatus.name();
-        }
-        if (itStatus == CertificateState.CANCELLED || itStatus == CertificateState.SENT) {
-            return itStatus.name();
-        }
-        if (wcStatus == CertificateState.SENT) {
-            return wcStatus.name();
-        }
-        return itStatus.name();
-    }
-
-    private Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
-    }
-
+  private Personnummer createPnr(String personId) {
+    return Personnummer.createPersonnummer(personId)
+        .orElseThrow(
+            () -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+  }
 }

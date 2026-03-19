@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,219 +37,229 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 
 public class ConvertToFKTypesTest {
 
-    @Test
-    public void testToIIRootNull() {
-        II res = ConvertToFKTypes.toII(null, "ext");
+  @Test
+  public void testToIIRootNull() {
+    II res = ConvertToFKTypes.toII(null, "ext");
 
-        assertNull(res);
-    }
+    assertNull(res);
+  }
 
-    @Test
-    public void testToIIExtNull() {
-        II res = ConvertToFKTypes.toII("root", null);
+  @Test
+  public void testToIIExtNull() {
+    II res = ConvertToFKTypes.toII("root", null);
 
-        assertNull(res);
-    }
+    assertNull(res);
+  }
 
-    @Test
-    public void testToII() {
-        final String root = "root";
-        final String ext = "ext";
-        II res = ConvertToFKTypes.toII(root, ext);
+  @Test
+  public void testToII() {
+    final String root = "root";
+    final String ext = "ext";
+    II res = ConvertToFKTypes.toII(root, ext);
 
-        assertNotNull(res);
-        assertEquals(root, res.getRoot());
-        assertEquals(ext, res.getExtension());
-    }
+    assertNotNull(res);
+    assertEquals(root, res.getRoot());
+    assertEquals(ext, res.getExtension());
+  }
 
-    @Test
-    public void testToAmneTyp() {
-        assertEquals(Amnetyp.ARBETSTIDSFORLAGGNING, ConvertToFKTypes.toAmneTyp(Amne.ARBETSTIDSFORLAGGNING));
-        assertEquals(Amnetyp.AVSTAMNINGSMOTE, ConvertToFKTypes.toAmneTyp(Amne.AVSTAMNINGSMOTE));
-        assertEquals(Amnetyp.KOMPLETTERING_AV_LAKARINTYG, ConvertToFKTypes.toAmneTyp(Amne.KOMPLETTERING_AV_LAKARINTYG));
-        assertEquals(Amnetyp.KONTAKT, ConvertToFKTypes.toAmneTyp(Amne.KONTAKT));
-        assertEquals(Amnetyp.MAKULERING_AV_LAKARINTYG, ConvertToFKTypes.toAmneTyp(Amne.MAKULERING_AV_LAKARINTYG));
-        assertEquals(Amnetyp.OVRIGT, ConvertToFKTypes.toAmneTyp(Amne.OVRIGT));
-        assertEquals(Amnetyp.PAMINNELSE, ConvertToFKTypes.toAmneTyp(Amne.PAMINNELSE));
-    }
+  @Test
+  public void testToAmneTyp() {
+    assertEquals(
+        Amnetyp.ARBETSTIDSFORLAGGNING, ConvertToFKTypes.toAmneTyp(Amne.ARBETSTIDSFORLAGGNING));
+    assertEquals(Amnetyp.AVSTAMNINGSMOTE, ConvertToFKTypes.toAmneTyp(Amne.AVSTAMNINGSMOTE));
+    assertEquals(
+        Amnetyp.KOMPLETTERING_AV_LAKARINTYG,
+        ConvertToFKTypes.toAmneTyp(Amne.KOMPLETTERING_AV_LAKARINTYG));
+    assertEquals(Amnetyp.KONTAKT, ConvertToFKTypes.toAmneTyp(Amne.KONTAKT));
+    assertEquals(
+        Amnetyp.MAKULERING_AV_LAKARINTYG,
+        ConvertToFKTypes.toAmneTyp(Amne.MAKULERING_AV_LAKARINTYG));
+    assertEquals(Amnetyp.OVRIGT, ConvertToFKTypes.toAmneTyp(Amne.OVRIGT));
+    assertEquals(Amnetyp.PAMINNELSE, ConvertToFKTypes.toAmneTyp(Amne.PAMINNELSE));
+  }
 
-    @Test
-    public void testToInnehallType() {
-        final String text = "text";
-        LocalDateTime signeringsdatum = LocalDateTime.now();
-        InnehallType res = ConvertToFKTypes.toInnehallType(text, signeringsdatum);
+  @Test
+  public void testToInnehallType() {
+    final String text = "text";
+    LocalDateTime signeringsdatum = LocalDateTime.now();
+    InnehallType res = ConvertToFKTypes.toInnehallType(text, signeringsdatum);
 
-        assertNotNull(res);
-        assertEquals(text, res.getMeddelandeText());
-        assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
-    }
+    assertNotNull(res);
+    assertEquals(text, res.getMeddelandeText());
+    assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
+  }
 
-    @Test
-    public void testToInnehallTypeSigneringsdatumNull() {
-        final String text = "text";
-        InnehallType res = ConvertToFKTypes.toInnehallType(text, null);
+  @Test
+  public void testToInnehallTypeSigneringsdatumNull() {
+    final String text = "text";
+    InnehallType res = ConvertToFKTypes.toInnehallType(text, null);
 
-        assertNotNull(res);
-        assertEquals(text, res.getMeddelandeText());
-        assertNull(res.getSigneringsTidpunkt());
-    }
+    assertNotNull(res);
+    assertEquals(text, res.getMeddelandeText());
+    assertNull(res.getSigneringsTidpunkt());
+  }
 
-    @Test
-    public void testToLakarUtlatande() {
-        final String intygsId = "intygsId";
-        final String patientNamn = "fullständigt namn";
-        final String patientId = "19121212-1212";
-        final LocalDateTime signeringsdatum = LocalDateTime.now();
-        IntygsReferens ir = new IntygsReferens();
-        ir.setIntygsId(intygsId);
-        ir.setPatientNamn(patientNamn);
-        ir.setPatientId(createPnr(patientId));
-        ir.setSigneringsDatum(signeringsdatum);
-        LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(ir);
+  @Test
+  public void testToLakarUtlatande() {
+    final String intygsId = "intygsId";
+    final String patientNamn = "fullständigt namn";
+    final String patientId = "19121212-1212";
+    final LocalDateTime signeringsdatum = LocalDateTime.now();
+    IntygsReferens ir = new IntygsReferens();
+    ir.setIntygsId(intygsId);
+    ir.setPatientNamn(patientNamn);
+    ir.setPatientId(createPnr(patientId));
+    ir.setSigneringsDatum(signeringsdatum);
+    LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(ir);
 
-        assertNotNull(res);
-        assertEquals(intygsId, res.getLakarutlatandeId());
-        assertNull(res.getPatient().getFullstandigtNamn());
-        assertEquals("1.2.752.129.2.1.3.1", res.getPatient().getPersonId().getRoot());
-        assertEquals(patientId, res.getPatient().getPersonId().getExtension());
-        assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
-    }
+    assertNotNull(res);
+    assertEquals(intygsId, res.getLakarutlatandeId());
+    assertNull(res.getPatient().getFullstandigtNamn());
+    assertEquals("1.2.752.129.2.1.3.1", res.getPatient().getPersonId().getRoot());
+    assertEquals(patientId, res.getPatient().getPersonId().getExtension());
+    assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
+  }
 
-    @Test
-    public void testToLakarUtlatandeSamordningsnummer() {
-        final String intygsId = "intygsId";
-        final String patientNamn = "fullständigt namn";
-        final String patientId = "999999-9999";
-        final LocalDateTime signeringsdatum = LocalDateTime.now();
+  @Test
+  public void testToLakarUtlatandeSamordningsnummer() {
+    final String intygsId = "intygsId";
+    final String patientNamn = "fullständigt namn";
+    final String patientId = "999999-9999";
+    final LocalDateTime signeringsdatum = LocalDateTime.now();
 
-        IntygsReferens ir = new IntygsReferens();
-        ir.setIntygsId(intygsId);
-        ir.setPatientNamn(patientNamn);
-        ir.setPatientId(createPnr(patientId));
-        ir.setSigneringsDatum(signeringsdatum);
+    IntygsReferens ir = new IntygsReferens();
+    ir.setIntygsId(intygsId);
+    ir.setPatientNamn(patientNamn);
+    ir.setPatientId(createPnr(patientId));
+    ir.setSigneringsDatum(signeringsdatum);
 
-        LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(ir);
+    LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(ir);
 
-        assertNotNull(res);
-        assertEquals(intygsId, res.getLakarutlatandeId());
-        assertNull(res.getPatient().getFullstandigtNamn());
-        assertEquals("1.2.752.129.2.1.3.3", res.getPatient().getPersonId().getRoot());
-        assertEquals("19999999-9999", res.getPatient().getPersonId().getExtension());
-        assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
-    }
+    assertNotNull(res);
+    assertEquals(intygsId, res.getLakarutlatandeId());
+    assertNull(res.getPatient().getFullstandigtNamn());
+    assertEquals("1.2.752.129.2.1.3.3", res.getPatient().getPersonId().getRoot());
+    assertEquals("19999999-9999", res.getPatient().getPersonId().getExtension());
+    assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
+  }
 
-    @Test
-    public void testToLakarUtlatandeIntygsReferensNull() {
-        LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(null);
+  @Test
+  public void testToLakarUtlatandeIntygsReferensNull() {
+    LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(null);
 
-        assertNull(res);
-    }
+    assertNull(res);
+  }
 
-    @Test
-    public void testToVardAdresseringsType() {
-        final String enhetsId = "enhetsId";
-        final String enhetsnamn = "enhetsnamn";
-        final String arbetsplatskod = "arbetsplatskod";
-        final String vardgivarid = "vardgivarid";
-        final String vardgivarnamn = "vardgivarnamn";
-        final String fullstandigtNamn = "fullstandigt namn";
-        final String personalId = "personalId";
-        final String forskrivarkod = "forskrivarkod";
-        final String epost = "epost";
-        final String postadress = "postadress";
-        final String postnummer = "postnummer";
-        final String postort = "postort";
-        Vardperson vp = new Vardperson();
-        vp.setArbetsplatsKod(arbetsplatskod);
-        vp.setEnhetsId(enhetsId);
-        vp.setEnhetsnamn(enhetsnamn);
-        vp.setForskrivarKod(forskrivarkod);
-        vp.setHsaId(personalId);
-        vp.setNamn(fullstandigtNamn);
-        vp.setVardgivarId(vardgivarid);
-        vp.setVardgivarnamn(vardgivarnamn);
-        vp.setEpost(epost);
-        vp.setPostadress(postadress);
-        vp.setPostnummer(postnummer);
-        vp.setPostort(postort);
-        VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(vp);
+  @Test
+  public void testToVardAdresseringsType() {
+    final String enhetsId = "enhetsId";
+    final String enhetsnamn = "enhetsnamn";
+    final String arbetsplatskod = "arbetsplatskod";
+    final String vardgivarid = "vardgivarid";
+    final String vardgivarnamn = "vardgivarnamn";
+    final String fullstandigtNamn = "fullstandigt namn";
+    final String personalId = "personalId";
+    final String forskrivarkod = "forskrivarkod";
+    final String epost = "epost";
+    final String postadress = "postadress";
+    final String postnummer = "postnummer";
+    final String postort = "postort";
+    Vardperson vp = new Vardperson();
+    vp.setArbetsplatsKod(arbetsplatskod);
+    vp.setEnhetsId(enhetsId);
+    vp.setEnhetsnamn(enhetsnamn);
+    vp.setForskrivarKod(forskrivarkod);
+    vp.setHsaId(personalId);
+    vp.setNamn(fullstandigtNamn);
+    vp.setVardgivarId(vardgivarid);
+    vp.setVardgivarnamn(vardgivarnamn);
+    vp.setEpost(epost);
+    vp.setPostadress(postadress);
+    vp.setPostnummer(postnummer);
+    vp.setPostort(postort);
+    VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(vp);
 
-        assertNotNull(res);
-        assertEquals("1.2.752.129.2.1.4.1", res.getHosPersonal().getEnhet().getEnhetsId().getRoot());
-        assertEquals(enhetsId, res.getHosPersonal().getEnhet().getEnhetsId().getExtension());
-        assertEquals(enhetsnamn, res.getHosPersonal().getEnhet().getEnhetsnamn());
-        assertEquals("1.2.752.29.4.71", res.getHosPersonal().getEnhet().getArbetsplatskod().getRoot());
-        assertEquals(arbetsplatskod, res.getHosPersonal().getEnhet().getArbetsplatskod().getExtension());
-        assertEquals("1.2.752.129.2.1.4.1", res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getRoot());
-        assertEquals(vardgivarid, res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
-        assertEquals(vardgivarnamn, res.getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
-        assertEquals(fullstandigtNamn, res.getHosPersonal().getFullstandigtNamn());
-        assertEquals("1.2.752.129.2.1.4.1", res.getHosPersonal().getPersonalId().getRoot());
-        assertEquals(personalId, res.getHosPersonal().getPersonalId().getExtension());
-        assertEquals(forskrivarkod, res.getHosPersonal().getForskrivarkod());
-        assertEquals(epost, res.getHosPersonal().getEnhet().getEpost());
-        assertEquals(postadress, res.getHosPersonal().getEnhet().getPostadress());
-        assertEquals(postnummer, res.getHosPersonal().getEnhet().getPostnummer());
-        assertEquals(postort, res.getHosPersonal().getEnhet().getPostort());
-    }
+    assertNotNull(res);
+    assertEquals("1.2.752.129.2.1.4.1", res.getHosPersonal().getEnhet().getEnhetsId().getRoot());
+    assertEquals(enhetsId, res.getHosPersonal().getEnhet().getEnhetsId().getExtension());
+    assertEquals(enhetsnamn, res.getHosPersonal().getEnhet().getEnhetsnamn());
+    assertEquals("1.2.752.29.4.71", res.getHosPersonal().getEnhet().getArbetsplatskod().getRoot());
+    assertEquals(
+        arbetsplatskod, res.getHosPersonal().getEnhet().getArbetsplatskod().getExtension());
+    assertEquals(
+        "1.2.752.129.2.1.4.1",
+        res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getRoot());
+    assertEquals(
+        vardgivarid,
+        res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
+    assertEquals(vardgivarnamn, res.getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
+    assertEquals(fullstandigtNamn, res.getHosPersonal().getFullstandigtNamn());
+    assertEquals("1.2.752.129.2.1.4.1", res.getHosPersonal().getPersonalId().getRoot());
+    assertEquals(personalId, res.getHosPersonal().getPersonalId().getExtension());
+    assertEquals(forskrivarkod, res.getHosPersonal().getForskrivarkod());
+    assertEquals(epost, res.getHosPersonal().getEnhet().getEpost());
+    assertEquals(postadress, res.getHosPersonal().getEnhet().getPostadress());
+    assertEquals(postnummer, res.getHosPersonal().getEnhet().getPostnummer());
+    assertEquals(postort, res.getHosPersonal().getEnhet().getPostort());
+  }
 
-    @Test
-    public void testToVardAdresseringsTypeNoArbetsplatskod() {
-        final String enhetsId = "enhetsId";
-        final String enhetsnamn = "enhetsnamn";
-        final String vardgivarid = "vardgivarid";
-        final String vardgivarnamn = "vardgivarnamn";
-        final String fullstandigtNamn = "fullstandigt namn";
-        final String personalId = "personalId";
-        Vardperson vp = new Vardperson();
-        vp.setEnhetsId(enhetsId);
-        vp.setEnhetsnamn(enhetsnamn);
-        vp.setHsaId(personalId);
-        vp.setNamn(fullstandigtNamn);
-        vp.setVardgivarId(vardgivarid);
-        vp.setVardgivarnamn(vardgivarnamn);
-        VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(vp);
+  @Test
+  public void testToVardAdresseringsTypeNoArbetsplatskod() {
+    final String enhetsId = "enhetsId";
+    final String enhetsnamn = "enhetsnamn";
+    final String vardgivarid = "vardgivarid";
+    final String vardgivarnamn = "vardgivarnamn";
+    final String fullstandigtNamn = "fullstandigt namn";
+    final String personalId = "personalId";
+    Vardperson vp = new Vardperson();
+    vp.setEnhetsId(enhetsId);
+    vp.setEnhetsnamn(enhetsnamn);
+    vp.setHsaId(personalId);
+    vp.setNamn(fullstandigtNamn);
+    vp.setVardgivarId(vardgivarid);
+    vp.setVardgivarnamn(vardgivarnamn);
+    VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(vp);
 
-        assertNotNull(res);
-        assertNull(res.getHosPersonal().getEnhet().getArbetsplatskod());
-    }
+    assertNotNull(res);
+    assertNull(res.getHosPersonal().getEnhet().getArbetsplatskod());
+  }
 
-    @Test
-    public void testToVardAdresseringsTypeNoVardgivarid() {
-        final String enhetsId = "enhetsId";
-        final String enhetsnamn = "enhetsnamn";
-        final String vardgivarnamn = "vardgivarnamn";
-        final String fullstandigtNamn = "fullstandigt namn";
-        final String personalId = "personalId";
-        Vardperson vp = new Vardperson();
-        vp.setEnhetsId(enhetsId);
-        vp.setEnhetsnamn(enhetsnamn);
-        vp.setHsaId(personalId);
-        vp.setNamn(fullstandigtNamn);
-        vp.setVardgivarnamn(vardgivarnamn);
-        VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(vp);
+  @Test
+  public void testToVardAdresseringsTypeNoVardgivarid() {
+    final String enhetsId = "enhetsId";
+    final String enhetsnamn = "enhetsnamn";
+    final String vardgivarnamn = "vardgivarnamn";
+    final String fullstandigtNamn = "fullstandigt namn";
+    final String personalId = "personalId";
+    Vardperson vp = new Vardperson();
+    vp.setEnhetsId(enhetsId);
+    vp.setEnhetsnamn(enhetsnamn);
+    vp.setHsaId(personalId);
+    vp.setNamn(fullstandigtNamn);
+    vp.setVardgivarnamn(vardgivarnamn);
+    VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(vp);
 
-        assertNotNull(res);
-        assertNull(res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId());
-    }
+    assertNotNull(res);
+    assertNull(res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId());
+  }
 
-    @Test
-    public void testToVardAdresseringsTypeVardpersonNull() {
-        VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(null);
+  @Test
+  public void testToVardAdresseringsTypeVardpersonNull() {
+    VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(null);
 
-        assertNull(res);
-    }
+    assertNull(res);
+  }
 
-    @Test
-    public void testToEnhetTypeVardpersonNull() {
-        EnhetType res = ConvertToFKTypes.toEnhetType(null);
+  @Test
+  public void testToEnhetTypeVardpersonNull() {
+    EnhetType res = ConvertToFKTypes.toEnhetType(null);
 
-        assertNull(res);
-    }
+    assertNull(res);
+  }
 
-    private Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
-    }
-
+  private Personnummer createPnr(String personId) {
+    return Personnummer.createPersonnummer(personId)
+        .orElseThrow(
+            () -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+  }
 }

@@ -1,6 +1,26 @@
+/*
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.srs;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -11,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SickLeaveCertificateDTO;
@@ -19,14 +38,14 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SickLeaveCertifi
 @ExtendWith(MockitoExtension.class)
 class GetSrsCertificateFromCertificateServiceTest {
 
-  @Mock
-  private CSIntegrationService csIntegrationService;
+  @Mock private CSIntegrationService csIntegrationService;
 
   private GetSrsCertificateFromCertificateService getSrsCertificateFromCertificateService;
 
   @BeforeEach
   void setUp() {
-    getSrsCertificateFromCertificateService = new GetSrsCertificateFromCertificateService(csIntegrationService);
+    getSrsCertificateFromCertificateService =
+        new GetSrsCertificateFromCertificateService(csIntegrationService);
   }
 
   @Test
@@ -41,13 +60,12 @@ class GetSrsCertificateFromCertificateServiceTest {
 
   @Test
   void shouldReturnNullWhenCertificateIsNotAvailable() {
-    final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
-        .available(false)
-        .sickLeaveCertificate(SickLeaveCertificateDTO.builder()
-            .id("cert-1")
-            .diagnoseCode("F438A")
-            .build())
-        .build();
+    final var response =
+        GetSickLeaveCertificateInternalResponseDTO.builder()
+            .available(false)
+            .sickLeaveCertificate(
+                SickLeaveCertificateDTO.builder().id("cert-1").diagnoseCode("F438A").build())
+            .build();
 
     when(csIntegrationService.getSickLeaveCertificate("cert-1")).thenReturn(Optional.of(response));
 
@@ -59,17 +77,19 @@ class GetSrsCertificateFromCertificateServiceTest {
   @Test
   void shouldReturnSrsCertificateWhenCertificateIsAvailable() {
     final var signingDateTime = LocalDateTime.of(2025, 10, 30, 10, 30);
-    final var sickLeaveCert = SickLeaveCertificateDTO.builder()
-        .id("cert-1")
-        .diagnoseCode("F438A")
-        .signingDateTime(signingDateTime)
-        .extendsCertificateId("parent-cert-1")
-        .build();
+    final var sickLeaveCert =
+        SickLeaveCertificateDTO.builder()
+            .id("cert-1")
+            .diagnoseCode("F438A")
+            .signingDateTime(signingDateTime)
+            .extendsCertificateId("parent-cert-1")
+            .build();
 
-    final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
-        .available(true)
-        .sickLeaveCertificate(sickLeaveCert)
-        .build();
+    final var response =
+        GetSickLeaveCertificateInternalResponseDTO.builder()
+            .available(true)
+            .sickLeaveCertificate(sickLeaveCert)
+            .build();
 
     when(csIntegrationService.getSickLeaveCertificate("cert-1")).thenReturn(Optional.of(response));
 
@@ -84,17 +104,19 @@ class GetSrsCertificateFromCertificateServiceTest {
 
   @Test
   void shouldReturnSrsCertificateWithNullSigningDateTimeWhenNotProvided() {
-    final var sickLeaveCert = SickLeaveCertificateDTO.builder()
-        .id("cert-1")
-        .diagnoseCode("F438A")
-        .signingDateTime(null)
-        .extendsCertificateId("parent-cert-1")
-        .build();
+    final var sickLeaveCert =
+        SickLeaveCertificateDTO.builder()
+            .id("cert-1")
+            .diagnoseCode("F438A")
+            .signingDateTime(null)
+            .extendsCertificateId("parent-cert-1")
+            .build();
 
-    final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
-        .available(true)
-        .sickLeaveCertificate(sickLeaveCert)
-        .build();
+    final var response =
+        GetSickLeaveCertificateInternalResponseDTO.builder()
+            .available(true)
+            .sickLeaveCertificate(sickLeaveCert)
+            .build();
 
     when(csIntegrationService.getSickLeaveCertificate("cert-1")).thenReturn(Optional.of(response));
 
@@ -110,17 +132,19 @@ class GetSrsCertificateFromCertificateServiceTest {
   @Test
   void shouldReturnSrsCertificateWithNullExtendsCertificateIdWhenNotProvided() {
     final var signingDateTime = LocalDateTime.of(2025, 10, 30, 10, 30);
-    SickLeaveCertificateDTO sickLeaveCert = SickLeaveCertificateDTO.builder()
-        .id("cert-1")
-        .diagnoseCode("F438A")
-        .signingDateTime(signingDateTime)
-        .extendsCertificateId(null)
-        .build();
+    SickLeaveCertificateDTO sickLeaveCert =
+        SickLeaveCertificateDTO.builder()
+            .id("cert-1")
+            .diagnoseCode("F438A")
+            .signingDateTime(signingDateTime)
+            .extendsCertificateId(null)
+            .build();
 
-    final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
-        .available(true)
-        .sickLeaveCertificate(sickLeaveCert)
-        .build();
+    final var response =
+        GetSickLeaveCertificateInternalResponseDTO.builder()
+            .available(true)
+            .sickLeaveCertificate(sickLeaveCert)
+            .build();
 
     when(csIntegrationService.getSickLeaveCertificate("cert-1")).thenReturn(Optional.of(response));
 
@@ -135,17 +159,19 @@ class GetSrsCertificateFromCertificateServiceTest {
 
   @Test
   void shouldReturnSrsCertificateWithAllNullableFieldsNull() {
-    final var sickLeaveCert = SickLeaveCertificateDTO.builder()
-        .id("cert-1")
-        .diagnoseCode("F438A")
-        .signingDateTime(null)
-        .extendsCertificateId(null)
-        .build();
+    final var sickLeaveCert =
+        SickLeaveCertificateDTO.builder()
+            .id("cert-1")
+            .diagnoseCode("F438A")
+            .signingDateTime(null)
+            .extendsCertificateId(null)
+            .build();
 
-    final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
-        .available(true)
-        .sickLeaveCertificate(sickLeaveCert)
-        .build();
+    final var response =
+        GetSickLeaveCertificateInternalResponseDTO.builder()
+            .available(true)
+            .sickLeaveCertificate(sickLeaveCert)
+            .build();
 
     when(csIntegrationService.getSickLeaveCertificate("cert-1")).thenReturn(Optional.of(response));
 
@@ -157,5 +183,4 @@ class GetSrsCertificateFromCertificateServiceTest {
     assertNull(result.getSignedDate());
     assertNull(result.getExtendsCertificateId());
   }
-
 }

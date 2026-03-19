@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,73 +41,86 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 @Component(value = "createNewDraftRequestBuilderImplV2")
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewDraftRequestBuilderImpl.class);
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
+  private static final Logger LOG = LoggerFactory.getLogger(CreateNewDraftRequestBuilderImpl.class);
+  @Autowired private IntygModuleRegistry moduleRegistry;
 
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
+  @Autowired private PatientDetailsResolver patientDetailsResolver;
 
-    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+  private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @Override
-    public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, String intygTypeVersion, IntygUser user) {
-        HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(),
-            HoSPersonHelper.createVardenhetFromIntygUser(intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
-        HoSPersonHelper.enrichHoSPerson(hosPerson, user);
-        String intygsType = moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode());
-        Optional<Forifyllnad> forifyllnad = getOptionalForifyllnadIfApplicable(intygsType, intyg.getForifyllnad(), user);
+  @Override
+  public CreateNewDraftRequest buildCreateNewDraftRequest(
+      Intyg intyg, String intygTypeVersion, IntygUser user) {
+    HoSPersonal hosPerson =
+        createHoSPerson(
+            intyg.getSkapadAv(),
+            HoSPersonHelper.createVardenhetFromIntygUser(
+                intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
+    HoSPersonHelper.enrichHoSPerson(hosPerson, user);
+    String intygsType = moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode());
+    Optional<Forifyllnad> forifyllnad =
+        getOptionalForifyllnadIfApplicable(intygsType, intyg.getForifyllnad(), user);
 
-        final var patient = getPatient(intyg);
+    final var patient = getPatient(intyg);
 
-        return new CreateNewDraftRequest(null, intygsType, intygTypeVersion,
-            null, hosPerson, patient, intyg.getRef(), forifyllnad);
-    }
+    return new CreateNewDraftRequest(
+        null, intygsType, intygTypeVersion, null, hosPerson, patient, intyg.getRef(), forifyllnad);
+  }
 
-    private Patient getPatient(Intyg intyg) {
-        final var pnr = intyg.getPatient().getPersonId().getExtension();
-        final var personnummer = Personnummer.createPersonnummer(pnr).orElseThrow();
-        return getPatientFromPU(personnummer);
-    }
+  private Patient getPatient(Intyg intyg) {
+    final var pnr = intyg.getPatient().getPersonId().getExtension();
+    final var personnummer = Personnummer.createPersonnummer(pnr).orElseThrow();
+    return getPatientFromPU(personnummer);
+  }
 
-    private Patient getPatientFromPU(Personnummer personnummer) {
-        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(personnummer).getPerson();
-        final var patient = new Patient();
-        patient.setPersonId(personFromPUService.personnummer());
-        patient.setEfternamn(personFromPUService.efternamn());
-        patient.setFornamn(personFromPUService.fornamn());
-        patient.setMellannamn(personFromPUService.mellannamn());
-        patient.setPostort(personFromPUService.postort());
-        patient.setPostnummer(personFromPUService.postnummer());
-        patient.setPostadress(personFromPUService.postadress());
-        patient.setFullstandigtNamn(IntygConverterUtil.concatPatientName(personFromPUService.fornamn(),
-            personFromPUService.mellannamn(), personFromPUService.efternamn()));
-        patient.setTestIndicator(personFromPUService.testIndicator());
-        return patient;
-    }
+  private Patient getPatientFromPU(Personnummer personnummer) {
+    final var personFromPUService =
+        patientDetailsResolver.getPersonFromPUService(personnummer).getPerson();
+    final var patient = new Patient();
+    patient.setPersonId(personFromPUService.personnummer());
+    patient.setEfternamn(personFromPUService.efternamn());
+    patient.setFornamn(personFromPUService.fornamn());
+    patient.setMellannamn(personFromPUService.mellannamn());
+    patient.setPostort(personFromPUService.postort());
+    patient.setPostnummer(personFromPUService.postnummer());
+    patient.setPostadress(personFromPUService.postadress());
+    patient.setFullstandigtNamn(
+        IntygConverterUtil.concatPatientName(
+            personFromPUService.fornamn(),
+            personFromPUService.mellannamn(),
+            personFromPUService.efternamn()));
+    patient.setTestIndicator(personFromPUService.testIndicator());
+    return patient;
+  }
 
-    private Optional<Forifyllnad> getOptionalForifyllnadIfApplicable(String intygsType, Forifyllnad forifyllnad, IntygUser user) {
-        if (forifyllnad != null && forifyllnad.getSvar().size() > 0) {
-            if (authoritiesValidator.given(user, intygsType).features(AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL)
-                .isVerified()) {
-                return Optional.of(forifyllnad);
-            } else {
-                LOG.info(
-                    AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL
-                        + " feature NOT enabled for " + intygsType + " but forifyllnad info was present in request.");
-                return Optional.empty();
-            }
-        }
+  private Optional<Forifyllnad> getOptionalForifyllnadIfApplicable(
+      String intygsType, Forifyllnad forifyllnad, IntygUser user) {
+    if (forifyllnad != null && forifyllnad.getSvar().size() > 0) {
+      if (authoritiesValidator
+          .given(user, intygsType)
+          .features(AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL)
+          .isVerified()) {
+        return Optional.of(forifyllnad);
+      } else {
+        LOG.info(
+            AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL
+                + " feature NOT enabled for "
+                + intygsType
+                + " but forifyllnad info was present in request.");
         return Optional.empty();
+      }
     }
+    return Optional.empty();
+  }
 
-    private HoSPersonal createHoSPerson(
-        se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal hoSPersonType,
-        Vardenhet vardenhet) {
-        HoSPersonal hoSPerson = new HoSPersonal();
-        hoSPerson.setFullstandigtNamn(hoSPersonType.getFullstandigtNamn());
-        hoSPerson.setPersonId(hoSPersonType.getPersonalId().getExtension());
-        hoSPerson.setVardenhet(vardenhet);
-        return hoSPerson;
-    }
+  private HoSPersonal createHoSPerson(
+      se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal
+          hoSPersonType,
+      Vardenhet vardenhet) {
+    HoSPersonal hoSPerson = new HoSPersonal();
+    hoSPerson.setFullstandigtNamn(hoSPersonType.getFullstandigtNamn());
+    hoSPerson.setPersonId(hoSPersonType.getPersonalId().getExtension());
+    hoSPerson.setVardenhet(vardenhet);
+    return hoSPerson;
+  }
 }

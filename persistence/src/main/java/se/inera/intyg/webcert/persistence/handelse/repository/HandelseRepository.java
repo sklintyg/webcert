@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,106 +27,134 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 public interface HandelseRepository extends JpaRepository<Handelse, Long> {
 
-    List<Handelse> findByIntygsId(String intygsId);
+  List<Handelse> findByIntygsId(String intygsId);
 
-    List<Handelse> findByPersonnummer(String personId);
+  List<Handelse> findByPersonnummer(String personId);
 
-    List<Handelse> findByPersonnummerAndEnhetsIdIn(String personId, List<String> unitId);
+  List<Handelse> findByPersonnummerAndEnhetsIdIn(String personId, List<String> unitId);
 
-    List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampBetween(String personId, List<String> unitIds, LocalDateTime from,
-        LocalDateTime to);
+  List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampBetween(
+      String personId, List<String> unitIds, LocalDateTime from, LocalDateTime to);
 
-    List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampAfter(String personId, List<String> unitIds, LocalDateTime from);
+  List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampAfter(
+      String personId, List<String> unitIds, LocalDateTime from);
 
-    List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampBefore(String personId, List<String> unitIds, LocalDateTime to);
+  List<Handelse> findByPersonnummerAndEnhetsIdInAndTimestampBefore(
+      String personId, List<String> unitIds, LocalDateTime to);
 
-    List<Handelse> findByPersonnummerAndVardgivarId(String personId, String careProviderId);
+  List<Handelse> findByPersonnummerAndVardgivarId(String personId, String careProviderId);
 
-    List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBetween(String personId, String careProviderId, LocalDateTime from,
-        LocalDateTime to);
+  List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBetween(
+      String personId, String careProviderId, LocalDateTime from, LocalDateTime to);
 
-    List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampAfter(String personId, String careProviderId, LocalDateTime from);
+  List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampAfter(
+      String personId, String careProviderId, LocalDateTime from);
 
-    List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBefore(String personId, String careProviderId, LocalDateTime to);
+  List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBefore(
+      String personId, String careProviderId, LocalDateTime to);
 
-    List<Handelse> findByVardgivarId(String careProviderId);
+  List<Handelse> findByVardgivarId(String careProviderId);
 
-    void deleteByIntygsId(String intygsId);
+  void deleteByIntygsId(String intygsId);
 
-    @Query("select h.id from Handelse h where h.intygsId in :certificateIds")
-    List<Long> findHandelseIdsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
+  @Query("select h.id from Handelse h where h.intygsId in :certificateIds")
+  List<Long> findHandelseIdsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
-    @Query("select h from Handelse h where h.intygsId in :certificateIds")
-    List<Handelse> getHandelseByIntygsIds(@Param("certificateIds") List<String> certificateIds);
+  @Query("select h from Handelse h where h.intygsId in :certificateIds")
+  List<Handelse> getHandelseByIntygsIds(@Param("certificateIds") List<String> certificateIds);
 
-
-    @Query(value = """
+  @Query(
+      value =
+          """
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.VARDGIVAR_ID = :careGiverId AND hm.DELIVERY_STATUS IN :statuses
-        AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
-    int countInsertsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<String> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
+        AND h.TIMESTAMP BETWEEN :start AND :end""",
+      nativeQuery = true)
+  int countInsertsForCareGiver(
+      @Param("careGiverId") String careGiverId,
+      @Param("statuses") List<String> statuses,
+      @Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end);
 
-    @Query(value = """
+  @Query(
+      value =
+          """
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
-        WHERE h.INTYGS_ID IN :certificateIds AND hm.DELIVERY_STATUS IN :statuses""", nativeQuery = true)
-    int countInsertsForCertificates(@Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<String> statuses);
+        WHERE h.INTYGS_ID IN :certificateIds AND hm.DELIVERY_STATUS IN :statuses""",
+      nativeQuery = true)
+  int countInsertsForCertificates(
+      @Param("certificateIds") List<String> certificateIds,
+      @Param("statuses") List<String> statuses);
 
-    @Query(value = """
+  @Query(
+      value =
+          """
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.ENHETS_ID IN :unitIds AND hm.DELIVERY_STATUS IN :statuses
-        AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
-    int countInsertsForUnits(@Param("unitIds") List<String> unitIds,
-        @Param("statuses") List<String> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
+        AND h.TIMESTAMP BETWEEN :start AND :end""",
+      nativeQuery = true)
+  int countInsertsForUnits(
+      @Param("unitIds") List<String> unitIds,
+      @Param("statuses") List<String> statuses,
+      @Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end);
 
-    @Query(value = """
+  @Query(
+      value =
+          """
         SELECT COUNT(h.ID) FROM HANDELSE h
-        WHERE h.id = :notificationId""", nativeQuery = true)
-    int countNotification(@Param("notificationId") String notificationId);
+        WHERE h.id = :notificationId""",
+      nativeQuery = true)
+  int countNotification(@Param("notificationId") String notificationId);
 
-    @Query(value = """
+  @Query(
+      value =
+          """
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.VARDGIVAR_ID = :careGiverId AND hm.DELIVERY_STATUS IN :statuses
-        AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
-    int countNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<String> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
+        AND h.TIMESTAMP BETWEEN :start AND :end""",
+      nativeQuery = true)
+  int countNotificationsForCareGiver(
+      @Param("careGiverId") String careGiverId,
+      @Param("statuses") List<String> statuses,
+      @Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end);
 
-    @Query(value = """
+  @Query(
+      value =
+          """
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.INTYGS_ID IN :certificateIds
-        AND hm.DELIVERY_STATUS IN :statuses""", nativeQuery = true)
-    int countNotificationsForCertificates(
-        @Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<String> statuses);
+        AND hm.DELIVERY_STATUS IN :statuses""",
+      nativeQuery = true)
+  int countNotificationsForCertificates(
+      @Param("certificateIds") List<String> certificateIds,
+      @Param("statuses") List<String> statuses);
 
-    @Query(value = """
+  @Query(
+      value =
+          """
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.ENHETS_ID IN :unitIds AND hm.DELIVERY_STATUS IN :statuses
-        AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
-    int countNotificationsForUnits(
-        @Param("unitIds") List<String> unitIds,
-        @Param("statuses") List<String> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
+        AND h.TIMESTAMP BETWEEN :start AND :end""",
+      nativeQuery = true)
+  int countNotificationsForUnits(
+      @Param("unitIds") List<String> unitIds,
+      @Param("statuses") List<String> statuses,
+      @Param("start") LocalDateTime start,
+      @Param("end") LocalDateTime end);
 
-    default int eraseHandelseByCertificateIds(List<String> certificateIds) {
-        final var handelseList = getHandelseByIntygsIds(certificateIds);
-        deleteAll(handelseList);
-        return handelseList.size();
-    }
+  default int eraseHandelseByCertificateIds(List<String> certificateIds) {
+    final var handelseList = getHandelseByIntygsIds(certificateIds);
+    deleteAll(handelseList);
+    return handelseList.size();
+  }
 
-    int deleteHandelseByVardgivarId(String vardgivarId);
+  int deleteHandelseByVardgivarId(String vardgivarId);
 }

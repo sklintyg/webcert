@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,25 +30,26 @@ import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter
 @Service("sendQuestionFromWC")
 public class SendQuestionFacadeServiceImpl implements SendQuestionFacadeService {
 
-    private final ArendeService arendeService;
-    private final ArendeDraftService arendeDraftService;
-    private final QuestionConverter questionConverter;
+  private final ArendeService arendeService;
+  private final ArendeDraftService arendeDraftService;
+  private final QuestionConverter questionConverter;
 
-    public SendQuestionFacadeServiceImpl(ArendeService arendeService,
-        ArendeDraftService arendeDraftService, QuestionConverter questionConverter) {
-        this.arendeService = arendeService;
-        this.arendeDraftService = arendeDraftService;
-        this.questionConverter = questionConverter;
-    }
+  public SendQuestionFacadeServiceImpl(
+      ArendeService arendeService,
+      ArendeDraftService arendeDraftService,
+      QuestionConverter questionConverter) {
+    this.arendeService = arendeService;
+    this.arendeDraftService = arendeDraftService;
+    this.questionConverter = questionConverter;
+  }
 
-    @Override
-    public Question send(Question question) {
-        final var questionDraft = arendeDraftService.getQuestionDraftById(Long.parseLong(question.getId()));
-        questionDraft.setText(question.getMessage());
-        questionDraft.setAmne(
-            getSubject(question.getType()).toString()
-        );
-        final var arende = arendeService.sendMessage(questionDraft);
-        return questionConverter.convert(arende);
-    }
+  @Override
+  public Question send(Question question) {
+    final var questionDraft =
+        arendeDraftService.getQuestionDraftById(Long.parseLong(question.getId()));
+    questionDraft.setText(question.getMessage());
+    questionDraft.setAmne(getSubject(question.getType()).toString());
+    final var arende = arendeService.sendMessage(questionDraft);
+    return questionConverter.convert(arende);
+  }
 }

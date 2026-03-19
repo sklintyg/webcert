@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.logging;
 
 import org.slf4j.Marker;
@@ -24,10 +23,9 @@ import org.slf4j.MarkerFactory;
 
 public class LogMarkers {
 
-    public static final Marker MONITORING = MarkerFactory.getMarker("Monitoring");
-    public static final Marker PERFORMANCE = MarkerFactory.getMarker("Performance");
-    public static final Marker VALIDATION = MarkerFactory.getMarker("Validation");
+  public static final Marker MONITORING = MarkerFactory.getMarker("Monitoring");
+  public static final Marker PERFORMANCE = MarkerFactory.getMarker("Performance");
+  public static final Marker VALIDATION = MarkerFactory.getMarker("Validation");
 
-    private LogMarkers() {
-    }
+  private LogMarkers() {}
 }

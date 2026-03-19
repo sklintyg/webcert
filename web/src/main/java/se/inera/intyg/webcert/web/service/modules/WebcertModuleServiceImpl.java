@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,47 +38,45 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 @Component
 public class WebcertModuleServiceImpl implements WebcertModuleService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WebcertModuleService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(WebcertModuleService.class);
 
-    @Autowired
-    private DiagnosService diagnosService;
+  @Autowired private DiagnosService diagnosService;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.common.support.modules.service.WebcertModuleService#validateDiagnosisCode(java.lang.String,
-     * int)
-     */
-    @Override
-    public boolean validateDiagnosisCode(String codeFragment, String codeSystemStr) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.inera.intyg.common.support.modules.service.WebcertModuleService#validateDiagnosisCode(java.lang.String,
+   * int)
+   */
+  @Override
+  public boolean validateDiagnosisCode(String codeFragment, String codeSystemStr) {
 
-        DiagnosResponse response = diagnosService.getDiagnosisByCode(codeFragment, codeSystemStr);
+    DiagnosResponse response = diagnosService.getDiagnosisByCode(codeFragment, codeSystemStr);
 
-        LOG.debug("Validation result for diagnosis code '{}' is {}", codeFragment, response);
+    LOG.debug("Validation result for diagnosis code '{}' is {}", codeFragment, response);
 
-        return DiagnosResponseType.OK.equals(response.getResultat());
-    }
+    return DiagnosResponseType.OK.equals(response.getResultat());
+  }
 
-    @Override
-    public boolean validateDiagnosisCode(String codeFragment, Diagnoskodverk codeSystem) {
+  @Override
+  public boolean validateDiagnosisCode(String codeFragment, Diagnoskodverk codeSystem) {
 
-        DiagnosResponse response = diagnosService.getDiagnosisByCode(codeFragment, codeSystem);
+    DiagnosResponse response = diagnosService.getDiagnosisByCode(codeFragment, codeSystem);
 
-        LOG.debug("Validation result for diagnosis code '{}' is {}", codeFragment, response);
+    LOG.debug("Validation result for diagnosis code '{}' is {}", codeFragment, response);
 
-        return DiagnosResponseType.OK.equals(response.getResultat());
-    }
+    return DiagnosResponseType.OK.equals(response.getResultat());
+  }
 
-    @Override
-    public boolean validateDiagnosisCodeFormat(String code) {
-        return diagnosService.validateDiagnosisCodeFormat(code);
-    }
+  @Override
+  public boolean validateDiagnosisCodeFormat(String code) {
+    return diagnosService.validateDiagnosisCodeFormat(code);
+  }
 
-    @Override
-    public String getDescriptionFromDiagnosKod(String code, String codeSystemStr) {
-        DiagnosResponse response = diagnosService.getDiagnosisByCode(code, codeSystemStr);
-        List<Diagnos> diagnoser = response.getDiagnoser();
-        return diagnoser == null || diagnoser.size() != 1 ? "" : diagnoser.get(0).getBeskrivning();
-    }
-
+  @Override
+  public String getDescriptionFromDiagnosKod(String code, String codeSystemStr) {
+    DiagnosResponse response = diagnosService.getDiagnosisByCode(code, codeSystemStr);
+    List<Diagnos> diagnoser = response.getDiagnoser();
+    return diagnoser == null || diagnoser.size() != 1 ? "" : diagnoser.get(0).getBeskrivning();
+  }
 }

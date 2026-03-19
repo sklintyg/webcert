@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,29 +27,27 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
  */
 public final class UtkastUtil {
 
-    private UtkastUtil() {
-    }
+  private UtkastUtil() {}
 
-    public static Vardenhet getVardenhet(Utkast utkast) {
-        final Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid(utkast.getVardgivarId());
+  public static Vardenhet getVardenhet(Utkast utkast) {
+    final Vardgivare vardgivare = new Vardgivare();
+    vardgivare.setVardgivarid(utkast.getVardgivarId());
 
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(utkast.getEnhetsId());
-        vardenhet.setVardgivare(vardgivare);
+    final Vardenhet vardenhet = new Vardenhet();
+    vardenhet.setEnhetsid(utkast.getEnhetsId());
+    vardenhet.setVardgivare(vardgivare);
 
-        return vardenhet;
-    }
+    return vardenhet;
+  }
 
-    public static Vardenhet getCareUnit(String vardgivarId, String enhetsId) {
-        final Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid(vardgivarId);
+  public static Vardenhet getCareUnit(String vardgivarId, String enhetsId) {
+    final Vardgivare vardgivare = new Vardgivare();
+    vardgivare.setVardgivarid(vardgivarId);
 
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(enhetsId);
-        vardenhet.setVardgivare(vardgivare);
+    final Vardenhet vardenhet = new Vardenhet();
+    vardenhet.setEnhetsid(enhetsId);
+    vardenhet.setVardgivare(vardgivare);
 
-        return vardenhet;
-    }
-
+    return vardenhet;
+  }
 }

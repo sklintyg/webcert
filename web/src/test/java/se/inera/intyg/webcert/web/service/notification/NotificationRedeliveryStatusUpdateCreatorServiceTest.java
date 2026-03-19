@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -60,150 +60,157 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
 
-    private final LocalDate LAST_DAY_FOR_ANSWER = LocalDate.now().plusDays(1);
-    private final LocalDateTime EVENT_TIMESTAMP = LocalDateTime.now();
+  private final LocalDate LAST_DAY_FOR_ANSWER = LocalDate.now().plusDays(1);
+  private final LocalDateTime EVENT_TIMESTAMP = LocalDateTime.now();
 
-    @Mock
-    private HandelseRepository handelseRepo;
+  @Mock private HandelseRepository handelseRepo;
 
-    @Mock
-    private UtkastRepository draftRepo;
+  @Mock private UtkastRepository draftRepo;
 
-    @Mock
-    private ObjectMapper objectMapper;
+  @Mock private ObjectMapper objectMapper;
 
-    @Mock
-    private HsaOrganizationsService hsaOrganizationsService;
+  @Mock private HsaOrganizationsService hsaOrganizationsService;
 
-    @Mock
-    private HsaPersonService hsaPersonService;
+  @Mock private HsaPersonService hsaPersonService;
 
-    @Mock
-    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+  @Mock private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @Mock
-    private NotificationMessageFactory notificationMessageFactory;
+  @Mock private NotificationMessageFactory notificationMessageFactory;
 
-    @InjectMocks
-    private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
+  @InjectMocks
+  private NotificationRedeliveryStatusUpdateCreatorService
+      notificationRedeliveryStatusUpdateCreatorService;
 
-    @Test
-    public void shallUseStatusUpdateXmlFromNotificationRedeliveryMessageIfExists() throws Exception {
-        final var notificationRedelivery = createNotificationRedelivery();
-        final var event = createEvent();
-        final var expectedStatusUpdateXml = "STATUS_UPDATE_XML";
+  @Test
+  public void shallUseStatusUpdateXmlFromNotificationRedeliveryMessageIfExists() throws Exception {
+    final var notificationRedelivery = createNotificationRedelivery();
+    final var event = createEvent();
+    final var expectedStatusUpdateXml = "STATUS_UPDATE_XML";
 
-        setupMockToReturnStatusUpdateXml(expectedStatusUpdateXml);
+    setupMockToReturnStatusUpdateXml(expectedStatusUpdateXml);
 
-        final var actualStatusUpdateXml = notificationRedeliveryStatusUpdateCreatorService
-            .getCertificateStatusUpdateXml(notificationRedelivery, event);
+    final var actualStatusUpdateXml =
+        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(
+            notificationRedelivery, event);
 
-        assertNotNull(actualStatusUpdateXml);
-        assertEquals(expectedStatusUpdateXml, actualStatusUpdateXml);
-    }
+    assertNotNull(actualStatusUpdateXml);
+    assertEquals(expectedStatusUpdateXml, actualStatusUpdateXml);
+  }
 
-    @Test
-    public void shallCreateStatusUpdateFromDraftIfRedeliveryMessageIsMissing() throws Exception {
-        final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
-        final var event = createEvent();
-        final var expectedDraft = mock(Utkast.class);
-        final var notificationMessage = mock(NotificationMessage.class);
+  @Test
+  public void shallCreateStatusUpdateFromDraftIfRedeliveryMessageIsMissing() throws Exception {
+    final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
+    final var event = createEvent();
+    final var expectedDraft = mock(Utkast.class);
+    final var notificationMessage = mock(NotificationMessage.class);
 
-        setupMockToReturnDraft(expectedDraft);
-        setupMockToReturnNotificationMessage(notificationMessage);
+    setupMockToReturnDraft(expectedDraft);
+    setupMockToReturnNotificationMessage(notificationMessage);
 
-        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, event);
+    notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(
+        notificationRedelivery, event);
 
-        verify(expectedDraft, times(1)).getModel();
-    }
+    verify(expectedDraft, times(1)).getModel();
+  }
 
-    @Test
-    public void shallCreateStatusUpdateFromCertificateIfRedeliveryMessageIsMissing() throws Exception {
-        final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
-        final var event = createEvent();
-        final var expectedCertificate = mock(IntygContentHolder.class);
-        final var notificationMessage = mock(NotificationMessage.class);
+  @Test
+  public void shallCreateStatusUpdateFromCertificateIfRedeliveryMessageIsMissing()
+      throws Exception {
+    final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
+    final var event = createEvent();
+    final var expectedCertificate = mock(IntygContentHolder.class);
+    final var notificationMessage = mock(NotificationMessage.class);
 
-        setupMockToReturnDraft(null);
-        setupMockToReturnIntygHolder(expectedCertificate);
-        setupMockToReturnNotificationMessage(notificationMessage);
+    setupMockToReturnDraft(null);
+    setupMockToReturnIntygHolder(expectedCertificate);
+    setupMockToReturnNotificationMessage(notificationMessage);
 
-        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, event);
+    notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(
+        notificationRedelivery, event);
 
-        verify(expectedCertificate, times(1)).getContents();
-    }
+    verify(expectedCertificate, times(1)).getContents();
+  }
 
-    @Test
-    public void shallCreateStatusUpdateWithoutDraftOrCertificateIfRedeliveryMessageIsMissingAndEventIsRadera() throws Exception {
-        final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
-        final var expectedEvent = createEvent();
-        expectedEvent.setCode(HandelsekodEnum.RADERA);
+  @Test
+  public void
+      shallCreateStatusUpdateWithoutDraftOrCertificateIfRedeliveryMessageIsMissingAndEventIsRadera()
+          throws Exception {
+    final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
+    final var expectedEvent = createEvent();
+    expectedEvent.setCode(HandelsekodEnum.RADERA);
 
-        doReturn(mock(List.class)).when(hsaPersonService).getHsaPersonInfo(expectedEvent.getCertificateIssuer());
+    doReturn(mock(List.class))
+        .when(hsaPersonService)
+        .getHsaPersonInfo(expectedEvent.getCertificateIssuer());
 
-        notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(notificationRedelivery, expectedEvent);
+    notificationRedeliveryStatusUpdateCreatorService.getCertificateStatusUpdateXml(
+        notificationRedelivery, expectedEvent);
 
-        verify(hsaOrganizationsService, times(1)).getVardgivareInfo(expectedEvent.getVardgivarId());
-        verify(hsaOrganizationsService, times(1)).getVardenhet(expectedEvent.getEnhetsId());
-        verify(hsaPersonService, times(1)).getHsaPersonInfo(expectedEvent.getCertificateIssuer());
-    }
+    verify(hsaOrganizationsService, times(1)).getVardgivareInfo(expectedEvent.getVardgivarId());
+    verify(hsaOrganizationsService, times(1)).getVardenhet(expectedEvent.getEnhetsId());
+    verify(hsaPersonService, times(1)).getHsaPersonInfo(expectedEvent.getCertificateIssuer());
+  }
 
-    private NotificationRedelivery createNotificationRedelivery() {
-        return createNotificationRedelivery("STATUS_UPDATE_XML".getBytes());
-    }
+  private NotificationRedelivery createNotificationRedelivery() {
+    return createNotificationRedelivery("STATUS_UPDATE_XML".getBytes());
+  }
 
-    private NotificationRedelivery createNotificationRedeliveryWithoutMessage() {
-        return createNotificationRedelivery(null);
-    }
+  private NotificationRedelivery createNotificationRedeliveryWithoutMessage() {
+    return createNotificationRedelivery(null);
+  }
 
-    private NotificationRedelivery createNotificationRedelivery(byte[] message) {
-        final var notificationRedelivery = new NotificationRedelivery();
-        notificationRedelivery.setCorrelationId("CORRELATION_ID");
-        notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
-        notificationRedelivery.setAttemptedDeliveries(1);
-        notificationRedelivery.setRedeliveryStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
-        notificationRedelivery.setEventId(1000L);
-        notificationRedelivery.setMessage(message);
-        return notificationRedelivery;
-    }
+  private NotificationRedelivery createNotificationRedelivery(byte[] message) {
+    final var notificationRedelivery = new NotificationRedelivery();
+    notificationRedelivery.setCorrelationId("CORRELATION_ID");
+    notificationRedelivery.setRedeliveryTime(LocalDateTime.now());
+    notificationRedelivery.setAttemptedDeliveries(1);
+    notificationRedelivery.setRedeliveryStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
+    notificationRedelivery.setEventId(1000L);
+    notificationRedelivery.setMessage(message);
+    return notificationRedelivery;
+  }
 
-    private void setupMockToReturnDraft(Utkast draft) {
-        doReturn(draft != null ? Optional.of(draft) : Optional.empty()).when(draftRepo).findById(any(String.class));
-    }
+  private void setupMockToReturnDraft(Utkast draft) {
+    doReturn(draft != null ? Optional.of(draft) : Optional.empty())
+        .when(draftRepo)
+        .findById(any(String.class));
+  }
 
-    private void setupMockToReturnIntygHolder(IntygContentHolder certificate) {
-        doReturn(certificate).when(intygService).fetchIntygDataForInternalUse(any(String.class), eq(true));
-    }
+  private void setupMockToReturnIntygHolder(IntygContentHolder certificate) {
+    doReturn(certificate)
+        .when(intygService)
+        .fetchIntygDataForInternalUse(any(String.class), eq(true));
+  }
 
-    private void setupMockToReturnNotificationMessage(NotificationMessage notificationMessage)
-        throws ModuleNotFoundException, IOException, ModuleException {
-        doReturn(notificationMessage).when(notificationMessageFactory).createNotificationMessage(any(Handelse.class),
-            nullable(String.class));
-    }
+  private void setupMockToReturnNotificationMessage(NotificationMessage notificationMessage)
+      throws ModuleNotFoundException, IOException, ModuleException {
+    doReturn(notificationMessage)
+        .when(notificationMessageFactory)
+        .createNotificationMessage(any(Handelse.class), nullable(String.class));
+  }
 
-    private void setupMockToReturnStatusUpdateXml(String statusUpdateXml) throws Exception {
-        doReturn(statusUpdateXml).when(objectMapper).readValue(any(byte[].class), eq(String.class));
-    }
+  private void setupMockToReturnStatusUpdateXml(String statusUpdateXml) throws Exception {
+    doReturn(statusUpdateXml).when(objectMapper).readValue(any(byte[].class), eq(String.class));
+  }
 
-    private Handelse createEvent() {
-        final var event = new Handelse();
-        event.setId(1000L);
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
-        event.setEnhetsId("UNIT_ID");
-        event.setCode(HandelsekodEnum.NYFRFM);
-        event.setIntygsId("CERTIFICATE_ID");
-        event.setVardgivarId("CAREPROVIDER_ID");
-        event.setTimestamp(EVENT_TIMESTAMP);
-        event.setHanteratAv("HANDLED_BY");
-        event.setPersonnummer("PERSON_NUMBER");
-        event.setCertificateVersion("CERTIFICATE_VERSION");
-        event.setCertificateIssuer("CERTIFICATE_ISSUER");
-        event.setCertificateVersion("CERTIFICATE_VERSION");
-        event.setAmne(ArendeAmne.AVSTMN);
-        event.setSistaDatumForSvar(LAST_DAY_FOR_ANSWER);
-        return event;
-    }
+  private Handelse createEvent() {
+    final var event = new Handelse();
+    event.setId(1000L);
+    event.setDeliveryStatus(NotificationDeliveryStatusEnum.RESEND);
+    event.setEnhetsId("UNIT_ID");
+    event.setCode(HandelsekodEnum.NYFRFM);
+    event.setIntygsId("CERTIFICATE_ID");
+    event.setVardgivarId("CAREPROVIDER_ID");
+    event.setTimestamp(EVENT_TIMESTAMP);
+    event.setHanteratAv("HANDLED_BY");
+    event.setPersonnummer("PERSON_NUMBER");
+    event.setCertificateVersion("CERTIFICATE_VERSION");
+    event.setCertificateIssuer("CERTIFICATE_ISSUER");
+    event.setCertificateVersion("CERTIFICATE_VERSION");
+    event.setAmne(ArendeAmne.AVSTMN);
+    event.setSistaDatumForSvar(LAST_DAY_FOR_ANSWER);
+    return event;
+  }
 }

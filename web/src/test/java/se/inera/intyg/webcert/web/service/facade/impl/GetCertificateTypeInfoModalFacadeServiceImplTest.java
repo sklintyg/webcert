@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,130 +42,128 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class GetCertificateTypeInfoModalFacadeServiceImplTest {
 
-    private static final String CERTIFICATE_TYPE = "db";
-    private static final String PATIENT_ID = "191212121212";
-    private static final String EXPECTED_TITLE = "Signerat dödsbevis på annan vårdenhet";
-    private static final String EXPECTED_DESCRIPTION = "<p><strong>Vårdgivare</strong><br/>Test Provider</p>";
+  private static final String CERTIFICATE_TYPE = "db";
+  private static final String PATIENT_ID = "191212121212";
+  private static final String EXPECTED_TITLE = "Signerat dödsbevis på annan vårdenhet";
+  private static final String EXPECTED_DESCRIPTION =
+      "<p><strong>Vårdgivare</strong><br/>Test Provider</p>";
 
-    @Mock
-    private CertificateTypeInfoModalService certificateTypeInfoModalService;
+  @Mock private CertificateTypeInfoModalService certificateTypeInfoModalService;
 
-    @Mock
-    private LogService logService;
+  @Mock private LogService logService;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    private GetCertificateTypeInfoModalFacadeServiceImpl service;
+  @InjectMocks private GetCertificateTypeInfoModalFacadeServiceImpl service;
 
-    private Personnummer personnummer;
-    private WebCertUser user;
+  private Personnummer personnummer;
+  private WebCertUser user;
 
-    @BeforeEach
-    void setUp() {
-        personnummer = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
-        user = new WebCertUser();
-        when(webCertUserService.getUser()).thenReturn(user);
-    }
+  @BeforeEach
+  void setUp() {
+    personnummer = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
+    user = new WebCertUser();
+    when(webCertUserService.getUser()).thenReturn(user);
+  }
 
-    @Test
-    void shouldReturnModalWhenModalExists() {
-        final var modal = CertificateTypeInfoModal.builder()
+  @Test
+  void shouldReturnModalWhenModalExists() {
+    final var modal =
+        CertificateTypeInfoModal.builder()
             .title(EXPECTED_TITLE)
             .description(EXPECTED_DESCRIPTION)
             .link("Visa vårdenhetens namn och HSA-id")
             .build();
 
-        when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
-            .thenReturn(Optional.of(modal));
+    when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
+        .thenReturn(Optional.of(modal));
 
-        final var result = service.get(CERTIFICATE_TYPE, personnummer);
+    final var result = service.get(CERTIFICATE_TYPE, personnummer);
 
-        assertAll(
-            () -> assertNotNull(result),
-            () -> assertEquals(EXPECTED_TITLE, result.getTitle()),
-            () -> assertEquals(EXPECTED_DESCRIPTION, result.getDescription())
-        );
-    }
+    assertAll(
+        () -> assertNotNull(result),
+        () -> assertEquals(EXPECTED_TITLE, result.getTitle()),
+        () -> assertEquals(EXPECTED_DESCRIPTION, result.getDescription()));
+  }
 
-    @Test
-    void shouldReturnNullWhenNoModalExists() {
-        when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
-            .thenReturn(Optional.empty());
+  @Test
+  void shouldReturnNullWhenNoModalExists() {
+    when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
+        .thenReturn(Optional.empty());
 
-        final var result = service.get(CERTIFICATE_TYPE, personnummer);
+    final var result = service.get(CERTIFICATE_TYPE, personnummer);
 
-        assertNull(result);
-    }
+    assertNull(result);
+  }
 
-    @Test
-    void shouldHandleDoiCertificateType() {
-        final var certificateType = "doi";
-        final var expectedTitle = "Signerat dödsorsaksintyg på annan vårdenhet";
+  @Test
+  void shouldHandleDoiCertificateType() {
+    final var certificateType = "doi";
+    final var expectedTitle = "Signerat dödsorsaksintyg på annan vårdenhet";
 
-        final var modal = CertificateTypeInfoModal.builder()
+    final var modal =
+        CertificateTypeInfoModal.builder()
             .title(expectedTitle)
             .description(EXPECTED_DESCRIPTION)
             .link("Visa vårdenhetens namn och HSA-id")
             .build();
 
-        when(certificateTypeInfoModalService.get(eq(certificateType), eq(personnummer)))
-            .thenReturn(Optional.of(modal));
+    when(certificateTypeInfoModalService.get(eq(certificateType), eq(personnummer)))
+        .thenReturn(Optional.of(modal));
 
-        final var result = service.get(certificateType, personnummer);
+    final var result = service.get(certificateType, personnummer);
 
-        assertAll(
-            () -> assertNotNull(result),
-            () -> assertEquals(expectedTitle, result.getTitle())
-        );
+    assertAll(() -> assertNotNull(result), () -> assertEquals(expectedTitle, result.getTitle()));
+  }
+
+  @Nested
+  class Logging {
+
+    @Test
+    void shouldLogReadLevelOneWhenModalExists() {
+      final var modal =
+          CertificateTypeInfoModal.builder()
+              .title(EXPECTED_TITLE)
+              .description(EXPECTED_DESCRIPTION)
+              .link("Visa vårdenhetens namn och HSA-id")
+              .build();
+
+      when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
+          .thenReturn(Optional.of(modal));
+
+      service.get(CERTIFICATE_TYPE, personnummer);
+
+      verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID));
     }
 
-    @Nested
-    class Logging {
+    @Test
+    void shouldLogReadLevelOneEvenWhenNoModalExists() {
+      when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
+          .thenReturn(Optional.empty());
 
-        @Test
-        void shouldLogReadLevelOneWhenModalExists() {
-            final var modal = CertificateTypeInfoModal.builder()
-                .title(EXPECTED_TITLE)
-                .description(EXPECTED_DESCRIPTION)
-                .link("Visa vårdenhetens namn och HSA-id")
-                .build();
+      service.get(CERTIFICATE_TYPE, personnummer);
 
-            when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
-                .thenReturn(Optional.of(modal));
-
-            service.get(CERTIFICATE_TYPE, personnummer);
-
-            verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID));
-        }
-
-        @Test
-        void shouldLogReadLevelOneEvenWhenNoModalExists() {
-            when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
-                .thenReturn(Optional.empty());
-
-            service.get(CERTIFICATE_TYPE, personnummer);
-
-            verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID));
-        }
-
-        @Test
-        void shouldLogReadLevelOneWithCorrectPatientId() {
-            final var differentPatientId = "199001011234";
-            final var differentPersonnummer = Personnummer.createPersonnummer(differentPatientId).orElseThrow();
-
-            final var modal = CertificateTypeInfoModal.builder()
-                .title(EXPECTED_TITLE)
-                .description(EXPECTED_DESCRIPTION)
-                .build();
-
-            when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(differentPersonnummer)))
-                .thenReturn(Optional.of(modal));
-
-            service.get(CERTIFICATE_TYPE, differentPersonnummer);
-
-            verify(logService).logReadLevelOne(eq(user), eq(differentPatientId));
-        }
+      verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID));
     }
+
+    @Test
+    void shouldLogReadLevelOneWithCorrectPatientId() {
+      final var differentPatientId = "199001011234";
+      final var differentPersonnummer =
+          Personnummer.createPersonnummer(differentPatientId).orElseThrow();
+
+      final var modal =
+          CertificateTypeInfoModal.builder()
+              .title(EXPECTED_TITLE)
+              .description(EXPECTED_DESCRIPTION)
+              .build();
+
+      when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(differentPersonnummer)))
+          .thenReturn(Optional.of(modal));
+
+      service.get(CERTIFICATE_TYPE, differentPersonnummer);
+
+      verify(logService).logReadLevelOne(eq(user), eq(differentPatientId));
+    }
+  }
 }

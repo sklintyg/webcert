@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,111 +40,111 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @Getter
 public class WebCertUser extends IntygUser implements Serializable, Saml2AuthenticatedPrincipal {
 
-    @Serial
-    private static final long serialVersionUID = -2624303818412468774L;
+  @Serial private static final long serialVersionUID = -2624303818412468774L;
 
-    private Map<String, String> anvandarPreference = new HashMap<>();
-    private IntegrationParameters parameters;
-    private boolean useSigningService = false;
-    private SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
-    private String identityProviderForSign;
-    private String launchFromOrigin;
+  private Map<String, String> anvandarPreference = new HashMap<>();
+  private IntegrationParameters parameters;
+  private boolean useSigningService = false;
+  private SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
+  private String identityProviderForSign;
+  private String launchFromOrigin;
 
-    public WebCertUser() {
-        super("only-for-test-use");
+  public WebCertUser() {
+    super("only-for-test-use");
+  }
+
+  public WebCertUser(String unauthorizedPrivatePractitioner) {
+    super(unauthorizedPrivatePractitioner);
+  }
+
+  public WebCertUser(IntygUser intygUser) {
+    super(intygUser.getHsaId());
+    this.userTermsApprovedOrSubscriptionInUse = intygUser.isUserTermsApprovedOrSubscriptionInUse();
+    this.personId = intygUser.getPersonId();
+    this.isSekretessMarkerad = intygUser.isSekretessMarkerad();
+    this.fornamn = intygUser.getFornamn();
+    this.efternamn = intygUser.getEfternamn();
+    this.namn = intygUser.getNamn();
+    this.titel = intygUser.getTitel();
+    this.forskrivarkod = intygUser.getForskrivarkod();
+    this.authenticationScheme = intygUser.getAuthenticationScheme();
+    this.vardgivare = intygUser.getVardgivare();
+    this.befattningar = intygUser.getBefattningar();
+    this.befattningsKoder = intygUser.getBefattningsKoder();
+    this.specialiseringar = intygUser.getSpecialiseringar();
+    this.legitimeradeYrkesgrupper = intygUser.getLegitimeradeYrkesgrupper();
+
+    this.valdVardenhet = intygUser.getValdVardenhet();
+    this.valdVardgivare = intygUser.getValdVardgivare();
+    this.miuNamnPerEnhetsId = intygUser.getMiuNamnPerEnhetsId();
+    this.authenticationMethod = intygUser.getAuthenticationMethod();
+    this.features = intygUser.getFeatures();
+    this.roles = intygUser.getRoles();
+    this.authorities = intygUser.getAuthorities();
+    this.origin = intygUser.getOrigin();
+    this.roleTypeName = intygUser.getRoleTypeName();
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (super.equals(o)) {
+      WebCertUser that = (WebCertUser) o;
+      return Objects.equals(this.anvandarPreference, that.anvandarPreference)
+          && Objects.equals(this.parameters, that.parameters)
+          && Objects.equals(this.subscriptionInfo, that.subscriptionInfo);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode()
+        + Objects.hash(this.anvandarPreference, this.parameters, this.subscriptionInfo);
+  }
+
+  @JsonIgnore
+  public boolean isValdVardenhetMottagning() {
+    if (valdVardenhet == null) {
+      return false;
     }
 
-    public WebCertUser(String unauthorizedPrivatePractitioner) {
-        super(unauthorizedPrivatePractitioner);
-    }
-
-    public WebCertUser(IntygUser intygUser) {
-        super(intygUser.getHsaId());
-        this.userTermsApprovedOrSubscriptionInUse = intygUser.isUserTermsApprovedOrSubscriptionInUse();
-        this.personId = intygUser.getPersonId();
-        this.isSekretessMarkerad = intygUser.isSekretessMarkerad();
-        this.fornamn = intygUser.getFornamn();
-        this.efternamn = intygUser.getEfternamn();
-        this.namn = intygUser.getNamn();
-        this.titel = intygUser.getTitel();
-        this.forskrivarkod = intygUser.getForskrivarkod();
-        this.authenticationScheme = intygUser.getAuthenticationScheme();
-        this.vardgivare = intygUser.getVardgivare();
-        this.befattningar = intygUser.getBefattningar();
-        this.befattningsKoder = intygUser.getBefattningsKoder();
-        this.specialiseringar = intygUser.getSpecialiseringar();
-        this.legitimeradeYrkesgrupper = intygUser.getLegitimeradeYrkesgrupper();
-
-        this.valdVardenhet = intygUser.getValdVardenhet();
-        this.valdVardgivare = intygUser.getValdVardgivare();
-        this.miuNamnPerEnhetsId = intygUser.getMiuNamnPerEnhetsId();
-        this.authenticationMethod = intygUser.getAuthenticationMethod();
-        this.features = intygUser.getFeatures();
-        this.roles = intygUser.getRoles();
-        this.authorities = intygUser.getAuthorities();
-        this.origin = intygUser.getOrigin();
-        this.roleTypeName = intygUser.getRoleTypeName();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (super.equals(o)) {
-            WebCertUser that = (WebCertUser) o;
-            return Objects.equals(this.anvandarPreference, that.anvandarPreference)
-                && Objects.equals(this.parameters, that.parameters)
-                && Objects.equals(this.subscriptionInfo, that.subscriptionInfo);
+    for (Vardgivare vg : vardgivare) {
+      for (Vardenhet ve : vg.getVardenheter()) {
+        if (ve.getId().equals(valdVardenhet.getId())) {
+          return false;
         }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode() + Objects.hash(this.anvandarPreference, this.parameters, this.subscriptionInfo);
-    }
-
-    @JsonIgnore
-    public boolean isValdVardenhetMottagning() {
-        if (valdVardenhet == null) {
-            return false;
+        for (Mottagning m : ve.getMottagningar()) {
+          if (m.getId().equals(valdVardenhet.getId())) {
+            return true;
+          }
         }
-
-        for (Vardgivare vg : vardgivare) {
-            for (Vardenhet ve : vg.getVardenheter()) {
-                if (ve.getId().equals(valdVardenhet.getId())) {
-                    return false;
-                }
-                for (Mottagning m : ve.getMottagningar()) {
-                    if (m.getId().equals(valdVardenhet.getId())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+      }
     }
+    return false;
+  }
 
-    public boolean isSjfActive() {
-        return parameters != null && parameters.isSjf();
-    }
+  public boolean isSjfActive() {
+    return parameters != null && parameters.isSjf();
+  }
 
-    public boolean isUnitInactive() {
-        return parameters != null && parameters.isInactiveUnit();
-    }
+  public boolean isUnitInactive() {
+    return parameters != null && parameters.isInactiveUnit();
+  }
 
-    @Override
-    public String getName() {
-        return "";
-    }
+  @Override
+  public String getName() {
+    return "";
+  }
 
-    @Override
-    public String getRelyingPartyRegistrationId() {
-        return switch (authenticationMethod) {
-            case BANK_ID, MOBILT_BANK_ID -> AuthConstants.REGISTRATION_ID_ELEG;
-            default -> AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
-        };
-    }
+  @Override
+  public String getRelyingPartyRegistrationId() {
+    return switch (authenticationMethod) {
+      case BANK_ID, MOBILT_BANK_ID -> AuthConstants.REGISTRATION_ID_ELEG;
+      default -> AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
+    };
+  }
 
-    public boolean isUnauthorizedPrivatePractitioner() {
-        return roles.containsKey(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
-    }
+  public boolean isUnauthorizedPrivatePractitioner() {
+    return roles.containsKey(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
+  }
 }

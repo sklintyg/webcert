@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import org.springframework.stereotype.Component;
@@ -30,35 +29,35 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Component
 public class AlternateSsnEvaluator {
 
-    public boolean shouldUpdate(Certificate certificate, WebCertUser user) {
-        if (!CertificateStatus.UNSIGNED.equals(certificate.getMetadata().getStatus())) {
-            return false;
-        }
-
-        if (alternateSsnNotProvided(user)) {
-            return false;
-        }
-
-        if (removeDash(user.getParameters().getAlternateSsn()).equals(
-            removeDash(certificate.getMetadata().getPatient().getPersonId().getId()))) {
-            return false;
-        }
-
-        return certificate.getLinks().stream()
-            .filter(link -> link.getType().equals(ResourceLinkTypeEnum.EDIT_CERTIFICATE))
-            .findFirst()
-            .map(ResourceLink::isEnabled)
-            .orElse(false);
+  public boolean shouldUpdate(Certificate certificate, WebCertUser user) {
+    if (!CertificateStatus.UNSIGNED.equals(certificate.getMetadata().getStatus())) {
+      return false;
     }
 
-    private String removeDash(String value) {
-        return value.replace("-", "");
+    if (alternateSsnNotProvided(user)) {
+      return false;
     }
 
-    private static boolean alternateSsnNotProvided(WebCertUser user) {
-        return user.getParameters() == null
-            || (user.getParameters().getAlternateSsn() == null
+    if (removeDash(user.getParameters().getAlternateSsn())
+        .equals(removeDash(certificate.getMetadata().getPatient().getPersonId().getId()))) {
+      return false;
+    }
+
+    return certificate.getLinks().stream()
+        .filter(link -> link.getType().equals(ResourceLinkTypeEnum.EDIT_CERTIFICATE))
+        .findFirst()
+        .map(ResourceLink::isEnabled)
+        .orElse(false);
+  }
+
+  private String removeDash(String value) {
+    return value.replace("-", "");
+  }
+
+  private static boolean alternateSsnNotProvided(WebCertUser user) {
+    return user.getParameters() == null
+        || (user.getParameters().getAlternateSsn() == null
             || user.getParameters().getAlternateSsn().isBlank())
-            || Personnummer.createPersonnummer(user.getParameters().getAlternateSsn()).isEmpty();
-    }
+        || Personnummer.createPersonnummer(user.getParameters().getAlternateSsn()).isEmpty();
+  }
 }

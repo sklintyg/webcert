@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,40 +34,46 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Service
 public class GetRelatedCertificateFacadeServiceImpl implements GetRelatedCertificateFacadeService {
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
-    private final UtkastService utkastService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
+  private final UtkastService utkastService;
 
-    private final WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-    public GetRelatedCertificateFacadeServiceImpl(GetCertificateFacadeService getCertificateFacadeService, UtkastService utkastService,
-        WebCertUserService webCertUserService) {
-        this.getCertificateFacadeService = getCertificateFacadeService;
-        this.utkastService = utkastService;
-        this.webCertUserService = webCertUserService;
+  public GetRelatedCertificateFacadeServiceImpl(
+      GetCertificateFacadeService getCertificateFacadeService,
+      UtkastService utkastService,
+      WebCertUserService webCertUserService) {
+    this.getCertificateFacadeService = getCertificateFacadeService;
+    this.utkastService = utkastService;
+    this.webCertUserService = webCertUserService;
+  }
+
+  @Override
+  public String get(String certificateId) {
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
+    if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificate.getMetadata().getType())) {
+      final var existingCertificates =
+          utkastService.checkIfPersonHasExistingIntyg(
+              Personnummer.createPersonnummer(
+                      certificate.getMetadata().getPatient().getPersonId().getId())
+                  .orElseThrow(),
+              webCertUserService.getUser(),
+              certificateId);
+      final var doiDraft =
+          existingCertificates
+              .getOrDefault(UTKAST_INDICATOR, Collections.emptyMap())
+              .getOrDefault(DoiModuleEntryPoint.MODULE_ID, null);
+      if (doiDraft != null && doiDraft.isEnableShowDoiButton()) {
+        return doiDraft.getLatestIntygsId();
+      }
+      final var doiCertificate =
+          existingCertificates
+              .getOrDefault(INTYG_INDICATOR, Collections.emptyMap())
+              .getOrDefault(DoiModuleEntryPoint.MODULE_ID, null);
+      if (doiCertificate != null && doiCertificate.isEnableShowDoiButton()) {
+        return doiCertificate.getLatestIntygsId();
+      }
     }
-
-    @Override
-    public String get(String certificateId) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
-        if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificate.getMetadata().getType())) {
-            final var existingCertificates = utkastService.checkIfPersonHasExistingIntyg(
-                Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow(),
-                webCertUserService.getUser(),
-                certificateId
-            );
-            final var doiDraft = existingCertificates
-                .getOrDefault(UTKAST_INDICATOR, Collections.emptyMap())
-                .getOrDefault(DoiModuleEntryPoint.MODULE_ID, null);
-            if (doiDraft != null && doiDraft.isEnableShowDoiButton()) {
-                return doiDraft.getLatestIntygsId();
-            }
-            final var doiCertificate = existingCertificates
-                .getOrDefault(INTYG_INDICATOR, Collections.emptyMap())
-                .getOrDefault(DoiModuleEntryPoint.MODULE_ID, null);
-            if (doiCertificate != null && doiCertificate.isEnableShowDoiButton()) {
-                return doiCertificate.getLatestIntygsId();
-            }
-        }
-        return null;
-    }
+    return null;
+  }
 }

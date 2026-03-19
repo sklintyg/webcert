@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,19 +20,19 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class CertificateResponseDTO {
 
-    private CertificateDTO certificate;
+  private CertificateDTO certificate;
 
-    public static CertificateResponseDTO create(CertificateDTO certificate) {
-        final var responseDTO = new CertificateResponseDTO();
-        responseDTO.certificate = certificate;
-        return responseDTO;
-    }
+  public static CertificateResponseDTO create(CertificateDTO certificate) {
+    final var responseDTO = new CertificateResponseDTO();
+    responseDTO.certificate = certificate;
+    return responseDTO;
+  }
 
-    public CertificateDTO getCertificate() {
-        return certificate;
-    }
+  public CertificateDTO getCertificate() {
+    return certificate;
+  }
 
-    public void setCertificate(CertificateDTO certificate) {
-        this.certificate = certificate;
-    }
+  public void setCertificate(CertificateDTO certificate) {
+    this.certificate = certificate;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,45 +34,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Aspect
 public class JavaMailSenderAroundAdvice {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JavaMailSenderAroundAdvice.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JavaMailSenderAroundAdvice.class);
 
-    @Autowired
-    private MailStore mailStore;
+  @Autowired private MailStore mailStore;
 
-    private String mailHost;
+  private String mailHost;
 
-    public String getMailHost() {
-        return mailHost;
-    }
+  public String getMailHost() {
+    return mailHost;
+  }
 
-    public void setMailHost(String mailHost) {
-        this.mailHost = mailHost;
-    }
+  public void setMailHost(String mailHost) {
+    this.mailHost = mailHost;
+  }
 
-    /**
-     * Intercepts and mail sending calls and stores the mime message in the MailStore.
-     */
-    @Around("execution(* org.springframework.mail.javamail.JavaMailSender+.send(..))")
-    public Object interceptMailSending(ProceedingJoinPoint pjp) throws Throwable {
-        if (Strings.isNullOrEmpty(mailHost)) {
-            for (Object argument : pjp.getArgs()) {
-                if (argument instanceof MimeMessage) {
-                    OutgoingMail outgoingMail = new OutgoingMail((MimeMessage) argument);
-                    mailStore.getMails().add(outgoingMail);
+  /** Intercepts and mail sending calls and stores the mime message in the MailStore. */
+  @Around("execution(* org.springframework.mail.javamail.JavaMailSender+.send(..))")
+  public Object interceptMailSending(ProceedingJoinPoint pjp) throws Throwable {
+    if (Strings.isNullOrEmpty(mailHost)) {
+      for (Object argument : pjp.getArgs()) {
+        if (argument instanceof MimeMessage) {
+          OutgoingMail outgoingMail = new OutgoingMail((MimeMessage) argument);
+          mailStore.getMails().add(outgoingMail);
 
-                    LOG.info("\n*********************************************************************************\n"
-                            + " Intercepting mail to : '{}' subject: '{}' from: '{}'.\n"
-                            + "{}\n"
-                            + "*********************************************************************************",
-                        outgoingMail.getRecipients().stream().collect(Collectors.joining(", ")), outgoingMail.getSubject(),
-                        outgoingMail.getFrom(), outgoingMail.getBody());
+          LOG.info(
+              "\n*********************************************************************************\n"
+                  + " Intercepting mail to : '{}' subject: '{}' from: '{}'.\n"
+                  + "{}\n"
+                  + "*********************************************************************************",
+              outgoingMail.getRecipients().stream().collect(Collectors.joining(", ")),
+              outgoingMail.getSubject(),
+              outgoingMail.getFrom(),
+              outgoingMail.getBody());
 
-                    mailStore.waitToContinue();
-                }
-            }
-            return null;
-        } else {
-            return pjp.proceed();
+          mailStore.waitToContinue();
         }
+      }
+      return null;
+    } else {
+      return pjp.proceed();
     }
+  }
 }

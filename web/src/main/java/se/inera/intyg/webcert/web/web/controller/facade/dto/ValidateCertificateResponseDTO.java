@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,19 +22,19 @@ import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorD
 
 public class ValidateCertificateResponseDTO {
 
-    private ValidationErrorDTO[] validationErrors;
+  private ValidationErrorDTO[] validationErrors;
 
-    public static ValidateCertificateResponseDTO create(ValidationErrorDTO[] validationErrors) {
-        final ValidateCertificateResponseDTO responseDTO = new ValidateCertificateResponseDTO();
-        responseDTO.validationErrors = validationErrors;
-        return responseDTO;
-    }
+  public static ValidateCertificateResponseDTO create(ValidationErrorDTO[] validationErrors) {
+    final ValidateCertificateResponseDTO responseDTO = new ValidateCertificateResponseDTO();
+    responseDTO.validationErrors = validationErrors;
+    return responseDTO;
+  }
 
-    public ValidationErrorDTO[] getValidationErrors() {
-        return validationErrors;
-    }
+  public ValidationErrorDTO[] getValidationErrors() {
+    return validationErrors;
+  }
 
-    public void setValidationErrors(ValidationErrorDTO[] validationErrors) {
-        this.validationErrors = validationErrors;
-    }
+  public void setValidationErrors(ValidationErrorDTO[] validationErrors) {
+    this.validationErrors = validationErrors;
+  }
 }

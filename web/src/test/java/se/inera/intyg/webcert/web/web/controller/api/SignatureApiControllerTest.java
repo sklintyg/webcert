@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -56,117 +56,121 @@ import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 @ExtendWith(MockitoExtension.class)
 public class SignatureApiControllerTest {
 
-    @Mock
-    private MonitoringLogService mockMonitoringService;
-    @Mock
-    private FakeSignatureService fakeSignatureService;
-    @Mock
-    private DssMetadataService dssMetadataService;
-    @Mock
-    private UriInfo uriInfo;
-    @Mock
-    private DssSignMessageService dssSignMessageService;
-    @Mock
-    private DssSignatureService dssSignatureService;
-    @Mock
-    private ReactUriFactory reactUriFactory;
-    @Mock
-    private UnderskriftService underskriftService;
+  @Mock private MonitoringLogService mockMonitoringService;
+  @Mock private FakeSignatureService fakeSignatureService;
+  @Mock private DssMetadataService dssMetadataService;
+  @Mock private UriInfo uriInfo;
+  @Mock private DssSignMessageService dssSignMessageService;
+  @Mock private DssSignatureService dssSignatureService;
+  @Mock private ReactUriFactory reactUriFactory;
+  @Mock private UnderskriftService underskriftService;
 
-    @InjectMocks
-    private SignatureApiController signatureApiController;
+  @InjectMocks private SignatureApiController signatureApiController;
 
-    @Captor
-    private ArgumentCaptor<Boolean> clientCaptor;
+  @Captor private ArgumentCaptor<Boolean> clientCaptor;
 
-    private static final String CERT_ID = UUID.randomUUID().toString();
-    private static final String CERT_TYPE = "lisjp";
-    private static final String TICKET_ID = "ticketId";
-    private static final String WC_URI = "https://wc.localtest.me";
-    private static final String WC_URI_ERROR = "https://wc.localtest.me/sign";
-    private static final String USER_IP_ADDRESS = "127.0.0.1";
+  private static final String CERT_ID = UUID.randomUUID().toString();
+  private static final String CERT_TYPE = "lisjp";
+  private static final String TICKET_ID = "ticketId";
+  private static final String WC_URI = "https://wc.localtest.me";
+  private static final String WC_URI_ERROR = "https://wc.localtest.me/sign";
+  private static final String USER_IP_ADDRESS = "127.0.0.1";
 
-    private static final long VERSION = 3L;
+  private static final long VERSION = 3L;
 
-    @Test
-    public void signServiceResponse() {
-        // TODO
-    }
+  @Test
+  public void signServiceResponse() {
+    // TODO
+  }
 
-    @Test
-    public void signServiceClientMetadata() {
-        when(dssMetadataService.getClientMetadataAsString()).thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Test>Inera AB</Test>");
+  @Test
+  public void signServiceClientMetadata() {
+    when(dssMetadataService.getClientMetadataAsString())
+        .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Test>Inera AB</Test>");
 
-        Response response = signatureApiController.signServiceClientMetadata();
+    Response response = signatureApiController.signServiceClientMetadata();
 
-        assertNotNull(response);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertNotNull(response.getEntity());
-        assertEquals("application/samlmetadata+xml", response.getMediaType().toString());
-        assertEquals("attachment; filename=\"wc_dss_client_metadata.xml\"", response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION));
-    }
+    assertNotNull(response);
+    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    assertNotNull(response.getEntity());
+    assertEquals("application/samlmetadata+xml", response.getMediaType().toString());
+    assertEquals(
+        "attachment; filename=\"wc_dss_client_metadata.xml\"",
+        response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION));
+  }
 
-    @Test
-    public void shouldFetchRedirectUrl() {
-        final var signatureTicket = getSignatureTicket(SignaturStatus.SIGNERAD);
+  @Test
+  public void shouldFetchRedirectUrl() {
+    final var signatureTicket = getSignatureTicket(SignaturStatus.SIGNERAD);
 
-        when(dssSignMessageService.validateDssMessageSignature(any(String.class))).thenReturn(getOkValidationResponse());
-        when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class))).thenReturn(signatureTicket);
-        when(reactUriFactory.uriForCertificate(uriInfo, signatureTicket.getIntygsId())).thenReturn(URI.create(WC_URI));
+    when(dssSignMessageService.validateDssMessageSignature(any(String.class)))
+        .thenReturn(getOkValidationResponse());
+    when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class)))
+        .thenReturn(signatureTicket);
+    when(reactUriFactory.uriForCertificate(uriInfo, signatureTicket.getIntygsId()))
+        .thenReturn(URI.create(WC_URI));
 
-        final var response = signatureApiController.signServiceResponse(uriInfo, "relayState", "eidSignResponse");
+    final var response =
+        signatureApiController.signServiceResponse(uriInfo, "relayState", "eidSignResponse");
 
-        verify(reactUriFactory, times(1)).uriForCertificate(uriInfo, CERT_ID);
-        verify(dssSignatureService, times(0)).findReturnUrl(any());
-        assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
-        assertEquals(WC_URI, response.getLocation().toString());
-    }
+    verify(reactUriFactory, times(1)).uriForCertificate(uriInfo, CERT_ID);
+    verify(dssSignatureService, times(0)).findReturnUrl(any());
+    assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
+    assertEquals(WC_URI, response.getLocation().toString());
+  }
 
-    @Test
-    public void shouldFetchRedirectUrlWithErrorStatus() {
-        final var signatureTicket = getSignatureTicket(SignaturStatus.ERROR);
+  @Test
+  public void shouldFetchRedirectUrlWithErrorStatus() {
+    final var signatureTicket = getSignatureTicket(SignaturStatus.ERROR);
 
-        when(dssSignMessageService.validateDssMessageSignature(any(String.class))).thenReturn(getOkValidationResponse());
-        when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class))).thenReturn(signatureTicket);
-        when(
-            reactUriFactory.uriForCertificateWithSignError(uriInfo, signatureTicket.getIntygsId(), signatureTicket.getStatus())).thenReturn(
-            URI.create(WC_URI_ERROR));
+    when(dssSignMessageService.validateDssMessageSignature(any(String.class)))
+        .thenReturn(getOkValidationResponse());
+    when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class)))
+        .thenReturn(signatureTicket);
+    when(reactUriFactory.uriForCertificateWithSignError(
+            uriInfo, signatureTicket.getIntygsId(), signatureTicket.getStatus()))
+        .thenReturn(URI.create(WC_URI_ERROR));
 
-        final var response = signatureApiController.signServiceResponse(uriInfo, "relayState", "eidSignResponse");
+    final var response =
+        signatureApiController.signServiceResponse(uriInfo, "relayState", "eidSignResponse");
 
-        verify(reactUriFactory, times(1)).uriForCertificateWithSignError(uriInfo, CERT_ID, signatureTicket.getStatus());
-        verify(dssSignatureService, times(0)).findReturnUrl(any());
-        assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
-        assertEquals(WC_URI_ERROR, response.getLocation().toString());
-    }
+    verify(reactUriFactory, times(1))
+        .uriForCertificateWithSignError(uriInfo, CERT_ID, signatureTicket.getStatus());
+    verify(dssSignatureService, times(0)).findReturnUrl(any());
+    assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
+    assertEquals(WC_URI_ERROR, response.getLocation().toString());
+  }
 
-    private void setupMocksForSignDraft() {
-        final var signatureTicket = getSignatureTicket(SignaturStatus.SIGNERAD);
-        when(dssSignatureService.createTransactionID()).thenReturn(TICKET_ID);
-        when(dssSignatureService.createSignatureRequestDTO(signatureTicket)).thenReturn(getSignRequestDto());
-        when(underskriftService.startSigningProcess(CERT_ID, CERT_TYPE, VERSION, SIGN_SERVICE, TICKET_ID, USER_IP_ADDRESS))
-            .thenReturn(signatureTicket);
-    }
+  private void setupMocksForSignDraft() {
+    final var signatureTicket = getSignatureTicket(SignaturStatus.SIGNERAD);
+    when(dssSignatureService.createTransactionID()).thenReturn(TICKET_ID);
+    when(dssSignatureService.createSignatureRequestDTO(signatureTicket))
+        .thenReturn(getSignRequestDto());
+    when(underskriftService.startSigningProcess(
+            CERT_ID, CERT_TYPE, VERSION, SIGN_SERVICE, TICKET_ID, USER_IP_ADDRESS))
+        .thenReturn(signatureTicket);
+  }
 
-    private DssSignRequestDTO getSignRequestDto() {
-        final var dssSignRequestDto = new DssSignRequestDTO();
-        dssSignRequestDto.setTransactionId(TICKET_ID);
-        dssSignRequestDto.setSignRequest("signRequest");
-        dssSignRequestDto.setActionUrl("actionUrl");
-        return dssSignRequestDto;
-    }
+  private DssSignRequestDTO getSignRequestDto() {
+    final var dssSignRequestDto = new DssSignRequestDTO();
+    dssSignRequestDto.setTransactionId(TICKET_ID);
+    dssSignRequestDto.setSignRequest("signRequest");
+    dssSignRequestDto.setActionUrl("actionUrl");
+    return dssSignRequestDto;
+  }
 
-    private SignaturBiljett getSignatureTicket(SignaturStatus status) {
-        return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(TICKET_ID, SignaturTyp.XMLDSIG, SIGN_SERVICE)
-            .withIntygsId(CERT_ID)
-            .withStatus(status)
-            .build();
-    }
+  private SignaturBiljett getSignatureTicket(SignaturStatus status) {
+    return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(
+            TICKET_ID, SignaturTyp.XMLDSIG, SIGN_SERVICE)
+        .withIntygsId(CERT_ID)
+        .withStatus(status)
+        .build();
+  }
 
-    private ValidationResponse getOkValidationResponse() {
-        return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
-            .withReferencesValid(ValidationResult.OK)
-            .withSignatureValid(ValidationResult.OK)
-            .build();
-    }
+  private ValidationResponse getOkValidationResponse() {
+    return ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+        .withReferencesValid(ValidationResult.OK)
+        .withSignatureValid(ValidationResult.OK)
+        .build();
+  }
 }

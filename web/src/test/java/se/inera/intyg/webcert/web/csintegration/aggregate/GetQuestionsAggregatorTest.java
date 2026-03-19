@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,61 +37,49 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeServ
 @ExtendWith(MockitoExtension.class)
 class GetQuestionsAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    @Mock
-    private GetQuestionsFacadeService getQuestionsFromWebcert;
-    @Mock
-    private GetQuestionsFromCertificateService getQuestionsFromCertificateService;
-    @InjectMocks
-    private GetQuestionsAggregator getQuestionsAggregator;
+  private static final String CERTIFICATE_ID = "certificateId";
+  @Mock private GetQuestionsFacadeService getQuestionsFromWebcert;
+  @Mock private GetQuestionsFromCertificateService getQuestionsFromCertificateService;
+  @InjectMocks private GetQuestionsAggregator getQuestionsAggregator;
 
+  @Test
+  void shallReturnQuestionsFromCSIfResponseIsNotNull() {
+    final var expectedResult = List.of(Question.builder().build());
+    doReturn(expectedResult).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
 
-    @Test
-    void shallReturnQuestionsFromCSIfResponseIsNotNull() {
-        final var expectedResult = List.of(Question.builder().build());
-        doReturn(expectedResult).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
+    final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
+    verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
 
-        final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
-        verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
+    assertEquals(expectedResult, response);
+  }
 
-        assertEquals(expectedResult, response);
-    }
+  @Test
+  void shallReturnQuestionsFromWCIfResponseIsNull() {
+    final var question = Question.builder().build();
+    final var expectedResult = List.of(question);
+    doReturn(null).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
+    doReturn(List.of(question)).when(getQuestionsFromWebcert).getQuestions(CERTIFICATE_ID);
 
-    @Test
-    void shallReturnQuestionsFromWCIfResponseIsNull() {
-        final var question = Question.builder().build();
-        final var expectedResult = List.of(question);
-        doReturn(null).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
-        doReturn(List.of(question)).when(getQuestionsFromWebcert).getQuestions(CERTIFICATE_ID);
+    final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
+    verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
+    verify(getQuestionsFromWebcert, times(1)).getQuestions(CERTIFICATE_ID);
 
-        final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
-        verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
-        verify(getQuestionsFromWebcert, times(1)).getQuestions(CERTIFICATE_ID);
+    assertEquals(expectedResult, response);
+  }
 
-        assertEquals(expectedResult, response);
-    }
+  @Test
+  void shallReturnComplementQuestions() {
+    final var resultFromCS =
+        List.of(
+            Question.builder().type(QuestionType.COMPLEMENT).build(),
+            Question.builder().type(QuestionType.CONTACT).build());
 
-    @Test
-    void shallReturnComplementQuestions() {
-        final var resultFromCS = List.of(
-            Question.builder()
-                .type(QuestionType.COMPLEMENT)
-                .build(),
-            Question.builder()
-                .type(QuestionType.CONTACT)
-                .build()
-        );
+    final var expectedResult = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
+    doReturn(resultFromCS).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
 
-        final var expectedResult = List.of(
-            Question.builder()
-                .type(QuestionType.COMPLEMENT)
-                .build()
-        );
-        doReturn(resultFromCS).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
+    final var response = getQuestionsAggregator.getComplementQuestions(CERTIFICATE_ID);
+    verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
 
-        final var response = getQuestionsAggregator.getComplementQuestions(CERTIFICATE_ID);
-        verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
-
-        assertEquals(expectedResult, response);
-    }
+    assertEquals(expectedResult, response);
+  }
 }

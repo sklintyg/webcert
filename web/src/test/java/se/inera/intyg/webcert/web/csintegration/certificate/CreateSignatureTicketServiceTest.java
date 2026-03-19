@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,124 +42,225 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class CreateSignatureTicketServiceTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String TICKET_ID = "ticketId";
-    private static final String CERTIFICATE_XML = "certificateXml";
-    private static final String PERSON_ID = "personId";
-    private static final String USER_IP_ADDRESS = "userIpAddress";
-    @Mock
-    private XmlUnderskriftServiceImpl xmlUnderskriftService;
-    @Mock
-    private GrpSignatureServiceImpl grpUnderskriftService;
-    @Mock
-    private WebCertUserService webCertUserService;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String TICKET_ID = "ticketId";
+  private static final String CERTIFICATE_XML = "certificateXml";
+  private static final String PERSON_ID = "personId";
+  private static final String USER_IP_ADDRESS = "userIpAddress";
+  @Mock private XmlUnderskriftServiceImpl xmlUnderskriftService;
+  @Mock private GrpSignatureServiceImpl grpUnderskriftService;
+  @Mock private WebCertUserService webCertUserService;
 
-    private WebCertUser user;
-    @InjectMocks
-    private CreateSignatureTicketService createSignatureTicketService;
+  private WebCertUser user;
+  @InjectMocks private CreateSignatureTicketService createSignatureTicketService;
 
-    @BeforeEach
-    void setUp() {
-        user = mock(WebCertUser.class);
-        doReturn(user).when(webCertUserService).getUser();
-    }
+  @BeforeEach
+  void setUp() {
+    user = mock(WebCertUser.class);
+    doReturn(user).when(webCertUserService).getUser();
+  }
 
-    @Test
-    void shallThrowIfTicketFromServiceIsNull() {
-        doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
-        doReturn(null).when(xmlUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
-                USER_IP_ADDRESS, CERTIFICATE_XML);
+  @Test
+  void shallThrowIfTicketFromServiceIsNull() {
+    doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
+    doReturn(null)
+        .when(xmlUnderskriftService)
+        .skapaSigneringsBiljettMedDigest(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            Optional.empty(),
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        assertThrows(IllegalStateException.class,
-            () -> createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-                USER_IP_ADDRESS, CERTIFICATE_XML));
-    }
+    assertThrows(
+        IllegalStateException.class,
+        () ->
+            createSignatureTicketService.create(
+                CERTIFICATE_ID,
+                CERTIFICATE_TYPE,
+                0L,
+                SignMethod.FAKE,
+                TICKET_ID,
+                USER_IP_ADDRESS,
+                CERTIFICATE_XML));
+  }
 
-    @Test
-    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodFake() {
-        final var expectedTicket = new SignaturBiljett();
-        doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
-        doReturn(expectedTicket).when(xmlUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
-                USER_IP_ADDRESS, CERTIFICATE_XML);
+  @Test
+  void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodFake() {
+    final var expectedTicket = new SignaturBiljett();
+    doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
+    doReturn(expectedTicket)
+        .when(xmlUnderskriftService)
+        .skapaSigneringsBiljettMedDigest(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            Optional.empty(),
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            USER_IP_ADDRESS, CERTIFICATE_XML);
+    final var actualTicket =
+        createSignatureTicketService.create(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        assertEquals(expectedTicket, actualTicket);
-    }
+    assertEquals(expectedTicket, actualTicket);
+  }
 
-    @Test
-    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodSiths() {
-        final var expectedTicket = new SignaturBiljett();
-        doReturn(AuthenticationMethod.SITHS).when(user).getAuthenticationMethod();
-        doReturn(expectedTicket).when(xmlUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
-                USER_IP_ADDRESS, CERTIFICATE_XML);
+  @Test
+  void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodSiths() {
+    final var expectedTicket = new SignaturBiljett();
+    doReturn(AuthenticationMethod.SITHS).when(user).getAuthenticationMethod();
+    doReturn(expectedTicket)
+        .when(xmlUnderskriftService)
+        .skapaSigneringsBiljettMedDigest(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            Optional.empty(),
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            USER_IP_ADDRESS, CERTIFICATE_XML);
+    final var actualTicket =
+        createSignatureTicketService.create(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        assertEquals(expectedTicket, actualTicket);
-    }
+    assertEquals(expectedTicket, actualTicket);
+  }
 
-    @Test
-    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodNetId() {
-        final var expectedTicket = new SignaturBiljett();
-        doReturn(AuthenticationMethod.NET_ID).when(user).getAuthenticationMethod();
-        doReturn(expectedTicket).when(xmlUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
-                USER_IP_ADDRESS, CERTIFICATE_XML);
+  @Test
+  void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodNetId() {
+    final var expectedTicket = new SignaturBiljett();
+    doReturn(AuthenticationMethod.NET_ID).when(user).getAuthenticationMethod();
+    doReturn(expectedTicket)
+        .when(xmlUnderskriftService)
+        .skapaSigneringsBiljettMedDigest(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            Optional.empty(),
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            USER_IP_ADDRESS, CERTIFICATE_XML);
+    final var actualTicket =
+        createSignatureTicketService.create(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        assertEquals(expectedTicket, actualTicket);
-    }
+    assertEquals(expectedTicket, actualTicket);
+  }
 
-    @Test
-    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodBankId() {
-        final var expectedTicket = new SignaturBiljett();
-        doReturn(AuthenticationMethod.BANK_ID).when(user).getAuthenticationMethod();
-        doReturn(expectedTicket).when(grpUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
-                USER_IP_ADDRESS, null);
+  @Test
+  void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodBankId() {
+    final var expectedTicket = new SignaturBiljett();
+    doReturn(AuthenticationMethod.BANK_ID).when(user).getAuthenticationMethod();
+    doReturn(expectedTicket)
+        .when(grpUnderskriftService)
+        .skapaSigneringsBiljettMedDigest(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            Optional.empty(),
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            null);
 
-        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            USER_IP_ADDRESS, CERTIFICATE_XML);
+    final var actualTicket =
+        createSignatureTicketService.create(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        assertEquals(expectedTicket, actualTicket);
-    }
+    assertEquals(expectedTicket, actualTicket);
+  }
 
-    @Test
-    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodMobiltBankID() {
-        final var expectedTicket = new SignaturBiljett();
-        doReturn(AuthenticationMethod.MOBILT_BANK_ID).when(user).getAuthenticationMethod();
-        doReturn(expectedTicket).when(grpUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
-                USER_IP_ADDRESS, null);
+  @Test
+  void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodMobiltBankID() {
+    final var expectedTicket = new SignaturBiljett();
+    doReturn(AuthenticationMethod.MOBILT_BANK_ID).when(user).getAuthenticationMethod();
+    doReturn(expectedTicket)
+        .when(grpUnderskriftService)
+        .skapaSigneringsBiljettMedDigest(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            Optional.empty(),
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            null);
 
-        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            USER_IP_ADDRESS, CERTIFICATE_XML);
+    final var actualTicket =
+        createSignatureTicketService.create(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            SignMethod.FAKE,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            CERTIFICATE_XML);
 
-        assertEquals(expectedTicket, actualTicket);
-    }
+    assertEquals(expectedTicket, actualTicket);
+  }
 
-    @Test
-    void shallStartGrpCollectPollerIfSignmethodGRP() {
-        final var expectedTicket = new SignaturBiljett();
-        expectedTicket.setSignMethod(SignMethod.GRP);
-        doReturn(AuthenticationMethod.MOBILT_BANK_ID).when(user).getAuthenticationMethod();
-        doReturn(PERSON_ID).when(user).getPersonId();
-        doReturn(expectedTicket).when(grpUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.GRP, TICKET_ID,
-                USER_IP_ADDRESS, null);
+  @Test
+  void shallStartGrpCollectPollerIfSignmethodGRP() {
+    final var expectedTicket = new SignaturBiljett();
+    expectedTicket.setSignMethod(SignMethod.GRP);
+    doReturn(AuthenticationMethod.MOBILT_BANK_ID).when(user).getAuthenticationMethod();
+    doReturn(PERSON_ID).when(user).getPersonId();
+    doReturn(expectedTicket)
+        .when(grpUnderskriftService)
+        .skapaSigneringsBiljettMedDigest(
+            CERTIFICATE_ID,
+            CERTIFICATE_TYPE,
+            0L,
+            Optional.empty(),
+            SignMethod.GRP,
+            TICKET_ID,
+            USER_IP_ADDRESS,
+            null);
 
-        createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.GRP, TICKET_ID,
-            USER_IP_ADDRESS, CERTIFICATE_XML);
+    createSignatureTicketService.create(
+        CERTIFICATE_ID,
+        CERTIFICATE_TYPE,
+        0L,
+        SignMethod.GRP,
+        TICKET_ID,
+        USER_IP_ADDRESS,
+        CERTIFICATE_XML);
 
-        verify(grpUnderskriftService).startGrpCollectPoller(PERSON_ID, expectedTicket);
-    }
+    verify(grpUnderskriftService).startGrpCollectPoller(PERSON_ID, expectedTicket);
+  }
 }

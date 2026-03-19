@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,48 +32,48 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class OriginConverterTest {
 
-    private OriginConverter converter = new OriginConverter();
+  private OriginConverter converter = new OriginConverter();
 
-    @Before
-    public void setup() {
-        cleanup();
-    }
+  @Before
+  public void setup() {
+    cleanup();
+  }
 
-    @After
-    public void cleanup() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
+  @After
+  public void cleanup() {
+    SecurityContextHolder.getContext().setAuthentication(null);
+  }
 
-    @Test
-    public void testConvert() {
-        String origin = "user origin";
-        WebCertUser user = new WebCertUser();
-        user.setOrigin(origin);
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getPrincipal()).thenReturn(user);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        ILoggingEvent event = mock(ILoggingEvent.class);
-        String res = converter.convert(event);
+  @Test
+  public void testConvert() {
+    String origin = "user origin";
+    WebCertUser user = new WebCertUser();
+    user.setOrigin(origin);
+    Authentication authentication = mock(Authentication.class);
+    when(authentication.getPrincipal()).thenReturn(user);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    ILoggingEvent event = mock(ILoggingEvent.class);
+    String res = converter.convert(event);
 
-        assertEquals(origin, res);
-    }
+    assertEquals(origin, res);
+  }
 
-    @Test
-    public void testConvertNoAuth() {
-        ILoggingEvent event = mock(ILoggingEvent.class);
-        String res = converter.convert(event);
+  @Test
+  public void testConvertNoAuth() {
+    ILoggingEvent event = mock(ILoggingEvent.class);
+    String res = converter.convert(event);
 
-        assertEquals("NO ORIGIN", res);
-    }
+    assertEquals("NO ORIGIN", res);
+  }
 
-    @Test
-    public void testConvertAuthNotWebCertUser() {
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getPrincipal()).thenReturn("user");
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        ILoggingEvent event = mock(ILoggingEvent.class);
-        String res = converter.convert(event);
+  @Test
+  public void testConvertAuthNotWebCertUser() {
+    Authentication authentication = mock(Authentication.class);
+    when(authentication.getPrincipal()).thenReturn("user");
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    ILoggingEvent event = mock(ILoggingEvent.class);
+    String res = converter.convert(event);
 
-        assertEquals("NO ORIGIN", res);
-    }
+    assertEquals("NO ORIGIN", res);
+  }
 }

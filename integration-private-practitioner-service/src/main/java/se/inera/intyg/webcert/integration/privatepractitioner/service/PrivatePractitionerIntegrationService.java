@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,53 +38,58 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivateP
 @RequiredArgsConstructor
 public class PrivatePractitionerIntegrationService {
 
-    private final PPSIntegrationService ppsIntegrationService;
+  private final PPSIntegrationService ppsIntegrationService;
 
-    public PrivatePractitionerValidationResponse validatePrivatePractitioner(String personalIdentityNumber) {
-        validateIdentifier(personalIdentityNumber);
-        final var response = ppsIntegrationService.validatePrivatePractitioner(
+  public PrivatePractitionerValidationResponse validatePrivatePractitioner(
+      String personalIdentityNumber) {
+    validateIdentifier(personalIdentityNumber);
+    final var response =
+        ppsIntegrationService.validatePrivatePractitioner(
             new PrivatePractitionerValidationRequest(personalIdentityNumber));
 
-        if (response == null) {
-            throw new RestClientException("Validation failed. Validation response is null.");
-        }
-        logResult(response);
-
-        return response;
+    if (response == null) {
+      throw new RestClientException("Validation failed. Validation response is null.");
     }
+    logResult(response);
 
-    public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
-        return ppsIntegrationService.getPrivatePractitionerConfig();
-    }
+    return response;
+  }
 
-    public HospInformation getHospInformation(String personalOrHsaIdIdentityNumber) {
-        return ppsIntegrationService.getHospInformation(new GetHospInformationRequest(personalOrHsaIdIdentityNumber));
-    }
+  public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
+    return ppsIntegrationService.getPrivatePractitionerConfig();
+  }
 
-    public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
-        return ppsIntegrationService.registerPrivatePractitioner(registrationRequest);
-    }
+  public HospInformation getHospInformation(String personalOrHsaIdIdentityNumber) {
+    return ppsIntegrationService.getHospInformation(
+        new GetHospInformationRequest(personalOrHsaIdIdentityNumber));
+  }
 
-    public PrivatePractitioner getPrivatePractitioner(String personOrHsaId) {
-        validateIdentifier(personOrHsaId);
-        return ppsIntegrationService.getPrivatePractitioner(personOrHsaId);
-    }
+  public PrivatePractitioner registerPrivatePractitioner(
+      RegisterPrivatePractitionerRequest registrationRequest) {
+    return ppsIntegrationService.registerPrivatePractitioner(registrationRequest);
+  }
 
-    public PrivatePractitioner updatePrivatePractitioner(UpdatePrivatePractitionerRequest privatePractitioner) {
-        return ppsIntegrationService.updatePrivatePractitioner(privatePractitioner);
-    }
+  public PrivatePractitioner getPrivatePractitioner(String personOrHsaId) {
+    validateIdentifier(personOrHsaId);
+    return ppsIntegrationService.getPrivatePractitioner(personOrHsaId);
+  }
 
-    private void validateIdentifier(String personOrHsaId) {
-        if (Strings.isNullOrEmpty(personOrHsaId)) {
-            throw new IllegalArgumentException("No personOrHsaId available.");
-        }
-    }
+  public PrivatePractitioner updatePrivatePractitioner(
+      UpdatePrivatePractitionerRequest privatePractitioner) {
+    return ppsIntegrationService.updatePrivatePractitioner(privatePractitioner);
+  }
 
-    private void logResult(PrivatePractitionerValidationResponse response) {
-        if (PrivatePractitionerValidationResultCode.NO_ACCOUNT.equals(response.resultCode())
-            || PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP.equals(response.resultCode())) {
-            log.info(response.resultText());
-        }
+  private void validateIdentifier(String personOrHsaId) {
+    if (Strings.isNullOrEmpty(personOrHsaId)) {
+      throw new IllegalArgumentException("No personOrHsaId available.");
     }
+  }
+
+  private void logResult(PrivatePractitionerValidationResponse response) {
+    if (PrivatePractitionerValidationResultCode.NO_ACCOUNT.equals(response.resultCode())
+        || PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP.equals(
+            response.resultCode())) {
+      log.info(response.resultText());
+    }
+  }
 }
-

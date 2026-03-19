@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -31,17 +30,15 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLogi
 @Builder
 public class FakeLoginDTO {
 
-    String hsaId;
-    String enhetId;
-    Boolean sekretessMarkerad;
-    String forNamn;
-    String efterNamn;
-    String origin;
-    String authenticationMethod;
-    List<String> legitimeradeYrkesgrupper;
+  String hsaId;
+  String enhetId;
+  Boolean sekretessMarkerad;
+  String forNamn;
+  String efterNamn;
+  String origin;
+  String authenticationMethod;
+  List<String> legitimeradeYrkesgrupper;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class FakeLoginDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class FakeLoginDTOBuilder {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,71 +43,82 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @Service
 public class CertificateServiceImpl implements CertificateService {
 
-    private ITIntegrationService itIntegrationService;
-    private PatientDetailsResolver patientDetailsResolver;
-    private LogService logService;
-    private WebCertUserService webcertUserService;
-    private AuthoritiesHelper authoritiesHelper;
+  private ITIntegrationService itIntegrationService;
+  private PatientDetailsResolver patientDetailsResolver;
+  private LogService logService;
+  private WebCertUserService webcertUserService;
+  private AuthoritiesHelper authoritiesHelper;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CertificateServiceImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CertificateServiceImpl.class);
 
-    @Autowired
-    public CertificateServiceImpl(ITIntegrationService itIntegrationService, PatientDetailsResolver patientDetailsResolver,
-        WebCertUserService webCertUserService, LogService logService, AuthoritiesHelper authoritiesHelper) {
-        this.itIntegrationService = itIntegrationService;
-        this.patientDetailsResolver = patientDetailsResolver;
-        this.webcertUserService = webCertUserService;
-        this.logService = logService;
-        this.authoritiesHelper = authoritiesHelper;
+  @Autowired
+  public CertificateServiceImpl(
+      ITIntegrationService itIntegrationService,
+      PatientDetailsResolver patientDetailsResolver,
+      WebCertUserService webCertUserService,
+      LogService logService,
+      AuthoritiesHelper authoritiesHelper) {
+    this.itIntegrationService = itIntegrationService;
+    this.patientDetailsResolver = patientDetailsResolver;
+    this.webcertUserService = webCertUserService;
+    this.logService = logService;
+    this.authoritiesHelper = authoritiesHelper;
+  }
+
+  @Override
+  public CertificateListResponse listCertificatesForDoctor(QueryIntygParameter queryParam) {
+    try {
+      final WebCertUser user = webcertUserService.getUser();
+      Set<String> types = getCertificateTypes();
+      final var responseFromIT = itIntegrationService.getCertificatesForDoctor(queryParam, types);
+
+      responseFromIT.setCertificates(
+          responseFromIT.getCertificates().stream()
+              .filter(Objects::nonNull)
+              .map(this::decoratePatientWithFlags)
+              .collect(Collectors.toList()));
+
+      responseFromIT.getCertificates().stream()
+          .map(CertificateListEntry::getCivicRegistrationNumber)
+          .distinct()
+          .forEach(
+              patientId -> {
+                logService.logReadLevelTwo(
+                    user, getCivicRegistrationNumber(patientId).get().getPersonnummerWithDash());
+              });
+      return responseFromIT;
+    } catch (Exception ex) {
+      LOGGER.error("Could not get list of signed certificates for unit from IT", ex);
+      CertificateListResponse certificateListResponse = new CertificateListResponse();
+      certificateListResponse.setErrorFromIT(true);
+      certificateListResponse.setCertificates(Collections.emptyList());
+      return certificateListResponse;
     }
+  }
 
-    @Override
-    public CertificateListResponse listCertificatesForDoctor(QueryIntygParameter queryParam) {
-        try {
-            final WebCertUser user = webcertUserService.getUser();
-            Set<String> types = getCertificateTypes();
-            final var responseFromIT = itIntegrationService.getCertificatesForDoctor(queryParam, types);
-
-            responseFromIT.setCertificates(responseFromIT.getCertificates().stream()
-                .filter(Objects::nonNull)
-                .map(this::decoratePatientWithFlags)
-                .collect(Collectors.toList())
-            );
-
-            responseFromIT.getCertificates().stream().map(CertificateListEntry::getCivicRegistrationNumber).distinct()
-                .forEach(patientId -> {
-                    logService.logReadLevelTwo(user, getCivicRegistrationNumber(patientId).get().getPersonnummerWithDash());
-                });
-            return responseFromIT;
-        } catch (Exception ex) {
-            LOGGER.error("Could not get list of signed certificates for unit from IT", ex);
-            CertificateListResponse certificateListResponse = new CertificateListResponse();
-            certificateListResponse.setErrorFromIT(true);
-            certificateListResponse.setCertificates(Collections.emptyList());
-            return certificateListResponse;
-        }
+  private CertificateListEntry decoratePatientWithFlags(CertificateListEntry certificate) {
+    Optional<Personnummer> civicRegistrationNumber =
+        getCivicRegistrationNumber(certificate.getCivicRegistrationNumber());
+    if (civicRegistrationNumber.isPresent()) {
+      SekretessStatus protectedIdentityStatus =
+          patientDetailsResolver.getSekretessStatus(civicRegistrationNumber.get());
+      boolean hasProtectedIdentity =
+          protectedIdentityStatus == SekretessStatus.TRUE
+              || protectedIdentityStatus == SekretessStatus.UNDEFINED;
+      certificate.setProtectedIdentity(hasProtectedIdentity);
+      certificate.setDeceased(patientDetailsResolver.isAvliden(civicRegistrationNumber.get()));
+      certificate.setTestIndicator(
+          patientDetailsResolver.isTestIndicator(civicRegistrationNumber.get()));
     }
+    return certificate;
+  }
 
+  private Set<String> getCertificateTypes() {
+    return authoritiesHelper.getIntygstyperForPrivilege(
+        webcertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+  }
 
-    private CertificateListEntry decoratePatientWithFlags(CertificateListEntry certificate) {
-        Optional<Personnummer> civicRegistrationNumber = getCivicRegistrationNumber(certificate.getCivicRegistrationNumber());
-        if (civicRegistrationNumber.isPresent()) {
-            SekretessStatus protectedIdentityStatus = patientDetailsResolver.getSekretessStatus(civicRegistrationNumber.get());
-            boolean hasProtectedIdentity = protectedIdentityStatus == SekretessStatus.TRUE
-                || protectedIdentityStatus == SekretessStatus.UNDEFINED;
-            certificate.setProtectedIdentity(hasProtectedIdentity);
-            certificate.setDeceased(patientDetailsResolver.isAvliden(civicRegistrationNumber.get()));
-            certificate.setTestIndicator(patientDetailsResolver.isTestIndicator(civicRegistrationNumber.get()));
-        }
-        return certificate;
-    }
-
-    private Set<String> getCertificateTypes() {
-        return authoritiesHelper.getIntygstyperForPrivilege(webcertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-    }
-
-    private Optional<Personnummer> getCivicRegistrationNumber(String civicRegistrationNumber) {
-        return Personnummer.createPersonnummer(civicRegistrationNumber);
-    }
+  private Optional<Personnummer> getCivicRegistrationNumber(String civicRegistrationNumber) {
+    return Personnummer.createPersonnummer(civicRegistrationNumber);
+  }
 }
-

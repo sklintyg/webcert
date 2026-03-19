@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,14 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.certificatesender;
 
-/**
- * Created by eriklupander on 2015-05-20.
- */
+/** Created by eriklupander on 2015-05-20. */
 public class CertificateSenderException extends Exception {
 
-    private static final long serialVersionUID = 3695710704123118866L;
+  private static final long serialVersionUID = 3695710704123118866L;
 
-    public CertificateSenderException(String message) {
-        super(message);
-    }
+  public CertificateSenderException(String message) {
+    super(message);
+  }
 }

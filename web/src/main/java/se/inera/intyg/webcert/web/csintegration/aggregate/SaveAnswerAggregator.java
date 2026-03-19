@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import lombok.RequiredArgsConstructor;
@@ -28,12 +27,13 @@ import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFaca
 @RequiredArgsConstructor
 public class SaveAnswerAggregator implements SaveQuestionAnswerFacadeService {
 
-    private final SaveQuestionAnswerFacadeService saveAnswerFromWC;
-    private final SaveQuestionAnswerFacadeService saveAnswerFromCS;
-    @Override
-    public Question save(String questionId, String message) {
-        final var responseFromCS = saveAnswerFromCS.save(questionId, message);
+  private final SaveQuestionAnswerFacadeService saveAnswerFromWC;
+  private final SaveQuestionAnswerFacadeService saveAnswerFromCS;
 
-        return responseFromCS != null ? responseFromCS : saveAnswerFromWC.save(questionId, message);
-    }
+  @Override
+  public Question save(String questionId, String message) {
+    final var responseFromCS = saveAnswerFromCS.save(questionId, message);
+
+    return responseFromCS != null ? responseFromCS : saveAnswerFromWC.save(questionId, message);
+  }
 }

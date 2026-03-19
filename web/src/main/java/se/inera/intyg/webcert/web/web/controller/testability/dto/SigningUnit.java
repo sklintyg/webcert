@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,53 +18,50 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.dto;
 
-/**
- * Created by eriklupander on 2016-07-14.
- */
+/** Created by eriklupander on 2016-07-14. */
 public class SigningUnit {
 
-    private String enhetsId;
-    private String enhetsNamn;
+  private String enhetsId;
+  private String enhetsNamn;
 
-    public SigningUnit(String enhetsId, String enhetsNamn) {
-        this.enhetsId = enhetsId;
-        this.enhetsNamn = enhetsNamn;
+  public SigningUnit(String enhetsId, String enhetsNamn) {
+    this.enhetsId = enhetsId;
+    this.enhetsNamn = enhetsNamn;
+  }
+
+  public String getEnhetsId() {
+    return enhetsId;
+  }
+
+  public void setEnhetsId(String enhetsId) {
+    this.enhetsId = enhetsId;
+  }
+
+  public String getEnhetsNamn() {
+    return enhetsNamn;
+  }
+
+  public void setEnhetsNamn(String enhetsNamn) {
+    this.enhetsNamn = enhetsNamn;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
 
-    public String getEnhetsId() {
-        return enhetsId;
+    if (!(o instanceof SigningUnit)) {
+      return false;
     }
 
-    public void setEnhetsId(String enhetsId) {
-        this.enhetsId = enhetsId;
-    }
+    SigningUnit that = (SigningUnit) o;
 
-    public String getEnhetsNamn() {
-        return enhetsNamn;
-    }
+    return enhetsId.equals(that.enhetsId);
+  }
 
-    public void setEnhetsNamn(String enhetsNamn) {
-        this.enhetsNamn = enhetsNamn;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof SigningUnit)) {
-            return false;
-        }
-
-        SigningUnit that = (SigningUnit) o;
-
-        return enhetsId.equals(that.enhetsId);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return enhetsId.hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return enhetsId.hashCode();
+  }
 }

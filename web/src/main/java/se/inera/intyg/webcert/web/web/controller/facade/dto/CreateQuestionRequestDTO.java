@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,31 +22,31 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 
 public class CreateQuestionRequestDTO {
 
-    private String certificateId;
-    private QuestionType type;
-    private String message;
+  private String certificateId;
+  private QuestionType type;
+  private String message;
 
-    public String getCertificateId() {
-        return certificateId;
-    }
+  public String getCertificateId() {
+    return certificateId;
+  }
 
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
-    }
+  public void setCertificateId(String certificateId) {
+    this.certificateId = certificateId;
+  }
 
-    public QuestionType getType() {
-        return type;
-    }
+  public QuestionType getType() {
+    return type;
+  }
 
-    public void setType(QuestionType type) {
-        this.type = type;
-    }
+  public void setType(QuestionType type) {
+    this.type = type;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }

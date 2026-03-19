@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,50 +42,48 @@ import se.inera.intyg.webcert.web.web.controller.authtestability.UserResource;
 
 public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @InjectMocks
-    private UserResource userResource;
+  @InjectMocks private UserResource userResource;
 
-    @Captor
-    private ArgumentCaptor<String> roleArrCaptor;
+  @Captor private ArgumentCaptor<String> roleArrCaptor;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
+  @Before
+  public void setUp() throws Exception {
+    MockitoAnnotations.initMocks(this);
+  }
 
-    @Test
-    public void testGetUserRoles() throws Exception {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+  @Test
+  public void testGetUserRoles() throws Exception {
+    Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
-        //Given
-        WebCertUser user = Mockito.mock(WebCertUser.class);
-        Map<String, Role> roleHashMap = new HashMap<>();
-        roleHashMap.put(role.getName(), role);
+    // Given
+    WebCertUser user = Mockito.mock(WebCertUser.class);
+    Map<String, Role> roleHashMap = new HashMap<>();
+    roleHashMap.put(role.getName(), role);
 
-        Mockito.when(user.getRoles()).thenReturn(roleHashMap);
-        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+    Mockito.when(user.getRoles()).thenReturn(roleHashMap);
+    Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
-        //When
-        final Collection<String> rolesResponse = (Collection<String>) userResource.getUserRoles().getEntity();
+    // When
+    final Collection<String> rolesResponse =
+        (Collection<String>) userResource.getUserRoles().getEntity();
 
-        //Then
-        assertArrayEquals(new String[]{role.getName()}, rolesResponse.toArray());
-    }
+    // Then
+    assertArrayEquals(new String[] {role.getName()}, rolesResponse.toArray());
+  }
 
-    @Test
-    public void testSetUserRole() throws Exception {
-        //Given
-        final WebCertUser user = Mockito.mock(WebCertUser.class);
-        Mockito.when(webCertUserService.getUser()).thenReturn(user);
+  @Test
+  public void testSetUserRole() throws Exception {
+    // Given
+    final WebCertUser user = Mockito.mock(WebCertUser.class);
+    Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
-        //When
-        userResource.setUserRole(AuthoritiesConstants.ROLE_LAKARE);
+    // When
+    userResource.setUserRole(AuthoritiesConstants.ROLE_LAKARE);
 
-        //Then
-        Mockito.verify(webCertUserService, times(1)).updateUserRole(roleArrCaptor.capture());
-        assertEquals(AuthoritiesConstants.ROLE_LAKARE, roleArrCaptor.getValue());
-    }
+    // Then
+    Mockito.verify(webCertUserService, times(1)).updateUserRole(roleArrCaptor.capture());
+    assertEquals(AuthoritiesConstants.ROLE_LAKARE, roleArrCaptor.getValue());
+  }
 }

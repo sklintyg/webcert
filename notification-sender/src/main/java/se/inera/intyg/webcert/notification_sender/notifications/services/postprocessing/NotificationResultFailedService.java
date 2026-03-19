@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,65 +36,83 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @Service
 public class NotificationResultFailedService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationResultFailedService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationResultFailedService.class);
 
-    @Autowired
-    private MonitoringLogService logService;
+  @Autowired private MonitoringLogService logService;
 
-    @Autowired
-    private HandelseRepository handelseRepo;
+  @Autowired private HandelseRepository handelseRepo;
 
-    @Autowired
-    private NotificationRedeliveryRepository notificationRedeliveryRepo;
+  @Autowired private NotificationRedeliveryRepository notificationRedeliveryRepo;
 
-    @Transactional
-    public void process(@NonNull NotificationResultMessage resultMessage) {
-        var event = resultMessage.getEvent();
-        final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
+  @Transactional
+  public void process(@NonNull NotificationResultMessage resultMessage) {
+    var event = resultMessage.getEvent();
+    final var existingRedelivery = getExistingRedelivery(resultMessage.getCorrelationId());
 
-        if (existingRedelivery.isEmpty()) {
-            event = createEvent(event);
-        } else {
-            event = updateEvent(existingRedelivery.get().getEventId());
-            deleteNotificationRedelivery(existingRedelivery.get());
-        }
-
-        monitorLogFailure(event, resultMessage, existingRedelivery);
+    if (existingRedelivery.isEmpty()) {
+      event = createEvent(event);
+    } else {
+      event = updateEvent(existingRedelivery.get().getEventId());
+      deleteNotificationRedelivery(existingRedelivery.get());
     }
 
-    private Optional<NotificationRedelivery> getExistingRedelivery(String correlationId) {
-        return notificationRedeliveryRepo.findByCorrelationId(correlationId);
-    }
+    monitorLogFailure(event, resultMessage, existingRedelivery);
+  }
 
-    private Handelse createEvent(Handelse event) {
-        final var createdEvent = handelseRepo.save(event);
-        LOG.debug("Creating notification event {} with delivery status {}", createdEvent.getId(), createdEvent.getDeliveryStatus());
-        return createdEvent;
-    }
+  private Optional<NotificationRedelivery> getExistingRedelivery(String correlationId) {
+    return notificationRedeliveryRepo.findByCorrelationId(correlationId);
+  }
 
-    private Handelse updateEvent(Long eventId) {
-        final var event = handelseRepo.findById(eventId).orElseThrow();
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.FAILURE);
-        LOG.debug("Setting Delivery Status {} for event with id {}.", event.getDeliveryStatus(), event.getId());
-        return handelseRepo.save(event);
-    }
+  private Handelse createEvent(Handelse event) {
+    final var createdEvent = handelseRepo.save(event);
+    LOG.debug(
+        "Creating notification event {} with delivery status {}",
+        createdEvent.getId(),
+        createdEvent.getDeliveryStatus());
+    return createdEvent;
+  }
 
-    private void deleteNotificationRedelivery(NotificationRedelivery redelivery) {
-        LOG.debug("Deleting Notification Redelivery for event with id {}.", redelivery.getEventId());
-        notificationRedeliveryRepo.delete(redelivery);
-    }
+  private Handelse updateEvent(Long eventId) {
+    final var event = handelseRepo.findById(eventId).orElseThrow();
+    event.setDeliveryStatus(NotificationDeliveryStatusEnum.FAILURE);
+    LOG.debug(
+        "Setting Delivery Status {} for event with id {}.",
+        event.getDeliveryStatus(),
+        event.getId());
+    return handelseRepo.save(event);
+  }
 
-    private void monitorLogFailure(Handelse event, NotificationResultMessage resultMessage, Optional<NotificationRedelivery> redelivery) {
-        final var resultType = resultMessage.getResultType();
-        final var errorId = resultType.getNotificationErrorType() != null ? resultType.getNotificationErrorType().name() : null;
-        final var currentSendAttempt = redelivery.map(notificationRedelivery -> attemptedRedeliveries(notificationRedelivery) + 1)
+  private void deleteNotificationRedelivery(NotificationRedelivery redelivery) {
+    LOG.debug("Deleting Notification Redelivery for event with id {}.", redelivery.getEventId());
+    notificationRedeliveryRepo.delete(redelivery);
+  }
+
+  private void monitorLogFailure(
+      Handelse event,
+      NotificationResultMessage resultMessage,
+      Optional<NotificationRedelivery> redelivery) {
+    final var resultType = resultMessage.getResultType();
+    final var errorId =
+        resultType.getNotificationErrorType() != null
+            ? resultType.getNotificationErrorType().name()
+            : null;
+    final var currentSendAttempt =
+        redelivery
+            .map(notificationRedelivery -> attemptedRedeliveries(notificationRedelivery) + 1)
             .orElse(1);
 
-        logService.logStatusUpdateForCareStatusFailure(event.getId(), event.getCode().name(), event.getEnhetsId(), event.getIntygsId(),
-            resultMessage.getCorrelationId(), errorId, resultType.getNotificationResultText(), currentSendAttempt);
-    }
+    logService.logStatusUpdateForCareStatusFailure(
+        event.getId(),
+        event.getCode().name(),
+        event.getEnhetsId(),
+        event.getIntygsId(),
+        resultMessage.getCorrelationId(),
+        errorId,
+        resultType.getNotificationResultText(),
+        currentSendAttempt);
+  }
 
-    private int attemptedRedeliveries(NotificationRedelivery redelivery) {
-        return redelivery.getAttemptedDeliveries() != null ? redelivery.getAttemptedDeliveries() : 0;
-    }
+  private int attemptedRedeliveries(NotificationRedelivery redelivery) {
+    return redelivery.getAttemptedDeliveries() != null ? redelivery.getAttemptedDeliveries() : 0;
+  }
 }

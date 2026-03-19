@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,53 +18,50 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.model;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.Type;
+import java.time.LocalDateTime;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 @Entity
 @Table(name = "AVTAL_PRIVATLAKARE")
 public class Avtal {
 
-    @Id
-    @Column(name = "AVTAL_VERSION")
-    private Integer avtalVersion;
+  @Id
+  @Column(name = "AVTAL_VERSION")
+  private Integer avtalVersion;
 
-    @Lob
-    @Column(name = "AVTAL_TEXT")
-    private String avtalText;
+  @Lob
+  @Column(name = "AVTAL_TEXT")
+  private String avtalText;
 
-    @Column(name = "VERSION_DATUM")
-    private LocalDateTime versionDatum;
+  @Column(name = "VERSION_DATUM")
+  private LocalDateTime versionDatum;
 
-    public String getAvtalText() {
-        return avtalText;
-    }
+  public String getAvtalText() {
+    return avtalText;
+  }
 
-    public void setAvtalText(String avtalText) {
-        this.avtalText = avtalText;
-    }
+  public void setAvtalText(String avtalText) {
+    this.avtalText = avtalText;
+  }
 
-    public Integer getAvtalVersion() {
-        return avtalVersion;
-    }
+  public Integer getAvtalVersion() {
+    return avtalVersion;
+  }
 
-    public void setAvtalVersion(Integer avtalVersion) {
-        this.avtalVersion = avtalVersion;
-    }
+  public void setAvtalVersion(Integer avtalVersion) {
+    this.avtalVersion = avtalVersion;
+  }
 
-    public LocalDateTime getVersionDatum() {
-        return versionDatum;
-    }
+  public LocalDateTime getVersionDatum() {
+    return versionDatum;
+  }
 
-    public void setVersionDatum(LocalDateTime versionDatum) {
-        this.versionDatum = versionDatum;
-    }
+  public void setVersionDatum(LocalDateTime versionDatum) {
+    this.versionDatum = versionDatum;
+  }
 }

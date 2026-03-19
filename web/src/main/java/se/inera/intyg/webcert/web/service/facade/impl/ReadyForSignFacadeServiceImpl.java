@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,26 +29,26 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @Service("readyForSignForWC")
 public class ReadyForSignFacadeServiceImpl implements ReadyForSignFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReadyForSignFacadeServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ReadyForSignFacadeServiceImpl.class);
 
-    private final UtkastService utkastService;
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final UtkastService utkastService;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    public ReadyForSignFacadeServiceImpl(UtkastService utkastService,
-        GetCertificateFacadeService getCertificateFacadeService) {
-        this.utkastService = utkastService;
-        this.getCertificateFacadeService = getCertificateFacadeService;
-    }
+  public ReadyForSignFacadeServiceImpl(
+      UtkastService utkastService, GetCertificateFacadeService getCertificateFacadeService) {
+    this.utkastService = utkastService;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
 
-    @Override
-    public Certificate readyForSign(String certificateId) {
-        LOG.debug("Get certificate type for certificate '{}'", certificateId);
-        final var certificateType = utkastService.getCertificateType(certificateId);
+  @Override
+  public Certificate readyForSign(String certificateId) {
+    LOG.debug("Get certificate type for certificate '{}'", certificateId);
+    final var certificateType = utkastService.getCertificateType(certificateId);
 
-        LOG.debug("Set certificate '{}' as 'ready to sign'", certificateId);
-        utkastService.setKlarForSigneraAndSendStatusMessage(certificateId, certificateType);
+    LOG.debug("Set certificate '{}' as 'ready to sign'", certificateId);
+    utkastService.setKlarForSigneraAndSendStatusMessage(certificateId, certificateType);
 
-        LOG.debug("Get the 'ready to sign' certificate '{}'", certificateId);
-        return getCertificateFacadeService.getCertificate(certificateId, false, true);
-    }
+    LOG.debug("Get the 'ready to sign' certificate '{}'", certificateId);
+    return getCertificateFacadeService.getCertificate(certificateId, false, true);
+  }
 }

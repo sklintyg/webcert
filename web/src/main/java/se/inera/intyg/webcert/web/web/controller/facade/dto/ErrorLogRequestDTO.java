@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,49 +20,49 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class ErrorLogRequestDTO {
 
-    private String message;
-    private String errorId;
-    private String certificateId;
-    private String errorCode;
-    private String stackTrace;
+  private String message;
+  private String errorId;
+  private String certificateId;
+  private String errorCode;
+  private String stackTrace;
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public String getErrorId() {
-        return errorId;
-    }
+  public String getErrorId() {
+    return errorId;
+  }
 
-    public void setErrorId(String errorId) {
-        this.errorId = errorId;
-    }
+  public void setErrorId(String errorId) {
+    this.errorId = errorId;
+  }
 
-    public String getCertificateId() {
-        return certificateId;
-    }
+  public String getCertificateId() {
+    return certificateId;
+  }
 
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
-    }
+  public void setCertificateId(String certificateId) {
+    this.certificateId = certificateId;
+  }
 
-    public String getErrorCode() {
-        return errorCode;
-    }
+  public String getErrorCode() {
+    return errorCode;
+  }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
+  public void setErrorCode(String errorCode) {
+    this.errorCode = errorCode;
+  }
 
-    public String getStackTrace() {
-        return stackTrace;
-    }
+  public String getStackTrace() {
+    return stackTrace;
+  }
 
-    public void setStackTrace(String stackTrace) {
-        this.stackTrace = stackTrace;
-    }
+  public void setStackTrace(String stackTrace) {
+    this.stackTrace = stackTrace;
+  }
 }

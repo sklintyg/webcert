@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import jakarta.ws.rs.GET;
@@ -45,81 +44,89 @@ import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 @Path("/launch")
 public class LaunchIntegrationController extends BaseIntegrationController {
 
-    private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
-        AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_SJUKSKOTERSKA, AuthoritiesConstants.ROLE_BARNMORSKA};
-    @Autowired
-    private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
-    @Autowired
-    private ReactUriFactory reactUriFactory;
-    @Autowired
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
-    private static final Logger LOG = LoggerFactory.getLogger(LaunchIntegrationController.class);
+  private static final String[] GRANTED_ROLES =
+      new String[] {
+        AuthoritiesConstants.ROLE_ADMIN,
+        AuthoritiesConstants.ROLE_LAKARE,
+        AuthoritiesConstants.ROLE_TANDLAKARE,
+        AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
+        AuthoritiesConstants.ROLE_BARNMORSKA
+      };
+  @Autowired private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
+  @Autowired private ReactUriFactory reactUriFactory;
+  @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  private static final Logger LOG = LoggerFactory.getLogger(LaunchIntegrationController.class);
 
-    @GET
-    @Path("/certificate/{certificateId}")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "launch-integration-get-redirect-to-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response redirectToCertificate(@Context UriInfo uriInfo, @PathParam("certificateId") String certificateId,
-        @QueryParam("origin") String origin) {
-        webCertUserService.getUser().setLaunchFromOrigin(origin);
-        LOG.debug("Redirecting to view intyg {}", certificateId);
-        return buildRedirectResponse(uriInfo, certificateId, false);
+  @GET
+  @Path("/certificate/{certificateId}")
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "launch-integration-get-redirect-to-certificate",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response redirectToCertificate(
+      @Context UriInfo uriInfo,
+      @PathParam("certificateId") String certificateId,
+      @QueryParam("origin") String origin) {
+    webCertUserService.getUser().setLaunchFromOrigin(origin);
+    LOG.debug("Redirecting to view intyg {}", certificateId);
+    return buildRedirectResponse(uriInfo, certificateId, false);
+  }
+
+  @GET
+  @Path("/certificate/{certificateId}/questions")
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "launch-integration-direct-to-certificate-questions",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response directToCertificateQuestions(
+      @Context UriInfo uriInfo, @PathParam("certificateId") String certificateId) {
+    LOG.debug("Directing to to view questions on intyg {}", certificateId);
+    return buildRedirectResponse(uriInfo, certificateId, true);
+  }
+
+  private Response buildRedirectResponse(
+      UriInfo uriInfo, String certificateId, boolean redirectToQuestion) {
+    super.validateParameter("certificateId", certificateId);
+    super.validateAuthorities();
+
+    final var unitId = getIssuingUnitIdAggregator.get(certificateId);
+    validateAndChangeUnit(unitId);
+
+    return redirectToQuestion
+        ? getReactRedirectResponseForQuestions(uriInfo, certificateId)
+        : getReactRedirectResponseForCertificate(uriInfo, certificateId);
+  }
+
+  private Response getReactRedirectResponseForCertificate(UriInfo uriInfo, String certificateId) {
+    final var uri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
+    return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
+  }
+
+  private Response getReactRedirectResponseForQuestions(UriInfo uriInfo, String certificateId) {
+    final var uri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
+    return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
+  }
+
+  @Override
+  protected String[] getGrantedRoles() {
+    return GRANTED_ROLES;
+  }
+
+  @Override
+  protected UserOriginType getGrantedRequestOrigin() {
+    return UserOriginType.NORMAL;
+  }
+
+  private void validateAndChangeUnit(String unitId) {
+    final var user = webCertUserService.getUser();
+    if (!user.changeValdVardenhet(unitId)) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+          String.format("User does not have access to unitId '%s'", unitId));
     }
 
-    @GET
-    @Path("/certificate/{certificateId}/questions")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "launch-integration-direct-to-certificate-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response directToCertificateQuestions(@Context UriInfo uriInfo, @PathParam("certificateId") String certificateId) {
-        LOG.debug("Directing to to view questions on intyg {}", certificateId);
-        return buildRedirectResponse(uriInfo, certificateId, true);
-    }
-
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateId, boolean redirectToQuestion) {
-        super.validateParameter("certificateId", certificateId);
-        super.validateAuthorities();
-
-        final var unitId = getIssuingUnitIdAggregator.get(certificateId);
-        validateAndChangeUnit(unitId);
-
-        return redirectToQuestion
-            ? getReactRedirectResponseForQuestions(uriInfo, certificateId)
-            : getReactRedirectResponseForCertificate(uriInfo, certificateId);
-    }
-
-    private Response getReactRedirectResponseForCertificate(UriInfo uriInfo, String certificateId) {
-        final var uri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
-        return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
-    }
-
-    private Response getReactRedirectResponseForQuestions(UriInfo uriInfo, String certificateId) {
-        final var uri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
-        return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
-    }
-
-    @Override
-    protected String[] getGrantedRoles() {
-        return GRANTED_ROLES;
-    }
-
-    @Override
-    protected UserOriginType getGrantedRequestOrigin() {
-        return UserOriginType.NORMAL;
-    }
-
-    private void validateAndChangeUnit(String unitId) {
-        final var user = webCertUserService.getUser();
-        if (!user.changeValdVardenhet(unitId)) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                String.format("User does not have access to unitId '%s'", unitId)
-            );
-        }
-
-        user.setFeatures(
-            commonAuthoritiesResolver.getFeatures(
-                Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())
-            )
-        );
-    }
+    user.setFeatures(
+        commonAuthoritiesResolver.getFeatures(
+            Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
+  }
 }

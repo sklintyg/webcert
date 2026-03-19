@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,20 +27,23 @@ import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeSe
 @Service
 public class CreateQuestionAggregator implements CreateQuestionFacadeService {
 
-    private final CreateQuestionFacadeService createQuestionFromWC;
-    private final CreateQuestionFacadeService createMessageFromCS;
+  private final CreateQuestionFacadeService createQuestionFromWC;
+  private final CreateQuestionFacadeService createMessageFromCS;
 
-    public CreateQuestionAggregator(@Qualifier("createQuestionFromWC") CreateQuestionFacadeService createQuestionFromWC,
-        @Qualifier("createMessageFromCS") CreateQuestionFacadeService createMessageFromCS) {
-        this.createQuestionFromWC = createQuestionFromWC;
-        this.createMessageFromCS = createMessageFromCS;
-    }
+  public CreateQuestionAggregator(
+      @Qualifier("createQuestionFromWC") CreateQuestionFacadeService createQuestionFromWC,
+      @Qualifier("createMessageFromCS") CreateQuestionFacadeService createMessageFromCS) {
+    this.createQuestionFromWC = createQuestionFromWC;
+    this.createMessageFromCS = createMessageFromCS;
+  }
 
-    @Override
-    public Question create(String certificateId, QuestionType type, String message) {
+  @Override
+  public Question create(String certificateId, QuestionType type, String message) {
 
-        final var responseFromCS = createMessageFromCS.create(certificateId, type, message);
+    final var responseFromCS = createMessageFromCS.create(certificateId, type, message);
 
-        return responseFromCS != null ? responseFromCS : createQuestionFromWC.create(certificateId, type, message);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : createQuestionFromWC.create(certificateId, type, message);
+  }
 }

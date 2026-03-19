@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,34 +33,38 @@ import se.inera.intyg.webcert.web.event.CertificateEventService;
 @RequiredArgsConstructor
 public class UpdateIntygstjanstTestabilityUtil {
 
-    @Value("${intygstjanst.logicaladdress}")
-    private String logicalAddress;
-    private final SendCertificateServiceClient sendCertificateServiceClient;
-    private final CertificateEventService certificateEventService;
-    private final ObjectMapper objectMapper;
-    private final IntygModuleRegistry moduleRegistry;
+  @Value("${intygstjanst.logicaladdress}")
+  private String logicalAddress;
 
-    public void update(Utkast utkast, HoSPersonal hosPersonal, String personId) {
-        try {
-            if (utkast.getSignatur() != null) {
-                final var moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
-                moduleApi.registerCertificate(utkast.getModel(), logicalAddress);
+  private final SendCertificateServiceClient sendCertificateServiceClient;
+  private final CertificateEventService certificateEventService;
+  private final ObjectMapper objectMapper;
+  private final IntygModuleRegistry moduleRegistry;
 
-                certificateEventService.createCertificateEvent(utkast.getIntygsId(), personId, EventCode.SIGNAT,
-                    String.format("Certificate type: %s", utkast.getIntygsTyp()));
+  public void update(Utkast utkast, HoSPersonal hosPersonal, String personId) {
+    try {
+      if (utkast.getSignatur() != null) {
+        final var moduleApi =
+            moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
+        moduleApi.registerCertificate(utkast.getModel(), logicalAddress);
 
-                if (utkast.getSkickadTillMottagareDatum() != null) {
-                    sendCertificateServiceClient.sendCertificate(
-                        utkast.getIntygsId(),
-                        utkast.getPatientPersonnummer().getPersonnummer(),
-                        objectMapper.writeValueAsString(hosPersonal),
-                        utkast.getSkickadTillMottagare(),
-                        logicalAddress
-                    );
-                }
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        certificateEventService.createCertificateEvent(
+            utkast.getIntygsId(),
+            personId,
+            EventCode.SIGNAT,
+            String.format("Certificate type: %s", utkast.getIntygsTyp()));
+
+        if (utkast.getSkickadTillMottagareDatum() != null) {
+          sendCertificateServiceClient.sendCertificate(
+              utkast.getIntygsId(),
+              utkast.getPatientPersonnummer().getPersonnummer(),
+              objectMapper.writeValueAsString(hosPersonal),
+              utkast.getSkickadTillMottagare(),
+              logicalAddress);
         }
+      }
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
     }
+  }
 }

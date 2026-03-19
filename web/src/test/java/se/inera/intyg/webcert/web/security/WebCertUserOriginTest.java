@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,50 +38,54 @@ import org.springframework.security.web.savedrequest.RequestCache;
 @ExtendWith(MockitoExtension.class)
 class WebCertUserOriginTest {
 
-    @Mock
-    private RequestCache requestCache;
+  @Mock private RequestCache requestCache;
 
-    @InjectMocks
-    private WebCertUserOrigin webcertUserOrigin;
+  @InjectMocks private WebCertUserOrigin webcertUserOrigin;
 
-    private static final String NORMAL = "NORMAL";
-    private static final String DJUPINTEGRATION = "DJUPINTEGRATION";
+  private static final String NORMAL = "NORMAL";
+  private static final String DJUPINTEGRATION = "DJUPINTEGRATION";
 
-    @Test
-    void shouldMatchTheDeepIntegrationRegex() {
-        assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0".matches(WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION));
-        assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/".matches(WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION));
-    }
+  @Test
+  void shouldMatchTheDeepIntegrationRegex() {
+    assertTrue(
+        "/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0"
+            .matches(WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION));
+    assertTrue(
+        "/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/"
+            .matches(WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION));
+  }
 
-    @Test
-    void shouldThrowIllegalArgumentExceptionWhenSavedRequestIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> webcertUserOrigin.resolveOrigin(null));
-    }
+  @Test
+  void shouldThrowIllegalArgumentExceptionWhenSavedRequestIsNull() {
+    assertThrows(IllegalArgumentException.class, () -> webcertUserOrigin.resolveOrigin(null));
+  }
 
-    @Test
-    void shouldReturnOriginNormalWhenNonMatchingUrl() {
-        final var res = webcertUserOrigin.resolveOrigin(buildRequest("/non/matching/url"));
-        assertEquals(NORMAL, res);
-    }
+  @Test
+  void shouldReturnOriginNormalWhenNonMatchingUrl() {
+    final var res = webcertUserOrigin.resolveOrigin(buildRequest("/non/matching/url"));
+    assertEquals(NORMAL, res);
+  }
 
-    @Test
-    void shouldReturnOriginNormalWhenRequestUrlIsNull() {
-        final var res = webcertUserOrigin.resolveOrigin(buildRequest(null));
-        assertEquals(NORMAL, res);
-    }
+  @Test
+  void shouldReturnOriginNormalWhenRequestUrlIsNull() {
+    final var res = webcertUserOrigin.resolveOrigin(buildRequest(null));
+    assertEquals(NORMAL, res);
+  }
 
-    @Test
-    void shouldReturnOriginDjupintegrationWhenMatchingRegex() {
-        final var res = webcertUserOrigin.resolveOrigin(buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0"));
-        assertEquals(DJUPINTEGRATION, res);
-    }
+  @Test
+  void shouldReturnOriginDjupintegrationWhenMatchingRegex() {
+    final var res =
+        webcertUserOrigin.resolveOrigin(
+            buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0"));
+    assertEquals(DJUPINTEGRATION, res);
+  }
 
-    private HttpServletRequest buildRequest(String uri) {
-        final var request = mock(HttpServletRequest.class);
-        final var defaultSavedRequest = mock(DefaultSavedRequest.class);
-        when(defaultSavedRequest.getRequestURI()).thenReturn(uri);
-        when(requestCache.getRequest(any(HttpServletRequest.class), isNull())).thenReturn(defaultSavedRequest);
-        return request;
-    }
-
+  private HttpServletRequest buildRequest(String uri) {
+    final var request = mock(HttpServletRequest.class);
+    final var defaultSavedRequest = mock(DefaultSavedRequest.class);
+    when(defaultSavedRequest.getRequestURI()).thenReturn(uri);
+    when(requestCache.getRequest(any(HttpServletRequest.class), isNull()))
+        .thenReturn(defaultSavedRequest);
+    return request;
+  }
 }

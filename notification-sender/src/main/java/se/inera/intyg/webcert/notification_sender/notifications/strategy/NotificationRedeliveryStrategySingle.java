@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,50 +27,52 @@ import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategy
 
 public class NotificationRedeliveryStrategySingle implements NotificationRedeliveryStrategy {
 
-    private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = SINGLE;
-    private static final int MAX_DELIVERIES = 1;
-    private static final ImmutableList<Pair<ChronoUnit, Integer>> NOTIFICATION_REDELIVERY_SCHEDULE = ImmutableList.of(
-        Pair.of(ChronoUnit.SECONDS, 10)
-    );
+  private static final NotificationRedeliveryStrategyEnum STRATEGY_NAME = SINGLE;
+  private static final int MAX_DELIVERIES = 1;
+  private static final ImmutableList<Pair<ChronoUnit, Integer>> NOTIFICATION_REDELIVERY_SCHEDULE =
+      ImmutableList.of(Pair.of(ChronoUnit.SECONDS, 10));
 
-    public NotificationRedeliveryStrategySingle() {
+  public NotificationRedeliveryStrategySingle() {}
+
+  @Override
+  public NotificationRedeliveryStrategyEnum getName() {
+    return STRATEGY_NAME;
+  }
+
+  @Override
+  public int getMaxDeliveries() {
+    return MAX_DELIVERIES;
+  }
+
+  @Override
+  public ChronoUnit getNextTimeUnit(int attemptedDeliveries) {
+
+    int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
+
+    if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEDULE.size()) {
+      return NOTIFICATION_REDELIVERY_SCHEDULE.get(attemptedRedeliveries).getFirst();
+    } else {
+      return NOTIFICATION_REDELIVERY_SCHEDULE
+          .get(NOTIFICATION_REDELIVERY_SCHEDULE.size() - 1)
+          .getFirst();
     }
+  }
 
-    @Override
-    public NotificationRedeliveryStrategyEnum getName() {
-        return STRATEGY_NAME;
+  @Override
+  public int getNextTimeValue(int attemptedDeliveries) {
+
+    int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
+
+    if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEDULE.size()) {
+      return NOTIFICATION_REDELIVERY_SCHEDULE.get(attemptedRedeliveries).getSecond();
+    } else {
+      return NOTIFICATION_REDELIVERY_SCHEDULE
+          .get(NOTIFICATION_REDELIVERY_SCHEDULE.size() - 1)
+          .getSecond();
     }
+  }
 
-    @Override
-    public int getMaxDeliveries() {
-        return MAX_DELIVERIES;
-    }
-
-    @Override
-    public ChronoUnit getNextTimeUnit(int attemptedDeliveries) {
-
-        int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
-
-        if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEDULE.size()) {
-            return NOTIFICATION_REDELIVERY_SCHEDULE.get(attemptedRedeliveries).getFirst();
-        } else {
-            return NOTIFICATION_REDELIVERY_SCHEDULE.get(NOTIFICATION_REDELIVERY_SCHEDULE.size() - 1).getFirst();
-        }
-    }
-
-    @Override
-    public int getNextTimeValue(int attemptedDeliveries) {
-
-        int attemptedRedeliveries = calculateAttemptedRedeliveries(attemptedDeliveries);
-
-        if (attemptedRedeliveries < NOTIFICATION_REDELIVERY_SCHEDULE.size()) {
-            return NOTIFICATION_REDELIVERY_SCHEDULE.get(attemptedRedeliveries).getSecond();
-        } else {
-            return NOTIFICATION_REDELIVERY_SCHEDULE.get(NOTIFICATION_REDELIVERY_SCHEDULE.size() - 1).getSecond();
-        }
-    }
-
-    private int calculateAttemptedRedeliveries(int attemptedDeliveries) {
-        return attemptedDeliveries - 1;
-    }
+  private int calculateAttemptedRedeliveries(int attemptedDeliveries) {
+    return attemptedDeliveries - 1;
+  }
 }

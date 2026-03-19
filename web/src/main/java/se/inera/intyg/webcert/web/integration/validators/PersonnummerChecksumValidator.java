@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,45 +25,47 @@ import se.inera.intyg.schemas.contract.Personnummer;
 
 public final class PersonnummerChecksumValidator {
 
-    private static final Pattern PERSONNUMMER_PATTERN = Pattern.compile("(\\d{8})(\\d{3})(\\d)");
-    private static final int PERSONNUMMER_DATE_GROUP = 1;
-    private static final int PERSONNUMMER_BIRTHNUMBER_GROUP = 2;
-    private static final int PERSONNUMMER_CHECKSUM_GROUP = 3;
+  private static final Pattern PERSONNUMMER_PATTERN = Pattern.compile("(\\d{8})(\\d{3})(\\d)");
+  private static final int PERSONNUMMER_DATE_GROUP = 1;
+  private static final int PERSONNUMMER_BIRTHNUMBER_GROUP = 2;
+  private static final int PERSONNUMMER_CHECKSUM_GROUP = 3;
 
-    private PersonnummerChecksumValidator() {
+  private PersonnummerChecksumValidator() {}
+
+  public static void validate(Personnummer personnummer, ResultValidator errors) {
+    if (personnummer == null) {
+      errors.addError("Cannot validate null");
+      return;
     }
 
-    public static void validate(Personnummer personnummer, ResultValidator errors) {
-        if (personnummer == null) {
-            errors.addError("Cannot validate null");
-            return;
-        }
-
-        String pnr = personnummer.getPersonnummer();
-        Matcher m = PERSONNUMMER_PATTERN.matcher(pnr);
-        if (!m.matches()) {
-            errors.addError(String.format("Cannot validate Personnummer '%s' (format should be 'yyyyMMddnnnn')", pnr));
-            return;
-        }
-
-        String dateString = m.group(PERSONNUMMER_DATE_GROUP);
-        String nnn = m.group(PERSONNUMMER_BIRTHNUMBER_GROUP);
-        int mod10 = Integer.parseInt(m.group(PERSONNUMMER_CHECKSUM_GROUP));
-        checkChecksum(pnr, dateString, nnn, mod10, errors);
+    String pnr = personnummer.getPersonnummer();
+    Matcher m = PERSONNUMMER_PATTERN.matcher(pnr);
+    if (!m.matches()) {
+      errors.addError(
+          String.format(
+              "Cannot validate Personnummer '%s' (format should be 'yyyyMMddnnnn')", pnr));
+      return;
     }
 
-    /**
-     * Check that the checksum of the personnummer is correct.
-     *
-     * @param pnr The personnummer. Used in validation messages.
-     * @param dateString The date as a string at the form <code>yyyyMMdd</code>.
-     * @param nnn The 3 first digits of the last 4.
-     * @param mod10 The last digit of the personnummer.
-     * @param errors ResultValidator that validation messages are added to.
-     */
-    private static void checkChecksum(String pnr, String dateString, String nnn, int mod10, ResultValidator errors) {
-        if (ValidatorUtil.calculateMod10(dateString.substring(2) + nnn) != mod10) {
-            errors.addError(String.format("The checksum digit in SSN '%s' is invalid", pnr));
-        }
+    String dateString = m.group(PERSONNUMMER_DATE_GROUP);
+    String nnn = m.group(PERSONNUMMER_BIRTHNUMBER_GROUP);
+    int mod10 = Integer.parseInt(m.group(PERSONNUMMER_CHECKSUM_GROUP));
+    checkChecksum(pnr, dateString, nnn, mod10, errors);
+  }
+
+  /**
+   * Check that the checksum of the personnummer is correct.
+   *
+   * @param pnr The personnummer. Used in validation messages.
+   * @param dateString The date as a string at the form <code>yyyyMMdd</code>.
+   * @param nnn The 3 first digits of the last 4.
+   * @param mod10 The last digit of the personnummer.
+   * @param errors ResultValidator that validation messages are added to.
+   */
+  private static void checkChecksum(
+      String pnr, String dateString, String nnn, int mod10, ResultValidator errors) {
+    if (ValidatorUtil.calculateMod10(dateString.substring(2) + nnn) != mod10) {
+      errors.addError(String.format("The checksum digit in SSN '%s' is invalid", pnr));
     }
+  }
 }

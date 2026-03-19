@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,81 +37,72 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeServi
 @ExtendWith(MockitoExtension.class)
 class HandleQuestionFacadeServiceImplTest {
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @Mock
-    private GetQuestionFacadeService getQuestionFacadeService;
+  @Mock private GetQuestionFacadeService getQuestionFacadeService;
 
-    @InjectMocks
-    private HandleQuestionFacadeServiceImpl handleQuestionFacadeService;
+  @InjectMocks private HandleQuestionFacadeServiceImpl handleQuestionFacadeService;
 
-    private String questionId = "questionId";
-    private String certificateType = "certificateType";
+  private String questionId = "questionId";
+  private String certificateType = "certificateType";
 
-    @Nested
-    class QuestionHandled {
+  @Nested
+  class QuestionHandled {
 
-        @BeforeEach
-        void setUp() {
-            final var arende = new Arende();
-            arende.setMeddelandeId(questionId);
-            arende.setIntygTyp(certificateType);
+    @BeforeEach
+    void setUp() {
+      final var arende = new Arende();
+      arende.setMeddelandeId(questionId);
+      arende.setIntygTyp(certificateType);
 
-            doReturn(arende)
-                .when(arendeService)
-                .getArende(questionId);
+      doReturn(arende).when(arendeService).getArende(questionId);
 
-            doReturn(Question.builder().build())
-                .when(getQuestionFacadeService)
-                .get(questionId);
-        }
-
-        @Test
-        void shallSetQuestionAsHandled() {
-            final var isHandled = true;
-
-            final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
-
-            verify(arendeService).closeArendeAsHandled(questionId, certificateType);
-        }
-
-        @Test
-        void shallHandleAndReturnQuestion() {
-            final var isHandled = true;
-
-            final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
-
-            assertNotNull(actualQuestion, "Should return the question that was answers");
-        }
+      doReturn(Question.builder().build()).when(getQuestionFacadeService).get(questionId);
     }
 
-    @Nested
-    class QuestionUnhandled {
+    @Test
+    void shallSetQuestionAsHandled() {
+      final var isHandled = true;
 
-        @BeforeEach
-        void setUp() {
-            doReturn(Question.builder().build())
-                .when(getQuestionFacadeService)
-                .get(questionId);
-        }
+      final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
 
-        @Test
-        void shallSetQuestionAsNotHandled() {
-            final var isHandled = false;
-
-            final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
-
-            verify(arendeService).openArendeAsUnhandled(questionId);
-        }
-
-        @Test
-        void shallUnHandleAndReturnQuestion() {
-            final var isHandled = false;
-
-            final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
-
-            assertNotNull(actualQuestion, "Should return the question that was answers");
-        }
+      verify(arendeService).closeArendeAsHandled(questionId, certificateType);
     }
+
+    @Test
+    void shallHandleAndReturnQuestion() {
+      final var isHandled = true;
+
+      final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
+
+      assertNotNull(actualQuestion, "Should return the question that was answers");
+    }
+  }
+
+  @Nested
+  class QuestionUnhandled {
+
+    @BeforeEach
+    void setUp() {
+      doReturn(Question.builder().build()).when(getQuestionFacadeService).get(questionId);
+    }
+
+    @Test
+    void shallSetQuestionAsNotHandled() {
+      final var isHandled = false;
+
+      final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
+
+      verify(arendeService).openArendeAsUnhandled(questionId);
+    }
+
+    @Test
+    void shallUnHandleAndReturnQuestion() {
+      final var isHandled = false;
+
+      final var actualQuestion = handleQuestionFacadeService.handle(questionId, isHandled);
+
+      assertNotNull(actualQuestion, "Should return the question that was answers");
+    }
+  }
 }

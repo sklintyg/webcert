@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,46 +35,50 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfR
 @ExtendWith(MockitoExtension.class)
 class GetCertificateInternalPdfAggregatorTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String PERSON_ID = "personId";
-    private static final String CUSTOMIZATION_ID = "customizationId";
-    private static final String FILE_NAME = "fileName";
-    private static final byte[] BYTES = "byte".getBytes(StandardCharsets.UTF_8);
-    @Mock
-    private GetCertificatePdfService getCertificatePdfServiceFromWC;
-    @Mock
-    private GetCertificatePdfService getCertificatePdfServiceFromCS;
-    private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String PERSON_ID = "personId";
+  private static final String CUSTOMIZATION_ID = "customizationId";
+  private static final String FILE_NAME = "fileName";
+  private static final byte[] BYTES = "byte".getBytes(StandardCharsets.UTF_8);
+  @Mock private GetCertificatePdfService getCertificatePdfServiceFromWC;
+  @Mock private GetCertificatePdfService getCertificatePdfServiceFromCS;
+  private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
 
-    @BeforeEach
-    void setUp() {
-        getCertificateInternalPdfAggregator = new GetGetCertificateInternalPdfAggregator(
-            getCertificatePdfServiceFromWC,
-            getCertificatePdfServiceFromCS
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    getCertificateInternalPdfAggregator =
+        new GetGetCertificateInternalPdfAggregator(
+            getCertificatePdfServiceFromWC, getCertificatePdfServiceFromCS);
+  }
 
-    @Test
-    void shouldReturnResponseFromCSIfResponseNotNull() {
-        final var expectedResult = CertificatePdfResponseDTO.create(FILE_NAME, BYTES);
-        when(getCertificatePdfServiceFromCS.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
+  @Test
+  void shouldReturnResponseFromCSIfResponseNotNull() {
+    final var expectedResult = CertificatePdfResponseDTO.create(FILE_NAME, BYTES);
+    when(getCertificatePdfServiceFromCS.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID))
+        .thenReturn(expectedResult);
 
-        final var response = getCertificateInternalPdfAggregator.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
-        verify(getCertificatePdfServiceFromCS, times(1)).get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
+    final var response =
+        getCertificateInternalPdfAggregator.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
+    verify(getCertificatePdfServiceFromCS, times(1))
+        .get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
 
-        assertEquals(expectedResult, response);
-    }
+    assertEquals(expectedResult, response);
+  }
 
-    @Test
-    void shouldReturnCertificateIdFromWCIIfReturnsNull() {
-        final var expectedResult = CertificatePdfResponseDTO.create(FILE_NAME, BYTES);
-        when(getCertificatePdfServiceFromWC.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
+  @Test
+  void shouldReturnCertificateIdFromWCIIfReturnsNull() {
+    final var expectedResult = CertificatePdfResponseDTO.create(FILE_NAME, BYTES);
+    when(getCertificatePdfServiceFromWC.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID))
+        .thenReturn(expectedResult);
 
-        final var response = getCertificateInternalPdfAggregator.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
+    final var response =
+        getCertificateInternalPdfAggregator.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
 
-        verify(getCertificatePdfServiceFromWC, times(1)).get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
-        verify(getCertificatePdfServiceFromCS, times(1)).get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
+    verify(getCertificatePdfServiceFromWC, times(1))
+        .get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
+    verify(getCertificatePdfServiceFromCS, times(1))
+        .get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
 
-        assertEquals(expectedResult, response);
-    }
+    assertEquals(expectedResult, response);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
@@ -32,36 +31,36 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @RequiredArgsConstructor
 public class IntegratedUnitRegistryHelper {
 
-    private final WebCertUserService webCertUserService;
-    private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final WebCertUserService webCertUserService;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    public void addUnit(IntygUser user) {
-        integreradeEnheterRegistry.putIntegreradEnhet(
-            new IntegreradEnhetEntry(
-                user.getValdVardenhet().getId(),
-                user.getValdVardenhet().getNamn(),
-                user.getValdVardgivare().getId(),
-                user.getValdVardgivare().getNamn()
-            ),
-            false,
-            true);
+  public void addUnit(IntygUser user) {
+    integreradeEnheterRegistry.putIntegreradEnhet(
+        new IntegreradEnhetEntry(
+            user.getValdVardenhet().getId(),
+            user.getValdVardenhet().getNamn(),
+            user.getValdVardgivare().getId(),
+            user.getValdVardgivare().getNamn()),
+        false,
+        true);
+  }
+
+  public void addUnitForCopy(Certificate certificate, Certificate copy) {
+    if (webCertUserService
+        .getUser()
+        .getOrigin()
+        .equals(UserOriginType.DJUPINTEGRATION.toString())) {
+      IntegreradEnhetEntry newEntry =
+          new IntegreradEnhetEntry(
+              copy.getMetadata().getCareUnit().getUnitId(),
+              copy.getMetadata().getCareUnit().getUnitName(),
+              copy.getMetadata().getCareProvider().getUnitId(),
+              copy.getMetadata().getCareProvider().getUnitName());
+
+      integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(
+          certificate.getMetadata().getCareUnit().getUnitId(),
+          newEntry,
+          copy.getMetadata().getType());
     }
-
-
-    public void addUnitForCopy(Certificate certificate, Certificate copy) {
-        if (webCertUserService.getUser().getOrigin().equals(UserOriginType.DJUPINTEGRATION.toString())) {
-            IntegreradEnhetEntry newEntry = new IntegreradEnhetEntry(
-                copy.getMetadata().getCareUnit().getUnitId(),
-                copy.getMetadata().getCareUnit().getUnitName(),
-                copy.getMetadata().getCareProvider().getUnitId(),
-                copy.getMetadata().getCareProvider().getUnitName()
-            );
-
-            integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(
-                certificate.getMetadata().getCareUnit().getUnitId(),
-                newEntry,
-                copy.getMetadata().getType()
-            );
-        }
-    }
+  }
 }

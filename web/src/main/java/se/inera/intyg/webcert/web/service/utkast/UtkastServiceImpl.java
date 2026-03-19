@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -115,1126 +115,1258 @@ import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 @Service
 public class UtkastServiceImpl implements UtkastService {
 
-    public static final String INTYG_INDICATOR = "intyg";
-    public static final String UTKAST_INDICATOR = "utkast";
-    public static final String ERSATT_INDICATOR = "ersatt";
-    private static final Set<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES = UtkastStatus.getEditableDraftStatuses();
-    private static final Set<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = UtkastStatus.getDraftStatuses();
-    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(
-        UtkastStatus.DRAFT_COMPLETE,
-        UtkastStatus.DRAFT_INCOMPLETE,
-        UtkastStatus.DRAFT_LOCKED,
-        UtkastStatus.SIGNED
-    );
-    private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
-    @Autowired
-    private CreateIntygsIdStrategy intygsIdStrategy;
-    @Autowired
-    private UtkastRepository utkastRepository;
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
-    @Autowired
-    private LogService logService;
-    @Autowired
-    private LogRequestFactory logRequestFactory;
-    @Autowired
-    private NotificationService notificationService;
-    @Autowired
-    private CertificateEventService certificateEventService;
-    @Autowired
-    private MonitoringLogService monitoringService;
-    @Autowired
-    private WebCertUserService webCertUserService;
-    @Autowired
-    private IntygTextsService intygTextsService;
-    @Autowired
-    private AuthoritiesHelper authoritiesHelper;
-    @Autowired
-    private StatisticsGroupByUtil statisticsGroupByUtil;
-    @Autowired
-    private ReferensService referensService;
-    @Autowired
-    private DraftAccessServiceHelper draftAccessServiceHelper;
-    @Autowired
-    private EmployeeNameService employeeNameService;
-    @Autowired
-    private UtkastServiceHelper utkastServiceHelper;
-    @Autowired
-    private HashUtility hashUtility;
-    @Autowired
-    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-    @Autowired
-    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @Autowired
-    private DefaultTypeAheadProvider defaultTypeAheadProvider;
-    @Autowired
-    private HandleObsoleteDraftsService handleObsoleteDraftsService;
+  public static final String INTYG_INDICATOR = "intyg";
+  public static final String UTKAST_INDICATOR = "utkast";
+  public static final String ERSATT_INDICATOR = "ersatt";
+  private static final Set<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES =
+      UtkastStatus.getEditableDraftStatuses();
+  private static final Set<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED =
+      UtkastStatus.getDraftStatuses();
+  private static final List<UtkastStatus> ALL_DRAFTS =
+      Arrays.asList(
+          UtkastStatus.DRAFT_COMPLETE,
+          UtkastStatus.DRAFT_INCOMPLETE,
+          UtkastStatus.DRAFT_LOCKED,
+          UtkastStatus.SIGNED);
+  private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
+  @Autowired private CreateIntygsIdStrategy intygsIdStrategy;
+  @Autowired private UtkastRepository utkastRepository;
+  @Autowired private IntygModuleRegistry moduleRegistry;
+  @Autowired private LogService logService;
+  @Autowired private LogRequestFactory logRequestFactory;
+  @Autowired private NotificationService notificationService;
+  @Autowired private CertificateEventService certificateEventService;
+  @Autowired private MonitoringLogService monitoringService;
+  @Autowired private WebCertUserService webCertUserService;
+  @Autowired private IntygTextsService intygTextsService;
+  @Autowired private AuthoritiesHelper authoritiesHelper;
+  @Autowired private StatisticsGroupByUtil statisticsGroupByUtil;
+  @Autowired private ReferensService referensService;
+  @Autowired private DraftAccessServiceHelper draftAccessServiceHelper;
+  @Autowired private EmployeeNameService employeeNameService;
+  @Autowired private UtkastServiceHelper utkastServiceHelper;
+  @Autowired private HashUtility hashUtility;
+  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Autowired private DefaultTypeAheadProvider defaultTypeAheadProvider;
+  @Autowired private HandleObsoleteDraftsService handleObsoleteDraftsService;
 
-    public static boolean isUtkast(Utkast utkast) {
-        return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
+  public static boolean isUtkast(Utkast utkast) {
+    return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
+  }
+
+  public static boolean isEditableUtkast(Utkast utkast) {
+    return utkast != null && ALL_EDITABLE_DRAFT_STATUSES.contains(utkast.getStatus());
+  }
+
+  @Override
+  @Transactional() // , readOnly=true
+  public int countFilterIntyg(UtkastFilter filter) {
+
+    // Get intygstyper from write privilege
+    Set<String> intygsTyper =
+        authoritiesHelper.getIntygstyperForPrivilege(
+            webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+
+    return utkastRepository.countFilterIntyg(filter, intygsTyper);
+  }
+
+  @Override
+  public Utkast createNewDraft(CreateNewDraftRequest request) {
+
+    populateRequestWithIntygId(request);
+
+    String intygType = request.getIntygType();
+
+    CreateNewDraftHolder draftRequest = createModuleRequest(request);
+
+    String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
+
+    setUtkastStatus(intygJsonModel, request);
+
+    Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
+
+    // Persist the referens if supplied
+    if (!Strings.isNullOrEmpty(request.getReferens())) {
+      referensService.saveReferens(request.getIntygId(), request.getReferens());
+    }
+    int nrPrefillElements =
+        request.getForifyllnad().isPresent() ? request.getForifyllnad().get().getSvar().size() : 0;
+
+    generateCertificateEvent(savedUtkast, EventCode.SKAPAT);
+
+    if (UtkastStatus.DRAFT_COMPLETE == savedUtkast.getStatus()) {
+      generateCertificateEvent(savedUtkast, EventCode.KFSIGN);
     }
 
-    public static boolean isEditableUtkast(Utkast utkast) {
-        return utkast != null && ALL_EDITABLE_DRAFT_STATUSES.contains(utkast.getStatus());
+    // If testability is set, return the draft without sending notifications or pdl log
+    if (request.isTestability()) {
+      monitoringService.logUtkastCreated(
+          savedUtkast.getIntygsId(),
+          savedUtkast.getIntygsTyp(),
+          savedUtkast.getEnhetsId(),
+          savedUtkast.getSkapadAv().getHsaId(),
+          nrPrefillElements);
+      return savedUtkast;
     }
 
-    @Override
-    @Transactional() // , readOnly=true
-    public int countFilterIntyg(UtkastFilter filter) {
+    // Notify stakeholders when a draft has been created
+    sendNotification(savedUtkast, Event.CREATED);
 
-        // Get intygstyper from write privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
-            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+    // Create a PDL log for this action
+    logCreateDraft(savedUtkast, createLogUser(request), nrPrefillElements);
 
-        return utkastRepository.countFilterIntyg(filter, intygsTyper);
+    return savedUtkast;
+  }
+
+  private void setUtkastStatus(String intygJsonModel, CreateNewDraftRequest request) {
+    if (request.getForifyllnad().isPresent()) {
+      DraftValidation draftValidation =
+          validateDraft(
+              request.getIntygId(),
+              request.getIntygType(),
+              intygJsonModel != null ? intygJsonModel : "");
+      request.setStatus(
+          draftValidation.isDraftValid()
+              ? UtkastStatus.DRAFT_COMPLETE
+              : UtkastStatus.DRAFT_INCOMPLETE);
+    } else {
+      request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+    }
+  }
+
+  /**
+   * @return {@link SaveDraftResponse}
+   * @see UtkastService#updateDraftFromCandidate(String, String, String, String)
+   */
+  @Override
+  public SaveDraftResponse updateDraftFromCandidate(
+      String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType) {
+    Utkast toUtkast = getIntygAsDraft(toUtkastId, toUtkastType);
+    verifyUtkastExists(
+        toUtkast,
+        toUtkastId,
+        toUtkastType,
+        "The draft with id '" + toUtkastId + "' cannot be updated since it could not be found");
+
+    return updateDraftFromCandidate(fromIntygId, fromIntygType, toUtkast);
+  }
+
+  /**
+   * @return {@link SaveDraftResponse}
+   * @see UtkastService#updateDraftFromCandidate(String, String, Utkast)
+   */
+  @Override
+  public SaveDraftResponse updateDraftFromCandidate(
+      String fromIntygId, String fromIntygType, Utkast toUtkast) {
+    Utkast to = toUtkast;
+    String toIntygsId = to.getIntygsId();
+    String toIntygsType = to.getIntygsTyp();
+
+    // Draft must be incomplete and only just created (no saving or updates).
+    if (!UtkastStatus.DRAFT_INCOMPLETE.equals(to.getStatus()) && to.getVersion() != 0) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE,
+          "The draft (utkast) you are trying to copy data to must have status DRAFT_INCOMPLETE and version 0");
     }
 
-    @Override
-    public Utkast createNewDraft(CreateNewDraftRequest request) {
+    try {
+      Utlatande fromUtlatande =
+          utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, true);
 
-        populateRequestWithIntygId(request);
-
-        String intygType = request.getIntygType();
-
-        CreateNewDraftHolder draftRequest = createModuleRequest(request);
-
-        String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
-
-        setUtkastStatus(intygJsonModel, request);
-
-        Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
-
-        // Persist the referens if supplied
-        if (!Strings.isNullOrEmpty(request.getReferens())) {
-            referensService.saveReferens(request.getIntygId(), request.getReferens());
+      String draftVersion = to.getIntygTypeVersion();
+      if (draftVersion == null) {
+        draftVersion = fromUtlatande.getTextVersion();
+        if (draftVersion == null) {
+          throw new WebCertServiceException(
+              WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+              "Expected type version to be set but value is null");
         }
-        int nrPrefillElements = request.getForifyllnad().isPresent() ? request.getForifyllnad().get().getSvar().size() : 0;
+      }
 
-        generateCertificateEvent(savedUtkast, EventCode.SKAPAT);
+      // Get mapper and copy data to draft
+      CreateDraftCopyHolder draftCopyHolder =
+          new CreateDraftCopyHolder(toIntygsId, getHosPersonal(to));
+      draftCopyHolder.setPatient(getPatientFromDraft(to));
+      draftCopyHolder.setIntygTypeVersion(draftVersion);
 
-        if (UtkastStatus.DRAFT_COMPLETE == savedUtkast.getStatus()) {
-            generateCertificateEvent(savedUtkast, EventCode.KFSIGN);
-        }
+      ModuleApi toModuleApi = getModuleApi(toIntygsType, draftVersion);
+      Mapper moduleMapper =
+          toModuleApi
+              .getMapper()
+              .orElseThrow(
+                  () ->
+                      new WebCertServiceException(
+                          WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+                          String.format(
+                              "Error copying data from intyg '%s' to utkast '%s'",
+                              fromIntygId, toIntygsId)));
+      String draftAsJson = moduleMapper.map(fromUtlatande, draftCopyHolder).json();
 
-        // If testability is set, return the draft without sending notifications or pdl log
-        if (request.isTestability()) {
-            monitoringService.logUtkastCreated(savedUtkast.getIntygsId(), savedUtkast.getIntygsTyp(),
-                savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId(), nrPrefillElements);
-            return savedUtkast;
-        }
+      // Keep persisted json for comparsion
+      String persistedJson = to.getModel();
 
-        // Notify stakeholders when a draft has been created
-        sendNotification(savedUtkast, Event.CREATED);
+      // Update draft
+      updateUtkastModel(to, draftAsJson);
 
-        // Create a PDL log for this action
-        logCreateDraft(savedUtkast, createLogUser(request), nrPrefillElements);
+      // Save the updated draft
+      to = saveDraft(to);
+      LOG.debug("Utkast '{}' updated", toIntygsId);
 
-        return savedUtkast;
+      // Notify stakeholders when a draft has been changed/updated
+      sendNotificationWhenDraftChanged(to, persistedJson);
+
+      // Do the mandatory PDL logging
+      logUpdateOfIntyg(to);
+
+      publishCertificateAnalyticsMessage.publishEvent(
+          certificateAnalyticsMessageFactory.draftUpdatedFromCertificate(to));
+
+      // Flush JPA changes, to make sure the version attribute is updated
+      utkastRepository.flush();
+
+      return new SaveDraftResponse(to.getVersion(), to.getStatus());
+
+    } catch (ModuleException | IOException e) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+          String.format(
+              "Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toIntygsId),
+          e);
+    }
+  }
+
+  @Override
+  public String getQuestions(String intygsTyp, String version) {
+    String questionsAsJson = intygTextsService.getIntygTexts(intygsTyp, version);
+
+    LOG.debug(
+        "Got questions of {} chars from module '{}'", getSafeLength(questionsAsJson), intygsTyp);
+
+    return questionsAsJson;
+  }
+
+  @Override
+  @Transactional
+  public void setKlarForSigneraAndSendStatusMessage(String intygsId, String intygType) {
+    validateUserAllowedToSendKFSignNotification(intygsId, intygType);
+
+    Utkast utkast = getIntygAsDraft(intygsId, intygType);
+    verifyUtkastExists(
+        utkast,
+        intygsId,
+        intygType,
+        "The draft can not be set to klart for signera since it could not be found");
+
+    // check that the draft is still unsigned
+    if (!isTheDraftStillADraft(utkast.getStatus())) {
+      LOG.error(
+          "Intyg '{}' can not be set to klart for signera since it is no longer a draft", intygsId);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE,
+          "The draft can not be set to klart for signera since it is no longer a draft");
     }
 
-    private void setUtkastStatus(String intygJsonModel, CreateNewDraftRequest request) {
-        if (request.getForifyllnad().isPresent()) {
-            DraftValidation draftValidation = validateDraft(request.getIntygId(),
-                request.getIntygType(), intygJsonModel != null ? intygJsonModel : "");
-            request.setStatus(draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE);
-        } else {
-            request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-        }
+    if (utkast.getKlartForSigneringDatum() == null) {
+      notificationService.sendNotificationForDraftReadyToSign(utkast);
+      utkast.setKlartForSigneringDatum(LocalDateTime.now());
+      monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
+      publishCertificateAnalyticsMessage.publishEvent(
+          certificateAnalyticsMessageFactory.draftReadyForSign(utkast));
+      saveDraft(utkast);
+
+      generateCertificateEvent(utkast, EventCode.KFSIGN);
+
+      LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
     }
+  }
 
-    /**
-     * @return {@link SaveDraftResponse}
-     * @see UtkastService#updateDraftFromCandidate(String, String, String, String)
-     */
-    @Override
-    public SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType) {
-        Utkast toUtkast = getIntygAsDraft(toUtkastId, toUtkastType);
-        verifyUtkastExists(toUtkast, toUtkastId, toUtkastType,
-            "The draft with id '" + toUtkastId + "' cannot be updated since it could not be found");
+  @Override
+  public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(
+      final Personnummer personnummer, final IntygUser user, final String currentDraftId) {
+    return checkIfPersonHasExistingIntyg(personnummer, user, currentDraftId, true);
+  }
 
-        return updateDraftFromCandidate(fromIntygId, fromIntygType, toUtkast);
-    }
+  @Override
+  public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(
+      final Personnummer personnummer,
+      final IntygUser user,
+      final String currentDraftId,
+      boolean hideMetadataIfDifferentVardgivare) {
 
-    /**
-     * @return {@link SaveDraftResponse}
-     * @see UtkastService#updateDraftFromCandidate(String, String, Utkast)
-     */
-    @Override
-    public SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, Utkast toUtkast) {
-        Utkast to = toUtkast;
-        String toIntygsId = to.getIntygsId();
-        String toIntygsType = to.getIntygsTyp();
-
-        // Draft must be incomplete and only just created (no saving or updates).
-        if (!UtkastStatus.DRAFT_INCOMPLETE.equals(to.getStatus()) && to.getVersion() != 0) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "The draft (utkast) you are trying to copy data to must have status DRAFT_INCOMPLETE and version 0");
-        }
-
-        try {
-            Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, true);
-
-            String draftVersion = to.getIntygTypeVersion();
-            if (draftVersion == null) {
-                draftVersion = fromUtlatande.getTextVersion();
-                if (draftVersion == null) {
-                    throw new WebCertServiceException(
-                        WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Expected type version to be set but value is null");
-                }
-            }
-
-            // Get mapper and copy data to draft
-            CreateDraftCopyHolder draftCopyHolder = new CreateDraftCopyHolder(toIntygsId, getHosPersonal(to));
-            draftCopyHolder.setPatient(getPatientFromDraft(to));
-            draftCopyHolder.setIntygTypeVersion(draftVersion);
-
-            ModuleApi toModuleApi = getModuleApi(toIntygsType, draftVersion);
-            Mapper moduleMapper = toModuleApi.getMapper().orElseThrow(() ->
-                new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                    String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toIntygsId)));
-            String draftAsJson = moduleMapper.map(fromUtlatande, draftCopyHolder).json();
-
-            // Keep persisted json for comparsion
-            String persistedJson = to.getModel();
-
-            // Update draft
-            updateUtkastModel(to, draftAsJson);
-
-            // Save the updated draft
-            to = saveDraft(to);
-            LOG.debug("Utkast '{}' updated", toIntygsId);
-
-            // Notify stakeholders when a draft has been changed/updated
-            sendNotificationWhenDraftChanged(to, persistedJson);
-
-            // Do the mandatory PDL logging
-            logUpdateOfIntyg(to);
-
-            publishCertificateAnalyticsMessage.publishEvent(
-                certificateAnalyticsMessageFactory.draftUpdatedFromCertificate(to)
-            );
-
-            // Flush JPA changes, to make sure the version attribute is updated
-            utkastRepository.flush();
-
-            return new SaveDraftResponse(to.getVersion(), to.getStatus());
-
-        } catch (ModuleException | IOException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toIntygsId), e);
-        }
-
-    }
-
-    @Override
-    public String getQuestions(String intygsTyp, String version) {
-        String questionsAsJson = intygTextsService.getIntygTexts(intygsTyp, version);
-
-        LOG.debug("Got questions of {} chars from module '{}'", getSafeLength(questionsAsJson), intygsTyp);
-
-        return questionsAsJson;
-    }
-
-    @Override
-    @Transactional
-    public void setKlarForSigneraAndSendStatusMessage(String intygsId, String intygType) {
-        validateUserAllowedToSendKFSignNotification(intygsId, intygType);
-
-        Utkast utkast = getIntygAsDraft(intygsId, intygType);
-        verifyUtkastExists(utkast, intygsId, intygType, "The draft can not be set to klart for signera since it could not be found");
-
-        // check that the draft is still unsigned
-        if (!isTheDraftStillADraft(utkast.getStatus())) {
-            LOG.error("Intyg '{}' can not be set to klart for signera since it is no longer a draft", intygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "The draft can not be set to klart for signera since it is no longer a draft");
-        }
-
-        if (utkast.getKlartForSigneringDatum() == null) {
-            notificationService.sendNotificationForDraftReadyToSign(utkast);
-            utkast.setKlartForSigneringDatum(LocalDateTime.now());
-            monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
-            publishCertificateAnalyticsMessage.publishEvent(
-                certificateAnalyticsMessageFactory.draftReadyForSign(utkast)
-            );
-            saveDraft(utkast);
-
-            generateCertificateEvent(utkast, EventCode.KFSIGN);
-
-            LOG.debug("Sent, saved and logged utkast '{}' ready to sign", intygsId);
-        }
-    }
-
-    @Override
-    public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer,
-        final IntygUser user, final String currentDraftId) {
-        return checkIfPersonHasExistingIntyg(personnummer, user, currentDraftId, true);
-    }
-
-    @Override
-    public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer,
-        final IntygUser user, final String currentDraftId, boolean hideMetadataIfDifferentVardgivare) {
-
-        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
-            authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
+    List<Utkast> toFilter =
+        utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(
+            personnummer.getPersonnummerWithDash(),
+            authoritiesHelper.getIntygstyperForFeature(
+                user,
+                AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                 AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
 
-        List<Utkast> signedList = toFilter.stream()
+    List<Utkast> signedList =
+        toFilter.stream()
             .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
             .filter(utkast -> utkast.getAterkalladDatum() == null)
             .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum()))
             .toList();
 
-        List<Utkast> replacedList = toFilter.stream()
-            .filter(utkast -> utkast.getRelationKod() == RelationKod.ERSATT && utkast.getIntygsId().equals(currentDraftId))
+    List<Utkast> replacedList =
+        toFilter.stream()
+            .filter(
+                utkast ->
+                    utkast.getRelationKod() == RelationKod.ERSATT
+                        && utkast.getIntygsId().equals(currentDraftId))
             .toList();
 
-        Map<String, Map<String, PreviousIntyg>> ret = new HashMap<>();
+    Map<String, Map<String, PreviousIntyg>> ret = new HashMap<>();
 
-        ret.put(ERSATT_INDICATOR, replacedList.stream()
+    ret.put(
+        ERSATT_INDICATOR,
+        replacedList.stream()
             .collect(getUtkastMapCollector(user, hideMetadataIfDifferentVardgivare)));
 
-        ret.put(INTYG_INDICATOR, signedList.stream()
+    ret.put(
+        INTYG_INDICATOR,
+        signedList.stream()
             .collect(getUtkastMapCollector(user, hideMetadataIfDifferentVardgivare)));
 
-        ret.put(UTKAST_INDICATOR, toFilter.stream()
-            .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED
-                && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED
-                && !utkast.getIntygsId().equals(currentDraftId))
-            .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
+    ret.put(
+        UTKAST_INDICATOR,
+        toFilter.stream()
+            .filter(
+                utkast ->
+                    utkast.getStatus() != UtkastStatus.SIGNED
+                        && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED
+                        && !utkast.getIntygsId().equals(currentDraftId))
+            .sorted(
+                Comparator.comparing(
+                    Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
             .collect(getUtkastMapCollector(user, hideMetadataIfDifferentVardgivare)));
 
-        return ret;
-    }
+    return ret;
+  }
 
-    private Collector<Utkast, ?, Map<String, PreviousIntyg>> getUtkastMapCollector(IntygUser user,
-        boolean hideOutsideOfCareProviderValues) {
-        return Collectors.groupingBy(Utkast::getIntygsTyp,
-            Collectors.mapping(utkast -> PreviousIntyg.of(
+  private Collector<Utkast, ?, Map<String, PreviousIntyg>> getUtkastMapCollector(
+      IntygUser user, boolean hideOutsideOfCareProviderValues) {
+    return Collectors.groupingBy(
+        Utkast::getIntygsTyp,
+        Collectors.mapping(
+            utkast ->
+                PreviousIntyg.of(
                     Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
                     Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
                     enableShowDoiButton(user, utkast),
                     utkast.getEnhetsNamn(),
                     utkast.getIntygsId(),
-                    utkast.getSkapad(), hideOutsideOfCareProviderValues),
-                Collectors.reducing(new PreviousIntyg(), (a, b) -> {
-                    if (hideOutsideOfCareProviderValues) {
-                        return b.isSameVardgivare() ? b : a;
-                    }
-                    return b;
+                    utkast.getSkapad(),
+                    hideOutsideOfCareProviderValues),
+            Collectors.reducing(
+                new PreviousIntyg(),
+                (a, b) -> {
+                  if (hideOutsideOfCareProviderValues) {
+                    return b.isSameVardgivare() ? b : a;
+                  }
+                  return b;
                 })));
+  }
+
+  private boolean enableShowDoiButton(IntygUser user, Utkast utkast) {
+    if (!utkast.getIntygsTyp().equalsIgnoreCase(KvIntygstyp.DOI.name())) {
+      return false;
     }
 
-    private boolean enableShowDoiButton(IntygUser user, Utkast utkast) {
-        if (!utkast.getIntygsTyp().equalsIgnoreCase(KvIntygstyp.DOI.name())) {
-            return false;
-        }
-
-        final var isSameCareUnit = CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, utkast.getEnhetsId());
-        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-            return isSameCareUnit;
-        }
-
-        if (user.getOrigin().equals(UserOriginType.NORMAL.name())) {
-            final var isSameUnit = user.getValdVardenhet().getId().equals(utkast.getEnhetsId());
-            final var unitOfUser = HoSPersonHelper.findVardenhetEllerMottagning(user, user.getValdVardenhet().getId());
-            if (unitOfUser.isPresent()) {
-                final var userOnCareUnit = unitOfUser.get() instanceof se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-                return userOnCareUnit ? isSameCareUnit : isSameUnit;
-            }
-        }
-
-        return false;
+    final var isSameCareUnit =
+        CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, utkast.getEnhetsId());
+    if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
+      return isSameCareUnit;
     }
 
-    private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
-            AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST);
-
-        if (intygsTyper.size() == 0 || !intygsTyper.contains(intygType)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                "User not allowed to send KFSIGN notification for utkast '" + intygsId + "', "
-                    + "user must be Vardadministrator or intygsTyp '" + intygType + "' is not eligible "
-                    + "for KFSIGN notifications.");
-        }
+    if (user.getOrigin().equals(UserOriginType.NORMAL.name())) {
+      final var isSameUnit = user.getValdVardenhet().getId().equals(utkast.getEnhetsId());
+      final var unitOfUser =
+          HoSPersonHelper.findVardenhetEllerMottagning(user, user.getValdVardenhet().getId());
+      if (unitOfUser.isPresent()) {
+        final var userOnCareUnit =
+            unitOfUser.get()
+                instanceof se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+        return userOnCareUnit ? isSameCareUnit : isSameUnit;
+      }
     }
 
-    @Override
-    @Transactional
-    public void deleteUnsignedDraft(String intygId, long version) {
+    return false;
+  }
 
-        LOG.debug("Deleting utkast '{}'", intygId);
+  private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {
+    Set<String> intygsTyper =
+        authoritiesHelper.getIntygstyperForPrivilege(
+            webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST);
 
-        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
-        verifyUtkastExists(utkast, intygId, null, "The draft could not be deleted since it could not be found");
+    if (intygsTyper.size() == 0 || !intygsTyper.contains(intygType)) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+          "User not allowed to send KFSIGN notification for utkast '"
+              + intygsId
+              + "', "
+              + "user must be Vardadministrator or intygsTyp '"
+              + intygType
+              + "' is not eligible "
+              + "for KFSIGN notifications.");
+    }
+  }
 
-        // check that the draft hasn't been modified concurrently
-        if (utkast.getVersion() != version) {
-            LOG.debug("Utkast '{}' was concurrently modified", intygId);
-            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
-        }
+  @Override
+  @Transactional
+  public void deleteUnsignedDraft(String intygId, long version) {
 
-        // check that the draft is still unsigned
-        if (!isTheDraftStillADraft(utkast.getStatus())) {
-            LOG.error("Intyg '{}' can not be deleted since it is no longer a draft", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "The draft can not be deleted since it is no longer a draft");
-        }
+    LOG.debug("Deleting utkast '{}'", intygId);
 
-        // Delete draft from repository
-        utkastRepository.delete(utkast);
-        LOG.debug("Deleted draft '{}'", utkast.getIntygsId());
+    Utkast utkast = utkastRepository.findById(intygId).orElse(null);
+    verifyUtkastExists(
+        utkast, intygId, null, "The draft could not be deleted since it could not be found");
 
-        // Audit log
-        monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftDeleted(utkast)
-        );
-
-        // Notify stakeholders when a draft is deleted
-        sendNotification(utkast, Event.DELETED);
-
-        generateCertificateEvent(utkast, EventCode.RADERAT);
-
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logDeleteIntyg(logRequest);
+    // check that the draft hasn't been modified concurrently
+    if (utkast.getVersion() != version) {
+      LOG.debug("Utkast '{}' was concurrently modified", intygId);
+      throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Utkast> filterIntyg(UtkastFilter filter) {
-
-        // Get intygstyper from write privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
-            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
-
-        // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
-        if (intygsTyper.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // Get a list of drafts
-        return utkastRepository.filterIntyg(filter, intygsTyper);
+    // check that the draft is still unsigned
+    if (!isTheDraftStillADraft(utkast.getStatus())) {
+      LOG.error("Intyg '{}' can not be deleted since it is no longer a draft", intygId);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE,
+          "The draft can not be deleted since it is no longer a draft");
     }
 
-    @Override
-    public String getCertificateType(String certificateId) {
-        return utkastRepository.getIntygsTyp(certificateId);
+    // Delete draft from repository
+    utkastRepository.delete(utkast);
+    LOG.debug("Deleted draft '{}'", utkast.getIntygsId());
+
+    // Audit log
+    monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.draftDeleted(utkast));
+
+    // Notify stakeholders when a draft is deleted
+    sendNotification(utkast, Event.DELETED);
+
+    generateCertificateEvent(utkast, EventCode.RADERAT);
+
+    LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
+    logService.logDeleteIntyg(logRequest);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<Utkast> filterIntyg(UtkastFilter filter) {
+
+    // Get intygstyper from write privilege
+    Set<String> intygsTyper =
+        authoritiesHelper.getIntygstyperForPrivilege(
+            webCertUserService.getUser(), AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+
+    // If intygstyper is an empty set, user are not granted access to view intyg of any intygstyp.
+    if (intygsTyper.isEmpty()) {
+      return Collections.emptyList();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Utkast getDraft(String intygId, boolean pdlLog) {
-        final String intygType = getCertificateType(intygId);
-        return getDraft(intygId, intygType, pdlLog);
+    // Get a list of drafts
+    return utkastRepository.filterIntyg(filter, intygsTyper);
+  }
+
+  @Override
+  public String getCertificateType(String certificateId) {
+    return utkastRepository.getIntygsTyp(certificateId);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Utkast getDraft(String intygId, boolean pdlLog) {
+    final String intygType = getCertificateType(intygId);
+    return getDraft(intygId, intygType, pdlLog);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Utkast getDraft(String intygId, String intygType) {
+    return getDraft(intygId, intygType, true);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent) {
+    Utkast utkast = getIntygAsDraft(intygId, intygType);
+    verifyUtkastExists(
+        utkast, intygId, intygType, "Could not get draft since it could not be found");
+
+    if (createPdlLogEvent) {
+      // Log read to PDL
+      LogRequest logRequest =
+          logRequestFactory.createLogRequestFromUtkast(utkast, shouldPdlLogSjf(utkast));
+      logService.logReadIntyg(logRequest);
+
+      // Log read to monitoring log
+      monitoringService.logUtkastRead(utkast.getIntygsId(), utkast.getIntygsTyp());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Utkast getDraft(String intygId, String intygType) {
-        return getDraft(intygId, intygType, true);
-    }
+    return utkast;
+  }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent) {
-        Utkast utkast = getIntygAsDraft(intygId, intygType);
-        verifyUtkastExists(utkast, intygId, intygType, "Could not get draft since it could not be found");
+  private boolean shouldPdlLogSjf(Utkast draft) {
+    final var user = webCertUserService.getUser();
+    return isSjf(user) && isDifferentCareProvider(draft, user);
+  }
 
-        if (createPdlLogEvent) {
-            // Log read to PDL
-            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast, shouldPdlLogSjf(utkast));
-            logService.logReadIntyg(logRequest);
+  private boolean isDifferentCareProvider(Utkast draft, WebCertUser user) {
+    return !draft.getVardgivarId().equalsIgnoreCase(user.getValdVardgivare().getId());
+  }
 
-            // Log read to monitoring log
-            monitoringService.logUtkastRead(utkast.getIntygsId(), utkast.getIntygsTyp());
-        }
+  private boolean isSjf(WebCertUser user) {
+    return user != null && user.getParameters() != null && user.getParameters().isSjf();
+  }
 
-        return utkast;
-    }
+  @Override
+  @Transactional(readOnly = true)
+  public List<Lakare> getLakareWithDraftsByEnhet(String enhetsId) {
 
-    private boolean shouldPdlLogSjf(Utkast draft) {
-        final var user = webCertUserService.getUser();
-        return isSjf(user) && isDifferentCareProvider(draft, user);
-    }
+    List<Object[]> result =
+        utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(
+            enhetsId, ALL_DRAFT_STATUSES_INCLUDE_LOCKED);
 
-    private boolean isDifferentCareProvider(Utkast draft, WebCertUser user) {
-        return !draft.getVardgivarId().equalsIgnoreCase(user.getValdVardgivare().getId());
-    }
+    Set<String> hsaIDs = result.stream().map(arr -> (String) arr[0]).collect(Collectors.toSet());
 
-    private boolean isSjf(WebCertUser user) {
-        return user != null && user.getParameters() != null && user.getParameters().isSjf();
-    }
+    Map<String, String> hsaToNameMap =
+        ArendeConverter.getNamesByHsaIds(hsaIDs, employeeNameService);
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Lakare> getLakareWithDraftsByEnhet(String enhetsId) {
+    return result.stream()
+        .map(
+            lakareArr -> {
+              String hsaId = (String) lakareArr[0];
+              String name = (String) lakareArr[1];
 
-        List<Object[]> result = utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFT_STATUSES_INCLUDE_LOCKED);
+              if (hsaToNameMap.containsKey(hsaId)) {
+                name = hsaToNameMap.get(hsaId);
+              }
 
-        Set<String> hsaIDs = result.stream().map(arr -> (String) arr[0]).collect(Collectors.toSet());
-
-        Map<String, String> hsaToNameMap = ArendeConverter.getNamesByHsaIds(hsaIDs, employeeNameService);
-
-        return result.stream()
-            .map(lakareArr -> {
-                String hsaId = (String) lakareArr[0];
-                String name = (String) lakareArr[1];
-
-                if (hsaToNameMap.containsKey(hsaId)) {
-                    name = hsaToNameMap.get(hsaId);
-                }
-
-                return new Lakare(hsaId, name);
+              return new Lakare(hsaId, name);
             })
-            .sorted(Comparator.comparing(Lakare::getName))
-            .collect(Collectors.toList());
+        .sorted(Comparator.comparing(Lakare::getName))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds) {
+
+    Map<String, Long> resultsMap = new HashMap<>();
+
+    if (careUnitIds == null || careUnitIds.isEmpty()) {
+      LOG.warn("No ids for Vardenheter was supplied");
+      return resultsMap;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds) {
+    WebCertUser user = webCertUserService.getUser();
 
-        Map<String, Long> resultsMap = new HashMap<>();
+    // Get intygstyper from write privilege
+    Set<String> intygsTyper =
+        authoritiesHelper.getIntygstyperForPrivilege(
+            user, AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
-        if (careUnitIds == null || careUnitIds.isEmpty()) {
-            LOG.warn("No ids for Vardenheter was supplied");
-            return resultsMap;
-        }
+    List<GroupableItem> resultArr =
+        utkastRepository.getIntygWithStatusesByEnhetsId(
+            careUnitIds, ALL_DRAFT_STATUSES_INCLUDE_LOCKED, intygsTyper);
+    return statisticsGroupByUtil.toSekretessFilteredMap(resultArr);
+  }
 
-        WebCertUser user = webCertUserService.getUser();
+  @Override
+  @Transactional
+  public SaveDraftResponse saveDraft(
+      String intygId, long version, String draftAsJson, boolean createPdlLogEvent) {
+    LOG.debug("Saving and validating utkast '{}'", intygId);
 
-        // Get intygstyper from write privilege
-        Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+    Utkast utkast = utkastRepository.findById(intygId).orElse(null);
+    verifyUtkastExists(
+        utkast, intygId, null, "The draft could not be saved since it could not be found");
 
-        List<GroupableItem> resultArr = utkastRepository.getIntygWithStatusesByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES_INCLUDE_LOCKED,
-            intygsTyper);
-        return statisticsGroupByUtil.toSekretessFilteredMap(resultArr);
+    // check that the draft hasn't been modified concurrently
+    if (utkast.getVersion() != version) {
+      LOG.debug("Utkast '{}' was concurrently modified", intygId);
+      throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
     }
 
-    @Override
-    @Transactional
-    public SaveDraftResponse saveDraft(String intygId, long version, String draftAsJson, boolean createPdlLogEvent) {
-        LOG.debug("Saving and validating utkast '{}'", intygId);
-
-        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
-        verifyUtkastExists(utkast, intygId, null, "The draft could not be saved since it could not be found");
-
-        // check that the draft hasn't been modified concurrently
-        if (utkast.getVersion() != version) {
-            LOG.debug("Utkast '{}' was concurrently modified", intygId);
-            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
-        }
-
-        // check that the draft is still a draft
-        if (!isTheDraftStillADraft(utkast.getStatus())) {
-            LOG.error("Utkast '{}' can not be updated since it is no longer in draft mode", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "This utkast can not be updated since it is no longer in draft mode");
-        }
-
-        String intygType = utkast.getIntygsTyp();
-
-        // Keep persisted json for comparsion
-        String persistedJson = utkast.getModel();
-
-        // Update draft with user information
-        updateUtkastModel(utkast, draftAsJson);
-
-        // Is draft valid?
-        DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
-
-        UtkastStatus utkastStatus = draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
-        utkast.setStatus(utkastStatus);
-
-        // Save the updated draft
-        utkast = saveDraft(utkast);
-        LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
-
-        // Notify stakeholders when a draft has been changed/updated
-        sendNotificationWhenDraftChanged(utkast, persistedJson);
-
-        if (createPdlLogEvent) {
-            logUpdateOfIntyg(utkast);
-        }
-
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftUpdated(utkast)
-        );
-
-        // Flush JPA changes, to make sure the version attribute is updated
-        utkastRepository.flush();
-
-        return new SaveDraftResponse(utkast.getVersion(), utkastStatus);
+    // check that the draft is still a draft
+    if (!isTheDraftStillADraft(utkast.getStatus())) {
+      LOG.error("Utkast '{}' can not be updated since it is no longer in draft mode", intygId);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE,
+          "This utkast can not be updated since it is no longer in draft mode");
     }
 
-    @Override
-    public void updatePatientOnDraft(UpdatePatientOnDraftRequest request) {
-        // diff draftPatient and request patient: if no changes, do nothing
-        String draftId = request.getDraftId();
+    String intygType = utkast.getIntygsTyp();
 
-        LOG.debug("Checking that Patient is up-to-date on Utkast '{}'", draftId);
+    // Keep persisted json for comparsion
+    String persistedJson = utkast.getModel();
 
-        Utkast utkast = utkastRepository.findById(draftId).orElse(null);
-        verifyUtkastExists(utkast, draftId, null,
-            "The draft could not be updated with patient details since it could not be found");
+    // Update draft with user information
+    updateUtkastModel(utkast, draftAsJson);
 
-        if (webCertUserService.getUser().getIdsOfAllVardenheter().stream()
-            .noneMatch(enhet -> enhet.equalsIgnoreCase(utkast.getEnhetsId()))) {
-            LOG.error("User did not have any medarbetaruppdrag for enhet '{}'", utkast.getEnhetsId());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                "User did not have any medarbetaruppdrag for enhet " + utkast.getEnhetsId());
-        }
+    // Is draft valid?
+    DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
 
-        // check that the draft hasn't been modified concurrently
-        if (utkast.getVersion() != request.getVersion()) {
-            LOG.debug("Utkast '{}' was concurrently modified", draftId);
-            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
-        }
+    UtkastStatus utkastStatus =
+        draftValidation.isDraftValid()
+            ? UtkastStatus.DRAFT_COMPLETE
+            : UtkastStatus.DRAFT_INCOMPLETE;
+    utkast.setStatus(utkastStatus);
 
-        // check that the draft is still a draft
-        if (!isTheDraftStillADraft(utkast.getStatus())) {
-            LOG.error("Utkast '{}' can not be updated since it is no longer in draft mode", draftId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "This utkast can not be updated since it is no longer in draft mode");
-        }
+    // Save the updated draft
+    utkast = saveDraft(utkast);
+    LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
 
-        final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
+    // Notify stakeholders when a draft has been changed/updated
+    sendNotificationWhenDraftChanged(utkast, persistedJson);
 
-        // INTYG-4086
-        Patient draftPatient = getPatientFromCDraft(moduleApi, utkast.getModel(), utkast.getSkapad());
-
-        Optional<Personnummer> optionalPnr = Optional.ofNullable(request.getPersonnummer());
-        Optional<Personnummer> optionalDraftPnr = Optional.ofNullable(draftPatient.getPersonId());
-
-        if (optionalDraftPnr.isPresent()) {
-            // Spara undan det gamla personnummret temporärt
-            String oldPersonId;
-            if (request.getOldPersonnummer() != null) {
-                oldPersonId = request.getOldPersonnummer().getPersonnummer();
-            } else {
-                oldPersonId = optionalDraftPnr.get().getPersonnummer();
-            }
-            webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
-        }
-
-        if ((optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr))
-            && !isHashEqual(optionalPnr, optionalDraftPnr)) {
-
-            // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar
-            // personnumret -
-            // vilka regler gäller då för namn och adress? Samma regler som i PatientDetailsResolverImpl?
-            draftPatient.setPersonId(optionalPnr.get());
-
-            try {
-                String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), draftPatient, utkast.getSkapad());
-                updateUtkastModel(utkast, updatedModel);
-                saveDraft(utkast);
-                monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
-                sendNotification(utkast, Event.CHANGED);
-
-            } catch (ModuleException e) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                    "Patient details on Utkast " + draftId + " could not be updated", e);
-            }
-        } else {
-            LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
-        }
+    if (createPdlLogEvent) {
+      logUpdateOfIntyg(utkast);
     }
 
-    @Override
-    @Transactional
-    public Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified) {
-        Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.draftUpdated(utkast));
 
-        verifyUtkastExists(utkast, intygsId, null, "The draft could not be set to notified since it could not be found");
-        draftAccessServiceHelper.validateAllowToForwardDraft(utkast);
+    // Flush JPA changes, to make sure the version attribute is updated
+    utkastRepository.flush();
 
-        // check that the draft is still unsigned
-        if (!isTheDraftStillADraft(utkast.getStatus())) {
-            LOG.error("Intyg '{}' can not be set to notified since it is no longer a draft", intygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "The draft can not be set to notified since it is no longer a draft");
-        }
+    return new SaveDraftResponse(utkast.getVersion(), utkastStatus);
+  }
 
-        // check that the draft hasn't been modified concurrently
-        if (utkast.getVersion() != version) {
-            LOG.debug("Utkast '{}' was concurrently modified", intygsId);
-            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
-        }
+  @Override
+  public void updatePatientOnDraft(UpdatePatientOnDraftRequest request) {
+    // diff draftPatient and request patient: if no changes, do nothing
+    String draftId = request.getDraftId();
 
-        utkast.setVidarebefordrad(notified);
+    LOG.debug("Checking that Patient is up-to-date on Utkast '{}'", draftId);
 
-        return saveDraft(utkast);
+    Utkast utkast = utkastRepository.findById(draftId).orElse(null);
+    verifyUtkastExists(
+        utkast,
+        draftId,
+        null,
+        "The draft could not be updated with patient details since it could not be found");
+
+    if (webCertUserService.getUser().getIdsOfAllVardenheter().stream()
+        .noneMatch(enhet -> enhet.equalsIgnoreCase(utkast.getEnhetsId()))) {
+      LOG.error("User did not have any medarbetaruppdrag for enhet '{}'", utkast.getEnhetsId());
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+          "User did not have any medarbetaruppdrag for enhet " + utkast.getEnhetsId());
     }
 
-    @Override
-    public DraftValidation validateDraft(String intygId, String intygType, String draftAsJson) {
-        LOG.debug("Validating draft with id '{}' and type '{}'", intygId, intygType);
-
-        try {
-            ModuleApi moduleApi = getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(intygType, draftAsJson));
-            return convertToDraftValidation(moduleApi.validateDraft(draftAsJson, defaultTypeAheadProvider));
-        } catch (ModuleException | ModuleNotFoundException me) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
+    // check that the draft hasn't been modified concurrently
+    if (utkast.getVersion() != request.getVersion()) {
+      LOG.debug("Utkast '{}' was concurrently modified", draftId);
+      throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
     }
 
-    @Override
-    @Transactional
-    public int lockOldDrafts(int lockedAfterDay, LocalDate today) {
+    // check that the draft is still a draft
+    if (!isTheDraftStillADraft(utkast.getStatus())) {
+      LOG.error("Utkast '{}' can not be updated since it is no longer in draft mode", draftId);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE,
+          "This utkast can not be updated since it is no longer in draft mode");
+    }
 
-        LocalDate lastCreatedDate = today.minusDays(lockedAfterDay);
-        LocalDateTime lastCreatedDateTime = lastCreatedDate.atStartOfDay();
+    final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
 
-        List<Utkast> utkasts = utkastRepository.findDraftsByNotLockedOrSignedAndSkapadBefore(lastCreatedDateTime);
+    // INTYG-4086
+    Patient draftPatient = getPatientFromCDraft(moduleApi, utkast.getModel(), utkast.getSkapad());
 
-        utkasts.forEach(utkast -> {
-            // Remove relations from other intyg
-            utkastRepository.removeRelationsToDraft(utkast.getIntygsId());
+    Optional<Personnummer> optionalPnr = Optional.ofNullable(request.getPersonnummer());
+    Optional<Personnummer> optionalDraftPnr = Optional.ofNullable(draftPatient.getPersonId());
 
-            // Remove relations to other intyg
-            utkast.setRelationKod(null);
-            utkast.setRelationIntygsId(null);
+    if (optionalDraftPnr.isPresent()) {
+      // Spara undan det gamla personnummret temporärt
+      String oldPersonId;
+      if (request.getOldPersonnummer() != null) {
+        oldPersonId = request.getOldPersonnummer().getPersonnummer();
+      } else {
+        oldPersonId = optionalDraftPnr.get().getPersonnummer();
+      }
+      webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
+    }
 
-            // Set status locked
-            utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
-            utkastRepository.save(utkast);
+    if ((optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr))
+        && !isHashEqual(optionalPnr, optionalDraftPnr)) {
 
-            certificateEventService
-                .createCertificateEvent(utkast.getIntygsId(), "UtkastLockJob", EventCode.LAST, "Draft locked after 14 days");
+      // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man
+      // uppdaterar
+      // personnumret -
+      // vilka regler gäller då för namn och adress? Samma regler som i PatientDetailsResolverImpl?
+      draftPatient.setPersonId(optionalPnr.get());
 
-            monitoringService.logUtkastLocked(utkast.getIntygsId(), utkast.getIntygsTyp());
+      try {
+        String updatedModel =
+            moduleApi.updateBeforeSave(utkast.getModel(), draftPatient, utkast.getSkapad());
+        updateUtkastModel(utkast, updatedModel);
+        saveDraft(utkast);
+        monitoringService.logUtkastPatientDetailsUpdated(
+            utkast.getIntygsId(), utkast.getIntygsTyp());
+        sendNotification(utkast, Event.CHANGED);
+
+      } catch (ModuleException e) {
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+            "Patient details on Utkast " + draftId + " could not be updated",
+            e);
+      }
+    } else {
+      LOG.debug("Utkast '{}' patient details were already up-to-date: no update needed", draftId);
+    }
+  }
+
+  @Override
+  @Transactional
+  public Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified) {
+    Utkast utkast = utkastRepository.findById(intygsId).orElse(null);
+
+    verifyUtkastExists(
+        utkast,
+        intygsId,
+        null,
+        "The draft could not be set to notified since it could not be found");
+    draftAccessServiceHelper.validateAllowToForwardDraft(utkast);
+
+    // check that the draft is still unsigned
+    if (!isTheDraftStillADraft(utkast.getStatus())) {
+      LOG.error("Intyg '{}' can not be set to notified since it is no longer a draft", intygsId);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE,
+          "The draft can not be set to notified since it is no longer a draft");
+    }
+
+    // check that the draft hasn't been modified concurrently
+    if (utkast.getVersion() != version) {
+      LOG.debug("Utkast '{}' was concurrently modified", intygsId);
+      throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
+    }
+
+    utkast.setVidarebefordrad(notified);
+
+    return saveDraft(utkast);
+  }
+
+  @Override
+  public DraftValidation validateDraft(String intygId, String intygType, String draftAsJson) {
+    LOG.debug("Validating draft with id '{}' and type '{}'", intygId, intygType);
+
+    try {
+      ModuleApi moduleApi =
+          getModuleApi(
+              intygType, moduleRegistry.resolveVersionFromUtlatandeJson(intygType, draftAsJson));
+      return convertToDraftValidation(
+          moduleApi.validateDraft(draftAsJson, defaultTypeAheadProvider));
+    } catch (ModuleException | ModuleNotFoundException me) {
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+    }
+  }
+
+  @Override
+  @Transactional
+  public int lockOldDrafts(int lockedAfterDay, LocalDate today) {
+
+    LocalDate lastCreatedDate = today.minusDays(lockedAfterDay);
+    LocalDateTime lastCreatedDateTime = lastCreatedDate.atStartOfDay();
+
+    List<Utkast> utkasts =
+        utkastRepository.findDraftsByNotLockedOrSignedAndSkapadBefore(lastCreatedDateTime);
+
+    utkasts.forEach(
+        utkast -> {
+          // Remove relations from other intyg
+          utkastRepository.removeRelationsToDraft(utkast.getIntygsId());
+
+          // Remove relations to other intyg
+          utkast.setRelationKod(null);
+          utkast.setRelationIntygsId(null);
+
+          // Set status locked
+          utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+          utkastRepository.save(utkast);
+
+          certificateEventService.createCertificateEvent(
+              utkast.getIntygsId(), "UtkastLockJob", EventCode.LAST, "Draft locked after 14 days");
+
+          monitoringService.logUtkastLocked(utkast.getIntygsId(), utkast.getIntygsTyp());
         });
 
-        return utkasts.size();
+    return utkasts.size();
+  }
+
+  @Override
+  public void revokeLockedDraft(
+      String intygId, String intygTyp, String revokeMessage, String reason) {
+
+    Utkast utkast = utkastRepository.findById(intygId).orElse(null);
+    verifyUtkastExists(
+        utkast,
+        intygId,
+        intygTyp,
+        "The locked draft could not be revoked since it could not be found");
+
+    if (!utkast.getIntygsTyp().equals(intygTyp)) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE,
+          "IntygTyp did not match : " + intygTyp + " " + utkast.getIntygsTyp());
     }
 
-    @Override
-    public void revokeLockedDraft(String intygId, String intygTyp, String revokeMessage, String reason) {
-
-        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
-        verifyUtkastExists(utkast, intygId, intygTyp, "The locked draft could not be revoked since it could not be found");
-
-        if (!utkast.getIntygsTyp().equals(intygTyp)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "IntygTyp did not match : " + intygTyp + " " + utkast.getIntygsTyp());
-        }
-
-        // Validate draft locked
-        if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
-            LOG.info("User cannot revoke a draft with status: {}", utkast.getStatus());
-            final String message = "Revoke failed due to wrong utkast status";
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
-
-        if (utkast.getAterkalladDatum() != null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "Already revoked : " + utkast.getAterkalladDatum());
-        }
-
-        revokeUtkast(utkast, reason, revokeMessage);
+    // Validate draft locked
+    if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
+      LOG.info("User cannot revoke a draft with status: {}", utkast.getStatus());
+      final String message = "Revoke failed due to wrong utkast status";
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
     }
 
-    @Override
-    public boolean isDraftCreatedFromReplacement(String certificateId) {
-        return utkastRepository.findParentRelation(certificateId).stream()
-            .anyMatch(relation -> relation.getRelationKod() == RelationKod.ERSATT);
+    if (utkast.getAterkalladDatum() != null) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE,
+          "Already revoked : " + utkast.getAterkalladDatum());
     }
 
-    @Override
-    public List<Utkast> findUtkastByPatientAndUnits(Personnummer patientId, List<String> unitIds) {
-        final var user = webCertUserService.getUser();
-        if (new AuthoritiesValidator().given(user).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).isVerified()) {
-            Set<String> intygstyper = authoritiesHelper
-                .getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-            final var drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
-                DaoUtil.formatPnrForPersistence(patientId),
-                unitIds,
-                ALL_DRAFTS,
-                intygstyper);
+    revokeUtkast(utkast, reason, revokeMessage);
+  }
 
-            LOG.debug("Got #{} utkast", drafts.size());
-            return drafts;
-        } else {
-            return Collections.emptyList();
-        }
+  @Override
+  public boolean isDraftCreatedFromReplacement(String certificateId) {
+    return utkastRepository.findParentRelation(certificateId).stream()
+        .anyMatch(relation -> relation.getRelationKod() == RelationKod.ERSATT);
+  }
+
+  @Override
+  public List<Utkast> findUtkastByPatientAndUnits(Personnummer patientId, List<String> unitIds) {
+    final var user = webCertUserService.getUser();
+    if (new AuthoritiesValidator()
+        .given(user)
+        .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .isVerified()) {
+      Set<String> intygstyper =
+          authoritiesHelper.getIntygstyperForPrivilege(
+              user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+      final var drafts =
+          utkastRepository.findDraftsByPatientAndEnhetAndStatus(
+              DaoUtil.formatPnrForPersistence(patientId), unitIds, ALL_DRAFTS, intygstyper);
+
+      LOG.debug("Got #{} utkast", drafts.size());
+      return drafts;
+    } else {
+      return Collections.emptyList();
     }
+  }
 
-    @Override
-    public int dispose(LocalDateTime disposeObsoleteDraftsDate, Integer pageSize) {
-        final var statuses = List.of(
-            UtkastStatus.DRAFT_LOCKED,
-            UtkastStatus.DRAFT_INCOMPLETE,
-            UtkastStatus.DRAFT_COMPLETE
-        );
+  @Override
+  public int dispose(LocalDateTime disposeObsoleteDraftsDate, Integer pageSize) {
+    final var statuses =
+        List.of(
+            UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE);
 
-        final var pageable = PageRequest.of(0, pageSize, Sort.by(Direction.ASC, "skapad"));
-        var totalDisposed = new AtomicInteger(0);
-        Page<Utkast> page;
+    final var pageable = PageRequest.of(0, pageSize, Sort.by(Direction.ASC, "skapad"));
+    var totalDisposed = new AtomicInteger(0);
+    Page<Utkast> page;
 
-        do {
-            page = utkastRepository.findObsoleteDrafts(disposeObsoleteDraftsDate, statuses, pageable);
-            final var drafts = page.getContent();
+    do {
+      page = utkastRepository.findObsoleteDrafts(disposeObsoleteDraftsDate, statuses, pageable);
+      final var drafts = page.getContent();
 
-            drafts.forEach(draft -> {
-                try {
-                    handleObsoleteDraftsService.disposeAndNotify(draft, disposeObsoleteDraftsDate);
-                    totalDisposed.incrementAndGet();
-                } catch (Exception e) {
-                    LOG.error("Error disposing obsolete draft with certificateId: {}, with error: {}",
-                        draft.getIntygsId(), e.getMessage(), e);
-                }
-
-            });
-
-        } while (page.hasNext());
-
-        return totalDisposed.get();
-    }
-
-    /**
-     * Revoke draft and notify stakeholders that this draft is now deleted.
-     */
-    private void revokeUtkast(Utkast utkast, String reason, String revokeMessage) {
-        String intygsId = utkast.getIntygsId();
-
-        String hsaId = webCertUserService.getUser().getHsaId();
-        monitoringService.logUtkastRevoked(intygsId, hsaId, reason);
-
-        // First: mark the originating Utkast as REVOKED
-        utkast.setAterkalladDatum(LocalDateTime.now());
-        utkastRepository.save(utkast);
-
-        // Secondly: notify stakeholders that draft is revoked
-        sendNotification(utkast, Event.REVOKED);
-        generateCertificateEvent(utkast, EventCode.MAKULERAT);
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.lockedDraftRevoked(utkast)
-        );
-
-        // Third: create a log event
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logRevokeIntyg(logRequest);
-    }
-
-    private LogUser createLogUser(CreateNewDraftRequest request) {
-        HoSPersonal hosPerson = request.getHosPerson();
-
-        String personId = hosPerson.getPersonId();
-        String vardenhetId = hosPerson.getVardenhet().getEnhetsid();
-        String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
-
-        return new LogUser.Builder(personId, vardenhetId, vardgivareId)
-            .userName(hosPerson.getFullstandigtNamn())
-            .userTitle(hosPerson.getTitel())
-            .userAssignment(hosPerson.getMedarbetarUppdrag())
-            .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
-            .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
-            .build();
-    }
-
-    private ModuleApi getModuleApi(String intygsTyp, String intygsTypeVersion) {
-        try {
-            return moduleRegistry.getModuleApi(intygsTyp, intygsTypeVersion);
-
-        } catch (ModuleNotFoundException e) {
-            if (e.getCause() != null && e.getCause().getCause() != null) {
-                // This error message is helpful when debugging save problems.
-                LOG.debug(e.getCause().getCause().getMessage());
+      drafts.forEach(
+          draft -> {
+            try {
+              handleObsoleteDraftsService.disposeAndNotify(draft, disposeObsoleteDraftsDate);
+              totalDisposed.incrementAndGet();
+            } catch (Exception e) {
+              LOG.error(
+                  "Error disposing obsolete draft with certificateId: {}, with error: {}",
+                  draft.getIntygsId(),
+                  e.getMessage(),
+                  e);
             }
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not get module for type " + intygsTyp, e);
+          });
+
+    } while (page.hasNext());
+
+    return totalDisposed.get();
+  }
+
+  /** Revoke draft and notify stakeholders that this draft is now deleted. */
+  private void revokeUtkast(Utkast utkast, String reason, String revokeMessage) {
+    String intygsId = utkast.getIntygsId();
+
+    String hsaId = webCertUserService.getUser().getHsaId();
+    monitoringService.logUtkastRevoked(intygsId, hsaId, reason);
+
+    // First: mark the originating Utkast as REVOKED
+    utkast.setAterkalladDatum(LocalDateTime.now());
+    utkastRepository.save(utkast);
+
+    // Secondly: notify stakeholders that draft is revoked
+    sendNotification(utkast, Event.REVOKED);
+    generateCertificateEvent(utkast, EventCode.MAKULERAT);
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.lockedDraftRevoked(utkast));
+
+    // Third: create a log event
+    LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
+    logService.logRevokeIntyg(logRequest);
+  }
+
+  private LogUser createLogUser(CreateNewDraftRequest request) {
+    HoSPersonal hosPerson = request.getHosPerson();
+
+    String personId = hosPerson.getPersonId();
+    String vardenhetId = hosPerson.getVardenhet().getEnhetsid();
+    String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
+
+    return new LogUser.Builder(personId, vardenhetId, vardgivareId)
+        .userName(hosPerson.getFullstandigtNamn())
+        .userTitle(hosPerson.getTitel())
+        .userAssignment(hosPerson.getMedarbetarUppdrag())
+        .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
+        .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
+        .build();
+  }
+
+  private ModuleApi getModuleApi(String intygsTyp, String intygsTypeVersion) {
+    try {
+      return moduleRegistry.getModuleApi(intygsTyp, intygsTypeVersion);
+
+    } catch (ModuleNotFoundException e) {
+      if (e.getCause() != null && e.getCause().getCause() != null) {
+        // This error message is helpful when debugging save problems.
+        LOG.debug(e.getCause().getCause().getMessage());
+      }
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+          "Could not get module for type " + intygsTyp,
+          e);
+    }
+  }
+
+  private Patient getPatientFromDraft(Utkast utkast) {
+    final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
+    return getPatientFromCDraft(moduleApi, utkast.getModel(), utkast.getSkapad());
+  }
+
+  private Patient getPatientFromCDraft(
+      ModuleApi moduleApi, String draftModel, LocalDateTime created) {
+    try {
+      return moduleApi.getUtlatandeFromJson(draftModel, created).getGrundData().getPatient();
+    } catch (ModuleException | IOException e) {
+      if (e.getCause() != null && e.getCause().getCause() != null) {
+        // This error message is helpful when debugging save problems.
+        LOG.debug(e.getCause().getCause().getMessage());
+      }
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not get Patient object from draft", e);
+    }
+  }
+
+  private DraftValidation convertToDraftValidation(ValidateDraftResponse dr) {
+
+    DraftValidation draftValidation = new DraftValidation();
+    ValidationStatus validationStatus = dr.getStatus();
+
+    // Always return the warning messages
+    for (ValidationMessage validationWarning : dr.getValidationWarnings()) {
+      draftValidation.addWarning(
+          new DraftValidationMessage(
+              validationWarning.getCategory(),
+              validationWarning.getField(),
+              validationWarning.getType(),
+              validationWarning.getMessage(),
+              validationWarning.getDynamicKey()));
+    }
+
+    if (ValidationStatus.VALID.equals(validationStatus)) {
+      LOG.debug("Validation is OK");
+      return draftValidation;
+    }
+
+    draftValidation.setStatus(ValidationStatus.INVALID);
+
+    // Only bother with returning validation (e.g. error) messages if the ArendeDraft is INVALID.
+    for (ValidationMessage validationMsg : dr.getValidationErrors()) {
+      draftValidation.addMessage(
+          new DraftValidationMessage(
+              validationMsg.getCategory(),
+              validationMsg.getField(),
+              validationMsg.getType(),
+              validationMsg.getMessage(),
+              validationMsg.getDynamicKey(),
+              validationMsg.getQuestionId()));
+    }
+
+    LOG.debug(
+        "Validation failed with {} validation messages", draftValidation.getMessages().size());
+
+    return draftValidation;
+  }
+
+  private CreateNewDraftHolder createModuleRequest(CreateNewDraftRequest request) {
+    return new CreateNewDraftHolder(
+        request.getIntygId(),
+        request.getIntygTypeVersion(),
+        request.getHosPerson(),
+        request.getPatient(),
+        request.getForifyllnad(),
+        request.getPatient().isTestIndicator());
+  }
+
+  private Utkast getIntygAsDraft(String intygsId, String intygsTyp) {
+    LOG.debug("Trying to fetch draft '{}' from repository", intygsId);
+    return utkastRepository.findByIntygsIdAndIntygsTyp(intygsId, intygsTyp);
+  }
+
+  private void verifyUtkastExists(Utkast utkast, String intygsId, String intygsTyp, String errMsg) {
+    if (utkast == null) {
+      StringBuilder sb = new StringBuilder("Utkast");
+
+      if (!Strings.isNullOrEmpty(intygsId)) {
+        sb.append(String.format(" with id '%s'", intygsId));
+        if (!Strings.isNullOrEmpty(intygsTyp)) {
+          sb.append(String.format(" and of type %s", intygsTyp));
         }
+      }
+      sb.append(" could not be found");
+
+      LOG.warn(sb.toString());
+
+      if (!Strings.isNullOrEmpty(errMsg)) {
+        sb.replace(0, sb.length(), errMsg);
+      }
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, sb.toString());
+    }
+  }
+
+  private String getPopulatedModelFromIntygModule(
+      String intygType, CreateNewDraftHolder draftRequest) {
+
+    LOG.debug("Calling module '{}' to get populated model", intygType);
+
+    String modelAsJson;
+
+    try {
+      ModuleApi moduleApi =
+          moduleRegistry.getModuleApi(intygType, draftRequest.getIntygTypeVersion());
+      modelAsJson = moduleApi.createNewInternal(draftRequest);
+    } catch (ModuleException | ModuleNotFoundException me) {
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
     }
 
-    private Patient getPatientFromDraft(Utkast utkast) {
-        final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
-        return getPatientFromCDraft(moduleApi, utkast.getModel(), utkast.getSkapad());
+    LOG.debug(
+        "Got populated model of {} chars from module '{}'", getSafeLength(modelAsJson), intygType);
+
+    return modelAsJson;
+  }
+
+  private int getSafeLength(String str) {
+    return Strings.nullToEmpty(str).trim().length();
+  }
+
+  private boolean isHashEqual(Optional<Personnummer> thiz, Optional<Personnummer> that) {
+    if (thiz.isPresent() && that.isPresent()) {
+      return hashUtility
+          .hash(thiz.get().getPersonnummer())
+          .equals(hashUtility.hash(that.get().getPersonnummer()));
     }
 
-    private Patient getPatientFromCDraft(ModuleApi moduleApi, String draftModel, LocalDateTime created) {
-        try {
-            return moduleApi.getUtlatandeFromJson(draftModel, created).getGrundData().getPatient();
-        } catch (ModuleException | IOException e) {
-            if (e.getCause() != null && e.getCause().getCause() != null) {
-                // This error message is helpful when debugging save problems.
-                LOG.debug(e.getCause().getCause().getMessage());
-            }
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                "Could not get Patient object from draft", e);
-        }
+    return false;
+  }
+
+  private boolean isTheDraftStillADraft(UtkastStatus utkastStatus) {
+    return ALL_EDITABLE_DRAFT_STATUSES.contains(utkastStatus);
+  }
+
+  private void logCreateDraft(Utkast utkast, LogUser logUser, int nrPrefillElements) {
+    LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
+    logService.logCreateIntyg(logRequest, logUser);
+
+    monitoringService.logUtkastCreated(
+        utkast.getIntygsId(),
+        utkast.getIntygsTyp(),
+        utkast.getEnhetsId(),
+        utkast.getSkapadAv().getHsaId(),
+        nrPrefillElements);
+  }
+
+  private void logUpdateOfIntyg(Utkast utkast) {
+    LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
+    logService.logUpdateIntyg(logRequest);
+
+    // Monitor that changes have been made to draft
+    monitoringService.logUtkastEdited(utkast.getIntygsId(), utkast.getIntygsTyp());
+  }
+
+  private void sendNotificationWhenDraftChanged(Utkast to, String persistedJson) {
+    try {
+      ModuleApi moduleApi = getModuleApi(to.getIntygsTyp(), to.getIntygTypeVersion());
+      if (moduleApi.shouldNotify(persistedJson, to.getModel())) {
+        LOG.debug("*** Detected changes in model, sending notification! ***");
+        sendNotification(to, Event.CHANGED);
+      }
+    } catch (ModuleException e) {
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+    }
+  }
+
+  private Utkast persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
+    Utkast utkast = new Utkast();
+
+    Patient patient = request.getPatient();
+    utkast.setPatientPersonnummer(patient.getPersonId());
+    utkast.setPatientFornamn(patient.getFornamn());
+    utkast.setPatientMellannamn(patient.getMellannamn());
+    utkast.setPatientEfternamn(patient.getEfternamn());
+    utkast.setTestIntyg(patient.isTestIndicator());
+
+    utkast.setIntygsId(request.getIntygId());
+    utkast.setIntygsTyp(request.getIntygType());
+    utkast.setIntygTypeVersion(request.getIntygTypeVersion());
+
+    utkast.setStatus(request.getStatus());
+
+    utkast.setModel(draftAsJson);
+
+    Vardenhet vardenhet = request.getHosPerson().getVardenhet();
+
+    utkast.setEnhetsId(vardenhet.getEnhetsid());
+    utkast.setEnhetsNamn(vardenhet.getEnhetsnamn());
+
+    Vardgivare vardgivare = vardenhet.getVardgivare();
+
+    utkast.setVardgivarId(vardgivare.getVardgivarid());
+    utkast.setVardgivarNamn(vardgivare.getVardgivarnamn());
+
+    VardpersonReferens creator =
+        UpdateUserUtil.createVardpersonFromHosPerson(request.getHosPerson());
+
+    utkast.setSenastSparadAv(creator);
+    utkast.setSkapadAv(creator);
+    utkast.setSkapad(LocalDateTime.now());
+
+    return saveDraft(utkast);
+  }
+
+  private void populateRequestWithIntygId(CreateNewDraftRequest request) {
+
+    if (!Strings.nullToEmpty(request.getIntygId()).trim().isEmpty()) {
+      LOG.debug("Detected that the CreateNewDraftRequest already contains an intygId!");
+      return;
     }
 
-    private DraftValidation convertToDraftValidation(ValidateDraftResponse dr) {
+    String generatedIntygId = intygsIdStrategy.createId();
+    request.setIntygId(generatedIntygId);
 
-        DraftValidation draftValidation = new DraftValidation();
-        ValidationStatus validationStatus = dr.getStatus();
+    LOG.debug("Created id '{}' for the new draft", generatedIntygId);
+  }
 
-        // Always return the warning messages
-        for (ValidationMessage validationWarning : dr.getValidationWarnings()) {
-            draftValidation.addWarning(new DraftValidationMessage(
-                validationWarning.getCategory(), validationWarning.getField(), validationWarning.getType(),
-                validationWarning.getMessage(), validationWarning.getDynamicKey()));
-        }
+  private Utkast saveDraft(Utkast utkast) {
+    Utkast savedUtkast = utkastRepository.save(utkast);
+    LOG.debug("ArendeDraft '{}' saved", savedUtkast.getIntygsId());
+    return savedUtkast;
+  }
 
-        if (ValidationStatus.VALID.equals(validationStatus)) {
-            LOG.debug("Validation is OK");
-            return draftValidation;
-        }
-
-        draftValidation.setStatus(ValidationStatus.INVALID);
-
-        // Only bother with returning validation (e.g. error) messages if the ArendeDraft is INVALID.
-        for (ValidationMessage validationMsg : dr.getValidationErrors()) {
-            draftValidation.addMessage(new DraftValidationMessage(
-                validationMsg.getCategory(), validationMsg.getField(), validationMsg.getType(),
-                validationMsg.getMessage(), validationMsg.getDynamicKey(), validationMsg.getQuestionId()));
-        }
-
-        LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());
-
-        return draftValidation;
+  private void sendNotification(Utkast utkast, Event event) {
+    switch (event) {
+      case CHANGED:
+        notificationService.sendNotificationForDraftChanged(utkast);
+        break;
+      case CREATED:
+        notificationService.sendNotificationForDraftCreated(utkast);
+        break;
+      case DELETED:
+        notificationService.sendNotificationForDraftDeleted(utkast);
+        break;
+      case REVOKED:
+        notificationService.sendNotificationForDraftRevoked(utkast);
+        break;
     }
+  }
 
-    private CreateNewDraftHolder createModuleRequest(CreateNewDraftRequest request) {
-        return new CreateNewDraftHolder(request.getIntygId(), request.getIntygTypeVersion(), request.getHosPerson(), request.getPatient(),
-            request.getForifyllnad(), request.getPatient().isTestIndicator());
+  private void generateCertificateEvent(Utkast certificate, EventCode eventCode) {
+    String user = certificate.getSkapadAv().getHsaId();
+    certificateEventService.createCertificateEvent(certificate.getIntygsId(), user, eventCode);
+  }
+
+  private HoSPersonal getHosPersonal(Utkast utkast) throws IOException, ModuleException {
+    ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
+
+    GrundData grundData =
+        moduleApi.getUtlatandeFromJson(utkast.getModel(), utkast.getSkapad()).getGrundData();
+    Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
+
+    return IntygConverterUtil.buildHosPersonalFromWebCertUser(
+        webCertUserService.getUser(), vardenhet);
+  }
+
+  private void updateUtkastModel(Utkast utkast, String modelJson) {
+    WebCertUser user = webCertUserService.getUser();
+
+    try {
+      ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
+
+      GrundData grundData =
+          moduleApi.getUtlatandeFromJson(modelJson, utkast.getSkapad()).getGrundData();
+
+      Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
+      HoSPersonal hosPerson =
+          IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
+      utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
+      utkast.setPatientPersonnummer(grundData.getPatient().getPersonId());
+      String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson, utkast.getSkapad());
+      utkast.setModel(updatedInternal);
+
+      updatePatientNameFromModel(utkast, grundData.getPatient());
+
+    } catch (ModuleException | IOException e) {
+      if (e.getCause() != null && e.getCause().getCause() != null) {
+        // This error message is helpful when debugging save problems.
+        LOG.debug(e.getCause().getCause().getMessage());
+      }
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
     }
+  }
 
-    private Utkast getIntygAsDraft(String intygsId, String intygsTyp) {
-        LOG.debug("Trying to fetch draft '{}' from repository", intygsId);
-        return utkastRepository.findByIntygsIdAndIntygsTyp(intygsId, intygsTyp);
+  /**
+   * See INTYG-3077 - when autosaving we make sure that the columns for fornamn, mellannamn and
+   * efternamn match whatever values that are present in the actual utkast model.
+   *
+   * <p>In the rare occurance that a patient has a name change after the initial utkast was created
+   * - e.g. the utkast was continued on at a subsequent date - this method makes sure that the three
+   * "metadata" 'name' columns in the INTYG table reflects the actual model.
+   *
+   * <p>The one exception is when the utkast is of type fk7263 and copied from Intygstjänsten (or
+   * have an ancestor which is created as a copy of an intyg in Intygstjänsten). In this case the
+   * JSON will not have a fornamn and we cannot save null in UTKAST.PATIENT_FORNAMN.
+   */
+  private void updatePatientNameFromModel(Utkast utkast, Patient patient) {
+    if (patient == null || patient.getFornamn() == null) {
+      return;
     }
-
-    private void verifyUtkastExists(Utkast utkast, String intygsId, String intygsTyp, String errMsg) {
-        if (utkast == null) {
-            StringBuilder sb = new StringBuilder("Utkast");
-
-            if (!Strings.isNullOrEmpty(intygsId)) {
-                sb.append(String.format(" with id '%s'", intygsId));
-                if (!Strings.isNullOrEmpty(intygsTyp)) {
-                    sb.append(String.format(" and of type %s", intygsTyp));
-                }
-            }
-            sb.append(" could not be found");
-
-            LOG.warn(sb.toString());
-
-            if (!Strings.isNullOrEmpty(errMsg)) {
-                sb.replace(0, sb.length(), errMsg);
-            }
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, sb.toString());
-        }
+    if (utkast.getPatientFornamn() != null
+        && !utkast.getPatientFornamn().equals(patient.getFornamn())) {
+      utkast.setPatientFornamn(patient.getFornamn());
     }
-
-    private String getPopulatedModelFromIntygModule(String intygType, CreateNewDraftHolder draftRequest) {
-
-        LOG.debug("Calling module '{}' to get populated model", intygType);
-
-        String modelAsJson;
-
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, draftRequest.getIntygTypeVersion());
-            modelAsJson = moduleApi.createNewInternal(draftRequest);
-        } catch (ModuleException | ModuleNotFoundException me) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
-
-        LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(modelAsJson), intygType);
-
-        return modelAsJson;
+    if (utkast.getPatientMellannamn() != null
+        && !utkast.getPatientMellannamn().equals(patient.getMellannamn())) {
+      utkast.setPatientMellannamn(patient.getMellannamn());
     }
-
-    private int getSafeLength(String str) {
-        return Strings.nullToEmpty(str).trim().length();
+    if (utkast.getPatientEfternamn() != null
+        && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
+      utkast.setPatientEfternamn(patient.getEfternamn());
     }
+  }
 
-    private boolean isHashEqual(Optional<Personnummer> thiz, Optional<Personnummer> that) {
-        if (thiz.isPresent() && that.isPresent()) {
-            return hashUtility.hash(thiz.get().getPersonnummer()).equals(hashUtility.hash(that.get().getPersonnummer()));
-        }
-
-        return false;
-    }
-
-    private boolean isTheDraftStillADraft(UtkastStatus utkastStatus) {
-        return ALL_EDITABLE_DRAFT_STATUSES.contains(utkastStatus);
-    }
-
-    private void logCreateDraft(Utkast utkast, LogUser logUser, int nrPrefillElements) {
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logCreateIntyg(logRequest, logUser);
-
-        monitoringService.logUtkastCreated(utkast.getIntygsId(), utkast.getIntygsTyp(),
-            utkast.getEnhetsId(), utkast.getSkapadAv().getHsaId(), nrPrefillElements);
-    }
-
-    private void logUpdateOfIntyg(Utkast utkast) {
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logUpdateIntyg(logRequest);
-
-        // Monitor that changes have been made to draft
-        monitoringService.logUtkastEdited(utkast.getIntygsId(), utkast.getIntygsTyp());
-    }
-
-    private void sendNotificationWhenDraftChanged(Utkast to, String persistedJson) {
-        try {
-            ModuleApi moduleApi = getModuleApi(to.getIntygsTyp(), to.getIntygTypeVersion());
-            if (moduleApi.shouldNotify(persistedJson, to.getModel())) {
-                LOG.debug("*** Detected changes in model, sending notification! ***");
-                sendNotification(to, Event.CHANGED);
-            }
-        } catch (ModuleException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-        }
-    }
-
-    private Utkast persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
-        Utkast utkast = new Utkast();
-
-        Patient patient = request.getPatient();
-        utkast.setPatientPersonnummer(patient.getPersonId());
-        utkast.setPatientFornamn(patient.getFornamn());
-        utkast.setPatientMellannamn(patient.getMellannamn());
-        utkast.setPatientEfternamn(patient.getEfternamn());
-        utkast.setTestIntyg(patient.isTestIndicator());
-
-        utkast.setIntygsId(request.getIntygId());
-        utkast.setIntygsTyp(request.getIntygType());
-        utkast.setIntygTypeVersion(request.getIntygTypeVersion());
-
-        utkast.setStatus(request.getStatus());
-
-        utkast.setModel(draftAsJson);
-
-        Vardenhet vardenhet = request.getHosPerson().getVardenhet();
-
-        utkast.setEnhetsId(vardenhet.getEnhetsid());
-        utkast.setEnhetsNamn(vardenhet.getEnhetsnamn());
-
-        Vardgivare vardgivare = vardenhet.getVardgivare();
-
-        utkast.setVardgivarId(vardgivare.getVardgivarid());
-        utkast.setVardgivarNamn(vardgivare.getVardgivarnamn());
-
-        VardpersonReferens creator = UpdateUserUtil.createVardpersonFromHosPerson(request.getHosPerson());
-
-        utkast.setSenastSparadAv(creator);
-        utkast.setSkapadAv(creator);
-        utkast.setSkapad(LocalDateTime.now());
-
-        return saveDraft(utkast);
-    }
-
-    private void populateRequestWithIntygId(CreateNewDraftRequest request) {
-
-        if (!Strings.nullToEmpty(request.getIntygId()).trim().isEmpty()) {
-            LOG.debug("Detected that the CreateNewDraftRequest already contains an intygId!");
-            return;
-        }
-
-        String generatedIntygId = intygsIdStrategy.createId();
-        request.setIntygId(generatedIntygId);
-
-        LOG.debug("Created id '{}' for the new draft", generatedIntygId);
-    }
-
-    private Utkast saveDraft(Utkast utkast) {
-        Utkast savedUtkast = utkastRepository.save(utkast);
-        LOG.debug("ArendeDraft '{}' saved", savedUtkast.getIntygsId());
-        return savedUtkast;
-    }
-
-    private void sendNotification(Utkast utkast, Event event) {
-        switch (event) {
-            case CHANGED:
-                notificationService.sendNotificationForDraftChanged(utkast);
-                break;
-            case CREATED:
-                notificationService.sendNotificationForDraftCreated(utkast);
-                break;
-            case DELETED:
-                notificationService.sendNotificationForDraftDeleted(utkast);
-                break;
-            case REVOKED:
-                notificationService.sendNotificationForDraftRevoked(utkast);
-                break;
-        }
-    }
-
-    private void generateCertificateEvent(Utkast certificate, EventCode eventCode) {
-        String user = certificate.getSkapadAv().getHsaId();
-        certificateEventService.createCertificateEvent(
-            certificate.getIntygsId(), user, eventCode);
-    }
-
-    private HoSPersonal getHosPersonal(Utkast utkast) throws IOException, ModuleException {
-        ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
-
-        GrundData grundData = moduleApi.getUtlatandeFromJson(utkast.getModel(), utkast.getSkapad()).getGrundData();
-        Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
-
-        return IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), vardenhet);
-    }
-
-    private void updateUtkastModel(Utkast utkast, String modelJson) {
-        WebCertUser user = webCertUserService.getUser();
-
-        try {
-            ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
-
-            GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson, utkast.getSkapad()).getGrundData();
-
-            Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
-            HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
-            utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
-            utkast.setPatientPersonnummer(grundData.getPatient().getPersonId());
-            String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson, utkast.getSkapad());
-            utkast.setModel(updatedInternal);
-
-            updatePatientNameFromModel(utkast, grundData.getPatient());
-
-        } catch (ModuleException | IOException e) {
-            if (e.getCause() != null && e.getCause().getCause() != null) {
-                // This error message is helpful when debugging save problems.
-                LOG.debug(e.getCause().getCause().getMessage());
-            }
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
-        }
-    }
-
-    /**
-     * See INTYG-3077 - when autosaving we make sure that the columns for fornamn, mellannamn and efternamn match
-     * whatever values that are present in the actual utkast model.
-     * <p>
-     * In the rare occurance that a patient has a name change after the initial utkast was created - e.g. the utkast
-     * was continued on at a subsequent date - this method makes sure that the three "metadata" 'name' columns in the
-     * INTYG table reflects the actual model.
-     * <p>
-     * The one exception is when the utkast is of type fk7263 and copied from Intygstjänsten (or have an ancestor which
-     * is created as a copy of an intyg in Intygstjänsten). In this case the JSON will not have a fornamn and we cannot
-     * save null in UTKAST.PATIENT_FORNAMN.
-     */
-    private void updatePatientNameFromModel(Utkast utkast, Patient patient) {
-        if (patient == null || patient.getFornamn() == null) {
-            return;
-        }
-        if (utkast.getPatientFornamn() != null && !utkast.getPatientFornamn().equals(patient.getFornamn())) {
-            utkast.setPatientFornamn(patient.getFornamn());
-        }
-        if (utkast.getPatientMellannamn() != null && !utkast.getPatientMellannamn().equals(patient.getMellannamn())) {
-            utkast.setPatientMellannamn(patient.getMellannamn());
-        }
-        if (utkast.getPatientEfternamn() != null && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
-            utkast.setPatientEfternamn(patient.getEfternamn());
-        }
-    }
-
-    public enum Event {
-        CHANGED,
-        CREATED,
-        DELETED,
-        REVOKED
-    }
+  public enum Event {
+    CHANGED,
+    CREATED,
+    DELETED,
+    REVOKED
+  }
 }

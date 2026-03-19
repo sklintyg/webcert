@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,85 +36,66 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsReques
  */
 public interface NotificationService {
 
-    /**
-     * Utkast created (HAN1).
-     */
-    void sendNotificationForDraftCreated(Utkast utkast);
+  /** Utkast created (HAN1). */
+  void sendNotificationForDraftCreated(Utkast utkast);
 
-    /**
-     * Utkast signed (HAN2).
-     */
-    void sendNotificationForDraftSigned(Utkast utkast);
+  /** Utkast signed (HAN2). */
+  void sendNotificationForDraftSigned(Utkast utkast);
 
-    /**
-     * Utkast changed (HAN11).
-     */
-    void sendNotificationForDraftChanged(Utkast utkast);
+  /** Utkast changed (HAN11). */
+  void sendNotificationForDraftChanged(Utkast utkast);
 
-    /**
-     * Utkast deleted (HAN4).
-     */
-    void sendNotificationForDraftDeleted(Utkast utkast);
+  /** Utkast deleted (HAN4). */
+  void sendNotificationForDraftDeleted(Utkast utkast);
 
-    /*
-     * Utkast revoked
-     */
-    void sendNotificationForDraftRevoked(Utkast utkast);
+  /*
+   * Utkast revoked
+   */
+  void sendNotificationForDraftRevoked(Utkast utkast);
 
-    /**
-     * Utkast marked as ready to sign.
-     */
-    void sendNotificationForDraftReadyToSign(Utkast utkast);
+  /** Utkast marked as ready to sign. */
+  void sendNotificationForDraftReadyToSign(Utkast utkast);
 
-    /**
-     * Signed intyg sent to recipient (HAN3).
-     */
-    void sendNotificationForIntygSent(String intygsId);
+  /** Signed intyg sent to recipient (HAN3). */
+  void sendNotificationForIntygSent(String intygsId);
 
-    /**
-     * Signed intyg revoked (HAN5).
-     */
-    void sendNotificationForIntygRevoked(String intygsId);
+  /** Signed intyg revoked (HAN5). */
+  void sendNotificationForIntygRevoked(String intygsId);
 
-    /**
-     * New question received from FK (HAN6).
-     */
-    void sendNotificationForQuestionReceived(FragaSvar fragaSvar);
+  /** New question received from FK (HAN6). */
+  void sendNotificationForQuestionReceived(FragaSvar fragaSvar);
 
-    /**
-     * New answer received from FK (HAN7).
-     */
-    void sendNotificationForAnswerRecieved(FragaSvar fragaSvar);
+  /** New answer received from FK (HAN7). */
+  void sendNotificationForAnswerRecieved(FragaSvar fragaSvar);
 
-    /**
-     * New question received from recipient (NYFRFM).
-     */
-    void sendNotificationForQuestionReceived(Arende arende, String careProviderId, LocalDateTime issuingDate);
+  /** New question received from recipient (NYFRFM). */
+  void sendNotificationForQuestionReceived(
+      Arende arende, String careProviderId, LocalDateTime issuingDate);
 
-    /**
-     * New answer received from recipient (NYSVFM).
-     */
-    void sendNotificationForAnswerRecieved(Arende arende, String careProviderId, LocalDateTime issuingDate);
+  /** New answer received from recipient (NYSVFM). */
+  void sendNotificationForAnswerRecieved(
+      Arende arende, String careProviderId, LocalDateTime issuingDate);
 
-    void sendNotificationForQAs(String intygsId, NotificationEvent event);
+  void sendNotificationForQAs(String intygsId, NotificationEvent event);
 
-    /**
-     * Returns all notifications saved for an intyg.
-     *
-     * @param intygsId the id of the intyg
-     * @return a list of all the notifications
-     */
-    List<Handelse> getNotifications(String intygsId);
+  /**
+   * Returns all notifications saved for an intyg.
+   *
+   * @param intygsId the id of the intyg
+   * @return a list of all the notifications
+   */
+  List<Handelse> getNotifications(String intygsId);
 
-    void forwardInternalNotification(String intygsId, String intygstyp, Utlatande utlatande, HandelsekodEnum handelsekodEnum);
+  void forwardInternalNotification(
+      String intygsId, String intygstyp, Utlatande utlatande, HandelsekodEnum handelsekodEnum);
 
-    /**
-     * Returns all notifications matching the request.
-     *
-     * @param request {@link IntygWithNotificationsRequest}
-     * @return a list of all matching notifications.
-     */
-    List<Handelse> findNotifications(IntygWithNotificationsRequest request);
+  /**
+   * Returns all notifications matching the request.
+   *
+   * @param request {@link IntygWithNotificationsRequest}
+   * @return a list of all matching notifications.
+   */
+  List<Handelse> findNotifications(IntygWithNotificationsRequest request);
 
-    void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion);
+  void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,38 +42,39 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationResultSuccessServiceTest {
 
-    @Mock
-    private HandelseRepository handelseRepository;
+  @Mock private HandelseRepository handelseRepository;
 
-    @Mock
-    private NotificationRedeliveryRepository notificationRedeliveryRepository;
+  @Mock private NotificationRedeliveryRepository notificationRedeliveryRepository;
 
-    @Mock
-    private MonitoringLogService monitoringLogService;
+  @Mock private MonitoringLogService monitoringLogService;
 
-    @InjectMocks
-    private NotificationResultSuccessService notificationResultSuccessService;
+  @InjectMocks private NotificationResultSuccessService notificationResultSuccessService;
 
-    private static final Long EVENT_ID = 1000L;
-    private static final Integer ATTEMPTED_DELIVERIES = 4;
+  private static final Long EVENT_ID = 1000L;
+  private static final Integer ATTEMPTED_DELIVERIES = 4;
 
-    @Test
-    public void shallMakeMonitorLogOnProcessingOfNewNotification() {
-        final var notificationResultMessage = createNotificationResultMessage();
+  @Test
+  public void shallMakeMonitorLogOnProcessingOfNewNotification() {
+    final var notificationResultMessage = createNotificationResultMessage();
 
-        final var captureEventId = ArgumentCaptor.forClass(Long.class);
-        final var captureEventType = ArgumentCaptor.forClass(String.class);
-        final var captureCertificateId = ArgumentCaptor.forClass(String.class);
-        final var captureCorrelationId = ArgumentCaptor.forClass(String.class);
-        final var captureLogicalAddress = ArgumentCaptor.forClass(String.class);
-        final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
+    final var captureEventId = ArgumentCaptor.forClass(Long.class);
+    final var captureEventType = ArgumentCaptor.forClass(String.class);
+    final var captureCertificateId = ArgumentCaptor.forClass(String.class);
+    final var captureCorrelationId = ArgumentCaptor.forClass(String.class);
+    final var captureLogicalAddress = ArgumentCaptor.forClass(String.class);
+    final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
 
-        doReturn(eventAsSaved(notificationResultMessage.getEvent())).when(handelseRepository).save(notificationResultMessage.getEvent());
-        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
+    doReturn(eventAsSaved(notificationResultMessage.getEvent()))
+        .when(handelseRepository)
+        .save(notificationResultMessage.getEvent());
+    doReturn(Optional.empty())
+        .when(notificationRedeliveryRepository)
+        .findByCorrelationId(notificationResultMessage.getCorrelationId());
 
-        notificationResultSuccessService.process(notificationResultMessage);
+    notificationResultSuccessService.process(notificationResultMessage);
 
-        verify(monitoringLogService).logStatusUpdateForCareStatusSuccess(
+    verify(monitoringLogService)
+        .logStatusUpdateForCareStatusSuccess(
             captureEventId.capture(),
             captureEventType.capture(),
             captureCertificateId.capture(),
@@ -81,35 +82,42 @@ public class NotificationResultSuccessServiceTest {
             captureLogicalAddress.capture(),
             captureAttemptedDeliveries.capture());
 
-        assertEquals(EVENT_ID, captureEventId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getCode().value(), captureEventType.getValue());
-        assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
-        assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
-        assertEquals(1, captureAttemptedDeliveries.getValue().intValue());
-    }
+    assertEquals(EVENT_ID, captureEventId.getValue());
+    assertEquals(
+        notificationResultMessage.getEvent().getCode().value(), captureEventType.getValue());
+    assertEquals(
+        notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
+    assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
+    assertEquals(
+        notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
+    assertEquals(1, captureAttemptedDeliveries.getValue().intValue());
+  }
 
-    @Test
-    public void shallMakeMonitorLogOnProcessingRedeliveredNotification() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
+  @Test
+  public void shallMakeMonitorLogOnProcessingRedeliveredNotification() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+    final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
 
-        final var captureEventId = ArgumentCaptor.forClass(Long.class);
-        final var captureEventType = ArgumentCaptor.forClass(String.class);
-        final var captureCertificateId = ArgumentCaptor.forClass(String.class);
-        final var captureCorrelationId = ArgumentCaptor.forClass(String.class);
-        final var captureLogicalAddress = ArgumentCaptor.forClass(String.class);
-        final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
+    final var captureEventId = ArgumentCaptor.forClass(Long.class);
+    final var captureEventType = ArgumentCaptor.forClass(String.class);
+    final var captureCertificateId = ArgumentCaptor.forClass(String.class);
+    final var captureCorrelationId = ArgumentCaptor.forClass(String.class);
+    final var captureLogicalAddress = ArgumentCaptor.forClass(String.class);
+    final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(Optional.of(eventAsSaved)).when(handelseRepository).findById(notificationRedelivery.getEventId());
-        doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
+    doReturn(Optional.of(notificationRedelivery))
+        .when(notificationRedeliveryRepository)
+        .findByCorrelationId(notificationResultMessage.getCorrelationId());
+    doReturn(Optional.of(eventAsSaved))
+        .when(handelseRepository)
+        .findById(notificationRedelivery.getEventId());
+    doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
 
-        notificationResultSuccessService.process(notificationResultMessage);
+    notificationResultSuccessService.process(notificationResultMessage);
 
-        verify(monitoringLogService).logStatusUpdateForCareStatusSuccess(
+    verify(monitoringLogService)
+        .logStatusUpdateForCareStatusSuccess(
             captureEventId.capture(),
             captureEventType.capture(),
             captureCertificateId.capture(),
@@ -117,115 +125,140 @@ public class NotificationResultSuccessServiceTest {
             captureLogicalAddress.capture(),
             captureAttemptedDeliveries.capture());
 
-        assertEquals(notificationRedelivery.getEventId(), captureEventId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getCode().value(), captureEventType.getValue());
-        assertEquals(notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
-        assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
-        assertEquals(notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
-        assertEquals(ATTEMPTED_DELIVERIES + 1, captureAttemptedDeliveries.getValue().intValue());
-    }
+    assertEquals(notificationRedelivery.getEventId(), captureEventId.getValue());
+    assertEquals(
+        notificationResultMessage.getEvent().getCode().value(), captureEventType.getValue());
+    assertEquals(
+        notificationResultMessage.getEvent().getIntygsId(), captureCertificateId.getValue());
+    assertEquals(notificationResultMessage.getCorrelationId(), captureCorrelationId.getValue());
+    assertEquals(
+        notificationResultMessage.getEvent().getEnhetsId(), captureLogicalAddress.getValue());
+    assertEquals(ATTEMPTED_DELIVERIES + 1, captureAttemptedDeliveries.getValue().intValue());
+  }
 
-    @Test
-    public void shallMonitorLogOneAttemptedDeliveryWhenRedeliveryHasNullSendAttempts() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        notificationRedelivery.setAttemptedDeliveries(null);
-        final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
+  @Test
+  public void shallMonitorLogOneAttemptedDeliveryWhenRedeliveryHasNullSendAttempts() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+    notificationRedelivery.setAttemptedDeliveries(null);
+    final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
 
-        final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
+    final var captureAttemptedDeliveries = ArgumentCaptor.forClass(Integer.class);
 
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
-        doReturn(Optional.of(eventAsSaved)).when(handelseRepository).findById(notificationRedelivery.getEventId());
-        doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
+    doReturn(Optional.of(notificationRedelivery))
+        .when(notificationRedeliveryRepository)
+        .findByCorrelationId(notificationResultMessage.getCorrelationId());
+    doReturn(Optional.of(eventAsSaved))
+        .when(handelseRepository)
+        .findById(notificationRedelivery.getEventId());
+    doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
 
-        notificationResultSuccessService.process(notificationResultMessage);
+    notificationResultSuccessService.process(notificationResultMessage);
 
-        verify(monitoringLogService).logStatusUpdateForCareStatusSuccess(any(Long.class), any(String.class), any(String.class),
-            any(String.class), any(String.class), captureAttemptedDeliveries.capture());
+    verify(monitoringLogService)
+        .logStatusUpdateForCareStatusSuccess(
+            any(Long.class),
+            any(String.class),
+            any(String.class),
+            any(String.class),
+            any(String.class),
+            captureAttemptedDeliveries.capture());
 
-        assertEquals(1, captureAttemptedDeliveries.getValue().intValue());
-    }
+    assertEquals(1, captureAttemptedDeliveries.getValue().intValue());
+  }
 
-    @Test
-    public void shallCreateNewEventOnProcessResult() {
-        final var notificationResultMessage = createNotificationResultMessage();
+  @Test
+  public void shallCreateNewEventOnProcessResult() {
+    final var notificationResultMessage = createNotificationResultMessage();
 
-        doReturn(eventAsSaved(notificationResultMessage.getEvent())).when(handelseRepository).save(notificationResultMessage.getEvent());
-        doReturn(Optional.empty()).when(notificationRedeliveryRepository).findByCorrelationId(notificationResultMessage.getCorrelationId());
+    doReturn(eventAsSaved(notificationResultMessage.getEvent()))
+        .when(handelseRepository)
+        .save(notificationResultMessage.getEvent());
+    doReturn(Optional.empty())
+        .when(notificationRedeliveryRepository)
+        .findByCorrelationId(notificationResultMessage.getCorrelationId());
 
-        notificationResultSuccessService.process(notificationResultMessage);
+    notificationResultSuccessService.process(notificationResultMessage);
 
-        verify(handelseRepository).save(notificationResultMessage.getEvent());
-    }
+    verify(handelseRepository).save(notificationResultMessage.getEvent());
+  }
 
-    @Test
-    public void shallUpdateEventOnProcessResult() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
+  @Test
+  public void shallUpdateEventOnProcessResult() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+    final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
 
-        final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
+    final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
 
-        doReturn(Optional.of(eventAsSaved)).when(handelseRepository).findById(notificationRedelivery.getEventId());
-        doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
+    doReturn(Optional.of(eventAsSaved))
+        .when(handelseRepository)
+        .findById(notificationRedelivery.getEventId());
+    doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
+    doReturn(Optional.of(notificationRedelivery))
+        .when(notificationRedeliveryRepository)
+        .findByCorrelationId(notificationResultMessage.getCorrelationId());
 
-        notificationResultSuccessService.process(notificationResultMessage);
+    notificationResultSuccessService.process(notificationResultMessage);
 
-        verify(handelseRepository).save(captureEvent.capture());
+    verify(handelseRepository).save(captureEvent.capture());
 
-        assertEquals(notificationResultMessage.getEvent().getDeliveryStatus().value(), captureEvent.getValue().getDeliveryStatus().value());
-    }
+    assertEquals(
+        notificationResultMessage.getEvent().getDeliveryStatus().value(),
+        captureEvent.getValue().getDeliveryStatus().value());
+  }
 
-    @Test
-    public void shallRemoveNotificationRedeliveryOnProcessResult() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
-        final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
+  @Test
+  public void shallRemoveNotificationRedeliveryOnProcessResult() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
+    final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
 
-        doReturn(Optional.of(eventAsSaved)).when(handelseRepository).findById(notificationRedelivery.getEventId());
-        doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
-        doReturn(Optional.of(notificationRedelivery)).when(notificationRedeliveryRepository)
-            .findByCorrelationId(notificationResultMessage.getCorrelationId());
+    doReturn(Optional.of(eventAsSaved))
+        .when(handelseRepository)
+        .findById(notificationRedelivery.getEventId());
+    doReturn(eventAsSaved).when(handelseRepository).save(any(Handelse.class));
+    doReturn(Optional.of(notificationRedelivery))
+        .when(notificationRedeliveryRepository)
+        .findByCorrelationId(notificationResultMessage.getCorrelationId());
 
-        notificationResultSuccessService.process(notificationResultMessage);
+    notificationResultSuccessService.process(notificationResultMessage);
 
-        verify(notificationRedeliveryRepository).delete(notificationRedelivery);
-    }
+    verify(notificationRedeliveryRepository).delete(notificationRedelivery);
+  }
 
-    private NotificationRedelivery createNotificationRedelivery(NotificationResultMessage notificationResultMessage) {
-        final var notificationRedelivery = new NotificationRedelivery();
-        notificationRedelivery.setCorrelationId(notificationResultMessage.getCorrelationId());
-        notificationRedelivery.setEventId(1000L);
-        notificationRedelivery.setAttemptedDeliveries(ATTEMPTED_DELIVERIES);
-        return notificationRedelivery;
-    }
+  private NotificationRedelivery createNotificationRedelivery(
+      NotificationResultMessage notificationResultMessage) {
+    final var notificationRedelivery = new NotificationRedelivery();
+    notificationRedelivery.setCorrelationId(notificationResultMessage.getCorrelationId());
+    notificationRedelivery.setEventId(1000L);
+    notificationRedelivery.setAttemptedDeliveries(ATTEMPTED_DELIVERIES);
+    return notificationRedelivery;
+  }
 
-    private NotificationResultMessage createNotificationResultMessage() {
-        final var notificationResultMessage = new NotificationResultMessage();
-        notificationResultMessage.setEvent(createEvent());
-        notificationResultMessage.setCorrelationId("CORRELATION_ID");
-        return notificationResultMessage;
-    }
+  private NotificationResultMessage createNotificationResultMessage() {
+    final var notificationResultMessage = new NotificationResultMessage();
+    notificationResultMessage.setEvent(createEvent());
+    notificationResultMessage.setCorrelationId("CORRELATION_ID");
+    return notificationResultMessage;
+  }
 
-    private Handelse createEvent() {
-        final var event = new Handelse();
-        event.setCode(HandelsekodEnum.SKAPAT);
-        event.setIntygsId("INTYGS_ID");
-        event.setEnhetsId("ENHETS_ID");
-        event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
-        return event;
-    }
+  private Handelse createEvent() {
+    final var event = new Handelse();
+    event.setCode(HandelsekodEnum.SKAPAT);
+    event.setIntygsId("INTYGS_ID");
+    event.setEnhetsId("ENHETS_ID");
+    event.setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
+    return event;
+  }
 
-    private Handelse eventAsSaved(Handelse event) {
-        final var savedEvent = new Handelse();
-        savedEvent.setCode(event.getCode());
-        savedEvent.setIntygsId(event.getIntygsId());
-        savedEvent.setEnhetsId(event.getEnhetsId());
-        savedEvent.setDeliveryStatus(event.getDeliveryStatus());
-        savedEvent.setId(EVENT_ID);
-        return savedEvent;
-    }
+  private Handelse eventAsSaved(Handelse event) {
+    final var savedEvent = new Handelse();
+    savedEvent.setCode(event.getCode());
+    savedEvent.setIntygsId(event.getIntygsId());
+    savedEvent.setEnhetsId(event.getEnhetsId());
+    savedEvent.setDeliveryStatus(event.getDeliveryStatus());
+    savedEvent.setId(EVENT_ID);
+    return savedEvent;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,10 +30,8 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse.Or
 @Builder
 public class OrganizationResponse {
 
-    List<Organization> result;
+  List<Organization> result;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class OrganizationResponseBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class OrganizationResponseBuilder {}
 }

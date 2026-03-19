@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,282 +40,297 @@ import se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepository;
 import se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepositoryFactory;
 
 /**
- * Implementation of DiagnosService. Supplies services for getting a diagnosis by code
- * or searching for diagnosies.
+ * Implementation of DiagnosService. Supplies services for getting a diagnosis by code or searching
+ * for diagnosies.
  *
  * @author npet
  */
 @Service
 public class DiagnosServiceImpl implements DiagnosService {
 
-    /**
-     * A regular expression for validating a 'swedish' ICD-10 code.
-     * <p/>
-     * The code should start with an upper-case letter
-     * and should be followed by two digits,
-     * then an optional '.',
-     * followed by an optional digit,
-     * finishing with an optional upper-case letter.
-     * <p/>
-     * Tested with: A11, A11.1, A11.1X, A111, A111X, A1111
-     */
-    private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[0-9A-Z]{0,1}$";
+  /**
+   * A regular expression for validating a 'swedish' ICD-10 code.
+   *
+   * <p>The code should start with an upper-case letter and should be followed by two digits, then
+   * an optional '.', followed by an optional digit, finishing with an optional upper-case letter.
+   *
+   * <p>Tested with: A11, A11.1, A11.1X, A111, A111X, A1111
+   */
+  private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[0-9A-Z]{0,1}$";
 
-    /**
-     * A regular expression for validating a specialization of ICD-10 code called KSH97P.
-     * <p/>
-     * All codes should begin with a letter followed by 2 digits, then a dash, a digit and the letter P follows where each
-     * is optional.
-     * Additionally allow F438A, which seems like a special case in the documents published by Socialstyrelsen.
-     * <p/>
-     * Tested with: A11, A11-P, A11-, A111, A111P, F438A.
-     */
-    private static final String KSH97P_CODE_REGEXP = "^([A-Z]\\d{2}\\-{0,1}\\d{0,1}[P]{0,1}|F438A)$";
+  /**
+   * A regular expression for validating a specialization of ICD-10 code called KSH97P.
+   *
+   * <p>All codes should begin with a letter followed by 2 digits, then a dash, a digit and the
+   * letter P follows where each is optional. Additionally allow F438A, which seems like a special
+   * case in the documents published by Socialstyrelsen.
+   *
+   * <p>Tested with: A11, A11-P, A11-, A111, A111P, F438A.
+   */
+  private static final String KSH97P_CODE_REGEXP = "^([A-Z]\\d{2}\\-{0,1}\\d{0,1}[P]{0,1}|F438A)$";
 
-    // CHECKSTYLE:OFF LineLength
-    private static final Pattern SCHEMATRON_DIAGNOSIS_PATTERN = Pattern.compile(
-        "^([A-EG-Ya-eg-y][0-9]{2}[A-Za-z0-9-]*|[Zz][0-689][0-9][A-Za-z0-9-]*|[Zz]7[0-24-9][A-Za-z0-9-]*|[Zz]73[A-Za-z0-9-]+|[Ff][0-9]{2}[A-Za-z0-9-]+)$");
-    // CHECKSTYLE:ON LineLength
+  // CHECKSTYLE:OFF LineLength
+  private static final Pattern SCHEMATRON_DIAGNOSIS_PATTERN =
+      Pattern.compile(
+          "^([A-EG-Ya-eg-y][0-9]{2}[A-Za-z0-9-]*|[Zz][0-689][0-9][A-Za-z0-9-]*|[Zz]7[0-24-9][A-Za-z0-9-]*|[Zz]73[A-Za-z0-9-]+|[Ff][0-9]{2}[A-Za-z0-9-]+)$");
+  // CHECKSTYLE:ON LineLength
 
-    private static final String COMMA = ",";
+  private static final String COMMA = ",";
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiagnosServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DiagnosServiceImpl.class);
 
-    @Value("${icd10se.diagnos.code.files}")
-    private String icd10seCodeFilesStr;
+  @Value("${icd10se.diagnos.code.files}")
+  private String icd10seCodeFilesStr;
 
-    @Value("${ksh97p.diagnos.code.files}")
-    private String ksh97pCodeFilesStr;
+  @Value("${ksh97p.diagnos.code.files}")
+  private String ksh97pCodeFilesStr;
 
-    @Autowired
-    private DiagnosRepositoryFactory diagnosRepositoryFactory;
+  @Autowired private DiagnosRepositoryFactory diagnosRepositoryFactory;
 
-    private DiagnosRepository icd10seDiagnosRepo;
+  private DiagnosRepository icd10seDiagnosRepo;
 
-    private DiagnosRepository ksh97pDiagnosRepo;
+  private DiagnosRepository ksh97pDiagnosRepo;
 
-    @PostConstruct
-    public void initDiagnosRepository() {
-        this.icd10seDiagnosRepo = createDiagnosRepo(icd10seCodeFilesStr, Diagnoskodverk.ICD_10_SE.getCodeSystemName(),
+  @PostConstruct
+  public void initDiagnosRepository() {
+    this.icd10seDiagnosRepo =
+        createDiagnosRepo(
+            icd10seCodeFilesStr,
+            Diagnoskodverk.ICD_10_SE.getCodeSystemName(),
             StandardCharsets.UTF_8);
-        this.ksh97pDiagnosRepo = createDiagnosRepo(ksh97pCodeFilesStr, Diagnoskodverk.KSH_97_P.getCodeSystemName(),
+    this.ksh97pDiagnosRepo =
+        createDiagnosRepo(
+            ksh97pCodeFilesStr,
+            Diagnoskodverk.KSH_97_P.getCodeSystemName(),
             StandardCharsets.ISO_8859_1);
+  }
+
+  private DiagnosRepository createDiagnosRepo(
+      String codeFilesStr, String repoName, Charset fileEncoding) {
+    Assert.hasText(
+        codeFilesStr,
+        "Can not populate "
+            + repoName
+            + " DiagnosRepository since no diagnosis code files was supplied");
+
+    String[] splittedcodeFiles = codeFilesStr.split(COMMA);
+    return diagnosRepositoryFactory.createAndInitDiagnosRepository(
+        Arrays.asList(splittedcodeFiles), fileEncoding);
+  }
+
+  @Override
+  public DiagnosResponse getDiagnosisByCode(String code, String codeSystemStr) {
+
+    if (!validateDiagnosisCode(code, codeSystemStr)) {
+      return DiagnosResponse.invalidCode();
     }
 
-    private DiagnosRepository createDiagnosRepo(String codeFilesStr, String repoName, Charset fileEncoding) {
-        Assert.hasText(codeFilesStr, "Can not populate " + repoName + " DiagnosRepository since no diagnosis code files was supplied");
+    Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
 
-        String[] splittedcodeFiles = codeFilesStr.split(COMMA);
-        return diagnosRepositoryFactory.createAndInitDiagnosRepository(Arrays.asList(splittedcodeFiles), fileEncoding);
+    return findDiagnosisesByCode(code, codeSystem);
+  }
+
+  @Override
+  public DiagnosResponse getDiagnosisByCode(String code, Diagnoskodverk codeSystem) {
+
+    if (!validateDiagnosisCode(code, codeSystem)) {
+      return DiagnosResponse.invalidCode();
     }
 
-    @Override
-    public DiagnosResponse getDiagnosisByCode(String code, String codeSystemStr) {
+    return findDiagnosisesByCode(code, codeSystem);
+  }
 
-        if (!validateDiagnosisCode(code, codeSystemStr)) {
-            return DiagnosResponse.invalidCode();
-        }
+  @Override
+  public boolean validateDiagnosisCodeFormat(String code) {
+    return code != null && SCHEMATRON_DIAGNOSIS_PATTERN.matcher(code).matches();
+  }
 
-        Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
+  private DiagnosResponse findDiagnosisesByCode(String code, Diagnoskodverk codeSystem) {
 
-        return findDiagnosisesByCode(code, codeSystem);
+    List<Diagnos> matches;
+
+    switch (codeSystem) {
+      case ICD_10_SE:
+        matches = icd10seDiagnosRepo.getDiagnosesByCode(code);
+        break;
+      case KSH_97_P:
+        matches = ksh97pDiagnosRepo.getDiagnosesByCode(code);
+        break;
+      default:
+        LOG.warn("Unknown code system '{}'", codeSystem);
+        return DiagnosResponse.invalidCodesystem();
     }
 
-    @Override
-    public DiagnosResponse getDiagnosisByCode(String code, Diagnoskodverk codeSystem) {
-
-        if (!validateDiagnosisCode(code, codeSystem)) {
-            return DiagnosResponse.invalidCode();
-        }
-
-        return findDiagnosisesByCode(code, codeSystem);
+    if (matches.isEmpty()) {
+      return DiagnosResponse.notFound();
     }
 
-    @Override
-    public boolean validateDiagnosisCodeFormat(String code) {
-        return code != null && SCHEMATRON_DIAGNOSIS_PATTERN.matcher(code).matches();
+    return DiagnosResponse.ok(matches, false);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.inera.intyg.webcert.web.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
+   */
+  @Override
+  public DiagnosResponse searchDiagnosisByCode(
+      String codeFragment, String codeSystemStr, int nbrOfResults) {
+
+    // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as
+    // possible
+    Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
+
+    Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
+
+    if (!validateDiagnosisCode(codeFragment, codeSystem)) {
+      return DiagnosResponse.invalidCode();
     }
 
-    private DiagnosResponse findDiagnosisesByCode(String code, Diagnoskodverk codeSystem) {
+    List<Diagnos> matches;
 
-        List<Diagnos> matches;
-
-        switch (codeSystem) {
-            case ICD_10_SE:
-                matches = icd10seDiagnosRepo.getDiagnosesByCode(code);
-                break;
-            case KSH_97_P:
-                matches = ksh97pDiagnosRepo.getDiagnosesByCode(code);
-                break;
-            default:
-                LOG.warn("Unknown code system '{}'", codeSystem);
-                return DiagnosResponse.invalidCodesystem();
-        }
-
-        if (matches.isEmpty()) {
-            return DiagnosResponse.notFound();
-        }
-
-        return DiagnosResponse.ok(matches, false);
+    switch (codeSystem) {
+      case ICD_10_SE:
+        matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
+        break;
+      case KSH_97_P:
+        matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
+        break;
+      default:
+        LOG.warn("Unknown code system '{}'", codeSystem);
+        return DiagnosResponse.invalidCodesystem();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.webcert.web.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
-     */
-    @Override
-    public DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystemStr, int nbrOfResults) {
-
-        // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as possible
-        Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
-
-        Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
-
-        if (!validateDiagnosisCode(codeFragment, codeSystem)) {
-            return DiagnosResponse.invalidCode();
-        }
-
-        List<Diagnos> matches;
-
-        switch (codeSystem) {
-            case ICD_10_SE:
-                matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
-                break;
-            case KSH_97_P:
-                matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
-                break;
-            default:
-                LOG.warn("Unknown code system '{}'", codeSystem);
-                return DiagnosResponse.invalidCodesystem();
-        }
-
-        if (matches.isEmpty()) {
-            return DiagnosResponse.notFound();
-        }
-
-        if (matches.size() <= nbrOfResults) {
-            return DiagnosResponse.ok(matches, false);
-        }
-
-        LOG.debug("Returning {} diagnosises out of a match of {}", nbrOfResults, matches.size());
-
-        return DiagnosResponse.ok(matches.subList(0, nbrOfResults), true);
+    if (matches.isEmpty()) {
+      return DiagnosResponse.notFound();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.intyg.webcert.web.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
-     */
-    @Override
-    public DiagnosResponse searchDiagnosisByDescription(String searchString, String codeSystemStr, int nbrOfResults) {
-
-        // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as possible
-        Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
-
-        if (Strings.nullToEmpty(searchString).trim().isEmpty()) {
-            return DiagnosResponse.invalidSearchString();
-        }
-
-        Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
-        List<Diagnos> matches;
-
-        if (codeSystem == null) {
-            LOG.warn("Code system is null");
-            return DiagnosResponse.invalidCodesystem();
-        }
-
-        switch (codeSystem) {
-            case ICD_10_SE:
-                matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
-                matches = filterResultList(matches, Diagnoskodverk.ICD_10_SE);
-                break;
-            case KSH_97_P:
-                matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
-                matches = filterResultList(matches, Diagnoskodverk.KSH_97_P);
-                break;
-            default:
-                LOG.warn("Unknown code system '{}'", codeSystem);
-                return DiagnosResponse.invalidCodesystem();
-        }
-
-        if (matches.isEmpty()) {
-            return DiagnosResponse.notFound();
-        }
-
-        if (matches.size() <= nbrOfResults) {
-            return DiagnosResponse.ok(matches, false);
-        }
-
-        LOG.debug("Returning {} diagnosises out of a match of {}", nbrOfResults, matches.size());
-
-        return DiagnosResponse.ok(matches.subList(0, nbrOfResults), true);
+    if (matches.size() <= nbrOfResults) {
+      return DiagnosResponse.ok(matches, false);
     }
 
-    /**
-     * Perform a regex validation on the diagnosis code, the code
-     * is trimmed before checked.
-     *
-     * @return true if the diagnosisCode matches the regexp
-     */
-    @Override
-    public boolean validateDiagnosisCode(String diagnosisCode, String codeSystemStr) {
+    LOG.debug("Returning {} diagnosises out of a match of {}", nbrOfResults, matches.size());
 
-        if (Strings.nullToEmpty(diagnosisCode).trim().isEmpty()) {
-            LOG.debug("Could not validate code since it is null or empty");
-            return false;
-        }
+    return DiagnosResponse.ok(matches.subList(0, nbrOfResults), true);
+  }
 
-        Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.inera.intyg.webcert.web.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
+   */
+  @Override
+  public DiagnosResponse searchDiagnosisByDescription(
+      String searchString, String codeSystemStr, int nbrOfResults) {
 
-        return validateDiagnosisCode(diagnosisCode, codeSystem);
+    // Since we call repo with nbrOfResults + 1 we want to check for integer overflow as early as
+    // possible
+    Assert.isTrue(nbrOfResults + 1 > 1, "nbrOfResults must be larger that 0");
+
+    if (Strings.nullToEmpty(searchString).trim().isEmpty()) {
+      return DiagnosResponse.invalidSearchString();
     }
 
-    private boolean validateDiagnosisCode(String diagnosisCode, Diagnoskodverk codeSystem) {
+    Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
+    List<Diagnos> matches;
 
-        if (codeSystem == null) {
-            LOG.warn("Tried to validate diagnosis code, but supplied Diagnoskodverk was null");
-            return false;
-        }
-
-        String regExp;
-
-        switch (codeSystem) {
-            case ICD_10_SE:
-                regExp = ICD10_CODE_REGEXP;
-                break;
-            case KSH_97_P:
-                regExp = KSH97P_CODE_REGEXP;
-                break;
-            default:
-                LOG.warn("Tried to validate diagnosis code using unknown code system '{}'", codeSystem);
-                return false;
-        }
-
-        Pattern p = Pattern.compile(regExp);
-        Matcher m = p.matcher(diagnosisCode.trim());
-        return m.matches();
+    if (codeSystem == null) {
+      LOG.warn("Code system is null");
+      return DiagnosResponse.invalidCodesystem();
     }
 
-    private Diagnoskodverk getDiagnoskodverk(String codeSystemStr) {
-
-        if (Strings.nullToEmpty(codeSystemStr).trim().isEmpty()) {
-            LOG.debug("Can not validate diagnosis code without code system");
-            return null;
-        }
-
-        try {
-            return Diagnoskodverk.valueOf(codeSystemStr);
-        } catch (IllegalArgumentException e) {
-            LOG.warn("Can not validate diagnosis code, unknown code system '{}'", codeSystemStr);
-            return null;
-        }
+    switch (codeSystem) {
+      case ICD_10_SE:
+        matches =
+            icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
+        matches = filterResultList(matches, Diagnoskodverk.ICD_10_SE);
+        break;
+      case KSH_97_P:
+        matches =
+            ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
+        matches = filterResultList(matches, Diagnoskodverk.KSH_97_P);
+        break;
+      default:
+        LOG.warn("Unknown code system '{}'", codeSystem);
+        return DiagnosResponse.invalidCodesystem();
     }
 
-    private List<Diagnos> filterResultList(final List<Diagnos> diagnosList, final Diagnoskodverk diagnoskodverk) {
-        return diagnosList.stream()
-            .filter(diagnos -> validateDiagnosisCode(diagnos.getKod(), diagnoskodverk))
-            .collect(Collectors.toList());
+    if (matches.isEmpty()) {
+      return DiagnosResponse.notFound();
     }
+
+    if (matches.size() <= nbrOfResults) {
+      return DiagnosResponse.ok(matches, false);
+    }
+
+    LOG.debug("Returning {} diagnosises out of a match of {}", nbrOfResults, matches.size());
+
+    return DiagnosResponse.ok(matches.subList(0, nbrOfResults), true);
+  }
+
+  /**
+   * Perform a regex validation on the diagnosis code, the code is trimmed before checked.
+   *
+   * @return true if the diagnosisCode matches the regexp
+   */
+  @Override
+  public boolean validateDiagnosisCode(String diagnosisCode, String codeSystemStr) {
+
+    if (Strings.nullToEmpty(diagnosisCode).trim().isEmpty()) {
+      LOG.debug("Could not validate code since it is null or empty");
+      return false;
+    }
+
+    Diagnoskodverk codeSystem = getDiagnoskodverk(codeSystemStr);
+
+    return validateDiagnosisCode(diagnosisCode, codeSystem);
+  }
+
+  private boolean validateDiagnosisCode(String diagnosisCode, Diagnoskodverk codeSystem) {
+
+    if (codeSystem == null) {
+      LOG.warn("Tried to validate diagnosis code, but supplied Diagnoskodverk was null");
+      return false;
+    }
+
+    String regExp;
+
+    switch (codeSystem) {
+      case ICD_10_SE:
+        regExp = ICD10_CODE_REGEXP;
+        break;
+      case KSH_97_P:
+        regExp = KSH97P_CODE_REGEXP;
+        break;
+      default:
+        LOG.warn("Tried to validate diagnosis code using unknown code system '{}'", codeSystem);
+        return false;
+    }
+
+    Pattern p = Pattern.compile(regExp);
+    Matcher m = p.matcher(diagnosisCode.trim());
+    return m.matches();
+  }
+
+  private Diagnoskodverk getDiagnoskodverk(String codeSystemStr) {
+
+    if (Strings.nullToEmpty(codeSystemStr).trim().isEmpty()) {
+      LOG.debug("Can not validate diagnosis code without code system");
+      return null;
+    }
+
+    try {
+      return Diagnoskodverk.valueOf(codeSystemStr);
+    } catch (IllegalArgumentException e) {
+      LOG.warn("Can not validate diagnosis code, unknown code system '{}'", codeSystemStr);
+      return null;
+    }
+  }
+
+  private List<Diagnos> filterResultList(
+      final List<Diagnos> diagnosList, final Diagnoskodverk diagnoskodverk) {
+    return diagnosList.stream()
+        .filter(diagnos -> validateDiagnosisCode(diagnos.getKod(), diagnoskodverk))
+        .collect(Collectors.toList());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -59,100 +59,114 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiveAnswerResponderImplTest {
 
-    private static final Long QUESTION_ID = 1234L;
+  private static final Long QUESTION_ID = 1234L;
 
-    private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
+  private static final String INTEGRERAD_ENHET = "SE4815162344-1A02";
 
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
+  private static final Personnummer PATIENT_ID =
+      Personnummer.createPersonnummer("19121212-1212").get();
 
-    @Mock
-    private FragaSvarService mockFragaSvarService;
+  @Mock private FragaSvarService mockFragaSvarService;
 
-    @Mock
-    private NotificationService mockNotificationService;
+  @Mock private NotificationService mockNotificationService;
 
-    @Mock
-    private CertificateEventService certificateEventService;
+  @Mock private CertificateEventService certificateEventService;
 
-    @InjectMocks
-    private ReceiveAnswerResponderImpl receiveAnswerResponder;
+  @InjectMocks private ReceiveAnswerResponderImpl receiveAnswerResponder;
 
-    @Test
-    public void testReceiveAnswerOK() {
+  @Test
+  public void testReceiveAnswerOK() {
 
-        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now(),
+    FragaSvar fragaSvar =
+        buildFraga(
+            QUESTION_ID,
+            "That is the question",
+            Amne.ARBETSTIDSFORLAGGNING,
+            LocalDateTime.now(),
             INTEGRERAD_ENHET,
             Status.PENDING_INTERNAL_ACTION);
-        when(mockFragaSvarService.processIncomingAnswer(anyLong(), anyString(), any(LocalDateTime.class))).thenReturn(fragaSvar);
+    when(mockFragaSvarService.processIncomingAnswer(
+            anyLong(), anyString(), any(LocalDateTime.class)))
+        .thenReturn(fragaSvar);
 
-        ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
-        ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
+    ReceiveMedicalCertificateAnswerType request =
+        createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
+    ReceiveMedicalCertificateAnswerResponseType response =
+        receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
 
-        // should place notification on queue
-        verify(mockNotificationService).sendNotificationForAnswerRecieved(any(FragaSvar.class));
-        verify(certificateEventService)
-            .createCertificateEvent(anyString(), anyString(), eq(EventCode.NYSVFM), anyString());
+    // should place notification on queue
+    verify(mockNotificationService).sendNotificationForAnswerRecieved(any(FragaSvar.class));
+    verify(certificateEventService)
+        .createCertificateEvent(anyString(), anyString(), eq(EventCode.NYSVFM), anyString());
 
-        assertNotNull(response);
-        assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+    assertNotNull(response);
+    assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
+  }
+
+  @Test
+  public void testReceiveAnswerValidationError() {
+    ReceiveMedicalCertificateAnswerType request =
+        createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
+    request.getAnswer().setSvar(null); // invalid
+    ReceiveMedicalCertificateAnswerResponseType response =
+        receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
+
+    verifyNoInteractions(mockNotificationService);
+    verifyNoInteractions(mockFragaSvarService);
+
+    assertNotNull(response);
+    assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
+    assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
+    assertEquals("Missing svar element.", response.getResult().getErrorText());
+  }
+
+  private ReceiveMedicalCertificateAnswerType createRequest(String answerFile) {
+    ReceiveMedicalCertificateAnswerType request = new ReceiveMedicalCertificateAnswerType();
+    AnswerFromFkType answer = inflateAnswer(answerFile);
+    request.setAnswer(answer);
+    return request;
+  }
+
+  private AnswerFromFkType inflateAnswer(String filePath) {
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(AnswerFromFkType.class);
+      Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+      AnswerFromFkType answer =
+          unmarshaller
+              .unmarshal(
+                  new StreamSource(new ClassPathResource(filePath).getInputStream()),
+                  AnswerFromFkType.class)
+              .getValue();
+      return answer;
+    } catch (Exception e) {
+      return null;
     }
+  }
 
-    @Test
-    public void testReceiveAnswerValidationError() {
-        ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
-        request.getAnswer().setSvar(null); // invalid
-        ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
+  private FragaSvar buildFraga(
+      Long id,
+      String frageText,
+      Amne amne,
+      LocalDateTime fragaSkickadDatum,
+      String vardpersonEnhetsId,
+      Status status) {
+    FragaSvar f = new FragaSvar();
+    f.setStatus(status);
+    f.setAmne(amne);
+    f.setExternReferens("<fk-extern-referens>");
+    f.setInternReferens(id);
+    f.setFrageSkickadDatum(fragaSkickadDatum);
+    f.setFrageText(frageText);
 
-        verifyNoInteractions(mockNotificationService);
-        verifyNoInteractions(mockFragaSvarService);
-
-        assertNotNull(response);
-        assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
-        assertEquals("Missing svar element.", response.getResult().getErrorText());
-    }
-
-    private ReceiveMedicalCertificateAnswerType createRequest(String answerFile) {
-        ReceiveMedicalCertificateAnswerType request = new ReceiveMedicalCertificateAnswerType();
-        AnswerFromFkType answer = inflateAnswer(answerFile);
-        request.setAnswer(answer);
-        return request;
-    }
-
-    private AnswerFromFkType inflateAnswer(String filePath) {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(AnswerFromFkType.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            AnswerFromFkType answer = unmarshaller
-                .unmarshal(new StreamSource(new ClassPathResource(filePath).getInputStream()),
-                    AnswerFromFkType.class)
-                .getValue();
-            return answer;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private FragaSvar buildFraga(Long id, String frageText, Amne amne, LocalDateTime fragaSkickadDatum, String vardpersonEnhetsId,
-        Status status) {
-        FragaSvar f = new FragaSvar();
-        f.setStatus(status);
-        f.setAmne(amne);
-        f.setExternReferens("<fk-extern-referens>");
-        f.setInternReferens(id);
-        f.setFrageSkickadDatum(fragaSkickadDatum);
-        f.setFrageText(frageText);
-
-        IntygsReferens intygsReferens = new IntygsReferens();
-        intygsReferens.setIntygsId("<intygsId>");
-        intygsReferens.setIntygsTyp("fk7263");
-        intygsReferens.setPatientId(PATIENT_ID);
-        f.setIntygsReferens(intygsReferens);
-        f.setKompletteringar(new HashSet<Komplettering>());
-        f.setVardperson(new Vardperson());
-        f.getVardperson().setEnhetsId(vardpersonEnhetsId);
-        f.getVardperson().setEnhetsnamn("WebCert-Integration Enhet 1");
-        return f;
-    }
-
+    IntygsReferens intygsReferens = new IntygsReferens();
+    intygsReferens.setIntygsId("<intygsId>");
+    intygsReferens.setIntygsTyp("fk7263");
+    intygsReferens.setPatientId(PATIENT_ID);
+    f.setIntygsReferens(intygsReferens);
+    f.setKompletteringar(new HashSet<Komplettering>());
+    f.setVardperson(new Vardperson());
+    f.getVardperson().setEnhetsId(vardpersonEnhetsId);
+    f.getVardperson().setEnhetsnamn("WebCert-Integration Enhet 1");
+    return f;
+  }
 }

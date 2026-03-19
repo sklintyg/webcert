@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,38 +36,34 @@ import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeSe
 @ExtendWith(MockitoExtension.class)
 class HandleQuestionAggregatorTest {
 
-    private static final String QUESTION_ID = "questionId";
-    @Mock
-    private HandleQuestionFacadeService handleQuestionFromWC;
-    @Mock
-    private HandleQuestionFromCertificateService handleQuestionFromCS;
-    @Mock
-    private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
+  private static final String QUESTION_ID = "questionId";
+  @Mock private HandleQuestionFacadeService handleQuestionFromWC;
+  @Mock private HandleQuestionFromCertificateService handleQuestionFromCS;
+  @Mock private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
 
-    private HandleQuestionAggregator handleQuestionAggregator;
+  private HandleQuestionAggregator handleQuestionAggregator;
 
-    @BeforeEach
-    void setUp() {
-        handleQuestionAggregator = new HandleQuestionAggregator(
-            handleQuestionFromWC, handleQuestionFromCS
-        );
-    }
+  @BeforeEach
+  void setUp() {
+    handleQuestionAggregator =
+        new HandleQuestionAggregator(handleQuestionFromWC, handleQuestionFromCS);
+  }
 
-    @Test
-    void shallReturnQuestionsFromCSIfResponseFromCSIsNotNull() {
-        doReturn(Question.builder().build()).when(handleQuestionFromCS).handle(QUESTION_ID, false);
-        handleQuestionAggregator.handle(QUESTION_ID, false);
-        verifyNoInteractions(handleQuestionFromWC);
-        verify(handleQuestionFromCS).handle(QUESTION_ID, false);
-    }
+  @Test
+  void shallReturnQuestionsFromCSIfResponseFromCSIsNotNull() {
+    doReturn(Question.builder().build()).when(handleQuestionFromCS).handle(QUESTION_ID, false);
+    handleQuestionAggregator.handle(QUESTION_ID, false);
+    verifyNoInteractions(handleQuestionFromWC);
+    verify(handleQuestionFromCS).handle(QUESTION_ID, false);
+  }
 
-    @Test
-    void shallReturnQuestionsFromWebcertIfResponseFromCSIsNull() {
-        final var expectedQuestion = Question.builder().build();
-        doReturn(null).when(handleQuestionFromCS).handle(QUESTION_ID, false);
-        doReturn(expectedQuestion).when(handleQuestionFromWC).handle(QUESTION_ID, false);
+  @Test
+  void shallReturnQuestionsFromWebcertIfResponseFromCSIsNull() {
+    final var expectedQuestion = Question.builder().build();
+    doReturn(null).when(handleQuestionFromCS).handle(QUESTION_ID, false);
+    doReturn(expectedQuestion).when(handleQuestionFromWC).handle(QUESTION_ID, false);
 
-        final var actualResult = handleQuestionAggregator.handle(QUESTION_ID, false);
-        assertEquals(expectedQuestion, actualResult);
-    }
+    final var actualResult = handleQuestionAggregator.handle(QUESTION_ID, false);
+    assertEquals(expectedQuestion, actualResult);
+  }
 }

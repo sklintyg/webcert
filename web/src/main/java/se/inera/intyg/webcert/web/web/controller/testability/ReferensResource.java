@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,42 +37,45 @@ import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository
 @Path("referens")
 public class ReferensResource {
 
-    public static final Logger LOG = LoggerFactory.getLogger(ReferensResource.class);
+  public static final Logger LOG = LoggerFactory.getLogger(ReferensResource.class);
 
-    @Autowired
-    private ReferensRepository referensRepository;
+  @Autowired private ReferensRepository referensRepository;
 
-    @POST
-    @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response insertReferens(Referens referens) {
-        Referens savedReferens = referensRepository.save(referens);
-        LOG.info("Created Referens with id {} using testability API", savedReferens.getId());
-        return Response.ok().build();
-    }
+  @POST
+  @Path("/")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response insertReferens(Referens referens) {
+    Referens savedReferens = referensRepository.save(referens);
+    LOG.info("Created Referens with id {} using testability API", savedReferens.getId());
+    return Response.ok().build();
+  }
 
-    @GET
-    @Path("/referensCount")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Long getEventCountForCertificateIds(List<String> certificateIds) {
-        final var referensList = (List<Referens>) referensRepository.findAll();
-        return referensList.stream().filter(referens -> certificateIds.contains(referens.getIntygsId())).count();
-    }
+  @GET
+  @Path("/referensCount")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Long getEventCountForCertificateIds(List<String> certificateIds) {
+    final var referensList = (List<Referens>) referensRepository.findAll();
+    return referensList.stream()
+        .filter(referens -> certificateIds.contains(referens.getIntygsId()))
+        .count();
+  }
 
-    @DELETE
-    @Path("/")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deletReferenserByCertificateIds(List<String> certificateIds) {
-        final var referensList = (List<Referens>) referensRepository.findAll();
-        final var referensForDeletion = referensList.stream()
+  @DELETE
+  @Path("/")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deletReferenserByCertificateIds(List<String> certificateIds) {
+    final var referensList = (List<Referens>) referensRepository.findAll();
+    final var referensForDeletion =
+        referensList.stream()
             .filter(referens -> certificateIds.contains(referens.getIntygsId()))
             .collect(Collectors.toList());
-        referensRepository.deleteAll(referensForDeletion);
-        LOG.info("Deleted {} referenser based on certificateIds using testability API", referensForDeletion.size());
+    referensRepository.deleteAll(referensForDeletion);
+    LOG.info(
+        "Deleted {} referenser based on certificateIds using testability API",
+        referensForDeletion.size());
 
-        return Response.ok().build();
-    }
-
+    return Response.ok().build();
+  }
 }

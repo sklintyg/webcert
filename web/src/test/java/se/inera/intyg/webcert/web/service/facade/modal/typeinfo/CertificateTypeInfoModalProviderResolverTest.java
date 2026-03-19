@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,96 +26,91 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
 class CertificateTypeInfoModalProviderResolverTest {
-    
-    @Test
-    void shouldReturnDbProviderForDbCertificateType() {
-        final var certificateType = "db";
 
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+  @Test
+  void shouldReturnDbProviderForDbCertificateType() {
+    final var certificateType = "db";
 
-        assertAll(
-            () -> assertNotNull(provider),
-            () -> assertInstanceOf(DbTypeInfoModalProvider.class, provider)
-        );
-    }
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
 
-    @Test
-    void shouldReturnDbProviderForDbCertificateTypeUpperCase() {
-        final var certificateType = "DB";
+    assertAll(
+        () -> assertNotNull(provider),
+        () -> assertInstanceOf(DbTypeInfoModalProvider.class, provider));
+  }
 
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+  @Test
+  void shouldReturnDbProviderForDbCertificateTypeUpperCase() {
+    final var certificateType = "DB";
 
-        assertAll(
-            () -> assertNotNull(provider),
-            () -> assertInstanceOf(DbTypeInfoModalProvider.class, provider)
-        );
-    }
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
 
-    @Test
-    void shouldReturnDoiProviderForDoiCertificateType() {
-        final var certificateType = "doi";
+    assertAll(
+        () -> assertNotNull(provider),
+        () -> assertInstanceOf(DbTypeInfoModalProvider.class, provider));
+  }
 
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+  @Test
+  void shouldReturnDoiProviderForDoiCertificateType() {
+    final var certificateType = "doi";
 
-        assertAll(
-            () -> assertNotNull(provider),
-            () -> assertInstanceOf(DoiTypeInfoModalProvider.class, provider)
-        );
-    }
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
 
-    @Test
-    void shouldReturnDoiProviderForDoiCertificateTypeUpperCase() {
-        final var certificateType = "DOI";
+    assertAll(
+        () -> assertNotNull(provider),
+        () -> assertInstanceOf(DoiTypeInfoModalProvider.class, provider));
+  }
 
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+  @Test
+  void shouldReturnDoiProviderForDoiCertificateTypeUpperCase() {
+    final var certificateType = "DOI";
 
-        assertAll(
-            () -> assertNotNull(provider),
-            () -> assertInstanceOf(DoiTypeInfoModalProvider.class, provider)
-        );
-    }
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
 
-    @Test
-    void shouldReturnNullForUnknownCertificateType() {
-        final var certificateType = "ag114";
+    assertAll(
+        () -> assertNotNull(provider),
+        () -> assertInstanceOf(DoiTypeInfoModalProvider.class, provider));
+  }
 
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+  @Test
+  void shouldReturnNullForUnknownCertificateType() {
+    final var certificateType = "ag114";
 
-        assertNull(provider);
-    }
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
 
-    @Test
-    void shouldReturnNullForNullCertificateType() {
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(null);
+    assertNull(provider);
+  }
 
-        assertNull(provider);
-    }
+  @Test
+  void shouldReturnNullForNullCertificateType() {
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(null);
 
-    @Test
-    void shouldReturnNullForEmptyCertificateType() {
-        final var certificateType = "";
+    assertNull(provider);
+  }
 
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+  @Test
+  void shouldReturnNullForEmptyCertificateType() {
+    final var certificateType = "";
 
-        assertNull(provider);
-    }
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
 
-    @Test
-    void shouldReturnNullForLuaenaCertificateType() {
-        final var certificateType = "luae_na";
+    assertNull(provider);
+  }
 
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+  @Test
+  void shouldReturnNullForLuaenaCertificateType() {
+    final var certificateType = "luae_na";
 
-        assertNull(provider);
-    }
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
 
-    @Test
-    void shouldReturnNullForLisjpCertificateType() {
-        final var certificateType = "lisjp";
+    assertNull(provider);
+  }
 
-        final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+  @Test
+  void shouldReturnNullForLisjpCertificateType() {
+    final var certificateType = "lisjp";
 
-        assertNull(provider);
-    }
+    final var provider = CertificateTypeInfoModalProviderResolver.getModalProvider(certificateType);
+
+    assertNull(provider);
+  }
 }
-

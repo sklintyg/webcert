@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,7 +24,4 @@ import java.util.Map;
 record CareUnitData(
     List<String> careUnitIds,
     Map<String, List<String>> careUnitToSubUnits,
-    Map<String, String> careUnitToCareProviderId
-) {
-
-}
+    Map<String, String> careUnitToCareProviderId) {}

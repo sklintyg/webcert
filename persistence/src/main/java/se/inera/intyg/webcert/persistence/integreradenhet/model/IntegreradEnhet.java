@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.persistence.integreradenhet.model;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.Type;
+import java.time.LocalDateTime;
 
 /**
  * Entity for a Vardenhet that uses to integrate with Webcert using journaling systems.
@@ -36,111 +35,125 @@ import org.hibernate.annotations.Type;
 @Table(name = "INTEGRERADE_VARDENHETER")
 public class IntegreradEnhet {
 
-    @Id
-    @Column(name = "ENHETS_ID")
-    private String enhetsId;
+  @Id
+  @Column(name = "ENHETS_ID")
+  private String enhetsId;
 
-    @Column(name = "ENHETS_NAMN")
-    private String enhetsNamn;
+  @Column(name = "ENHETS_NAMN")
+  private String enhetsNamn;
 
-    @Column(name = "VARDGIVAR_ID")
-    private String vardgivarId;
+  @Column(name = "VARDGIVAR_ID")
+  private String vardgivarId;
 
-    @Column(name = "VARDGIVAR_NAMN")
-    private String vardgivarNamn;
+  @Column(name = "VARDGIVAR_NAMN")
+  private String vardgivarNamn;
 
-    @Column(name = "SKAPAD_DATUM")
-    private LocalDateTime skapadDatum;
+  @Column(name = "SKAPAD_DATUM")
+  private LocalDateTime skapadDatum;
 
-    @Column(name = "SENASTE_KONTROLL_DATUM")
-    private LocalDateTime senasteKontrollDatum;
+  @Column(name = "SENASTE_KONTROLL_DATUM")
+  private LocalDateTime senasteKontrollDatum;
 
-    @Column(name = "SCHEMA_VERSION_1")
-    private boolean schemaVersion1;
+  @Column(name = "SCHEMA_VERSION_1")
+  private boolean schemaVersion1;
 
-    @Column(name = "SCHEMA_VERSION_3")
-    private boolean schemaVersion3;
+  @Column(name = "SCHEMA_VERSION_3")
+  private boolean schemaVersion3;
 
-    @PrePersist
-    void onPrePersist() {
-        if (skapadDatum == null) {
-            skapadDatum = LocalDateTime.now();
-        }
+  @PrePersist
+  void onPrePersist() {
+    if (skapadDatum == null) {
+      skapadDatum = LocalDateTime.now();
     }
+  }
 
-    @PreUpdate
-    void onPreUpdate() {
-        senasteKontrollDatum = LocalDateTime.now();
-    }
+  @PreUpdate
+  void onPreUpdate() {
+    senasteKontrollDatum = LocalDateTime.now();
+  }
 
-    @Override
-    public String toString() {
-        return "IntegreradEnhet [enhetsId=" + enhetsId + ", enhetsNamn=" + enhetsNamn + ", vardgivarId=" + vardgivarId + ", vardgivarNamn="
-            + vardgivarNamn + ", skapadDatum=" + skapadDatum + ", senasteKontrollDatum=" + senasteKontrollDatum + ", version1="
-            + isSchemaVersion1() + ", version2=" + isSchemaVersion3() + "]";
-    }
+  @Override
+  public String toString() {
+    return "IntegreradEnhet [enhetsId="
+        + enhetsId
+        + ", enhetsNamn="
+        + enhetsNamn
+        + ", vardgivarId="
+        + vardgivarId
+        + ", vardgivarNamn="
+        + vardgivarNamn
+        + ", skapadDatum="
+        + skapadDatum
+        + ", senasteKontrollDatum="
+        + senasteKontrollDatum
+        + ", version1="
+        + isSchemaVersion1()
+        + ", version2="
+        + isSchemaVersion3()
+        + "]";
+  }
 
-    public String getEnhetsId() {
-        return enhetsId;
-    }
+  public String getEnhetsId() {
+    return enhetsId;
+  }
 
-    public void setEnhetsId(String enhetsId) {
-        this.enhetsId = enhetsId;
-    }
+  public void setEnhetsId(String enhetsId) {
+    this.enhetsId = enhetsId;
+  }
 
-    public String getEnhetsNamn() {
-        return enhetsNamn;
-    }
+  public String getEnhetsNamn() {
+    return enhetsNamn;
+  }
 
-    public void setEnhetsNamn(String enhetsNamn) {
-        this.enhetsNamn = enhetsNamn;
-    }
+  public void setEnhetsNamn(String enhetsNamn) {
+    this.enhetsNamn = enhetsNamn;
+  }
 
-    public String getVardgivarId() {
-        return vardgivarId;
-    }
+  public String getVardgivarId() {
+    return vardgivarId;
+  }
 
-    public void setVardgivarId(String vardgivarId) {
-        this.vardgivarId = vardgivarId;
-    }
+  public void setVardgivarId(String vardgivarId) {
+    this.vardgivarId = vardgivarId;
+  }
 
-    public String getVardgivarNamn() {
-        return vardgivarNamn;
-    }
+  public String getVardgivarNamn() {
+    return vardgivarNamn;
+  }
 
-    public void setVardgivarNamn(String vardgivarNamn) {
-        this.vardgivarNamn = vardgivarNamn;
-    }
+  public void setVardgivarNamn(String vardgivarNamn) {
+    this.vardgivarNamn = vardgivarNamn;
+  }
 
-    public LocalDateTime getSkapadDatum() {
-        return skapadDatum;
-    }
+  public LocalDateTime getSkapadDatum() {
+    return skapadDatum;
+  }
 
-    public void setSkapadDatum(LocalDateTime skapadDatum) {
-        this.skapadDatum = skapadDatum;
-    }
+  public void setSkapadDatum(LocalDateTime skapadDatum) {
+    this.skapadDatum = skapadDatum;
+  }
 
-    public LocalDateTime getSenasteKontrollDatum() {
-        return senasteKontrollDatum;
-    }
+  public LocalDateTime getSenasteKontrollDatum() {
+    return senasteKontrollDatum;
+  }
 
-    public void setSenasteKontrollDatum(LocalDateTime senasteKontrollDatum) {
-        this.senasteKontrollDatum = senasteKontrollDatum;
-    }
+  public void setSenasteKontrollDatum(LocalDateTime senasteKontrollDatum) {
+    this.senasteKontrollDatum = senasteKontrollDatum;
+  }
 
-    public boolean isSchemaVersion1() {
-        return schemaVersion1;
-    }
+  public boolean isSchemaVersion1() {
+    return schemaVersion1;
+  }
 
-    public void setSchemaVersion1(boolean schemaVersion1) {
-        this.schemaVersion1 = schemaVersion1;
-    }
+  public void setSchemaVersion1(boolean schemaVersion1) {
+    this.schemaVersion1 = schemaVersion1;
+  }
 
-    public boolean isSchemaVersion3() {
-        return schemaVersion3;
-    }
+  public boolean isSchemaVersion3() {
+    return schemaVersion3;
+  }
 
-    public void setSchemaVersion3(boolean schemaVersion3) {
-        this.schemaVersion3 = schemaVersion3;
-    }
+  public void setSchemaVersion3(boolean schemaVersion3) {
+    this.schemaVersion3 = schemaVersion3;
+  }
 }

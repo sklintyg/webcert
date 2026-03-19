@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,26 +27,24 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  */
 public final class LogUtil {
 
-    private LogUtil() {
-    }
+  private LogUtil() {}
 
-    /**
-     * Utility method to create a LogUser object.
-     *
-     * @param user the Webcert user to get values from
-     * @return a LogUser object
-     */
-    public static LogUser getLogUser(WebCertUser user) {
-        SelectableVardenhet valdVardenhet = user.getValdVardenhet();
-        SelectableVardenhet valdVardgivare = user.getValdVardgivare();
+  /**
+   * Utility method to create a LogUser object.
+   *
+   * @param user the Webcert user to get values from
+   * @return a LogUser object
+   */
+  public static LogUser getLogUser(WebCertUser user) {
+    SelectableVardenhet valdVardenhet = user.getValdVardenhet();
+    SelectableVardenhet valdVardgivare = user.getValdVardgivare();
 
-        return new LogUser.Builder(user.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
-            .userName(user.getNamn())
-            .userAssignment(user.getSelectedMedarbetarUppdragNamn())
-            .userTitle(user.getTitel())
-            .enhetsNamn(valdVardenhet.getNamn())
-            .vardgivareNamn(valdVardgivare.getNamn())
-            .build();
-    }
-
+    return new LogUser.Builder(user.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
+        .userName(user.getNamn())
+        .userAssignment(user.getSelectedMedarbetarUppdragNamn())
+        .userTitle(user.getTitel())
+        .enhetsNamn(valdVardenhet.getNamn())
+        .vardgivareNamn(valdVardgivare.getNamn())
+        .build();
+  }
 }

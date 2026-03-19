@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,94 +45,103 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 @ExtendWith(MockitoExtension.class)
 class CertificateRelationsParentHelperImplTest {
 
-    @Mock
-    private UtkastRepositoryCustom utkastRepositoryCustom;
+  @Mock private UtkastRepositoryCustom utkastRepositoryCustom;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @InjectMocks
-    private CertificateRelationsParentHelperImpl certificateRelationsParentHandler;
+  @InjectMocks private CertificateRelationsParentHelperImpl certificateRelationsParentHandler;
 
-    private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+  private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
 
-    @Test
-    void shallReturnNullIfCertificateDoesntExistsInWebcert() {
-        doReturn(Collections.emptyList())
-            .when(utkastRepositoryCustom).findParentRelationWhenParentMissing(CERTIFICATE_ID);
+  @Test
+  void shallReturnNullIfCertificateDoesntExistsInWebcert() {
+    doReturn(Collections.emptyList())
+        .when(utkastRepositoryCustom)
+        .findParentRelationWhenParentMissing(CERTIFICATE_ID);
 
-        assertNull(certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID));
+    assertNull(certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID));
+  }
+
+  @Test
+  void shallReturnNullIfNoRelationExistsForTheCertificate() {
+    final var webcertCertificateRelation =
+        new WebcertCertificateRelation(null, null, null, null, false);
+    doReturn(List.of(webcertCertificateRelation))
+        .when(utkastRepositoryCustom)
+        .findParentRelationWhenParentMissing(CERTIFICATE_ID);
+
+    assertNull(certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID));
+  }
+
+  @Nested
+  class ParentInIntygstjanst {
+
+    private final String parentCertificateId = "PARENT_CERTIFICATE_ID";
+    private final RelationKod parentRelationCode = RelationKod.KOMPLT;
+    private final LocalDateTime relationCreated = LocalDateTime.now();
+    private IntygContentHolder certifificate;
+
+    @BeforeEach
+    void setUp() {
+      final var webcertCertificateRelation =
+          new WebcertCertificateRelation(
+              parentCertificateId, parentRelationCode, relationCreated, null, false);
+
+      doReturn(List.of(webcertCertificateRelation))
+          .when(utkastRepositoryCustom)
+          .findParentRelationWhenParentMissing(CERTIFICATE_ID);
+
+      certifificate = mock(IntygContentHolder.class);
+
+      doReturn(certifificate)
+          .when(intygService)
+          .fetchIntygDataForInternalUse(parentCertificateId, false);
     }
 
     @Test
-    void shallReturnNullIfNoRelationExistsForTheCertificate() {
-        final var webcertCertificateRelation = new WebcertCertificateRelation(null, null, null, null,
-            false);
-        doReturn(List.of(webcertCertificateRelation))
-            .when(utkastRepositoryCustom).findParentRelationWhenParentMissing(CERTIFICATE_ID);
-
-        assertNull(certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID));
+    void shallReturnParentCertificateId() {
+      assertEquals(
+          parentCertificateId,
+          certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getIntygsId());
     }
 
-    @Nested
-    class ParentInIntygstjanst {
-
-        private final String parentCertificateId = "PARENT_CERTIFICATE_ID";
-        private final RelationKod parentRelationCode = RelationKod.KOMPLT;
-        private final LocalDateTime relationCreated = LocalDateTime.now();
-        private IntygContentHolder certifificate;
-
-        @BeforeEach
-        void setUp() {
-            final var webcertCertificateRelation = new WebcertCertificateRelation(
-                parentCertificateId, parentRelationCode, relationCreated, null,
-                false);
-
-            doReturn(List.of(webcertCertificateRelation))
-                .when(utkastRepositoryCustom).findParentRelationWhenParentMissing(CERTIFICATE_ID);
-
-            certifificate = mock(IntygContentHolder.class);
-
-            doReturn(certifificate)
-                .when(intygService).fetchIntygDataForInternalUse(parentCertificateId, false);
-        }
-
-        @Test
-        void shallReturnParentCertificateId() {
-            assertEquals(parentCertificateId,
-                certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getIntygsId());
-        }
-
-        @Test
-        void shallReturnParentRelationCode() {
-            assertEquals(parentRelationCode,
-                certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getRelationKod());
-        }
-
-        @Test
-        void shallReturnRelationCreated() {
-            assertEquals(relationCreated,
-                certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getSkapad());
-        }
-
-        @Test
-        void shallReturnStatusSignedAsCertificatesInITAreAlwaysSigned() {
-            assertEquals(UtkastStatus.SIGNED,
-                certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getStatus());
-        }
-
-        @Test
-        void shallReturnParentRelationRevokedStatusWhenFalse() {
-            doReturn(false).when(certifificate).isRevoked();
-
-            assertFalse(certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).isMakulerat());
-        }
-
-        @Test
-        void shallReturnParentRelationRevokedStatusWhenTrue() {
-            doReturn(true).when(certifificate).isRevoked();
-
-            assertTrue(certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).isMakulerat());
-        }
+    @Test
+    void shallReturnParentRelationCode() {
+      assertEquals(
+          parentRelationCode,
+          certificateRelationsParentHandler
+              .getParentFromITIfExists(CERTIFICATE_ID)
+              .getRelationKod());
     }
+
+    @Test
+    void shallReturnRelationCreated() {
+      assertEquals(
+          relationCreated,
+          certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getSkapad());
+    }
+
+    @Test
+    void shallReturnStatusSignedAsCertificatesInITAreAlwaysSigned() {
+      assertEquals(
+          UtkastStatus.SIGNED,
+          certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).getStatus());
+    }
+
+    @Test
+    void shallReturnParentRelationRevokedStatusWhenFalse() {
+      doReturn(false).when(certifificate).isRevoked();
+
+      assertFalse(
+          certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).isMakulerat());
+    }
+
+    @Test
+    void shallReturnParentRelationRevokedStatusWhenTrue() {
+      doReturn(true).when(certifificate).isRevoked();
+
+      assertTrue(
+          certificateRelationsParentHandler.getParentFromITIfExists(CERTIFICATE_ID).isMakulerat());
+    }
+  }
 }

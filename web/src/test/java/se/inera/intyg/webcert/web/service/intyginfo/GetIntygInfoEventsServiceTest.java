@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.intyginfo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,49 +41,46 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 @ExtendWith(MockitoExtension.class)
 class GetIntygInfoEventsServiceTest {
 
-    @Mock
-    private HandelseRepository handelseRepository;
+  @Mock private HandelseRepository handelseRepository;
 
-    @InjectMocks
-    private GetIntygInfoEventsService getIntygInfoEventsService;
+  @InjectMocks private GetIntygInfoEventsService getIntygInfoEventsService;
 
-    @ParameterizedTest
-    @CsvSource({
-        "SKAPAT, IS101",
-        "ANDRAT, IS102",
-        "RADERA, IS103",
-        "KFSIGN, IS105",
-        "SIGNAT, IS106",
-        "SKICKA, IS107",
-        "MAKULE, IS108",
-        "NYFRFM, IS109",
-        "NYFRFV, IS110",
-        "NYSVFM, IS111",
-        "HANFRFM, IS112",
-        "HANFRFV, IS113",
-    })
-    void shouldConvertEvent(String handelsekod, String eventType) {
-        final var handelse = getHandelse(HandelsekodEnum.valueOf(handelsekod));
-        final var expected = new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.valueOf(eventType));
-        expected.addData("status", NotificationDeliveryStatusEnum.SUCCESS.toString());
-        expected.addData("notificationId", "1");
-        when(handelseRepository.findByIntygsId("ID")).thenReturn(List.of(handelse));
+  @ParameterizedTest
+  @CsvSource({
+    "SKAPAT, IS101",
+    "ANDRAT, IS102",
+    "RADERA, IS103",
+    "KFSIGN, IS105",
+    "SIGNAT, IS106",
+    "SKICKA, IS107",
+    "MAKULE, IS108",
+    "NYFRFM, IS109",
+    "NYFRFV, IS110",
+    "NYSVFM, IS111",
+    "HANFRFM, IS112",
+    "HANFRFV, IS113",
+  })
+  void shouldConvertEvent(String handelsekod, String eventType) {
+    final var handelse = getHandelse(HandelsekodEnum.valueOf(handelsekod));
+    final var expected =
+        new IntygInfoEvent(
+            Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.valueOf(eventType));
+    expected.addData("status", NotificationDeliveryStatusEnum.SUCCESS.toString());
+    expected.addData("notificationId", "1");
+    when(handelseRepository.findByIntygsId("ID")).thenReturn(List.of(handelse));
 
-        final var events = getIntygInfoEventsService.get("ID");
+    final var events = getIntygInfoEventsService.get("ID");
 
-        assertEquals(
-            expected,
-            events.getFirst()
-        );
-    }
+    assertEquals(expected, events.getFirst());
+  }
 
-    private static Handelse getHandelse(HandelsekodEnum skapat) {
-        final var handelse = new Handelse();
-        handelse.setId(1L);
-        handelse.setCode(skapat);
-        handelse.setTimestamp(LocalDateTime.now());
-        handelse.setHandelseMetaData(new HandelseMetaData());
-        handelse.getHandelseMetaData().setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
-        return handelse;
-    }
+  private static Handelse getHandelse(HandelsekodEnum skapat) {
+    final var handelse = new Handelse();
+    handelse.setId(1L);
+    handelse.setCode(skapat);
+    handelse.setTimestamp(LocalDateTime.now());
+    handelse.setHandelseMetaData(new HandelseMetaData());
+    handelse.getHandelseMetaData().setDeliveryStatus(NotificationDeliveryStatusEnum.SUCCESS);
+    return handelse;
+  }
 }

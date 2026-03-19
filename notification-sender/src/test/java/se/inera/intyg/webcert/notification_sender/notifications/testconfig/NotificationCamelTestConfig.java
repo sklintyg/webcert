@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,37 +33,39 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.v3.Noti
 @ImportResource(locations = "classpath:notifications/unit-test-notification-sender-config.xml")
 public class NotificationCamelTestConfig {
 
-    // Presence of below bean definitions is required during setup of routes for the imported camel context.
-    // Since the beans are mocked during testing the return values have intentionally been set to null to
-    // avoid having to import further dependencies.
+  // Presence of below bean definitions is required during setup of routes for the imported camel
+  // context.
+  // Since the beans are mocked during testing the return values have intentionally been set to null
+  // to
+  // avoid having to import further dependencies.
 
-    @Bean
-    public NotificationTransformer notificationTransformer() {
-        return null;
-    }
+  @Bean
+  public NotificationTransformer notificationTransformer() {
+    return null;
+  }
 
-    @Bean
-    public MdcHelper mdcHelper() {
-        return new MdcHelper();
-    }
+  @Bean
+  public MdcHelper mdcHelper() {
+    return new MdcHelper();
+  }
 
-    @Bean
-    public NotificationWSSender notificationWSSender() {
-        return null;
-    }
+  @Bean
+  public NotificationWSSender notificationWSSender() {
+    return null;
+  }
 
-    @Bean
-    public NotificationPostProcessor notificationPostProcessor() {
-        return null;
-    }
+  @Bean
+  public NotificationPostProcessor notificationPostProcessor() {
+    return null;
+  }
 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-        return mock(JmsTransactionManager.class);
-    }
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    return mock(JmsTransactionManager.class);
+  }
 
-    @Bean
-    public SpringTransactionPolicy txTemplate(PlatformTransactionManager transactionManager) {
-        return new SpringTransactionPolicy(transactionManager);
-    }
+  @Bean
+  public SpringTransactionPolicy txTemplate(PlatformTransactionManager transactionManager) {
+    return new SpringTransactionPolicy(transactionManager);
+  }
 }

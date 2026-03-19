@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,144 +50,143 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class DisposeObsoleteDraftsFromCertificateServiceTest {
 
-    private static final LocalDateTime CUTOFF_DATE = LocalDateTime.of(2025, 1, 1, 0, 0);
-    private static final long PERIOD = ChronoUnit.DAYS.between(CUTOFF_DATE.toLocalDate(), LocalDate.now());
-    private static final String CERTIFICATE_ID_1 = "cert-id-1";
-    private static final String CERTIFICATE_ID_2 = "cert-id-2";
-    private static final String CERTIFICATE_ID_3 = "cert-id-3";
-    private static final String TYPE = "lisjp";
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @Mock
-    MonitoringLogService monitoringLogService;
-    @InjectMocks
-    DisposeObsoleteDraftsFromCertificateService disposeObsoleteDraftsFromCertificateService;
+  private static final LocalDateTime CUTOFF_DATE = LocalDateTime.of(2025, 1, 1, 0, 0);
+  private static final long PERIOD =
+      ChronoUnit.DAYS.between(CUTOFF_DATE.toLocalDate(), LocalDate.now());
+  private static final String CERTIFICATE_ID_1 = "cert-id-1";
+  private static final String CERTIFICATE_ID_2 = "cert-id-2";
+  private static final String CERTIFICATE_ID_3 = "cert-id-3";
+  private static final String TYPE = "lisjp";
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock MonitoringLogService monitoringLogService;
 
-    @Test
-    void shouldReturnZeroIfNoObsoleteDraftsFound() {
-        doReturn(Collections.emptyList()).when(csIntegrationService).listObsoleteDrafts(any());
+  @InjectMocks
+  DisposeObsoleteDraftsFromCertificateService disposeObsoleteDraftsFromCertificateService;
 
-        final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
+  @Test
+  void shouldReturnZeroIfNoObsoleteDraftsFound() {
+    doReturn(Collections.emptyList()).when(csIntegrationService).listObsoleteDrafts(any());
 
-        assertEquals(0, result);
-        verify(csIntegrationService).listObsoleteDrafts(any());
-        verify(csIntegrationService, never()).disposeObsoleteDraft(any());
-        verifyNoInteractions(publishCertificateStatusUpdateService);
-        verifyNoInteractions(monitoringLogService);
-    }
+    final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
-    @Test
-    void shouldDisposeEachDraftIndividually() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
-        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+    assertEquals(0, result);
+    verify(csIntegrationService).listObsoleteDrafts(any());
+    verify(csIntegrationService, never()).disposeObsoleteDraft(any());
+    verifyNoInteractions(publishCertificateStatusUpdateService);
+    verifyNoInteractions(monitoringLogService);
+  }
 
-        doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
-        doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
-        doReturn("xml3").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_3);
+  @Test
+  void shouldDisposeEachDraftIndividually() {
+    final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
+    doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
-        doReturn(getCertificate(CERTIFICATE_ID_1)).when(csIntegrationService).disposeObsoleteDraft(any());
+    doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
+    doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
+    doReturn("xml3").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_3);
 
-        final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
+    doReturn(getCertificate(CERTIFICATE_ID_1))
+        .when(csIntegrationService)
+        .disposeObsoleteDraft(any());
 
-        assertEquals(3, result);
-        verify(csIntegrationService, times(3)).getInternalCertificateXml(any());
-        verify(csIntegrationService, times(3)).disposeObsoleteDraft(any());
-    }
+    final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
-    @Test
-    void shouldPublishStatusUpdateWithXmlForEachDeletedDraft() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
-        final var certificate1 = getCertificate(CERTIFICATE_ID_1);
-        final var certificate2 = getCertificate(CERTIFICATE_ID_2);
-        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+    assertEquals(3, result);
+    verify(csIntegrationService, times(3)).getInternalCertificateXml(any());
+    verify(csIntegrationService, times(3)).disposeObsoleteDraft(any());
+  }
 
-        doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
-        doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
+  @Test
+  void shouldPublishStatusUpdateWithXmlForEachDeletedDraft() {
+    final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+    final var certificate1 = getCertificate(CERTIFICATE_ID_1);
+    final var certificate2 = getCertificate(CERTIFICATE_ID_2);
+    doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
-        doReturn(certificate1, certificate2).when(csIntegrationService).disposeObsoleteDraft(any());
+    doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
+    doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
 
-        disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
+    doReturn(certificate1, certificate2).when(csIntegrationService).disposeObsoleteDraft(any());
 
-        verify(publishCertificateStatusUpdateService, times(2))
-            .publish(any(Certificate.class), any(HandelsekodEnum.class), any(String.class));
-    }
+    disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
-    @Test
-    void shouldLogMonitoringForEachDeletedDraft() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
-        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+    verify(publishCertificateStatusUpdateService, times(2))
+        .publish(any(Certificate.class), any(HandelsekodEnum.class), any(String.class));
+  }
 
-        doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
-        doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
+  @Test
+  void shouldLogMonitoringForEachDeletedDraft() {
+    final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+    doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
-        doReturn(getCertificate(CERTIFICATE_ID_1), getCertificate(CERTIFICATE_ID_2))
-            .when(csIntegrationService).disposeObsoleteDraft(any());
+    doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
+    doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
 
-        disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
+    doReturn(getCertificate(CERTIFICATE_ID_1), getCertificate(CERTIFICATE_ID_2))
+        .when(csIntegrationService)
+        .disposeObsoleteDraft(any());
 
-        verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_1, TYPE, PERIOD);
-        verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_2, TYPE, PERIOD);
-    }
+    disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
-    @Test
-    void shouldPublishAnalyticsMessageForEachDeletedDraft() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
-        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+    verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_1, TYPE, PERIOD);
+    verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_2, TYPE, PERIOD);
+  }
 
-        doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
-        doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
+  @Test
+  void shouldPublishAnalyticsMessageForEachDeletedDraft() {
+    final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+    doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
-        final var certificate1 = getCertificate(CERTIFICATE_ID_2);
-        final var certificate2 = getCertificate(CERTIFICATE_ID_1);
+    doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
+    doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
 
-        doReturn(certificate2, certificate1)
-            .when(csIntegrationService).disposeObsoleteDraft(any());
+    final var certificate1 = getCertificate(CERTIFICATE_ID_2);
+    final var certificate2 = getCertificate(CERTIFICATE_ID_1);
 
-        final var certificateAnalyticsMessage = CertificateAnalyticsMessage.builder().build();
-        doReturn(certificateAnalyticsMessage).when(certificateAnalyticsMessageFactory).draftDisposed(certificate1);
-        doReturn(certificateAnalyticsMessage).when(certificateAnalyticsMessageFactory).draftDisposed(certificate2);
+    doReturn(certificate2, certificate1).when(csIntegrationService).disposeObsoleteDraft(any());
 
-        disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
+    final var certificateAnalyticsMessage = CertificateAnalyticsMessage.builder().build();
+    doReturn(certificateAnalyticsMessage)
+        .when(certificateAnalyticsMessageFactory)
+        .draftDisposed(certificate1);
+    doReturn(certificateAnalyticsMessage)
+        .when(certificateAnalyticsMessageFactory)
+        .draftDisposed(certificate2);
 
-        verify(publishCertificateAnalyticsMessage, times(2)).publishEvent(certificateAnalyticsMessage);
-    }
+    disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
-    @Test
-    void shouldContinueProcessingWhenOneDraftFailsToDispose() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
-        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+    verify(publishCertificateAnalyticsMessage, times(2)).publishEvent(certificateAnalyticsMessage);
+  }
 
-        doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
-        doThrow(new RuntimeException("Failed to get XML")).when(csIntegrationService)
-            .getInternalCertificateXml(CERTIFICATE_ID_2);
-        doReturn("xml3").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_3);
+  @Test
+  void shouldContinueProcessingWhenOneDraftFailsToDispose() {
+    final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
+    doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
-        doReturn(getCertificate(CERTIFICATE_ID_1), getCertificate(CERTIFICATE_ID_3))
-            .when(csIntegrationService).disposeObsoleteDraft(any());
+    doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
+    doThrow(new RuntimeException("Failed to get XML"))
+        .when(csIntegrationService)
+        .getInternalCertificateXml(CERTIFICATE_ID_2);
+    doReturn("xml3").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_3);
 
-        final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
+    doReturn(getCertificate(CERTIFICATE_ID_1), getCertificate(CERTIFICATE_ID_3))
+        .when(csIntegrationService)
+        .disposeObsoleteDraft(any());
 
-        verify(csIntegrationService, times(3)).getInternalCertificateXml(any());
-        assertEquals(2, result);
-        verify(csIntegrationService, times(2)).disposeObsoleteDraft(any());
-    }
+    final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
-    private static Certificate getCertificate(String id) {
-        final var certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .id(id)
-                .type(TYPE)
-                .build()
-        );
-        return certificate;
-    }
+    verify(csIntegrationService, times(3)).getInternalCertificateXml(any());
+    assertEquals(2, result);
+    verify(csIntegrationService, times(2)).disposeObsoleteDraft(any());
+  }
+
+  private static Certificate getCertificate(String id) {
+    final var certificate = new Certificate();
+    certificate.setMetadata(CertificateMetadata.builder().id(id).type(TYPE).build());
+    return certificate;
+  }
 }

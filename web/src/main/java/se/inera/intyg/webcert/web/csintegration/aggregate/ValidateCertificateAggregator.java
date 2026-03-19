@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,20 +27,22 @@ import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeServic
 @Service("validateCertificateAggregator")
 public class ValidateCertificateAggregator implements ValidateCertificateFacadeService {
 
-    private final ValidateCertificateFacadeService validateCertificateFromWC;
-    private final ValidateCertificateFacadeService validateCertificateFromCS;
+  private final ValidateCertificateFacadeService validateCertificateFromWC;
+  private final ValidateCertificateFacadeService validateCertificateFromCS;
 
-    public ValidateCertificateAggregator(
-        @Qualifier("validateCertificateFromWC") ValidateCertificateFacadeService validateCertificateFromWC,
-        @Qualifier("validateCertificateFromCS") ValidateCertificateFacadeService validateCertificateFromCS) {
-        this.validateCertificateFromWC = validateCertificateFromWC;
-        this.validateCertificateFromCS = validateCertificateFromCS;
-    }
+  public ValidateCertificateAggregator(
+      @Qualifier("validateCertificateFromWC") ValidateCertificateFacadeService validateCertificateFromWC,
+      @Qualifier("validateCertificateFromCS") ValidateCertificateFacadeService validateCertificateFromCS) {
+    this.validateCertificateFromWC = validateCertificateFromWC;
+    this.validateCertificateFromCS = validateCertificateFromCS;
+  }
 
-    @Override
-    public ValidationErrorDTO[] validate(Certificate certificate) {
-        final var responseFromCS = validateCertificateFromCS.validate(certificate);
+  @Override
+  public ValidationErrorDTO[] validate(Certificate certificate) {
+    final var responseFromCS = validateCertificateFromCS.validate(certificate);
 
-        return responseFromCS != null ? responseFromCS : validateCertificateFromWC.validate(certificate);
-    }
+    return responseFromCS != null
+        ? responseFromCS
+        : validateCertificateFromWC.validate(certificate);
+  }
 }

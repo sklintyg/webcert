@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,23 +28,23 @@ import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFaca
 @Service("sendAnswerFromWC")
 public class SendQuestionAnswerFacadeServiceImpl implements SendQuestionAnswerFacadeService {
 
-    private final ArendeService arendeService;
-    private final GetQuestionFacadeService getQuestionFacadeService;
+  private final ArendeService arendeService;
+  private final GetQuestionFacadeService getQuestionFacadeService;
 
-    @Autowired
-    public SendQuestionAnswerFacadeServiceImpl(ArendeService arendeService,
-        GetQuestionFacadeService getQuestionFacadeService) {
-        this.arendeService = arendeService;
-        this.getQuestionFacadeService = getQuestionFacadeService;
-    }
+  @Autowired
+  public SendQuestionAnswerFacadeServiceImpl(
+      ArendeService arendeService, GetQuestionFacadeService getQuestionFacadeService) {
+    this.arendeService = arendeService;
+    this.getQuestionFacadeService = getQuestionFacadeService;
+  }
 
-    @Override
-    public Question send(String questionId, String message) {
-        sendAnswerForQuestion(questionId, message);
-        return getQuestionFacadeService.get(questionId);
-    }
+  @Override
+  public Question send(String questionId, String message) {
+    sendAnswerForQuestion(questionId, message);
+    return getQuestionFacadeService.get(questionId);
+  }
 
-    private void sendAnswerForQuestion(String questionId, String message) {
-        arendeService.answer(questionId, message);
-    }
+  private void sendAnswerForQuestion(String questionId, String message) {
+    arendeService.answer(questionId, message);
+  }
 }

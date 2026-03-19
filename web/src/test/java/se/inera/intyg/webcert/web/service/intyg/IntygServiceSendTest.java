@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -73,272 +73,328 @@ import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
-    private static final String INTYG_TYPE_VERSION_1_0 = "1.0";
-
-    private Utkast utkast;
-
-    @Before
-    public void setupIntyg() throws Exception {
-        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
-        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
-        utkast = getUtkast(INTYG_ID);
-
-        ReflectionTestUtils.setField(intygService, "sekretessmarkeringStartDatum", LocalDateTime.of(2016, 11, 30, 23, 0, 0, 0));
-        when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(utkast));
-    }
-
-    @Test
-    public void testSendIntyg() throws Exception {
-        final String completionMeddelandeId = "meddelandeId";
-
-        WebCertUser webCertUser = createUser();
-
-        Utlatande completionUtlatande = utlatande;
-        completionUtlatande.getGrundData().setRelation(new Relation());
-        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
-        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
-
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-        assertEquals(IntygServiceResult.OK, res);
-
-        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
-
-        verify(intygRepository, times(2)).findById(INTYG_ID);
-        verify(intygRepository).save(any(Utkast.class));
-    }
-
-    @Test
-    public void shallPublishAnalyticsMessageWhenCertificateIsSent() throws Exception {
-        final String completionMeddelandeId = "meddelandeId";
-
-        WebCertUser webCertUser = createUser();
-
-        Utlatande completionUtlatande = utlatande;
-        completionUtlatande.getGrundData().setRelation(new Relation());
-        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
-        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
-        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.certificateSent(utkast, "FKASSA")).thenReturn(analyticsMessage);
-
-        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-
-        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-        verify(certificateAnalyticsMessageFactory).certificateSent(utkast, "FKASSA");
-    }
-
-    @Test
-    public void testSendIntygFailsForRevokedCertificate() throws Exception {
-
-        final Utkast utkast = getUtkast(INTYG_ID);
-        utkast.setAterkalladDatum(LocalDateTime.of(2018, 5, 5, 5, 5, 5, 5));
-
-        when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(utkast));
-
-        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
-        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
-        CertificateMetaData metaData = buildCertificateMetaData();
-        certificateResponse = new CertificateResponse(json, utlatande, metaData, true);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
-
-        WebCertUser webCertUser = createUser();
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-
-        Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
-            .isExactlyInstanceOf(WebCertServiceException.class)
-            .hasMessageEndingWith("cannot send a revoked certificate");
-    }
-
-    @Test
-    public void testSendIntygFailsForReplacedCertificate() throws Exception {
-        WebCertUser webCertUser = createUser();
-
-        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
-        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
-        utlatande.getGrundData().setRelation(new Relation());
-        utlatande.getGrundData().getRelation().setRelationKod(RelationKod.ERSATT);
-        CertificateMetaData metaData = buildCertificateMetaData();
-        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-
-        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-            UtkastStatus.SIGNED, false);
-
-        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), anyList()))
-            .thenReturn(Optional.of(ersattRelation));
-
-        CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(revokedCertificateResponse);
-
-        Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
-            .isExactlyInstanceOf(WebCertServiceException.class)
-            .hasFieldOrPropertyWithValue("errorCode", WebCertServiceErrorCodeEnum.INVALID_STATE)
-            .hasMessageContaining("the certificate is replaced by certificate");
-    }
-
-    @Test
-    public void testSendIntygOkForReplacedCertificateWithRevokedReplacingCertificate() throws Exception {
-        WebCertUser webCertUser = createUser();
-
-        json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
-        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
-        utlatande.getGrundData().setRelation(new Relation());
-        utlatande.getGrundData().getRelation().setRelationKod(RelationKod.ERSATT);
-        CertificateMetaData metaData = buildCertificateMetaData();
-        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-
-        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-            UtkastStatus.SIGNED, true);
-
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), anyList()))
-            .thenReturn(Optional.of(ersattRelation));
-
-        CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(revokedCertificateResponse);
-
-        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-
-        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
-
-        verify(intygRepository, times(2)).findById(INTYG_ID);
-        verify(intygRepository).save(any(Utkast.class));
-    }
-
-    @Test
-    public void testSendIntygCompletion() throws Exception {
-        final String completionMeddelandeId = "meddelandeId";
-
-        WebCertUser webCertUser = createUser();
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
-        Utlatande completionUtlatande = utlatande;
-        completionUtlatande.getGrundData().setRelation(new Relation());
-        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
-        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-
-        when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT),
-            eq(Collections.singletonList(UtkastStatus.SIGNED)))).thenReturn(Optional.empty());
-
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-        assertEquals(IntygServiceResult.OK, res);
-
-        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
-
-        verify(intygRepository, times(2)).findById(INTYG_ID);
-        verify(intygRepository).save(any(Utkast.class));
-    }
-
-    @Test
-    public void testSendIntygReturnsInfo() throws Exception {
-        final String completionMeddelandeId = "meddelandeId";
-
-        SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
-        response.setResult(ResultTypeUtil.infoResult("Info text"));
-
-        WebCertUser webCertUser = createUser();
-
-        Utlatande completionUtlatande = utlatande;
-        completionUtlatande.getGrundData().setRelation(new Relation());
-        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
-        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
-
-        IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-        assertEquals(IntygServiceResult.OK, res);
-
-        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
-        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
-        verify(intygRepository, times(2)).findById(INTYG_ID);
-        verify(intygRepository).save(any(Utkast.class));
-    }
-
-    @Test
-    public void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() {
-        final String completionMeddelandeId = "meddelandeId";
-
-        Utlatande completionUtlatande = utlatande;
-        completionUtlatande.getGrundData().setRelation(new Relation());
-        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
-        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
-
-        Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
-            .isExactlyInstanceOf(WebCertServiceException.class);
-
-    }
-
-    @Test
-    public void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() {
-        final String completionMeddelandeId = "meddelandeId";
-        intygService.setSekretessmarkeringStartDatum(LocalDateTime.now().plusMonths(1L));
-
-        WebCertUser webCertUser = createUser();
-
-        Utlatande completionUtlatande = utlatande;
-        completionUtlatande.getGrundData().setRelation(new Relation());
-        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
-        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-
-        Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
-            .isExactlyInstanceOf(WebCertServiceException.class);
-
-    }
-
-    private WebCertUser createUser() {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-
-        WebCertUser user = new WebCertUser();
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true, null));
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-
-        return user;
-    }
-
-    private Utkast getUtkast(String intygId) throws IOException {
-        Utkast utkast = new Utkast();
-        String json = IOUtils.toString(new ClassPathResource(
-            "FragaSvarServiceImplTest/utlatande.json").getInputStream(), StandardCharsets.UTF_8);
-        utkast.setModel(json);
-        utkast.setIntygsId(intygId);
-        utkast.setIntygsTyp(INTYG_TYP_FK);
-        utkast.setIntygTypeVersion(INTYG_TYPE_VERSION_1_0);
-        utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSignatur(
-            new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", INTYG_ID, "data", "hash", "signatur"));
-        return utkast;
-    }
+  private static final String INTYG_TYPE_VERSION_1_0 = "1.0";
+
+  private Utkast utkast;
+
+  @Before
+  public void setupIntyg() throws Exception {
+    json =
+        Files.readString(
+            Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
+    utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+    utkast = getUtkast(INTYG_ID);
+
+    ReflectionTestUtils.setField(
+        intygService, "sekretessmarkeringStartDatum", LocalDateTime.of(2016, 11, 30, 23, 0, 0, 0));
+    when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(utkast));
+  }
+
+  @Test
+  public void testSendIntyg() throws Exception {
+    final String completionMeddelandeId = "meddelandeId";
+
+    WebCertUser webCertUser = createUser();
+
+    Utlatande completionUtlatande = utlatande;
+    completionUtlatande.getGrundData().setRelation(new Relation());
+    completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+    completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+    when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean()))
+        .thenReturn(true);
+
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.FALSE);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+    when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
+
+    IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
+    assertEquals(IntygServiceResult.OK, res);
+
+    verify(logService).logSendIntygToRecipient(any(LogRequest.class));
+    verify(certificateSenderService)
+        .sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
+
+    verify(intygRepository, times(2)).findById(INTYG_ID);
+    verify(intygRepository).save(any(Utkast.class));
+  }
+
+  @Test
+  public void shallPublishAnalyticsMessageWhenCertificateIsSent() throws Exception {
+    final String completionMeddelandeId = "meddelandeId";
+
+    WebCertUser webCertUser = createUser();
+
+    Utlatande completionUtlatande = utlatande;
+    completionUtlatande.getGrundData().setRelation(new Relation());
+    completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+    completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+    when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean()))
+        .thenReturn(true);
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.FALSE);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+    when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
+    final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+    when(certificateAnalyticsMessageFactory.certificateSent(utkast, "FKASSA"))
+        .thenReturn(analyticsMessage);
+
+    intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
+
+    verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+    verify(certificateAnalyticsMessageFactory).certificateSent(utkast, "FKASSA");
+  }
+
+  @Test
+  public void testSendIntygFailsForRevokedCertificate() throws Exception {
+
+    final Utkast utkast = getUtkast(INTYG_ID);
+    utkast.setAterkalladDatum(LocalDateTime.of(2018, 5, 5, 5, 5, 5, 5));
+
+    when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(utkast));
+
+    json =
+        Files.readString(
+            Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
+    utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+    CertificateMetaData metaData = buildCertificateMetaData();
+    certificateResponse = new CertificateResponse(json, utlatande, metaData, true);
+    when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString()))
+        .thenReturn(certificateResponse);
+
+    WebCertUser webCertUser = createUser();
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+    when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean()))
+        .thenReturn(true);
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.FALSE);
+
+    Assertions.assertThatThrownBy(
+            () -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
+        .isExactlyInstanceOf(WebCertServiceException.class)
+        .hasMessageEndingWith("cannot send a revoked certificate");
+  }
+
+  @Test
+  public void testSendIntygFailsForReplacedCertificate() throws Exception {
+    WebCertUser webCertUser = createUser();
+
+    json =
+        Files.readString(
+            Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
+    utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+    utlatande.getGrundData().setRelation(new Relation());
+    utlatande.getGrundData().getRelation().setRelationKod(RelationKod.ERSATT);
+    CertificateMetaData metaData = buildCertificateMetaData();
+    certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+
+    WebcertCertificateRelation ersattRelation =
+        new WebcertCertificateRelation(
+            INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false);
+
+    when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.FALSE);
+    when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean()))
+        .thenReturn(true);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+    when(certificateRelationService.getNewestRelationOfType(
+            anyString(), any(RelationKod.class), anyList()))
+        .thenReturn(Optional.of(ersattRelation));
+
+    CertificateResponse revokedCertificateResponse =
+        new CertificateResponse(json, utlatande, metaData, false);
+    when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString()))
+        .thenReturn(revokedCertificateResponse);
+
+    Assertions.assertThatThrownBy(
+            () -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
+        .isExactlyInstanceOf(WebCertServiceException.class)
+        .hasFieldOrPropertyWithValue("errorCode", WebCertServiceErrorCodeEnum.INVALID_STATE)
+        .hasMessageContaining("the certificate is replaced by certificate");
+  }
+
+  @Test
+  public void testSendIntygOkForReplacedCertificateWithRevokedReplacingCertificate()
+      throws Exception {
+    WebCertUser webCertUser = createUser();
+
+    json =
+        Files.readString(
+            Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
+    utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+    utlatande.getGrundData().setRelation(new Relation());
+    utlatande.getGrundData().getRelation().setRelationKod(RelationKod.ERSATT);
+    CertificateMetaData metaData = buildCertificateMetaData();
+    certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+
+    WebcertCertificateRelation ersattRelation =
+        new WebcertCertificateRelation(
+            INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, true);
+
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.FALSE);
+    when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean()))
+        .thenReturn(true);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+    when(certificateRelationService.getNewestRelationOfType(
+            anyString(), any(RelationKod.class), anyList()))
+        .thenReturn(Optional.of(ersattRelation));
+
+    CertificateResponse revokedCertificateResponse =
+        new CertificateResponse(json, utlatande, metaData, false);
+    when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString()))
+        .thenReturn(revokedCertificateResponse);
+
+    intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
+
+    verify(logService).logSendIntygToRecipient(any(LogRequest.class));
+    verify(certificateSenderService)
+        .sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
+
+    verify(intygRepository, times(2)).findById(INTYG_ID);
+    verify(intygRepository).save(any(Utkast.class));
+  }
+
+  @Test
+  public void testSendIntygCompletion() throws Exception {
+    final String completionMeddelandeId = "meddelandeId";
+
+    WebCertUser webCertUser = createUser();
+    when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean()))
+        .thenReturn(true);
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.FALSE);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+    when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
+    Utlatande completionUtlatande = utlatande;
+    completionUtlatande.getGrundData().setRelation(new Relation());
+    completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+    completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+    when(certificateRelationService.getNewestRelationOfType(
+            eq(INTYG_ID),
+            eq(RelationKod.ERSATT),
+            eq(Collections.singletonList(UtkastStatus.SIGNED))))
+        .thenReturn(Optional.empty());
+
+    IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
+    assertEquals(IntygServiceResult.OK, res);
+
+    verify(logService).logSendIntygToRecipient(any(LogRequest.class));
+    verify(certificateSenderService)
+        .sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
+
+    verify(intygRepository, times(2)).findById(INTYG_ID);
+    verify(intygRepository).save(any(Utkast.class));
+  }
+
+  @Test
+  public void testSendIntygReturnsInfo() throws Exception {
+    final String completionMeddelandeId = "meddelandeId";
+
+    SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
+    response.setResult(ResultTypeUtil.infoResult("Info text"));
+
+    WebCertUser webCertUser = createUser();
+
+    Utlatande completionUtlatande = utlatande;
+    completionUtlatande.getGrundData().setRelation(new Relation());
+    completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+    completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+    when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean()))
+        .thenReturn(true);
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.FALSE);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+    when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(getUtkast(INTYG_ID)));
+
+    IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
+    assertEquals(IntygServiceResult.OK, res);
+
+    verify(logService).logSendIntygToRecipient(any(LogRequest.class));
+    verify(certificateSenderService)
+        .sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
+    verify(intygRepository, times(2)).findById(INTYG_ID);
+    verify(intygRepository).save(any(Utkast.class));
+  }
+
+  @Test
+  public void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() {
+    final String completionMeddelandeId = "meddelandeId";
+
+    Utlatande completionUtlatande = utlatande;
+    completionUtlatande.getGrundData().setRelation(new Relation());
+    completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+    completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.UNDEFINED);
+
+    Assertions.assertThatThrownBy(
+            () -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
+        .isExactlyInstanceOf(WebCertServiceException.class);
+  }
+
+  @Test
+  public void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() {
+    final String completionMeddelandeId = "meddelandeId";
+    intygService.setSekretessmarkeringStartDatum(LocalDateTime.now().plusMonths(1L));
+
+    WebCertUser webCertUser = createUser();
+
+    Utlatande completionUtlatande = utlatande;
+    completionUtlatande.getGrundData().setRelation(new Relation());
+    completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+    completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+    when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean()))
+        .thenReturn(true);
+    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+        .thenReturn(SekretessStatus.TRUE);
+    when(webCertUserService.getUser()).thenReturn(webCertUser);
+
+    Assertions.assertThatThrownBy(
+            () -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
+        .isExactlyInstanceOf(WebCertServiceException.class);
+  }
+
+  private WebCertUser createUser() {
+    Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+
+    WebCertUser user = new WebCertUser();
+    user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+    user.setParameters(
+        new IntegrationParameters(
+            "", "", "", "", "", "", "", "", "", false, false, false, true, null));
+    user.setRoles(AuthoritiesResolverUtil.toMap(role));
+    user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+
+    return user;
+  }
+
+  private Utkast getUtkast(String intygId) throws IOException {
+    Utkast utkast = new Utkast();
+    String json =
+        IOUtils.toString(
+            new ClassPathResource("FragaSvarServiceImplTest/utlatande.json").getInputStream(),
+            StandardCharsets.UTF_8);
+    utkast.setModel(json);
+    utkast.setIntygsId(intygId);
+    utkast.setIntygsTyp(INTYG_TYP_FK);
+    utkast.setIntygTypeVersion(INTYG_TYPE_VERSION_1_0);
+    utkast.setStatus(UtkastStatus.SIGNED);
+    utkast.setSignatur(
+        new Signatur(
+            LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11),
+            "Signe Signatur",
+            INTYG_ID,
+            "data",
+            "hash",
+            "signatur"));
+    return utkast;
+  }
 }

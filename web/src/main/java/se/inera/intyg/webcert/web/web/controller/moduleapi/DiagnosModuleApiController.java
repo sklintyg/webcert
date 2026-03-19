@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,70 +45,80 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
 @Api(value = "diagnos", produces = MediaType.APPLICATION_JSON)
 public class DiagnosModuleApiController extends AbstractApiController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);
 
-    @Autowired
-    private DiagnosService diagnosService;
+  @Autowired private DiagnosService diagnosService;
 
-    /**
-     * Gets the diagnosis matching a code exactly.
-     *
-     * @param parameter A parameter object.
-     */
-    @POST
-    @Path("/kod")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "diagnos-module-get-diagnosis-by-code", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getDiagnosisByCode(DiagnosParameter parameter) {
+  /**
+   * Gets the diagnosis matching a code exactly.
+   *
+   * @param parameter A parameter object.
+   */
+  @POST
+  @Path("/kod")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "diagnos-module-get-diagnosis-by-code",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getDiagnosisByCode(DiagnosParameter parameter) {
 
-        LOG.debug("Getting diagnosises using code: {}", parameter.getCodeFragment());
+    LOG.debug("Getting diagnosises using code: {}", parameter.getCodeFragment());
 
-        DiagnosResponse diagnosResponse = diagnosService.getDiagnosisByCode(parameter.getCodeFragment(), parameter.getCodeSystem());
-        return Response.ok(diagnosResponse).build();
-    }
+    DiagnosResponse diagnosResponse =
+        diagnosService.getDiagnosisByCode(parameter.getCodeFragment(), parameter.getCodeSystem());
+    return Response.ok(diagnosResponse).build();
+  }
 
-    /**
-     * Search for diagnosises using a code fragment. The fragment "A04" will return all
-     * diagnosises whose code starts with this fragment. The number of results returned
-     * by the service can be limited by setting the 'NbrOfResults' parameter to a positive
-     * number.
-     *
-     * @param parameter A parameter object.
-     */
-    @POST
-    @Path("/kod/sok")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "diagnos-module-search-diagnosis-by-code", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response searchDiagnosisByCode(DiagnosParameter parameter) {
+  /**
+   * Search for diagnosises using a code fragment. The fragment "A04" will return all diagnosises
+   * whose code starts with this fragment. The number of results returned by the service can be
+   * limited by setting the 'NbrOfResults' parameter to a positive number.
+   *
+   * @param parameter A parameter object.
+   */
+  @POST
+  @Path("/kod/sok")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "diagnos-module-search-diagnosis-by-code",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response searchDiagnosisByCode(DiagnosParameter parameter) {
 
-        LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
+    LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
 
-        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getCodeSystem(),
+    DiagnosResponse diagnosResponse =
+        diagnosService.searchDiagnosisByCode(
+            parameter.getCodeFragment(), parameter.getCodeSystem(), parameter.getNbrOfResults());
+    return Response.ok(diagnosResponse).build();
+  }
+
+  /**
+   * Search for diagnosises using a description fragment. The number of results returned by the
+   * service can be limited by setting the 'NbrOfResults' parameter to a positive number.
+   */
+  @POST
+  @Path("/beskrivning/sok")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "diagnos-module-search-diagnosis-by-description",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response searchDiagnosisByDescription(DiagnosParameter parameter) {
+
+    LOG.debug(
+        "Searching for diagnosises using description fragment: {}",
+        parameter.getDescriptionSearchString());
+
+    DiagnosResponse diagnosResponse =
+        diagnosService.searchDiagnosisByDescription(
+            parameter.getDescriptionSearchString(),
+            parameter.getCodeSystem(),
             parameter.getNbrOfResults());
-        return Response.ok(diagnosResponse).build();
-    }
-
-    /**
-     * Search for diagnosises using a description fragment. The number of results returned
-     * by the service can be limited by setting the 'NbrOfResults' parameter to a positive
-     * number.
-     */
-    @POST
-    @Path("/beskrivning/sok")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "diagnos-module-search-diagnosis-by-description", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response searchDiagnosisByDescription(DiagnosParameter parameter) {
-
-        LOG.debug("Searching for diagnosises using description fragment: {}", parameter.getDescriptionSearchString());
-
-        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByDescription(parameter.getDescriptionSearchString(),
-            parameter.getCodeSystem(), parameter.getNbrOfResults());
-        return Response.ok(diagnosResponse).build();
-    }
+    return Response.ok(diagnosResponse).build();
+  }
 }

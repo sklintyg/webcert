@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,17 +22,38 @@ import java.time.LocalDateTime;
 
 public interface MonitoringLogService {
 
-    void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId, String unitId,
-        int sendAttempt);
+  void logStatusUpdateForCareStatusSuccess(
+      long eventId,
+      String eventType,
+      String certificateId,
+      String correlationId,
+      String unitId,
+      int sendAttempt);
 
-    //CHECKSTYLE:OFF ParameterNumber
-    void logStatusUpdateForCareStatusResend(long eventId, String eventType, String unitId, String certificateId, String correlationId,
-        String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt);
-    //CHECKSTYLE:ON ParameterNumber
+  // CHECKSTYLE:OFF ParameterNumber
+  void logStatusUpdateForCareStatusResend(
+      long eventId,
+      String eventType,
+      String unitId,
+      String certificateId,
+      String correlationId,
+      String errorCode,
+      String message,
+      int sendAttempt,
+      LocalDateTime nextAttempt);
 
-    //CHECKSTYLE:OFF ParameterNumber
-    void logStatusUpdateForCareStatusFailure(long eventId, String eventType, String unitId, String certificateId, String correlationId,
-        String errorCode, String message, int sendAttempt);
-    //CHECKSTYLE:ON ParameterNumber
+  // CHECKSTYLE:ON ParameterNumber
+
+  // CHECKSTYLE:OFF ParameterNumber
+  void logStatusUpdateForCareStatusFailure(
+      long eventId,
+      String eventType,
+      String unitId,
+      String certificateId,
+      String correlationId,
+      String errorCode,
+      String message,
+      int sendAttempt);
+  // CHECKSTYLE:ON ParameterNumber
 
 }

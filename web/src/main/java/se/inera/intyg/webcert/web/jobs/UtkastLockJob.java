@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,36 +36,42 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @RequiredArgsConstructor
 public class UtkastLockJob {
 
-    @Value("${job.utkastlock.locked.after.day}")
-    private int lockedAfterDay;
+  @Value("${job.utkastlock.locked.after.day}")
+  private int lockedAfterDay;
 
-    private static final Logger LOG = LoggerFactory.getLogger(UtkastLockJob.class);
-    private static final String JOB_NAME = "UtkastLockJob.run";
-    private static final String LOCK_AT_MOST = "PT10M"; //10 * 60 * 1000
-    private static final String LOCK_AT_LEAST = "PT30S"; //30 * 1000
-    
-    private final UtkastService utkastService;
-    private final LockDraftsFromCertificateService lockDraftsFromCertificateService;
-    private final MdcHelper mdcHelper;
+  private static final Logger LOG = LoggerFactory.getLogger(UtkastLockJob.class);
+  private static final String JOB_NAME = "UtkastLockJob.run";
+  private static final String LOCK_AT_MOST = "PT10M"; // 10 * 60 * 1000
+  private static final String LOCK_AT_LEAST = "PT30S"; // 30 * 1000
 
-    @Scheduled(cron = "${job.utkastlock.cron}")
-    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
-    @PerformanceLogging(eventAction = "job-lock-drafts", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
-        eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
-    public void run() {
-        LOG.info("Staring job to set utkast to locked");
+  private final UtkastService utkastService;
+  private final LockDraftsFromCertificateService lockDraftsFromCertificateService;
+  private final MdcHelper mdcHelper;
 
-        try {
-            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
-            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+  @Scheduled(cron = "${job.utkastlock.cron}")
+  @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
+  @PerformanceLogging(
+      eventAction = "job-lock-drafts",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
+      eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
+  public void run() {
+    LOG.info("Staring job to set utkast to locked");
 
-            final var today = LocalDate.now();
-            final var lockedInWC = utkastService.lockOldDrafts(lockedAfterDay, today);
-            final var lockedInCS = lockDraftsFromCertificateService.lock(lockedAfterDay);
+    try {
+      MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+      MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
-            LOG.info("{} utkast set to locked - {} in Webcert - {} in CertificateService", lockedInWC + lockedInCS, lockedInWC, lockedInCS);
-        } finally {
-            MDC.clear();
-        }
+      final var today = LocalDate.now();
+      final var lockedInWC = utkastService.lockOldDrafts(lockedAfterDay, today);
+      final var lockedInCS = lockDraftsFromCertificateService.lock(lockedAfterDay);
+
+      LOG.info(
+          "{} utkast set to locked - {} in Webcert - {} in CertificateService",
+          lockedInWC + lockedInCS,
+          lockedInWC,
+          lockedInCS);
+    } finally {
+      MDC.clear();
     }
+  }
 }

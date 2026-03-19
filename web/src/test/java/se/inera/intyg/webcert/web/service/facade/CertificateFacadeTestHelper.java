@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,27 +38,30 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDate
 
 public class CertificateFacadeTestHelper {
 
-    public static Certificate createCertificate(String certificateType, CertificateStatus status) {
-        return createCertificateWithChildRelation(certificateType, status, (CertificateRelation) null);
-    }
+  public static Certificate createCertificate(String certificateType, CertificateStatus status) {
+    return createCertificateWithChildRelation(certificateType, status, (CertificateRelation) null);
+  }
 
-    public static Certificate createCertificate(String certificateType, CertificateStatus status, boolean addressFromPU) {
-        return createCertificateWithChildRelation(certificateType, status, addressFromPU, (CertificateRelation) null);
-    }
+  public static Certificate createCertificate(
+      String certificateType, CertificateStatus status, boolean addressFromPU) {
+    return createCertificateWithChildRelation(
+        certificateType, status, addressFromPU, (CertificateRelation) null);
+  }
 
-    public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
-        CertificateRelation... relation) {
-        return createCertificateWithChildRelation(certificateType, status, true, relation);
-    }
+  public static Certificate createCertificateWithChildRelation(
+      String certificateType, CertificateStatus status, CertificateRelation... relation) {
+    return createCertificateWithChildRelation(certificateType, status, true, relation);
+  }
 
-    public static Certificate createCertificateTypeWithVersion(String certificateType, CertificateStatus status, boolean addressFromPU,
-        String typeVersion) {
-        return createCertificateCertainWithVersion(certificateType, status, addressFromPU, typeVersion);
-    }
+  public static Certificate createCertificateTypeWithVersion(
+      String certificateType, CertificateStatus status, boolean addressFromPU, String typeVersion) {
+    return createCertificateCertainWithVersion(certificateType, status, addressFromPU, typeVersion);
+  }
 
-    private static Certificate createCertificateCertainWithVersion(String certificateType, CertificateStatus status, boolean addressFromPU,
-        String typeVersion) {
-        final var metadataBuilder = CertificateMetadata.builder()
+  private static Certificate createCertificateCertainWithVersion(
+      String certificateType, CertificateStatus status, boolean addressFromPU, String typeVersion) {
+    final var metadataBuilder =
+        CertificateMetadata.builder()
             .id("certificateId")
             .type(certificateType)
             .typeVersion(typeVersion)
@@ -67,14 +70,9 @@ public class CertificateFacadeTestHelper {
             .modified(LocalDateTime.now().plusDays(5))
             .patient(
                 Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id("191212121212")
-                            .build()
-                    )
+                    .personId(PersonId.builder().id("191212121212").build())
                     .addressFromPU(addressFromPU)
-                    .build()
-            )
+                    .build())
             .unit(
                 Unit.builder()
                     .unitId("unitId")
@@ -84,8 +82,7 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            )
+                    .build())
             .careProvider(
                 Unit.builder()
                     .unitId("careProviderId")
@@ -95,8 +92,8 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            ).careUnit(
+                    .build())
+            .careUnit(
                 Unit.builder()
                     .unitId("unitId")
                     .unitName("unitName")
@@ -105,36 +102,33 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            ).issuedBy(Staff.builder()
-                .fullName("fullName")
-                .personId("personId")
-                .prescriptionCode("prescriptionCode")
-                .build()
-            );
+                    .build())
+            .issuedBy(
+                Staff.builder()
+                    .fullName("fullName")
+                    .personId("personId")
+                    .prescriptionCode("prescriptionCode")
+                    .build());
 
-        return CertificateBuilder.create()
-            .metadata(metadataBuilder.build())
-            .build();
-    }
+    return CertificateBuilder.create().metadata(metadataBuilder.build()).build();
+  }
 
-    public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
-        boolean addressFromPU, CertificateRelation... relation) {
-        final var metadataBuilder = CertificateMetadata.builder()
+  public static Certificate createCertificateWithChildRelation(
+      String certificateType,
+      CertificateStatus status,
+      boolean addressFromPU,
+      CertificateRelation... relation) {
+    final var metadataBuilder =
+        CertificateMetadata.builder()
             .id("certificateId")
             .type(certificateType)
             .typeVersion("1.2")
             .status(status)
             .patient(
                 Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id("191212121212")
-                            .build()
-                    )
+                    .personId(PersonId.builder().id("191212121212").build())
                     .addressFromPU(addressFromPU)
-                    .build()
-            )
+                    .build())
             .unit(
                 Unit.builder()
                     .unitId("unitId")
@@ -144,8 +138,7 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            )
+                    .build())
             .careProvider(
                 Unit.builder()
                     .unitId("careProviderId")
@@ -155,56 +148,42 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            ).careUnit(
-                Unit.builder().
-                    unitId("unitId")
+                    .build())
+            .careUnit(
+                Unit.builder()
+                    .unitId("unitId")
                     .unitName("unitName")
                     .address("address")
                     .zipCode("zipCode")
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            ).issuedBy(Staff.builder()
-                .fullName("fullName")
-                .personId("personId")
-                .prescriptionCode("prescriptionCode")
-                .build()
-            );
-        ;
+                    .build())
+            .issuedBy(
+                Staff.builder()
+                    .fullName("fullName")
+                    .personId("personId")
+                    .prescriptionCode("prescriptionCode")
+                    .build());
+    ;
 
-        if (relation != null && relation.length > 0 && relation[0] != null) {
-            metadataBuilder.relations(
-                CertificateRelations.builder()
-                    .children(
-                        relation
-                    )
-                    .build()
-            );
-        }
-
-        return CertificateBuilder.create()
-            .metadata(metadataBuilder.build())
-            .build();
+    if (relation != null && relation.length > 0 && relation[0] != null) {
+      metadataBuilder.relations(CertificateRelations.builder().children(relation).build());
     }
 
-    public static Certificate createCertificateWithParentRelation(String certificateType, CertificateStatus status,
-        CertificateRelation parent) {
-        final var metadataBuilder = CertificateMetadata.builder()
+    return CertificateBuilder.create().metadata(metadataBuilder.build()).build();
+  }
+
+  public static Certificate createCertificateWithParentRelation(
+      String certificateType, CertificateStatus status, CertificateRelation parent) {
+    final var metadataBuilder =
+        CertificateMetadata.builder()
             .id("certificateId")
             .type(certificateType)
             .typeVersion("1.2")
             .status(status)
             .patient(
-                Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id("191212121212")
-                            .build()
-                    )
-                    .build()
-            )
+                Patient.builder().personId(PersonId.builder().id("191212121212").build()).build())
             .unit(
                 Unit.builder()
                     .unitId("unitId")
@@ -214,8 +193,7 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            )
+                    .build())
             .careProvider(
                 Unit.builder()
                     .unitId("careProviderId")
@@ -225,37 +203,24 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            );
+                    .build());
 
-        if (parent != null) {
-            metadataBuilder.relations(
-                CertificateRelations.builder()
-                    .parent(parent)
-                    .build()
-            );
-        }
-
-        return CertificateBuilder.create()
-            .metadata(metadataBuilder.build())
-            .build();
+    if (parent != null) {
+      metadataBuilder.relations(CertificateRelations.builder().parent(parent).build());
     }
 
-    public static Certificate createCertificateWithSickleavePeriod(int numberOfDays) {
-        final var metadataBuilder = CertificateMetadata.builder()
+    return CertificateBuilder.create().metadata(metadataBuilder.build()).build();
+  }
+
+  public static Certificate createCertificateWithSickleavePeriod(int numberOfDays) {
+    final var metadataBuilder =
+        CertificateMetadata.builder()
             .id("certificateId")
             .type("lisjp")
             .typeVersion("1.2")
             .status(CertificateStatus.SIGNED)
             .patient(
-                Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id("191212121212")
-                            .build()
-                    )
-                    .build()
-            )
+                Patient.builder().personId(PersonId.builder().id("191212121212").build()).build())
             .unit(
                 Unit.builder()
                     .unitId("unitId")
@@ -265,8 +230,7 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            )
+                    .build())
             .careProvider(
                 Unit.builder()
                     .unitId("careProviderId")
@@ -276,29 +240,25 @@ public class CertificateFacadeTestHelper {
                     .city("city")
                     .email("email")
                     .phoneNumber("phoneNumber")
-                    .build()
-            );
+                    .build());
 
-        final var sickLeavePeriod = CertificateDataElement.builder()
-            .config(
-                CertificateDataConfigCheckboxDateRangeList.builder().build()
-            )
+    final var sickLeavePeriod =
+        CertificateDataElement.builder()
+            .config(CertificateDataConfigCheckboxDateRangeList.builder().build())
             .value(
                 CertificateDataValueDateRangeList.builder()
-                    .list(Arrays.asList(
+                    .list(
+                        Arrays.asList(
                             CertificateDataValueDateRange.builder()
                                 .from(LocalDate.now())
                                 .to(LocalDate.now().plusDays(numberOfDays))
-                                .build()
-                        )
-                    )
-                    .build()
-            )
+                                .build()))
+                    .build())
             .build();
 
-        return CertificateBuilder.create()
-            .metadata(metadataBuilder.build())
-            .addElement(sickLeavePeriod)
-            .build();
-    }
+    return CertificateBuilder.create()
+        .metadata(metadataBuilder.build())
+        .addElement(sickLeavePeriod)
+        .build();
+  }
 }

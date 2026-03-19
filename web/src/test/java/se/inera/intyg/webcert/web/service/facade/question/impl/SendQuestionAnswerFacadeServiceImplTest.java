@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,36 +35,31 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeServi
 @ExtendWith(MockitoExtension.class)
 class SendQuestionAnswerFacadeServiceImplTest {
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @Mock
-    private GetQuestionFacadeService getQuestionFacadeService;
+  @Mock private GetQuestionFacadeService getQuestionFacadeService;
 
-    @InjectMocks
-    private SendQuestionAnswerFacadeServiceImpl sendQuestionAnswerFacadeService;
+  @InjectMocks private SendQuestionAnswerFacadeServiceImpl sendQuestionAnswerFacadeService;
 
-    private String questionId = "questionId";
-    private String message = "Det här är ett svar!";
+  private String questionId = "questionId";
+  private String message = "Det här är ett svar!";
 
-    @BeforeEach
-    void setUp() {
-        doReturn(Question.builder().build())
-            .when(getQuestionFacadeService)
-            .get(questionId);
-    }
+  @BeforeEach
+  void setUp() {
+    doReturn(Question.builder().build()).when(getQuestionFacadeService).get(questionId);
+  }
 
-    @Test
-    void shallSendAnswer() {
-        sendQuestionAnswerFacadeService.send(questionId, message);
+  @Test
+  void shallSendAnswer() {
+    sendQuestionAnswerFacadeService.send(questionId, message);
 
-        verify(arendeService).answer(questionId, message);
-    }
+    verify(arendeService).answer(questionId, message);
+  }
 
-    @Test
-    void shallReturnQuestionWhenSendingAnswer() {
-        final var actualQuestion = sendQuestionAnswerFacadeService.send(questionId, message);
+  @Test
+  void shallReturnQuestionWhenSendingAnswer() {
+    final var actualQuestion = sendQuestionAnswerFacadeService.send(questionId, message);
 
-        assertNotNull(actualQuestion, "Should return the question that was answers");
-    }
+    assertNotNull(actualQuestion, "Should return the question that was answers");
+  }
 }

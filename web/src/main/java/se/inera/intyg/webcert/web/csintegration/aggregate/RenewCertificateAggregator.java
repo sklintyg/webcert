@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,42 +27,45 @@ import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 @Service("renewCertificateAggregator")
 public class RenewCertificateAggregator implements RenewCertificateFacadeService {
 
-    private final RenewCertificateFacadeService renewCertificateFromWebcert;
-    private final RenewCertificateFacadeService renewCertificateFromCertificateService;
-    private final CSIntegrationService csIntegrationService;
-    private final GetCertificateAggregator getCertificateAggregator;
-    private final RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService;
+  private final RenewCertificateFacadeService renewCertificateFromWebcert;
+  private final RenewCertificateFacadeService renewCertificateFromCertificateService;
+  private final CSIntegrationService csIntegrationService;
+  private final GetCertificateAggregator getCertificateAggregator;
+  private final RenewLegacyCertificateFromCertificateService
+      renewLegacyCertificateFromCertificateService;
 
-    public RenewCertificateAggregator(
-        @Qualifier("renewCertificateFromWebcert")
-        RenewCertificateFacadeService renewCertificateFromWebcert,
-        @Qualifier("renewCertificateFromCertificateService")
-        RenewCertificateFacadeService renewCertificateFromCertificateService,
-        CSIntegrationService csIntegrationService,
-        GetCertificateAggregator getCertificateAggregator,
-        RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService) {
-        this.renewCertificateFromWebcert = renewCertificateFromWebcert;
-        this.renewCertificateFromCertificateService = renewCertificateFromCertificateService;
-        this.getCertificateAggregator = getCertificateAggregator;
-        this.csIntegrationService = csIntegrationService;
-        this.renewLegacyCertificateFromCertificateService = renewLegacyCertificateFromCertificateService;
+  public RenewCertificateAggregator(
+      @Qualifier("renewCertificateFromWebcert") RenewCertificateFacadeService renewCertificateFromWebcert,
+      @Qualifier("renewCertificateFromCertificateService") RenewCertificateFacadeService renewCertificateFromCertificateService,
+      CSIntegrationService csIntegrationService,
+      GetCertificateAggregator getCertificateAggregator,
+      RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService) {
+    this.renewCertificateFromWebcert = renewCertificateFromWebcert;
+    this.renewCertificateFromCertificateService = renewCertificateFromCertificateService;
+    this.getCertificateAggregator = getCertificateAggregator;
+    this.csIntegrationService = csIntegrationService;
+    this.renewLegacyCertificateFromCertificateService =
+        renewLegacyCertificateFromCertificateService;
+  }
+
+  @Override
+  public String renewCertificate(String certificateId) {
+    final var responseFromCS =
+        renewCertificateFromCertificateService.renewCertificate(certificateId);
+
+    if (responseFromCS != null) {
+      return responseFromCS;
     }
 
-    @Override
-    public String renewCertificate(String certificateId) {
-        final var responseFromCS = renewCertificateFromCertificateService.renewCertificate(
-            certificateId);
+    final var certificate = getCertificateAggregator.getCertificate(certificateId, false, true);
+    final var certificateTypeExistsInCS =
+        csIntegrationService.certificateTypeExists(certificate.getMetadata().getType());
 
-        if (responseFromCS != null) {
-            return responseFromCS;
-        }
-
-        final var certificate = getCertificateAggregator.getCertificate(certificateId, false, true);
-        final var certificateTypeExistsInCS = csIntegrationService.certificateTypeExists(certificate.getMetadata().getType());
-
-        return certificateTypeExistsInCS
-            .map(certificateModelId -> renewLegacyCertificateFromCertificateService.renewCertificate(
-                certificate, certificateModelId))
-            .orElseGet(() -> renewCertificateFromWebcert.renewCertificate(certificateId));
-    }
+    return certificateTypeExistsInCS
+        .map(
+            certificateModelId ->
+                renewLegacyCertificateFromCertificateService.renewCertificate(
+                    certificate, certificateModelId))
+        .orElseGet(() -> renewCertificateFromWebcert.renewCertificate(certificateId));
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,22 +22,21 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
+/** Created by eriklupander on 2015-08-05. */
 public class AvtalRepositoryImpl implements AvtalRepositoryCustom {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+  @PersistenceContext private EntityManager entityManager;
 
-    @Override
-    public Integer getLatestAvtalVersion() {
-        try {
-            Integer latestAvtalVersion = entityManager.createQuery("SELECT MAX(a.avtalVersion) FROM Avtal a", Integer.class)
-                .getSingleResult();
-            return latestAvtalVersion == null ? -1 : latestAvtalVersion;
-        } catch (NoResultException e) {
-            return -1;
-        }
+  @Override
+  public Integer getLatestAvtalVersion() {
+    try {
+      Integer latestAvtalVersion =
+          entityManager
+              .createQuery("SELECT MAX(a.avtalVersion) FROM Avtal a", Integer.class)
+              .getSingleResult();
+      return latestAvtalVersion == null ? -1 : latestAvtalVersion;
+    } catch (NoResultException e) {
+      return -1;
     }
+  }
 }

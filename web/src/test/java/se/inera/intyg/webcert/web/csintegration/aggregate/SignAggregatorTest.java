@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,175 +37,234 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 @ExtendWith(MockitoExtension.class)
 class SignAggregatorTest {
 
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String TICKED_ID = "tickedId";
+  private static final byte[] SIGN_BYTE = "signature".getBytes(StandardCharsets.UTF_8);
+  private static final String SIGN_CERTIFICATE = "sign-certificate";
+  private static final String USER_IP_ADDRESS = "user-ip-address";
+  @Mock private UnderskriftService signatureServiceForWC;
+  @Mock private UnderskriftService signatureServiceForCS;
+  private UnderskriftService signCertificateAggregator;
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String TICKED_ID = "tickedId";
-    private static final byte[] SIGN_BYTE = "signature".getBytes(StandardCharsets.UTF_8);
-    private static final String SIGN_CERTIFICATE = "sign-certificate";
-    private static final String USER_IP_ADDRESS = "user-ip-address";
-    @Mock
-    private UnderskriftService signatureServiceForWC;
-    @Mock
-    private UnderskriftService signatureServiceForCS;
-    private UnderskriftService signCertificateAggregator;
+  @BeforeEach
+  void setUp() {
+    signCertificateAggregator = new SignAggregator(signatureServiceForWC, signatureServiceForCS);
+  }
 
+  @Nested
+  class StartSigningProcess {
 
-    @BeforeEach
-    void setUp() {
-        signCertificateAggregator = new SignAggregator(
+    @Test
+    void shallUseWebcertImplementationIfProfileNotActive() {
+      signCertificateAggregator.startSigningProcess(
+          CERTIFICATE_ID,
+          CERTIFICATE_TYPE,
+          1L,
+          SignMethod.SIGN_SERVICE,
+          TICKED_ID,
+          USER_IP_ADDRESS);
 
-            signatureServiceForWC,
-            signatureServiceForCS
-        );
+      verify(signatureServiceForWC, times(1))
+          .startSigningProcess(
+              CERTIFICATE_ID,
+              CERTIFICATE_TYPE,
+              1L,
+              SignMethod.SIGN_SERVICE,
+              TICKED_ID,
+              USER_IP_ADDRESS);
     }
 
-    @Nested
-    class StartSigningProcess {
+    @Test
+    void shallUseWebcertImplementationIfCSReturnsNull() {
+      doReturn(null)
+          .when(signatureServiceForCS)
+          .startSigningProcess(
+              CERTIFICATE_ID,
+              CERTIFICATE_TYPE,
+              1L,
+              SignMethod.SIGN_SERVICE,
+              TICKED_ID,
+              USER_IP_ADDRESS);
 
-        @Test
-        void shallUseWebcertImplementationIfProfileNotActive() {
-            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID,
-                USER_IP_ADDRESS);
+      signCertificateAggregator.startSigningProcess(
+          CERTIFICATE_ID,
+          CERTIFICATE_TYPE,
+          1L,
+          SignMethod.SIGN_SERVICE,
+          TICKED_ID,
+          USER_IP_ADDRESS);
 
-            verify(signatureServiceForWC, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID, USER_IP_ADDRESS);
-        }
-
-        @Test
-        void shallUseWebcertImplementationIfCSReturnsNull() {
-            doReturn(null).when(signatureServiceForCS).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID, USER_IP_ADDRESS);
-
-            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID,
-                USER_IP_ADDRESS);
-
-            verify(signatureServiceForWC, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID, USER_IP_ADDRESS);
-        }
-
-
-        @Test
-        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
-            final var expectedResult = new SignaturBiljett();
-            doReturn(expectedResult).when(signatureServiceForCS)
-                .startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                    TICKED_ID, USER_IP_ADDRESS);
-
-            final var actualResult = signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L,
-                SignMethod.SIGN_SERVICE, TICKED_ID, USER_IP_ADDRESS);
-
-            verify(signatureServiceForWC, times(0)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID, USER_IP_ADDRESS);
-            verify(signatureServiceForCS, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID, USER_IP_ADDRESS);
-            assertEquals(expectedResult, actualResult);
-        }
+      verify(signatureServiceForWC, times(1))
+          .startSigningProcess(
+              CERTIFICATE_ID,
+              CERTIFICATE_TYPE,
+              1L,
+              SignMethod.SIGN_SERVICE,
+              TICKED_ID,
+              USER_IP_ADDRESS);
     }
 
-    @Nested
-    class FakeSignature {
+    @Test
+    void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
+      final var expectedResult = new SignaturBiljett();
+      doReturn(expectedResult)
+          .when(signatureServiceForCS)
+          .startSigningProcess(
+              CERTIFICATE_ID,
+              CERTIFICATE_TYPE,
+              1L,
+              SignMethod.SIGN_SERVICE,
+              TICKED_ID,
+              USER_IP_ADDRESS);
 
-        @Test
-        void shallUseWebcertImplementationIfProfileNotActive() {
-            signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+      final var actualResult =
+          signCertificateAggregator.startSigningProcess(
+              CERTIFICATE_ID,
+              CERTIFICATE_TYPE,
+              1L,
+              SignMethod.SIGN_SERVICE,
+              TICKED_ID,
+              USER_IP_ADDRESS);
 
-            verify(signatureServiceForWC, times(1)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
-        }
+      verify(signatureServiceForWC, times(0))
+          .startSigningProcess(
+              CERTIFICATE_ID,
+              CERTIFICATE_TYPE,
+              1L,
+              SignMethod.SIGN_SERVICE,
+              TICKED_ID,
+              USER_IP_ADDRESS);
+      verify(signatureServiceForCS, times(1))
+          .startSigningProcess(
+              CERTIFICATE_ID,
+              CERTIFICATE_TYPE,
+              1L,
+              SignMethod.SIGN_SERVICE,
+              TICKED_ID,
+              USER_IP_ADDRESS);
+      assertEquals(expectedResult, actualResult);
+    }
+  }
 
-        @Test
-        void shallUseWebcertImplementationIfCSReturnsNull() {
-            doReturn(null).when(signatureServiceForCS).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+  @Nested
+  class FakeSignature {
 
-            signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
-            verify(signatureServiceForWC, times(1)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
-        }
+    @Test
+    void shallUseWebcertImplementationIfProfileNotActive() {
+      signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
 
-
-        @Test
-        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
-            final var expectedResult = new SignaturBiljett();
-            doReturn(expectedResult).when(signatureServiceForCS).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
-
-            final var actualResult = signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
-
-            verify(signatureServiceForWC, times(0)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
-            verify(signatureServiceForCS, times(1)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
-            assertEquals(expectedResult, actualResult);
-        }
+      verify(signatureServiceForWC, times(1))
+          .fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
     }
 
-    @Nested
-    class NetidSignature {
+    @Test
+    void shallUseWebcertImplementationIfCSReturnsNull() {
+      doReturn(null)
+          .when(signatureServiceForCS)
+          .fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
 
-        @Test
-        void shallUseWebcertImplementationIfProfileNotActive() {
-            signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-
-            verify(signatureServiceForWC, times(1)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-        }
-
-        @Test
-        void shallUseWebcertImplementationIfCSReturnsNull() {
-            doReturn(null).when(signatureServiceForCS).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-
-            signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-            verify(signatureServiceForWC, times(1)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-        }
-
-
-        @Test
-        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
-            final var expectedResult = new SignaturBiljett();
-            doReturn(expectedResult).when(signatureServiceForCS).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-
-            final var actualResult = signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-
-            verify(signatureServiceForWC, times(0)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-            verify(signatureServiceForCS, times(1)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
-            assertEquals(expectedResult, actualResult);
-        }
+      signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+      verify(signatureServiceForWC, times(1))
+          .fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
     }
 
-    @Nested
-    class GrpSignature {
+    @Test
+    void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
+      final var expectedResult = new SignaturBiljett();
+      doReturn(expectedResult)
+          .when(signatureServiceForCS)
+          .fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
 
-        @Test
-        void shallUseWebcertImplementationIfProfileNotActive() {
-            signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
+      final var actualResult =
+          signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
 
-            verify(signatureServiceForWC, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
-        }
+      verify(signatureServiceForWC, times(0))
+          .fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+      verify(signatureServiceForCS, times(1))
+          .fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+      assertEquals(expectedResult, actualResult);
+    }
+  }
 
-        @Test
-        void shallUseWebcertImplementationIfCSReturnsNull() {
-            doReturn(null).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
+  @Nested
+  class NetidSignature {
 
-            signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
-            verify(signatureServiceForWC, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
-        }
+    @Test
+    void shallUseWebcertImplementationIfProfileNotActive() {
+      signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
 
-
-        @Test
-        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
-            final var expectedResult = new SignaturBiljett();
-            doReturn(expectedResult).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
-
-            final var actualResult = signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
-
-            verify(signatureServiceForWC, times(0)).grpSignature(TICKED_ID, SIGN_BYTE);
-            verify(signatureServiceForCS, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
-            assertEquals(expectedResult, actualResult);
-        }
+      verify(signatureServiceForWC, times(1))
+          .netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
     }
 
-    @Nested
-    class SigneringsStatus {
+    @Test
+    void shallUseWebcertImplementationIfCSReturnsNull() {
+      doReturn(null)
+          .when(signatureServiceForCS)
+          .netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
 
-        @Test
-        void shallUseWebcertImplementation() {
-            signCertificateAggregator.signeringsStatus(TICKED_ID);
-            verify(signatureServiceForWC).signeringsStatus(TICKED_ID);
-        }
+      signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+      verify(signatureServiceForWC, times(1))
+          .netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
     }
+
+    @Test
+    void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
+      final var expectedResult = new SignaturBiljett();
+      doReturn(expectedResult)
+          .when(signatureServiceForCS)
+          .netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+
+      final var actualResult =
+          signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+
+      verify(signatureServiceForWC, times(0))
+          .netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+      verify(signatureServiceForCS, times(1))
+          .netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+      assertEquals(expectedResult, actualResult);
+    }
+  }
+
+  @Nested
+  class GrpSignature {
+
+    @Test
+    void shallUseWebcertImplementationIfProfileNotActive() {
+      signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
+
+      verify(signatureServiceForWC, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
+    }
+
+    @Test
+    void shallUseWebcertImplementationIfCSReturnsNull() {
+      doReturn(null).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
+
+      signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
+      verify(signatureServiceForWC, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
+    }
+
+    @Test
+    void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
+      final var expectedResult = new SignaturBiljett();
+      doReturn(expectedResult).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
+
+      final var actualResult = signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
+
+      verify(signatureServiceForWC, times(0)).grpSignature(TICKED_ID, SIGN_BYTE);
+      verify(signatureServiceForCS, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
+      assertEquals(expectedResult, actualResult);
+    }
+  }
+
+  @Nested
+  class SigneringsStatus {
+
+    @Test
+    void shallUseWebcertImplementation() {
+      signCertificateAggregator.signeringsStatus(TICKED_ID);
+      verify(signatureServiceForWC).signeringsStatus(TICKED_ID);
+    }
+  }
 }

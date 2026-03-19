@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,23 +25,23 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
-/**
- * Created by eriklupander on 2015-10-08.
- */
+/** Created by eriklupander on 2015-10-08. */
 // CHECKSTYLE:OFF LineLength
 @Path("/pp-certificate")
-@Api(value = "webcert web user pp-certificate (Fråga/Svar, uthopp privatläkare)", description = "REST API för fråga/svar via uthoppslänk, privatläkare", produces = MediaType.APPLICATION_JSON)
+@Api(
+    value = "webcert web user pp-certificate (Fråga/Svar, uthopp privatläkare)",
+    description = "REST API för fråga/svar via uthoppslänk, privatläkare",
+    produces = MediaType.APPLICATION_JSON)
 public class PrivatePractitionerFragaSvarUthoppController extends FragaSvarUthoppController {
-// CHECKSTYLE:ON LineLength
+  // CHECKSTYLE:ON LineLength
 
-    @Override
-    protected String[] getGrantedRoles() {
-        return new String[]{ROLE_PRIVATLAKARE};
-    }
+  @Override
+  protected String[] getGrantedRoles() {
+    return new String[] {ROLE_PRIVATLAKARE};
+  }
 
-    @Override
-    protected UserOriginType getGrantedRequestOrigin() {
-        return UserOriginType.NORMAL;
-    }
-
+  @Override
+  protected UserOriginType getGrantedRequestOrigin() {
+    return UserOriginType.NORMAL;
+  }
 }

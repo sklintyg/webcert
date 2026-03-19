@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,11 +27,19 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface CommonUnderskriftService {
 
-    SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
-        SignMethod signMethod, String ticketId, String userIpAddress, String certificateXml);
+  SignaturBiljett skapaSigneringsBiljettMedDigest(
+      String intygsId,
+      String intygsTyp,
+      long version,
+      Optional<String> intygJson,
+      SignMethod signMethod,
+      String ticketId,
+      String userIpAddress,
+      String certificateXml);
 
-    SignaturBiljett finalizeSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
-        WebCertUser user);
+  SignaturBiljett finalizeSignature(
+      SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast, WebCertUser user);
 
-    FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat);
+  FinalizedCertificateSignature finalizeSignatureForCS(
+      SignaturBiljett ticket, byte[] signatur, String certifikat);
 }

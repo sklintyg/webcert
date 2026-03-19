@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,101 +37,103 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 public class UnderskriftTestUtil {
 
-    public static final String INTYG_ID = "intyg-1";
-    public static final String INTYG_TYP = "luse";
-    public static final String ENHET_ID = "enhet-1";
-    public static final String PERSON_ID = "19121212-1212";
-    public static final String TICKET_ID = "ticket-1";
-    public static final String USER_IP_ADDRESS = "127.0.0.1";
+  public static final String INTYG_ID = "intyg-1";
+  public static final String INTYG_TYP = "luse";
+  public static final String ENHET_ID = "enhet-1";
+  public static final String PERSON_ID = "19121212-1212";
+  public static final String TICKET_ID = "ticket-1";
+  public static final String USER_IP_ADDRESS = "127.0.0.1";
 
-    public static final String ORDER_REF = "order-ref";
+  public static final String ORDER_REF = "order-ref";
 
-    public static final Long VERSION = 1L;
+  public static final Long VERSION = 1L;
 
-    public static Utkast createUtkast(
-        final String intygId,
-        final long version,
-        final String type,
-        final UtkastStatus status,
-        final String model,
-        final VardpersonReferens vardperson,
-        final String enhetsId,
-        final String personId) {
-        return createUtkast(intygId, version, type, status, model, vardperson, enhetsId, personId, null);
-    }
+  public static Utkast createUtkast(
+      final String intygId,
+      final long version,
+      final String type,
+      final UtkastStatus status,
+      final String model,
+      final VardpersonReferens vardperson,
+      final String enhetsId,
+      final String personId) {
+    return createUtkast(
+        intygId, version, type, status, model, vardperson, enhetsId, personId, null);
+  }
 
-    public static Utkast createUtkast(
-        final String intygId,
-        final long version,
-        final String type,
-        final UtkastStatus status,
-        final String model,
-        final VardpersonReferens vardperson,
-        final String enhetsId,
-        final String personId,
-        final LocalDateTime skapad) {
+  public static Utkast createUtkast(
+      final String intygId,
+      final long version,
+      final String type,
+      final UtkastStatus status,
+      final String model,
+      final VardpersonReferens vardperson,
+      final String enhetsId,
+      final String personId,
+      final LocalDateTime skapad) {
 
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(intygId);
-        utkast.setVersion(version);
-        utkast.setIntygsTyp(type);
-        utkast.setIntygTypeVersion("1.0");
-        utkast.setStatus(status);
-        utkast.setModel(model);
-        utkast.setSkapadAv(vardperson);
-        utkast.setSkapad(skapad);
-        utkast.setSenastSparadAv(vardperson);
-        utkast.setEnhetsId(enhetsId);
-        utkast.setPatientPersonnummer(Personnummer.createPersonnummer(personId).get());
+    Utkast utkast = new Utkast();
+    utkast.setIntygsId(intygId);
+    utkast.setVersion(version);
+    utkast.setIntygsTyp(type);
+    utkast.setIntygTypeVersion("1.0");
+    utkast.setStatus(status);
+    utkast.setModel(model);
+    utkast.setSkapadAv(vardperson);
+    utkast.setSkapad(skapad);
+    utkast.setSenastSparadAv(vardperson);
+    utkast.setEnhetsId(enhetsId);
+    utkast.setPatientPersonnummer(Personnummer.createPersonnummer(personId).get());
 
-        return utkast;
-    }
+    return utkast;
+  }
 
-    public static SignaturBiljett createSignaturBiljett(SignaturStatus status) {
-        return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(TICKET_ID, SignaturTyp.XMLDSIG, SignMethod.NETID_PLUGIN)
-            .withIntygsId(INTYG_ID)
-            .withVersion(VERSION)
-            .withStatus(status)
-            .withSkapad(LocalDateTime.now().minusSeconds(30L))
-            .withHash("hash")
-            .withIntygSignature(buildIntygXMLSignature())
-            .build();
-    }
+  public static SignaturBiljett createSignaturBiljett(SignaturStatus status) {
+    return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(
+            TICKET_ID, SignaturTyp.XMLDSIG, SignMethod.NETID_PLUGIN)
+        .withIntygsId(INTYG_ID)
+        .withVersion(VERSION)
+        .withStatus(status)
+        .withSkapad(LocalDateTime.now().minusSeconds(30L))
+        .withHash("hash")
+        .withIntygSignature(buildIntygXMLSignature())
+        .build();
+  }
 
-    public static IntygXMLDSignature buildIntygXMLSignature() {
-        return IntygXMLDSignature.IntygXMLDSignatureBuilder.anIntygXMLDSignature()
-            .withSignatureType(buildSignature())
-            .withSignedInfoForSigning("<SignedInfo/>")
-            .withIntygJson("json")
-            .withCanonicalizedIntygXml("<intyg/>")
-            .build();
-    }
+  public static IntygXMLDSignature buildIntygXMLSignature() {
+    return IntygXMLDSignature.IntygXMLDSignatureBuilder.anIntygXMLDSignature()
+        .withSignatureType(buildSignature())
+        .withSignedInfoForSigning("<SignedInfo/>")
+        .withIntygJson("json")
+        .withCanonicalizedIntygXml("<intyg/>")
+        .build();
+  }
 
-    private static SignatureType buildSignature() {
-        ObjectFactory of = new ObjectFactory();
-        SignatureType st = of.createSignatureType();
-        SignedInfoType signedInfo = of.createSignedInfoType();
-        ReferenceType reference = of.createReferenceType();
-        reference.setDigestValue("digest".getBytes(Charset.forName("UTF-8")));
-        signedInfo.getReference().add(reference);
-        st.setSignedInfo(signedInfo);
-        return st;
-    }
+  private static SignatureType buildSignature() {
+    ObjectFactory of = new ObjectFactory();
+    SignatureType st = of.createSignatureType();
+    SignedInfoType signedInfo = of.createSignedInfoType();
+    ReferenceType reference = of.createReferenceType();
+    reference.setDigestValue("digest".getBytes(Charset.forName("UTF-8")));
+    signedInfo.getReference().add(reference);
+    st.setSignedInfo(signedInfo);
+    return st;
+  }
 
-    public static VardpersonReferens createVardperson() {
+  public static VardpersonReferens createVardperson() {
 
-        HoSPersonal hoSPerson = createHoSPerson();
-        VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(hoSPerson.getPersonId());
-        vardperson.setNamn(hoSPerson.getFullstandigtNamn());
+    HoSPersonal hoSPerson = createHoSPerson();
+    VardpersonReferens vardperson = new VardpersonReferens();
+    vardperson.setHsaId(hoSPerson.getPersonId());
+    vardperson.setNamn(hoSPerson.getFullstandigtNamn());
 
-        return vardperson;
-    }
+    return vardperson;
+  }
 
-    public static HoSPersonal createHoSPerson() {
-        HoSPersonal hoSPerson = new HoSPersonal();
-        hoSPerson.setPersonId("AAA");
-        hoSPerson.setFullstandigtNamn("Dr Dengroth");
-        return hoSPerson;
-    }
+  public static HoSPersonal createHoSPerson() {
+    HoSPersonal hoSPerson = new HoSPersonal();
+    hoSPerson.setPersonId("AAA");
+    hoSPerson.setFullstandigtNamn("Dr Dengroth");
+    return hoSPerson;
+  }
 }

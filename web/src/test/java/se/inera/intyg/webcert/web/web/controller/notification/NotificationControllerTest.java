@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.notification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,174 +48,143 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 @ExtendWith(MockitoExtension.class)
 class NotificationControllerTest {
 
-    private static final String ID = "ID";
-    private static final Integer COUNT = 2;
-    private static final SendNotificationsForCertificatesRequestDTO CERTIFICATE_REQUEST =
-        SendNotificationsForCertificatesRequestDTO.builder()
-            .certificateIds(List.of(ID))
-            .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
-            .build();
-    private static final CountNotificationsForCertificatesRequestDTO CERTIFICATE_COUNT_REQUEST =
-        CountNotificationsForCertificatesRequestDTO.builder()
-            .certificateIds(List.of(ID))
-            .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
-            .build();
-    private static final SendNotificationsForUnitsRequestDTO UNITS_REQUEST = SendNotificationsForUnitsRequestDTO.builder()
-        .unitIds(List.of(ID))
-        .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
-        .activationTime(LocalDateTime.now())
-        .start(LocalDateTime.now())
-        .end(LocalDateTime.now())
-        .build();
-    private static final CountNotificationsForUnitsRequestDTO UNITS_COUNT_REQUEST = CountNotificationsForUnitsRequestDTO.builder()
-        .unitIds(List.of(ID))
-        .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
-        .activationTime(LocalDateTime.now())
-        .start(LocalDateTime.now())
-        .end(LocalDateTime.now())
-        .build();
-    private static final SendNotificationsForCareGiverRequestDTO CARE_GIVER_REQUEST = SendNotificationsForCareGiverRequestDTO.builder()
-        .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
-        .activationTime(LocalDateTime.now())
-        .start(LocalDateTime.now())
-        .end(LocalDateTime.now())
-        .build();
-    private static final CountNotificationsForCareGiverRequestDTO CARE_GIVER_COUNT_REQUEST =
-        CountNotificationsForCareGiverRequestDTO.builder()
-            .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
-            .build();
+  private static final String ID = "ID";
+  private static final Integer COUNT = 2;
+  private static final SendNotificationsForCertificatesRequestDTO CERTIFICATE_REQUEST =
+      SendNotificationsForCertificatesRequestDTO.builder()
+          .certificateIds(List.of(ID))
+          .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+          .build();
+  private static final CountNotificationsForCertificatesRequestDTO CERTIFICATE_COUNT_REQUEST =
+      CountNotificationsForCertificatesRequestDTO.builder()
+          .certificateIds(List.of(ID))
+          .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+          .build();
+  private static final SendNotificationsForUnitsRequestDTO UNITS_REQUEST =
+      SendNotificationsForUnitsRequestDTO.builder()
+          .unitIds(List.of(ID))
+          .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+          .activationTime(LocalDateTime.now())
+          .start(LocalDateTime.now())
+          .end(LocalDateTime.now())
+          .build();
+  private static final CountNotificationsForUnitsRequestDTO UNITS_COUNT_REQUEST =
+      CountNotificationsForUnitsRequestDTO.builder()
+          .unitIds(List.of(ID))
+          .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+          .activationTime(LocalDateTime.now())
+          .start(LocalDateTime.now())
+          .end(LocalDateTime.now())
+          .build();
+  private static final SendNotificationsForCareGiverRequestDTO CARE_GIVER_REQUEST =
+      SendNotificationsForCareGiverRequestDTO.builder()
+          .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+          .activationTime(LocalDateTime.now())
+          .start(LocalDateTime.now())
+          .end(LocalDateTime.now())
+          .build();
+  private static final CountNotificationsForCareGiverRequestDTO CARE_GIVER_COUNT_REQUEST =
+      CountNotificationsForCareGiverRequestDTO.builder()
+          .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+          .build();
 
+  @Mock private SendNotificationService sendNotificationService;
 
-    @Mock
-    private SendNotificationService sendNotificationService;
+  @Mock private SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
 
-    @Mock
-    private SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
+  @Mock private SendNotificationsForUnitsService sendNotificationsForUnitsService;
 
-    @Mock
-    private SendNotificationsForUnitsService sendNotificationsForUnitsService;
+  @Mock private SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
-    @Mock
-    private SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
+  @InjectMocks private NotificationController notificationController;
 
-    @InjectMocks
-    private NotificationController notificationController;
+  @Nested
+  class SendNotificationsForCertificates {
 
-    @Nested
-    class SendNotificationsForCertificates {
+    @Test
+    void shouldReturnResponseFromService() {
+      when(sendNotificationsForCertificatesService.send(CERTIFICATE_REQUEST))
+          .thenReturn(SendNotificationResponseDTO.builder().count(COUNT).build());
+      final var response =
+          notificationController.sendNotificationsForCertificates(CERTIFICATE_REQUEST);
 
-
-        @Test
-        void shouldReturnResponseFromService() {
-            when(sendNotificationsForCertificatesService.send(CERTIFICATE_REQUEST))
-                .thenReturn(
-                    SendNotificationResponseDTO.builder()
-                        .count(COUNT)
-                        .build()
-                );
-            final var response = notificationController.sendNotificationsForCertificates(CERTIFICATE_REQUEST);
-
-            assertEquals(COUNT, response.getCount());
-        }
-
-        @Test
-        void shouldReturnResponseFromCount() {
-            when(sendNotificationsForCertificatesService.count( CERTIFICATE_COUNT_REQUEST))
-                .thenReturn(
-                    CountNotificationResponseDTO.builder()
-                        .count(COUNT)
-                        .max(COUNT+1)
-                        .build()
-                );
-            final var response = notificationController.countNotificationsForCertificates(CERTIFICATE_COUNT_REQUEST);
-
-            assertEquals(COUNT, response.getCount());
-            assertEquals(COUNT+1, response.getMax());
-        }
+      assertEquals(COUNT, response.getCount());
     }
 
-    @Nested
-    class SendNotification {
+    @Test
+    void shouldReturnResponseFromCount() {
+      when(sendNotificationsForCertificatesService.count(CERTIFICATE_COUNT_REQUEST))
+          .thenReturn(CountNotificationResponseDTO.builder().count(COUNT).max(COUNT + 1).build());
+      final var response =
+          notificationController.countNotificationsForCertificates(CERTIFICATE_COUNT_REQUEST);
 
-        @BeforeEach
-        void setup() {
-            when(sendNotificationService.send(ID))
-                .thenReturn(
-                    SendNotificationResponseDTO.builder()
-                        .count(COUNT)
-                        .build()
-                );
-        }
+      assertEquals(COUNT, response.getCount());
+      assertEquals(COUNT + 1, response.getMax());
+    }
+  }
 
-        @Test
-        void shouldReturnResponseFromService() {
-            final var response = notificationController.sendNotification(ID);
+  @Nested
+  class SendNotification {
 
-            assertEquals(COUNT, response.getCount());
-        }
+    @BeforeEach
+    void setup() {
+      when(sendNotificationService.send(ID))
+          .thenReturn(SendNotificationResponseDTO.builder().count(COUNT).build());
     }
 
-    @Nested
-    class SendNotificationsForUnits {
+    @Test
+    void shouldReturnResponseFromService() {
+      final var response = notificationController.sendNotification(ID);
 
-        @Test
-        void shouldReturnResponseFromService() {
-            when(sendNotificationsForUnitsService.send(UNITS_REQUEST))
-                .thenReturn(
-                    SendNotificationResponseDTO.builder()
-                        .count(COUNT)
-                        .build()
-                );
-            final var response = notificationController.sendNotificationsForUnits(UNITS_REQUEST);
+      assertEquals(COUNT, response.getCount());
+    }
+  }
 
-            assertEquals(COUNT, response.getCount());
-        }
+  @Nested
+  class SendNotificationsForUnits {
 
-        @Test
-        void shouldReturnResponseFromCount() {
-            when(sendNotificationsForUnitsService.count( UNITS_COUNT_REQUEST))
-                .thenReturn(
-                    CountNotificationResponseDTO.builder()
-                        .count(COUNT)
-                        .max(COUNT+1)
-                        .build()
-                );
-            final var response = notificationController.countNotificationsForUnits(UNITS_COUNT_REQUEST);
+    @Test
+    void shouldReturnResponseFromService() {
+      when(sendNotificationsForUnitsService.send(UNITS_REQUEST))
+          .thenReturn(SendNotificationResponseDTO.builder().count(COUNT).build());
+      final var response = notificationController.sendNotificationsForUnits(UNITS_REQUEST);
 
-            assertEquals(COUNT, response.getCount());
-            assertEquals(COUNT+1, response.getMax());
-        }
+      assertEquals(COUNT, response.getCount());
     }
 
-    @Nested
-    class SendNotificationsForCareGiver {
+    @Test
+    void shouldReturnResponseFromCount() {
+      when(sendNotificationsForUnitsService.count(UNITS_COUNT_REQUEST))
+          .thenReturn(CountNotificationResponseDTO.builder().count(COUNT).max(COUNT + 1).build());
+      final var response = notificationController.countNotificationsForUnits(UNITS_COUNT_REQUEST);
 
-        @Test
-        void shouldReturnResponseFromService() {
-            when(sendNotificationsForCareGiverService.send("ID", CARE_GIVER_REQUEST))
-                .thenReturn(
-                    SendNotificationResponseDTO.builder()
-                        .count(COUNT)
-                        .build()
-                );
-            final var response = notificationController.sendNotificationsForCareGiver("ID", CARE_GIVER_REQUEST);
-
-            assertEquals(COUNT, response.getCount());
-        }
-
-        @Test
-        void shouldReturnResponseFromCount() {
-            when(sendNotificationsForCareGiverService.count("ID", CARE_GIVER_COUNT_REQUEST))
-                .thenReturn(
-                    CountNotificationResponseDTO.builder()
-                        .count(COUNT)
-                        .max(COUNT+1)
-                        .build()
-                );
-            final var response = notificationController.countNotificationsForCareGiver("ID", CARE_GIVER_COUNT_REQUEST);
-
-            assertEquals(COUNT, response.getCount());
-            assertEquals(COUNT+1, response.getMax());
-        }
+      assertEquals(COUNT, response.getCount());
+      assertEquals(COUNT + 1, response.getMax());
     }
+  }
+
+  @Nested
+  class SendNotificationsForCareGiver {
+
+    @Test
+    void shouldReturnResponseFromService() {
+      when(sendNotificationsForCareGiverService.send("ID", CARE_GIVER_REQUEST))
+          .thenReturn(SendNotificationResponseDTO.builder().count(COUNT).build());
+      final var response =
+          notificationController.sendNotificationsForCareGiver("ID", CARE_GIVER_REQUEST);
+
+      assertEquals(COUNT, response.getCount());
+    }
+
+    @Test
+    void shouldReturnResponseFromCount() {
+      when(sendNotificationsForCareGiverService.count("ID", CARE_GIVER_COUNT_REQUEST))
+          .thenReturn(CountNotificationResponseDTO.builder().count(COUNT).max(COUNT + 1).build());
+      final var response =
+          notificationController.countNotificationsForCareGiver("ID", CARE_GIVER_COUNT_REQUEST);
+
+      assertEquals(COUNT, response.getCount());
+      assertEquals(COUNT + 1, response.getMax());
+    }
+  }
 }

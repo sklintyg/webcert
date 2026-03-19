@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import java.util.List;
@@ -32,68 +31,70 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
 @Service("getCertificateInternalPdfFromWC")
-public class GetGetCertificatePdfService implements se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificatePdfService {
+public class GetGetCertificatePdfService
+    implements se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificatePdfService {
 
-    private final GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
-    private final IntygModuleRegistry moduleRegistry;
+  private final GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
+  private final IntygModuleRegistry moduleRegistry;
 
-    private static final String DONT_DISPLAY_DIAGNOSIS_ID = "!diagnoser";
-    private static final List<String> OPTIONAL_FIELDS = List.of(DONT_DISPLAY_DIAGNOSIS_ID, "!onskarFormedlaDiagnos");
+  private static final String DONT_DISPLAY_DIAGNOSIS_ID = "!diagnoser";
+  private static final List<String> OPTIONAL_FIELDS =
+      List.of(DONT_DISPLAY_DIAGNOSIS_ID, "!onskarFormedlaDiagnos");
 
-    public GetGetCertificatePdfService(GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService,
-        IntygModuleRegistry moduleRegistry) {
-        this.getRequiredFieldsForCertificatePdfService = getRequiredFieldsForCertificatePdfService;
-        this.moduleRegistry = moduleRegistry;
-    }
+  public GetGetCertificatePdfService(
+      GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService,
+      IntygModuleRegistry moduleRegistry) {
+    this.getRequiredFieldsForCertificatePdfService = getRequiredFieldsForCertificatePdfService;
+    this.moduleRegistry = moduleRegistry;
+  }
 
-    @Override
-    public CertificatePdfResponseDTO get(String customizationId, String certificateId, String personId) {
-        final var requiredFieldsForCertificatePdf = getRequiredFieldsForCertificatePdfService.get(certificateId);
+  @Override
+  public CertificatePdfResponseDTO get(
+      String customizationId, String certificateId, String personId) {
+    final var requiredFieldsForCertificatePdf =
+        getRequiredFieldsForCertificatePdfService.get(certificateId);
 
-        final var moduleApi = getModuleApi(
+    final var moduleApi =
+        getModuleApi(
             requiredFieldsForCertificatePdf.getCertificateType(),
-            requiredFieldsForCertificatePdf.getCertificateTypeVersion()
-        );
+            requiredFieldsForCertificatePdf.getCertificateTypeVersion());
 
-        final var pdfResponse = getPdfResponse(
+    final var pdfResponse =
+        getPdfResponse(
             customizationId,
             moduleApi,
             requiredFieldsForCertificatePdf.getInternalJsonModel(),
             requiredFieldsForCertificatePdf.getStatuses(),
-            requiredFieldsForCertificatePdf.getStatus()
-        );
+            requiredFieldsForCertificatePdf.getStatus());
 
-        return CertificatePdfResponseDTO.create(
-            pdfResponse.getFilename(),
-            pdfResponse.getPdfData()
-        );
-    }
+    return CertificatePdfResponseDTO.create(pdfResponse.getFilename(), pdfResponse.getPdfData());
+  }
 
-    private ModuleApi getModuleApi(String certificateType, String certificateTypeVersion) {
-        try {
-            return moduleRegistry.getModuleApi(
-                certificateType,
-                certificateTypeVersion
-            );
-        } catch (ModuleNotFoundException exception) {
-            throw new IllegalStateException(
-                String.format("Module api not found with typeVersion '%s' and type '%s'",
-                    certificateTypeVersion,
-                    certificateType
-                )
-            );
-        }
+  private ModuleApi getModuleApi(String certificateType, String certificateTypeVersion) {
+    try {
+      return moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
+    } catch (ModuleNotFoundException exception) {
+      throw new IllegalStateException(
+          String.format(
+              "Module api not found with typeVersion '%s' and type '%s'",
+              certificateTypeVersion, certificateType));
     }
+  }
 
-    private PdfResponse getPdfResponse(String customizationId, ModuleApi moduleApi, String jsonModel, List<Status> statuses,
-        UtkastStatus status) {
-        try {
-            if (DONT_DISPLAY_DIAGNOSIS_ID.equals(customizationId)) {
-                return moduleApi.pdfEmployer(jsonModel, statuses, ApplicationOrigin.MINA_INTYG, OPTIONAL_FIELDS, status);
-            }
-            return moduleApi.pdf(jsonModel, statuses, ApplicationOrigin.MINA_INTYG, status);
-        } catch (ModuleException exception) {
-            throw new IllegalStateException("Unable to get pdf from module api implementation");
-        }
+  private PdfResponse getPdfResponse(
+      String customizationId,
+      ModuleApi moduleApi,
+      String jsonModel,
+      List<Status> statuses,
+      UtkastStatus status) {
+    try {
+      if (DONT_DISPLAY_DIAGNOSIS_ID.equals(customizationId)) {
+        return moduleApi.pdfEmployer(
+            jsonModel, statuses, ApplicationOrigin.MINA_INTYG, OPTIONAL_FIELDS, status);
+      }
+      return moduleApi.pdf(jsonModel, statuses, ApplicationOrigin.MINA_INTYG, status);
+    } catch (ModuleException exception) {
+      throw new IllegalStateException("Unable to get pdf from module api implementation");
     }
+  }
 }

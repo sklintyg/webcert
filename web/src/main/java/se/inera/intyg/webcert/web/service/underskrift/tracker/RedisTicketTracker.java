@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,13 +23,13 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 public interface RedisTicketTracker {
 
-    void trackBiljett(SignaturBiljett signaturBiljett);
+  void trackBiljett(SignaturBiljett signaturBiljett);
 
-    SignaturBiljett findBiljett(String ticketId);
+  SignaturBiljett findBiljett(String ticketId);
 
-    SignaturBiljett updateStatus(String ticketId, SignaturStatus status);
+  SignaturBiljett updateStatus(String ticketId, SignaturStatus status);
 
-    void updateAutoStartToken(String ticketId, String autoStartToken);
+  void updateAutoStartToken(String ticketId, String autoStartToken);
 
-    void updateQrCodeProperties(String ticketId, String qrStartToken, String qrStartSecret);
+  void updateQrCodeProperties(String ticketId, String qrStartToken, String qrStartSecret);
 }

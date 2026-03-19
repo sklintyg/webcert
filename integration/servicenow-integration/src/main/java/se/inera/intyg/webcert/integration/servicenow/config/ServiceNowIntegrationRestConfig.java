@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,22 +27,22 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class ServiceNowIntegrationRestConfig {
 
-    @Value("${servicenow.connection.request.timeout}")
-    private int connectionRequestTimeout;
+  @Value("${servicenow.connection.request.timeout}")
+  private int connectionRequestTimeout;
 
-    @Value("${servicenow.connection.timeout}")
-    private int connectionTimeout;
+  @Value("${servicenow.connection.timeout}")
+  private int connectionTimeout;
 
-    @Value("${servicenow.read.timeout}")
-    private int readTimeout;
+  @Value("${servicenow.read.timeout}")
+  private int readTimeout;
 
-    private static final String SUBSCRIPTION_SERVICE_REST_TEMPLATE = "serviceNowRestTemplate";
+  private static final String SUBSCRIPTION_SERVICE_REST_TEMPLATE = "serviceNowRestTemplate";
 
-    @Bean(SUBSCRIPTION_SERVICE_REST_TEMPLATE)
-    RestTemplate restTemplate() {
-        final var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-        httpRequestFactory.setConnectionRequestTimeout(connectionRequestTimeout);
-        httpRequestFactory.setConnectTimeout(connectionTimeout);
-        return new RestTemplate(httpRequestFactory);
-    }
+  @Bean(SUBSCRIPTION_SERVICE_REST_TEMPLATE)
+  RestTemplate restTemplate() {
+    final var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+    httpRequestFactory.setConnectionRequestTimeout(connectionRequestTimeout);
+    httpRequestFactory.setConnectTimeout(connectionTimeout);
+    return new RestTemplate(httpRequestFactory);
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -81,585 +81,671 @@ import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
 
-    public static final String CREATE_REPLACEMENT = "create replacement";
-    public static final String ORIGINAL_CERTIFICATE_IS_REVOKED = "Original certificate is revoked";
-    public static final String CREATE_RENEWAL = "create renewal";
-    private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
-    @Autowired
-    private IntygService intygService;
+  public static final String CREATE_REPLACEMENT = "create replacement";
+  public static final String ORIGINAL_CERTIFICATE_IS_REVOKED = "Original certificate is revoked";
+  public static final String CREATE_RENEWAL = "create renewal";
+  private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
+  @Autowired private IntygService intygService;
 
-    @Autowired
-    private CertificateRelationService certificateRelationService;
+  @Autowired private CertificateRelationService certificateRelationService;
 
-    @Autowired
-    private UtkastRepository utkastRepository;
+  @Autowired private UtkastRepository utkastRepository;
 
-    @Autowired
-    private PUService puService;
+  @Autowired private PUService puService;
 
-    @Autowired
-    @Qualifier("copyCompletionUtkastBuilder")
-    private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
+  @Autowired
+  @Qualifier("copyCompletionUtkastBuilder") private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
 
-    @Autowired
-    @Qualifier("createRenewalUtkastBuilder")
-    private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
+  @Autowired
+  @Qualifier("createRenewalUtkastBuilder") private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
 
-    @Autowired
-    @Qualifier("createReplacementUtkastBuilder")
-    private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
+  @Autowired
+  @Qualifier("createReplacementUtkastBuilder") private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
 
-    @Autowired
-    @Qualifier("createUtkastFromTemplateBuilder")
-    private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastFromTemplateBuilder;
+  @Autowired
+  @Qualifier("createUtkastFromTemplateBuilder") private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastFromTemplateBuilder;
 
-    @Autowired
-    @Qualifier("createUtkastCopyBuilder")
-    private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastCopyBuilder;
+  @Autowired
+  @Qualifier("createUtkastCopyBuilder") private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastCopyBuilder;
 
-    @Autowired
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    @Autowired
-    private NotificationService notificationService;
+  @Autowired private NotificationService notificationService;
 
-    @Autowired
-    private CertificateEventService certificateEventService;
+  @Autowired private CertificateEventService certificateEventService;
 
-    @Autowired
-    private LogService logService;
+  @Autowired private LogService logService;
 
-    @Autowired
-    private LogRequestFactory logRequestFactory;
+  @Autowired private LogRequestFactory logRequestFactory;
 
-    @Autowired
-    private MonitoringLogService monitoringService;
+  @Autowired private MonitoringLogService monitoringService;
 
-    @Autowired
-    private WebCertUserService userService;
+  @Autowired private WebCertUserService userService;
 
-    @Autowired
-    private UtkastService utkastService;
+  @Autowired private UtkastService utkastService;
 
-    @Autowired
-    private ReferensService referensService;
+  @Autowired private ReferensService referensService;
 
-    @Autowired
-    private UtkastServiceHelper utkastServiceHelper;
+  @Autowired private UtkastServiceHelper utkastServiceHelper;
 
-    @Autowired
-    private CertificateAccessServiceHelper certificateAccessServiceHelper;
+  @Autowired private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
-    @Autowired
-    private DraftAccessServiceHelper draftAccessServiceHelper;
+  @Autowired private DraftAccessServiceHelper draftAccessServiceHelper;
 
-    @Autowired
-    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
+  @Autowired private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
+  @Autowired private PatientDetailsResolver patientDetailsResolver;
 
-    @Autowired
-    private HashUtility hashUtility;
+  @Autowired private HashUtility hashUtility;
 
-    @Autowired
-    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @Autowired
-    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-    @Override
-    public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {
-        String originalIntygId = copyRequest.getOriginalIntygId();
+  @Override
+  public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {
+    String originalIntygId = copyRequest.getOriginalIntygId();
 
-        LOG.debug("Creating completion to intyg '{}'", originalIntygId);
-        WebCertUser user = userService.getUser();
+    LOG.debug("Creating completion to intyg '{}'", originalIntygId);
+    WebCertUser user = userService.getUser();
 
-        try {
-            final Utlatande utlatande = utkastServiceHelper.getUtlatande(copyRequest.getOriginalIntygId(),
-                copyRequest.getOriginalIntygTyp(),
-                false);
+    try {
+      final Utlatande utlatande =
+          utkastServiceHelper.getUtlatande(
+              copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), false);
 
-            certificateAccessServiceHelper.validateAccessToAnswerComplementQuestion(utlatande, true);
+      certificateAccessServiceHelper.validateAccessToAnswerComplementQuestion(utlatande, true);
 
-            addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utlatande.getGrundData().isTestIntyg());
+      addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utlatande.getGrundData().isTestIntyg());
 
-            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp())) {
-                LOG.debug("Cannot create completion copy of certificate with id '{}', the certificate is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
-            }
-            UtkastBuilderResponse builderResponse = buildCompletionUtkastBuilderResponse(copyRequest, originalIntygId, true);
+      if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp())) {
+        LOG.debug(
+            "Cannot create completion copy of certificate with id '{}', the certificate is revoked",
+            originalIntygId);
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
+      }
+      UtkastBuilderResponse builderResponse =
+          buildCompletionUtkastBuilderResponse(copyRequest, originalIntygId, true);
 
-            if (copyRequest.isDjupintegrerad()) {
-                checkIntegreradEnhet(builderResponse);
-            }
+      if (copyRequest.isDjupintegrerad()) {
+        checkIntegreradEnhet(builderResponse);
+      }
 
-            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.KOMPLETTERAR, originalIntygId);
+      Utkast savedUtkast =
+          saveAndNotify(builderResponse, user, EventCode.KOMPLETTERAR, originalIntygId);
 
-            monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
-            publishCertificateAnalyticsMessage.publishEvent(
-                certificateAnalyticsMessageFactory.certificateComplemented(savedUtkast)
-            );
+      monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
+      publishCertificateAnalyticsMessage.publishEvent(
+          certificateAnalyticsMessageFactory.certificateComplemented(savedUtkast));
 
-            return new CreateCompletionCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
-                savedUtkast.getIntygsId(), originalIntygId);
+      return new CreateCompletionCopyResponse(
+          savedUtkast.getIntygsTyp(),
+          savedUtkast.getIntygTypeVersion(),
+          savedUtkast.getIntygsId(),
+          originalIntygId);
 
-        } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
+    } catch (ModuleException | ModuleNotFoundException me) {
+      LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+    }
+  }
+
+  @Override
+  public CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest) {
+    String originalIntygId = copyRequest.getOriginalIntygId();
+
+    LOG.debug("Creating renewal for intyg '{}'", originalIntygId);
+
+    try {
+      final Utlatande utlatande =
+          utkastServiceHelper.getUtlatande(
+              copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), false);
+
+      certificateAccessServiceHelper.validateAccessToRenew(utlatande);
+
+      addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utlatande.getGrundData().isTestIntyg());
+
+      if (intygService.isRevoked(
+          copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp())) {
+        LOG.debug(
+            "Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
+      }
+
+      verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), CREATE_RENEWAL);
+      verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), CREATE_RENEWAL);
+      verifySigned(utlatande, CREATE_RENEWAL);
+
+      UtkastBuilderResponse builderResponse =
+          buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId);
+
+      if (copyRequest.isDjupintegrerad()) {
+        checkIntegreradEnhet(builderResponse);
+      }
+
+      final var user = userService.getUser();
+      Utkast savedUtkast =
+          saveAndNotify(builderResponse, user, EventCode.FORLANGER, originalIntygId);
+
+      monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
+
+      final var analyticsMessage =
+          certificateAnalyticsMessageFactory.certificateRenewed(savedUtkast);
+      publishCertificateAnalyticsMessage.publishEvent(analyticsMessage);
+
+      return new CreateRenewalCopyResponse(
+          savedUtkast.getIntygsTyp(),
+          savedUtkast.getIntygTypeVersion(),
+          savedUtkast.getIntygsId(),
+          originalIntygId);
+
+    } catch (ModuleException | ModuleNotFoundException me) {
+      LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+    }
+  }
+
+  @Override
+  @Transactional
+  public CreateReplacementCopyResponse createReplacementCopy(
+      CreateReplacementCopyRequest replacementRequest) {
+
+    String originalIntygId = replacementRequest.getOriginalIntygId();
+    WebCertUser user = userService.getUser();
+
+    LOG.debug("Creating replacement copy of intyg '{}'", originalIntygId);
+
+    try {
+      final Utlatande utlatande =
+          utkastServiceHelper.getUtlatande(
+              replacementRequest.getOriginalIntygId(),
+              replacementRequest.getOriginalIntygTyp(),
+              false);
+
+      certificateAccessServiceHelper.validateAccessToReplace(utlatande);
+
+      addTestIntygFlagIfNecessaryToCopyRequest(
+          replacementRequest, utlatande.getGrundData().isTestIntyg());
+
+      if (intygService.isRevoked(
+          replacementRequest.getOriginalIntygId(), replacementRequest.getTyp())) {
+        LOG.debug(
+            "Cannot create replacement certificate for id '{}', the certificate is revoked",
+            originalIntygId);
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.INVALID_STATE,
+            "Can not create replacement copy - Original certificate is revoked");
+      }
+      verifyNotReplaced(originalIntygId, CREATE_REPLACEMENT);
+      verifyNotComplementedWithSigned(originalIntygId, CREATE_REPLACEMENT);
+      verifySigned(utlatande, CREATE_REPLACEMENT);
+
+      UtkastBuilderResponse builderResponse =
+          buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
+
+      if (replacementRequest.isDjupintegrerad()) {
+        checkIntegreradEnhet(builderResponse);
+      }
+
+      Utkast savedUtkast =
+          saveAndNotify(builderResponse, user, EventCode.ERSATTER, originalIntygId);
+
+      monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
+
+      final var analyticsMessage =
+          certificateAnalyticsMessageFactory.certificateReplace(savedUtkast);
+      publishCertificateAnalyticsMessage.publishEvent(analyticsMessage);
+
+      return new CreateReplacementCopyResponse(
+          savedUtkast.getIntygsTyp(),
+          savedUtkast.getIntygTypeVersion(),
+          savedUtkast.getIntygsId(),
+          originalIntygId);
+
+    } catch (ModuleException | ModuleNotFoundException me) {
+      LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+    }
+  }
+
+  /**
+   * First, check if the original certificate was issued as a test intyg. If not, check if the
+   * patient currently have the testIndicator-flag.
+   *
+   * @param copyRequest Request to add the TestIntyg-flag for.
+   * @param isSourceATestIntyg If the source intyg is a test intyg.
+   */
+  private void addTestIntygFlagIfNecessaryToCopyRequest(
+      AbstractCreateCopyRequest copyRequest, boolean isSourceATestIntyg) {
+    if (isSourceATestIntyg) {
+      copyRequest.setTestIntyg(isSourceATestIntyg);
+    } else if (patientDetailsResolver.isTestIndicator(copyRequest.getPatient().getPersonId())) {
+      copyRequest.setTestIntyg(true);
+      copyRequest.getPatient().setTestIndicator(true);
+    }
+  }
+
+  @Override
+  public CreateUtkastFromTemplateResponse createUtkastFromSignedTemplate(
+      CreateUtkastFromTemplateRequest templateRequest) {
+    String originalIntygId = templateRequest.getOriginalIntygId();
+
+    LOG.debug("Creating utkast from template (certificate). Certificate = '{}'", originalIntygId);
+
+    try {
+      if (intygService.isRevoked(
+          templateRequest.getOriginalIntygId(), templateRequest.getOriginalIntygTyp())) {
+        LOG.debug(
+            "Cannot create utkast from template. The certificate is revoked. Certificate id = '{}'",
+            originalIntygId);
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
+      }
+
+      // Update patient details here instead of later in the buildUtkastFromTemplateBuilderResponse
+      // method.
+      // We need to validate access logic early and then depend on patient information available.
+      Person patientDetails = updatePatientDetails(templateRequest, false);
+
+      final Utlatande utlatande =
+          utkastServiceHelper.getUtlatande(
+              templateRequest.getOriginalIntygId(), templateRequest.getOriginalIntygTyp(), false);
+
+      certificateAccessServiceHelper.validateAllowCreateDraftFromSignedTemplate(utlatande);
+
+      addTestIntygFlagIfNecessaryToCopyRequest(
+          templateRequest, utlatande.getGrundData().isTestIntyg());
+
+      verifyNotReplacedWithSigned(
+          templateRequest.getOriginalIntygId(), "create utkast from template");
+
+      UtkastBuilderResponse builderResponse =
+          buildUtkastFromSignedTemplateBuilderResponse(templateRequest, patientDetails, true);
+
+      final var user = userService.getUser();
+      Utkast savedUtkast =
+          saveAndNotify(builderResponse, user, EventCode.SKAPATFRAN, originalIntygId);
+
+      monitoringService.logUtkastCreatedTemplateManual(
+          savedUtkast.getIntygsId(),
+          savedUtkast.getIntygsTyp(),
+          savedUtkast.getSkapadAv().getHsaId(),
+          savedUtkast.getEnhetsId(),
+          originalIntygId,
+          templateRequest.getOriginalIntygTyp());
+
+      publishCertificateAnalyticsMessage.publishEvent(
+          certificateAnalyticsMessageFactory.draftCreatedFromCertificate(savedUtkast));
+
+      if (templateRequest.isDjupintegrerad()) {
+        checkIntegreradEnhet(builderResponse);
+      }
+
+      return new CreateUtkastFromTemplateResponse(
+          savedUtkast.getIntygsTyp(),
+          savedUtkast.getIntygTypeVersion(),
+          savedUtkast.getIntygsId(),
+          originalIntygId);
+
+    } catch (ModuleException | ModuleNotFoundException me) {
+      LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+    }
+  }
+
+  @Override
+  public CreateUtkastFromTemplateResponse createUtkastCopy(
+      CreateUtkastFromTemplateRequest copyRequest) {
+    String originalIntygId = copyRequest.getOriginalIntygId();
+
+    LOG.debug("Creating utkast from utkast certificate '{}'", originalIntygId);
+
+    try {
+      if (intygService.isRevoked(
+          copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp())) {
+        LOG.debug(
+            "Cannot create utkast from utkast certificate with id '{}', the certificate is revoked",
+            originalIntygId);
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
+      }
+
+      Utkast utkast =
+          utkastService.getDraft(
+              copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), false);
+
+      lockedDraftAccessServiceHelper.validateAccessToCopy(utkast);
+
+      addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utkast.isTestIntyg());
+
+      // Validate draft locked
+      if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
+        final String message = "Copy failed due to wrong utkast status. Expected '%s' but was '%s'";
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.INVALID_STATE,
+            String.format(message, UtkastStatus.DRAFT_LOCKED.name(), utkast.getStatus().name()));
+      }
+
+      if (utkast.getAterkalladDatum() != null) {
+        LOG.debug(
+            "Cannot create utkast from utkast certificate with id '{}', the utkast is revoked",
+            originalIntygId);
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
+      }
+
+      verifyNoDraftCopy(copyRequest.getOriginalIntygId(), "create utkast copy");
+
+      UtkastBuilderResponse builderResponse =
+          buildUtkastCopyBuilderResponse(copyRequest, originalIntygId);
+
+      final var user = userService.getUser();
+      Utkast savedUtkast =
+          saveAndNotify(builderResponse, user, EventCode.KOPIERATFRAN, originalIntygId);
+
+      if (copyRequest.isDjupintegrerad()) {
+        checkIntegreradEnhet(builderResponse);
+      }
+
+      return new CreateUtkastFromTemplateResponse(
+          savedUtkast.getIntygsTyp(),
+          savedUtkast.getIntygTypeVersion(),
+          savedUtkast.getIntygsId(),
+          originalIntygId);
+
+    } catch (ModuleException | ModuleNotFoundException me) {
+      LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+    }
+  }
+
+  private String getErrorMessageWhenCopyingFails(String originalIntygId) {
+    return "Module exception occured when trying to make a copy of " + originalIntygId;
+  }
+
+  private void verifySigned(final Utlatande utlatande, final String operation) {
+    if (utlatande.getGrundData().getSigneringsdatum() == null) {
+      final String message =
+          MessageFormat.format(
+              "Certificate {0} is not signed, cannot {1} an unsigned certificate",
+              utlatande.getId(), operation);
+      LOG.debug(message);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+    }
+  }
+
+  private void verifyNoDraftCopy(String originalIntygId, String operation) {
+    final Optional<WebcertCertificateRelation> copiedByRelation =
+        certificateRelationService.getNewestRelationOfType(
+            originalIntygId,
+            RelationKod.KOPIA,
+            Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
+    if (copiedByRelation.isPresent()) {
+      String errorString =
+          String.format(
+              "Cannot %s for certificate id '%s', copy already exist with id '%s'",
+              operation, originalIntygId, copiedByRelation.get().getIntygsId());
+      LOG.debug(errorString);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, errorString);
+    }
+  }
+
+  // Duplicate in IntygServiceImpl, refactor.
+  private void verifyNotReplacedWithSigned(String originalIntygId, String operation) {
+    final Optional<WebcertCertificateRelation> replacedByRelation =
+        certificateRelationService.getNewestRelationOfType(
+            originalIntygId, RelationKod.ERSATT, Collections.singletonList(UtkastStatus.SIGNED));
+    if (replacedByRelation.isPresent() && !replacedByRelation.get().isMakulerat()) {
+      String errorString =
+          String.format(
+              "Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
+              operation, originalIntygId, replacedByRelation.get().getIntygsId());
+      LOG.debug(errorString);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE_REPLACED, errorString);
+    }
+  }
+
+  private void verifyNotReplaced(String originalIntygId, String operation) {
+    final Optional<WebcertCertificateRelation> replacedByRelation =
+        certificateRelationService.getNewestRelationOfType(
+            originalIntygId, RelationKod.ERSATT, Arrays.asList(UtkastStatus.values()));
+    if (replacedByRelation.isPresent() && !replacedByRelation.get().isMakulerat()) {
+      String errorString =
+          String.format(
+              "Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
+              operation, originalIntygId, replacedByRelation.get().getIntygsId());
+      LOG.debug(errorString);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INVALID_STATE_REPLACED, errorString);
+    }
+  }
+
+  private void verifyNotComplementedWithSigned(String originalIntygId, String operation) {
+    Optional<WebcertCertificateRelation> complementedByRelation =
+        certificateRelationService.getNewestRelationOfType(
+            originalIntygId, RelationKod.KOMPLT, Arrays.asList(UtkastStatus.SIGNED));
+    if (complementedByRelation.isPresent() && !complementedByRelation.get().isMakulerat()) {
+      String errorString =
+          String.format(
+              "Cannot %s for certificate id '%s', the certificate is complemented by certificate '%s'",
+              operation, originalIntygId, complementedByRelation.get().getIntygsId());
+      LOG.debug(errorString);
+      // COMPLEMENT_INTYG_EXISTS is needed to provide specific error message in frontend, in intyg
+      // list view
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.COMPLEMENT_INTYG_EXISTS, errorString);
+    }
+  }
+
+  private Utkast saveAndNotify(
+      UtkastBuilderResponse builderResponse,
+      WebCertUser user,
+      EventCode eventCode,
+      String originalCertificateId) {
+    builderResponse.getUtkast().setSkapad(LocalDateTime.now());
+
+    Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkast());
+
+    if (user.getParameters() != null
+        && !Strings.isNullOrEmpty(user.getParameters().getReference())) {
+      referensService.saveReferens(savedUtkast.getIntygsId(), user.getParameters().getReference());
+    }
+    notificationService.sendNotificationForDraftCreated(savedUtkast);
+
+    certificateEventService.createCertificateEventFromCopyUtkast(
+        savedUtkast, user.getHsaId(), eventCode, originalCertificateId);
+
+    LOG.debug(
+        "Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
+
+    LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(savedUtkast);
+    logService.logCreateIntyg(logRequest);
+    return savedUtkast;
+  }
+
+  private UtkastBuilderResponse buildCompletionUtkastBuilderResponse(
+      CreateCompletionCopyRequest copyRequest, String originalIntygId, boolean addRelation)
+      throws ModuleNotFoundException, ModuleException {
+
+    Person patientDetails = updatePatientDetails(copyRequest);
+
+    UtkastBuilderResponse builderResponse;
+    if (utkastRepository.existsById(originalIntygId)) {
+      builderResponse =
+          copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(
+              copyRequest, patientDetails, addRelation);
+    } else {
+      builderResponse =
+          copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(
+              copyRequest, patientDetails, addRelation);
     }
 
-    @Override
-    public CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest) {
-        String originalIntygId = copyRequest.getOriginalIntygId();
+    return builderResponse;
+  }
 
-        LOG.debug("Creating renewal for intyg '{}'", originalIntygId);
+  private UtkastBuilderResponse buildRenewalUtkastBuilderResponse(
+      CreateRenewalCopyRequest copyRequest, String originalIntygId)
+      throws ModuleNotFoundException, ModuleException {
 
-        try {
-            final Utlatande utlatande = utkastServiceHelper.getUtlatande(copyRequest.getOriginalIntygId(),
-                copyRequest.getOriginalIntygTyp(),
-                false);
+    Person patientDetails = updatePatientDetails(copyRequest);
 
-            certificateAccessServiceHelper.validateAccessToRenew(utlatande);
-
-            addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utlatande.getGrundData().isTestIntyg());
-
-            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp())) {
-                LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
-            }
-
-            verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), CREATE_RENEWAL);
-            verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), CREATE_RENEWAL);
-            verifySigned(utlatande, CREATE_RENEWAL);
-
-            UtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId);
-
-            if (copyRequest.isDjupintegrerad()) {
-                checkIntegreradEnhet(builderResponse);
-            }
-
-            final var user = userService.getUser();
-            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.FORLANGER, originalIntygId);
-
-            monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
-
-            final var analyticsMessage = certificateAnalyticsMessageFactory.certificateRenewed(savedUtkast);
-            publishCertificateAnalyticsMessage.publishEvent(analyticsMessage);
-
-            return new CreateRenewalCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(), savedUtkast.getIntygsId(),
-                originalIntygId);
-
-        } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
+    UtkastBuilderResponse builderResponse;
+    if (utkastRepository.existsById(originalIntygId)) {
+      builderResponse =
+          createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(
+              copyRequest, patientDetails, true);
+    } else {
+      builderResponse =
+          createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(
+              copyRequest, patientDetails, false);
     }
 
-    @Override
-    @Transactional
-    public CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest replacementRequest) {
+    return builderResponse;
+  }
 
-        String originalIntygId = replacementRequest.getOriginalIntygId();
-        WebCertUser user = userService.getUser();
+  private UtkastBuilderResponse buildUtkastFromSignedTemplateBuilderResponse(
+      CreateUtkastFromTemplateRequest copyRequest, Person patientDetails, boolean addRelation)
+      throws ModuleNotFoundException, ModuleException {
 
-        LOG.debug("Creating replacement copy of intyg '{}'", originalIntygId);
+    return createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(
+        copyRequest, patientDetails, addRelation);
+  }
 
-        try {
-            final Utlatande utlatande = utkastServiceHelper.getUtlatande(replacementRequest.getOriginalIntygId(),
-                replacementRequest.getOriginalIntygTyp(),
-                false);
+  private UtkastBuilderResponse buildUtkastCopyBuilderResponse(
+      CreateUtkastFromTemplateRequest copyRequest, String originalIntygId)
+      throws ModuleNotFoundException, ModuleException {
 
-            certificateAccessServiceHelper.validateAccessToReplace(utlatande);
+    Person patientDetails = updatePatientDetails(copyRequest);
 
-            addTestIntygFlagIfNecessaryToCopyRequest(replacementRequest, utlatande.getGrundData().isTestIntyg());
-
-            if (intygService.isRevoked(replacementRequest.getOriginalIntygId(), replacementRequest.getTyp())) {
-                LOG.debug("Cannot create replacement certificate for id '{}', the certificate is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Can not create replacement copy - Original certificate is revoked");
-            }
-            verifyNotReplaced(originalIntygId, CREATE_REPLACEMENT);
-            verifyNotComplementedWithSigned(originalIntygId, CREATE_REPLACEMENT);
-            verifySigned(utlatande, CREATE_REPLACEMENT);
-
-            UtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
-
-            if (replacementRequest.isDjupintegrerad()) {
-                checkIntegreradEnhet(builderResponse);
-            }
-
-            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.ERSATTER, originalIntygId);
-
-            monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
-
-            final var analyticsMessage = certificateAnalyticsMessageFactory.certificateReplace(savedUtkast);
-            publishCertificateAnalyticsMessage.publishEvent(analyticsMessage);
-
-            return new CreateReplacementCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
-                savedUtkast.getIntygsId(), originalIntygId);
-
-        } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
+    UtkastBuilderResponse builderResponse;
+    if (utkastRepository.existsById(originalIntygId)) {
+      builderResponse =
+          createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(
+              copyRequest, patientDetails, true);
+    } else {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Certificates not found.");
     }
 
-    /**
-     * First, check if the original certificate was issued as a test intyg. If not, check
-     * if the patient currently have the testIndicator-flag.
-     *
-     * @param copyRequest Request to add the TestIntyg-flag for.
-     * @param isSourceATestIntyg If the source intyg is a test intyg.
-     */
-    private void addTestIntygFlagIfNecessaryToCopyRequest(AbstractCreateCopyRequest copyRequest, boolean isSourceATestIntyg) {
-        if (isSourceATestIntyg) {
-            copyRequest.setTestIntyg(isSourceATestIntyg);
-        } else if (patientDetailsResolver.isTestIndicator(copyRequest.getPatient().getPersonId())) {
-            copyRequest.setTestIntyg(true);
-            copyRequest.getPatient().setTestIndicator(true);
-        }
+    return builderResponse;
+  }
+
+  private UtkastBuilderResponse buildReplacementUtkastBuilderResponse(
+      CreateReplacementCopyRequest replacementCopyRequest, String originalIntygId)
+      throws ModuleNotFoundException, ModuleException {
+
+    Person patientDetails = updatePatientDetails(replacementCopyRequest);
+
+    UtkastBuilderResponse builderResponse;
+    if (utkastRepository.existsById(originalIntygId)) {
+      builderResponse =
+          createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(
+              replacementCopyRequest, patientDetails, true);
+    } else {
+      builderResponse =
+          createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(
+              replacementCopyRequest, patientDetails, true);
     }
 
-    @Override
-    public CreateUtkastFromTemplateResponse createUtkastFromSignedTemplate(CreateUtkastFromTemplateRequest templateRequest) {
-        String originalIntygId = templateRequest.getOriginalIntygId();
+    return builderResponse;
+  }
 
-        LOG.debug("Creating utkast from template (certificate). Certificate = '{}'", originalIntygId);
+  private Person updatePatientDetails(AbstractCreateCopyRequest copyRequest) {
+    return updatePatientDetails(copyRequest, true);
+  }
 
-        try {
-            if (intygService.isRevoked(templateRequest.getOriginalIntygId(), templateRequest.getOriginalIntygTyp())) {
-                LOG.debug("Cannot create utkast from template. The certificate is revoked. Certificate id = '{}'", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
-            }
+  private Person updatePatientDetails(
+      AbstractCreateCopyRequest copyRequest, boolean isCopyRequest) {
+    // I djupintegration version 1 (fk7263) kommer inte patientinformation med i copyRequest.
+    // I djupintegration version 3 (nya fkintygen) är patientinformation i copyRequest obligatorisk.
+    if (copyRequest.isDjupintegrerad()) {
+      if (isCopyRequest && !hasRequiredPatientDetails(copyRequest.getPatient())) {
+        return null;
+      }
+      return copyPatientDetailsFromRequest(copyRequest);
+    } else {
+      return refreshPatientDetailsFromPUService(copyRequest);
+    }
+  }
 
-            // Update patient details here instead of later in the buildUtkastFromTemplateBuilderResponse method.
-            // We need to validate access logic early and then depend on patient information available.
-            Person patientDetails = updatePatientDetails(templateRequest, false);
+  private boolean hasRequiredPatientDetails(Patient patient) {
+    // Vid kopiering i djupintegration är alla patient parametrar utom mellannamn obligatoriska
+    return patient != null
+        && !Strings.nullToEmpty(patient.getFornamn()).trim().isEmpty()
+        && !Strings.nullToEmpty(patient.getEfternamn()).trim().isEmpty()
+        && !Strings.nullToEmpty(patient.getPostadress()).trim().isEmpty()
+        && !Strings.nullToEmpty(patient.getPostnummer()).trim().isEmpty()
+        && !Strings.nullToEmpty(patient.getPostort()).trim().isEmpty();
+  }
 
-            final Utlatande utlatande = utkastServiceHelper.getUtlatande(templateRequest.getOriginalIntygId(),
-                templateRequest.getOriginalIntygTyp(),
-                false);
+  private Person copyPatientDetailsFromRequest(AbstractCreateCopyRequest copyRequest) {
+    return new Person(
+        copyRequest.getPatient().getPersonId(),
+        false,
+        false,
+        copyRequest.getPatient().getFornamn(),
+        copyRequest.getPatient().getMellannamn(),
+        copyRequest.getPatient().getEfternamn(),
+        copyRequest.getPatient().getPostadress(),
+        copyRequest.getPatient().getPostnummer(),
+        copyRequest.getPatient().getPostort(),
+        copyRequest.getPatient().isTestIndicator());
+  }
 
-            certificateAccessServiceHelper.validateAllowCreateDraftFromSignedTemplate(utlatande);
+  private Person refreshPatientDetailsFromPUService(AbstractCreateCopyRequest copyRequest) {
+    Personnummer personnummer;
 
-            addTestIntygFlagIfNecessaryToCopyRequest(templateRequest, utlatande.getGrundData().isTestIntyg());
-
-            verifyNotReplacedWithSigned(templateRequest.getOriginalIntygId(), "create utkast from template");
-
-            UtkastBuilderResponse builderResponse = buildUtkastFromSignedTemplateBuilderResponse(templateRequest, patientDetails,
-                true);
-
-            final var user = userService.getUser();
-            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.SKAPATFRAN, originalIntygId);
-
-            monitoringService.logUtkastCreatedTemplateManual(savedUtkast.getIntygsId(), savedUtkast.getIntygsTyp(),
-                savedUtkast.getSkapadAv().getHsaId(), savedUtkast.getEnhetsId(), originalIntygId, templateRequest.getOriginalIntygTyp());
-
-            publishCertificateAnalyticsMessage.publishEvent(
-                certificateAnalyticsMessageFactory.draftCreatedFromCertificate(savedUtkast)
-            );
-
-            if (templateRequest.isDjupintegrerad()) {
-                checkIntegreradEnhet(builderResponse);
-            }
-
-            return new CreateUtkastFromTemplateResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
-                savedUtkast.getIntygsId(), originalIntygId);
-
-        } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
+    if (copyRequest.containsNyttPatientPersonnummer()) {
+      LOG.debug("Request contained a new personnummer to use for the copy");
+      personnummer = copyRequest.getNyttPatientPersonnummer();
+    } else {
+      personnummer = copyRequest.getPatient().getPersonId();
     }
 
-    @Override
-    public CreateUtkastFromTemplateResponse createUtkastCopy(CreateUtkastFromTemplateRequest copyRequest) {
-        String originalIntygId = copyRequest.getOriginalIntygId();
+    LOG.debug("Refreshing person data to use for the copy");
+    PersonSvar personSvar = getPersonSvar(personnummer);
 
-        LOG.debug("Creating utkast from utkast certificate '{}'", originalIntygId);
-
-        try {
-            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp())) {
-                LOG.debug("Cannot create utkast from utkast certificate with id '{}', the certificate is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
-            }
-
-            Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), false);
-
-            lockedDraftAccessServiceHelper.validateAccessToCopy(utkast);
-
-            addTestIntygFlagIfNecessaryToCopyRequest(copyRequest, utkast.isTestIntyg());
-
-            // Validate draft locked
-            if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
-                final String message = "Copy failed due to wrong utkast status. Expected '%s' but was '%s'";
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    String.format(message, UtkastStatus.DRAFT_LOCKED.name(), utkast.getStatus().name()));
-            }
-
-            if (utkast.getAterkalladDatum() != null) {
-                LOG.debug("Cannot create utkast from utkast certificate with id '{}', the utkast is revoked", originalIntygId);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, ORIGINAL_CERTIFICATE_IS_REVOKED);
-            }
-
-            verifyNoDraftCopy(copyRequest.getOriginalIntygId(), "create utkast copy");
-
-            UtkastBuilderResponse builderResponse = buildUtkastCopyBuilderResponse(copyRequest, originalIntygId);
-
-            final var user = userService.getUser();
-            Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.KOPIERATFRAN, originalIntygId);
-
-            if (copyRequest.isDjupintegrerad()) {
-                checkIntegreradEnhet(builderResponse);
-            }
-
-            return new CreateUtkastFromTemplateResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
-                savedUtkast.getIntygsId(), originalIntygId);
-
-        } catch (ModuleException | ModuleNotFoundException me) {
-            LOG.error(getErrorMessageWhenCopyingFails(originalIntygId));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
+    if (PersonSvar.Status.ERROR.equals(personSvar.getStatus())) {
+      LOG.error(
+          "An error occured when using '{}' to lookup person data",
+          hashUtility.hash(personnummer.getPersonnummer()));
+      return null;
+    } else if (PersonSvar.Status.NOT_FOUND.equals(personSvar.getStatus())) {
+      LOG.error(
+          "No person data was found using '{}' to lookup person data",
+          hashUtility.hash(personnummer.getPersonnummer()));
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+          "No person data found using '" + hashUtility.hash(personnummer.getPersonnummer()) + "'");
     }
 
-    private String getErrorMessageWhenCopyingFails(String originalIntygId) {
-        return "Module exception occured when trying to make a copy of " + originalIntygId;
+    return personSvar.getPerson();
+  }
+
+  private PersonSvar getPersonSvar(Personnummer personnummer) {
+    if (personnummer == null) {
+      String errMsg = "No personnummer present. Unable to make a call to PUService";
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, errMsg);
     }
 
-    private void verifySigned(final Utlatande utlatande, final String operation) {
-        if (utlatande.getGrundData().getSigneringsdatum() == null) {
-            final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                utlatande.getId(), operation);
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
-    }
+    return puService.getPerson(personnummer);
+  }
 
-    private void verifyNoDraftCopy(String originalIntygId, String operation) {
-        final Optional<WebcertCertificateRelation> copiedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
-            RelationKod.KOPIA, Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
-        if (copiedByRelation.isPresent()) {
-            String errorString = String.format("Cannot %s for certificate id '%s', copy already exist with id '%s'",
-                operation, originalIntygId, copiedByRelation.get().getIntygsId());
-            LOG.debug(errorString);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                errorString);
-        }
-    }
+  private void checkIntegreradEnhet(UtkastBuilderResponse builderResponse) {
+    String orginalEnhetsId = builderResponse.getOrginalEnhetsId();
+    Utkast utkastCopy = builderResponse.getUtkast();
 
-    // Duplicate in IntygServiceImpl, refactor.
-    private void verifyNotReplacedWithSigned(String originalIntygId, String operation) {
-        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
-            RelationKod.ERSATT, Collections.singletonList(UtkastStatus.SIGNED));
-        if (replacedByRelation.isPresent() && !replacedByRelation.get().isMakulerat()) {
-            String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
-                operation, originalIntygId, replacedByRelation.get().getIntygsId());
-            LOG.debug(errorString);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_REPLACED,
-                errorString);
-        }
-    }
-
-    private void verifyNotReplaced(String originalIntygId, String operation) {
-        final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
-            RelationKod.ERSATT, Arrays.asList(UtkastStatus.values()));
-        if (replacedByRelation.isPresent() && !replacedByRelation.get().isMakulerat()) {
-            String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
-                operation, originalIntygId, replacedByRelation.get().getIntygsId());
-            LOG.debug(errorString);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_REPLACED,
-                errorString);
-        }
-    }
-
-    private void verifyNotComplementedWithSigned(String originalIntygId, String operation) {
-        Optional<WebcertCertificateRelation> complementedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
-            RelationKod.KOMPLT, Arrays.asList(UtkastStatus.SIGNED));
-        if (complementedByRelation.isPresent() && !complementedByRelation.get().isMakulerat()) {
-            String errorString = String.format("Cannot %s for certificate id '%s', the certificate is complemented by certificate '%s'",
-                operation, originalIntygId, complementedByRelation.get().getIntygsId());
-            LOG.debug(errorString);
-            // COMPLEMENT_INTYG_EXISTS is needed to provide specific error message in frontend, in intyg list view
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.COMPLEMENT_INTYG_EXISTS,
-                errorString);
-        }
-    }
-
-    private Utkast saveAndNotify(UtkastBuilderResponse builderResponse, WebCertUser user, EventCode eventCode,
-        String originalCertificateId) {
-        builderResponse.getUtkast().setSkapad(LocalDateTime.now());
-
-        Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkast());
-
-        if (user.getParameters() != null && !Strings.isNullOrEmpty(user.getParameters().getReference())) {
-            referensService.saveReferens(savedUtkast.getIntygsId(), user.getParameters().getReference());
-        }
-        notificationService.sendNotificationForDraftCreated(savedUtkast);
-
-        certificateEventService.createCertificateEventFromCopyUtkast(savedUtkast, user.getHsaId(), eventCode, originalCertificateId);
-
-        LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
-
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(savedUtkast);
-        logService.logCreateIntyg(logRequest);
-        return savedUtkast;
-    }
-
-    private UtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCompletionCopyRequest copyRequest, String originalIntygId,
-        boolean addRelation) throws ModuleNotFoundException, ModuleException {
-
-        Person patientDetails = updatePatientDetails(copyRequest);
-
-        UtkastBuilderResponse builderResponse;
-        if (utkastRepository.existsById(originalIntygId)) {
-            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation);
-        } else {
-            builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
-        }
-
-        return builderResponse;
-    }
-
-    private UtkastBuilderResponse buildRenewalUtkastBuilderResponse(CreateRenewalCopyRequest copyRequest, String originalIntygId)
-        throws ModuleNotFoundException, ModuleException {
-
-        Person patientDetails = updatePatientDetails(copyRequest);
-
-        UtkastBuilderResponse builderResponse;
-        if (utkastRepository.existsById(originalIntygId)) {
-            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
-        } else {
-            builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false);
-        }
-
-        return builderResponse;
-    }
-
-    private UtkastBuilderResponse buildUtkastFromSignedTemplateBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
-        Person patientDetails, boolean addRelation)
-        throws ModuleNotFoundException, ModuleException {
-
-        return createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation);
-    }
-
-    private UtkastBuilderResponse buildUtkastCopyBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
-        String originalIntygId) throws ModuleNotFoundException, ModuleException {
-
-        Person patientDetails = updatePatientDetails(copyRequest);
-
-        UtkastBuilderResponse builderResponse;
-        if (utkastRepository.existsById(originalIntygId)) {
-            builderResponse = createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true);
-        } else {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Certificates not found.");
-        }
-
-        return builderResponse;
-    }
-
-    private UtkastBuilderResponse buildReplacementUtkastBuilderResponse(CreateReplacementCopyRequest replacementCopyRequest,
-        String originalIntygId) throws ModuleNotFoundException, ModuleException {
-
-        Person patientDetails = updatePatientDetails(replacementCopyRequest);
-
-        UtkastBuilderResponse builderResponse;
-        if (utkastRepository.existsById(originalIntygId)) {
-            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(replacementCopyRequest, patientDetails,
-                true);
-        } else {
-            builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(replacementCopyRequest, patientDetails,
-                true);
-        }
-
-        return builderResponse;
-    }
-
-    private Person updatePatientDetails(AbstractCreateCopyRequest copyRequest) {
-        return updatePatientDetails(copyRequest, true);
-    }
-
-    private Person updatePatientDetails(AbstractCreateCopyRequest copyRequest, boolean isCopyRequest) {
-        // I djupintegration version 1 (fk7263) kommer inte patientinformation med i copyRequest.
-        // I djupintegration version 3 (nya fkintygen) är patientinformation i copyRequest obligatorisk.
-        if (copyRequest.isDjupintegrerad()) {
-            if (isCopyRequest && !hasRequiredPatientDetails(copyRequest.getPatient())) {
-                return null;
-            }
-            return copyPatientDetailsFromRequest(copyRequest);
-        } else {
-            return refreshPatientDetailsFromPUService(copyRequest);
-        }
-    }
-
-    private boolean hasRequiredPatientDetails(Patient patient) {
-        // Vid kopiering i djupintegration är alla patient parametrar utom mellannamn obligatoriska
-        return patient != null
-            && !Strings.nullToEmpty(patient.getFornamn()).trim().isEmpty()
-            && !Strings.nullToEmpty(patient.getEfternamn()).trim().isEmpty()
-            && !Strings.nullToEmpty(patient.getPostadress()).trim().isEmpty()
-            && !Strings.nullToEmpty(patient.getPostnummer()).trim().isEmpty()
-            && !Strings.nullToEmpty(patient.getPostort()).trim().isEmpty();
-    }
-
-    private Person copyPatientDetailsFromRequest(AbstractCreateCopyRequest copyRequest) {
-        return new Person(
-            copyRequest.getPatient().getPersonId(),
-            false,
-            false,
-            copyRequest.getPatient().getFornamn(),
-            copyRequest.getPatient().getMellannamn(),
-            copyRequest.getPatient().getEfternamn(),
-            copyRequest.getPatient().getPostadress(),
-            copyRequest.getPatient().getPostnummer(),
-            copyRequest.getPatient().getPostort(),
-            copyRequest.getPatient().isTestIndicator());
-    }
-
-    private Person refreshPatientDetailsFromPUService(AbstractCreateCopyRequest copyRequest) {
-        Personnummer personnummer;
-
-        if (copyRequest.containsNyttPatientPersonnummer()) {
-            LOG.debug("Request contained a new personnummer to use for the copy");
-            personnummer = copyRequest.getNyttPatientPersonnummer();
-        } else {
-            personnummer = copyRequest.getPatient().getPersonId();
-        }
-
-        LOG.debug("Refreshing person data to use for the copy");
-        PersonSvar personSvar = getPersonSvar(personnummer);
-
-        if (PersonSvar.Status.ERROR.equals(personSvar.getStatus())) {
-            LOG.error("An error occured when using '{}' to lookup person data", hashUtility.hash(personnummer.getPersonnummer()));
-            return null;
-        } else if (PersonSvar.Status.NOT_FOUND.equals(personSvar.getStatus())) {
-            LOG.error("No person data was found using '{}' to lookup person data", hashUtility.hash(personnummer.getPersonnummer()));
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                "No person data found using '" + hashUtility.hash(personnummer.getPersonnummer()) + "'");
-        }
-
-        return personSvar.getPerson();
-    }
-
-    private PersonSvar getPersonSvar(Personnummer personnummer) {
-        if (personnummer == null) {
-            String errMsg = "No personnummer present. Unable to make a call to PUService";
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, errMsg);
-        }
-
-        return puService.getPerson(personnummer);
-    }
-
-    private void checkIntegreradEnhet(UtkastBuilderResponse builderResponse) {
-        String orginalEnhetsId = builderResponse.getOrginalEnhetsId();
-        Utkast utkastCopy = builderResponse.getUtkast();
-
-        IntegreradEnhetEntry newEntry = new IntegreradEnhetEntry(utkastCopy.getEnhetsId(), utkastCopy.getEnhetsNamn(),
+    IntegreradEnhetEntry newEntry =
+        new IntegreradEnhetEntry(
+            utkastCopy.getEnhetsId(),
+            utkastCopy.getEnhetsNamn(),
             utkastCopy.getVardgivarId(),
             utkastCopy.getVardgivarNamn());
 
-        integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
-    }
+    integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(
+        orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
+  }
 }

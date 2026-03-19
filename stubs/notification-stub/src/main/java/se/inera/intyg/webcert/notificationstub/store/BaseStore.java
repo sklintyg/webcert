@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,76 +33,78 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
-/**
- * Created by eriklupander on 2017-05-29.
- */
+/** Created by eriklupander on 2017-05-29. */
 public abstract class BaseStore<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BaseStore.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BaseStore.class);
 
-    protected Map<String, String> notificationsMap;
+  protected Map<String, String> notificationsMap;
 
-    protected CustomObjectMapper objectMapper = new CustomObjectMapper();
+  protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 
-    protected final int maxSize = 100;
-    protected final int minSize = 80;
+  protected final int maxSize = 100;
+  protected final int minSize = 80;
 
-    public void put(T request) {
-        try {
-            notificationsMap.put(UUID.randomUUID().toString(), objectMapper.writeValueAsString(request));
-            if (notificationsMap.values().size() >= maxSize) {
-                purge();
-            }
+  public void put(T request) {
+    try {
+      notificationsMap.put(UUID.randomUUID().toString(), objectMapper.writeValueAsString(request));
+      if (notificationsMap.values().size() >= maxSize) {
+        purge();
+      }
 
-        } catch (JsonProcessingException e) {
-            LOG.error(e.getMessage());
-        }
+    } catch (JsonProcessingException e) {
+      LOG.error(e.getMessage());
     }
+  }
 
-    protected void purge() {
+  protected void purge() {
 
-        LOG.debug("NotificationStoreV3 contains {} notifications, pruning old ones...", notificationsMap.values().size());
+    LOG.debug(
+        "NotificationStoreV3 contains {} notifications, pruning old ones...",
+        notificationsMap.values().size());
 
-        List<Pair<String, T>> values = notificationsMap.entrySet().stream()
+    List<Pair<String, T>> values =
+        notificationsMap.entrySet().stream()
             .map(entry -> Pair.of(entry.getKey(), transform(entry.getValue())))
             .filter(Objects::nonNull)
             .sorted(Comparator.comparing(this::getTidpunkt))
             .collect(Collectors.toList());
-        Iterator<Pair<String, T>> iter = values.iterator();
+    Iterator<Pair<String, T>> iter = values.iterator();
 
-        // trim map down to minSize
-        while (notificationsMap.size() > minSize) {
-            Pair<String, T> objToRemove = iter.next();
-            notificationsMap.remove(objToRemove.getKey());
-        }
-
-        LOG.debug("Pruning done! NotificationStoreV3 now contains {} notifications", notificationsMap.size());
+    // trim map down to minSize
+    while (notificationsMap.size() > minSize) {
+      Pair<String, T> objToRemove = iter.next();
+      notificationsMap.remove(objToRemove.getKey());
     }
 
-    protected abstract LocalDateTime getTidpunkt(Pair<String, T> left);
+    LOG.debug(
+        "Pruning done! NotificationStoreV3 now contains {} notifications", notificationsMap.size());
+  }
 
-    public Collection<T> getNotifications() {
-        return notificationsMap.values().stream().map(this::<T>transform)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-    }
+  protected abstract LocalDateTime getTidpunkt(Pair<String, T> left);
 
-    public int size() {
-        return this.notificationsMap.size();
-    }
+  public Collection<T> getNotifications() {
+    return notificationsMap.values().stream()
+        .map(this::<T>transform)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+  }
 
-    public int getMaxSize() {
-        return maxSize;
-    }
+  public int size() {
+    return this.notificationsMap.size();
+  }
 
-    public int getMinSize() {
-        return minSize;
-    }
+  public int getMaxSize() {
+    return maxSize;
+  }
 
-    public void clear() {
-        notificationsMap.clear();
-    }
+  public int getMinSize() {
+    return minSize;
+  }
 
-    protected abstract T transform(String s);
+  public void clear() {
+    notificationsMap.clear();
+  }
 
+  protected abstract T transform(String s);
 }

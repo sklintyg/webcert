@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,37 +33,43 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 
 @Path("/anvandare")
-@Api(value = "intyg (Djupintegration)", description = "REST API för Djupintegration", produces = MediaType.APPLICATION_JSON)
+@Api(
+    value = "intyg (Djupintegration)",
+    description = "REST API för Djupintegration",
+    produces = MediaType.APPLICATION_JSON)
 public class UserIntegrationController extends BaseIntegrationController {
 
-    private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
+  private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
 
-    private static final String[] GRANTED_ROLES = new String[]{
+  private static final String[] GRANTED_ROLES =
+      new String[] {
         AuthoritiesConstants.ROLE_LAKARE,
         AuthoritiesConstants.ROLE_ADMIN,
         AuthoritiesConstants.ROLE_TANDLAKARE,
         AuthoritiesConstants.ROLE_BARNMORSKA,
         AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
-    };
+      };
 
-    @GET
-    @Path("/logout/now")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-integration-logout-user-now", eventType = MdcLogConstants.EVENT_TYPE_USER)
-    public Response logoutUserNow(@Context HttpServletRequest request) {
-        super.validateAuthorities();
-        HttpSession session = request.getSession();
-        getWebCertUserService().removeSessionNow(session);
-        return Response.ok().build();
-    }
+  @GET
+  @Path("/logout/now")
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-integration-logout-user-now",
+      eventType = MdcLogConstants.EVENT_TYPE_USER)
+  public Response logoutUserNow(@Context HttpServletRequest request) {
+    super.validateAuthorities();
+    HttpSession session = request.getSession();
+    getWebCertUserService().removeSessionNow(session);
+    return Response.ok().build();
+  }
 
-    @Override
-    protected String[] getGrantedRoles() {
-        return GRANTED_ROLES;
-    }
+  @Override
+  protected String[] getGrantedRoles() {
+    return GRANTED_ROLES;
+  }
 
-    @Override
-    protected UserOriginType getGrantedRequestOrigin() {
-        return GRANTED_ORIGIN;
-    }
+  @Override
+  protected UserOriginType getGrantedRequestOrigin() {
+    return GRANTED_ORIGIN;
+  }
 }

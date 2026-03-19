@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,30 +35,29 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerReques
 @ExtendWith(MockitoExtension.class)
 class SaveAnswerFromCertificateServiceTest {
 
-    private static final String MESSAGE_ID = "messageId";
-    private static final String MESSAGE = "content";
-    @Mock
-    CSIntegrationService csIntegrationService;
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @InjectMocks
-    SaveAnswerFromCertificateService saveAnswerFromCertificateService;
+  private static final String MESSAGE_ID = "messageId";
+  private static final String MESSAGE = "content";
+  @Mock CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @InjectMocks SaveAnswerFromCertificateService saveAnswerFromCertificateService;
 
-    @Test
-    void shallReturnNullIfCertificateDontExistInCertificateService() {
-        doReturn(false).when(csIntegrationService).messageExists(MESSAGE_ID);
-        assertNull(saveAnswerFromCertificateService.save(MESSAGE_ID, MESSAGE));
-    }
+  @Test
+  void shallReturnNullIfCertificateDontExistInCertificateService() {
+    doReturn(false).when(csIntegrationService).messageExists(MESSAGE_ID);
+    assertNull(saveAnswerFromCertificateService.save(MESSAGE_ID, MESSAGE));
+  }
 
-    @Test
-    void shallReturnSavedQuestionFromCertificateService() {
-        final var expectedQuestion = Question.builder().build();
-        final var saveMessageRequestDTO = SaveAnswerRequestDTO.builder().build();
+  @Test
+  void shallReturnSavedQuestionFromCertificateService() {
+    final var expectedQuestion = Question.builder().build();
+    final var saveMessageRequestDTO = SaveAnswerRequestDTO.builder().build();
 
-        doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
-        doReturn(saveMessageRequestDTO).when(csIntegrationRequestFactory).saveAnswerRequest(MESSAGE);
-        doReturn(expectedQuestion).when(csIntegrationService).saveAnswer(saveMessageRequestDTO, MESSAGE_ID);
+    doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
+    doReturn(saveMessageRequestDTO).when(csIntegrationRequestFactory).saveAnswerRequest(MESSAGE);
+    doReturn(expectedQuestion)
+        .when(csIntegrationService)
+        .saveAnswer(saveMessageRequestDTO, MESSAGE_ID);
 
-        assertEquals(expectedQuestion, saveAnswerFromCertificateService.save(MESSAGE_ID, MESSAGE));
-    }
+    assertEquals(expectedQuestion, saveAnswerFromCertificateService.save(MESSAGE_ID, MESSAGE));
+  }
 }

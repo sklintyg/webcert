@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -54,118 +54,126 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 @RequiredArgsConstructor
 public class DiagnosRepositoryFactory {
 
-    private static final String BOM = "\uFEFF";
-    private static final String ASTERISK_TAB_OR_DAGGER_TAB = "\\u002A\t|\u2020\t";
-    private static final char SPACE = ' ';
+  private static final String BOM = "\uFEFF";
+  private static final String ASTERISK_TAB_OR_DAGGER_TAB = "\\u002A\t|\u2020\t";
+  private static final char SPACE = ' ';
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
 
-    private final IcdCodeConverter icdCodeConverter;
-    private final ResourceLoader resourceLoader;
+  private final IcdCodeConverter icdCodeConverter;
+  private final ResourceLoader resourceLoader;
 
-    public DiagnosRepository createAndInitDiagnosRepository(List<String> filesList, Charset fileEncoding) {
-        try {
+  public DiagnosRepository createAndInitDiagnosRepository(
+      List<String> filesList, Charset fileEncoding) {
+    try {
 
-            DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
+      DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
 
-            log.info("Creating DiagnosRepository from {} files using encoding '{}'", filesList.size(), fileEncoding);
+      log.info(
+          "Creating DiagnosRepository from {} files using encoding '{}'",
+          filesList.size(),
+          fileEncoding);
 
-            for (String file : filesList) {
-                populateRepoFromDiagnosisCodeFile(file, diagnosRepository, fileEncoding);
+      for (String file : filesList) {
+        populateRepoFromDiagnosisCodeFile(file, diagnosRepository, fileEncoding);
+      }
+
+      diagnosRepository.openLuceneIndexReader();
+
+      log.info(
+          "Created DiagnosRepository containing {} diagnoses", diagnosRepository.nbrOfDiagosis());
+
+      return diagnosRepository;
+
+    } catch (IOException e) {
+      throw new IllegalStateException("Failure initiating DiagnosRepository", e);
+    }
+  }
+
+  public void populateRepoFromDiagnosisCodeFile(
+      String fileUrl, DiagnosRepositoryImpl diagnosRepository, Charset fileEncoding) {
+
+    if (Strings.nullToEmpty(fileUrl).trim().isEmpty()) {
+      return;
+    }
+
+    final String location = ResourceUtils.isUrl(fileUrl) ? fileUrl : "file:" + fileUrl;
+
+    LOG.debug("Loading diagnosis from: '{}'", location);
+
+    try {
+      Resource resource = resourceLoader.getResource(location);
+
+      if (!resource.exists()) {
+        LOG.error("Could not load diagnosis file since '{}' does not exists", location);
+        return;
+      }
+
+      int count = 0;
+      IndexWriterConfig idxWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
+      try (IndexWriter idxWriter =
+              new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
+          BufferedReader reader =
+              new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding))) {
+        while (reader.ready()) {
+          String line = reader.readLine();
+          if (line != null) {
+            Diagnos diagnos = createDiagnosFromString(line, count == 0, fileEncoding);
+            if (diagnos != null) {
+              Document doc = new Document();
+              doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
+              doc.add(
+                  new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
+              idxWriter.addDocument(doc);
+
+              count++;
             }
-
-            diagnosRepository.openLuceneIndexReader();
-
-            log.info("Created DiagnosRepository containing {} diagnoses", diagnosRepository.nbrOfDiagosis());
-
-            return diagnosRepository;
-
-        } catch (IOException e) {
-            throw new IllegalStateException("Failure initiating DiagnosRepository", e);
+          }
         }
+      }
+      LOG.info("Loaded {} codes from file {}", count, fileUrl);
+
+    } catch (IOException e) {
+      LOG.error("IOException occured when loading diagnosis file '{}'", fileUrl);
+      throw new IllegalStateException("Failure loading diagnosis file '%s".formatted(fileUrl), e);
+    }
+  }
+
+  public Diagnos createDiagnosFromString(
+      String line, boolean firstLineInFile, Charset fileEncoding) {
+
+    if (Strings.nullToEmpty(line).trim().isEmpty()) {
+      return null;
     }
 
-    public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository,
-        Charset fileEncoding) {
-
-        if (Strings.nullToEmpty(fileUrl).trim().isEmpty()) {
-            return;
-        }
-
-        final String location = ResourceUtils.isUrl(fileUrl) ? fileUrl : "file:" + fileUrl;
-
-        LOG.debug("Loading diagnosis from: '{}'", location);
-
-        try {
-            Resource resource = resourceLoader.getResource(location);
-
-            if (!resource.exists()) {
-                LOG.error("Could not load diagnosis file since '{}' does not exists", location);
-                return;
-            }
-
-            int count = 0;
-            IndexWriterConfig idxWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
-            try (IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(),
-                    fileEncoding))) {
-                while (reader.ready()) {
-                    String line = reader.readLine();
-                    if (line != null) {
-                        Diagnos diagnos = createDiagnosFromString(line, count == 0, fileEncoding);
-                        if (diagnos != null) {
-                            Document doc = new Document();
-                            doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
-                            doc.add(new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
-                            idxWriter.addDocument(doc);
-
-                            count++;
-                        }
-                    }
-                }
-            }
-            LOG.info("Loaded {} codes from file {}", count, fileUrl);
-
-        } catch (IOException e) {
-            LOG.error("IOException occured when loading diagnosis file '{}'", fileUrl);
-            throw new IllegalStateException("Failure loading diagnosis file '%s".formatted(fileUrl), e);
-        }
+    if (fileEncoding.equals(StandardCharsets.UTF_8)) {
+      return icdCodeConverter.convert(line);
     }
 
-    public Diagnos createDiagnosFromString(String line, boolean firstLineInFile, Charset fileEncoding) {
+    String cleanedLine = removeUnwantedCharacters(line, firstLineInFile);
 
-        if (Strings.nullToEmpty(line).trim().isEmpty()) {
-            return null;
-        }
+    int firstSpacePos = cleanedLine.indexOf(SPACE);
 
-        if (fileEncoding.equals(StandardCharsets.UTF_8)) {
-            return icdCodeConverter.convert(line);
-        }
-
-        String cleanedLine = removeUnwantedCharacters(line, firstLineInFile);
-
-        int firstSpacePos = cleanedLine.indexOf(SPACE);
-
-        if (firstSpacePos == -1) {
-            return null;
-        }
-
-        String kodStr = cleanedLine.substring(0, firstSpacePos);
-        String beskStr = cleanedLine.substring(firstSpacePos + 1);
-
-        Diagnos d = new Diagnos();
-        d.setKod(kodStr.toUpperCase());
-        d.setBeskrivning(beskStr);
-
-        return d;
+    if (firstSpacePos == -1) {
+      return null;
     }
 
-    private String removeUnwantedCharacters(String line, boolean firstLineInFile) {
-        String cleanedLine = line;
-        if (firstLineInFile) {
-            cleanedLine = cleanedLine.replaceFirst(BOM, "");
-        }
-        cleanedLine = cleanedLine.replaceFirst(ASTERISK_TAB_OR_DAGGER_TAB, String.valueOf(SPACE));
-        return CharMatcher.whitespace().trimAndCollapseFrom(cleanedLine, SPACE);
+    String kodStr = cleanedLine.substring(0, firstSpacePos);
+    String beskStr = cleanedLine.substring(firstSpacePos + 1);
+
+    Diagnos d = new Diagnos();
+    d.setKod(kodStr.toUpperCase());
+    d.setBeskrivning(beskStr);
+
+    return d;
+  }
+
+  private String removeUnwantedCharacters(String line, boolean firstLineInFile) {
+    String cleanedLine = line;
+    if (firstLineInFile) {
+      cleanedLine = cleanedLine.replaceFirst(BOM, "");
     }
+    cleanedLine = cleanedLine.replaceFirst(ASTERISK_TAB_OR_DAGGER_TAB, String.valueOf(SPACE));
+    return CharMatcher.whitespace().trimAndCollapseFrom(cleanedLine, SPACE);
+  }
 }

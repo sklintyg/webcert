@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,8 +25,8 @@ import se.inera.intyg.infra.integration.ia.jobs.BannerJob;
 @Component
 public class WCBannerJob extends BannerJob {
 
-    @Override
-    protected Application getApplication() {
-        return Application.WEBCERT;
-    }
+  @Override
+  protected Application getApplication() {
+    return Application.WEBCERT;
+  }
 }

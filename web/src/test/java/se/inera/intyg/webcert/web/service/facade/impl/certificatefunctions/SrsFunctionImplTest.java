@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,179 +40,173 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class SrsFunctionImplTest {
 
-    @InjectMocks
-    private SrsFunctionImpl srsFunction;
+  @InjectMocks private SrsFunctionImpl srsFunction;
+
+  @Nested
+  class SrsFunctionTest {
+
+    Certificate certificate;
+    WebCertUser user = new WebCertUser();
+    Map<String, Feature> features = new HashMap<>();
 
     @Nested
-    class SrsFunctionTest {
+    class TestDraft {
 
-        Certificate certificate;
-        WebCertUser user = new WebCertUser();
-        Map<String, Feature> features = new HashMap<>();
+      @BeforeEach
+      void setup() {
+        certificate = new Certificate();
+        final var metadata =
+            CertificateMetadata.builder().type("lisjp").status(CertificateStatus.UNSIGNED).build();
+        certificate.setMetadata(metadata);
+      }
 
-        @Nested
-        class TestDraft {
+      @Nested
+      class SrsFullView {
 
-            @BeforeEach
-            void setup() {
-                certificate = new Certificate();
-                final var metadata = CertificateMetadata.builder()
-                    .type("lisjp")
-                    .status(CertificateStatus.UNSIGNED)
-                    .build();
-                certificate.setMetadata(metadata);
-            }
-
-            @Nested
-            class SrsFullView {
-
-                @Test
-                void shouldReturnResourceLinkIfFeatureIsActivated() {
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertTrue(srsFunction.getSRSFullView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfFeatureIsInactive() {
-                    updateUserFeatures(getFeature(false, "lisjp"));
-                    assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfTypeIsWrong() {
-                    updateUserFeatures(getFeature(true, "wrongType"));
-                    assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfFeatureIsMissing() {
-                    updateUserFeatures(null);
-                    assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
-                }
-            }
-
-            @Nested
-            class SrsMinimizedView {
-
-                @Test
-                void shouldNotReturnResourceLinkForDraft() {
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
-                }
-            }
+        @Test
+        void shouldReturnResourceLinkIfFeatureIsActivated() {
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertTrue(srsFunction.getSRSFullView(certificate, user).isPresent());
         }
 
-        @Nested
-        class TestNotDraft {
-
-            void setup(CertificateStatus status) {
-                certificate = new Certificate();
-                final var metadata = CertificateMetadata.builder()
-                    .type("lisjp")
-                    .status(status)
-                    .build();
-                certificate.setMetadata(metadata);
-            }
-
-            @Nested
-            class SrsFullView {
-
-                @Test
-                void shouldNotReturnResourceLinkIfSigned() {
-                    setup(CertificateStatus.SIGNED);
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfRevoked() {
-                    setup(CertificateStatus.REVOKED);
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfLocked() {
-                    setup(CertificateStatus.LOCKED);
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfLockedRevoked() {
-                    setup(CertificateStatus.LOCKED_REVOKED);
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
-                }
-            }
-
-            @Nested
-            class SrsMinimizedView {
-
-                @Test
-                void shouldReturnResourceLinkIfSigned() {
-                    setup(CertificateStatus.SIGNED);
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertTrue(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfRevoked() {
-                    setup(CertificateStatus.REVOKED);
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfLocked() {
-                    setup(CertificateStatus.LOCKED);
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfLockedRevoked() {
-                    setup(CertificateStatus.LOCKED_REVOKED);
-                    updateUserFeatures(getFeature(true, "lisjp"));
-                    assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfFeatureIsInactive() {
-                    setup(CertificateStatus.SIGNED);
-                    updateUserFeatures(getFeature(false, "lisjp"));
-                    assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfTypeIsWrong() {
-                    setup(CertificateStatus.SIGNED);
-                    updateUserFeatures(getFeature(true, "wrongType"));
-                    assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
-                }
-
-                @Test
-                void shouldNotReturnResourceLinkIfFeatureIsMissing() {
-                    setup(CertificateStatus.SIGNED);
-                    updateUserFeatures(null);
-                    assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
-                }
-            }
+        @Test
+        void shouldNotReturnResourceLinkIfFeatureIsInactive() {
+          updateUserFeatures(getFeature(false, "lisjp"));
+          assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
         }
 
-        private void updateUserFeatures(Feature feature) {
-            if (feature != null) {
-                features.put(feature.getName(), feature);
-            }
-            user.setFeatures(features);
+        @Test
+        void shouldNotReturnResourceLinkIfTypeIsWrong() {
+          updateUserFeatures(getFeature(true, "wrongType"));
+          assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
         }
 
-        private Feature getFeature(boolean global, String certificateType) {
-            final var feature = new Feature();
-            feature.setName(AuthoritiesConstants.FEATURE_SRS);
-            feature.setIntygstyper(Collections.singletonList(certificateType));
-            feature.setGlobal(global);
-            return feature;
+        @Test
+        void shouldNotReturnResourceLinkIfFeatureIsMissing() {
+          updateUserFeatures(null);
+          assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
         }
+      }
+
+      @Nested
+      class SrsMinimizedView {
+
+        @Test
+        void shouldNotReturnResourceLinkForDraft() {
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
+        }
+      }
     }
+
+    @Nested
+    class TestNotDraft {
+
+      void setup(CertificateStatus status) {
+        certificate = new Certificate();
+        final var metadata = CertificateMetadata.builder().type("lisjp").status(status).build();
+        certificate.setMetadata(metadata);
+      }
+
+      @Nested
+      class SrsFullView {
+
+        @Test
+        void shouldNotReturnResourceLinkIfSigned() {
+          setup(CertificateStatus.SIGNED);
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfRevoked() {
+          setup(CertificateStatus.REVOKED);
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfLocked() {
+          setup(CertificateStatus.LOCKED);
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfLockedRevoked() {
+          setup(CertificateStatus.LOCKED_REVOKED);
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertFalse(srsFunction.getSRSFullView(certificate, user).isPresent());
+        }
+      }
+
+      @Nested
+      class SrsMinimizedView {
+
+        @Test
+        void shouldReturnResourceLinkIfSigned() {
+          setup(CertificateStatus.SIGNED);
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertTrue(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfRevoked() {
+          setup(CertificateStatus.REVOKED);
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfLocked() {
+          setup(CertificateStatus.LOCKED);
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfLockedRevoked() {
+          setup(CertificateStatus.LOCKED_REVOKED);
+          updateUserFeatures(getFeature(true, "lisjp"));
+          assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfFeatureIsInactive() {
+          setup(CertificateStatus.SIGNED);
+          updateUserFeatures(getFeature(false, "lisjp"));
+          assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfTypeIsWrong() {
+          setup(CertificateStatus.SIGNED);
+          updateUserFeatures(getFeature(true, "wrongType"));
+          assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
+        }
+
+        @Test
+        void shouldNotReturnResourceLinkIfFeatureIsMissing() {
+          setup(CertificateStatus.SIGNED);
+          updateUserFeatures(null);
+          assertFalse(srsFunction.getSRSMinimizedView(certificate, user).isPresent());
+        }
+      }
+    }
+
+    private void updateUserFeatures(Feature feature) {
+      if (feature != null) {
+        features.put(feature.getName(), feature);
+      }
+      user.setFeatures(features);
+    }
+
+    private Feature getFeature(boolean global, String certificateType) {
+      final var feature = new Feature();
+      feature.setName(AuthoritiesConstants.FEATURE_SRS);
+      feature.setIntygstyper(Collections.singletonList(certificateType));
+      feature.setGlobal(global);
+      return feature;
+    }
+  }
 }

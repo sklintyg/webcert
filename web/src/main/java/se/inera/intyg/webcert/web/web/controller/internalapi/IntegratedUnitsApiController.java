@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,32 +37,34 @@ import se.inera.intyg.webcert.web.service.integreradeenheter.IntegreradeEnheterS
 @Api(value = "/internalapi/integratedUnits", produces = MediaType.APPLICATION_JSON)
 public class IntegratedUnitsApiController {
 
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Autowired
-    private IntegreradeEnheterService integreradeEnheterService;
+  @Autowired private IntegreradeEnheterService integreradeEnheterService;
 
-    @GET
-    @Path("/{hsaId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PerformanceLogging(eventAction = "integrated-units-get-integrated-unit", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getIntegratedUnit(@PathParam("hsaId") String hsaId) {
+  @GET
+  @Path("/{hsaId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PerformanceLogging(
+      eventAction = "integrated-units-get-integrated-unit",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getIntegratedUnit(@PathParam("hsaId") String hsaId) {
 
-        Optional<IntegratedUnitDTO> unit = integreradeEnheterService.getIntegratedUnit(hsaId);
+    Optional<IntegratedUnitDTO> unit = integreradeEnheterService.getIntegratedUnit(hsaId);
 
-        if (!unit.isPresent()) {
-            return Response.status(Status.NOT_FOUND).build();
-        }
-
-        return Response.ok(unit.get()).build();
+    if (!unit.isPresent()) {
+      return Response.status(Status.NOT_FOUND).build();
     }
 
-    @GET
-    @Path("/all")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PerformanceLogging(eventAction = "integrated-units-get-all-integrated-unit", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getAllIntegratedUnits() {
-        return Response.ok(integreradeEnheterService.getAllIntegratedUnits()).build();
-    }
+    return Response.ok(unit.get()).build();
+  }
 
+  @GET
+  @Path("/all")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PerformanceLogging(
+      eventAction = "integrated-units-get-all-integrated-unit",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getAllIntegratedUnits() {
+    return Response.ok(integreradeEnheterService.getAllIntegratedUnits()).build();
+  }
 }

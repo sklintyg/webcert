@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,18 +24,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
 
-/**
- * Provides a CRUD interface for the {@link PagaendeSignering} entity.
- */
+/** Provides a CRUD interface for the {@link PagaendeSignering} entity. */
 public interface PagaendeSigneringRepository extends JpaRepository<PagaendeSignering, Long> {
 
-    @Query("select ps from PagaendeSignering ps where ps.intygsId in :certificateIds")
-    List<PagaendeSignering> getPagaendeSigneringByIntygsIds(@Param("certificateIds") List<String> certificateIds);
+  @Query("select ps from PagaendeSignering ps where ps.intygsId in :certificateIds")
+  List<PagaendeSignering> getPagaendeSigneringByIntygsIds(
+      @Param("certificateIds") List<String> certificateIds);
 
-    default int erasePagaendeSigneringByCertificateIds(List<String> certificateIds) {
-        final var pagaendeSigneringList = getPagaendeSigneringByIntygsIds(certificateIds);
-        deleteAll(pagaendeSigneringList);
-        return pagaendeSigneringList.size();
-    }
-
+  default int erasePagaendeSigneringByCertificateIds(List<String> certificateIds) {
+    final var pagaendeSigneringList = getPagaendeSigneringByIntygsIds(certificateIds);
+    deleteAll(pagaendeSigneringList);
+    return pagaendeSigneringList.size();
+  }
 }

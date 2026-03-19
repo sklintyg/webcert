@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,50 +22,50 @@ import java.util.Objects;
 
 public class Diagnos implements Comparable<Diagnos> {
 
-    private String kod;
+  private String kod;
 
-    private String beskrivning;
+  private String beskrivning;
 
-    public String getKod() {
-        return kod;
+  public String getKod() {
+    return kod;
+  }
+
+  public void setKod(String kod) {
+    this.kod = kod;
+  }
+
+  public String getBeskrivning() {
+    return beskrivning;
+  }
+
+  public void setBeskrivning(String beskrivning) {
+    this.beskrivning = beskrivning;
+  }
+
+  @Override
+  public int compareTo(Diagnos d) {
+    return getKod().compareTo(d.getKod());
+  }
+
+  @Override
+  public String toString() {
+    return kod + ":" + beskrivning;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
+      return false;
+    } else if (!(o instanceof Diagnos)) {
+      return false;
+    } else {
+      Diagnos d = (Diagnos) o;
+      return Objects.equals(this.kod, d.kod) && Objects.equals(this.beskrivning, d.beskrivning);
     }
+  }
 
-    public void setKod(String kod) {
-        this.kod = kod;
-    }
-
-    public String getBeskrivning() {
-        return beskrivning;
-    }
-
-    public void setBeskrivning(String beskrivning) {
-        this.beskrivning = beskrivning;
-    }
-
-    @Override
-    public int compareTo(Diagnos d) {
-        return getKod().compareTo(d.getKod());
-    }
-
-    @Override
-    public String toString() {
-        return kod + ":" + beskrivning;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        } else if (!(o instanceof Diagnos)) {
-            return false;
-        } else {
-            Diagnos d = (Diagnos) o;
-            return Objects.equals(this.kod, d.kod) && Objects.equals(this.beskrivning, d.beskrivning);
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.kod, this.beskrivning);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.kod, this.beskrivning);
+  }
 }

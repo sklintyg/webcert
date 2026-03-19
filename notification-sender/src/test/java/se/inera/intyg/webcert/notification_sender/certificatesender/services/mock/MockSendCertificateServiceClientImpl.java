@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,74 +31,79 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-/**
- * Created by eriklupander on 2015-06-03.
- */
+/** Created by eriklupander on 2015-06-03. */
 public class MockSendCertificateServiceClientImpl implements SendCertificateServiceClient {
 
-    public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande";
-    private static final Logger LOG = LoggerFactory.getLogger(MockSendCertificateServiceClientImpl.class);
-    private AtomicInteger count = new AtomicInteger(0);
+  public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande";
+  private static final Logger LOG =
+      LoggerFactory.getLogger(MockSendCertificateServiceClientImpl.class);
+  private AtomicInteger count = new AtomicInteger(0);
 
-    private ConcurrentHashMap<String, AtomicInteger> attemptsPerMessage = new ConcurrentHashMap<>();
+  private ConcurrentHashMap<String, AtomicInteger> attemptsPerMessage = new ConcurrentHashMap<>();
 
-    private List<String> store = new CopyOnWriteArrayList<>();
+  private List<String> store = new CopyOnWriteArrayList<>();
 
-    @Override
-    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient,
-        String logicalAddress) {
-        count.incrementAndGet();
+  @Override
+  public SendCertificateToRecipientResponseType sendCertificate(
+      String intygsId,
+      String personId,
+      String skickatAvJson,
+      String recipient,
+      String logicalAddress) {
+    count.incrementAndGet();
 
-        if (intygsId.startsWith(FALLERAT_MEDDELANDE)) {
-            int attempts = increaseAttempts(intygsId);
-            int numberOfRequestedFailedAttempts = Integer.parseInt(intygsId.substring(intygsId.length() - 1));
-            LOG.debug("attempts: " + attempts);
-            LOG.debug("numberOfRequestedFailedAttempts: " + numberOfRequestedFailedAttempts);
-            if (attempts < numberOfRequestedFailedAttempts + 1) {
-                throw new WebServiceException("Something went wrong");
-            }
-        }
-
-        store.add(intygsId);
-
-        return createResponse(ResultCodeType.OK, null);
+    if (intygsId.startsWith(FALLERAT_MEDDELANDE)) {
+      int attempts = increaseAttempts(intygsId);
+      int numberOfRequestedFailedAttempts =
+          Integer.parseInt(intygsId.substring(intygsId.length() - 1));
+      LOG.debug("attempts: " + attempts);
+      LOG.debug("numberOfRequestedFailedAttempts: " + numberOfRequestedFailedAttempts);
+      if (attempts < numberOfRequestedFailedAttempts + 1) {
+        throw new WebServiceException("Something went wrong");
+      }
     }
 
-    private int increaseAttempts(String key) {
-        AtomicInteger value = attemptsPerMessage.get(key);
-        if (value == null) {
-            value = attemptsPerMessage.putIfAbsent(key, new AtomicInteger(1));
-        }
-        if (value != null) {
-            value.incrementAndGet();
-        }
-        return attemptsPerMessage.get(key).intValue();
+    store.add(intygsId);
+
+    return createResponse(ResultCodeType.OK, null);
+  }
+
+  private int increaseAttempts(String key) {
+    AtomicInteger value = attemptsPerMessage.get(key);
+    if (value == null) {
+      value = attemptsPerMessage.putIfAbsent(key, new AtomicInteger(1));
     }
-
-    public int getNumberOfReceivedMessages() {
-        return count.get();
+    if (value != null) {
+      value.incrementAndGet();
     }
+    return attemptsPerMessage.get(key).intValue();
+  }
 
-    public int getNumberOfSentMessages() {
-        return store.size();
+  public int getNumberOfReceivedMessages() {
+    return count.get();
+  }
+
+  public int getNumberOfSentMessages() {
+    return store.size();
+  }
+
+  private SendCertificateToRecipientResponseType createResponse(
+      ResultCodeType resultCodeType, ErrorIdType errorType) {
+    ResultType resultType = new ResultType();
+    resultType.setResultCode(resultCodeType);
+    if (errorType != null) {
+      resultType.setErrorId(errorType);
     }
+    SendCertificateToRecipientResponseType responseType =
+        new SendCertificateToRecipientResponseType();
 
-    private SendCertificateToRecipientResponseType createResponse(ResultCodeType resultCodeType, ErrorIdType errorType) {
-        ResultType resultType = new ResultType();
-        resultType.setResultCode(resultCodeType);
-        if (errorType != null) {
-            resultType.setErrorId(errorType);
-        }
-        SendCertificateToRecipientResponseType responseType = new SendCertificateToRecipientResponseType();
+    responseType.setResult(resultType);
+    return responseType;
+  }
 
-        responseType.setResult(resultType);
-        return responseType;
-    }
-
-    public void reset() {
-        count = new AtomicInteger(0);
-        attemptsPerMessage = new ConcurrentHashMap<>();
-        store = new CopyOnWriteArrayList<>();
-    }
-
+  public void reset() {
+    count = new AtomicInteger(0);
+    attemptsPerMessage = new ConcurrentHashMap<>();
+    store = new CopyOnWriteArrayList<>();
+  }
 }

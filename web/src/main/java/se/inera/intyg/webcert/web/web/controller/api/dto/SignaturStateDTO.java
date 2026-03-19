@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,6 +30,41 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 @Getter
 public class SignaturStateDTO {
 
+  private String id;
+  private String intygsId;
+  private long version;
+  private SignaturStatus status;
+  private String hash;
+  private SignaturTyp signaturTyp;
+  private String autoStartToken;
+  private String qrCode;
+
+  // Signing Service
+  private String actionUrl;
+  private String signRequest;
+
+  @JsonIgnore
+  public SignaturTyp getSignaturTyp() {
+    return signaturTyp;
+  }
+
+  /**
+   * The hash MUST be the Base64 encoded representation of the canonicalized XML of the <SignedInfo
+   * xmlns="http://www.w3.org/2000/09/xmldsig#"> element on a single row, with all elements properly
+   * closed.
+   */
+  public String getHash() {
+    if (hash == null) {
+      return null;
+    }
+    if (signaturTyp == SignaturTyp.XMLDSIG) {
+      return Base64.getEncoder().encodeToString(hash.getBytes(StandardCharsets.UTF_8));
+    }
+    return hash;
+  }
+
+  public static final class SignaturStateDTOBuilder {
+
     private String id;
     private String intygsId;
     private long version;
@@ -43,111 +78,75 @@ public class SignaturStateDTO {
     private String actionUrl;
     private String signRequest;
 
-    @JsonIgnore
-    public SignaturTyp getSignaturTyp() {
-        return signaturTyp;
+    private SignaturStateDTOBuilder() {}
+
+    public static SignaturStateDTOBuilder aSignaturStateDTO() {
+      return new SignaturStateDTOBuilder();
     }
 
-    /**
-     * The hash MUST be the Base64 encoded representation of the canonicalized XML of the
-     * <SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"> element on a single row, with all elements
-     * properly closed.
-     */
-    public String getHash() {
-        if (hash == null) {
-            return null;
-        }
-        if (signaturTyp == SignaturTyp.XMLDSIG) {
-            return Base64.getEncoder().encodeToString(hash.getBytes(StandardCharsets.UTF_8));
-        }
-        return hash;
+    public SignaturStateDTOBuilder withQrCode(String qrData) {
+      this.qrCode = qrData;
+      return this;
     }
 
-    public static final class SignaturStateDTOBuilder {
-
-        private String id;
-        private String intygsId;
-        private long version;
-        private SignaturStatus status;
-        private String hash;
-        private SignaturTyp signaturTyp;
-        private String autoStartToken;
-        private String qrCode;
-
-        // Signing Service
-        private String actionUrl;
-        private String signRequest;
-
-        private SignaturStateDTOBuilder() {
-        }
-
-        public static SignaturStateDTOBuilder aSignaturStateDTO() {
-            return new SignaturStateDTOBuilder();
-        }
-
-        public SignaturStateDTOBuilder withQrCode(String qrData) {
-            this.qrCode = qrData;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withAutoStartToken(String autoStartToken) {
-            this.autoStartToken = autoStartToken;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withId(String id) {
-            this.id = id;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withIntygsId(String intygsId) {
-            this.intygsId = intygsId;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withVersion(long version) {
-            this.version = version;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withStatus(SignaturStatus status) {
-            this.status = status;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withHash(String hash) {
-            this.hash = hash;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withSignaturTyp(SignaturTyp signaturTyp) {
-            this.signaturTyp = signaturTyp;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withActionUrl(String actionUrl) {
-            this.actionUrl = actionUrl;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withSignRequest(String signRequest) {
-            this.signRequest = signRequest;
-            return this;
-        }
-
-        public SignaturStateDTO build() {
-            SignaturStateDTO signaturStateDTO = new SignaturStateDTO();
-            signaturStateDTO.setId(id);
-            signaturStateDTO.setIntygsId(intygsId);
-            signaturStateDTO.setVersion(version);
-            signaturStateDTO.setStatus(status);
-            signaturStateDTO.setHash(hash);
-            signaturStateDTO.setSignaturTyp(signaturTyp);
-            signaturStateDTO.setActionUrl(actionUrl);
-            signaturStateDTO.setSignRequest(signRequest);
-            signaturStateDTO.setAutoStartToken(autoStartToken);
-            signaturStateDTO.setQrCode(qrCode);
-            return signaturStateDTO;
-        }
+    public SignaturStateDTOBuilder withAutoStartToken(String autoStartToken) {
+      this.autoStartToken = autoStartToken;
+      return this;
     }
+
+    public SignaturStateDTOBuilder withId(String id) {
+      this.id = id;
+      return this;
+    }
+
+    public SignaturStateDTOBuilder withIntygsId(String intygsId) {
+      this.intygsId = intygsId;
+      return this;
+    }
+
+    public SignaturStateDTOBuilder withVersion(long version) {
+      this.version = version;
+      return this;
+    }
+
+    public SignaturStateDTOBuilder withStatus(SignaturStatus status) {
+      this.status = status;
+      return this;
+    }
+
+    public SignaturStateDTOBuilder withHash(String hash) {
+      this.hash = hash;
+      return this;
+    }
+
+    public SignaturStateDTOBuilder withSignaturTyp(SignaturTyp signaturTyp) {
+      this.signaturTyp = signaturTyp;
+      return this;
+    }
+
+    public SignaturStateDTOBuilder withActionUrl(String actionUrl) {
+      this.actionUrl = actionUrl;
+      return this;
+    }
+
+    public SignaturStateDTOBuilder withSignRequest(String signRequest) {
+      this.signRequest = signRequest;
+      return this;
+    }
+
+    public SignaturStateDTO build() {
+      SignaturStateDTO signaturStateDTO = new SignaturStateDTO();
+      signaturStateDTO.setId(id);
+      signaturStateDTO.setIntygsId(intygsId);
+      signaturStateDTO.setVersion(version);
+      signaturStateDTO.setStatus(status);
+      signaturStateDTO.setHash(hash);
+      signaturStateDTO.setSignaturTyp(signaturTyp);
+      signaturStateDTO.setActionUrl(actionUrl);
+      signaturStateDTO.setSignRequest(signRequest);
+      signaturStateDTO.setAutoStartToken(autoStartToken);
+      signaturStateDTO.setQrCode(qrCode);
+      return signaturStateDTO;
+    }
+  }
 }

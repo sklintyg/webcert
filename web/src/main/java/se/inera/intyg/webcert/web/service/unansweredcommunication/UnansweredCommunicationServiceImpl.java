@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.unansweredcommunication;
 
 import static se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.StatusType.BESVARAD;
@@ -41,84 +40,84 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredQAs;
 @Service("getUnansweredCommunicationFromWC")
 public class UnansweredCommunicationServiceImpl implements UnansweredCommunicationService {
 
-    private final ArendeService arendeService;
+  private final ArendeService arendeService;
 
-    public UnansweredCommunicationServiceImpl(ArendeService arendeService) {
-        this.arendeService = arendeService;
-    }
+  public UnansweredCommunicationServiceImpl(ArendeService arendeService) {
+    this.arendeService = arendeService;
+  }
 
-    @Override
-    public UnansweredCommunicationResponse get(UnansweredCommunicationRequest request) {
-        assertPatientIds(request.getPatientIds());
-        assertMaxDaysOfUnansweredCommunication(request.getMaxDaysOfUnansweredCommunication());
+  @Override
+  public UnansweredCommunicationResponse get(UnansweredCommunicationRequest request) {
+    assertPatientIds(request.getPatientIds());
+    assertMaxDaysOfUnansweredCommunication(request.getMaxDaysOfUnansweredCommunication());
 
-        final var arendenForPatients = arendeService.getArendenForPatientsWithTimestampAfterDate(
+    final var arendenForPatients =
+        arendeService.getArendenForPatientsWithTimestampAfterDate(
             formatPatientIds(request.getPatientIds()),
-            LocalDateTime.now().minusDays(request.getMaxDaysOfUnansweredCommunication()).toLocalDate().atStartOfDay()
-        );
+            LocalDateTime.now()
+                .minusDays(request.getMaxDaysOfUnansweredCommunication())
+                .toLocalDate()
+                .atStartOfDay());
 
-        return new UnansweredCommunicationResponse(createUnansweredCommunication(arendenForPatients));
-    }
+    return new UnansweredCommunicationResponse(createUnansweredCommunication(arendenForPatients));
+  }
 
-    private void assertMaxDaysOfUnansweredCommunication(Integer maxDaysOfUnansweredCommunication) {
-        if (maxDaysOfUnansweredCommunication == null) {
-            throw new IllegalArgumentException("Request is missing parameter maxDaysOfUnansweredCommunication");
-        }
+  private void assertMaxDaysOfUnansweredCommunication(Integer maxDaysOfUnansweredCommunication) {
+    if (maxDaysOfUnansweredCommunication == null) {
+      throw new IllegalArgumentException(
+          "Request is missing parameter maxDaysOfUnansweredCommunication");
     }
+  }
 
-    private void assertPatientIds(List<String> patientIds) {
-        if (patientIds == null || patientIds.isEmpty()) {
-            throw new IllegalArgumentException("Request is missing parameter patientIds or is empty");
-        }
+  private void assertPatientIds(List<String> patientIds) {
+    if (patientIds == null || patientIds.isEmpty()) {
+      throw new IllegalArgumentException("Request is missing parameter patientIds or is empty");
     }
+  }
 
-    private static List<String> formatPatientIds(List<String> patientIds) {
-        return patientIds.stream()
-            .map(patientId -> patientId.replace("-", ""))
-            .collect(Collectors.toList());
-    }
+  private static List<String> formatPatientIds(List<String> patientIds) {
+    return patientIds.stream()
+        .map(patientId -> patientId.replace("-", ""))
+        .collect(Collectors.toList());
+  }
 
-    private Map<String, UnansweredQAs> createUnansweredCommunication(List<Arende> arenden) {
-        return arenden.stream()
-            .filter(this::isUnansweredCommunication)
-            .collect(
-                Collectors.toMap(
-                    Arende::getIntygsId,
-                    this::createUnansweredQAs,
-                    UnansweredQAs::add
-                )
-            );
-    }
+  private Map<String, UnansweredQAs> createUnansweredCommunication(List<Arende> arenden) {
+    return arenden.stream()
+        .filter(this::isUnansweredCommunication)
+        .collect(
+            Collectors.toMap(Arende::getIntygsId, this::createUnansweredQAs, UnansweredQAs::add));
+  }
 
-    private UnansweredQAs createUnansweredQAs(Arende arende) {
-        final var unansweredQAs = new UnansweredQAs();
-        if (KOMPLT.equals(arende.getAmne())) {
-            unansweredQAs.incrementComplement();
-        } else {
-            unansweredQAs.incrementOther();
-        }
-        return unansweredQAs;
+  private UnansweredQAs createUnansweredQAs(Arende arende) {
+    final var unansweredQAs = new UnansweredQAs();
+    if (KOMPLT.equals(arende.getAmne())) {
+      unansweredQAs.incrementComplement();
+    } else {
+      unansweredQAs.incrementOther();
     }
+    return unansweredQAs;
+  }
 
-    private boolean isUnansweredCommunication(Arende arende) {
-        return status(arende) == OBESVARAD && arende.getAmne() != ArendeAmne.PAMINN
-            && arende.getSkickatAv().equals(FrageStallare.FORSAKRINGSKASSAN.getKod());
-    }
+  private boolean isUnansweredCommunication(Arende arende) {
+    return status(arende) == OBESVARAD
+        && arende.getAmne() != ArendeAmne.PAMINN
+        && arende.getSkickatAv().equals(FrageStallare.FORSAKRINGSKASSAN.getKod());
+  }
 
-    private StatusType status(Arende arende) {
-        if (isAnsweredFromExternal(arende.getStatus(), arende.getSvarPaId())) {
-            return BESVARAD;
-        }
-        switch (arende.getStatus()) {
-            case CLOSED:
-            case PENDING_EXTERNAL_ACTION:
-                return BESVARAD;
-            default:
-                return OBESVARAD;
-        }
+  private StatusType status(Arende arende) {
+    if (isAnsweredFromExternal(arende.getStatus(), arende.getSvarPaId())) {
+      return BESVARAD;
     }
+    switch (arende.getStatus()) {
+      case CLOSED:
+      case PENDING_EXTERNAL_ACTION:
+        return BESVARAD;
+      default:
+        return OBESVARAD;
+    }
+  }
 
-    private static boolean isAnsweredFromExternal(Status status, String svarPaId) {
-        return status == Status.ANSWERED && svarPaId != null && !svarPaId.isEmpty();
-    }
+  private static boolean isAnsweredFromExternal(Status status, String svarPaId) {
+    return status == Status.ANSWERED && svarPaId != null && !svarPaId.isEmpty();
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,48 +37,40 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeServi
 @ExtendWith(MockitoExtension.class)
 class DeleteQuestionAnswerFacadeServiceImplTest {
 
-    private final String CERTIFICATE_ID = "certificateId";
-    private final String QUESTION_ID = "questionId";
+  private final String CERTIFICATE_ID = "certificateId";
+  private final String QUESTION_ID = "questionId";
 
-    @Mock
-    ArendeService arendeService;
+  @Mock ArendeService arendeService;
 
-    @Mock
-    ArendeDraftService arendeDraftService;
+  @Mock ArendeDraftService arendeDraftService;
 
-    @Mock
-    GetQuestionFacadeService getQuestionFacadeService;
+  @Mock GetQuestionFacadeService getQuestionFacadeService;
 
-    @InjectMocks
-    private DeleteQuestionAnswerFacadeServiceImpl deleteQuestionAnswerFacadeService;
+  @InjectMocks private DeleteQuestionAnswerFacadeServiceImpl deleteQuestionAnswerFacadeService;
 
-    private Arende arende;
+  private Arende arende;
 
-    @BeforeEach
-    void setup() {
-        arende = new Arende();
-        arende.setIntygsId(CERTIFICATE_ID);
-        arende.setMeddelandeId(QUESTION_ID);
+  @BeforeEach
+  void setup() {
+    arende = new Arende();
+    arende.setIntygsId(CERTIFICATE_ID);
+    arende.setMeddelandeId(QUESTION_ID);
 
-        doReturn(arende)
-            .when(arendeService)
-            .getArende(QUESTION_ID);
+    doReturn(arende).when(arendeService).getArende(QUESTION_ID);
 
-        doReturn(Question.builder().build())
-            .when(getQuestionFacadeService)
-            .get(QUESTION_ID);
-    }
+    doReturn(Question.builder().build()).when(getQuestionFacadeService).get(QUESTION_ID);
+  }
 
-    @Test
-    void shallDeleteDraftForQuestion() {
-        deleteQuestionAnswerFacadeService.delete(QUESTION_ID);
-        // When deleting a question answer draft you pass the questions ID.
-        verify(arendeDraftService).delete(CERTIFICATE_ID, QUESTION_ID);
-    }
+  @Test
+  void shallDeleteDraftForQuestion() {
+    deleteQuestionAnswerFacadeService.delete(QUESTION_ID);
+    // When deleting a question answer draft you pass the questions ID.
+    verify(arendeDraftService).delete(CERTIFICATE_ID, QUESTION_ID);
+  }
 
-    @Test
-    void shallQuestionWhenDeletingAnswerDraft() {
-        final var actualQuestion = deleteQuestionAnswerFacadeService.delete(QUESTION_ID);
-        assertNull(actualQuestion.getAnswer(), "Answer should be null after deleting the answer draft");
-    }
+  @Test
+  void shallQuestionWhenDeletingAnswerDraft() {
+    final var actualQuestion = deleteQuestionAnswerFacadeService.delete(QUESTION_ID);
+    assertNull(actualQuestion.getAnswer(), "Answer should be null after deleting the answer draft");
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,29 +27,32 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 @Service
 public class ErrorLogFacadeServiceImpl implements ErrorLogFacadeService {
 
-    private final MonitoringLogService monitoringService;
+  private final MonitoringLogService monitoringService;
 
-    @Autowired
-    public ErrorLogFacadeServiceImpl(MonitoringLogService monitoringService) {
-        this.monitoringService = monitoringService;
-    }
+  @Autowired
+  public ErrorLogFacadeServiceImpl(MonitoringLogService monitoringService) {
+    this.monitoringService = monitoringService;
+  }
 
-    @Override
-    public void log(ErrorLogRequestDTO request) {
-        monitoringService
-            .logClientError(request.getErrorId(), getCertificateId(request.getCertificateId()),
-                request.getErrorCode(), request.getMessage(), getStackTrace(request.getStackTrace()));
-    }
+  @Override
+  public void log(ErrorLogRequestDTO request) {
+    monitoringService.logClientError(
+        request.getErrorId(),
+        getCertificateId(request.getCertificateId()),
+        request.getErrorCode(),
+        request.getMessage(),
+        getStackTrace(request.getStackTrace()));
+  }
 
-    private boolean isDefined(String value) {
-        return value != null && !value.isEmpty() && !value.isBlank();
-    }
+  private boolean isDefined(String value) {
+    return value != null && !value.isEmpty() && !value.isBlank();
+  }
 
-    private String getCertificateId(String certificateId) {
-        return isDefined(certificateId) ? certificateId : "NO_CERTIFICATE_ID";
-    }
+  private String getCertificateId(String certificateId) {
+    return isDefined(certificateId) ? certificateId : "NO_CERTIFICATE_ID";
+  }
 
-    private String getStackTrace(String stackTrace) {
-        return isDefined(stackTrace) ? stackTrace : "NO_STACK_TRACE";
-    }
+  private String getStackTrace(String stackTrace) {
+    return isDefined(stackTrace) ? stackTrace : "NO_STACK_TRACE";
+  }
 }

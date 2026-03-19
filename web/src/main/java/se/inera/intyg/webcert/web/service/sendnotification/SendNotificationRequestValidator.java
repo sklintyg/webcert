@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import java.time.LocalDateTime;
@@ -30,80 +29,84 @@ import org.springframework.stereotype.Component;
 @Component
 public class SendNotificationRequestValidator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SendNotificationRequestValidator.class);
-    private static final String LOG_MESSAGE_PREFIX = "Validation of status update failed with reason: ";
-    
-    public void validateId(String id) {
-        if (id == null || id.isBlank() || id.isEmpty()) {
-            LOG.warn(LOG_MESSAGE_PREFIX + "Id is empty");
-            throw new IllegalArgumentException(
-                "Id is empty, cannot send notifications"
-            );
-        }
+  private static final Logger LOG = LoggerFactory.getLogger(SendNotificationRequestValidator.class);
+  private static final String LOG_MESSAGE_PREFIX =
+      "Validation of status update failed with reason: ";
+
+  public void validateId(String id) {
+    if (id == null || id.isBlank() || id.isEmpty()) {
+      LOG.warn(LOG_MESSAGE_PREFIX + "Id is empty");
+      throw new IllegalArgumentException("Id is empty, cannot send notifications");
+    }
+  }
+
+  public void validateIds(List<String> ids) {
+    if (ids == null || ids.isEmpty()) {
+      LOG.warn(LOG_MESSAGE_PREFIX + "Ids are empty");
+      throw new IllegalArgumentException("Ids are empty, cannot send notifications");
+    }
+  }
+
+  public void validateCertificateIds(List<String> ids) {
+    if (ids == null || ids.isEmpty()) {
+      LOG.warn(LOG_MESSAGE_PREFIX + "Certificate ids are empty");
+      throw new IllegalArgumentException("Certificate ids are empty, cannot send notifications");
+    }
+    ids.forEach(this::validateCertificateIdFormat);
+  }
+
+  private void validateCertificateIdFormat(String id) {
+    final var validFormat =
+        Pattern.compile(
+            "^[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}$");
+
+    if (!validFormat.matcher(id).matches()) {
+      LOG.warn(LOG_MESSAGE_PREFIX + "Certificate id '{}' has incorrect format", id);
+      throw new IllegalArgumentException(
+          String.format("Certificate id '%s' has incorrect format, cannot send notifications", id));
+    }
+  }
+
+  public void validateDate(LocalDateTime start, LocalDateTime end, Integer maxDaysBackSinceStart) {
+    validateDate(start, end, null, maxDaysBackSinceStart);
+  }
+
+  public void validateDate(
+      LocalDateTime start,
+      LocalDateTime end,
+      Integer maxDaysTimeInterval,
+      Integer maxDaysBackSinceStart) {
+    if (end != null && end.isBefore(start)) {
+      LOG.warn(LOG_MESSAGE_PREFIX + "Time period is invalid, end is before start");
+      throw new IllegalArgumentException("Time period is invalid, end is before start");
     }
 
-    public void validateIds(List<String> ids) {
-        if (ids == null || ids.isEmpty()) {
-            LOG.warn(LOG_MESSAGE_PREFIX + "Ids are empty");
-            throw new IllegalArgumentException(
-                "Ids are empty, cannot send notifications"
-            );
-        }
+    if (maxDaysTimeInterval != null && !isTimePeriodValid(start, end, maxDaysTimeInterval)) {
+      LOG.warn(
+          LOG_MESSAGE_PREFIX + "Time period is larger than allowed '{}' days", maxDaysTimeInterval);
+      throw new IllegalArgumentException(
+          String.format(
+              "Time period is larger than allowed '%s' days, cannot send notifications",
+              maxDaysTimeInterval));
     }
 
-    public void validateCertificateIds(List<String> ids) {
-        if (ids == null || ids.isEmpty()) {
-            LOG.warn(LOG_MESSAGE_PREFIX + "Certificate ids are empty");
-            throw new IllegalArgumentException(
-                "Certificate ids are empty, cannot send notifications"
-            );
-        }
-        ids.forEach(this::validateCertificateIdFormat);
+    if (!isStartDateValid(start, maxDaysBackSinceStart)) {
+      LOG.warn(
+          LOG_MESSAGE_PREFIX + "Start date is larger than allowed '{}' days",
+          maxDaysBackSinceStart);
+      throw new IllegalArgumentException(
+          String.format(
+              "Start date is larger than allowed '%s' days, cannot send notifications",
+              maxDaysBackSinceStart));
     }
+  }
 
-    private void validateCertificateIdFormat(String id) {
-        final var validFormat = Pattern.compile("^[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}$");
+  private boolean isTimePeriodValid(LocalDateTime start, LocalDateTime end, int maxDaysBetween) {
+    final var daysBetween = ChronoUnit.DAYS.between(start, end != null ? end : LocalDateTime.now());
+    return daysBetween <= maxDaysBetween;
+  }
 
-        if (!validFormat.matcher(id).matches()) {
-            LOG.warn(LOG_MESSAGE_PREFIX + "Certificate id '{}' has incorrect format", id);
-            throw new IllegalArgumentException(
-                String.format("Certificate id '%s' has incorrect format, cannot send notifications", id)
-            );
-        }
-    }
-
-    public void validateDate(LocalDateTime start, LocalDateTime end, Integer maxDaysBackSinceStart) {
-        validateDate(start, end, null, maxDaysBackSinceStart);
-    }
-
-    public void validateDate(LocalDateTime start, LocalDateTime end, Integer maxDaysTimeInterval, Integer maxDaysBackSinceStart) {
-        if (end != null && end.isBefore(start)) {
-            LOG.warn(LOG_MESSAGE_PREFIX + "Time period is invalid, end is before start");
-            throw new IllegalArgumentException("Time period is invalid, end is before start");
-        }
-
-        if (maxDaysTimeInterval != null && !isTimePeriodValid(start, end, maxDaysTimeInterval)) {
-            LOG.warn(LOG_MESSAGE_PREFIX + "Time period is larger than allowed '{}' days", maxDaysTimeInterval);
-            throw new IllegalArgumentException(
-                String.format("Time period is larger than allowed '%s' days, cannot send notifications", maxDaysTimeInterval)
-            );
-        }
-
-        if (!isStartDateValid(start, maxDaysBackSinceStart)) {
-            LOG.warn(LOG_MESSAGE_PREFIX + "Start date is larger than allowed '{}' days", maxDaysBackSinceStart);
-            throw new IllegalArgumentException(
-                String.format("Start date is larger than allowed '%s' days, cannot send notifications", maxDaysBackSinceStart)
-            );
-        }
-    }
-
-    private boolean isTimePeriodValid(LocalDateTime start, LocalDateTime end, int maxDaysBetween) {
-        final var daysBetween = ChronoUnit.DAYS.between(start, end != null ? end : LocalDateTime.now());
-        return daysBetween <= maxDaysBetween;
-    }
-
-    private boolean isStartDateValid(LocalDateTime start, int maxDaysBack) {
-        return isTimePeriodValid(start, LocalDateTime.now(), maxDaysBack);
-    }
-
+  private boolean isStartDateValid(LocalDateTime start, int maxDaysBack) {
+    return isTimePeriodValid(start, LocalDateTime.now(), maxDaysBack);
+  }
 }

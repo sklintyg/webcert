@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.util.List;
@@ -27,28 +26,25 @@ import se.inera.intyg.common.support.modules.support.api.notification.ArendeCoun
 @Component
 public class QuestionCounter {
 
-    public ArendeCount calculateArendeCount(List<Question> questions) {
-        final var totalAmount = questions.size();
+  public ArendeCount calculateArendeCount(List<Question> questions) {
+    final var totalAmount = questions.size();
 
-        final var totalNotAnswered = (int) questions.stream()
-            .filter(question -> Boolean.FALSE.equals(question.isHandled()))
-            .filter(question -> question.getAnswer() == null)
-            .count();
+    final var totalNotAnswered =
+        (int)
+            questions.stream()
+                .filter(question -> Boolean.FALSE.equals(question.isHandled()))
+                .filter(question -> question.getAnswer() == null)
+                .count();
 
-        final var totalAnswered = (int) questions.stream()
-            .filter(question -> Boolean.FALSE.equals(question.isHandled()))
-            .filter(question -> question.getAnswer() != null)
-            .count();
+    final var totalAnswered =
+        (int)
+            questions.stream()
+                .filter(question -> Boolean.FALSE.equals(question.isHandled()))
+                .filter(question -> question.getAnswer() != null)
+                .count();
 
-        final var totalHandled = (int) questions.stream()
-            .filter(Question::isHandled)
-            .count();
+    final var totalHandled = (int) questions.stream().filter(Question::isHandled).count();
 
-        return new ArendeCount(
-            totalAmount,
-            totalNotAnswered,
-            totalAnswered,
-            totalHandled
-        );
-    }
+    return new ArendeCount(totalAmount, totalNotAnswered, totalAnswered, totalHandled);
+  }
 }

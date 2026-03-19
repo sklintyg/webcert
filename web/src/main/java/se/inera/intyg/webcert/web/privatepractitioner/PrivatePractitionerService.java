@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.privatepractitioner;
 
 import lombok.RequiredArgsConstructor;
@@ -37,65 +36,79 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 @RequiredArgsConstructor
 public class PrivatePractitionerService {
 
-    private final WebCertUserService webCertUserService;
-    private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    private final PrivatePractitionerAccessValidationService privatePractitionerAccessValidationService;
-    private final RegisterPrivatePractitionerFactory registerPrivatePractitionerFactory;
-    private final UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
+  private final WebCertUserService webCertUserService;
+  private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+  private final PrivatePractitionerAccessValidationService
+      privatePractitionerAccessValidationService;
+  private final RegisterPrivatePractitionerFactory registerPrivatePractitionerFactory;
+  private final UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
 
-    public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
-        final var user = webCertUserService.getUser();
-        if (!privatePractitionerAccessValidationService.hasAccessToRegister(user)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                "User is not authorized to register as private practitioner");
-        }
-
-        privatePractitionerIntegrationService.registerPrivatePractitioner(
-            registerPrivatePractitionerFactory.create(privatePractitionerRegisterRequest)
-                .withName(user.getNamn())
-                .withPersonId(user.getPersonId())
-        );
+  public void registerPrivatePractitioner(
+      PrivatePractitionerDetails privatePractitionerRegisterRequest) {
+    final var user = webCertUserService.getUser();
+    if (!privatePractitionerAccessValidationService.hasAccessToRegister(user)) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+          "User is not authorized to register as private practitioner");
     }
 
-    public PrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
-        final var result = privatePractitionerIntegrationService.getPrivatePractitionerConfig();
-        return PrivatePractitionerConfigResponse
-            .builder()
-            .positions(result.positionCodes().stream().map(position -> new CodeDTO(position.code(), position.description())).toList())
-            .healthcareServiceTypes(
-                result.healthcareServiceTypeCodes().stream()
-                    .map(healthCareServiceType -> new CodeDTO(healthCareServiceType.code(), healthCareServiceType.description()))
-                    .toList())
-            .typeOfCare(result.typeOfCareCodes()
-                .stream()
-                .map(typeOfCare -> new CodeDTO(typeOfCare.code(), typeOfCare.description())).toList())
-            .build();
-    }
+    privatePractitionerIntegrationService.registerPrivatePractitioner(
+        registerPrivatePractitionerFactory
+            .create(privatePractitionerRegisterRequest)
+            .withName(user.getNamn())
+            .withPersonId(user.getPersonId()));
+  }
 
-    public HospInformationResponse getHospInformation() {
-        final var personId = webCertUserService.getUser().getPersonId();
-        return HospInformationResponse.convert(privatePractitionerIntegrationService.getHospInformation(personId));
-    }
+  public PrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
+    final var result = privatePractitionerIntegrationService.getPrivatePractitionerConfig();
+    return PrivatePractitionerConfigResponse.builder()
+        .positions(
+            result.positionCodes().stream()
+                .map(position -> new CodeDTO(position.code(), position.description()))
+                .toList())
+        .healthcareServiceTypes(
+            result.healthcareServiceTypeCodes().stream()
+                .map(
+                    healthCareServiceType ->
+                        new CodeDTO(
+                            healthCareServiceType.code(), healthCareServiceType.description()))
+                .toList())
+        .typeOfCare(
+            result.typeOfCareCodes().stream()
+                .map(typeOfCare -> new CodeDTO(typeOfCare.code(), typeOfCare.description()))
+                .toList())
+        .build();
+  }
 
-    public PrivatePractitionerResponse getLoggedInPrivatePractitioner() {
-        final var personId = webCertUserService.getUser().getPersonId();
-        return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(personId));
-    }
+  public HospInformationResponse getHospInformation() {
+    final var personId = webCertUserService.getUser().getPersonId();
+    return HospInformationResponse.convert(
+        privatePractitionerIntegrationService.getHospInformation(personId));
+  }
 
-    public PrivatePractitionerResponse getPrivatePractitioner(String hsaId) {
-        return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(hsaId));
-    }
+  public PrivatePractitionerResponse getLoggedInPrivatePractitioner() {
+    final var personId = webCertUserService.getUser().getPersonId();
+    return PrivatePractitionerResponse.convert(
+        privatePractitionerIntegrationService.getPrivatePractitioner(personId));
+  }
 
-    public PrivatePractitionerResponse editPrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
-        final var user = webCertUserService.getUser();
-        if (!privatePractitionerAccessValidationService.hasAccessToEdit(user)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                "User is not authorized to update private practitioner details");
-        }
-        return PrivatePractitionerResponse.convert(
-            privatePractitionerIntegrationService.updatePrivatePractitioner(
-                updatePrivatePractitionerFactory.create(updatePrivatePractitionerRequest).withPersonId(user.getPersonId())
-            )
-        );
+  public PrivatePractitionerResponse getPrivatePractitioner(String hsaId) {
+    return PrivatePractitionerResponse.convert(
+        privatePractitionerIntegrationService.getPrivatePractitioner(hsaId));
+  }
+
+  public PrivatePractitionerResponse editPrivatePractitioner(
+      PrivatePractitionerDetails updatePrivatePractitionerRequest) {
+    final var user = webCertUserService.getUser();
+    if (!privatePractitionerAccessValidationService.hasAccessToEdit(user)) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+          "User is not authorized to update private practitioner details");
     }
+    return PrivatePractitionerResponse.convert(
+        privatePractitionerIntegrationService.updatePrivatePractitioner(
+            updatePrivatePractitionerFactory
+                .create(updatePrivatePractitionerRequest)
+                .withPersonId(user.getPersonId())));
+  }
 }

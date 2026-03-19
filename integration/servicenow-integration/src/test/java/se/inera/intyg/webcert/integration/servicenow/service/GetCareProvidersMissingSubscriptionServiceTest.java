@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,77 +36,82 @@ import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 @ExtendWith(MockitoExtension.class)
 class GetCareProvidersMissingSubscriptionServiceTest {
 
-    @Mock
-    private CheckSubscriptionService checkSubscriptionService;
+  @Mock private CheckSubscriptionService checkSubscriptionService;
 
-    @InjectMocks
-    private GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
+  @InjectMocks
+  private GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
 
-    private static final String ORGANIZATION_NUMBER_1 = "ORGANIZATION_NUMBER_1";
-    private static final String HSA_ID_1 = "HSA_ID_1";
-    private static final String HSA_ID_2 = "HSA_ID_2";
-    private static final String HSA_ID_3 = "HSA_ID_3";
+  private static final String ORGANIZATION_NUMBER_1 = "ORGANIZATION_NUMBER_1";
+  private static final String HSA_ID_1 = "HSA_ID_1";
+  private static final String HSA_ID_2 = "HSA_ID_2";
+  private static final String HSA_ID_3 = "HSA_ID_3";
 
-    @Test
-    void shouldAddHsaIdToListWhenMissingSubscription() {
-        final var organizations = List.of(
+  @Test
+  void shouldAddHsaIdToListWhenMissingSubscription() {
+    final var organizations =
+        List.of(
             Organization.builder()
                 .organizationNumber(ORGANIZATION_NUMBER_1)
                 .serviceCodes(Collections.emptyList())
-                .build()
-        );
+                .build());
 
-        final var organizationHsaIdMap = Map.of(ORGANIZATION_NUMBER_1, List.of(HSA_ID_1));
+    final var organizationHsaIdMap = Map.of(ORGANIZATION_NUMBER_1, List.of(HSA_ID_1));
 
-        doReturn(true).when(checkSubscriptionService).isMissing(organizations.getFirst().getServiceCodes(),
-            SITHS);
+    doReturn(true)
+        .when(checkSubscriptionService)
+        .isMissing(organizations.getFirst().getServiceCodes(), SITHS);
 
-        final var actualResponse = getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
+    final var actualResponse =
+        getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
 
-        assertEquals(1, actualResponse.size());
-        assertEquals(HSA_ID_1, actualResponse.getFirst());
-    }
+    assertEquals(1, actualResponse.size());
+    assertEquals(HSA_ID_1, actualResponse.getFirst());
+  }
 
-    @Test
-    void shouldAddMultipleHsaIdToListWhenMissingSubscription() {
-        final var organizations = List.of(
+  @Test
+  void shouldAddMultipleHsaIdToListWhenMissingSubscription() {
+    final var organizations =
+        List.of(
             Organization.builder()
                 .organizationNumber(ORGANIZATION_NUMBER_1)
                 .serviceCodes(Collections.emptyList())
-                .build()
-        );
+                .build());
 
-        final var organizationHsaIdMap = Map.of(
-            ORGANIZATION_NUMBER_1, List.of(HSA_ID_1, HSA_ID_2, HSA_ID_3)
-        );
+    final var organizationHsaIdMap =
+        Map.of(ORGANIZATION_NUMBER_1, List.of(HSA_ID_1, HSA_ID_2, HSA_ID_3));
 
-        doReturn(true).when(checkSubscriptionService).isMissing(organizations.getFirst().getServiceCodes(), SITHS);
+    doReturn(true)
+        .when(checkSubscriptionService)
+        .isMissing(organizations.getFirst().getServiceCodes(), SITHS);
 
-        final var actualResponse = getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
+    final var actualResponse =
+        getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
 
-        assertEquals(3, actualResponse.size());
-        assertEquals(HSA_ID_1, actualResponse.get(0));
-        assertEquals(HSA_ID_2, actualResponse.get(1));
-        assertEquals(HSA_ID_3, actualResponse.get(2));
-    }
+    assertEquals(3, actualResponse.size());
+    assertEquals(HSA_ID_1, actualResponse.get(0));
+    assertEquals(HSA_ID_2, actualResponse.get(1));
+    assertEquals(HSA_ID_3, actualResponse.get(2));
+  }
 
-    @Test
-    void shouldNotAddHsaIdToListWhenNotMissingSubscription() {
-        final var organizations = List.of(
+  @Test
+  void shouldNotAddHsaIdToListWhenNotMissingSubscription() {
+    final var organizations =
+        List.of(
             Organization.builder()
                 .organizationNumber(ORGANIZATION_NUMBER_1)
                 .serviceCodes(Collections.emptyList())
-                .build()
-        );
+                .build());
 
-        final var organizationHsaIdMap = Map.of(
-            ORGANIZATION_NUMBER_1, List.of(HSA_ID_1, HSA_ID_2, HSA_ID_3)
-        );
+    final var organizationHsaIdMap =
+        Map.of(ORGANIZATION_NUMBER_1, List.of(HSA_ID_1, HSA_ID_2, HSA_ID_3));
 
-        doReturn(false).when(checkSubscriptionService).isMissing(organizations.getFirst().getServiceCodes(), SITHS);
+    doReturn(false)
+        .when(checkSubscriptionService)
+        .isMissing(organizations.getFirst().getServiceCodes(), SITHS);
 
-        final var actualResponse = getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
+    final var actualResponse =
+        getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
 
-        assertTrue(actualResponse.isEmpty());
-    }
+    assertTrue(actualResponse.isEmpty());
+  }
 }

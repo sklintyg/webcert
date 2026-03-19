@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,141 +33,143 @@ import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 @Getter
 public class SignaturBiljett implements Serializable {
 
+  private String userIpAddress;
+  private String ticketId;
+  private String intygsId;
+  private long version;
+  private SignaturStatus status;
+  private IntygSignature intygSignature;
+  private LocalDateTime skapad;
+  private SignaturTyp signaturTyp;
+  private String hash;
+  private SignMethod signMethod;
+  private String autoStartToken;
+  private String qrStartToken;
+  private String qrStartSecret;
+  private static final long serialVersionUID = 1L;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof SignaturBiljett)) {
+      return false;
+    }
+    SignaturBiljett that = (SignaturBiljett) o;
+    return version == that.version
+        && Objects.equals(ticketId, that.ticketId)
+        && Objects.equals(intygsId, that.intygsId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(ticketId, intygsId, version);
+  }
+
+  public static final class SignaturBiljettBuilder {
+
     private String userIpAddress;
-    private String ticketId;
+    private final String ticketId;
     private String intygsId;
     private long version;
     private SignaturStatus status;
     private IntygSignature intygSignature;
     private LocalDateTime skapad;
-    private SignaturTyp signaturTyp;
+    private final SignaturTyp signaturTyp;
     private String hash;
     private SignMethod signMethod;
     private String autoStartToken;
     private String qrStartToken;
     private String qrStartSecret;
-    private static final long serialVersionUID = 1L;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof SignaturBiljett)) {
-            return false;
-        }
-        SignaturBiljett that = (SignaturBiljett) o;
-        return version == that.version
-            && Objects.equals(ticketId, that.ticketId)
-            && Objects.equals(intygsId, that.intygsId);
+    private SignaturBiljettBuilder(
+        String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
+      this.ticketId = ticketId;
+      this.signaturTyp = signaturTyp;
+      this.signMethod = signMethod;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(ticketId, intygsId, version);
+    public static SignaturBiljettBuilder aSignaturBiljett(
+        String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
+      return new SignaturBiljettBuilder(ticketId, signaturTyp, signMethod);
     }
 
-    public static final class SignaturBiljettBuilder {
-
-        private String userIpAddress;
-        private final String ticketId;
-        private String intygsId;
-        private long version;
-        private SignaturStatus status;
-        private IntygSignature intygSignature;
-        private LocalDateTime skapad;
-        private final SignaturTyp signaturTyp;
-        private String hash;
-        private SignMethod signMethod;
-        private String autoStartToken;
-        private String qrStartToken;
-        private String qrStartSecret;
-
-        private SignaturBiljettBuilder(String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
-            this.ticketId = ticketId;
-            this.signaturTyp = signaturTyp;
-            this.signMethod = signMethod;
-        }
-
-        public static SignaturBiljettBuilder aSignaturBiljett(String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
-            return new SignaturBiljettBuilder(ticketId, signaturTyp, signMethod);
-        }
-
-        public SignaturBiljettBuilder withQrStartSecret(String qrStartSecret) {
-            this.qrStartSecret = qrStartSecret;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withQrStartToken(String qrStartToken) {
-            this.qrStartToken = qrStartToken;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withAutoStartToken(String autoStartToken) {
-            this.autoStartToken = autoStartToken;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withIntygsId(String intygsId) {
-            this.intygsId = intygsId;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withVersion(long version) {
-            this.version = version;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withStatus(SignaturStatus status) {
-            this.status = status;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withIntygSignature(IntygSignature intygSignature) {
-            this.intygSignature = intygSignature;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withSkapad(LocalDateTime skapad) {
-            this.skapad = skapad;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withHash(String hash) {
-            this.hash = hash;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withSignMethod(SignMethod signMethod) {
-            this.signMethod = signMethod;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withUserIpAddress(String userIpAddress) {
-            this.userIpAddress = userIpAddress;
-            return this;
-        }
-
-        public SignaturBiljett build() {
-            checkArgument(nonNull(ticketId));
-            checkArgument(nonNull(signaturTyp));
-            checkArgument(nonNull(signMethod));
-
-            SignaturBiljett signaturBiljett = new SignaturBiljett();
-            signaturBiljett.setTicketId(ticketId);
-            signaturBiljett.setIntygsId(intygsId);
-            signaturBiljett.setVersion(version);
-            signaturBiljett.setStatus(status);
-            signaturBiljett.setIntygSignature(intygSignature);
-            signaturBiljett.setSkapad(skapad);
-            signaturBiljett.setSignaturTyp(signaturTyp);
-            signaturBiljett.setHash(hash);
-            signaturBiljett.setSignMethod(signMethod);
-            signaturBiljett.setAutoStartToken(autoStartToken);
-            signaturBiljett.setQrStartToken(qrStartToken);
-            signaturBiljett.setQrStartSecret(qrStartSecret);
-            signaturBiljett.setUserIpAddress(userIpAddress);
-            return signaturBiljett;
-        }
+    public SignaturBiljettBuilder withQrStartSecret(String qrStartSecret) {
+      this.qrStartSecret = qrStartSecret;
+      return this;
     }
+
+    public SignaturBiljettBuilder withQrStartToken(String qrStartToken) {
+      this.qrStartToken = qrStartToken;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withAutoStartToken(String autoStartToken) {
+      this.autoStartToken = autoStartToken;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withIntygsId(String intygsId) {
+      this.intygsId = intygsId;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withVersion(long version) {
+      this.version = version;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withStatus(SignaturStatus status) {
+      this.status = status;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withIntygSignature(IntygSignature intygSignature) {
+      this.intygSignature = intygSignature;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withSkapad(LocalDateTime skapad) {
+      this.skapad = skapad;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withHash(String hash) {
+      this.hash = hash;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withSignMethod(SignMethod signMethod) {
+      this.signMethod = signMethod;
+      return this;
+    }
+
+    public SignaturBiljettBuilder withUserIpAddress(String userIpAddress) {
+      this.userIpAddress = userIpAddress;
+      return this;
+    }
+
+    public SignaturBiljett build() {
+      checkArgument(nonNull(ticketId));
+      checkArgument(nonNull(signaturTyp));
+      checkArgument(nonNull(signMethod));
+
+      SignaturBiljett signaturBiljett = new SignaturBiljett();
+      signaturBiljett.setTicketId(ticketId);
+      signaturBiljett.setIntygsId(intygsId);
+      signaturBiljett.setVersion(version);
+      signaturBiljett.setStatus(status);
+      signaturBiljett.setIntygSignature(intygSignature);
+      signaturBiljett.setSkapad(skapad);
+      signaturBiljett.setSignaturTyp(signaturTyp);
+      signaturBiljett.setHash(hash);
+      signaturBiljett.setSignMethod(signMethod);
+      signaturBiljett.setAutoStartToken(autoStartToken);
+      signaturBiljett.setQrStartToken(qrStartToken);
+      signaturBiljett.setQrStartSecret(qrStartSecret);
+      signaturBiljett.setUserIpAddress(userIpAddress);
+      return signaturBiljett;
+    }
+  }
 }

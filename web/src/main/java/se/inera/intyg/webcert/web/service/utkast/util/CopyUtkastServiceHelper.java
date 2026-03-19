@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,134 +44,143 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @Service
 public class CopyUtkastServiceHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceHelper.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceHelper.class);
 
-    private WebCertUserService webCertUserService;
+  private WebCertUserService webCertUserService;
 
-    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+  private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-    @Autowired
-    public void setWebCertUserService(WebCertUserService webCertUserService) {
-        this.webCertUserService = webCertUserService;
+  @Autowired
+  public void setWebCertUserService(WebCertUserService webCertUserService) {
+    this.webCertUserService = webCertUserService;
+  }
+
+  public CreateUtkastFromTemplateRequest createUtkastFromUtkast(
+      String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
+
+    return createUtkastFromDifferentIntygTypeRequest(orgIntygsId, intygsTyp, intygsTyp, request);
+  }
+
+  public CreateUtkastFromTemplateRequest createUtkastFromDifferentIntygTypeRequest(
+      String orgIntygsId, String newIntygsTyp, String orgIntygsTyp, CopyIntygRequest request) {
+    HoSPersonal hosPerson = createHoSPersonFromUser();
+    Patient patient = createPatientFromCopyIntygRequest(request);
+
+    CreateUtkastFromTemplateRequest req =
+        new CreateUtkastFromTemplateRequest(
+            orgIntygsId, newIntygsTyp, patient, hosPerson, orgIntygsTyp);
+
+    addValuesOnRequest(req, webCertUserService.getUser().getParameters());
+
+    return req;
+  }
+
+  public CreateReplacementCopyRequest createReplacementCopyRequest(
+      String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
+    HoSPersonal hosPerson = createHoSPersonFromUser();
+    Patient patient = createPatientFromCopyIntygRequest(request);
+    final WebCertUser user = webCertUserService.getUser();
+    IntegrationParameters parameters = user.getParameters();
+
+    CreateReplacementCopyRequest req =
+        new CreateReplacementCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
+
+    addValuesOnRequest(req, parameters);
+
+    return req;
+  }
+
+  public CreateRenewalCopyRequest createRenewalCopyRequest(
+      String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
+    HoSPersonal hosPerson = createHoSPersonFromUser();
+    Patient patient = createPatientFromCopyIntygRequest(request);
+
+    CreateRenewalCopyRequest req =
+        new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
+
+    addValuesOnRequest(req, webCertUserService.getUser().getParameters());
+
+    return req;
+  }
+
+  public CreateCompletionCopyRequest createCompletionCopyRequest(
+      String orgIntygsId, String intygsTyp, String meddelandeId, CopyIntygRequest copyRequest) {
+    HoSPersonal hosPerson = createHoSPersonFromUser();
+    Patient patient = createPatientFromCopyIntygRequest(copyRequest);
+
+    CreateCompletionCopyRequest req =
+        new CreateCompletionCopyRequest(
+            orgIntygsId, intygsTyp, meddelandeId, patient, hosPerson, copyRequest.getKommentar());
+
+    addValuesOnRequest(req, webCertUserService.getUser().getParameters());
+
+    return req;
+  }
+
+  private Patient createPatientFromCopyIntygRequest(CopyIntygRequest copyRequest) {
+    WebCertUser user = webCertUserService.getUser();
+    IntegrationParameters parameters = user.getParameters();
+
+    Patient patient = new Patient();
+    patient.setPersonId(copyRequest.getPatientPersonnummer());
+    if (parameters != null) {
+      if (!Strings.nullToEmpty(parameters.getFornamn()).trim().isEmpty()) {
+        patient.setFornamn(parameters.getFornamn());
+      }
+      if (!Strings.nullToEmpty(parameters.getEfternamn()).trim().isEmpty()) {
+        patient.setEfternamn(parameters.getEfternamn());
+      }
+      if (!Strings.nullToEmpty(parameters.getMellannamn()).trim().isEmpty()) {
+        patient.setMellannamn(parameters.getMellannamn());
+      }
+      if (!Strings.nullToEmpty(parameters.getPostadress()).trim().isEmpty()) {
+        patient.setPostadress(parameters.getPostadress());
+      }
+      if (!Strings.nullToEmpty(parameters.getPostnummer()).trim().isEmpty()) {
+        patient.setPostnummer(parameters.getPostnummer());
+      }
+      if (!Strings.nullToEmpty(parameters.getPostort()).trim().isEmpty()) {
+        patient.setPostort(parameters.getPostort());
+      }
     }
+    return patient;
+  }
 
-    public CreateUtkastFromTemplateRequest createUtkastFromUtkast(String orgIntygsId, String intygsTyp,
-        CopyIntygRequest request) {
+  private void addValuesOnRequest(AbstractCreateCopyRequest req, IntegrationParameters parameters) {
+    // Add new personnummer to request
+    addPersonnummerToRequest(req, parameters);
 
-        return createUtkastFromDifferentIntygTypeRequest(orgIntygsId, intygsTyp, intygsTyp, request);
+    // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+    setDeepIntegrationFlagOnRequest(req);
+  }
+
+  private void setDeepIntegrationFlagOnRequest(AbstractCreateCopyRequest req) {
+    if (authoritiesValidator
+        .given(webCertUserService.getUser())
+        .origins(UserOriginType.DJUPINTEGRATION)
+        .isVerified()) {
+      LOG.debug("Setting djupintegrerad flag on request to true");
+      req.setDjupintegrerad(true);
     }
+  }
 
-    public CreateUtkastFromTemplateRequest createUtkastFromDifferentIntygTypeRequest(String orgIntygsId, String newIntygsTyp,
-        String orgIntygsTyp, CopyIntygRequest request) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(request);
-
-        CreateUtkastFromTemplateRequest req = new CreateUtkastFromTemplateRequest(orgIntygsId, newIntygsTyp, patient,
-            hosPerson, orgIntygsTyp);
-
-        addValuesOnRequest(req, webCertUserService.getUser().getParameters());
-
-        return req;
+  private void addPersonnummerToRequest(
+      AbstractCreateCopyRequest req, IntegrationParameters parameters) {
+    if (parameters != null) {
+      Optional<Personnummer> optionalPnr = createOptPnr(parameters.getAlternateSsn());
+      if (optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr)) {
+        LOG.debug("Adding new personnummer to request");
+        req.setNyttPatientPersonnummer(optionalPnr.get());
+      }
     }
+  }
 
-    public CreateReplacementCopyRequest createReplacementCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(request);
-        final WebCertUser user = webCertUserService.getUser();
-        IntegrationParameters parameters = user.getParameters();
+  private HoSPersonal createHoSPersonFromUser() {
+    WebCertUser user = webCertUserService.getUser();
+    return IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
+  }
 
-        CreateReplacementCopyRequest req = new CreateReplacementCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
-
-        addValuesOnRequest(req, parameters);
-
-        return req;
-    }
-
-    public CreateRenewalCopyRequest createRenewalCopyRequest(String orgIntygsId, String intygsTyp, CopyIntygRequest request) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(request);
-
-        CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
-
-        addValuesOnRequest(req, webCertUserService.getUser().getParameters());
-
-        return req;
-    }
-
-    public CreateCompletionCopyRequest createCompletionCopyRequest(String orgIntygsId, String intygsTyp, String meddelandeId,
-        CopyIntygRequest copyRequest) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(copyRequest);
-
-        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId,
-            patient, hosPerson, copyRequest.getKommentar());
-
-        addValuesOnRequest(req, webCertUserService.getUser().getParameters());
-
-        return req;
-    }
-
-    private Patient createPatientFromCopyIntygRequest(CopyIntygRequest copyRequest) {
-        WebCertUser user = webCertUserService.getUser();
-        IntegrationParameters parameters = user.getParameters();
-
-        Patient patient = new Patient();
-        patient.setPersonId(copyRequest.getPatientPersonnummer());
-        if (parameters != null) {
-            if (!Strings.nullToEmpty(parameters.getFornamn()).trim().isEmpty()) {
-                patient.setFornamn(parameters.getFornamn());
-            }
-            if (!Strings.nullToEmpty(parameters.getEfternamn()).trim().isEmpty()) {
-                patient.setEfternamn(parameters.getEfternamn());
-            }
-            if (!Strings.nullToEmpty(parameters.getMellannamn()).trim().isEmpty()) {
-                patient.setMellannamn(parameters.getMellannamn());
-            }
-            if (!Strings.nullToEmpty(parameters.getPostadress()).trim().isEmpty()) {
-                patient.setPostadress(parameters.getPostadress());
-            }
-            if (!Strings.nullToEmpty(parameters.getPostnummer()).trim().isEmpty()) {
-                patient.setPostnummer(parameters.getPostnummer());
-            }
-            if (!Strings.nullToEmpty(parameters.getPostort()).trim().isEmpty()) {
-                patient.setPostort(parameters.getPostort());
-            }
-        }
-        return patient;
-
-    }
-
-    private void addValuesOnRequest(AbstractCreateCopyRequest req, IntegrationParameters parameters) {
-        // Add new personnummer to request
-        addPersonnummerToRequest(req, parameters);
-
-        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
-        setDeepIntegrationFlagOnRequest(req);
-    }
-
-    private void setDeepIntegrationFlagOnRequest(AbstractCreateCopyRequest req) {
-        if (authoritiesValidator.given(webCertUserService.getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
-    }
-
-    private void addPersonnummerToRequest(AbstractCreateCopyRequest req, IntegrationParameters parameters) {
-        if (parameters != null) {
-            Optional<Personnummer> optionalPnr = createOptPnr(parameters.getAlternateSsn());
-            if (optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr)) {
-                LOG.debug("Adding new personnummer to request");
-                req.setNyttPatientPersonnummer(optionalPnr.get());
-            }
-        }
-    }
-
-    private HoSPersonal createHoSPersonFromUser() {
-        WebCertUser user = webCertUserService.getUser();
-        return IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
-    }
-
-    private Optional<Personnummer> createOptPnr(String personId) {
-        return Personnummer.createPersonnummer(personId);
-    }
+  private Optional<Personnummer> createOptPnr(String personId) {
+    return Personnummer.createPersonnummer(personId);
+  }
 }

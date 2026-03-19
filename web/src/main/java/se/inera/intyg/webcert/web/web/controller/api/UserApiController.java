@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -61,195 +61,212 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorag
  * @author npet
  */
 @Path("/anvandare")
-@Api(value = "anvandare", description = "REST API för användarhantering", produces = MediaType.APPLICATION_JSON)
+@Api(
+    value = "anvandare",
+    description = "REST API för användarhantering",
+    produces = MediaType.APPLICATION_JSON)
 public class UserApiController extends AbstractApiController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
 
-    @Autowired
-    private AvtalService avtalService;
+  @Autowired private AvtalService avtalService;
 
-    @Autowired
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
-    @Autowired
-    private DssSignatureService dssSignatureService;
+  @Autowired private DssSignatureService dssSignatureService;
 
-    /**
-     * Retrieves the security context of the logged in user as JSON.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getUser() {
-        WebCertUser user = getWebCertUserService().getUser();
+  /** Retrieves the security context of the logged in user as JSON. */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getUser() {
+    WebCertUser user = getWebCertUserService().getUser();
 
-        var valdVardenhet = user.getValdVardenhet();
-        if (valdVardenhet != null) {
-            user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
-        }
-        return Response.ok(user.getAsJson()).build();
+    var valdVardenhet = user.getValdVardenhet();
+    if (valdVardenhet != null) {
+      user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
+    }
+    return Response.ok(user.getAsJson()).build();
+  }
+
+  @PUT
+  @Path("/features")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-set-user-features",
+      eventType = MdcLogConstants.EVENT_TYPE_USER)
+  public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest) {
+    WebCertUser user = getWebCertUserService().getUser();
+    Map<String, Feature> mutFeatures = new HashMap<>(user.getFeatures());
+    updateFeatures(
+        webUserFeaturesRequest.isJsLoggning(),
+        AuthoritiesConstants.FEATURE_JS_LOGGNING,
+        mutFeatures);
+    user.setFeatures(mutFeatures);
+    return Response.ok(mutFeatures).build();
+  }
+
+  /** Changes the selected care unit in the security context for the logged in user. */
+  @POST
+  @Path("/andraenhet")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-change-selected-unit",
+      eventType = MdcLogConstants.EVENT_TYPE_USER)
+  public Response changeSelectedUnitOnUser(ChangeSelectedUnitRequest request) {
+
+    WebCertUser user = getWebCertUserService().getUser();
+
+    LOG.debug(
+        "Attempting to change selected unit for user '{}', currently selected unit is '{}'",
+        user.getHsaId(),
+        user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "(none)");
+
+    boolean changeSuccess = user.changeValdVardenhet(request.getId());
+
+    if (!changeSuccess) {
+      LOG.error(
+          "Unit '{}' is not present in the MIUs for user '{}'", request.getId(), user.getHsaId());
+      return Response.status(Status.BAD_REQUEST).entity("Unit change failed").build();
     }
 
-    @PUT
-    @Path("/features")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-set-user-features", eventType = MdcLogConstants.EVENT_TYPE_USER)
-    public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest) {
-        WebCertUser user = getWebCertUserService().getUser();
-        Map<String, Feature> mutFeatures = new HashMap<>(user.getFeatures());
-        updateFeatures(webUserFeaturesRequest.isJsLoggning(), AuthoritiesConstants.FEATURE_JS_LOGGNING, mutFeatures);
-        user.setFeatures(mutFeatures);
-        return Response.ok(mutFeatures).build();
+    var valdVardenhet = user.getValdVardenhet();
+    if (valdVardenhet != null) {
+      user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
     }
 
-    /**
-     * Changes the selected care unit in the security context for the logged in user.
-     */
-    @POST
-    @Path("/andraenhet")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-change-selected-unit", eventType = MdcLogConstants.EVENT_TYPE_USER)
-    public Response changeSelectedUnitOnUser(ChangeSelectedUnitRequest request) {
-
-        WebCertUser user = getWebCertUserService().getUser();
-
-        LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
-            user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "(none)");
-
-        boolean changeSuccess = user.changeValdVardenhet(request.getId());
-
-        if (!changeSuccess) {
-            LOG.error("Unit '{}' is not present in the MIUs for user '{}'", request.getId(), user.getHsaId());
-            return Response.status(Status.BAD_REQUEST).entity("Unit change failed").build();
-        }
-
-        var valdVardenhet = user.getValdVardenhet();
-        if (valdVardenhet != null) {
-            user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
-        }
-
-        user.setFeatures(commonAuthoritiesResolver.getFeatures(
+    user.setFeatures(
+        commonAuthoritiesResolver.getFeatures(
             Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
 
-        LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
+    LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
 
-        return Response.ok(user.getAsJson()).build();
+    return Response.ok(user.getAsJson()).build();
+  }
+
+  /** Retrieves the security context of the logged in user as JSON. */
+  @PUT
+  @Path("/godkannavtal")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-approve-agreement",
+      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
+  public Response godkannAvtal() {
+    WebCertUser user = getWebCertUserService().getUser();
+    if (user != null) {
+      avtalService.approveLatestAvtal(user.getHsaId(), user.getPersonId());
+      user.setUserTermsApprovedOrSubscriptionInUse(true);
     }
+    return Response.ok().build();
+  }
 
-    /**
-     * Retrieves the security context of the logged in user as JSON.
-     */
-    @PUT
-    @Path("/godkannavtal")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-approve-agreement", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response godkannAvtal() {
-        WebCertUser user = getWebCertUserService().getUser();
-        if (user != null) {
-            avtalService.approveLatestAvtal(user.getHsaId(), user.getPersonId());
-            user.setUserTermsApprovedOrSubscriptionInUse(true);
-        }
-        return Response.ok().build();
+  /** Deletes privatlakaravtal approval for the specified user. */
+  @DELETE
+  @Path("/privatlakaravtal")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-remove-agreement-approval",
+      eventType = MdcLogConstants.EVENT_TYPE_DELETION)
+  public Response taBortAvtalsGodkannande() {
+    WebCertUser user = getWebCertUserService().getUser();
+    if (user != null) {
+      avtalService.removeApproval(user.getHsaId());
+      return Response.ok().build();
     }
+    return Response.notModified().build();
+  }
 
-    /**
-     * Deletes privatlakaravtal approval for the specified user.
-     */
-    @DELETE
-    @Path("/privatlakaravtal")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-remove-agreement-approval", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-    public Response taBortAvtalsGodkannande() {
-        WebCertUser user = getWebCertUserService().getUser();
-        if (user != null) {
-            avtalService.removeApproval(user.getHsaId());
-            return Response.ok().build();
-        }
-        return Response.notModified().build();
+  @GET
+  @Path("/latestavtal")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-get-agreement",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getAvtal() {
+    Optional<Avtal> avtal = avtalService.getLatestAvtal();
+    return Response.ok(avtal.orElse(null)).build();
+  }
+
+  @GET
+  @Path("/ping")
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-client-ping",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response clientPing() {
+    // Any active user session will be extended just by accessing an endpoint.
+    LOG.debug("wc-client pinged server");
+    return Response.ok().build();
+  }
+
+  @PUT
+  @Path("/preferences")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-store-metadata-entry",
+      eventType = MdcLogConstants.EVENT_TYPE_USER)
+  public Response storeUserMetdataEntry(WebUserPreferenceStorageRequest request) {
+    LOG.debug("User stored user preference entry for key: " + request.getKey());
+    getWebCertUserService().storeUserPreference(request.getKey(), request.getValue());
+    return Response.ok().build();
+  }
+
+  @DELETE
+  @Path("/preferences/{key}")
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-delete-user-preference-entry",
+      eventType = MdcLogConstants.EVENT_TYPE_USER)
+  public Response deleteUserPreferenceEntry(@PathParam("key") String prefKey) {
+    LOG.debug("User deleted user preference entry for key: " + prefKey);
+    getWebCertUserService().deleteUserPreference(prefKey);
+    return Response.ok().build();
+  }
+
+  @GET
+  @Path("/logout")
+  @PrometheusTimeMethod
+  @PerformanceLogging(eventAction = "user-logout", eventType = MdcLogConstants.EVENT_TYPE_USER)
+  public Response logoutUserAfterTimeout(@Context HttpServletRequest request) {
+    HttpSession session = request.getSession();
+
+    getWebCertUserService().scheduleSessionRemoval(session);
+
+    return Response.ok().build();
+  }
+
+  @GET
+  @Path("/logout/cancel")
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "user-cancel-logout",
+      eventType = MdcLogConstants.EVENT_TYPE_USER)
+  public Response cancelLogout(@Context HttpServletRequest request) {
+    HttpSession session = request.getSession();
+
+    getWebCertUserService().cancelScheduledLogout(session);
+
+    return Response.ok().build();
+  }
+
+  private void updateFeatures(boolean active, String name, Map<String, Feature> features) {
+    if (active) {
+      Feature feature = new Feature();
+      feature.setName(name);
+      feature.setGlobal(true);
+      features.put(name, feature);
+    } else {
+      features.remove(name);
     }
-
-    @GET
-    @Path("/latestavtal")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-get-agreement", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getAvtal() {
-        Optional<Avtal> avtal = avtalService.getLatestAvtal();
-        return Response.ok(avtal.orElse(null)).build();
-    }
-
-    @GET
-    @Path("/ping")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-client-ping", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response clientPing() {
-        // Any active user session will be extended just by accessing an endpoint.
-        LOG.debug("wc-client pinged server");
-        return Response.ok().build();
-    }
-
-    @PUT
-    @Path("/preferences")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-store-metadata-entry", eventType = MdcLogConstants.EVENT_TYPE_USER)
-    public Response storeUserMetdataEntry(WebUserPreferenceStorageRequest request) {
-        LOG.debug("User stored user preference entry for key: " + request.getKey());
-        getWebCertUserService().storeUserPreference(request.getKey(), request.getValue());
-        return Response.ok().build();
-    }
-
-    @DELETE
-    @Path("/preferences/{key}")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-delete-user-preference-entry", eventType = MdcLogConstants.EVENT_TYPE_USER)
-    public Response deleteUserPreferenceEntry(@PathParam("key") String prefKey) {
-        LOG.debug("User deleted user preference entry for key: " + prefKey);
-        getWebCertUserService().deleteUserPreference(prefKey);
-        return Response.ok().build();
-    }
-
-    @GET
-    @Path("/logout")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-logout", eventType = MdcLogConstants.EVENT_TYPE_USER)
-    public Response logoutUserAfterTimeout(@Context HttpServletRequest request) {
-        HttpSession session = request.getSession();
-
-        getWebCertUserService().scheduleSessionRemoval(session);
-
-        return Response.ok().build();
-    }
-
-    @GET
-    @Path("/logout/cancel")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "user-cancel-logout", eventType = MdcLogConstants.EVENT_TYPE_USER)
-    public Response cancelLogout(@Context HttpServletRequest request) {
-        HttpSession session = request.getSession();
-
-        getWebCertUserService().cancelScheduledLogout(session);
-
-        return Response.ok().build();
-    }
-
-    private void updateFeatures(boolean active, String name, Map<String, Feature> features) {
-        if (active) {
-            Feature feature = new Feature();
-            feature.setName(name);
-            feature.setGlobal(true);
-            features.put(name, feature);
-        } else {
-            features.remove(name);
-        }
-    }
+  }
 }

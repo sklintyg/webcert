@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,78 +43,129 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 @Component
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {
 
-    private static final List<HandelsekodEnum> USES_FRAGOR_OCH_SVAR = Arrays.asList(HandelsekodEnum.NYFRFM,
-        HandelsekodEnum.NYSVFM, HandelsekodEnum.NYFRFV, HandelsekodEnum.HANFRFM,
-        HandelsekodEnum.HANFRFV, HandelsekodEnum.MAKULE);
+  private static final List<HandelsekodEnum> USES_FRAGOR_OCH_SVAR =
+      Arrays.asList(
+          HandelsekodEnum.NYFRFM,
+          HandelsekodEnum.NYSVFM,
+          HandelsekodEnum.NYFRFV,
+          HandelsekodEnum.HANFRFM,
+          HandelsekodEnum.HANFRFV,
+          HandelsekodEnum.MAKULE);
 
-    @Autowired
-    private FragorOchSvarCreator fragorOchSvarCreator;
-    @Autowired
-    private SendNotificationStrategy sendNotificationStrategy;
-    @Autowired
-    private ReferensService referenceService;
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
+  @Autowired private FragorOchSvarCreator fragorOchSvarCreator;
+  @Autowired private SendNotificationStrategy sendNotificationStrategy;
+  @Autowired private ReferensService referenceService;
+  @Autowired private IntygModuleRegistry moduleRegistry;
 
-    @Override
-    public NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version,
-        String reference, Amneskod amne, LocalDate sistaSvarsDatum) {
-        return createNotificationMessage(utkast.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), utkast.getModel(),
-            handelse, version, reference, amne, sistaSvarsDatum);
+  @Override
+  public NotificationMessage createNotificationMessage(
+      Utkast utkast,
+      HandelsekodEnum handelse,
+      SchemaVersion version,
+      String reference,
+      Amneskod amne,
+      LocalDate sistaSvarsDatum) {
+    return createNotificationMessage(
+        utkast.getIntygsId(),
+        utkast.getIntygsTyp(),
+        utkast.getEnhetsId(),
+        utkast.getModel(),
+        handelse,
+        version,
+        reference,
+        amne,
+        sistaSvarsDatum);
+  }
+
+  // CHECKSTYLE:OFF ParameterNumber
+  @Override
+  public NotificationMessage createNotificationMessage(
+      String intygsId,
+      String intygsTyp,
+      String logiskAdress,
+      String utkastJson,
+      HandelsekodEnum handelse,
+      SchemaVersion version,
+      String reference,
+      Amneskod amne,
+      LocalDate sistaSvarsDatum) {
+
+    LocalDateTime handelseTid = LocalDateTime.now();
+
+    FragorOchSvar fragaSvar = null;
+    ArendeCount skickadeFragor = null;
+    ArendeCount mottagnaFragor = null;
+
+    if (SchemaVersion.VERSION_3 == version) {
+      Pair<ArendeCount, ArendeCount> arenden =
+          Pair.of(ArendeCount.getEmpty(), ArendeCount.getEmpty());
+
+      // Add a count of questions to the message
+      if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
+        arenden = fragorOchSvarCreator.createArenden(intygsId, intygsTyp);
+      }
+
+      skickadeFragor = arenden.getLeft();
+      mottagnaFragor = arenden.getRight();
+
+    } else {
+      fragaSvar = FragorOchSvar.getEmpty();
+
+      // Add a count of questions to the message
+      if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
+        fragaSvar = fragorOchSvarCreator.createFragorOchSvar(intygsId);
+      }
     }
 
-    // CHECKSTYLE:OFF ParameterNumber
-    @Override
-    public NotificationMessage createNotificationMessage(String intygsId, String intygsTyp, String logiskAdress, String utkastJson,
-        HandelsekodEnum handelse, SchemaVersion version, String reference, Amneskod amne, LocalDate sistaSvarsDatum) {
+    return new NotificationMessage(
+        intygsId,
+        intygsTyp,
+        handelseTid,
+        handelse,
+        logiskAdress,
+        utkastJson,
+        fragaSvar,
+        skickadeFragor,
+        mottagnaFragor,
+        version,
+        reference,
+        amne,
+        sistaSvarsDatum);
+  }
 
-        LocalDateTime handelseTid = LocalDateTime.now();
+  // CHECKSTYLE:ON ParameterNumber
 
-        FragorOchSvar fragaSvar = null;
-        ArendeCount skickadeFragor = null;
-        ArendeCount mottagnaFragor = null;
-
-        if (SchemaVersion.VERSION_3 == version) {
-            Pair<ArendeCount, ArendeCount> arenden = Pair.of(ArendeCount.getEmpty(), ArendeCount.getEmpty());
-
-            // Add a count of questions to the message
-            if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
-                arenden = fragorOchSvarCreator.createArenden(intygsId, intygsTyp);
-            }
-
-            skickadeFragor = arenden.getLeft();
-            mottagnaFragor = arenden.getRight();
-
-        } else {
-            fragaSvar = FragorOchSvar.getEmpty();
-
-            // Add a count of questions to the message
-            if (USES_FRAGOR_OCH_SVAR.contains(handelse)) {
-                fragaSvar = fragorOchSvarCreator.createFragorOchSvar(intygsId);
-            }
-        }
-
-        return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson,
-            fragaSvar, skickadeFragor, mottagnaFragor, version, reference, amne, sistaSvarsDatum);
-    }
-    // CHECKSTYLE:ON ParameterNumber
-
-    @Override
-    public NotificationMessage createNotificationMessage(Handelse event, String draftJson)
-        throws ModuleNotFoundException, IOException, ModuleException {
-        final var moduleApi = moduleRegistry.getModuleApi(moduleRegistry.getModuleIdFromExternalId(event.getCertificateType()),
+  @Override
+  public NotificationMessage createNotificationMessage(Handelse event, String draftJson)
+      throws ModuleNotFoundException, IOException, ModuleException {
+    final var moduleApi =
+        moduleRegistry.getModuleApi(
+            moduleRegistry.getModuleIdFromExternalId(event.getCertificateType()),
             event.getCertificateVersion());
-        final var utlatande = moduleApi.getUtlatandeFromJson(draftJson);
-        final var schemaVersion = sendNotificationStrategy.decideNotificationForIntyg(utlatande).orElse(SchemaVersion.VERSION_3);
-        final var reference = referenceService.getReferensForIntygsId(event.getIntygsId());
-        final var topicCode = event.getAmne() != null ? AmneskodCreator.create(event.getAmne().name(), event.getAmne().getDescription())
+    final var utlatande = moduleApi.getUtlatandeFromJson(draftJson);
+    final var schemaVersion =
+        sendNotificationStrategy
+            .decideNotificationForIntyg(utlatande)
+            .orElse(SchemaVersion.VERSION_3);
+    final var reference = referenceService.getReferensForIntygsId(event.getIntygsId());
+    final var topicCode =
+        event.getAmne() != null
+            ? AmneskodCreator.create(event.getAmne().name(), event.getAmne().getDescription())
             : null;
 
-        final var notificationMessage = createNotificationMessage(event.getIntygsId(), utlatande.getTyp(),
-            event.getEnhetsId(), draftJson, event.getCode(), schemaVersion, reference, topicCode, event.getSistaDatumForSvar());
+    final var notificationMessage =
+        createNotificationMessage(
+            event.getIntygsId(),
+            utlatande.getTyp(),
+            event.getEnhetsId(),
+            draftJson,
+            event.getCode(),
+            schemaVersion,
+            reference,
+            topicCode,
+            event.getSistaDatumForSvar());
 
-        notificationMessage.setHandelseTid(event.getTimestamp());
-        return notificationMessage;
-    }
-
+    notificationMessage.setHandelseTid(event.getTimestamp());
+    return notificationMessage;
+  }
 }

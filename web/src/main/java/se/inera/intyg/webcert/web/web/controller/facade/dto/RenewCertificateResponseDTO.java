@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,19 +20,19 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class RenewCertificateResponseDTO {
 
-    private String certificateId;
+  private String certificateId;
 
-    public static RenewCertificateResponseDTO create(String certificateId) {
-        final RenewCertificateResponseDTO responseDTO = new RenewCertificateResponseDTO();
-        responseDTO.certificateId = certificateId;
-        return responseDTO;
-    }
+  public static RenewCertificateResponseDTO create(String certificateId) {
+    final RenewCertificateResponseDTO responseDTO = new RenewCertificateResponseDTO();
+    responseDTO.certificateId = certificateId;
+    return responseDTO;
+  }
 
-    public String getCertificateId() {
-        return certificateId;
-    }
+  public String getCertificateId() {
+    return certificateId;
+  }
 
-    public void setCertificateId(String certificateId) {
-        this.certificateId = certificateId;
-    }
+  public void setCertificateId(String certificateId) {
+    this.certificateId = certificateId;
+  }
 }

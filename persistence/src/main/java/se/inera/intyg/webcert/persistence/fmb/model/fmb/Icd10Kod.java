@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,76 +36,74 @@ import java.util.Optional;
 @Table(name = "FMB_ICD10_KOD")
 public class Icd10Kod {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID", nullable = false)
+  private Long id;
 
-    @Column(name = "KOD", nullable = false)
+  @Column(name = "KOD", nullable = false)
+  private String kod;
+
+  @Column(name = "BESKRIVNING")
+  private String beskrivning;
+
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "ICD10_ID", nullable = false)
+  private List<TypFall> typFallList = Lists.newArrayList();
+
+  protected Icd10Kod() {}
+
+  private Icd10Kod(final String kod, final String beskrivning, final List<TypFall> typFallList) {
+    this.kod = kod;
+    this.beskrivning = beskrivning;
+    this.typFallList = typFallList;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public String getKod() {
+    return kod;
+  }
+
+  public Optional<String> getBeskrivning() {
+    return Optional.ofNullable(beskrivning);
+  }
+
+  public List<TypFall> getTypFallList() {
+    return typFallList;
+  }
+
+  public static final class Icd10KodBuilder {
+
     private String kod;
-
-    @Column(name = "BESKRIVNING")
     private String beskrivning;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ICD10_ID", nullable = false)
     private List<TypFall> typFallList = Lists.newArrayList();
 
-    protected Icd10Kod() {
+    private Icd10KodBuilder() {}
+
+    public static Icd10KodBuilder anIcd10Kod() {
+      return new Icd10KodBuilder();
     }
 
-    private Icd10Kod(final String kod, final String beskrivning, final List<TypFall> typFallList) {
-        this.kod = kod;
-        this.beskrivning = beskrivning;
-        this.typFallList = typFallList;
+    public Icd10KodBuilder kod(String kod) {
+      this.kod = kod;
+      return this;
     }
 
-    public Long getId() {
-        return id;
+    public Icd10KodBuilder beskrivning(String beskrivning) {
+      this.beskrivning = beskrivning;
+      return this;
     }
 
-    public String getKod() {
-        return kod;
+    public Icd10KodBuilder typFallList(List<TypFall> typFallList) {
+      this.typFallList = typFallList;
+      return this;
     }
 
-    public Optional<String> getBeskrivning() {
-        return Optional.ofNullable(beskrivning);
+    public Icd10Kod build() {
+      return new Icd10Kod(kod, beskrivning, typFallList);
     }
-
-    public List<TypFall> getTypFallList() {
-        return typFallList;
-    }
-
-    public static final class Icd10KodBuilder {
-
-        private String kod;
-        private String beskrivning;
-        private List<TypFall> typFallList = Lists.newArrayList();
-
-        private Icd10KodBuilder() {
-        }
-
-        public static Icd10KodBuilder anIcd10Kod() {
-            return new Icd10KodBuilder();
-        }
-
-        public Icd10KodBuilder kod(String kod) {
-            this.kod = kod;
-            return this;
-        }
-
-        public Icd10KodBuilder beskrivning(String beskrivning) {
-            this.beskrivning = beskrivning;
-            return this;
-        }
-
-        public Icd10KodBuilder typFallList(List<TypFall> typFallList) {
-            this.typFallList = typFallList;
-            return this;
-        }
-
-        public Icd10Kod build() {
-            return new Icd10Kod(kod, beskrivning, typFallList);
-        }
-    }
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,22 +20,22 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 public class KlientSignaturRequest {
 
-    private byte[] signatur;
-    private String certifikat;
+  private byte[] signatur;
+  private String certifikat;
 
-    public byte[] getSignatur() {
-        return signatur;
-    }
+  public byte[] getSignatur() {
+    return signatur;
+  }
 
-    public void setSignatur(byte[] signatur) {
-        this.signatur = signatur;
-    }
+  public void setSignatur(byte[] signatur) {
+    this.signatur = signatur;
+  }
 
-    public String getCertifikat() {
-        return certifikat;
-    }
+  public String getCertifikat() {
+    return certifikat;
+  }
 
-    public void setCertifikat(String certifikat) {
-        this.certifikat = certifikat;
-    }
+  public void setCertifikat(String certifikat) {
+    this.certifikat = certifikat;
+  }
 }

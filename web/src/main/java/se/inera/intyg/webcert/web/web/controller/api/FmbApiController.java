@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,84 +49,117 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 
 @Path("/fmb")
-@Api(value = "fmb", description = "REST API för Försäkringsmedicinskt beslutsstöd", produces = MediaType.APPLICATION_JSON)
+@Api(
+    value = "fmb",
+    description = "REST API för Försäkringsmedicinskt beslutsstöd",
+    produces = MediaType.APPLICATION_JSON)
 public class FmbApiController extends AbstractApiController {
 
-    private static final int OK = 200;
-    private static final int BAD_REQUEST = 400;
+  private static final int OK = 200;
+  private static final int BAD_REQUEST = 400;
 
-    @Autowired
-    private FmbDiagnosInformationService fmbDiagnosInformationService;
+  @Autowired private FmbDiagnosInformationService fmbDiagnosInformationService;
 
-    // CHECKSTYLE:OFF LineLength
-    @GET
-    @Path("/{icd10}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get FMB data for ICD10 codes", httpMethod = "GET", notes = "Fetch the admin user details", produces = MediaType.APPLICATION_JSON)
-    @ApiResponses(value = {
-        @ApiResponse(code = OK, message = "Given FMB data for icd10 code found", response = FmbResponse.class),
+  // CHECKSTYLE:OFF LineLength
+  @GET
+  @Path("/{icd10}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @ApiOperation(
+      value = "Get FMB data for ICD10 codes",
+      httpMethod = "GET",
+      notes = "Fetch the admin user details",
+      produces = MediaType.APPLICATION_JSON)
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            code = OK,
+            message = "Given FMB data for icd10 code found",
+            response = FmbResponse.class),
         @ApiResponse(code = BAD_REQUEST, message = "Bad request due to missing icd10 code")
-    })
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "fmb-get-fmb-data-for-icd10", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response getFmbForIcd10(@ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10) {
-        if (icd10 == null || icd10.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
-        }
-
-        return fmbDiagnosInformationService.findFmbDiagnosInformationByIcd10Kod(icd10)
-            .map(Response::ok)
-            .map(Response.ResponseBuilder::build)
-            .orElseGet(() -> Response.noContent().build());
+      })
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "fmb-get-fmb-data-for-icd10",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response getFmbForIcd10(
+      @ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10) {
+    if (icd10 == null || icd10.isEmpty()) {
+      return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
     }
 
-    @GET
-    @Path("/valideraSjukskrivningstid")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(
-        value = "validate sjukskrivningstid for patient and ICD10 codes", httpMethod = "GET",
-        produces = MediaType.APPLICATION_JSON)
-    @ApiResponses(value = {
-        @ApiResponse(code = HttpStatus.SC_OK, message = "Response Object containing info regardning sjukskrivning for patient", response = FmbResponse.class),
-        @ApiResponse(code = HttpStatus.SC_BAD_REQUEST, message = "Bad request due to missing icd10 codes, or missing foreslagenSjukskrivningstid")})
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "fmb-validate-sickleave-period", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response valideraSjukskrivningstid(
-        @ApiParam(value = "ICD10 code", required = true) @QueryParam("icd10Kod1") final String icd10Kod1,
-        @QueryParam("icd10Kod2") final String icd10Kod2,
-        @QueryParam("icd10Kod3") final String icd10Kod3,
-        @ApiParam(value = "Personnummer för patient", required = true) @QueryParam("personnummer") final String personnummer,
-        @ApiParam(value = "Sjukskrivningsperioder för föreslagen sjukskrivning", required = true) @QueryParam("periods") final List<Period> periods) {
+    return fmbDiagnosInformationService
+        .findFmbDiagnosInformationByIcd10Kod(icd10)
+        .map(Response::ok)
+        .map(Response.ResponseBuilder::build)
+        .orElseGet(() -> Response.noContent().build());
+  }
 
-        List<String> validationErrors = Lists.newArrayList();
+  @GET
+  @Path("/valideraSjukskrivningstid")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @ApiOperation(
+      value = "validate sjukskrivningstid for patient and ICD10 codes",
+      httpMethod = "GET",
+      produces = MediaType.APPLICATION_JSON)
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            code = HttpStatus.SC_OK,
+            message = "Response Object containing info regardning sjukskrivning for patient",
+            response = FmbResponse.class),
+        @ApiResponse(
+            code = HttpStatus.SC_BAD_REQUEST,
+            message =
+                "Bad request due to missing icd10 codes, or missing foreslagenSjukskrivningstid")
+      })
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "fmb-validate-sickleave-period",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response valideraSjukskrivningstid(
+      @ApiParam(value = "ICD10 code", required = true) @QueryParam("icd10Kod1")
+          final String icd10Kod1,
+      @QueryParam("icd10Kod2") final String icd10Kod2,
+      @QueryParam("icd10Kod3") final String icd10Kod3,
+      @ApiParam(value = "Personnummer för patient", required = true) @QueryParam("personnummer")
+          final String personnummer,
+      @ApiParam(value = "Sjukskrivningsperioder för föreslagen sjukskrivning", required = true)
+          @QueryParam("periods")
+          final List<Period> periods) {
 
-        if (isNull(icd10Kod1)) {
-            validationErrors.add("Missing icd10 codes");
-        }
+    List<String> validationErrors = Lists.newArrayList();
 
-        if (isNull(personnummer)) {
-            validationErrors.add("Missing personnummer");
-        }
+    if (isNull(icd10Kod1)) {
+      validationErrors.add("Missing icd10 codes");
+    }
 
-        final Optional<Personnummer> optionalPersonnummer = Personnummer.createPersonnummer(personnummer);
-        if (optionalPersonnummer.isEmpty()) {
-            validationErrors.add("Incorrect personnummer format");
-        }
+    if (isNull(personnummer)) {
+      validationErrors.add("Missing personnummer");
+    }
 
-        if (isNull(periods) || periods.isEmpty()) {
-            validationErrors.add("Missing periods");
-        }
+    final Optional<Personnummer> optionalPersonnummer =
+        Personnummer.createPersonnummer(personnummer);
+    if (optionalPersonnummer.isEmpty()) {
+      validationErrors.add("Incorrect personnummer format");
+    }
 
-        if (!validationErrors.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(String.join(",", validationErrors)).build();
-        }
+    if (isNull(periods) || periods.isEmpty()) {
+      validationErrors.add("Missing periods");
+    }
 
-        return Response.ok(fmbDiagnosInformationService.validateSjukskrivningtidForPatient(
+    if (!validationErrors.isEmpty()) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(String.join(",", validationErrors))
+          .build();
+    }
+
+    return Response.ok(
+            fmbDiagnosInformationService.validateSjukskrivningtidForPatient(
                 MaximalSjukskrivningstidRequest.of(
                     Icd10KoderRequest.of(icd10Kod1, icd10Kod2, icd10Kod3),
                     optionalPersonnummer.get(),
                     periods)))
-            .build();
-    }
-    // CHECKSTYLE:ON LineLength
+        .build();
+  }
+  // CHECKSTYLE:ON LineLength
 }

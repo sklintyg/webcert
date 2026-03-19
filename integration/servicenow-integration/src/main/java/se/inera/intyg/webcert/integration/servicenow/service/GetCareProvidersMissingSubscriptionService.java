@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.service;
 
 import java.util.List;
@@ -30,13 +29,19 @@ import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 @RequiredArgsConstructor
 public class GetCareProvidersMissingSubscriptionService {
 
-    private final CheckSubscriptionService checkSubscriptionService;
+  private final CheckSubscriptionService checkSubscriptionService;
 
-    public List<String> get(List<Organization> organizations,
-        Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
-        return organizations.stream()
-            .filter(organization -> checkSubscriptionService.isMissing(organization.getServiceCodes(), authMethod))
-            .flatMap(organization -> organizationNumberHsaIdMap.get(organization.getOrganizationNumber()).stream())
-            .toList();
-    }
+  public List<String> get(
+      List<Organization> organizations,
+      Map<String, List<String>> organizationNumberHsaIdMap,
+      AuthenticationMethodEnum authMethod) {
+    return organizations.stream()
+        .filter(
+            organization ->
+                checkSubscriptionService.isMissing(organization.getServiceCodes(), authMethod))
+        .flatMap(
+            organization ->
+                organizationNumberHsaIdMap.get(organization.getOrganizationNumber()).stream())
+        .toList();
+  }
 }

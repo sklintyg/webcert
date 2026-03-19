@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,63 +32,68 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 class ConfirmationModalProviderResolverTest {
 
-    @Test
-    void shouldReturnProviderForDBIfNormalOriginAndCreatedFromList() {
-        final var user = mock(WebCertUser.class);
-        when(user.getOrigin())
-            .thenReturn("NORMAL");
-        assertEquals(DbConfirmationModalProvider.class,
-            ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, true, true).getClass());
-    }
+  @Test
+  void shouldReturnProviderForDBIfNormalOriginAndCreatedFromList() {
+    final var user = mock(WebCertUser.class);
+    when(user.getOrigin()).thenReturn("NORMAL");
+    assertEquals(
+        DbConfirmationModalProvider.class,
+        ConfirmationModalProviderResolver.getConfirmation(
+                "db", CertificateStatus.UNSIGNED, user, true, true)
+            .getClass());
+  }
 
-    @Test
-    void shouldReturnNullIfUnsupportedType() {
-        final var user = mock(WebCertUser.class);
-        when(user.getOrigin())
-            .thenReturn("NORMAL");
-        assertNull(ConfirmationModalProviderResolver.getConfirmation("doi", CertificateStatus.UNSIGNED, user, true, true));
-    }
+  @Test
+  void shouldReturnNullIfUnsupportedType() {
+    final var user = mock(WebCertUser.class);
+    when(user.getOrigin()).thenReturn("NORMAL");
+    assertNull(
+        ConfirmationModalProviderResolver.getConfirmation(
+            "doi", CertificateStatus.UNSIGNED, user, true, true));
+  }
 
-    @ParameterizedTest
-    @EnumSource(CertificateStatus.class)
-    void testStatusShouldReturnNullOrProvider(CertificateStatus status) {
-        final var user = mock(WebCertUser.class);
-        when(user.getOrigin())
-            .thenReturn("NORMAL");
-        final var response = ConfirmationModalProviderResolver.getConfirmation("db", status, user, true, true);
-        if (status == CertificateStatus.UNSIGNED) {
-            assertNotNull(response);
-        } else {
-            assertNull(response);
-        }
+  @ParameterizedTest
+  @EnumSource(CertificateStatus.class)
+  void testStatusShouldReturnNullOrProvider(CertificateStatus status) {
+    final var user = mock(WebCertUser.class);
+    when(user.getOrigin()).thenReturn("NORMAL");
+    final var response =
+        ConfirmationModalProviderResolver.getConfirmation("db", status, user, true, true);
+    if (status == CertificateStatus.UNSIGNED) {
+      assertNotNull(response);
+    } else {
+      assertNull(response);
     }
+  }
 
-    @Test
-    void shouldReturnNullIfNormalAndNotNewDraft() {
-        final var user = mock(WebCertUser.class);
-        when(user.getOrigin())
-            .thenReturn("NORMAL");
-        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false, true);
-        assertNull(response);
-    }
+  @Test
+  void shouldReturnNullIfNormalAndNotNewDraft() {
+    final var user = mock(WebCertUser.class);
+    when(user.getOrigin()).thenReturn("NORMAL");
+    final var response =
+        ConfirmationModalProviderResolver.getConfirmation(
+            "db", CertificateStatus.UNSIGNED, user, false, true);
+    assertNull(response);
+  }
 
-    @Test
-    void shouldReturnProviderIfIntegratedAndNotCreatedFromList() {
-        final var user = mock(WebCertUser.class);
-        when(user.getOrigin())
-            .thenReturn("DJUPINTEGRATION");
-        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false, true);
-        assertEquals(DbConfirmationModalProvider.class, response.getClass());
-    }
+  @Test
+  void shouldReturnProviderIfIntegratedAndNotCreatedFromList() {
+    final var user = mock(WebCertUser.class);
+    when(user.getOrigin()).thenReturn("DJUPINTEGRATION");
+    final var response =
+        ConfirmationModalProviderResolver.getConfirmation(
+            "db", CertificateStatus.UNSIGNED, user, false, true);
+    assertEquals(DbConfirmationModalProvider.class, response.getClass());
+  }
 
-    @Test
-    void shouldNotReturnProviderIfIntegratedAndNotAllowedToEdit() {
-        final var user = mock(WebCertUser.class);
-        when(user.getOrigin())
-            .thenReturn("DJUPINTEGRATION");
-        when(user.isSjfActive())
-            .thenReturn(true);
-        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false, false);
-        assertNull(response);
-    }
+  @Test
+  void shouldNotReturnProviderIfIntegratedAndNotAllowedToEdit() {
+    final var user = mock(WebCertUser.class);
+    when(user.getOrigin()).thenReturn("DJUPINTEGRATION");
+    when(user.isSjfActive()).thenReturn(true);
+    final var response =
+        ConfirmationModalProviderResolver.getConfirmation(
+            "db", CertificateStatus.UNSIGNED, user, false, false);
+    assertNull(response);
+  }
 }

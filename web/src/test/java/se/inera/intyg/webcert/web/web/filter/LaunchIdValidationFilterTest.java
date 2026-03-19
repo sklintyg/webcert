@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,103 +49,104 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @RunWith(MockitoJUnitRunner.class)
 public class LaunchIdValidationFilterTest {
 
-    private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
-    private static final String NEW_LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f5";
+  private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
+  private static final String NEW_LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f5";
 
-    @Mock
-    private HttpServletRequest httpServletRequest;
-    @Mock
-    private ObjectMapper mapper;
-    @Mock
-    private HttpServletResponse httpServletResponse;
-    @Mock
-    private FilterChain filterChain;
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private HttpServletRequest httpServletRequest;
+  @Mock private ObjectMapper mapper;
+  @Mock private HttpServletResponse httpServletResponse;
+  @Mock private FilterChain filterChain;
+  @Mock private WebCertUserService webCertUserService;
 
-    @Captor
-    ArgumentCaptor<Map> mapArgumentCaptor;
+  @Captor ArgumentCaptor<Map> mapArgumentCaptor;
 
-    @InjectMocks
-    private LaunchIdValidationFilter filter = new LaunchIdValidationFilter();
+  @InjectMocks private LaunchIdValidationFilter filter = new LaunchIdValidationFilter();
 
-    @Test
-    public void filterChainShouldContinueWhenRequestLaunchIdIsNull() throws ServletException, IOException {
-        when(httpServletRequest.getHeader("launchId")).thenReturn(null);
+  @Test
+  public void filterChainShouldContinueWhenRequestLaunchIdIsNull()
+      throws ServletException, IOException {
+    when(httpServletRequest.getHeader("launchId")).thenReturn(null);
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
-    }
+    verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
+    verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
+  }
 
-    @Test
-    public void filterChainShouldContinueWhenUserIsNull() throws ServletException, IOException {
-        when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
+  @Test
+  public void filterChainShouldContinueWhenUserIsNull() throws ServletException, IOException {
+    when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
-    }
+    verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
+    verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
+  }
 
-    @Test
-    public void filterChainShouldStopWhenLaunchIdDoesNotMatchAndGiveError() throws ServletException, IOException {
-        when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
-        when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
-        when(httpServletResponse.getWriter()).thenReturn(mock(PrintWriter.class));
+  @Test
+  public void filterChainShouldStopWhenLaunchIdDoesNotMatchAndGiveError()
+      throws ServletException, IOException {
+    when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
+    when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
+    when(httpServletResponse.getWriter()).thenReturn(mock(PrintWriter.class));
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(filterChain, never()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
-    }
+    verify(filterChain, never()).doFilter(httpServletRequest, httpServletResponse);
+    verify(httpServletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
+  }
 
-    @Test
-    public void filterChainShouldContinueWhenUserDoesNotHaveIntegrationsParametersSet() throws ServletException, IOException {
-        when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
-        when(webCertUserService.getUser()).thenReturn(createNormalUser());
+  @Test
+  public void filterChainShouldContinueWhenUserDoesNotHaveIntegrationsParametersSet()
+      throws ServletException, IOException {
+    when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
+    when(webCertUserService.getUser()).thenReturn(createNormalUser());
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
-    }
+    verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
+    verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
+  }
 
-    @Test
-    public void filterShouldReturnMessageContainingErrorCodeInvalidLaunchId() throws IOException, ServletException {
-        when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
-        when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
-        when(httpServletResponse.getWriter()).thenReturn(mock(PrintWriter.class));
+  @Test
+  public void filterShouldReturnMessageContainingErrorCodeInvalidLaunchId()
+      throws IOException, ServletException {
+    when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
+    when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
+    when(httpServletResponse.getWriter()).thenReturn(mock(PrintWriter.class));
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(mapper).writeValue(any(PrintWriter.class), mapArgumentCaptor.capture());
-        assertEquals(WebCertServiceErrorCodeEnum.INVALID_LAUNCHID, mapArgumentCaptor.getValue().get("errorCode"));
-    }
+    verify(mapper).writeValue(any(PrintWriter.class), mapArgumentCaptor.capture());
+    assertEquals(
+        WebCertServiceErrorCodeEnum.INVALID_LAUNCHID,
+        mapArgumentCaptor.getValue().get("errorCode"));
+  }
 
-    @Test
-    public void filterShouldReturnMessageContainingMessageInvalidLaunchId() throws IOException, ServletException {
-        when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
-        when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
-        when(httpServletResponse.getWriter()).thenReturn(mock(PrintWriter.class));
+  @Test
+  public void filterShouldReturnMessageContainingMessageInvalidLaunchId()
+      throws IOException, ServletException {
+    when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
+    when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
+    when(httpServletResponse.getWriter()).thenReturn(mock(PrintWriter.class));
 
-        ArgumentCaptor<Map> mapArgumentCaptor = ArgumentCaptor.forClass(Map.class);
+    ArgumentCaptor<Map> mapArgumentCaptor = ArgumentCaptor.forClass(Map.class);
 
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+    filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-        verify(mapper).writeValue(any(PrintWriter.class), mapArgumentCaptor.capture());
-        assertEquals("Invalid launchId", mapArgumentCaptor.getValue().get("message"));
-    }
+    verify(mapper).writeValue(any(PrintWriter.class), mapArgumentCaptor.capture());
+    assertEquals("Invalid launchId", mapArgumentCaptor.getValue().get("message"));
+  }
 
-    private WebCertUser createUserWithIntegrationsParameters() {
-        WebCertUser user = new WebCertUser();
-        user.setParameters(new IntegrationParameters("", "", "", "", "",
-            "", "", "", "", true, false, false, true, LAUNCH_ID));
-        return user;
-    }
+  private WebCertUser createUserWithIntegrationsParameters() {
+    WebCertUser user = new WebCertUser();
+    user.setParameters(
+        new IntegrationParameters(
+            "", "", "", "", "", "", "", "", "", true, false, false, true, LAUNCH_ID));
+    return user;
+  }
 
-    private WebCertUser createNormalUser() {
-        return new WebCertUser();
-    }
+  private WebCertUser createNormalUser() {
+    return new WebCertUser();
+  }
 }

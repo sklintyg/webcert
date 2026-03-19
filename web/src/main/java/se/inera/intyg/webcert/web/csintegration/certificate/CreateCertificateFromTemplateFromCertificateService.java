@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,61 +34,64 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @Slf4j
 @Service("createCertificateFromTemplateFromCS")
 @RequiredArgsConstructor
-public class CreateCertificateFromTemplateFromCertificateService implements CreateCertificateFromTemplateFacadeService {
+public class CreateCertificateFromTemplateFromCertificateService
+    implements CreateCertificateFromTemplateFacadeService {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final MonitoringLogServiceImpl monitoringLogService;
-    private final PDLLogService pdlLogService;
-    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final WebCertUserService webCertUserService;
-    
-    @Override
-    public String createCertificateFromTemplate(String certificateId) {
-        final var existsInCS = csIntegrationService.certificateExists(certificateId);
-        if (!existsInCS) {
-            log.debug("Certificate '{}' does not exist in Certificate Service", certificateId);
-            return null;
-        }
+  private final CSIntegrationService csIntegrationService;
+  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+  private final MonitoringLogServiceImpl monitoringLogService;
+  private final PDLLogService pdlLogService;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final WebCertUserService webCertUserService;
 
-        final var originalCertificate = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
-
-        log.debug("Creating certificate from template with id '{}' from Certificate Service", certificateId);
-        final var createCertificateFromTemplateRequest = csIntegrationRequestFactory
-            .createCertificateFromTemplateRequest(
-                originalCertificate.getMetadata().getPatient().getPersonId().getId(),
-                webCertUserService.getUser().getParameters()
-            );
-
-        final var response = csIntegrationService.createDraftFromCertificate(certificateId, createCertificateFromTemplateRequest);
-
-        if (response == null || response.getCertificate() == null) {
-            log.debug("Certificate Service returned null when creating certificate from template with id '{}'", certificateId);
-            return null;
-        }
-
-        final var createdCertificate = response.getCertificate();
-        pdlLogService.logCreated(createdCertificate);
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftCreatedFromCertificate(createdCertificate)
-        );
-        monitoringLogService.logUtkastCreatedTemplateManual(
-            createdCertificate.getMetadata().getId(),
-            createdCertificate.getMetadata().getType(),
-            createdCertificate.getMetadata().getIssuedBy().getPersonId(),
-            createdCertificate.getMetadata().getUnit().getUnitId(),
-            certificateId,
-            originalCertificate.getMetadata().getType()
-        );
-        publishCertificateStatusUpdateService.publish(createdCertificate, HandelsekodEnum.SKAPAT);
-
-        log.debug("Successfully created certificate from template with new id '{}' in Certificate Service",
-            response.getCertificate().getMetadata().getId());
-        return response.getCertificate().getMetadata().getId();
+  @Override
+  public String createCertificateFromTemplate(String certificateId) {
+    final var existsInCS = csIntegrationService.certificateExists(certificateId);
+    if (!existsInCS) {
+      log.debug("Certificate '{}' does not exist in Certificate Service", certificateId);
+      return null;
     }
+
+    final var originalCertificate =
+        csIntegrationService.getCertificate(
+            certificateId, csIntegrationRequestFactory.getCertificateRequest());
+
+    log.debug(
+        "Creating certificate from template with id '{}' from Certificate Service", certificateId);
+    final var createCertificateFromTemplateRequest =
+        csIntegrationRequestFactory.createCertificateFromTemplateRequest(
+            originalCertificate.getMetadata().getPatient().getPersonId().getId(),
+            webCertUserService.getUser().getParameters());
+
+    final var response =
+        csIntegrationService.createDraftFromCertificate(
+            certificateId, createCertificateFromTemplateRequest);
+
+    if (response == null || response.getCertificate() == null) {
+      log.debug(
+          "Certificate Service returned null when creating certificate from template with id '{}'",
+          certificateId);
+      return null;
+    }
+
+    final var createdCertificate = response.getCertificate();
+    pdlLogService.logCreated(createdCertificate);
+    publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.draftCreatedFromCertificate(createdCertificate));
+    monitoringLogService.logUtkastCreatedTemplateManual(
+        createdCertificate.getMetadata().getId(),
+        createdCertificate.getMetadata().getType(),
+        createdCertificate.getMetadata().getIssuedBy().getPersonId(),
+        createdCertificate.getMetadata().getUnit().getUnitId(),
+        certificateId,
+        originalCertificate.getMetadata().getType());
+    publishCertificateStatusUpdateService.publish(createdCertificate, HandelsekodEnum.SKAPAT);
+
+    log.debug(
+        "Successfully created certificate from template with new id '{}' in Certificate Service",
+        response.getCertificate().getMetadata().getId());
+    return response.getCertificate().getMetadata().getId();
+  }
 }

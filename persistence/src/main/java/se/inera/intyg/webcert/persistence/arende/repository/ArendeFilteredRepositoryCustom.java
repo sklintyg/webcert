@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,18 +23,16 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection;
 import se.inera.intyg.webcert.persistence.model.Filter;
 
-/**
- * Created by eriklupander on 2016-06-08.
- */
+/** Created by eriklupander on 2016-06-08. */
 public interface ArendeFilteredRepositoryCustom {
 
-    List<Arende> filterArende(Filter filter);
+  List<Arende> filterArende(Filter filter);
 
-    /**
-     * Optimized query that returns only fields needed for list display.
-     * Avoids EAGER fetch of collections (kontaktInfo, komplettering).
-     */
-    List<ArendeListItemProjection> filterArendeForList(Filter filter);
+  /**
+   * Optimized query that returns only fields needed for list display. Avoids EAGER fetch of
+   * collections (kontaktInfo, komplettering).
+   */
+  List<ArendeListItemProjection> filterArendeForList(Filter filter);
 
-    int filterArendeCount(Filter filter);
+  int filterArendeCount(Filter filter);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,177 +47,139 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 @ExtendWith(MockitoExtension.class)
 class CopyCertificateFacadeServiceImplTest {
 
-    @Mock
-    private CopyUtkastServiceHelper copyUtkastServiceHelper;
+  @Mock private CopyUtkastServiceHelper copyUtkastServiceHelper;
 
-    @Mock
-    private CopyUtkastService copyUtkastService;
+  @Mock private CopyUtkastService copyUtkastService;
 
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
+  @Mock private GetCertificateFacadeService getCertificateFacadeService;
 
-    @InjectMocks
-    private CopyCertificateFacadeServiceImpl copyCertificateFacadeService;
+  @InjectMocks private CopyCertificateFacadeServiceImpl copyCertificateFacadeService;
 
-    private final static String CERTIFICATE_ID = "certificateId";
-    private final static String COPY_CERTIFICATE_ID = "copyCertificateId";
-    private final static String CERTIFICATE_TYPE = "certificateType";
-    private final static String PATIENT_ID = "191212121212";
-    private final static String RESERVE_ID = "19121212-121A";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String COPY_CERTIFICATE_ID = "copyCertificateId";
+  private static final String CERTIFICATE_TYPE = "certificateType";
+  private static final String PATIENT_ID = "191212121212";
+  private static final String RESERVE_ID = "19121212-121A";
 
-    @Nested
-    class CopyCertificateWithPatientId {
+  @Nested
+  class CopyCertificateWithPatientId {
 
-        @BeforeEach
-        void setup() {
-            final var certificate = new Certificate();
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .id(CERTIFICATE_ID)
-                    .type(CERTIFICATE_TYPE)
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id(PATIENT_ID)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            );
+    @BeforeEach
+    void setup() {
+      final var certificate = new Certificate();
+      certificate.setMetadata(
+          CertificateMetadata.builder()
+              .id(CERTIFICATE_ID)
+              .type(CERTIFICATE_TYPE)
+              .patient(
+                  Patient.builder().personId(PersonId.builder().id(PATIENT_ID).build()).build())
+              .build());
 
-            doReturn(certificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false, true);
+      doReturn(certificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(CERTIFICATE_ID, false, true);
 
-            final var serviceRequest = new CreateUtkastFromTemplateRequest(
-                CERTIFICATE_ID,
-                CERTIFICATE_TYPE,
-                null,
-                null,
-                CERTIFICATE_TYPE
-            );
+      final var serviceRequest =
+          new CreateUtkastFromTemplateRequest(
+              CERTIFICATE_ID, CERTIFICATE_TYPE, null, null, CERTIFICATE_TYPE);
 
-            doReturn(serviceRequest)
-                .when(copyUtkastServiceHelper)
-                .createUtkastFromUtkast(
-                    eq(CERTIFICATE_ID),
-                    eq(CERTIFICATE_TYPE),
-                    any(CopyIntygRequest.class)
-                );
+      doReturn(serviceRequest)
+          .when(copyUtkastServiceHelper)
+          .createUtkastFromUtkast(
+              eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), any(CopyIntygRequest.class));
 
-            final var serviceResponse = new CreateUtkastFromTemplateResponse(
-                CERTIFICATE_TYPE,
-                "1.0",
-                COPY_CERTIFICATE_ID,
-                CERTIFICATE_ID
-            );
+      final var serviceResponse =
+          new CreateUtkastFromTemplateResponse(
+              CERTIFICATE_TYPE, "1.0", COPY_CERTIFICATE_ID, CERTIFICATE_ID);
 
-            doReturn(serviceResponse)
-                .when(copyUtkastService)
-                .createUtkastCopy(serviceRequest);
-        }
-
-        @Test
-        void shallIncludePatientId() {
-
-            copyCertificateFacadeService.copyCertificate(CERTIFICATE_ID);
-
-            final var copyIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
-
-            verify(copyUtkastServiceHelper).createUtkastFromUtkast(anyString(), anyString(), copyIntygRequestArgumentCaptor.capture());
-
-            assertEquals(PATIENT_ID, copyIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
-        }
-
-        @Test
-        void shallReturnNewDraftId() {
-
-            final var actualCertificateId = copyCertificateFacadeService.copyCertificate(CERTIFICATE_ID);
-
-            assertEquals(COPY_CERTIFICATE_ID, actualCertificateId);
-        }
+      doReturn(serviceResponse).when(copyUtkastService).createUtkastCopy(serviceRequest);
     }
 
-    @Nested
-    class CopyPatientWithReserveId {
+    @Test
+    void shallIncludePatientId() {
 
-        @BeforeEach
-        void setup() {
-            final var certificate = new Certificate();
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .id(CERTIFICATE_ID)
-                    .type(CERTIFICATE_TYPE)
-                    .patient(
-                        Patient.builder()
-                            .personId(
-                                PersonId.builder()
-                                    .id(RESERVE_ID)
-                                    .build()
-                            )
-                            .previousPersonId(
-                                PersonId.builder()
-                                    .id(PATIENT_ID)
-                                    .build()
-                            )
-                            .reserveId(true)
-                            .build()
-                    )
-                    .build()
-            );
+      copyCertificateFacadeService.copyCertificate(CERTIFICATE_ID);
 
-            doReturn(certificate)
-                .when(getCertificateFacadeService)
-                .getCertificate(CERTIFICATE_ID, false, true);
+      final var copyIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
 
-            final var serviceRequest = new CreateUtkastFromTemplateRequest(
-                CERTIFICATE_ID,
-                CERTIFICATE_TYPE,
-                null,
-                null,
-                CERTIFICATE_TYPE
-            );
+      verify(copyUtkastServiceHelper)
+          .createUtkastFromUtkast(
+              anyString(), anyString(), copyIntygRequestArgumentCaptor.capture());
 
-            doReturn(serviceRequest)
-                .when(copyUtkastServiceHelper)
-                .createUtkastFromUtkast(
-                    eq(CERTIFICATE_ID),
-                    eq(CERTIFICATE_TYPE),
-                    any(CopyIntygRequest.class)
-                );
-
-            final var serviceResponse = new CreateUtkastFromTemplateResponse(
-                CERTIFICATE_TYPE,
-                "1.0",
-                COPY_CERTIFICATE_ID,
-                CERTIFICATE_ID
-            );
-
-            doReturn(serviceResponse)
-                .when(copyUtkastService)
-                .createUtkastCopy(serviceRequest);
-        }
-
-        @Test
-        void shallIncludePatientId() {
-
-            copyCertificateFacadeService.copyCertificate(CERTIFICATE_ID);
-
-            final var copyIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
-
-            verify(copyUtkastServiceHelper).createUtkastFromUtkast(anyString(), anyString(), copyIntygRequestArgumentCaptor.capture());
-
-            assertEquals(PATIENT_ID, copyIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
-        }
-
-        @Test
-        void shallReturnNewDraftId() {
-
-            final var actualCertificateId = copyCertificateFacadeService.copyCertificate(CERTIFICATE_ID);
-
-            assertEquals(COPY_CERTIFICATE_ID, actualCertificateId);
-        }
+      assertEquals(
+          PATIENT_ID,
+          copyIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
     }
+
+    @Test
+    void shallReturnNewDraftId() {
+
+      final var actualCertificateId = copyCertificateFacadeService.copyCertificate(CERTIFICATE_ID);
+
+      assertEquals(COPY_CERTIFICATE_ID, actualCertificateId);
+    }
+  }
+
+  @Nested
+  class CopyPatientWithReserveId {
+
+    @BeforeEach
+    void setup() {
+      final var certificate = new Certificate();
+      certificate.setMetadata(
+          CertificateMetadata.builder()
+              .id(CERTIFICATE_ID)
+              .type(CERTIFICATE_TYPE)
+              .patient(
+                  Patient.builder()
+                      .personId(PersonId.builder().id(RESERVE_ID).build())
+                      .previousPersonId(PersonId.builder().id(PATIENT_ID).build())
+                      .reserveId(true)
+                      .build())
+              .build());
+
+      doReturn(certificate)
+          .when(getCertificateFacadeService)
+          .getCertificate(CERTIFICATE_ID, false, true);
+
+      final var serviceRequest =
+          new CreateUtkastFromTemplateRequest(
+              CERTIFICATE_ID, CERTIFICATE_TYPE, null, null, CERTIFICATE_TYPE);
+
+      doReturn(serviceRequest)
+          .when(copyUtkastServiceHelper)
+          .createUtkastFromUtkast(
+              eq(CERTIFICATE_ID), eq(CERTIFICATE_TYPE), any(CopyIntygRequest.class));
+
+      final var serviceResponse =
+          new CreateUtkastFromTemplateResponse(
+              CERTIFICATE_TYPE, "1.0", COPY_CERTIFICATE_ID, CERTIFICATE_ID);
+
+      doReturn(serviceResponse).when(copyUtkastService).createUtkastCopy(serviceRequest);
+    }
+
+    @Test
+    void shallIncludePatientId() {
+
+      copyCertificateFacadeService.copyCertificate(CERTIFICATE_ID);
+
+      final var copyIntygRequestArgumentCaptor = ArgumentCaptor.forClass(CopyIntygRequest.class);
+
+      verify(copyUtkastServiceHelper)
+          .createUtkastFromUtkast(
+              anyString(), anyString(), copyIntygRequestArgumentCaptor.capture());
+
+      assertEquals(
+          PATIENT_ID,
+          copyIntygRequestArgumentCaptor.getValue().getPatientPersonnummer().getPersonnummer());
+    }
+
+    @Test
+    void shallReturnNewDraftId() {
+
+      final var actualCertificateId = copyCertificateFacadeService.copyCertificate(CERTIFICATE_ID);
+
+      assertEquals(COPY_CERTIFICATE_ID, actualCertificateId);
+    }
+  }
 }

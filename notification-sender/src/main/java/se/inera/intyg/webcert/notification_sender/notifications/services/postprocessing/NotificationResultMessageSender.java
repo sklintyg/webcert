@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,34 +32,39 @@ import se.inera.intyg.webcert.notification_sender.notifications.routes.Notificat
 @Component
 public class NotificationResultMessageSender {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationResultMessageSender.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NotificationResultMessageSender.class);
 
-    @Autowired
-    @Qualifier("jmsTemplateNotificationPostProcessing")
-    private JmsTemplate jmsTemplateNotificationPostProcessing;
+  @Autowired
+  @Qualifier("jmsTemplateNotificationPostProcessing") private JmsTemplate jmsTemplateNotificationPostProcessing;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
+  public boolean sendResultMessage(NotificationResultMessage resultMessage) {
 
-    public boolean sendResultMessage(NotificationResultMessage resultMessage) {
+    try {
+      final var notificationMessageJson = objectMapper.writeValueAsString(resultMessage);
 
-        try {
-            final var notificationMessageJson = objectMapper.writeValueAsString(resultMessage);
-
-            jmsTemplateNotificationPostProcessing.send(session -> {
-                TextMessage textMessage = session.createTextMessage(notificationMessageJson);
-                textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, resultMessage.getEvent().getIntygsId());
-                textMessage.setStringProperty(NotificationRouteHeaders.CORRELATION_ID, resultMessage.getCorrelationId());
-                textMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, resultMessage.getEvent().getEnhetsId());
-                textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, resultMessage.getEvent().getCode().value());
-                return textMessage;
-            });
-            return true;
-        } catch (Exception e) {
-            LOG.error(String.format("Exception occured sending NotificationResultMessage after exception %s",
-                resultMessage), e);
-            return false;
-        }
+      jmsTemplateNotificationPostProcessing.send(
+          session -> {
+            TextMessage textMessage = session.createTextMessage(notificationMessageJson);
+            textMessage.setStringProperty(
+                NotificationRouteHeaders.INTYGS_ID, resultMessage.getEvent().getIntygsId());
+            textMessage.setStringProperty(
+                NotificationRouteHeaders.CORRELATION_ID, resultMessage.getCorrelationId());
+            textMessage.setStringProperty(
+                NotificationRouteHeaders.LOGISK_ADRESS, resultMessage.getEvent().getEnhetsId());
+            textMessage.setStringProperty(
+                NotificationRouteHeaders.HANDELSE, resultMessage.getEvent().getCode().value());
+            return textMessage;
+          });
+      return true;
+    } catch (Exception e) {
+      LOG.error(
+          String.format(
+              "Exception occured sending NotificationResultMessage after exception %s",
+              resultMessage),
+          e);
+      return false;
     }
+  }
 }

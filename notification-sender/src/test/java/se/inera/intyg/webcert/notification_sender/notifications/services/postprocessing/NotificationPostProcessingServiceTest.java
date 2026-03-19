@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -54,258 +54,269 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationPostProcessingServiceTest {
 
-    @Mock
-    private NotificationResultSuccessService notificationResultSuccessService;
+  @Mock private NotificationResultSuccessService notificationResultSuccessService;
 
-    @Mock
-    private NotificationResultFailedService notificationResultFailedService;
+  @Mock private NotificationResultFailedService notificationResultFailedService;
 
-    @Mock
-    private NotificationResultResendService notificationResultResendService;
+  @Mock private NotificationResultResendService notificationResultResendService;
 
-    @Mock
-    private Appender<ILoggingEvent> appender;
+  @Mock private Appender<ILoggingEvent> appender;
 
-    @InjectMocks
-    private NotificationPostProcessingService notificationPostProcessingService;
+  @InjectMocks private NotificationPostProcessingService notificationPostProcessingService;
 
-    private static final Long EVENT_ID = 1000L;
-    private static final String UNIT_ID = "UNIT_ID";
-    private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
-    private static final String CORRELATION_ID = "CORRELATION_ID";
-    private static final HandelsekodEnum TEST_EVENT_ENUM = HandelsekodEnum.SKAPAT;
-    private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
+  private static final Long EVENT_ID = 1000L;
+  private static final String UNIT_ID = "UNIT_ID";
+  private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+  private static final String CORRELATION_ID = "CORRELATION_ID";
+  private static final HandelsekodEnum TEST_EVENT_ENUM = HandelsekodEnum.SKAPAT;
+  private static final byte[] STATUS_UPDATE_XML = "STATUS_UPDATE_XML".getBytes();
 
-    private static final String SOAPFAULTEXCEPTION = "jakarta.xml.ws.soap.SOAPFaultException";
-    private static final String MARSHALLING_ERROR = "Marshalling Error";
-    private static final String UNMARSHALLING_ERROR = "Unmarshalling Error";
+  private static final String SOAPFAULTEXCEPTION = "jakarta.xml.ws.soap.SOAPFaultException";
+  private static final String MARSHALLING_ERROR = "Marshalling Error";
+  private static final String UNMARSHALLING_ERROR = "Unmarshalling Error";
 
-    @Test
-    public void shouldProduceFailureOnUnrecoverableWebcertException() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(UNRECOVERABLE_ERROR, WEBCERT_EXCEPTION,
-            "UNRECOVERABLE_WEBCERT_EXCEPTION", "TEST_EXCEPTION"));
-
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
-
-        verify(notificationResultFailedService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
-
-    @Test
-    public void shouldProduceFailureOnSoapFaultExceptionWithMarshallingError() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(ERROR, WEBCERT_EXCEPTION, MARSHALLING_ERROR,
-            SOAPFAULTEXCEPTION));
-
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
-
-        verify(notificationResultFailedService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
-
-    @Test
-    public void shouldProduceFailureOnSoapFaultExceptionWithUnMarshallingError() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(ERROR, WEBCERT_EXCEPTION, UNMARSHALLING_ERROR,
-            SOAPFAULTEXCEPTION));
-
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
-
-        verify(notificationResultFailedService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
-
-    @Test
-    public void shouldProduceFailureOnValidationError() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(ERROR, VALIDATION_ERROR, "VALIDATION_ERROR", null));
-
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
-
-        verify(notificationResultFailedService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
-
-    @Test
-    public void shouldProduceFailureOnApplicationError() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(ERROR, APPLICATION_ERROR, "APPLICATION_ERROR", null));
-
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
-
-        verify(notificationResultFailedService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
-
-    @Test
-    public void shouldProduceFailureOnRevoked() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(ERROR, REVOKED, "REVOKED", null));
-
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
-
-        verify(notificationResultFailedService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
-
-    @Test
-    public void shouldProduceResendOnTechnicalError() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(ERROR, TECHNICAL_ERROR, "TECHNICAL_ERROR", null));
-
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
-
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
-
-        verify(notificationResultResendService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(RESEND, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
-
-    @Test
-    public void shouldProduceResendOnRecoverableWebcertException() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(ERROR, WEBCERT_EXCEPTION, "RECOVERABLE_WEBCERT_EXCEPTION",
+  @Test
+  public void shouldProduceFailureOnUnrecoverableWebcertException() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(
+            UNRECOVERABLE_ERROR,
+            WEBCERT_EXCEPTION,
+            "UNRECOVERABLE_WEBCERT_EXCEPTION",
             "TEST_EXCEPTION"));
 
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
 
-        verify(notificationResultResendService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(RESEND, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
+    verify(notificationResultFailedService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
 
-    @Test
-    public void shouldProduceSuccessOnReturnTypeOk() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(OK, null, null, null));
+  @Test
+  public void shouldProduceFailureOnSoapFaultExceptionWithMarshallingError() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(
+            ERROR, WEBCERT_EXCEPTION, MARSHALLING_ERROR, SOAPFAULTEXCEPTION));
 
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
 
-        verify(notificationResultSuccessService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(SUCCESS, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
+    verify(notificationResultFailedService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
 
-    @Test
-    public void shouldProduceSuccessOnReturnTypeInfo() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(INFO, null, "INFORMATION_TEXT", null));
+  @Test
+  public void shouldProduceFailureOnSoapFaultExceptionWithUnMarshallingError() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(
+            ERROR, WEBCERT_EXCEPTION, UNMARSHALLING_ERROR, SOAPFAULTEXCEPTION));
 
-        final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
 
-        verify(notificationResultSuccessService).process(captureResultMessage.capture());
-        assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
-        assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
-        assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
-        assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
-        assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
-        assertEquals(SUCCESS, captureResultMessage.getValue().getEvent().getDeliveryStatus());
-    }
+    verify(notificationResultFailedService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
 
-    @Test
-    public void shouldInfoLogResultTextOnReturnTypeInfo() {
-        final var notificationResultMessage = createNotificationResultMessage();
-        notificationResultMessage.setResultType(createNotificationResultType(INFO, null, "INFORMATION_TEXT", null));
+  @Test
+  public void shouldProduceFailureOnValidationError() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(ERROR, VALIDATION_ERROR, "VALIDATION_ERROR", null));
 
-        // TODO Is use of the Appender, which not visible in the tested code, accepted practice?
-        final var root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.addAppender(appender);
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
-        final var captureLogMessage = ArgumentCaptor.forClass(ILoggingEvent.class);
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
 
-        notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+    verify(notificationResultFailedService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
 
-        verify(appender).doAppend(captureLogMessage.capture());
-        assertTrue(captureLogMessage.getValue().getFormattedMessage().contains("INFORMATION_TEXT"));
-        assertEquals("INFO", captureLogMessage.getValue().getLevel().levelStr);
-    }
+  @Test
+  public void shouldProduceFailureOnApplicationError() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(ERROR, APPLICATION_ERROR, "APPLICATION_ERROR", null));
 
-    private NotificationResultMessage createNotificationResultMessage() {
-        final var notificationResultMessage = new NotificationResultMessage();
-        notificationResultMessage.setEvent(createEvent());
-        notificationResultMessage.setCorrelationId(CORRELATION_ID);
-        notificationResultMessage.setStatusUpdateXml(STATUS_UPDATE_XML);
-        return notificationResultMessage;
-    }
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
-    private Handelse createEvent() {
-        final var event = new Handelse();
-        event.setId(EVENT_ID);
-        event.setCode(TEST_EVENT_ENUM);
-        event.setIntygsId(CERTIFICATE_ID);
-        event.setEnhetsId(UNIT_ID);
-        return event;
-    }
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
 
-    private NotificationResultType createNotificationResultType(NotificationResultTypeEnum resultType, NotificationErrorTypeEnum errorType,
-        String resultText, String exception) {
-        final var notificationResultType = new NotificationResultType();
-        notificationResultType.setNotificationResult(resultType);
-        notificationResultType.setNotificationErrorType(errorType);
-        notificationResultType.setNotificationResultText(resultText);
-        notificationResultType.setException(exception);
-        return notificationResultType;
-    }
+    verify(notificationResultFailedService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
+
+  @Test
+  public void shouldProduceFailureOnRevoked() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(ERROR, REVOKED, "REVOKED", null));
+
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+
+    verify(notificationResultFailedService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(FAILURE, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
+
+  @Test
+  public void shouldProduceResendOnTechnicalError() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(ERROR, TECHNICAL_ERROR, "TECHNICAL_ERROR", null));
+
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+
+    verify(notificationResultResendService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(RESEND, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
+
+  @Test
+  public void shouldProduceResendOnRecoverableWebcertException() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(
+            ERROR, WEBCERT_EXCEPTION, "RECOVERABLE_WEBCERT_EXCEPTION", "TEST_EXCEPTION"));
+
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+
+    verify(notificationResultResendService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(RESEND, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
+
+  @Test
+  public void shouldProduceSuccessOnReturnTypeOk() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(createNotificationResultType(OK, null, null, null));
+
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+
+    verify(notificationResultSuccessService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(SUCCESS, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
+
+  @Test
+  public void shouldProduceSuccessOnReturnTypeInfo() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(INFO, null, "INFORMATION_TEXT", null));
+
+    final var captureResultMessage = ArgumentCaptor.forClass(NotificationResultMessage.class);
+
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+
+    verify(notificationResultSuccessService).process(captureResultMessage.capture());
+    assertEquals(CORRELATION_ID, captureResultMessage.getValue().getCorrelationId());
+    assertEquals(EVENT_ID, captureResultMessage.getValue().getEvent().getId());
+    assertEquals(UNIT_ID, captureResultMessage.getValue().getEvent().getEnhetsId());
+    assertEquals(CERTIFICATE_ID, captureResultMessage.getValue().getEvent().getIntygsId());
+    assertEquals(STATUS_UPDATE_XML, captureResultMessage.getValue().getStatusUpdateXml());
+    assertEquals(SUCCESS, captureResultMessage.getValue().getEvent().getDeliveryStatus());
+  }
+
+  @Test
+  public void shouldInfoLogResultTextOnReturnTypeInfo() {
+    final var notificationResultMessage = createNotificationResultMessage();
+    notificationResultMessage.setResultType(
+        createNotificationResultType(INFO, null, "INFORMATION_TEXT", null));
+
+    // TODO Is use of the Appender, which not visible in the tested code, accepted practice?
+    final var root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    root.addAppender(appender);
+
+    final var captureLogMessage = ArgumentCaptor.forClass(ILoggingEvent.class);
+
+    notificationPostProcessingService.processNotificationResult(notificationResultMessage);
+
+    verify(appender).doAppend(captureLogMessage.capture());
+    assertTrue(captureLogMessage.getValue().getFormattedMessage().contains("INFORMATION_TEXT"));
+    assertEquals("INFO", captureLogMessage.getValue().getLevel().levelStr);
+  }
+
+  private NotificationResultMessage createNotificationResultMessage() {
+    final var notificationResultMessage = new NotificationResultMessage();
+    notificationResultMessage.setEvent(createEvent());
+    notificationResultMessage.setCorrelationId(CORRELATION_ID);
+    notificationResultMessage.setStatusUpdateXml(STATUS_UPDATE_XML);
+    return notificationResultMessage;
+  }
+
+  private Handelse createEvent() {
+    final var event = new Handelse();
+    event.setId(EVENT_ID);
+    event.setCode(TEST_EVENT_ENUM);
+    event.setIntygsId(CERTIFICATE_ID);
+    event.setEnhetsId(UNIT_ID);
+    return event;
+  }
+
+  private NotificationResultType createNotificationResultType(
+      NotificationResultTypeEnum resultType,
+      NotificationErrorTypeEnum errorType,
+      String resultText,
+      String exception) {
+    final var notificationResultType = new NotificationResultType();
+    notificationResultType.setNotificationResult(resultType);
+    notificationResultType.setNotificationErrorType(errorType);
+    notificationResultType.setNotificationResultText(resultText);
+    notificationResultType.setException(exception);
+    return notificationResultType;
+  }
 }

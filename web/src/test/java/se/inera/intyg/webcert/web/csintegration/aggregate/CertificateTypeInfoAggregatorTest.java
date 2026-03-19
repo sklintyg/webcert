@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,77 +35,75 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 @ExtendWith(MockitoExtension.class)
 class CertificateTypeInfoAggregatorTest {
 
-    private static final String ORIGINAL_PATIENT_ID = "191212121212";
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).orElseThrow();
+  private static final String ORIGINAL_PATIENT_ID = "191212121212";
+  private static final Personnummer PATIENT_ID =
+      Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).orElseThrow();
 
-    GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
-    GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
-    CertificateTypeInfoAggregator certificateTypeInfoAggregator;
+  GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
+  GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
+  CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
-    @BeforeEach
-    void setup() {
-        getCertificateTypeInfoFromCertificateService = mock(GetCertificateTypesFacadeService.class);
-        getCertificateTypeInfoFromWebcert = mock(GetCertificateTypesFacadeService.class);
+  @BeforeEach
+  void setup() {
+    getCertificateTypeInfoFromCertificateService = mock(GetCertificateTypesFacadeService.class);
+    getCertificateTypeInfoFromWebcert = mock(GetCertificateTypesFacadeService.class);
 
-        certificateTypeInfoAggregator = new CertificateTypeInfoAggregator(
-            getCertificateTypeInfoFromWebcert,
-            getCertificateTypeInfoFromCertificateService
-        );
-    }
+    certificateTypeInfoAggregator =
+        new CertificateTypeInfoAggregator(
+            getCertificateTypeInfoFromWebcert, getCertificateTypeInfoFromCertificateService);
+  }
 
-    @Test
-    void shouldMergeCertificateTypesListsWhenATypeExistsInWCAndCS() {
-        final var csTypeA = new CertificateTypeInfoDTO();
-        csTypeA.setId("csIdA");
-        csTypeA.setIssuerTypeId("A");
-        csTypeA.setLabel("A");
-        final var wcTypeB = new CertificateTypeInfoDTO();
-        wcTypeB.setId("wcIdB");
-        wcTypeB.setIssuerTypeId("B");
-        wcTypeB.setLabel("BBB");
-        wcTypeB.setCertificateServiceTypeId("csIdA");
-        final var csTypeC = new CertificateTypeInfoDTO();
-        csTypeC.setId("csIdC");
-        csTypeC.setIssuerTypeId("C");
-        csTypeC.setLabel("CC");
+  @Test
+  void shouldMergeCertificateTypesListsWhenATypeExistsInWCAndCS() {
+    final var csTypeA = new CertificateTypeInfoDTO();
+    csTypeA.setId("csIdA");
+    csTypeA.setIssuerTypeId("A");
+    csTypeA.setLabel("A");
+    final var wcTypeB = new CertificateTypeInfoDTO();
+    wcTypeB.setId("wcIdB");
+    wcTypeB.setIssuerTypeId("B");
+    wcTypeB.setLabel("BBB");
+    wcTypeB.setCertificateServiceTypeId("csIdA");
+    final var csTypeC = new CertificateTypeInfoDTO();
+    csTypeC.setId("csIdC");
+    csTypeC.setIssuerTypeId("C");
+    csTypeC.setLabel("CC");
 
-        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
-            .thenReturn(List.of(csTypeA, csTypeC));
-        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
-            .thenReturn(List.of(wcTypeB));
+    when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
+        .thenReturn(List.of(csTypeA, csTypeC));
+    when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID)).thenReturn(List.of(wcTypeB));
 
-        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
+    final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
 
-        assertEquals(2, response.size());
-        assertTrue(response.contains(csTypeA));
-        assertTrue(response.contains(csTypeC));
-    }
+    assertEquals(2, response.size());
+    assertTrue(response.contains(csTypeA));
+    assertTrue(response.contains(csTypeC));
+  }
 
-    @Test
-    void shouldSortElementsInAlphabeticalOrderBasedOnLabel() {
-        final var csTypeA = new CertificateTypeInfoDTO();
-        csTypeA.setId("csIdA");
-        csTypeA.setIssuerTypeId("A");
-        csTypeA.setLabel("A");
-        final var wcTypeB = new CertificateTypeInfoDTO();
-        wcTypeB.setId("idB");
-        wcTypeB.setIssuerTypeId("B");
-        wcTypeB.setLabel("BBB");
-        wcTypeB.setCertificateServiceTypeId("isB");
-        final var csTypeC = new CertificateTypeInfoDTO();
-        csTypeC.setId("csIdC");
-        csTypeC.setIssuerTypeId("C");
-        csTypeC.setLabel("CC");
+  @Test
+  void shouldSortElementsInAlphabeticalOrderBasedOnLabel() {
+    final var csTypeA = new CertificateTypeInfoDTO();
+    csTypeA.setId("csIdA");
+    csTypeA.setIssuerTypeId("A");
+    csTypeA.setLabel("A");
+    final var wcTypeB = new CertificateTypeInfoDTO();
+    wcTypeB.setId("idB");
+    wcTypeB.setIssuerTypeId("B");
+    wcTypeB.setLabel("BBB");
+    wcTypeB.setCertificateServiceTypeId("isB");
+    final var csTypeC = new CertificateTypeInfoDTO();
+    csTypeC.setId("csIdC");
+    csTypeC.setIssuerTypeId("C");
+    csTypeC.setLabel("CC");
 
-        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
-            .thenReturn(List.of(csTypeA, csTypeC));
-        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
-            .thenReturn(List.of(wcTypeB));
+    when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
+        .thenReturn(List.of(csTypeA, csTypeC));
+    when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID)).thenReturn(List.of(wcTypeB));
 
-        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
+    final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
 
-        assertEquals(csTypeA, response.get(0));
-        assertEquals(wcTypeB, response.get(1));
-        assertEquals(csTypeC, response.get(2));
-    }
+    assertEquals(csTypeA, response.get(0));
+    assertEquals(wcTypeB, response.get(1));
+    assertEquals(csTypeC, response.get(2));
+  }
 }

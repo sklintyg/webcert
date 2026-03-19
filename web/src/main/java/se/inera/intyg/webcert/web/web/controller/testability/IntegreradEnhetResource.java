@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,59 +35,60 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 
 /**
- * Testbarhetsresurs för att till och börja med radera och lista identifierade integrerade vårdenheter.
+ * Testbarhetsresurs för att till och börja med radera och lista identifierade integrerade
+ * vårdenheter.
  */
 @Service
-@Api(value = "testability integreradevardenheter", description = "REST API för testbarhet - Integrerade vårdenheter")
+@Api(
+    value = "testability integreradevardenheter",
+    description = "REST API för testbarhet - Integrerade vårdenheter")
 @Path("/integreradevardenheter")
 public class IntegreradEnhetResource {
 
-    private static final int OK = 200;
-    private static final int BAD_REQUEST = 400;
+  private static final int OK = 200;
+  private static final int BAD_REQUEST = 400;
 
-    @Autowired
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    @DELETE
-    @Path("/{hsaId}")
-    @ApiResponses(value = {
+  @DELETE
+  @Path("/{hsaId}")
+  @ApiResponses(
+      value = {
         @ApiResponse(code = OK, message = "Given identified integrated unit was deleted"),
         @ApiResponse(code = BAD_REQUEST, message = "If supplied hsaId was null or blank")
-    })
-    public Response deleteIntegreradVardenhet(@PathParam("hsaId") String hsaId) {
-        if (isNullOrEmpty(hsaId)) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Specified hsaId is null or blank").build();
-        }
-
-        integreradeEnheterRegistry.deleteIntegreradEnhet(hsaId);
-        return Response.ok().build();
+      })
+  public Response deleteIntegreradVardenhet(@PathParam("hsaId") String hsaId) {
+    if (isNullOrEmpty(hsaId)) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Specified hsaId is null or blank")
+          .build();
     }
 
-    private boolean isNullOrEmpty(String hsaId) {
-        return hsaId == null || hsaId.trim().length() == 0;
-    }
+    integreradeEnheterRegistry.deleteIntegreradEnhet(hsaId);
+    return Response.ok().build();
+  }
 
-    @GET
-    @Path("/")
-    @Produces("application/json")
-    @ApiResponses(value = {
-        @ApiResponse(code = OK, message = "Listed current set of integrerade Vårdenheter")
-    })
-    public Response getIntegreradeVardenheter() {
-        return Response.ok(integreradeEnheterRegistry.getIntegreradeVardenheter()).build();
-    }
+  private boolean isNullOrEmpty(String hsaId) {
+    return hsaId == null || hsaId.trim().length() == 0;
+  }
 
-    @POST
-    @Path("/")
-    @Consumes("application/json")
-    @Produces("application/json")
-    @ApiResponses(value = {
-        @ApiResponse(code = OK, message = "Registered integrerad vardenhet")
-    })
-    public Response registerIntegreradVardenhet(IntegreradEnhetEntryWithSchemaVersion enhet) {
-        integreradeEnheterRegistry.putIntegreradEnhet(enhet, "1.0".equals(enhet.getSchemaVersion()),
-            "2.0".equals(enhet.getSchemaVersion()));
-        return Response.ok(enhet).build();
-    }
+  @GET
+  @Path("/")
+  @Produces("application/json")
+  @ApiResponses(
+      value = {@ApiResponse(code = OK, message = "Listed current set of integrerade Vårdenheter")})
+  public Response getIntegreradeVardenheter() {
+    return Response.ok(integreradeEnheterRegistry.getIntegreradeVardenheter()).build();
+  }
 
+  @POST
+  @Path("/")
+  @Consumes("application/json")
+  @Produces("application/json")
+  @ApiResponses(value = {@ApiResponse(code = OK, message = "Registered integrerad vardenhet")})
+  public Response registerIntegreradVardenhet(IntegreradEnhetEntryWithSchemaVersion enhet) {
+    integreradeEnheterRegistry.putIntegreradEnhet(
+        enhet, "1.0".equals(enhet.getSchemaVersion()), "2.0".equals(enhet.getSchemaVersion()));
+    return Response.ok(enhet).build();
+  }
 }

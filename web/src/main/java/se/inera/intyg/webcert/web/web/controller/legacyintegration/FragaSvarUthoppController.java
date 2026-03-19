@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,118 +47,131 @@ import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 /**
- * Controller to enable an external user to access certificates directly from a
- * link in an external patient care system.
+ * Controller to enable an external user to access certificates directly from a link in an external
+ * patient care system.
  *
  * @author nikpet
  */
 // CHECKSTYLE:OFF LineLength
 @Path("/certificate")
-@Api(value = "webcert web user certificate (Fråga/Svar uthopp)", description = "REST API för fråga/svar via uthoppslänk, landstingspersonal", produces = MediaType.APPLICATION_JSON)
+@Api(
+    value = "webcert web user certificate (Fråga/Svar uthopp)",
+    description = "REST API för fråga/svar via uthoppslänk, landstingspersonal",
+    produces = MediaType.APPLICATION_JSON)
 public class FragaSvarUthoppController extends BaseIntegrationController {
-// CHECKSTYLE:ON LineLength
+  // CHECKSTYLE:ON LineLength
 
-    private static final Logger LOG = LoggerFactory.getLogger(FragaSvarUthoppController.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FragaSvarUthoppController.class);
 
-    private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
-        AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_SJUKSKOTERSKA, AuthoritiesConstants.ROLE_BARNMORSKA};
-    private static final UserOriginType GRANTED_ORIGIN = UserOriginType.NORMAL;
+  private static final String[] GRANTED_ROLES =
+      new String[] {
+        AuthoritiesConstants.ROLE_ADMIN,
+        AuthoritiesConstants.ROLE_LAKARE,
+        AuthoritiesConstants.ROLE_TANDLAKARE,
+        AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
+        AuthoritiesConstants.ROLE_BARNMORSKA
+      };
+  private static final UserOriginType GRANTED_ORIGIN = UserOriginType.NORMAL;
 
-    @Autowired
-    private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
+  @Autowired private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
 
-    @Autowired
-    private ReactUriFactory reactUriFactory;
+  @Autowired private ReactUriFactory reactUriFactory;
 
-    @Autowired
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
-    /**
-     * Fetches a certificate from IT and then performs a redirect to the view that displays
-     * the certificate. Can be used for all types of certificates.
-     *
-     * @param intygId The id of the certificate to view.
-     */
-    @GET
-    @Path("/{type}/{intygId}/questions")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "fragasvar-redirect-to-certificate-with-type", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response redirectToIntyg(@Context UriInfo uriInfo,
-        @PathParam("type") String type,
-        @PathParam("intygId") String intygId,
-        @QueryParam("enhet") String enhetHsaId) {
+  /**
+   * Fetches a certificate from IT and then performs a redirect to the view that displays the
+   * certificate. Can be used for all types of certificates.
+   *
+   * @param intygId The id of the certificate to view.
+   */
+  @GET
+  @Path("/{type}/{intygId}/questions")
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "fragasvar-redirect-to-certificate-with-type",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response redirectToIntyg(
+      @Context UriInfo uriInfo,
+      @PathParam("type") String type,
+      @PathParam("intygId") String intygId,
+      @QueryParam("enhet") String enhetHsaId) {
 
-        super.validateParameter("type", type);
-        super.validateParameter("intygId", intygId);
-        super.validateAuthorities();
-        this.validateAndChangeEnhet(intygId, enhetHsaId);
+    super.validateParameter("type", type);
+    super.validateParameter("intygId", intygId);
+    super.validateAuthorities();
+    this.validateAndChangeEnhet(intygId, enhetHsaId);
 
-        LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
-        return buildRedirectResponse(uriInfo, intygId);
+    LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
+    return buildRedirectResponse(uriInfo, intygId);
+  }
+
+  @GET
+  @Path("/{intygId}/questions")
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "fragasvar-redirect-to-certificate-without-type",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public Response redirectToIntyg(
+      @Context UriInfo uriInfo,
+      @PathParam("intygId") String intygId,
+      @QueryParam("enhet") String enhetHsaId) {
+
+    super.validateParameter("intygId", intygId);
+    super.validateAuthorities();
+    this.validateAndChangeEnhet(intygId, enhetHsaId);
+
+    LOG.debug("Redirecting to view intyg {}", intygId);
+    return buildRedirectResponse(uriInfo, intygId);
+  }
+
+  @Override
+  protected String[] getGrantedRoles() {
+    return GRANTED_ROLES;
+  }
+
+  @Override
+  protected UserOriginType getGrantedRequestOrigin() {
+    return GRANTED_ORIGIN;
+  }
+
+  /**
+   * Makes sure we change (if possible) the current vardEnhet to the one either specified in the URL
+   * or to the one the intyg was issued on.
+   */
+  private void validateAndChangeEnhet(String intygsId, String enhetHsaId) {
+    WebCertUser user = webCertUserService.getUser();
+    if (user == null) {
+      LOG.error("No user in session, cannot continue");
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+          "No user session, cannot view questions for intyg " + intygsId);
     }
 
-    @GET
-    @Path("/{intygId}/questions")
-    @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "fragasvar-redirect-to-certificate-without-type", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public Response redirectToIntyg(@Context UriInfo uriInfo,
-        @PathParam("intygId") String intygId,
-        @QueryParam("enhet") String enhetHsaId) {
-
-        super.validateParameter("intygId", intygId);
-        super.validateAuthorities();
-        this.validateAndChangeEnhet(intygId, enhetHsaId);
-
-        LOG.debug("Redirecting to view intyg {}", intygId);
-        return buildRedirectResponse(uriInfo, intygId);
+    if (!Strings.nullToEmpty(enhetHsaId).trim().isEmpty()) {
+      // Link contained not empty ?enhet= query param, try to set on user!
+      if (!user.changeValdVardenhet(enhetHsaId)) {
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+            "User does not have access to enhet " + enhetHsaId);
+      }
+    } else {
+      // No enhet on link (legacy fallback for pre WC 5.0 links)
+      String enhet = getIssuingUnitIdAggregator.get(intygsId);
+      if (!user.changeValdVardenhet(enhet)) {
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+            "User does not have access to enhet " + enhetHsaId);
+      }
     }
 
-    @Override
-    protected String[] getGrantedRoles() {
-        return GRANTED_ROLES;
-    }
+    user.setFeatures(
+        commonAuthoritiesResolver.getFeatures(
+            Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
+  }
 
-    @Override
-    protected UserOriginType getGrantedRequestOrigin() {
-        return GRANTED_ORIGIN;
-    }
-
-    /**
-     * Makes sure we change (if possible) the current vardEnhet to the one either specified in the URL or to the one
-     * the intyg was issued on.
-     */
-    private void validateAndChangeEnhet(String intygsId, String enhetHsaId) {
-        WebCertUser user = webCertUserService.getUser();
-        if (user == null) {
-            LOG.error("No user in session, cannot continue");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                "No user session, cannot view questions for intyg " + intygsId);
-        }
-
-        if (!Strings.nullToEmpty(enhetHsaId).trim().isEmpty()) {
-            // Link contained not empty ?enhet= query param, try to set on user!
-            if (!user.changeValdVardenhet(enhetHsaId)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User does not have access to enhet " + enhetHsaId);
-            }
-        } else {
-            // No enhet on link (legacy fallback for pre WC 5.0 links)
-            String enhet = getIssuingUnitIdAggregator.get(intygsId);
-            if (!user.changeValdVardenhet(enhet)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User does not have access to enhet " + enhetHsaId);
-            }
-        }
-
-        user.setFeatures(
-            commonAuthoritiesResolver.getFeatures(
-                Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())
-            )
-        );
-    }
-
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateId) {
-        final var uri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
-        return Response.status(Status.SEE_OTHER).location(uri).build();
-    }
+  private Response buildRedirectResponse(UriInfo uriInfo, String certificateId) {
+    final var uri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
+    return Response.status(Status.SEE_OTHER).location(uri).build();
+  }
 }

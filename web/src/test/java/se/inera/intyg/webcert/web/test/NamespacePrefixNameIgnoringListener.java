@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,17 +29,17 @@ import org.w3c.dom.Node;
  */
 public class NamespacePrefixNameIgnoringListener implements DifferenceListener {
 
-    @Override
-    public int differenceFound(Difference difference) {
-        if (NAMESPACE_PREFIX_ID == difference.getId()) {
-            // differences in namespace prefix IDs are ok (eg. 'ns1' vs 'ns2'), as long as the namespace URI is the same
-            return RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL;
-        } else {
-            return RETURN_ACCEPT_DIFFERENCE;
-        }
+  @Override
+  public int differenceFound(Difference difference) {
+    if (NAMESPACE_PREFIX_ID == difference.getId()) {
+      // differences in namespace prefix IDs are ok (eg. 'ns1' vs 'ns2'), as long as the namespace
+      // URI is the same
+      return RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL;
+    } else {
+      return RETURN_ACCEPT_DIFFERENCE;
     }
+  }
 
-    @Override
-    public void skippedComparison(Node control, Node test) {
-    }
+  @Override
+  public void skippedComparison(Node control, Node test) {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,138 +52,130 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class DeleteCertificateFromCertificateServiceTest {
 
-    private static final DeleteCertificateRequestDTO REQUEST = DeleteCertificateRequestDTO.builder().build();
-    private static final String ID = "ID";
-    private static final int VERSION = 10;
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final String TYPE = "TYPE";
-    private static final String XML_DATA = "xmlData";
-    private static final GetCertificateXmlResponseDTO XML_RESPONSE_DTO = GetCertificateXmlResponseDTO.builder()
-        .xml(XML_DATA)
-        .build();
-    private static final GetCertificateXmlRequestDTO XML_REQUEST_DTO = GetCertificateXmlRequestDTO.builder().build();
+  private static final DeleteCertificateRequestDTO REQUEST =
+      DeleteCertificateRequestDTO.builder().build();
+  private static final String ID = "ID";
+  private static final int VERSION = 10;
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final String TYPE = "TYPE";
+  private static final String XML_DATA = "xmlData";
+  private static final GetCertificateXmlResponseDTO XML_RESPONSE_DTO =
+      GetCertificateXmlResponseDTO.builder().xml(XML_DATA).build();
+  private static final GetCertificateXmlRequestDTO XML_REQUEST_DTO =
+      GetCertificateXmlRequestDTO.builder().build();
 
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock CSIntegrationService csIntegrationService;
 
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Mock
-    PDLLogService pdlLogService;
+  @Mock PDLLogService pdlLogService;
 
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    @Mock
-    MonitoringLogService monitoringLogService;
-    @Mock
-    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    @Mock
-    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock MonitoringLogService monitoringLogService;
+  @Mock PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    DeleteCertificateFromCertificateService deleteCertificateFromCertificateService;
+  @InjectMocks DeleteCertificateFromCertificateService deleteCertificateFromCertificateService;
 
-    @Test
-    void shouldReturnFalseIfCertificateDoesNotExistInCS() {
-        final var response = deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+  @Test
+  void shouldReturnFalseIfCertificateDoesNotExistInCS() {
+    final var response = deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
 
-        assertFalse(response);
+    assertFalse(response);
+  }
+
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+
+      CERTIFICATE.setMetadata(CertificateMetadata.builder().id(ID).type(TYPE).build());
+
+      when(csIntegrationService.certificateExists(ID)).thenReturn(true);
+
+      when(csIntegrationService.getCertificateXml(XML_REQUEST_DTO, ID))
+          .thenReturn(XML_RESPONSE_DTO);
+
+      when(csIntegrationRequestFactory.getCertificateXmlRequest()).thenReturn(XML_REQUEST_DTO);
+
+      when(csIntegrationRequestFactory.deleteCertificateRequest()).thenReturn(REQUEST);
     }
 
     @Nested
-    class CertificateExistsInCS {
+    class CertificateIsDeletedFromCS {
 
-        @BeforeEach
-        void setup() {
+      @BeforeEach
+      void setup() {
+        when(csIntegrationService.deleteCertificate(ID, VERSION, REQUEST)).thenReturn(CERTIFICATE);
+      }
 
-            CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .build());
+      @Test
+      void shouldCallDeleteWithVersion() {
+        final var captor = ArgumentCaptor.forClass(Long.class);
+        deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
 
-            when(csIntegrationService.certificateExists(ID))
-                .thenReturn(true);
+        verify(csIntegrationService)
+            .deleteCertificate(
+                anyString(), captor.capture(), any(DeleteCertificateRequestDTO.class));
+        assertEquals(VERSION, captor.getValue());
+      }
 
-            when(csIntegrationService.getCertificateXml(XML_REQUEST_DTO, ID))
-                .thenReturn(XML_RESPONSE_DTO);
+      @Test
+      void shouldCallDeleteWithId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
 
-            when(csIntegrationRequestFactory.getCertificateXmlRequest())
-                .thenReturn(XML_REQUEST_DTO);
+        verify(csIntegrationService)
+            .deleteCertificate(captor.capture(), anyLong(), any(DeleteCertificateRequestDTO.class));
+        assertEquals(ID, captor.getValue());
+      }
 
-            when(csIntegrationRequestFactory.deleteCertificateRequest())
-                .thenReturn(REQUEST);
-        }
+      @Test
+      void shouldCallDeleteWithRequest() {
+        final var captor = ArgumentCaptor.forClass(DeleteCertificateRequestDTO.class);
+        deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
 
-        @Nested
-        class CertificateIsDeletedFromCS {
+        verify(csIntegrationService).deleteCertificate(anyString(), anyLong(), captor.capture());
+        assertEquals(REQUEST, captor.getValue());
+      }
 
-            @BeforeEach
-            void setup() {
-                when(csIntegrationService.deleteCertificate(ID, VERSION, REQUEST))
-                    .thenReturn(CERTIFICATE);
-            }
+      @Test
+      void shouldPdlLogDelete() {
+        deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+        verify(pdlLogService).logDeleted(CERTIFICATE);
+      }
 
-            @Test
-            void shouldCallDeleteWithVersion() {
-                final var captor = ArgumentCaptor.forClass(Long.class);
-                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+      @Test
+      void shouldMonitorLogDelete() {
+        deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+        verify(monitoringLogService).logUtkastDeleted(ID, TYPE);
+      }
 
-                verify(csIntegrationService).deleteCertificate(anyString(), captor.capture(), any(DeleteCertificateRequestDTO.class));
-                assertEquals(VERSION, captor.getValue());
-            }
+      @Test
+      void shouldCallPublishCertificateStatusServiceWithXmlData() {
+        deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+        verify(publishCertificateStatusUpdateService)
+            .publish(CERTIFICATE, HandelsekodEnum.RADERA, XML_DATA);
+      }
 
-            @Test
-            void shouldCallDeleteWithId() {
-                final var captor = ArgumentCaptor.forClass(String.class);
-                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+      @Test
+      void shouldPublishAnalyticsMessageWhenCertificateIsDeleted() {
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftDeleted(CERTIFICATE))
+            .thenReturn(analyticsMessage);
 
-                verify(csIntegrationService).deleteCertificate(captor.capture(), anyLong(), any(DeleteCertificateRequestDTO.class));
-                assertEquals(ID, captor.getValue());
-            }
+        deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
 
-            @Test
-            void shouldCallDeleteWithRequest() {
-                final var captor = ArgumentCaptor.forClass(DeleteCertificateRequestDTO.class);
-                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
-
-                verify(csIntegrationService).deleteCertificate(anyString(), anyLong(), captor.capture());
-                assertEquals(REQUEST, captor.getValue());
-            }
-
-            @Test
-            void shouldPdlLogDelete() {
-                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
-                verify(pdlLogService).logDeleted(CERTIFICATE);
-
-            }
-
-            @Test
-            void shouldMonitorLogDelete() {
-                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
-                verify(monitoringLogService).logUtkastDeleted(ID, TYPE);
-            }
-
-            @Test
-            void shouldCallPublishCertificateStatusServiceWithXmlData() {
-                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
-                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.RADERA, XML_DATA);
-            }
-
-            @Test
-            void shouldPublishAnalyticsMessageWhenCertificateIsDeleted() {
-                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.draftDeleted(CERTIFICATE)).thenReturn(analyticsMessage);
-
-                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
-
-                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-            }
-        }
-
-        @Test
-        void shouldThrowExceptionIfReturnedCertificateIsNull() {
-            assertThrows(IllegalStateException.class, () -> deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION));
-        }
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+      }
     }
+
+    @Test
+    void shouldThrowExceptionIfReturnedCertificateIsNull() {
+      assertThrows(
+          IllegalStateException.class,
+          () -> deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION));
+    }
+  }
 }

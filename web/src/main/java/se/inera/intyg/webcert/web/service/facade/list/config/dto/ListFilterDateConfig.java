@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,51 +22,50 @@ import java.time.LocalDateTime;
 
 public class ListFilterDateConfig extends ListFilterConfig {
 
-    private LocalDateTime max;
-    private LocalDateTime min;
-    private LocalDateTime defaultValue;
+  private LocalDateTime max;
+  private LocalDateTime min;
+  private LocalDateTime defaultValue;
 
-    public ListFilterDateConfig(String id, String title) {
-        super(ListFilterType.DATE, id, title);
-    }
+  public ListFilterDateConfig(String id, String title) {
+    super(ListFilterType.DATE, id, title);
+  }
 
-    public ListFilterDateConfig(String id, String title, LocalDateTime defaultValue) {
-        super(ListFilterType.DATE, id, title);
-        this.defaultValue = defaultValue;
-    }
+  public ListFilterDateConfig(String id, String title, LocalDateTime defaultValue) {
+    super(ListFilterType.DATE, id, title);
+    this.defaultValue = defaultValue;
+  }
 
-    public ListFilterDateConfig(String id, String title, LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {
-        super(ListFilterType.DATE, id, title);
-        this.max = max;
-        this.min = min;
-        this.defaultValue = defaultValue;
-    }
+  public ListFilterDateConfig(
+      String id, String title, LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {
+    super(ListFilterType.DATE, id, title);
+    this.max = max;
+    this.min = min;
+    this.defaultValue = defaultValue;
+  }
 
-    public ListFilterDateConfig() {
+  public ListFilterDateConfig() {}
 
-    }
+  public LocalDateTime getMax() {
+    return max;
+  }
 
-    public LocalDateTime getMax() {
-        return max;
-    }
+  public void setMax(LocalDateTime max) {
+    this.max = max;
+  }
 
-    public void setMax(LocalDateTime max) {
-        this.max = max;
-    }
+  public LocalDateTime getMin() {
+    return min;
+  }
 
-    public LocalDateTime getMin() {
-        return min;
-    }
+  public void setMin(LocalDateTime min) {
+    this.min = min;
+  }
 
-    public void setMin(LocalDateTime min) {
-        this.min = min;
-    }
+  public LocalDateTime getDefaultValue() {
+    return defaultValue;
+  }
 
-    public LocalDateTime getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(LocalDateTime defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+  public void setDefaultValue(LocalDateTime defaultValue) {
+    this.defaultValue = defaultValue;
+  }
 }

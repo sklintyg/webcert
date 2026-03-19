@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -30,11 +29,9 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificati
 @JsonDeserialize(builder = CountNotificationResponseDTOBuilder.class)
 public class CountNotificationResponseDTO {
 
-    private Integer count;
-    private Integer max;
+  private Integer count;
+  private Integer max;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CountNotificationResponseDTOBuilder {
-
-    }
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class CountNotificationResponseDTOBuilder {}
 }

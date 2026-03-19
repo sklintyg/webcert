@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,180 +50,178 @@ import se.inera.intyg.webcert.common.Constants;
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateSenderServiceImplTest {
 
-    private static final String LOGICAL_ADDRESS = "logical address";
+  private static final String LOGICAL_ADDRESS = "logical address";
 
-    @Mock
-    private Session session;
+  @Mock private Session session;
 
-    @Mock
-    private JmsTemplate template;
+  @Mock private JmsTemplate template;
 
-    @InjectMocks
-    private CertificateSenderServiceImpl service;
+  @InjectMocks private CertificateSenderServiceImpl service;
 
-    @Before
-    public void setup() throws Exception {
-        ReflectionTestUtils.setField(service, "logicalAddress", LOGICAL_ADDRESS);
-        when(session.createTextMessage(anyString())).thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
+  @Before
+  public void setup() throws Exception {
+    ReflectionTestUtils.setField(service, "logicalAddress", LOGICAL_ADDRESS);
+    when(session.createTextMessage(anyString()))
+        .thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
+  }
+
+  @Test
+  public void storeCertificateTest() throws Exception {
+    final String intygsId = "intygsId";
+    final String jsonBody = "jsonBody";
+    final String intygsTyp = "intygsTyp";
+
+    service.storeCertificate(intygsId, intygsTyp, jsonBody);
+    ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
+    verify(template).send(messageCaptor.capture());
+
+    Message res = messageCaptor.getValue().createMessage(session);
+    assertEquals(Constants.STORE_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
+    assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
+    assertEquals(intygsTyp, res.getStringProperty(Constants.INTYGS_TYP));
+    assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
+    assertEquals(jsonBody, ((TextMessage) res).getText());
+  }
+
+  @Test(expected = JmsException.class)
+  public void storeCertificateJmsException() throws Exception {
+    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+
+    try {
+      service.storeCertificate("intygsId", "intygsTyp", "jsonBody");
+    } finally {
+      verify(template, times(1)).send(any(MessageCreator.class));
     }
+  }
 
-    @Test
-    public void storeCertificateTest() throws Exception {
-        final String intygsId = "intygsId";
-        final String jsonBody = "jsonBody";
-        final String intygsTyp = "intygsTyp";
+  @Test
+  public void sendCertificateTest() throws Exception {
+    final String intygsId = "intygsId";
+    final Personnummer personId = createPnr("19121212-1212");
+    final String jsonBody = "jsonBody";
+    final String recipientId = "recipientId";
 
-        service.storeCertificate(intygsId, intygsTyp, jsonBody);
-        ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
-        verify(template).send(messageCaptor.capture());
+    service.sendCertificate(intygsId, personId, jsonBody, recipientId);
+    ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
+    verify(template).send(messageCaptor.capture());
 
-        Message res = messageCaptor.getValue().createMessage(session);
-        assertEquals(Constants.STORE_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
-        assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
-        assertEquals(intygsTyp, res.getStringProperty(Constants.INTYGS_TYP));
-        assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
-        assertEquals(jsonBody, ((TextMessage) res).getText());
+    Message res = messageCaptor.getValue().createMessage(session);
+    assertEquals(Constants.SEND_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
+    assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
+    assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
+    assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
+    assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
+    assertNull(res.getStringProperty(Constants.DELAY_MESSAGE));
+    assertEquals(jsonBody, ((TextMessage) res).getText());
+  }
+
+  @Test
+  public void sendCertificateWithDelayTest() throws Exception {
+    final String intygsId = "intygsId";
+    final Personnummer personId = createPnr("19121212-1212");
+    final String jsonBody = "jsonBody";
+    final String recipientId = "recipientId";
+
+    service.sendCertificate(intygsId, personId, jsonBody, recipientId, true);
+    ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
+    verify(template).send(messageCaptor.capture());
+
+    Message res = messageCaptor.getValue().createMessage(session);
+    assertEquals(Constants.SEND_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
+    assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
+    assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
+    assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
+    assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
+    assertEquals("true", res.getStringProperty(Constants.DELAY_MESSAGE));
+    assertEquals(jsonBody, ((TextMessage) res).getText());
+  }
+
+  @Test(expected = JmsException.class)
+  public void sendCertificateJmsException() throws Exception {
+    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+
+    try {
+      service.sendCertificate("intygsId", createPnr("19121212-1212"), "jsonBody", "recipientId");
+    } finally {
+      verify(template, times(1)).send(any(MessageCreator.class));
     }
+  }
 
-    @Test(expected = JmsException.class)
-    public void storeCertificateJmsException() throws Exception {
-        doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  @Test
+  public void revokeCertificateTest() throws Exception {
+    final String intygsId = "intygsId";
+    final String xmlBody = "xmlBody";
+    final String intygsTyp = "intygsTyp";
+    final String intygsTypVersion = "intygsTypVersion";
 
-        try {
-            service.storeCertificate("intygsId", "intygsTyp", "jsonBody");
-        } finally {
-            verify(template, times(1)).send(any(MessageCreator.class));
-        }
+    service.revokeCertificate(intygsId, xmlBody, intygsTyp, intygsTypVersion);
+    ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
+    verify(template).send(messageCaptor.capture());
+
+    Message res = messageCaptor.getValue().createMessage(session);
+    assertEquals(Constants.REVOKE_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
+    assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
+    assertEquals(intygsTyp, res.getStringProperty(Constants.INTYGS_TYP));
+    assertEquals(intygsTypVersion, res.getStringProperty(Constants.INTYGS_TYP_VERSION));
+    assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
+    assertEquals(xmlBody, ((TextMessage) res).getText());
+  }
+
+  @Test(expected = JmsException.class)
+  public void revokeCertificateJmsException() throws Exception {
+    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+
+    try {
+      service.revokeCertificate("intygsId", "xmlBody", "intygsTyp", "1.0");
+    } finally {
+      verify(template, times(1)).send(any(MessageCreator.class));
     }
+  }
 
-    @Test
-    public void sendCertificateTest() throws Exception {
-        final String intygsId = "intygsId";
-        final Personnummer personId = createPnr("19121212-1212");
-        final String jsonBody = "jsonBody";
-        final String recipientId = "recipientId";
+  @Test
+  public void sendMessageToRecipientTest() throws Exception {
+    final String intygsId = "intygsId";
+    final String xmlBody = "xmlBody";
 
-        service.sendCertificate(intygsId, personId, jsonBody, recipientId);
-        ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
-        verify(template).send(messageCaptor.capture());
+    service.sendMessageToRecipient(intygsId, xmlBody);
+    ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
+    verify(template).send(messageCaptor.capture());
 
-        Message res = messageCaptor.getValue().createMessage(session);
-        assertEquals(Constants.SEND_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
-        assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
-        assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
-        assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
-        assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
-        assertNull(res.getStringProperty(Constants.DELAY_MESSAGE));
-        assertEquals(jsonBody, ((TextMessage) res).getText());
+    Message res = messageCaptor.getValue().createMessage(session);
+    assertEquals(
+        Constants.SEND_MESSAGE_TO_RECIPIENT, res.getStringProperty(Constants.MESSAGE_TYPE));
+    assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
+    assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
+    assertEquals(xmlBody, ((TextMessage) res).getText());
+  }
+
+  @Test(expected = JmsException.class)
+  public void sendMessageToRecipientJmsException() throws Exception {
+    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+
+    try {
+      service.sendMessageToRecipient("intygsId", "xmlBody");
+    } finally {
+      verify(template, times(1)).send(any(MessageCreator.class));
     }
+  }
 
-    @Test
-    public void sendCertificateWithDelayTest() throws Exception {
-        final String intygsId = "intygsId";
-        final Personnummer personId = createPnr("19121212-1212");
-        final String jsonBody = "jsonBody";
-        final String recipientId = "recipientId";
+  @Test
+  public void testCheckJmsTemplateNoTemplateAvailable() {
+    ReflectionTestUtils.setField(service, "jmsTemplate", null);
+    service.checkJmsTemplate();
+    // no exception is thrown
+  }
 
-        service.sendCertificate(intygsId, personId, jsonBody, recipientId, true);
-        ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
-        verify(template).send(messageCaptor.capture());
+  private TextMessage createTextMessage(String s) throws JMSException {
+    ActiveMQTextMessage message = new ActiveMQTextMessage();
+    message.setText(s);
+    return message;
+  }
 
-        Message res = messageCaptor.getValue().createMessage(session);
-        assertEquals(Constants.SEND_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
-        assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
-        assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
-        assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
-        assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
-        assertEquals("true", res.getStringProperty(Constants.DELAY_MESSAGE));
-        assertEquals(jsonBody, ((TextMessage) res).getText());
-
-    }
-
-    @Test(expected = JmsException.class)
-    public void sendCertificateJmsException() throws Exception {
-        doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-
-        try {
-            service.sendCertificate("intygsId", createPnr("19121212-1212"), "jsonBody", "recipientId");
-        } finally {
-            verify(template, times(1)).send(any(MessageCreator.class));
-        }
-    }
-
-    @Test
-    public void revokeCertificateTest() throws Exception {
-        final String intygsId = "intygsId";
-        final String xmlBody = "xmlBody";
-        final String intygsTyp = "intygsTyp";
-        final String intygsTypVersion = "intygsTypVersion";
-
-        service.revokeCertificate(intygsId, xmlBody, intygsTyp, intygsTypVersion);
-        ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
-        verify(template).send(messageCaptor.capture());
-
-        Message res = messageCaptor.getValue().createMessage(session);
-        assertEquals(Constants.REVOKE_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
-        assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
-        assertEquals(intygsTyp, res.getStringProperty(Constants.INTYGS_TYP));
-        assertEquals(intygsTypVersion, res.getStringProperty(Constants.INTYGS_TYP_VERSION));
-        assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
-        assertEquals(xmlBody, ((TextMessage) res).getText());
-    }
-
-    @Test(expected = JmsException.class)
-    public void revokeCertificateJmsException() throws Exception {
-        doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-
-        try {
-            service.revokeCertificate("intygsId", "xmlBody", "intygsTyp", "1.0");
-        } finally {
-            verify(template, times(1)).send(any(MessageCreator.class));
-        }
-    }
-
-    @Test
-    public void sendMessageToRecipientTest() throws Exception {
-        final String intygsId = "intygsId";
-        final String xmlBody = "xmlBody";
-
-        service.sendMessageToRecipient(intygsId, xmlBody);
-        ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
-        verify(template).send(messageCaptor.capture());
-
-        Message res = messageCaptor.getValue().createMessage(session);
-        assertEquals(Constants.SEND_MESSAGE_TO_RECIPIENT, res.getStringProperty(Constants.MESSAGE_TYPE));
-        assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
-        assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
-        assertEquals(xmlBody, ((TextMessage) res).getText());
-    }
-
-    @Test(expected = JmsException.class)
-    public void sendMessageToRecipientJmsException() throws Exception {
-        doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-
-        try {
-            service.sendMessageToRecipient("intygsId", "xmlBody");
-        } finally {
-            verify(template, times(1)).send(any(MessageCreator.class));
-        }
-    }
-
-    @Test
-    public void testCheckJmsTemplateNoTemplateAvailable() {
-        ReflectionTestUtils.setField(service, "jmsTemplate", null);
-        service.checkJmsTemplate();
-        // no exception is thrown
-    }
-
-    private TextMessage createTextMessage(String s) throws JMSException {
-        ActiveMQTextMessage message = new ActiveMQTextMessage();
-        message.setText(s);
-        return message;
-    }
-
-    private Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
-    }
-
+  private Personnummer createPnr(String personId) {
+    return Personnummer.createPersonnummer(personId)
+        .orElseThrow(
+            () -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,106 +44,107 @@ import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter
 @Service
 public class GetQuestionFacadeServiceImpl implements GetQuestionFacadeService {
 
-    private final ArendeService arendeService;
-    private final ArendeDraftService arendeDraftService;
-    private final QuestionConverter questionConverter;
-    private final ComplementConverter complementConverter;
-    private final GetCertificateFacadeService getCertificateFacadeService;
+  private final ArendeService arendeService;
+  private final ArendeDraftService arendeDraftService;
+  private final QuestionConverter questionConverter;
+  private final ComplementConverter complementConverter;
+  private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public GetQuestionFacadeServiceImpl(ArendeService arendeService,
-        ArendeDraftService arendeDraftService, QuestionConverter questionConverter,
-        ComplementConverter complementConverter,
-        GetCertificateFacadeService getCertificateFacadeService) {
-        this.arendeService = arendeService;
-        this.arendeDraftService = arendeDraftService;
-        this.questionConverter = questionConverter;
-        this.complementConverter = complementConverter;
-        this.getCertificateFacadeService = getCertificateFacadeService;
+  @Autowired
+  public GetQuestionFacadeServiceImpl(
+      ArendeService arendeService,
+      ArendeDraftService arendeDraftService,
+      QuestionConverter questionConverter,
+      ComplementConverter complementConverter,
+      GetCertificateFacadeService getCertificateFacadeService) {
+    this.arendeService = arendeService;
+    this.arendeDraftService = arendeDraftService;
+    this.questionConverter = questionConverter;
+    this.complementConverter = complementConverter;
+    this.getCertificateFacadeService = getCertificateFacadeService;
+  }
+
+  @Override
+  public Question get(String questionId) {
+    final var question = getQuestion(questionId);
+    final var relatedArenden = arendeService.getRelatedArenden(questionId);
+
+    final var complements = getComplements(question);
+
+    final var answeredByCertificate = getAnsweredByCertificate(question, complements);
+
+    final var reminders = getReminders(relatedArenden);
+
+    final var answer = getAnswer(relatedArenden);
+    if (hasAnswer(answer)) {
+      return questionConverter.convert(
+          question, complements, answeredByCertificate, answer, reminders);
     }
 
-    @Override
-    public Question get(String questionId) {
-        final var question = getQuestion(questionId);
-        final var relatedArenden = arendeService.getRelatedArenden(questionId);
-
-        final var complements = getComplements(question);
-
-        final var answeredByCertificate = getAnsweredByCertificate(question, complements);
-
-        final var reminders = getReminders(relatedArenden);
-
-        final var answer = getAnswer(relatedArenden);
-        if (hasAnswer(answer)) {
-            return questionConverter.convert(question, complements, answeredByCertificate, answer, reminders);
-        }
-
-        final var answerDraft = getAnswerDraft(questionId, question);
-        if (hasAnswerDraft(answerDraft)) {
-            return questionConverter.convert(question, complements, answeredByCertificate, answerDraft, reminders);
-        }
-
-        return questionConverter.convert(question, complements, answeredByCertificate, reminders);
+    final var answerDraft = getAnswerDraft(questionId, question);
+    if (hasAnswerDraft(answerDraft)) {
+      return questionConverter.convert(
+          question, complements, answeredByCertificate, answerDraft, reminders);
     }
 
-    private CertificateRelation getAnsweredByCertificate(Arende question, Complement[] complements) {
-        if (complements.length == 0) {
-            return null;
-        }
+    return questionConverter.convert(question, complements, answeredByCertificate, reminders);
+  }
 
-        final var certificate = getCertificateFacadeService.getCertificate(question.getIntygsId(), false, true);
-        final var relations = certificate.getMetadata().getRelations();
-        if (relations == null) {
-            return null;
-        }
+  private CertificateRelation getAnsweredByCertificate(Arende question, Complement[] complements) {
+    if (complements.length == 0) {
+      return null;
+    }
 
-        final var children = relations.getChildren();
-        if (children == null || children.length == 0) {
-            return null;
-        }
+    final var certificate =
+        getCertificateFacadeService.getCertificate(question.getIntygsId(), false, true);
+    final var relations = certificate.getMetadata().getRelations();
+    if (relations == null) {
+      return null;
+    }
 
-        return Stream.of(children)
-            .filter(certificateRelation ->
+    final var children = relations.getChildren();
+    if (children == null || children.length == 0) {
+      return null;
+    }
+
+    return Stream.of(children)
+        .filter(
+            certificateRelation ->
                 certificateRelation.getType() == CertificateRelationType.COMPLEMENTED
                     && certificateRelation.getCreated().isAfter(question.getSkickatTidpunkt()))
-            .min(comparing(CertificateRelation::getCreated))
-            .orElse(null);
+        .min(comparing(CertificateRelation::getCreated))
+        .orElse(null);
+  }
+
+  private Arende getQuestion(String questionId) {
+    return arendeService.getArende(questionId);
+  }
+
+  private Complement[] getComplements(Arende question) {
+    if (question.getAmne() != ArendeAmne.KOMPLT || question.getKomplettering().isEmpty()) {
+      return new Complement[0];
     }
 
-    private Arende getQuestion(String questionId) {
-        return arendeService.getArende(questionId);
-    }
+    return complementConverter.convert(question);
+  }
 
-    private Complement[] getComplements(Arende question) {
-        if (question.getAmne() != ArendeAmne.KOMPLT || question.getKomplettering().isEmpty()) {
-            return new Complement[0];
-        }
+  private List<Arende> getReminders(List<Arende> relatedArenden) {
+    return relatedArenden.stream().filter(isReminder()).collect(Collectors.toList());
+  }
 
-        return complementConverter.convert(question);
-    }
+  private Arende getAnswer(List<Arende> relatedArenden) {
+    return relatedArenden.stream().filter(isAnswer()).findFirst().orElse(null);
+  }
 
-    private List<Arende> getReminders(List<Arende> relatedArenden) {
-        return relatedArenden.stream()
-            .filter(isReminder())
-            .collect(Collectors.toList());
-    }
+  private ArendeDraft getAnswerDraft(String questionId, Arende question) {
+    return arendeDraftService.getAnswerDraft(question.getIntygsId(), questionId);
+  }
 
-    private Arende getAnswer(List<Arende> relatedArenden) {
-        return relatedArenden.stream()
-            .filter(isAnswer())
-            .findFirst()
-            .orElse(null);
-    }
+  private boolean hasAnswerDraft(ArendeDraft answerDraft) {
+    return answerDraft != null;
+  }
 
-    private ArendeDraft getAnswerDraft(String questionId, Arende question) {
-        return arendeDraftService.getAnswerDraft(question.getIntygsId(), questionId);
-    }
-
-    private boolean hasAnswerDraft(ArendeDraft answerDraft) {
-        return answerDraft != null;
-    }
-
-    private boolean hasAnswer(Arende arendeSvar) {
-        return arendeSvar != null;
-    }
+  private boolean hasAnswer(Arende arendeSvar) {
+    return arendeSvar != null;
+  }
 }

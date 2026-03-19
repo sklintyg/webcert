@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,27 +22,26 @@ import java.util.List;
 
 public class ListFilterSelectConfig extends ListFilterConfig {
 
-    private List<ListFilterConfigValue> values;
+  private List<ListFilterConfigValue> values;
 
-    public ListFilterSelectConfig(String id, String title, List<ListFilterConfigValue> values) {
-        super(ListFilterType.SELECT, id, title);
-        this.values = values;
-    }
+  public ListFilterSelectConfig(String id, String title, List<ListFilterConfigValue> values) {
+    super(ListFilterType.SELECT, id, title);
+    this.values = values;
+  }
 
-    public ListFilterSelectConfig(String id, String title, List<ListFilterConfigValue> values, boolean alwaysHighlighted) {
-        super(ListFilterType.SELECT, id, title, alwaysHighlighted);
-        this.values = values;
-    }
+  public ListFilterSelectConfig(
+      String id, String title, List<ListFilterConfigValue> values, boolean alwaysHighlighted) {
+    super(ListFilterType.SELECT, id, title, alwaysHighlighted);
+    this.values = values;
+  }
 
-    public ListFilterSelectConfig() {
+  public ListFilterSelectConfig() {}
 
-    }
+  public List<ListFilterConfigValue> getValues() {
+    return values;
+  }
 
-    public List<ListFilterConfigValue> getValues() {
-        return values;
-    }
-
-    public void setValues(List<ListFilterConfigValue> values) {
-        this.values = values;
-    }
+  public void setValues(List<ListFilterConfigValue> values) {
+    this.values = values;
+  }
 }

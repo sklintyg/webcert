@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,70 +20,73 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public class TableHeading {
 
-    private ListColumnType id;
-    private String title;
-    private CertificateListItemValueType type;
-    private String description;
-    private boolean defaultAscending;
+  private ListColumnType id;
+  private String title;
+  private CertificateListItemValueType type;
+  private String description;
+  private boolean defaultAscending;
 
+  public TableHeading(
+      ListColumnType id, String title, CertificateListItemValueType type, String description) {
+    this.id = id;
+    this.title = title;
+    this.type = type;
+    this.description = description;
+    this.defaultAscending = true;
+  }
 
-    public TableHeading(ListColumnType id, String title, CertificateListItemValueType type, String description) {
-        this.id = id;
-        this.title = title;
-        this.type = type;
-        this.description = description;
-        this.defaultAscending = true;
-    }
+  public TableHeading(
+      ListColumnType id,
+      String title,
+      CertificateListItemValueType type,
+      String description,
+      boolean defaultAscending) {
+    this.id = id;
+    this.title = title;
+    this.type = type;
+    this.description = description;
+    this.defaultAscending = defaultAscending;
+  }
 
-    public TableHeading(ListColumnType id, String title, CertificateListItemValueType type, String description, boolean defaultAscending) {
-        this.id = id;
-        this.title = title;
-        this.type = type;
-        this.description = description;
-        this.defaultAscending = defaultAscending;
-    }
+  public TableHeading() {}
 
-    public TableHeading() {
+  public ListColumnType getId() {
+    return id;
+  }
 
-    }
+  public void setId(ListColumnType id) {
+    this.id = id;
+  }
 
-    public ListColumnType getId() {
-        return id;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public void setId(ListColumnType id) {
-        this.id = id;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public CertificateListItemValueType getType() {
+    return type;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public void setType(CertificateListItemValueType type) {
+    this.type = type;
+  }
 
-    public CertificateListItemValueType getType() {
-        return type;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setType(CertificateListItemValueType type) {
-        this.type = type;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public boolean isDefaultAscending() {
+    return defaultAscending;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isDefaultAscending() {
-        return defaultAscending;
-    }
-
-    public void setDefaultAscending(boolean defaultAscending) {
-        this.defaultAscending = defaultAscending;
-    }
+  public void setDefaultAscending(boolean defaultAscending) {
+    this.defaultAscending = defaultAscending;
+  }
 }

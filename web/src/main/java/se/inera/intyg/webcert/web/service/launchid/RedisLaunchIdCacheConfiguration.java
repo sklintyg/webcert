@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,17 +28,16 @@ import se.inera.intyg.infra.rediscache.core.RedisCacheOptionsSetter;
 @Configuration
 public class RedisLaunchIdCacheConfiguration {
 
-    @Value("${app.name:webcert}")
-    private String appName;
-    @Value("${redisCacheLaunchId.cache.expiry}")
-    private String launchCacheExpirySeconds;
+  @Value("${app.name:webcert}")
+  private String appName;
 
-    @Autowired
-    private RedisCacheOptionsSetter redisCacheOptionsSetter;
+  @Value("${redisCacheLaunchId.cache.expiry}")
+  private String launchCacheExpirySeconds;
 
-    @Bean
-    public Cache redisCacheLaunchId() {
-        return redisCacheOptionsSetter.createCache("launchId:" + appName, launchCacheExpirySeconds);
-    }
+  @Autowired private RedisCacheOptionsSetter redisCacheOptionsSetter;
 
+  @Bean
+  public Cache redisCacheLaunchId() {
+    return redisCacheOptionsSetter.createCache("launchId:" + appName, launchCacheExpirySeconds);
+  }
 }

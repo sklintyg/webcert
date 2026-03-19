@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,80 +37,78 @@ import java.util.List;
 @Table(name = "FMB_BESKRIVNING")
 public class Beskrivning {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "ID", nullable = false)
+  private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "TYP", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "TYP", nullable = false)
+  private BeskrivningTyp beskrivningTyp;
+
+  @Column(name = "BESKRIVNING", nullable = false)
+  private String beskrivningText;
+
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "BESKRIVNING_ID", nullable = false)
+  private List<IcfKod> icfKodList = Lists.newArrayList();
+
+  protected Beskrivning() {}
+
+  public Beskrivning(
+      final BeskrivningTyp beskrivningTyp,
+      final String beskrivningText,
+      final List<IcfKod> icfKodList) {
+    this.beskrivningTyp = beskrivningTyp;
+    this.beskrivningText = beskrivningText;
+    this.icfKodList = icfKodList;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public BeskrivningTyp getBeskrivningTyp() {
+    return beskrivningTyp;
+  }
+
+  public String getBeskrivningText() {
+    return beskrivningText;
+  }
+
+  public List<IcfKod> getIcfKodList() {
+    return icfKodList;
+  }
+
+  public static final class BeskrivningBuilder {
+
     private BeskrivningTyp beskrivningTyp;
-
-    @Column(name = "BESKRIVNING", nullable = false)
     private String beskrivningText;
+    private List<IcfKod> icfKodList;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "BESKRIVNING_ID", nullable = false)
-    private List<IcfKod> icfKodList = Lists.newArrayList();
+    private BeskrivningBuilder() {}
 
-    protected Beskrivning() {
+    public static BeskrivningBuilder aBeskrivning() {
+      return new BeskrivningBuilder();
     }
 
-    public Beskrivning(
-        final BeskrivningTyp beskrivningTyp,
-        final String beskrivningText,
-        final List<IcfKod> icfKodList) {
-        this.beskrivningTyp = beskrivningTyp;
-        this.beskrivningText = beskrivningText;
-        this.icfKodList = icfKodList;
+    public BeskrivningBuilder beskrivningTyp(BeskrivningTyp beskrivningTyp) {
+      this.beskrivningTyp = beskrivningTyp;
+      return this;
     }
 
-    public Long getId() {
-        return id;
+    public BeskrivningBuilder beskrivningText(String beskrivningText) {
+      this.beskrivningText = beskrivningText;
+      return this;
     }
 
-    public BeskrivningTyp getBeskrivningTyp() {
-        return beskrivningTyp;
+    public BeskrivningBuilder icfKodList(List<IcfKod> icfKodList) {
+      this.icfKodList = icfKodList;
+      return this;
     }
 
-    public String getBeskrivningText() {
-        return beskrivningText;
+    public Beskrivning build() {
+      return new Beskrivning(beskrivningTyp, beskrivningText, icfKodList);
     }
-
-    public List<IcfKod> getIcfKodList() {
-        return icfKodList;
-    }
-
-    public static final class BeskrivningBuilder {
-
-        private BeskrivningTyp beskrivningTyp;
-        private String beskrivningText;
-        private List<IcfKod> icfKodList;
-
-        private BeskrivningBuilder() {
-        }
-
-        public static BeskrivningBuilder aBeskrivning() {
-            return new BeskrivningBuilder();
-        }
-
-        public BeskrivningBuilder beskrivningTyp(BeskrivningTyp beskrivningTyp) {
-            this.beskrivningTyp = beskrivningTyp;
-            return this;
-        }
-
-        public BeskrivningBuilder beskrivningText(String beskrivningText) {
-            this.beskrivningText = beskrivningText;
-            return this;
-        }
-
-        public BeskrivningBuilder icfKodList(List<IcfKod> icfKodList) {
-            this.icfKodList = icfKodList;
-            return this;
-        }
-
-        public Beskrivning build() {
-            return new Beskrivning(beskrivningTyp, beskrivningText, icfKodList);
-        }
-    }
+  }
 }

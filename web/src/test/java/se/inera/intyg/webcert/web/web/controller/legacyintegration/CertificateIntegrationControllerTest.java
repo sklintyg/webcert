@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -49,72 +48,69 @@ import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 @ExtendWith(MockitoExtension.class)
 public class CertificateIntegrationControllerTest {
 
-    private static final String CERTIFICATE_ID = "certificateId";
-    private static final String UNIT_ID = "unitId";
-    private static final String CERTIFICATE_TYPE = "type";
-    private static final String CERTIFICATE_TYPE_VERSION = "typeVersion";
+  private static final String CERTIFICATE_ID = "certificateId";
+  private static final String UNIT_ID = "unitId";
+  private static final String CERTIFICATE_TYPE = "type";
+  private static final String CERTIFICATE_TYPE_VERSION = "typeVersion";
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @Mock
-    private ReactUriFactory reactUriFactory;
+  @Mock private ReactUriFactory reactUriFactory;
 
-    @Mock
-    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  @Mock private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
-    @InjectMocks
-    private CertificateIntegrationController certificateIntegrationController;
+  @InjectMocks private CertificateIntegrationController certificateIntegrationController;
 
-    private UriInfo uriInfo;
-    private WebCertUser webcertUser;
+  private UriInfo uriInfo;
+  private WebCertUser webcertUser;
+
+  @BeforeEach
+  void setup() {
+    final var roles = new HashMap<>();
+    roles.put("LAKARE", new Role());
+    webcertUser = mock(WebCertUser.class);
+    doReturn("NORMAL").when(webcertUser).getOrigin();
+    doReturn(roles).when(webcertUser).getRoles();
+
+    when(webCertUserService.getUser()).thenReturn(webcertUser);
+    when(webcertUser.changeValdVardenhet(any())).thenReturn(true);
+
+    final var mockedSelectableVardenhet = mock(SelectableVardenhet.class);
+    doReturn(mockedSelectableVardenhet).when(webcertUser).getValdVardenhet();
+    doReturn(mockedSelectableVardenhet).when(webcertUser).getValdVardgivare();
+    doReturn(Collections.emptyMap()).when(commonAuthoritiesResolver).getFeatures(anyList());
+  }
+
+  @Nested
+  class ReactTest {
 
     @BeforeEach
     void setup() {
-        final var roles = new HashMap<>();
-        roles.put("LAKARE", new Role());
-        webcertUser = mock(WebCertUser.class);
-        doReturn("NORMAL").when(webcertUser).getOrigin();
-        doReturn(roles).when(webcertUser).getRoles();
-
-        when(webCertUserService.getUser()).thenReturn(webcertUser);
-        when(webcertUser.changeValdVardenhet(any())).thenReturn(true);
-
-        final var mockedSelectableVardenhet = mock(SelectableVardenhet.class);
-        doReturn(mockedSelectableVardenhet).when(webcertUser).getValdVardenhet();
-        doReturn(mockedSelectableVardenhet).when(webcertUser).getValdVardgivare();
-        doReturn(Collections.emptyMap()).when(commonAuthoritiesResolver).getFeatures(anyList());
+      doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
     }
 
-    @Nested
-    class ReactTest {
-
-        @BeforeEach
-        void setup() {
-            doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
-        }
-
-        @Test
-        void shouldUseReactIfFeatureIsActivatedFk7263() {
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
-            verify(reactUriFactory).uriForCertificate(any(), any());
-        }
-
-        @Test
-        void shouldUseReactIfFeatureIsActivated() {
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
-
-            verify(reactUriFactory).uriForCertificate(any(), any());
-        }
-
-        @Test
-        void shouldUpdateFeaturesForLoggedInUser() {
-            certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
-
-            verify(webcertUser).setFeatures(anyMap());
-        }
+    @Test
+    void shouldUseReactIfFeatureIsActivatedFk7263() {
+      certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
+      verify(reactUriFactory).uriForCertificate(any(), any());
     }
+
+    @Test
+    void shouldUseReactIfFeatureIsActivated() {
+      certificateIntegrationController.redirectToIntyg(
+          uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+
+      verify(reactUriFactory).uriForCertificate(any(), any());
+    }
+
+    @Test
+    void shouldUpdateFeaturesForLoggedInUser() {
+      certificateIntegrationController.redirectToIntyg(
+          uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+
+      verify(webcertUser).setFeatures(anyMap());
+    }
+  }
 }

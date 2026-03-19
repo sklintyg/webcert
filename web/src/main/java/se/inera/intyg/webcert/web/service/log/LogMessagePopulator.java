@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,10 +22,8 @@ import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 
-/**
- * Created by eriklupander on 2017-04-24.
- */
+/** Created by eriklupander on 2017-04-24. */
 public interface LogMessagePopulator {
 
-    PdlLogMessage populateLogMessage(PdlLogMessage logMsg, LogRequest logRequest, LogUser user);
+  PdlLogMessage populateLogMessage(PdlLogMessage logMsg, LogRequest logRequest, LogUser user);
 }

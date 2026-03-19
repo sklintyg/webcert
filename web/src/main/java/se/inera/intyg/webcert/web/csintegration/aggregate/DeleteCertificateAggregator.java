@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,22 +25,21 @@ import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 @Service("deleteCertificateAggregator")
 public class DeleteCertificateAggregator implements DeleteCertificateFacadeService {
 
-    private final DeleteCertificateFacadeService deleteCertificateFromWebcert;
-    private final DeleteCertificateFacadeService deleteCertificateFromCertificateService;
+  private final DeleteCertificateFacadeService deleteCertificateFromWebcert;
+  private final DeleteCertificateFacadeService deleteCertificateFromCertificateService;
 
-    public DeleteCertificateAggregator(
-        @Qualifier("deleteCertificateFromWebcert")
-        DeleteCertificateFacadeService deleteCertificateFromWebcert,
-        @Qualifier("deleteCertificateFromCertificateService")
-        DeleteCertificateFacadeService deleteCertificateFromCertificateService) {
-        this.deleteCertificateFromWebcert = deleteCertificateFromWebcert;
-        this.deleteCertificateFromCertificateService = deleteCertificateFromCertificateService;
-    }
+  public DeleteCertificateAggregator(
+      @Qualifier("deleteCertificateFromWebcert") DeleteCertificateFacadeService deleteCertificateFromWebcert,
+      @Qualifier("deleteCertificateFromCertificateService") DeleteCertificateFacadeService deleteCertificateFromCertificateService) {
+    this.deleteCertificateFromWebcert = deleteCertificateFromWebcert;
+    this.deleteCertificateFromCertificateService = deleteCertificateFromCertificateService;
+  }
 
-    @Override
-    public boolean deleteCertificate(String certificateId, long version) {
-        final var responseFromCS = deleteCertificateFromCertificateService.deleteCertificate(certificateId, version);
+  @Override
+  public boolean deleteCertificate(String certificateId, long version) {
+    final var responseFromCS =
+        deleteCertificateFromCertificateService.deleteCertificate(certificateId, version);
 
-        return responseFromCS || deleteCertificateFromWebcert.deleteCertificate(certificateId, version);
-    }
+    return responseFromCS || deleteCertificateFromWebcert.deleteCertificate(certificateId, version);
+  }
 }

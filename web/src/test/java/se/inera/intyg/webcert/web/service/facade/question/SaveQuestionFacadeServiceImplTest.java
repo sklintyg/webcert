@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,64 +38,57 @@ import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter
 @ExtendWith(MockitoExtension.class)
 class SaveQuestionFacadeServiceImplTest {
 
-    public static final String CERTIFICATE_ID = "certificateId";
-    public static final QuestionType QUESTION_TYPE = QuestionType.COORDINATION;
-    public static final String MESSAGE = "message";
-    public static final Long QUESTION_ID = 1000L;
+  public static final String CERTIFICATE_ID = "certificateId";
+  public static final QuestionType QUESTION_TYPE = QuestionType.COORDINATION;
+  public static final String MESSAGE = "message";
+  public static final Long QUESTION_ID = 1000L;
 
-    @Mock
-    private ArendeDraftService arendeDraftService;
+  @Mock private ArendeDraftService arendeDraftService;
 
-    @Mock
-    private QuestionConverter questionConverter;
+  @Mock private QuestionConverter questionConverter;
 
-    @InjectMocks
-    private SaveQuestionFacadeServiceImpl saveQuestionFacadeService;
+  @InjectMocks private SaveQuestionFacadeServiceImpl saveQuestionFacadeService;
 
-    private ArendeDraft questionDraft;
+  private ArendeDraft questionDraft;
 
-    @BeforeEach
-    void setUp() {
-        questionDraft = new ArendeDraft();
-        questionDraft.setId(QUESTION_ID);
-        questionDraft.setAmne(ArendeAmne.AVSTMN.toString());
+  @BeforeEach
+  void setUp() {
+    questionDraft = new ArendeDraft();
+    questionDraft.setId(QUESTION_ID);
+    questionDraft.setAmne(ArendeAmne.AVSTMN.toString());
 
-        doReturn(questionDraft)
-            .when(arendeDraftService)
-            .getQuestionDraftById(QUESTION_ID);
+    doReturn(questionDraft).when(arendeDraftService).getQuestionDraftById(QUESTION_ID);
 
-        doReturn(questionDraft)
-            .when(arendeDraftService)
-            .save(questionDraft);
+    doReturn(questionDraft).when(arendeDraftService).save(questionDraft);
 
-        doReturn(Question.builder().build())
-            .when(questionConverter)
-            .convert(questionDraft);
-    }
+    doReturn(Question.builder().build()).when(questionConverter).convert(questionDraft);
+  }
 
-    @Test
-    void shallSaveQuestion() {
-        final var question = Question.builder()
+  @Test
+  void shallSaveQuestion() {
+    final var question =
+        Question.builder()
             .id(Long.toString(QUESTION_ID))
             .message(MESSAGE)
             .type(QUESTION_TYPE)
             .build();
 
-        final var actualQuestion = saveQuestionFacadeService.save(question);
+    final var actualQuestion = saveQuestionFacadeService.save(question);
 
-        assertNotNull(actualQuestion, "Should return saved question");
-    }
+    assertNotNull(actualQuestion, "Should return saved question");
+  }
 
-    @Test
-    void shallAllowToSaveQuestionWithoutQuestionType() {
-        final var question = Question.builder()
+  @Test
+  void shallAllowToSaveQuestionWithoutQuestionType() {
+    final var question =
+        Question.builder()
             .id(Long.toString(QUESTION_ID))
             .message(MESSAGE)
             .type(QuestionType.MISSING)
             .build();
 
-        final var actualQuestion = saveQuestionFacadeService.save(question);
+    final var actualQuestion = saveQuestionFacadeService.save(question);
 
-        assertNotNull(actualQuestion, "Should return saved question");
-    }
+    assertNotNull(actualQuestion, "Should return saved question");
+  }
 }

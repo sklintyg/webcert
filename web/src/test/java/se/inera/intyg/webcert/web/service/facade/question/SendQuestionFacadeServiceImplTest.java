@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,7 +25,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,90 +45,76 @@ import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter
 @ExtendWith(MockitoExtension.class)
 class SendQuestionFacadeServiceImplTest {
 
-    @Mock
-    private ArendeDraftService arendeDraftService;
+  @Mock private ArendeDraftService arendeDraftService;
 
-    @Mock
-    private ArendeService arendeService;
+  @Mock private ArendeService arendeService;
 
-    @Mock
-    private QuestionConverter questionConverter;
+  @Mock private QuestionConverter questionConverter;
 
-    @InjectMocks
-    private SendQuestionFacadeServiceImpl sendQuestionFacadeService;
+  @InjectMocks private SendQuestionFacadeServiceImpl sendQuestionFacadeService;
 
-    private ArendeDraft questionDraft;
-    private Arende arende;
+  private ArendeDraft questionDraft;
+  private Arende arende;
 
-    private static final QuestionType QUESTION_TYPE = QuestionType.COORDINATION;
-    private final ArendeAmne QUESTION_AMNE = ArendeAmne.AVSTMN;
-    public static final Long QUESTION_ID_AS_LONG = 1000L;
-    private final String QUESTION_ID_AS_STRING = Long.toString(QUESTION_ID_AS_LONG);
-    private final String MESSAGE = "message";
-    private final String SUBJECT = "subject";
-    private final LocalDateTime SENT = LocalDateTime.now();
-    private final LocalDateTime LAST_UPDATE = LocalDateTime.now().minusMinutes(100);
+  private static final QuestionType QUESTION_TYPE = QuestionType.COORDINATION;
+  private final ArendeAmne QUESTION_AMNE = ArendeAmne.AVSTMN;
+  public static final Long QUESTION_ID_AS_LONG = 1000L;
+  private final String QUESTION_ID_AS_STRING = Long.toString(QUESTION_ID_AS_LONG);
+  private final String MESSAGE = "message";
+  private final String SUBJECT = "subject";
+  private final LocalDateTime SENT = LocalDateTime.now();
+  private final LocalDateTime LAST_UPDATE = LocalDateTime.now().minusMinutes(100);
 
+  @BeforeEach
+  void setUp() {
+    questionDraft = new ArendeDraft();
+    questionDraft.setId(QUESTION_ID_AS_LONG);
+    questionDraft.setAmne(ArendeAmne.AVSTMN.toString());
+    doReturn(questionDraft).when(arendeDraftService).getQuestionDraftById(QUESTION_ID_AS_LONG);
 
-    @BeforeEach
-    void setUp() {
-        questionDraft = new ArendeDraft();
-        questionDraft.setId(QUESTION_ID_AS_LONG);
-        questionDraft.setAmne(ArendeAmne.AVSTMN.toString());
-        doReturn(questionDraft).when(arendeDraftService).getQuestionDraftById(QUESTION_ID_AS_LONG);
+    doReturn(new Arende()).when(arendeService).sendMessage(questionDraft);
 
-        doReturn(new Arende())
-            .when(arendeService)
-            .sendMessage(questionDraft);
+    doReturn(Question.builder().build()).when(questionConverter).convert(any(Arende.class));
+  }
 
-        doReturn(Question.builder().build())
-            .when(questionConverter)
-            .convert(any(Arende.class));
-    }
+  @Test
+  void shallSendQuestion() {
+    final var question =
+        Question.builder().id(QUESTION_ID_AS_STRING).message(MESSAGE).type(QUESTION_TYPE).build();
 
-    @Test
-    void shallSendQuestion() {
-        final var question = Question.builder()
-            .id(QUESTION_ID_AS_STRING)
-            .message(MESSAGE)
-            .type(QUESTION_TYPE)
-            .build();
+    final var actualQuestion = sendQuestionFacadeService.send(question);
+    assertNotNull(actualQuestion);
+  }
 
-        final var actualQuestion = sendQuestionFacadeService.send(question);
-        assertNotNull(actualQuestion);
-    }
+  @Test
+  void shallUpdateMessageWhenSendingQuestion() {
+    final var question =
+        Question.builder().id(QUESTION_ID_AS_STRING).message(MESSAGE).type(QUESTION_TYPE).build();
 
-    @Test
-    void shallUpdateMessageWhenSendingQuestion() {
-        final var question = Question.builder()
-            .id(QUESTION_ID_AS_STRING)
-            .message(MESSAGE)
-            .type(QUESTION_TYPE)
-            .build();
+    final var arendeDraftArgumentCaptor = ArgumentCaptor.forClass(ArendeDraft.class);
 
-        final var arendeDraftArgumentCaptor = ArgumentCaptor.forClass(ArendeDraft.class);
+    sendQuestionFacadeService.send(question);
 
-        sendQuestionFacadeService.send(question);
+    verify(arendeService).sendMessage(arendeDraftArgumentCaptor.capture());
 
-        verify(arendeService).sendMessage(arendeDraftArgumentCaptor.capture());
+    assertEquals(MESSAGE, arendeDraftArgumentCaptor.getValue().getText());
+  }
 
-        assertEquals(MESSAGE, arendeDraftArgumentCaptor.getValue().getText());
-    }
-
-    @Test
-    void shallUpdateSubjectWhenSendingQuestion() {
-        final var question = Question.builder()
+  @Test
+  void shallUpdateSubjectWhenSendingQuestion() {
+    final var question =
+        Question.builder()
             .id(QUESTION_ID_AS_STRING)
             .message(MESSAGE)
             .type(QuestionType.OTHER)
             .build();
 
-        final var arendeDraftArgumentCaptor = ArgumentCaptor.forClass(ArendeDraft.class);
+    final var arendeDraftArgumentCaptor = ArgumentCaptor.forClass(ArendeDraft.class);
 
-        sendQuestionFacadeService.send(question);
+    sendQuestionFacadeService.send(question);
 
-        verify(arendeService).sendMessage(arendeDraftArgumentCaptor.capture());
+    verify(arendeService).sendMessage(arendeDraftArgumentCaptor.capture());
 
-        assertEquals(ArendeAmne.OVRIGT.toString(), arendeDraftArgumentCaptor.getValue().getAmne());
-    }
+    assertEquals(ArendeAmne.OVRIGT.toString(), arendeDraftArgumentCaptor.getValue().getAmne());
+  }
 }

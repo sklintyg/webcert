@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,19 +20,19 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 public class SaveCertificateResponseDTO {
 
-    private long version;
+  private long version;
 
-    public static SaveCertificateResponseDTO create(long version) {
-        final SaveCertificateResponseDTO responseDTO = new SaveCertificateResponseDTO();
-        responseDTO.version = version;
-        return responseDTO;
-    }
+  public static SaveCertificateResponseDTO create(long version) {
+    final SaveCertificateResponseDTO responseDTO = new SaveCertificateResponseDTO();
+    responseDTO.version = version;
+    return responseDTO;
+  }
 
-    public long getVersion() {
-        return version;
-    }
+  public long getVersion() {
+    return version;
+  }
 
-    public void setVersion(long version) {
-        this.version = version;
-    }
+  public void setVersion(long version) {
+    this.version = version;
+  }
 }

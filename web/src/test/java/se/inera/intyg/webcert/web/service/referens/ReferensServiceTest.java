@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,46 +36,44 @@ import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository
 @RunWith(MockitoJUnitRunner.class)
 public class ReferensServiceTest {
 
-    private String intygsId = "intygsId";
-    private String referens = "referens";
-    private Referens ref = new Referens();
+  private String intygsId = "intygsId";
+  private String referens = "referens";
+  private Referens ref = new Referens();
 
-    @Mock
-    private ReferensRepository repo;
+  @Mock private ReferensRepository repo;
 
-    @InjectMocks
-    private ReferensService referensService = new ReferensServiceImpl();
+  @InjectMocks private ReferensService referensService = new ReferensServiceImpl();
 
-    @Before
-    public void setup() {
-        ref.setReferens(referens);
-        ref.setIntygsId(intygsId);
-    }
+  @Before
+  public void setup() {
+    ref.setReferens(referens);
+    ref.setIntygsId(intygsId);
+  }
 
-    @Test
-    public void saveReferens() {
-        referensService.saveReferens(intygsId, referens);
-        verify(repo).findByIntygId(intygsId);
-        verify(repo).save(ref);
-    }
+  @Test
+  public void saveReferens() {
+    referensService.saveReferens(intygsId, referens);
+    verify(repo).findByIntygId(intygsId);
+    verify(repo).save(ref);
+  }
 
-    @Test
-    public void getReferensForIntygsId() {
-        when(repo.findByIntygId(intygsId)).thenReturn(ref);
-        String output = referensService.getReferensForIntygsId(intygsId);
-        assertEquals(referens, output);
-    }
+  @Test
+  public void getReferensForIntygsId() {
+    when(repo.findByIntygId(intygsId)).thenReturn(ref);
+    String output = referensService.getReferensForIntygsId(intygsId);
+    assertEquals(referens, output);
+  }
 
-    @Test
-    public void getReferensForIntygsIdReturnsNullWhenDoesntExist() {
-        when(repo.findByIntygId(intygsId)).thenReturn(null);
-        String output = referensService.getReferensForIntygsId(intygsId);
-        assertNull(output);
-    }
+  @Test
+  public void getReferensForIntygsIdReturnsNullWhenDoesntExist() {
+    when(repo.findByIntygId(intygsId)).thenReturn(null);
+    String output = referensService.getReferensForIntygsId(intygsId);
+    assertNull(output);
+  }
 
-    @Test
-    public void referensExists() {
-        when(repo.findByIntygId(intygsId)).thenReturn(ref);
-        assertTrue("Referens not found", referensService.referensExists(intygsId));
-    }
+  @Test
+  public void referensExists() {
+    when(repo.findByIntygId(intygsId)).thenReturn(ref);
+    assertTrue("Referens not found", referensService.referensExists(intygsId));
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,168 +32,193 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @Component
 public class PatientConverterImpl implements PatientConverter {
 
-    private final PatientDetailsResolver patientDetailsResolver;
+  private final PatientDetailsResolver patientDetailsResolver;
 
-    private final WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-    @Autowired
-    public PatientConverterImpl(PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService) {
-        this.patientDetailsResolver = patientDetailsResolver;
-        this.webCertUserService = webCertUserService;
-    }
+  @Autowired
+  public PatientConverterImpl(
+      PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService) {
+    this.patientDetailsResolver = patientDetailsResolver;
+    this.webCertUserService = webCertUserService;
+  }
 
-    @Override
-    public Patient convert(Patient originalPatient, Personnummer patientId, String certificateType,
-        String certificateTypeVersion) {
-        final var patient = patientDetailsResolver.resolvePatient(patientId, certificateType, certificateTypeVersion);
-        final var user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
-        final var parameters = getIntegrationParameters(user);
-        return Patient.builder()
-            .personId(
-                getPersonId(patientId, parameters)
-            )
-            .firstName(getString(patient.getFornamn()))
-            .middleName(getString(patient.getMellannamn()))
-            .lastName(getString(patient.getEfternamn()))
-            .fullName(patient.getFullstandigtNamn())
-            .zipCode(getZipCode(originalPatient, patient))
-            .street(getStreet(originalPatient, patient))
-            .city(getCity(originalPatient, patient))
-            .addressFromPU(patient.isAddressDetailsSourcePU())
-            .testIndicated(patient.isTestIndicator())
-            .protectedPerson(isProtectedPerson(patientId))
-            .deceased(patient.isAvliden())
-            .differentNameFromEHR(isPatientNameDifferent(patient, parameters))
-            .previousPersonId(getPreviousPersonId(patientId, parameters))
-            .personIdChanged(isPatientIdChanged(parameters, patientId))
-            .reserveId(hasReserveId(parameters, patientId))
-            .build();
-    }
+  @Override
+  public Patient convert(
+      Patient originalPatient,
+      Personnummer patientId,
+      String certificateType,
+      String certificateTypeVersion) {
+    final var patient =
+        patientDetailsResolver.resolvePatient(patientId, certificateType, certificateTypeVersion);
+    final var user =
+        webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
+    final var parameters = getIntegrationParameters(user);
+    return Patient.builder()
+        .personId(getPersonId(patientId, parameters))
+        .firstName(getString(patient.getFornamn()))
+        .middleName(getString(patient.getMellannamn()))
+        .lastName(getString(patient.getEfternamn()))
+        .fullName(patient.getFullstandigtNamn())
+        .zipCode(getZipCode(originalPatient, patient))
+        .street(getStreet(originalPatient, patient))
+        .city(getCity(originalPatient, patient))
+        .addressFromPU(patient.isAddressDetailsSourcePU())
+        .testIndicated(patient.isTestIndicator())
+        .protectedPerson(isProtectedPerson(patientId))
+        .deceased(patient.isAvliden())
+        .differentNameFromEHR(isPatientNameDifferent(patient, parameters))
+        .previousPersonId(getPreviousPersonId(patientId, parameters))
+        .personIdChanged(isPatientIdChanged(parameters, patientId))
+        .reserveId(hasReserveId(parameters, patientId))
+        .build();
+  }
 
-    private boolean isPatientIdChanged(IntegrationParameters parameters, Personnummer patientId) {
-        final var personId = isBeforeAlternateSSNSet(parameters)
+  private boolean isPatientIdChanged(IntegrationParameters parameters, Personnummer patientId) {
+    final var personId =
+        isBeforeAlternateSSNSet(parameters)
             ? Personnummer.createPersonnummer(parameters.getBeforeAlternateSsn())
             : Personnummer.createPersonnummer(patientId.getPersonnummer());
 
-        if (personId.isEmpty()) {
-            return false;
-        }
-
-        return isAlternateSSNSet(parameters)
-            && !isPersonIdSameAsAlternateSSN(personId.get(), parameters)
-            && isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
+    if (personId.isEmpty()) {
+      return false;
     }
 
-    private boolean hasReserveId(IntegrationParameters parameters, Personnummer patientId) {
-        return isAlternateSSNSet(parameters)
-            && !isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
-    }
+    return isAlternateSSNSet(parameters)
+        && !isPersonIdSameAsAlternateSSN(personId.get(), parameters)
+        && isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
+  }
 
-    private boolean isValidPersonIdOrCoordinationId(String id) {
-        return Personnummer.createPersonnummer(id).isPresent();
-    }
+  private boolean hasReserveId(IntegrationParameters parameters, Personnummer patientId) {
+    return isAlternateSSNSet(parameters)
+        && !isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
+  }
 
-    private String getString(String s) {
-        return s != null ? s : "";
-    }
+  private boolean isValidPersonIdOrCoordinationId(String id) {
+    return Personnummer.createPersonnummer(id).isPresent();
+  }
 
-    private boolean isBeforeAlternateSSNSet(IntegrationParameters parameters) {
-        return parameters != null && parameters.getBeforeAlternateSsn() != null && !parameters.getBeforeAlternateSsn().equals("");
-    }
+  private String getString(String s) {
+    return s != null ? s : "";
+  }
 
-    private PersonId getPersonId(Personnummer patientId, IntegrationParameters parameters) {
-        final var id = parameters == null || !isAlternateSSNSet(parameters)
-            || isPersonIdSameAsAlternateSSN(patientId, parameters)
+  private boolean isBeforeAlternateSSNSet(IntegrationParameters parameters) {
+    return parameters != null
+        && parameters.getBeforeAlternateSsn() != null
+        && !parameters.getBeforeAlternateSsn().equals("");
+  }
+
+  private PersonId getPersonId(Personnummer patientId, IntegrationParameters parameters) {
+    final var id =
+        parameters == null
+                || !isAlternateSSNSet(parameters)
+                || isPersonIdSameAsAlternateSSN(patientId, parameters)
             ? patientId.getPersonnummerWithDash()
             : parameters.getAlternateSsn();
-        return PersonId.builder()
-            .id(id)
-            .type("PERSON_NUMMER")
-            .build();
+    return PersonId.builder().id(id).type("PERSON_NUMMER").build();
+  }
+
+  private boolean isPersonIdSameAsAlternateSSN(
+      Personnummer patientId, IntegrationParameters parameters) {
+    return parameters != null && compareWithAndWithoutDash(patientId, parameters.getAlternateSsn());
+  }
+
+  private boolean compareWithAndWithoutDash(Personnummer patientId, String patientIdAsString) {
+    return patientId.getPersonnummer().equals(patientIdAsString)
+        || patientId.getPersonnummerWithDash().equals(patientIdAsString);
+  }
+
+  private boolean isPatientNameDifferent(
+      se.inera.intyg.common.support.model.common.internal.Patient patient,
+      IntegrationParameters parameters) {
+    return isNameSentAsParameter(parameters) && isNameDifferent(patient, parameters);
+  }
+
+  private boolean isNameDifferent(
+      se.inera.intyg.common.support.model.common.internal.Patient patient,
+      IntegrationParameters parameters) {
+    final var isFirstNameDifferent =
+        isStringDifferent(patient.getFornamn(), parameters.getFornamn());
+    final var isLastNameDifferent =
+        isStringDifferent(parameters.getEfternamn(), patient.getEfternamn());
+    return isFirstNameDifferent || isLastNameDifferent;
+  }
+
+  private boolean isStringDifferent(String s1, String s2) {
+    return s1 == null || !s1.equals(s2);
+  }
+
+  private boolean isNameSentAsParameter(IntegrationParameters parameters) {
+    return parameters != null
+        && parameters.getFornamn() != null
+        && parameters.getEfternamn() != null;
+  }
+
+  private PersonId getPreviousPersonId(Personnummer patientId, IntegrationParameters parameters) {
+    if (isBeforeAlternateSSNSet(parameters)) {
+      final var personnummer =
+          Personnummer.createPersonnummer(parameters.getBeforeAlternateSsn()).orElse(null);
+      return PersonId.builder()
+          .id(
+              personnummer != null
+                  ? personnummer.getPersonnummerWithDash()
+                  : parameters.getBeforeAlternateSsn())
+          .type("PERSON_NUMMER")
+          .build();
     }
 
-    private boolean isPersonIdSameAsAlternateSSN(Personnummer patientId, IntegrationParameters parameters) {
-        return parameters != null && compareWithAndWithoutDash(patientId, parameters.getAlternateSsn());
+    if (isAlternateSSNSet(parameters)) {
+      return PersonId.builder()
+          .id(patientId.getPersonnummerWithDash())
+          .type("PERSON_NUMMER")
+          .build();
     }
 
-    private boolean compareWithAndWithoutDash(Personnummer patientId, String patientIdAsString) {
-        return patientId.getPersonnummer().equals(patientIdAsString)
-            || patientId.getPersonnummerWithDash().equals(patientIdAsString);
+    return null;
+  }
+
+  private boolean isAlternateSSNSet(IntegrationParameters parameters) {
+    return parameters != null
+        && parameters.getAlternateSsn() != null
+        && !parameters.getAlternateSsn().equals("");
+  }
+
+  private boolean isProtectedPerson(Personnummer patientId) {
+    final var protectedStatus = patientDetailsResolver.getSekretessStatus(patientId);
+    return protectedStatus == SekretessStatus.TRUE || protectedStatus == SekretessStatus.UNDEFINED;
+  }
+
+  private IntegrationParameters getIntegrationParameters(WebCertUser user) {
+    if (user == null) {
+      return null;
     }
+    return user.getParameters();
+  }
 
-    private boolean isPatientNameDifferent(se.inera.intyg.common.support.model.common.internal.Patient patient,
-        IntegrationParameters parameters) {
-        return isNameSentAsParameter(parameters)
-            && isNameDifferent(patient, parameters);
+  private String getZipCode(
+      Patient originalPatient,
+      se.inera.intyg.common.support.model.common.internal.Patient patient) {
+    if (!patient.isAddressDetailsSourcePU()) {
+      return originalPatient.getZipCode();
     }
+    return patient.getPostnummer();
+  }
 
-    private boolean isNameDifferent(se.inera.intyg.common.support.model.common.internal.Patient patient, IntegrationParameters parameters) {
-        final var isFirstNameDifferent = isStringDifferent(patient.getFornamn(), parameters.getFornamn());
-        final var isLastNameDifferent = isStringDifferent(parameters.getEfternamn(), patient.getEfternamn());
-        return isFirstNameDifferent || isLastNameDifferent;
+  private String getStreet(
+      Patient originalPatient,
+      se.inera.intyg.common.support.model.common.internal.Patient patient) {
+    if (!patient.isAddressDetailsSourcePU()) {
+      return originalPatient.getStreet();
     }
+    return patient.getPostadress();
+  }
 
-    private boolean isStringDifferent(String s1, String s2) {
-        return s1 == null || !s1.equals(s2);
+  private String getCity(
+      Patient originalPatient,
+      se.inera.intyg.common.support.model.common.internal.Patient patient) {
+    if (!patient.isAddressDetailsSourcePU()) {
+      return originalPatient.getCity();
     }
-
-    private boolean isNameSentAsParameter(IntegrationParameters parameters) {
-        return parameters != null && parameters.getFornamn() != null && parameters.getEfternamn() != null;
-    }
-
-    private PersonId getPreviousPersonId(Personnummer patientId, IntegrationParameters parameters) {
-        if (isBeforeAlternateSSNSet(parameters)) {
-            final var personnummer = Personnummer.createPersonnummer(parameters.getBeforeAlternateSsn()).orElse(null);
-            return PersonId.builder()
-                .id(personnummer != null ? personnummer.getPersonnummerWithDash() : parameters.getBeforeAlternateSsn())
-                .type("PERSON_NUMMER")
-                .build();
-        }
-
-        if (isAlternateSSNSet(parameters)) {
-            return PersonId.builder()
-                .id(patientId.getPersonnummerWithDash())
-                .type("PERSON_NUMMER")
-                .build();
-        }
-
-        return null;
-    }
-
-    private boolean isAlternateSSNSet(IntegrationParameters parameters) {
-        return parameters != null && parameters.getAlternateSsn() != null && !parameters.getAlternateSsn().equals("");
-    }
-
-    private boolean isProtectedPerson(Personnummer patientId) {
-        final var protectedStatus = patientDetailsResolver.getSekretessStatus(patientId);
-        return protectedStatus == SekretessStatus.TRUE || protectedStatus == SekretessStatus.UNDEFINED;
-    }
-
-    private IntegrationParameters getIntegrationParameters(WebCertUser user) {
-        if (user == null) {
-            return null;
-        }
-        return user.getParameters();
-    }
-
-    private String getZipCode(Patient originalPatient, se.inera.intyg.common.support.model.common.internal.Patient patient) {
-        if (!patient.isAddressDetailsSourcePU()) {
-            return originalPatient.getZipCode();
-        }
-        return patient.getPostnummer();
-    }
-
-    private String getStreet(Patient originalPatient, se.inera.intyg.common.support.model.common.internal.Patient patient) {
-        if (!patient.isAddressDetailsSourcePU()) {
-            return originalPatient.getStreet();
-        }
-        return patient.getPostadress();
-    }
-
-    private String getCity(Patient originalPatient, se.inera.intyg.common.support.model.common.internal.Patient patient) {
-        if (!patient.isAddressDetailsSourcePU()) {
-            return originalPatient.getCity();
-        }
-        return patient.getPostort();
-    }
+    return patient.getPostort();
+  }
 }

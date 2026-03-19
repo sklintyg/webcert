@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -58,185 +58,203 @@ import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 
 public class FmbServiceImplTest {
 
-    @Mock
-    private FmbRepository fmbRepository;
-    @Mock
-    private DiagnosInformationRepository diagnosInformationRepository;
-    @Mock
-    private FmbConsumer fmbConsumer;
-    @Spy
-    private MdcHelper mdcHelper;
+  @Mock private FmbRepository fmbRepository;
+  @Mock private DiagnosInformationRepository diagnosInformationRepository;
+  @Mock private FmbConsumer fmbConsumer;
+  @Spy private MdcHelper mdcHelper;
 
-    @Captor
-    private ArgumentCaptor<List<DiagnosInformation>> fmbCaptor;
+  @Captor private ArgumentCaptor<List<DiagnosInformation>> fmbCaptor;
 
-    @InjectMocks
-    private FmbServiceImpl fmbServiceImpl;
+  @InjectMocks private FmbServiceImpl fmbServiceImpl;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
-    }
+  @Before
+  public void setUp() throws Exception {
+    MockitoAnnotations.openMocks(this);
+  }
 
-    @Test
-    public void testGoldenMaster() throws Exception {
-        //Given
-        ObjectMapper mapper = new ObjectMapper();
-        final URL typfallJson = getClass().getResource("/TypfallStubResponse.json");
-        final Typfall typfall = mapper.readValue(typfallJson, Typfall.class);
-        final URL fmdxInfoJson = getClass().getResource("/FmdxInfoStubResponse.json");
-        final FmdxInformation fmdxInformation = mapper.readValue(fmdxInfoJson, FmdxInformation.class);
-        Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(fmdxInformation);
-        Mockito.when(fmbConsumer.getTypfall()).thenReturn(typfall);
+  @Test
+  public void testGoldenMaster() throws Exception {
+    // Given
+    ObjectMapper mapper = new ObjectMapper();
+    final URL typfallJson = getClass().getResource("/TypfallStubResponse.json");
+    final Typfall typfall = mapper.readValue(typfallJson, Typfall.class);
+    final URL fmdxInfoJson = getClass().getResource("/FmdxInfoStubResponse.json");
+    final FmdxInformation fmdxInformation = mapper.readValue(fmdxInfoJson, FmdxInformation.class);
+    Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
+        .thenReturn(fmdxInformation);
+    Mockito.when(fmbConsumer.getTypfall()).thenReturn(typfall);
 
-        //When
-        fmbServiceImpl.updateData();
+    // When
+    fmbServiceImpl.updateData();
 
-        //Then
-        Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
-        List<DiagnosInformation> fmbCaptorAllValues = fmbCaptor.getValue();
-        assertEquals(116, fmbCaptorAllValues.size());
-    }
+    // Then
+    Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
+    List<DiagnosInformation> fmbCaptorAllValues = fmbCaptor.getValue();
+    assertEquals(116, fmbCaptorAllValues.size());
+  }
 
-    private long getCount(List<Fmb> fmbCaptorAllValues, FmbType aktivitetsbegransning) {
-        return fmbCaptorAllValues.stream().filter(fmb -> fmb.getTyp().equals(aktivitetsbegransning)).count();
-    }
+  private long getCount(List<Fmb> fmbCaptorAllValues, FmbType aktivitetsbegransning) {
+    return fmbCaptorAllValues.stream()
+        .filter(fmb -> fmb.getTyp().equals(aktivitetsbegransning))
+        .count();
+  }
 
-    @Test
-    public void testThatDotsInIcd10CodesAreRemoved() throws Exception {
-        //Given
-//        Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation("", "J22.2", "J22.4"));
+  @Test
+  public void testThatDotsInIcd10CodesAreRemoved() throws Exception {
+    // Given
+    //
+    // Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation("", "J22.2", "J22.4"));
 
-        doReturn(createFmdxInformation("", "J22.2", "J22.4")).when(fmbConsumer).getForsakringsmedicinskDiagnosinformation();
-        Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("", "J22.2", "J22.4"));
+    doReturn(createFmdxInformation("", "J22.2", "J22.4"))
+        .when(fmbConsumer)
+        .getForsakringsmedicinskDiagnosinformation();
+    Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("", "J22.2", "J22.4"));
 
-        //When
-        fmbServiceImpl.updateData();
+    // When
+    fmbServiceImpl.updateData();
 
-        //Then
-        Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
-        List<List<DiagnosInformation>> fmbCaptorAllValues = fmbCaptor.getAllValues();
-        assertEquals("J222", fmbCaptorAllValues.get(0).get(0).getIcd10KodList().get(0).getKod());
-        assertEquals("J224", fmbCaptorAllValues.get(0).get(0).getIcd10KodList().get(1).getKod());
-    }
+    // Then
+    Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
+    List<List<DiagnosInformation>> fmbCaptorAllValues = fmbCaptor.getAllValues();
+    assertEquals("J222", fmbCaptorAllValues.get(0).get(0).getIcd10KodList().get(0).getKod());
+    assertEquals("J224", fmbCaptorAllValues.get(0).get(0).getIcd10KodList().get(1).getKod());
+  }
 
-    @Test
-    public void testUpdateDiagnosInfoUpdatesCorrectlyOnEmptyDb() throws Exception {
-        //Given
-        final String beskrivning = "test";
-        Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation(beskrivning, "J22"));
-        Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("", "J22"));
+  @Test
+  public void testUpdateDiagnosInfoUpdatesCorrectlyOnEmptyDb() throws Exception {
+    // Given
+    final String beskrivning = "test";
+    Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
+        .thenReturn(createFmdxInformation(beskrivning, "J22"));
+    Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("", "J22"));
 
-        //When
-        fmbServiceImpl.updateData();
+    // When
+    fmbServiceImpl.updateData();
 
-        //Then
-        Mockito.verify(diagnosInformationRepository, times(1)).deleteAll();
-        Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
-        assertEquals(1, fmbCaptor.getValue().size());
-        assertEquals(beskrivning, fmbCaptor.getValue().get(0).getBeskrivningList().stream()
+    // Then
+    Mockito.verify(diagnosInformationRepository, times(1)).deleteAll();
+    Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
+    assertEquals(1, fmbCaptor.getValue().size());
+    assertEquals(
+        beskrivning,
+        fmbCaptor.getValue().get(0).getBeskrivningList().stream()
             .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
-            .collect(MoreCollectors.onlyElement()).getBeskrivningText());
-    }
+            .collect(MoreCollectors.onlyElement())
+            .getBeskrivningText());
+  }
 
-    @Test
-    public void testUpdateDiagnosInfoUpdatesCorrectlyOnNonEmptyDb() throws Exception {
-        //Given
-        final String beskrivning = "test";
-        Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation(beskrivning, "J22"));
-        Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("Testunderlag", "J22"));
+  @Test
+  public void testUpdateDiagnosInfoUpdatesCorrectlyOnNonEmptyDb() throws Exception {
+    // Given
+    final String beskrivning = "test";
+    Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
+        .thenReturn(createFmdxInformation(beskrivning, "J22"));
+    Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("Testunderlag", "J22"));
 
-        //When
-        fmbServiceImpl.updateData();
+    // When
+    fmbServiceImpl.updateData();
 
-        //Then
-        Mockito.verify(diagnosInformationRepository, times(1)).deleteAll();
-        Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
-        assertEquals(1, fmbCaptor.getValue().size());
-        assertEquals(beskrivning, fmbCaptor.getValue().get(0).getBeskrivningList().stream()
+    // Then
+    Mockito.verify(diagnosInformationRepository, times(1)).deleteAll();
+    Mockito.verify(diagnosInformationRepository, times(1)).saveAll(fmbCaptor.capture());
+    assertEquals(1, fmbCaptor.getValue().size());
+    assertEquals(
+        beskrivning,
+        fmbCaptor.getValue().get(0).getBeskrivningList().stream()
             .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
-            .collect(MoreCollectors.onlyElement()).getBeskrivningText());
+            .collect(MoreCollectors.onlyElement())
+            .getBeskrivningText());
+  }
+
+  @Test
+  public void testUpdateDiagnosInfoWillNotBeDoneIfTypfallCouldNotBeFetched() throws Exception {
+    // Given
+    final String beskrivning = "test";
+    Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
+        .thenReturn(createFmdxInformation(beskrivning, "J22"));
+    Mockito.when(fmbConsumer.getTypfall()).thenReturn(null);
+
+    // When
+    fmbServiceImpl.updateData();
+
+    // Then
+    Mockito.verify(diagnosInformationRepository, times(0)).deleteAll();
+    Mockito.verify(diagnosInformationRepository, times(0)).saveAll(fmbCaptor.capture());
+  }
+
+  @Test
+  public void testUpdateDiagnosInfoWillNotBeDoneIfFmdxInfoCouldNotBeFetched() throws Exception {
+    // Given
+    final String beskrivning = "test";
+    Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(null);
+    Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("", "J22"));
+
+    // When
+    fmbServiceImpl.updateData();
+
+    // Then
+    Mockito.verify(diagnosInformationRepository, times(0)).deleteAllInBatch();
+    Mockito.verify(diagnosInformationRepository, times(0)).saveAll(fmbCaptor.capture());
+  }
+
+  private Fmb createFmbDi(String icd10, String text) {
+    return new Fmb(
+        icd10, FmbType.FUNKTIONSNEDSATTNING, FmbCallType.DIAGNOSINFORMATION, text, "unknown");
+  }
+
+  private Fmb findFmbType(FmbType fmbType, List<Fmb> fmbs) {
+    for (Fmb fmb : fmbs) {
+      if (fmbType.equals(fmb.getTyp())) {
+        return fmb;
+      }
     }
+    throw new RuntimeException("Could not find Fmb with type: " + fmbType);
+  }
 
-    @Test
-    public void testUpdateDiagnosInfoWillNotBeDoneIfTypfallCouldNotBeFetched() throws Exception {
-        //Given
-        final String beskrivning = "test";
-        Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation(beskrivning, "J22"));
-        Mockito.when(fmbConsumer.getTypfall()).thenReturn(null);
+  private FmdxInformation createFmdxInformation(
+      String funktionsnedsattningBeskrivning, String... icd10Codes) {
+    final FmdxInformation fmdxInformation = new FmdxInformation();
+    final ArrayList<FmdxData> data = new ArrayList<>();
+    fmdxInformation.setData(data);
+    final FmdxData fmdxData = new FmdxData();
+    data.add(fmdxData);
+    final se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes attributes =
+        new se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes();
+    fmdxData.setAttributes(attributes);
+    attributes.setDiagnoskod(
+        Arrays.stream(icd10Codes)
+            .map(
+                dx -> {
+                  final Kod kod = new Kod();
+                  kod.setKod(dx);
+                  return kod;
+                })
+            .collect(Collectors.toList()));
+    final Funktionsnedsattning funktionsnedsattning = new Funktionsnedsattning();
+    funktionsnedsattning.setBeskrivning(funktionsnedsattningBeskrivning);
+    attributes.setFunktionsnedsattning(funktionsnedsattning);
+    return fmdxInformation;
+  }
 
-        //When
-        fmbServiceImpl.updateData();
-
-        //Then
-        Mockito.verify(diagnosInformationRepository, times(0)).deleteAll();
-        Mockito.verify(diagnosInformationRepository, times(0)).saveAll(fmbCaptor.capture());
-
-    }
-
-    @Test
-    public void testUpdateDiagnosInfoWillNotBeDoneIfFmdxInfoCouldNotBeFetched() throws Exception {
-        //Given
-        final String beskrivning = "test";
-        Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(null);
-        Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("", "J22"));
-
-        //When
-        fmbServiceImpl.updateData();
-
-        //Then
-        Mockito.verify(diagnosInformationRepository, times(0)).deleteAllInBatch();
-        Mockito.verify(diagnosInformationRepository, times(0)).saveAll(fmbCaptor.capture());
-    }
-
-    private Fmb createFmbDi(String icd10, String text) {
-        return new Fmb(icd10, FmbType.FUNKTIONSNEDSATTNING, FmbCallType.DIAGNOSINFORMATION, text, "unknown");
-    }
-
-    private Fmb findFmbType(FmbType fmbType, List<Fmb> fmbs) {
-        for (Fmb fmb : fmbs) {
-            if (fmbType.equals(fmb.getTyp())) {
-                return fmb;
-            }
-        }
-        throw new RuntimeException("Could not find Fmb with type: " + fmbType);
-    }
-
-    private FmdxInformation createFmdxInformation(String funktionsnedsattningBeskrivning, String... icd10Codes) {
-        final FmdxInformation fmdxInformation = new FmdxInformation();
-        final ArrayList<FmdxData> data = new ArrayList<>();
-        fmdxInformation.setData(data);
-        final FmdxData fmdxData = new FmdxData();
-        data.add(fmdxData);
-        final se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes attributes = new se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes();
-        fmdxData.setAttributes(attributes);
-        attributes.setDiagnoskod(Arrays.stream(icd10Codes).map(dx -> {
-            final Kod kod = new Kod();
-            kod.setKod(dx);
-            return kod;
-        }).collect(Collectors.toList()));
-        final Funktionsnedsattning funktionsnedsattning = new Funktionsnedsattning();
-        funktionsnedsattning.setBeskrivning(funktionsnedsattningBeskrivning);
-        attributes.setFunktionsnedsattning(funktionsnedsattning);
-        return fmdxInformation;
-    }
-
-    private Typfall createTypfall(String underlag, String... icd10Codes) {
-        final Typfall typfall = new Typfall();
-        final ArrayList<TypfallData> data = new ArrayList<>();
-        typfall.setData(data);
-        final TypfallData typfallData = new TypfallData();
-        final Attributes attributes = new Attributes();
-        typfallData.setAttributes(attributes);
-        attributes.setTypfallsmening(underlag);
-        final Fmbtillstand fmbtillstand = new Fmbtillstand();
-        attributes.setFmbtillstand(fmbtillstand);
-        fmbtillstand.setDiagnoskod(Arrays.stream(icd10Codes).map(dx -> {
-            final Kod kod = new Kod();
-            kod.setKod(dx);
-            return kod;
-        }).collect(Collectors.toList()));
-        return typfall;
-    }
-
+  private Typfall createTypfall(String underlag, String... icd10Codes) {
+    final Typfall typfall = new Typfall();
+    final ArrayList<TypfallData> data = new ArrayList<>();
+    typfall.setData(data);
+    final TypfallData typfallData = new TypfallData();
+    final Attributes attributes = new Attributes();
+    typfallData.setAttributes(attributes);
+    attributes.setTypfallsmening(underlag);
+    final Fmbtillstand fmbtillstand = new Fmbtillstand();
+    attributes.setFmbtillstand(fmbtillstand);
+    fmbtillstand.setDiagnoskod(
+        Arrays.stream(icd10Codes)
+            .map(
+                dx -> {
+                  final Kod kod = new Kod();
+                  kod.setKod(dx);
+                  return kod;
+                })
+            .collect(Collectors.toList()));
+    return typfall;
+  }
 }

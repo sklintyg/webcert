@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,60 +39,61 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @Service
 public class ITIntegrationServiceImpl implements ITIntegrationService {
 
-    @Bean("itRestTemplate")
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
+  @Bean("itRestTemplate")
+  public RestTemplate restTemplate() {
+    return new RestTemplate();
+  }
+
+  @Autowired
+  @Qualifier("itRestTemplate") private RestTemplate restTemplate;
+
+  @Value("${intygstjanst.base.url}")
+  private String intygstjanstenUrl;
+
+  @Override
+  public List<MessageFromIT> findMessagesByCertificateId(String certificateId) {
+    final var url = intygstjanstenUrl + "/internalapi/message/" + certificateId;
+    try {
+      return Arrays.asList(restTemplate.getForObject(url, MessageFromIT[].class));
+    } catch (HttpClientErrorException ex) {
+      if (ex.getStatusCode() != HttpStatus.NOT_FOUND) {
+        throw ex;
+      }
+      return Collections.emptyList();
     }
+  }
 
-    @Autowired
-    @Qualifier("itRestTemplate")
-    private RestTemplate restTemplate;
-
-    @Value("${intygstjanst.base.url}")
-    private String intygstjanstenUrl;
-
-    @Override
-    public List<MessageFromIT> findMessagesByCertificateId(String certificateId) {
-        final var url = intygstjanstenUrl + "/internalapi/message/" + certificateId;
-        try {
-            return Arrays.asList(restTemplate.getForObject(url, MessageFromIT[].class));
-        } catch (HttpClientErrorException ex) {
-            if (ex.getStatusCode() != HttpStatus.NOT_FOUND) {
-                throw ex;
-            }
-            return Collections.emptyList();
-        }
+  @Override
+  public ItIntygInfo getCertificateInfo(String certificateId) {
+    final var url = intygstjanstenUrl + "/internalapi/intygInfo/" + certificateId;
+    try {
+      return restTemplate.getForObject(url, ItIntygInfo.class);
+    } catch (HttpClientErrorException ex) {
+      return new ItIntygInfo();
     }
+  }
 
-    @Override
-    public ItIntygInfo getCertificateInfo(String certificateId) {
-        final var url = intygstjanstenUrl + "/internalapi/intygInfo/" + certificateId;
-        try {
-            return restTemplate.getForObject(url, ItIntygInfo.class);
-        } catch (HttpClientErrorException ex) {
-            return new ItIntygInfo();
-        }
-    }
+  @Override
+  public CertificateListResponse getCertificatesForDoctor(
+      QueryIntygParameter queryParam, Set<String> types) {
+    final String url = intygstjanstenUrl + "/internalapi/certificatelist/certificates/doctor";
+    CertificateListRequest requestObject = getCertificateListRequest(queryParam, types);
+    return restTemplate.postForObject(url, requestObject, CertificateListResponse.class);
+  }
 
-    @Override
-    public CertificateListResponse getCertificatesForDoctor(QueryIntygParameter queryParam, Set<String> types) {
-        final String url = intygstjanstenUrl + "/internalapi/certificatelist/certificates/doctor";
-        CertificateListRequest requestObject = getCertificateListRequest(queryParam, types);
-        return restTemplate.postForObject(url, requestObject, CertificateListResponse.class);
-    }
-
-    private CertificateListRequest getCertificateListRequest(QueryIntygParameter queryParam, Set<String> types) {
-        CertificateListRequest requestObject = new CertificateListRequest();
-        requestObject.setHsaId(queryParam.getHsaId());
-        requestObject.setCivicRegistrationNumber(queryParam.getPatientId());
-        requestObject.setUnitIds(queryParam.getUnitIds());
-        requestObject.setToDate(queryParam.getSignedTo());
-        requestObject.setFromDate(queryParam.getSignedFrom());
-        requestObject.setOrderBy(queryParam.getOrderBy());
-        requestObject.setOrderAscending(queryParam.getOrderAscending());
-        requestObject.setStartFrom(queryParam.getStartFrom());
-        requestObject.setPageSize(queryParam.getPageSize());
-        requestObject.setTypes(types);
-        return requestObject;
-    }
+  private CertificateListRequest getCertificateListRequest(
+      QueryIntygParameter queryParam, Set<String> types) {
+    CertificateListRequest requestObject = new CertificateListRequest();
+    requestObject.setHsaId(queryParam.getHsaId());
+    requestObject.setCivicRegistrationNumber(queryParam.getPatientId());
+    requestObject.setUnitIds(queryParam.getUnitIds());
+    requestObject.setToDate(queryParam.getSignedTo());
+    requestObject.setFromDate(queryParam.getSignedFrom());
+    requestObject.setOrderBy(queryParam.getOrderBy());
+    requestObject.setOrderAscending(queryParam.getOrderAscending());
+    requestObject.setStartFrom(queryParam.getStartFrom());
+    requestObject.setPageSize(queryParam.getPageSize());
+    requestObject.setTypes(types);
+    return requestObject;
+  }
 }

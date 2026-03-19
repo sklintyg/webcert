@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,29 +22,29 @@ import se.inera.intyg.common.support.facade.model.user.User;
 
 public class UserResponseDTO {
 
-    private User user;
-    private ResourceLinkDTO[] links;
+  private User user;
+  private ResourceLinkDTO[] links;
 
-    public static UserResponseDTO create(User user, ResourceLinkDTO[] links) {
-        final var userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setUser(user);
-        userResponseDTO.setLinks(links);
-        return userResponseDTO;
-    }
+  public static UserResponseDTO create(User user, ResourceLinkDTO[] links) {
+    final var userResponseDTO = new UserResponseDTO();
+    userResponseDTO.setUser(user);
+    userResponseDTO.setLinks(links);
+    return userResponseDTO;
+  }
 
-    public User getUser() {
-        return user;
-    }
+  public User getUser() {
+    return user;
+  }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+  public void setUser(User user) {
+    this.user = user;
+  }
 
-    public ResourceLinkDTO[] getLinks() {
-        return links;
-    }
+  public ResourceLinkDTO[] getLinks() {
+    return links;
+  }
 
-    public void setLinks(ResourceLinkDTO[] links) {
-        this.links = links;
-    }
+  public void setLinks(ResourceLinkDTO[] links) {
+    this.links = links;
+  }
 }

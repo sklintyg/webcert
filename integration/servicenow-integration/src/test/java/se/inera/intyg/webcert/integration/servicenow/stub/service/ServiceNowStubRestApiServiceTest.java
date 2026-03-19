@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.servicenow.stub.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,230 +40,243 @@ import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.Service
 @ExtendWith(MockitoExtension.class)
 class ServiceNowStubRestApiServiceTest {
 
-    @Spy
-    private ServiceNowStubState stubState;
+  @Spy private ServiceNowStubState stubState;
 
-    @InjectMocks
-    ServiceNowStubRestApiService serviceNowStubRestApiService;
+  @InjectMocks ServiceNowStubRestApiService serviceNowStubRestApiService;
 
-    private static final String BASIC_AUTH = "Basic ";
-    private static final List<String> SERVICES = List.of("Webcert-tj", "Webcert-int");
-    private static final String SERVICE_CODE_1 = "SERVICE_CODE_1";
-    private static final String SERVICE_CODE_2 = "SERVICE_CODE_2";
-    private static final String ORGANIZATION_NUMBER_1 = "ORGANIZATION_NUMBER_1";
-    private static final String ORGANIZATION_NUMBER_2 = "ORGANIZATION_NUMBER_2";
-    private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert fristående med e-legitimation");
-    private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert fristående med SITHS-kort", "Webcert Integrerad - via agent",
-        "Webcert Integrerad - via region", "Webcert integrerad - direktanslutning");
+  private static final String BASIC_AUTH = "Basic ";
+  private static final List<String> SERVICES = List.of("Webcert-tj", "Webcert-int");
+  private static final String SERVICE_CODE_1 = "SERVICE_CODE_1";
+  private static final String SERVICE_CODE_2 = "SERVICE_CODE_2";
+  private static final String ORGANIZATION_NUMBER_1 = "ORGANIZATION_NUMBER_1";
+  private static final String ORGANIZATION_NUMBER_2 = "ORGANIZATION_NUMBER_2";
+  private static final List<String> ELEG_SERVICE_CODES =
+      List.of("Webcert fristående med e-legitimation");
+  private static final List<String> SITHS_SERVICE_CODES =
+      List.of(
+          "Webcert fristående med SITHS-kort",
+          "Webcert Integrerad - via agent",
+          "Webcert Integrerad - via region",
+          "Webcert integrerad - direktanslutning");
 
-    @BeforeEach
-    public void setup() {
-        ReflectionTestUtils.setField(stubState, ServiceNowStubState.class, "elegServiceCodes",
-            ELEG_SERVICE_CODES, List.class);
-        ReflectionTestUtils.setField(stubState, ServiceNowStubState.class, "sithsServiceCodes",
-            SITHS_SERVICE_CODES, List.class);
-    }
+  @BeforeEach
+  public void setup() {
+    ReflectionTestUtils.setField(
+        stubState, ServiceNowStubState.class, "elegServiceCodes", ELEG_SERVICE_CODES, List.class);
+    ReflectionTestUtils.setField(
+        stubState, ServiceNowStubState.class, "sithsServiceCodes", SITHS_SERVICE_CODES, List.class);
+  }
 
-    @Test
-    void shouldReturnOneServiceCodeWhenOneSubscriptionExists() {
-        final var activeSubscriptions = createActiveSubscriptions();
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnOneServiceCodeWhenOneSubscriptionExists() {
+    final var activeSubscriptions = createActiveSubscriptions();
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(0);
-        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+    when(stubState.getHttpErrorCode()).thenReturn(0);
+    when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
-            final var organizations = response.readEntity(OrganizationResponse.class).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            final var serviceCodeList = organizations.getFirst().getServiceCodes();
-            assertEquals(1, organizations.size());
-            assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
-            assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
-        }
+      final var serviceCodeList = organizations.getFirst().getServiceCodes();
+      assertEquals(1, organizations.size());
+      assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
+      assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
     }
+  }
 
-    @Test
-    void shouldReturnTwoServiceCodesWhenTwoSubscriptionsExists() {
-        final var activeSubscriptions = createActiveSubscriptions();
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnTwoServiceCodesWhenTwoSubscriptionsExists() {
+    final var activeSubscriptions = createActiveSubscriptions();
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_2))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(0);
-        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+    when(stubState.getHttpErrorCode()).thenReturn(0);
+    when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
-            final var organizations = response.readEntity(OrganizationResponse.class).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            final var serviceCodeList = organizations.getFirst().getServiceCodes();
-            assertEquals(1, organizations.size());
-            assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
-            assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
-            assertTrue(serviceCodeList.contains(SERVICE_CODE_2));
-        }
+      final var serviceCodeList = organizations.getFirst().getServiceCodes();
+      assertEquals(1, organizations.size());
+      assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
+      assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
+      assertTrue(serviceCodeList.contains(SERVICE_CODE_2));
     }
+  }
 
-    @Test
-    void shouldReturnEmptyServiceCodeListWhenNoSubscriptionExists() {
-        final var activeSubscriptions = createActiveSubscriptions();
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnEmptyServiceCodeListWhenNoSubscriptionExists() {
+    final var activeSubscriptions = createActiveSubscriptions();
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of("ORGANIZATION_NUMBER_3"))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(0);
-        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+    when(stubState.getHttpErrorCode()).thenReturn(0);
+    when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
-            final var organizations = response.readEntity(OrganizationResponse.class).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            assertEquals(1, organizations.size());
-            assertEquals("ORGANIZATION_NUMBER_3", organizations.getFirst().getOrganizationNumber());
-            assertTrue(organizations.getFirst().getServiceCodes().isEmpty());
-        }
+      assertEquals(1, organizations.size());
+      assertEquals("ORGANIZATION_NUMBER_3", organizations.getFirst().getOrganizationNumber());
+      assertTrue(organizations.getFirst().getServiceCodes().isEmpty());
     }
+  }
 
-    @Test
-    void shouldReturnTwoOrganizationsWithServiceCodesWhenBothHaveSubscription() {
-        final var activeSubscriptions = createActiveSubscriptions();
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnTwoOrganizationsWithServiceCodesWhenBothHaveSubscription() {
+    final var activeSubscriptions = createActiveSubscriptions();
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1, ORGANIZATION_NUMBER_2))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(0);
-        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+    when(stubState.getHttpErrorCode()).thenReturn(0);
+    when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
-            final var organizations = response.readEntity(OrganizationResponse.class).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            final var serviceCodeList1 = organizations.getFirst().getServiceCodes();
-            final var serviceCodeList2 = organizations.get(1).getServiceCodes();
-            assertEquals(2, organizations.size());
-            assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
-            assertEquals(ORGANIZATION_NUMBER_2, organizations.get(1).getOrganizationNumber());
-            assertEquals(1, serviceCodeList1.size());
-            assertEquals(2, serviceCodeList2.size());
-        }
+      final var serviceCodeList1 = organizations.getFirst().getServiceCodes();
+      final var serviceCodeList2 = organizations.get(1).getServiceCodes();
+      assertEquals(2, organizations.size());
+      assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
+      assertEquals(ORGANIZATION_NUMBER_2, organizations.get(1).getOrganizationNumber());
+      assertEquals(1, serviceCodeList1.size());
+      assertEquals(2, serviceCodeList2.size());
     }
+  }
 
-    @Test
-    void shouldReturnTwoOrganizationsWhenOneHaveSubscription() {
-        final var activeSubscriptions = createActiveSubscriptions();
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnTwoOrganizationsWhenOneHaveSubscription() {
+    final var activeSubscriptions = createActiveSubscriptions();
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_2, "ORGANIZATION_NUMBER_3"))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(0);
-        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+    when(stubState.getHttpErrorCode()).thenReturn(0);
+    when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
-            final var organizations = response.readEntity(OrganizationResponse.class).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            assertEquals(2, organizations.size());
-            assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
-            assertEquals("ORGANIZATION_NUMBER_3", organizations.get(1).getOrganizationNumber());
-            assertEquals(2, organizations.getFirst().getServiceCodes().size());
-            assertTrue(organizations.get(1).getServiceCodes().isEmpty());
-        }
+      assertEquals(2, organizations.size());
+      assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
+      assertEquals("ORGANIZATION_NUMBER_3", organizations.get(1).getOrganizationNumber());
+      assertEquals(2, organizations.getFirst().getServiceCodes().size());
+      assertTrue(organizations.get(1).getServiceCodes().isEmpty());
     }
+  }
 
-    @Test
-    void shouldReturnAllServiceCodesWhenActiveSubcriptionsIsEmptyAndReturnValueIsTrue() {
-        final var activeSubscriptions = new HashMap<String, List<String>>();
-        final var setReturnValue = true;
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnAllServiceCodesWhenActiveSubcriptionsIsEmptyAndReturnValueIsTrue() {
+    final var activeSubscriptions = new HashMap<String, List<String>>();
+    final var setReturnValue = true;
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(0);
-        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
-        when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
-        when(stubState.getServiceCodeList()).thenReturn(List.of(SERVICE_CODE_1, SERVICE_CODE_2, "SERVICE_CODE_3"));
+    when(stubState.getHttpErrorCode()).thenReturn(0);
+    when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+    when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
+    when(stubState.getServiceCodeList())
+        .thenReturn(List.of(SERVICE_CODE_1, SERVICE_CODE_2, "SERVICE_CODE_3"));
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
-            final var organizations = response.readEntity(OrganizationResponse.class).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            assertEquals(1, organizations.size());
-            assertEquals(3, organizations.getFirst().getServiceCodes().size());
-        }
+      assertEquals(1, organizations.size());
+      assertEquals(3, organizations.getFirst().getServiceCodes().size());
     }
+  }
 
-    @Test
-    void shouldReturnNoServiceCodesWhenActiveSubcriptionsIsEmptyAndReturnValueIsFalse() {
-        final var activeSubscriptions = new HashMap<String, List<String>>();
-        final var setReturnValue = false;
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnNoServiceCodesWhenActiveSubcriptionsIsEmptyAndReturnValueIsFalse() {
+    final var activeSubscriptions = new HashMap<String, List<String>>();
+    final var setReturnValue = false;
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(0);
-        when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
-        when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
+    when(stubState.getHttpErrorCode()).thenReturn(0);
+    when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
+    when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
-            final var organizations = response.readEntity(OrganizationResponse.class).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            assertEquals(1, organizations.size());
-            assertEquals(0, organizations.getFirst().getServiceCodes().size());
-        }
+      assertEquals(1, organizations.size());
+      assertEquals(0, organizations.getFirst().getServiceCodes().size());
     }
+  }
 
-    @Test
-    void shouldReturnNullErrorResponseWhenErrorSet() {
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnNullErrorResponseWhenErrorSet() {
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(403);
+    when(stubState.getHttpErrorCode()).thenReturn(403);
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
 
-            assertEquals(Status.FORBIDDEN, response.getStatusInfo().toEnum());
-        }
+      assertEquals(Status.FORBIDDEN, response.getStatusInfo().toEnum());
     }
+  }
 
-    @Test
-    void shouldReturnError500WhenHttpErrorSetToUnknown() {
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnError500WhenHttpErrorSetToUnknown() {
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
-        when(stubState.getHttpErrorCode()).thenReturn(777);
+    when(stubState.getHttpErrorCode()).thenReturn(777);
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
-            organizationRequest)) {
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
 
-            assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
-        }
+      assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
     }
+  }
 
-    @Test
-    void shouldReturnBadRequestIfNoAuthorizationHeader() {
-        final var organizationRequest = OrganizationRequest.builder()
+  @Test
+  void shouldReturnBadRequestIfNoAuthorizationHeader() {
+    final var organizationRequest =
+        OrganizationRequest.builder()
             .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
 
-        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(null,
-            organizationRequest)) {
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(null, organizationRequest)) {
 
-            assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
-        }
+      assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
     }
+  }
 
-    private Map<String, List<String>> createActiveSubscriptions() {
-        return Map.of(
-            ORGANIZATION_NUMBER_1, List.of(SERVICE_CODE_1),
-            ORGANIZATION_NUMBER_2, List.of(SERVICE_CODE_1, SERVICE_CODE_2)
-        );
-    }
+  private Map<String, List<String>> createActiveSubscriptions() {
+    return Map.of(
+        ORGANIZATION_NUMBER_1, List.of(SERVICE_CODE_1),
+        ORGANIZATION_NUMBER_2, List.of(SERVICE_CODE_1, SERVICE_CODE_2));
+  }
 }

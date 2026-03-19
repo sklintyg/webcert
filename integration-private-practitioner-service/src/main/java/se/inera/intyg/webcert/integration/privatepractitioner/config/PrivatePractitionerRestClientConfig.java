@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.integration.privatepractitioner.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,15 +28,15 @@ import org.springframework.web.client.RestClient;
 @ComponentScan(basePackages = {"se.inera.intyg.webcert.integration.privatepractitioner"})
 public class PrivatePractitionerRestClientConfig {
 
-    @Value("${privatepractitionerservice.base.url}")
-    private String privatePractitionerServiceBaseUrl;
-    public static final String CONFIG_PATH = "/configuration";
-    public static final String VALIDATE_PATH = "/validate";
-    public static final String HOSP_INFO_PATH = "/hosp";
+  @Value("${privatepractitionerservice.base.url}")
+  private String privatePractitionerServiceBaseUrl;
 
-    @Bean(name = "ppsRestClient")
-    public RestClient ppsRestClient() {
-        return RestClient.create(privatePractitionerServiceBaseUrl);
-    }
+  public static final String CONFIG_PATH = "/configuration";
+  public static final String VALIDATE_PATH = "/validate";
+  public static final String HOSP_INFO_PATH = "/hosp";
 
+  @Bean(name = "ppsRestClient")
+  public RestClient ppsRestClient() {
+    return RestClient.create(privatePractitionerServiceBaseUrl);
+  }
 }

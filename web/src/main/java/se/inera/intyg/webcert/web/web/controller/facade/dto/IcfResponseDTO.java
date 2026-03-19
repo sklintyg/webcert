@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,22 +22,22 @@ import se.inera.intyg.common.support.facade.model.icf.AvailableIcfCodes;
 
 public class IcfResponseDTO {
 
-    private AvailableIcfCodes disability;
-    private AvailableIcfCodes activityLimitation;
+  private AvailableIcfCodes disability;
+  private AvailableIcfCodes activityLimitation;
 
-    public void setDisability(AvailableIcfCodes disability) {
-        this.disability = disability;
-    }
+  public void setDisability(AvailableIcfCodes disability) {
+    this.disability = disability;
+  }
 
-    public void setActivityLimitation(AvailableIcfCodes activityLimitation) {
-        this.activityLimitation = activityLimitation;
-    }
+  public void setActivityLimitation(AvailableIcfCodes activityLimitation) {
+    this.activityLimitation = activityLimitation;
+  }
 
-    public AvailableIcfCodes getDisability() {
-        return disability;
-    }
+  public AvailableIcfCodes getDisability() {
+    return disability;
+  }
 
-    public AvailableIcfCodes getActivityLimitation() {
-        return activityLimitation;
-    }
+  public AvailableIcfCodes getActivityLimitation() {
+    return activityLimitation;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,77 +37,98 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest
 @Service("integrationServiceForWC")
 public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
-    @Autowired
-    private MonitoringLogService monitoringLog;
+  @Autowired private MonitoringLogService monitoringLog;
 
-    @Autowired
-    private UtkastService utkastService;
+  @Autowired private UtkastService utkastService;
 
-    @Autowired
-    private DraftAccessServiceHelper draftAccessServiceHelper;
+  @Autowired private DraftAccessServiceHelper draftAccessServiceHelper;
 
-    @Override
-    void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user, Personnummer prepareBeforeAlternateSsn) {
-        if (utkast != null) {
-            // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.
-            // If the intyg was authored elsewhere, the check has to be performed after the redirect when the actual intyg
-            // is loaded from Intygstjänsten.
-            verifySekretessmarkering(utkast, user);
+  @Override
+  void ensurePreparation(
+      String intygTyp,
+      String intygId,
+      Utkast utkast,
+      WebCertUser user,
+      Personnummer prepareBeforeAlternateSsn) {
+    if (utkast != null) {
+      // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for
+      // sekretessmarkering here.
+      // If the intyg was authored elsewhere, the check has to be performed after the redirect when
+      // the actual intyg
+      // is loaded from Intygstjänsten.
+      verifySekretessmarkering(utkast, user);
 
-            // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
-            // integrating journaling system
-            if (UtkastServiceImpl.isEditableUtkast(utkast) && draftAccessServiceHelper.isAllowToEditUtkast(utkast)) {
-                ensureDraftPatientInfoUpdated(intygTyp, intygId, utkast.getVersion(), user, prepareBeforeAlternateSsn);
-            }
+      // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info
+      // supplied by the
+      // integrating journaling system
+      if (UtkastServiceImpl.isEditableUtkast(utkast)
+          && draftAccessServiceHelper.isAllowToEditUtkast(utkast)) {
+        ensureDraftPatientInfoUpdated(
+            intygTyp, intygId, utkast.getVersion(), user, prepareBeforeAlternateSsn);
+      }
 
-            logSammanhallenSjukforing(intygTyp, intygId, utkast, user);
-        }
+      logSammanhallenSjukforing(intygTyp, intygId, utkast, user);
+    }
+  }
+
+  /** Updates Patient section of a draft with updated patient details for selected types. */
+  void ensureDraftPatientInfoUpdated(
+      String intygsType,
+      String draftId,
+      long draftVersion,
+      WebCertUser user,
+      Personnummer prepareBeforeAlternateSsn) {
+
+    // To be allowed to update utkast, we need to have the same authority as when saving a draft..
+    authoritiesValidator
+        .given(user, intygsType)
+        .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+        .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+        .orThrow();
+
+    String alternatePatientSsn = user.getParameters().getAlternateSsn();
+    if (!Strings.isNullOrEmpty(alternatePatientSsn)) {
+      Personnummer pnr = Personnummer.createPersonnummer(alternatePatientSsn).orElse(null);
+
+      UpdatePatientOnDraftRequest request;
+      if (prepareBeforeAlternateSsn != null) {
+        request =
+            new UpdatePatientOnDraftRequest(pnr, prepareBeforeAlternateSsn, draftId, draftVersion);
+      } else {
+        request = new UpdatePatientOnDraftRequest(pnr, draftId, draftVersion);
+      }
+
+      utkastService.updatePatientOnDraft(request);
+    }
+  }
+
+  private void logSammanhallenSjukforing(
+      String intygsTyp, String intygsId, Utkast utkast, WebCertUser user) {
+    if (!user.getParameters().isSjf()) {
+      return;
     }
 
-    /**
-     * Updates Patient section of a draft with updated patient details for selected types.
-     */
-    void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, WebCertUser user,
-        Personnummer prepareBeforeAlternateSsn) {
+    final var draftCareProviderId = utkast.getVardgivarId();
+    final var draftCareUnitId = utkast.getEnhetsId();
+    final var userCareProviderId = user.getValdVardgivare().getId();
+    final var userCareUnitId = user.getValdVardenhet().getId();
 
-        // To be allowed to update utkast, we need to have the same authority as when saving a draft..
-        authoritiesValidator.given(user, intygsType)
-            .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .orThrow();
-
-        String alternatePatientSsn = user.getParameters().getAlternateSsn();
-        if (!Strings.isNullOrEmpty(alternatePatientSsn)) {
-            Personnummer pnr = Personnummer.createPersonnummer(alternatePatientSsn).orElse(null);
-
-            UpdatePatientOnDraftRequest request;
-            if (prepareBeforeAlternateSsn != null) {
-                request = new UpdatePatientOnDraftRequest(pnr, prepareBeforeAlternateSsn, draftId, draftVersion);
-            } else {
-                request = new UpdatePatientOnDraftRequest(pnr, draftId, draftVersion);
-            }
-
-            utkastService.updatePatientOnDraft(request);
-        }
+    if (!draftCareProviderId.equals(userCareProviderId)) {
+      monitoringLog.logIntegratedOtherCaregiver(
+          intygsId,
+          intygsTyp,
+          draftCareProviderId,
+          draftCareUnitId,
+          userCareProviderId,
+          userCareUnitId);
+    } else if (!user.getValdVardenhet().getHsaIds().contains(draftCareUnitId)) {
+      monitoringLog.logIntegratedOtherUnit(
+          intygsId,
+          intygsTyp,
+          draftCareProviderId,
+          draftCareUnitId,
+          userCareProviderId,
+          userCareUnitId);
     }
-
-    private void logSammanhallenSjukforing(String intygsTyp, String intygsId, Utkast utkast, WebCertUser user) {
-        if (!user.getParameters().isSjf()) {
-            return;
-        }
-
-        final var draftCareProviderId = utkast.getVardgivarId();
-        final var draftCareUnitId = utkast.getEnhetsId();
-        final var userCareProviderId = user.getValdVardgivare().getId();
-        final var userCareUnitId = user.getValdVardenhet().getId();
-
-        if (!draftCareProviderId.equals(userCareProviderId)) {
-            monitoringLog.logIntegratedOtherCaregiver(intygsId, intygsTyp, draftCareProviderId, draftCareUnitId, userCareProviderId,
-                userCareUnitId);
-        } else if (!user.getValdVardenhet().getHsaIds().contains(draftCareUnitId)) {
-            monitoringLog.logIntegratedOtherUnit(intygsId, intygsTyp, draftCareProviderId, draftCareUnitId, userCareProviderId,
-                userCareUnitId);
-        }
-    }
-
+  }
 }

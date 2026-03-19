@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -108,278 +108,382 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
-    @Mock
-    private WebCertUserService webCertUserService;
+  @Mock private WebCertUserService webCertUserService;
 
-    @Mock
-    private GrpSignatureServiceImpl grpUnderskriftService;
+  @Mock private GrpSignatureServiceImpl grpUnderskriftService;
 
-    @Mock
-    private XmlUnderskriftServiceImpl xmlUnderskriftService;
+  @Mock private XmlUnderskriftServiceImpl xmlUnderskriftService;
 
-    @Mock
-    private UtkastRepository utkastRepository;
+  @Mock private UtkastRepository utkastRepository;
 
-    @Mock
-    private CertificateEventService certificateEventService;
+  @Mock private CertificateEventService certificateEventService;
 
-    @Mock
-    private UtkastService utkastService;
+  @Mock private UtkastService utkastService;
 
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
+  @Mock private IntygModuleRegistry moduleRegistry;
 
-    @Mock
-    private FakeUnderskriftService fakeUnderskriftService;
+  @Mock private FakeUnderskriftService fakeUnderskriftService;
 
-    @Mock
-    private NotificationService notificationService;
+  @Mock private NotificationService notificationService;
 
-    @Mock
-    private LogService logService;
+  @Mock private LogService logService;
 
-    @Mock
-    private LogRequestFactory logRequestFactory;
+  @Mock private LogRequestFactory logRequestFactory;
 
-    @Mock
-    private IntygService intygService;
+  @Mock private IntygService intygService;
 
-    @Mock
-    private RedisTicketTracker redisTicketTracker;
+  @Mock private RedisTicketTracker redisTicketTracker;
 
-    @Mock
-    private DraftAccessService draftAccessService;
+  @Mock private DraftAccessService draftAccessService;
 
-    @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+  @Mock private AccessResultExceptionHelper accessResultExceptionHelper;
 
-    @Mock
-    private DraftModelToXmlValidator draftModelToXMLValidator;
+  @Mock private DraftModelToXmlValidator draftModelToXMLValidator;
 
-    @Mock
-    private UtkastModelToXMLConverter utkastModelToXMLConverter;
+  @Mock private UtkastModelToXMLConverter utkastModelToXMLConverter;
 
-    @Mock
-    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Mock private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-    @Mock
-    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  @Mock private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-    @InjectMocks
-    private UnderskriftServiceImpl testee;
+  @InjectMocks private UnderskriftServiceImpl testee;
 
-    private HoSPersonal hoSPerson;
-    private VardpersonReferens vardperson;
-    private Vardenhet vardenhet;
-    private Vardgivare vardgivare;
-    private WebCertUser user;
-    private ModuleApi moduleApi = mock(ModuleApi.class);
+  private HoSPersonal hoSPerson;
+  private VardpersonReferens vardperson;
+  private Vardenhet vardenhet;
+  private Vardgivare vardgivare;
+  private WebCertUser user;
+  private ModuleApi moduleApi = mock(ModuleApi.class);
 
-    @Before
-    public void init() throws IOException, ModuleNotFoundException, ModuleException {
-        vardperson = UnderskriftTestUtil.createVardperson();
-        vardenhet = new Vardenhet(ENHET_ID, "testNamn");
-        vardgivare = new Vardgivare("123", "vardgivare");
-        vardgivare.setVardenheter(Collections.singletonList(vardenhet));
+  @Before
+  public void init() throws IOException, ModuleNotFoundException, ModuleException {
+    vardperson = UnderskriftTestUtil.createVardperson();
+    vardenhet = new Vardenhet(ENHET_ID, "testNamn");
+    vardgivare = new Vardgivare("123", "vardgivare");
+    vardgivare.setVardenheter(Collections.singletonList(vardenhet));
 
-        user = createWebCertUser(true);
-        when(webCertUserService.getUser()).thenReturn(user);
+    user = createWebCertUser(true);
+    when(webCertUserService.getUser()).thenReturn(user);
 
-        when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString()))).thenReturn(moduleApi);
+    when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString())))
+        .thenReturn(moduleApi);
 
-        Utlatande utlatande = mock(Utlatande.class);
-        GrundData grunddata = new GrundData();
-        grunddata.setSkapadAv(new HoSPersonal());
-        when(utlatande.getGrundData()).thenReturn(grunddata);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(moduleApi
-            .updateBeforeSigning(anyString(), any(), any(LocalDateTime.class)))
-            .thenReturn("json");
+    Utlatande utlatande = mock(Utlatande.class);
+    GrundData grunddata = new GrundData();
+    grunddata.setSkapadAv(new HoSPersonal());
+    when(utlatande.getGrundData()).thenReturn(grunddata);
+    when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+    when(moduleApi.updateBeforeSigning(anyString(), any(), any(LocalDateTime.class)))
+        .thenReturn("json");
 
-        when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
-            "utkast", ImmutableMap.of(),
-            "intyg", ImmutableMap.of()));
+    when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any()))
+        .thenReturn(
+            ImmutableMap.of(
+                "utkast", ImmutableMap.of(),
+                "intyg", ImmutableMap.of()));
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(LogRequest.builder().build());
-    }
+    when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class)))
+        .thenReturn(LogRequest.builder().build());
+  }
 
-    @Test
-    public void testStartSigning() throws ModuleNotFoundException, ModuleException {
-        when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
-                ENHET_ID, PERSON_ID)));
+  @Test
+  public void testStartSigning() throws ModuleNotFoundException, ModuleException {
+    when(utkastRepository.findById(INTYG_ID))
+        .thenReturn(
+            Optional.of(
+                createUtkast(
+                    INTYG_ID,
+                    1L,
+                    INTYG_TYP,
+                    UtkastStatus.DRAFT_COMPLETE,
+                    "model",
+                    vardperson,
+                    ENHET_ID,
+                    PERSON_ID)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(),
+    when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
+            anyString(),
+            anyString(),
+            anyLong(),
+            any(),
             any(SignMethod.class),
-            anyString(), any(), any()))
-            .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
+            anyString(),
+            any(),
+            any()))
+        .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
-        when(draftModelToXMLValidator.validateDraftModelAsXml(any())).thenReturn(ValidateXmlResponse.createValidResponse());
+    when(draftModelToXMLValidator.validateDraftModelAsXml(any()))
+        .thenReturn(ValidateXmlResponse.createValidResponse());
 
-        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID, USER_IP_ADDRESS);
-        assertNotNull(sb.getIntygSignature());
-        assertNotNull(sb.getHash());
-    }
+    SignaturBiljett sb =
+        testee.startSigningProcess(
+            INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID, USER_IP_ADDRESS);
+    assertNotNull(sb.getIntygSignature());
+    assertNotNull(sb.getHash());
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testStartSignNoUtkastFound() {
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testStartSignNoUtkastFound() {
+    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
+    testee.startSigningProcess(
+        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+  }
 
-    @Test(expected = OptimisticLockException.class)
-    public void testStartSignUtkastVersionsDifferFound() {
-        when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
-                ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-    }
+  @Test(expected = OptimisticLockException.class)
+  public void testStartSignUtkastVersionsDifferFound() {
+    when(utkastRepository.findById(INTYG_ID))
+        .thenReturn(
+            Optional.of(
+                createUtkast(
+                    INTYG_ID,
+                    2L,
+                    INTYG_TYP,
+                    UtkastStatus.DRAFT_COMPLETE,
+                    "model",
+                    vardperson,
+                    ENHET_ID,
+                    PERSON_ID)));
+    testee.startSigningProcess(
+        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testStartSignUtkastNotReadyForSign() {
-        when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
-                ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testStartSignUtkastNotReadyForSign() {
+    when(utkastRepository.findById(INTYG_ID))
+        .thenReturn(
+            Optional.of(
+                createUtkast(
+                    INTYG_ID,
+                    1L,
+                    INTYG_TYP,
+                    UtkastStatus.DRAFT_INCOMPLETE,
+                    "model",
+                    vardperson,
+                    ENHET_ID,
+                    PERSON_ID)));
+    testee.startSigningProcess(
+        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+  }
 
-    @Test
-    public void testStartSignUtkastWithUndantagUnikOmSenaste() {
-        final LocalDateTime ogIntygSkapad = LocalDateTime.of(2018, 5, 5, 5, 5);
-        final LocalDateTime ersattandeIntygSkapad = ogIntygSkapad.plusDays(1);
-        final String doiTyp = "doi";
+  @Test
+  public void testStartSignUtkastWithUndantagUnikOmSenaste() {
+    final LocalDateTime ogIntygSkapad = LocalDateTime.of(2018, 5, 5, 5, 5);
+    final LocalDateTime ersattandeIntygSkapad = ogIntygSkapad.plusDays(1);
+    final String doiTyp = "doi";
 
-        when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
-                ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
+    when(utkastRepository.findById(INTYG_ID))
+        .thenReturn(
+            Optional.of(
+                createUtkast(
+                    INTYG_ID,
+                    1L,
+                    doiTyp,
+                    UtkastStatus.DRAFT_COMPLETE,
+                    "model",
+                    vardperson,
+                    ENHET_ID,
+                    PERSON_ID,
+                    ersattandeIntygSkapad)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(), any(SignMethod.class),
-            anyString(), any(), any()))
-            .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
+    when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
+            anyString(),
+            anyString(),
+            anyLong(),
+            any(),
+            any(SignMethod.class),
+            anyString(),
+            any(),
+            any()))
+        .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
-        when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
-            "utkast", ImmutableMap.of(),
-            "intyg", ImmutableMap.of(doiTyp, PreviousIntyg.of(true, true, true, "name", "id", ogIntygSkapad))));
+    when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any()))
+        .thenReturn(
+            ImmutableMap.of(
+                "utkast", ImmutableMap.of(),
+                "intyg",
+                    ImmutableMap.of(
+                        doiTyp, PreviousIntyg.of(true, true, true, "name", "id", ogIntygSkapad))));
 
-        Feature feature = new Feature();
-        feature.setName(AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG);
-        feature.setIntygstyper(ImmutableList.of(DoiModuleEntryPoint.MODULE_ID));
-        feature.setGlobal(true);
+    Feature feature = new Feature();
+    feature.setName(AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG);
+    feature.setIntygstyper(ImmutableList.of(DoiModuleEntryPoint.MODULE_ID));
+    feature.setGlobal(true);
 
-        user.setFeatures(ImmutableMap.of(feature.getName(), feature));
+    user.setFeatures(ImmutableMap.of(feature.getName(), feature));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-    }
+    testee.startSigningProcess(
+        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testStartSignUtkastAlreadySigned() {
-        when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
-                ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-    }
+  @Test(expected = WebCertServiceException.class)
+  public void testStartSignUtkastAlreadySigned() {
+    when(utkastRepository.findById(INTYG_ID))
+        .thenReturn(
+            Optional.of(
+                createUtkast(
+                    INTYG_ID,
+                    1L,
+                    INTYG_TYP,
+                    UtkastStatus.SIGNED,
+                    "model",
+                    vardperson,
+                    ENHET_ID,
+                    PERSON_ID)));
+    testee.startSigningProcess(
+        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testStartSignInvalidDraft() throws ModuleException, ModuleNotFoundException {
-        when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
-                ENHET_ID, PERSON_ID)));
+  @Test(expected = WebCertServiceException.class)
+  public void testStartSignInvalidDraft() throws ModuleException, ModuleNotFoundException {
+    when(utkastRepository.findById(INTYG_ID))
+        .thenReturn(
+            Optional.of(
+                createUtkast(
+                    INTYG_ID,
+                    1L,
+                    INTYG_TYP,
+                    UtkastStatus.SIGNED,
+                    "model",
+                    vardperson,
+                    ENHET_ID,
+                    PERSON_ID)));
 
-        when(draftModelToXMLValidator.validateDraftModelAsXml(any()))
-            .thenReturn(new ValidateXmlResponse(ValidationStatus.INVALID, Collections.singletonList("Error")));
+    when(draftModelToXMLValidator.validateDraftModelAsXml(any()))
+        .thenReturn(
+            new ValidateXmlResponse(ValidationStatus.INVALID, Collections.singletonList("Error")));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-    }
+    testee.startSigningProcess(
+        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+  }
 
-    @Test
-    public void testGetSigneringsStatus() {
-        when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
+  @Test
+  public void testGetSigneringsStatus() {
+    when(redisTicketTracker.findBiljett(TICKET_ID))
+        .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
-        SignaturBiljett signaturBiljett = testee.signeringsStatus(TICKET_ID);
-        assertNotNull(signaturBiljett);
-    }
+    SignaturBiljett signaturBiljett = testee.signeringsStatus(TICKET_ID);
+    assertNotNull(signaturBiljett);
+  }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testGetSigneringsStatusNoTicketFound() {
-        when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(null);
+  @Test(expected = WebCertServiceException.class)
+  public void testGetSigneringsStatusNoTicketFound() {
+    when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(null);
 
-        SignaturBiljett signaturBiljett = testee.signeringsStatus(TICKET_ID);
-        assertNotNull(signaturBiljett);
-    }
+    SignaturBiljett signaturBiljett = testee.signeringsStatus(TICKET_ID);
+    assertNotNull(signaturBiljett);
+  }
 
-    @Test
-    public void testNetidSignature() {
-        Utkast utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
-            ENHET_ID, PERSON_ID);
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
-        SignaturBiljett signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
-        when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
-        when(xmlUnderskriftService.finalizeSignature(any(SignaturBiljett.class), any(byte[].class), anyString(), any(Utkast.class),
+  @Test
+  public void testNetidSignature() {
+    Utkast utkast =
+        createUtkast(
+            INTYG_ID,
+            1L,
+            INTYG_TYP,
+            UtkastStatus.DRAFT_COMPLETE,
+            "model",
+            vardperson,
+            ENHET_ID,
+            PERSON_ID);
+    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
+    SignaturBiljett signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
+    when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
+    when(xmlUnderskriftService.finalizeSignature(
+            any(SignaturBiljett.class),
+            any(byte[].class),
+            anyString(),
+            any(Utkast.class),
             any(WebCertUser.class)))
-            .thenReturn(createSignaturBiljett(SIGNERAD));
+        .thenReturn(createSignaturBiljett(SIGNERAD));
 
-        SignaturBiljett sb = testee.netidSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8), "certifikat");
-        assertNotNull(sb);
-        assertEquals(SIGNERAD, sb.getStatus());
-        verify(certificateEventService)
-            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SIGNAT), anyString());
-    }
-
-    @Test
-    public void testGrpSignature() {
-        Utkast utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
-            ENHET_ID, PERSON_ID);
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
-        SignaturBiljett signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
-        when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
-        when(grpUnderskriftService.finalizeSignature(any(SignaturBiljett.class), any(byte[].class), ArgumentMatchers.isNull(),
-            any(Utkast.class), any(WebCertUser.class)))
-            .thenReturn(createSignaturBiljett(SIGNERAD));
-
-        SignaturBiljett sb = testee.grpSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8));
-        assertNotNull(sb);
-        assertEquals(SIGNERAD, sb.getStatus());
-        verify(certificateEventService)
-            .createCertificateEvent(anyString(), anyString(), eq(EventCode.SIGNAT), anyString());
-    }
-
-    @Test
-    public void shallPublishAnalyticsMessageWhenSigningIsFinalized() {
-        final var utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson, ENHET_ID, PERSON_ID);
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
-        final var signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
-        when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
-        when(xmlUnderskriftService.finalizeSignature(any(SignaturBiljett.class), any(byte[].class), anyString(), any(Utkast.class),
-            any(WebCertUser.class)))
-            .thenReturn(createSignaturBiljett(SIGNERAD));
-        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.certificateSigned(utkast)).thenReturn(analyticsMessage);
-
+    SignaturBiljett sb =
         testee.netidSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8), "certifikat");
-        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-        verify(certificateAnalyticsMessageFactory).certificateSigned(utkast);
+    assertNotNull(sb);
+    assertEquals(SIGNERAD, sb.getStatus());
+    verify(certificateEventService)
+        .createCertificateEvent(anyString(), anyString(), eq(EventCode.SIGNAT), anyString());
+  }
+
+  @Test
+  public void testGrpSignature() {
+    Utkast utkast =
+        createUtkast(
+            INTYG_ID,
+            1L,
+            INTYG_TYP,
+            UtkastStatus.DRAFT_COMPLETE,
+            "model",
+            vardperson,
+            ENHET_ID,
+            PERSON_ID);
+    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
+    SignaturBiljett signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
+    when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
+    when(grpUnderskriftService.finalizeSignature(
+            any(SignaturBiljett.class),
+            any(byte[].class),
+            ArgumentMatchers.isNull(),
+            any(Utkast.class),
+            any(WebCertUser.class)))
+        .thenReturn(createSignaturBiljett(SIGNERAD));
+
+    SignaturBiljett sb =
+        testee.grpSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8));
+    assertNotNull(sb);
+    assertEquals(SIGNERAD, sb.getStatus());
+    verify(certificateEventService)
+        .createCertificateEvent(anyString(), anyString(), eq(EventCode.SIGNAT), anyString());
+  }
+
+  @Test
+  public void shallPublishAnalyticsMessageWhenSigningIsFinalized() {
+    final var utkast =
+        createUtkast(
+            INTYG_ID,
+            1L,
+            INTYG_TYP,
+            UtkastStatus.DRAFT_COMPLETE,
+            "model",
+            vardperson,
+            ENHET_ID,
+            PERSON_ID);
+    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
+    final var signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
+    when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
+    when(xmlUnderskriftService.finalizeSignature(
+            any(SignaturBiljett.class),
+            any(byte[].class),
+            anyString(),
+            any(Utkast.class),
+            any(WebCertUser.class)))
+        .thenReturn(createSignaturBiljett(SIGNERAD));
+    final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+    when(certificateAnalyticsMessageFactory.certificateSigned(utkast)).thenReturn(analyticsMessage);
+
+    testee.netidSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8), "certifikat");
+    verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+    verify(certificateAnalyticsMessageFactory).certificateSigned(utkast);
+  }
+
+  private WebCertUser createWebCertUser(boolean doctor) {
+    Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+    if (!doctor) {
+      role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN);
     }
 
-    private WebCertUser createWebCertUser(boolean doctor) {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-        if (!doctor) {
-            role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN);
-        }
+    HoSPersonal hoSPerson = UnderskriftTestUtil.createHoSPerson();
 
-        HoSPersonal hoSPerson = UnderskriftTestUtil.createHoSPerson();
+    WebCertUser user = new WebCertUser();
+    user.setRoles(AuthoritiesResolverUtil.toMap(role));
+    user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+    user.setNamn(hoSPerson.getFullstandigtNamn());
+    user.setHsaId(hoSPerson.getPersonId());
+    user.setVardgivare(Collections.singletonList(vardgivare));
+    user.setValdVardenhet(vardenhet);
+    user.setValdVardgivare(vardgivare);
+    user.setAuthenticationMethod(AuthenticationMethod.SITHS);
+    user.setPersonId(hoSPerson.getPersonId());
 
-        WebCertUser user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-        user.setNamn(hoSPerson.getFullstandigtNamn());
-        user.setHsaId(hoSPerson.getPersonId());
-        user.setVardgivare(Collections.singletonList(vardgivare));
-        user.setValdVardenhet(vardenhet);
-        user.setValdVardgivare(vardgivare);
-        user.setAuthenticationMethod(AuthenticationMethod.SITHS);
-        user.setPersonId(hoSPerson.getPersonId());
-
-        return user;
-    }
-
+    return user;
+  }
 }

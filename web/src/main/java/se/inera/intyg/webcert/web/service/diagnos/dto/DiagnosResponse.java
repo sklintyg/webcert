@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,76 +23,76 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 public class DiagnosResponse {
 
-    private DiagnosResponseType resultat = DiagnosResponseType.OK;
+  private DiagnosResponseType resultat = DiagnosResponseType.OK;
 
-    private List<Diagnos> diagnoser;
+  private List<Diagnos> diagnoser;
 
-    private boolean moreResults;
+  private boolean moreResults;
 
-    public static DiagnosResponse ok(List<Diagnos> diagnoser, boolean moreResults) {
-        DiagnosResponse diagnosResponse = new DiagnosResponse();
-        diagnosResponse.setDiagnoser(diagnoser);
-        diagnosResponse.setMoreResults(moreResults);
-        return diagnosResponse;
-    }
+  public static DiagnosResponse ok(List<Diagnos> diagnoser, boolean moreResults) {
+    DiagnosResponse diagnosResponse = new DiagnosResponse();
+    diagnosResponse.setDiagnoser(diagnoser);
+    diagnosResponse.setMoreResults(moreResults);
+    return diagnosResponse;
+  }
 
-    public static DiagnosResponse invalidCode() {
-        DiagnosResponse diagnosResponse = new DiagnosResponse();
-        diagnosResponse.setInvalidCode();
-        return diagnosResponse;
-    }
+  public static DiagnosResponse invalidCode() {
+    DiagnosResponse diagnosResponse = new DiagnosResponse();
+    diagnosResponse.setInvalidCode();
+    return diagnosResponse;
+  }
 
-    public static DiagnosResponse invalidCodesystem() {
-        DiagnosResponse diagnosResponse = new DiagnosResponse();
-        diagnosResponse.setInvalidCodesystem();
-        return diagnosResponse;
-    }
+  public static DiagnosResponse invalidCodesystem() {
+    DiagnosResponse diagnosResponse = new DiagnosResponse();
+    diagnosResponse.setInvalidCodesystem();
+    return diagnosResponse;
+  }
 
-    public static DiagnosResponse invalidSearchString() {
-        DiagnosResponse diagnosResponse = new DiagnosResponse();
-        diagnosResponse.setInvalidSearchString();
-        return diagnosResponse;
-    }
+  public static DiagnosResponse invalidSearchString() {
+    DiagnosResponse diagnosResponse = new DiagnosResponse();
+    diagnosResponse.setInvalidSearchString();
+    return diagnosResponse;
+  }
 
-    public static DiagnosResponse notFound() {
-        DiagnosResponse diagnosResponse = new DiagnosResponse();
-        diagnosResponse.setNotFound();
-        return diagnosResponse;
-    }
+  public static DiagnosResponse notFound() {
+    DiagnosResponse diagnosResponse = new DiagnosResponse();
+    diagnosResponse.setNotFound();
+    return diagnosResponse;
+  }
 
-    public DiagnosResponseType getResultat() {
-        return resultat;
-    }
+  public DiagnosResponseType getResultat() {
+    return resultat;
+  }
 
-    private void setInvalidCode() {
-        this.resultat = DiagnosResponseType.INVALID_CODE;
-    }
+  private void setInvalidCode() {
+    this.resultat = DiagnosResponseType.INVALID_CODE;
+  }
 
-    private void setInvalidCodesystem() {
-        this.resultat = DiagnosResponseType.INVALID_CODE_SYSTEM;
-    }
+  private void setInvalidCodesystem() {
+    this.resultat = DiagnosResponseType.INVALID_CODE_SYSTEM;
+  }
 
-    private void setInvalidSearchString() {
-        this.resultat = DiagnosResponseType.INVALID_SEARCH_STRING;
-    }
+  private void setInvalidSearchString() {
+    this.resultat = DiagnosResponseType.INVALID_SEARCH_STRING;
+  }
 
-    private void setNotFound() {
-        this.resultat = DiagnosResponseType.NOT_FOUND;
-    }
+  private void setNotFound() {
+    this.resultat = DiagnosResponseType.NOT_FOUND;
+  }
 
-    public List<Diagnos> getDiagnoser() {
-        return diagnoser;
-    }
+  public List<Diagnos> getDiagnoser() {
+    return diagnoser;
+  }
 
-    public void setDiagnoser(List<Diagnos> diagnoser) {
-        this.diagnoser = diagnoser;
-    }
+  public void setDiagnoser(List<Diagnos> diagnoser) {
+    this.diagnoser = diagnoser;
+  }
 
-    public boolean isMoreResults() {
-        return moreResults;
-    }
+  public boolean isMoreResults() {
+    return moreResults;
+  }
 
-    public void setMoreResults(boolean moreResults) {
-        this.moreResults = moreResults;
-    }
+  public void setMoreResults(boolean moreResults) {
+    this.moreResults = moreResults;
+  }
 }

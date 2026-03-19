@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.util.Optional;
@@ -33,44 +32,80 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @RequiredArgsConstructor
 public class CreateSignatureTicketService {
 
-    private final XmlUnderskriftServiceImpl xmlUnderskriftService;
-    private final GrpSignatureService grpUnderskriftService;
-    private final WebCertUserService webCertUserService;
+  private final XmlUnderskriftServiceImpl xmlUnderskriftService;
+  private final GrpSignatureService grpUnderskriftService;
+  private final WebCertUserService webCertUserService;
 
-    public SignaturBiljett create(String certificateId, String certificateType, long version, SignMethod signMethod,
-        String ticketID, String userIpAddress, String certificateXml) {
-        final var user = webCertUserService.getUser();
-        final var ticket = getTicket(user.getAuthenticationMethod(), certificateId, certificateType, version,
-            signMethod, ticketID, userIpAddress, certificateXml);
+  public SignaturBiljett create(
+      String certificateId,
+      String certificateType,
+      long version,
+      SignMethod signMethod,
+      String ticketID,
+      String userIpAddress,
+      String certificateXml) {
+    final var user = webCertUserService.getUser();
+    final var ticket =
+        getTicket(
+            user.getAuthenticationMethod(),
+            certificateId,
+            certificateType,
+            version,
+            signMethod,
+            ticketID,
+            userIpAddress,
+            certificateXml);
 
-        if (ticket == null) {
-            throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
-        }
-
-        if (ticket.getSignMethod() == SignMethod.GRP) {
-            grpUnderskriftService.startGrpCollectPoller(user.getPersonId(), ticket);
-        }
-
-        return ticket;
+    if (ticket == null) {
+      throw new IllegalStateException(
+          "Unhandled authentication method, could not create SignaturBiljett");
     }
 
-    private SignaturBiljett getTicket(AuthenticationMethod authenticationMethod, String certificateId, String certificateType, long version,
-        SignMethod signMethod, String ticketID, String userIpAddress, String certificateXml) {
-        switch (authenticationMethod) {
-            case FAKE:
-            case SITHS:
-            case NET_ID:
-                return xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
-                    certificateId, certificateType, version, Optional.empty(), signMethod, ticketID, userIpAddress, certificateXml);
-            case BANK_ID:
-            case MOBILT_BANK_ID: {
-                return grpUnderskriftService.skapaSigneringsBiljettMedDigest(certificateId, certificateType, version,
-                    Optional.empty(), signMethod, ticketID, userIpAddress, null);
-            }
-            default:
-                throw new IllegalStateException(
-                    String.format("AuthenticationMethod not supported '%s'", authenticationMethod)
-                );
-        }
+    if (ticket.getSignMethod() == SignMethod.GRP) {
+      grpUnderskriftService.startGrpCollectPoller(user.getPersonId(), ticket);
     }
+
+    return ticket;
+  }
+
+  private SignaturBiljett getTicket(
+      AuthenticationMethod authenticationMethod,
+      String certificateId,
+      String certificateType,
+      long version,
+      SignMethod signMethod,
+      String ticketID,
+      String userIpAddress,
+      String certificateXml) {
+    switch (authenticationMethod) {
+      case FAKE:
+      case SITHS:
+      case NET_ID:
+        return xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
+            certificateId,
+            certificateType,
+            version,
+            Optional.empty(),
+            signMethod,
+            ticketID,
+            userIpAddress,
+            certificateXml);
+      case BANK_ID:
+      case MOBILT_BANK_ID:
+        {
+          return grpUnderskriftService.skapaSigneringsBiljettMedDigest(
+              certificateId,
+              certificateType,
+              version,
+              Optional.empty(),
+              signMethod,
+              ticketID,
+              userIpAddress,
+              null);
+        }
+      default:
+        throw new IllegalStateException(
+            String.format("AuthenticationMethod not supported '%s'", authenticationMethod));
+    }
+  }
 }

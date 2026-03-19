@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,100 +42,100 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 @ExtendWith(MockitoExtension.class)
 class SendNotificationsForCertificatesServiceTest {
 
-    private static final Integer COUNT = 10;
-    private static final List<String> IDS = List.of("ID ID");
-    private static final List<String> SANITIZED_IDS = List.of("IDID");
-    private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
-    private static final List<String> STATUS_LIST = List.of("FAILURE");
-    private static final SendNotificationsForCertificatesRequestDTO REQUEST = SendNotificationsForCertificatesRequestDTO.builder()
-        .certificateIds(IDS)
-        .statuses(STATUSES)
-        .build();
-    private static final SendNotificationsForCertificatesRequestDTO SANITIZED_REQUEST = SendNotificationsForCertificatesRequestDTO.builder()
-        .certificateIds(SANITIZED_IDS)
-        .statuses(STATUSES)
-        .build();
-    private static final CountNotificationsForCertificatesRequestDTO COUNT_REQUEST = CountNotificationsForCertificatesRequestDTO.builder()
-        .certificateIds(IDS)
-        .statuses(STATUSES)
-        .build();
+  private static final Integer COUNT = 10;
+  private static final List<String> IDS = List.of("ID ID");
+  private static final List<String> SANITIZED_IDS = List.of("IDID");
+  private static final List<NotificationDeliveryStatusEnum> STATUSES =
+      List.of(NotificationDeliveryStatusEnum.FAILURE);
+  private static final List<String> STATUS_LIST = List.of("FAILURE");
+  private static final SendNotificationsForCertificatesRequestDTO REQUEST =
+      SendNotificationsForCertificatesRequestDTO.builder()
+          .certificateIds(IDS)
+          .statuses(STATUSES)
+          .build();
+  private static final SendNotificationsForCertificatesRequestDTO SANITIZED_REQUEST =
+      SendNotificationsForCertificatesRequestDTO.builder()
+          .certificateIds(SANITIZED_IDS)
+          .statuses(STATUSES)
+          .build();
+  private static final CountNotificationsForCertificatesRequestDTO COUNT_REQUEST =
+      CountNotificationsForCertificatesRequestDTO.builder()
+          .certificateIds(IDS)
+          .statuses(STATUSES)
+          .build();
 
+  @Mock SendNotificationCountValidator sendNotificationCountValidator;
+  @Mock NotificationRedeliveryRepository notificationRedeliveryRepository;
 
-    @Mock
-    SendNotificationCountValidator sendNotificationCountValidator;
-    @Mock
-    NotificationRedeliveryRepository notificationRedeliveryRepository;
+  @Mock SendNotificationRequestValidator sendNotificationRequestValidator;
 
-    @Mock
-    SendNotificationRequestValidator sendNotificationRequestValidator;
+  @InjectMocks SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
 
-    @InjectMocks
-    SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
+  @Mock HandelseRepository handelseRepository;
 
-    @Mock
-    HandelseRepository handelseRepository;
+  @Test
+  void shouldThrowIfCountExceedLimit() {
+    doThrow(IllegalArgumentException.class)
+        .when(sendNotificationCountValidator)
+        .certificates(SANITIZED_REQUEST);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> sendNotificationsForCertificatesService.send(REQUEST));
+  }
+
+  @Nested
+  class SendTests {
+
+    @BeforeEach
+    void setup() {
+      when(notificationRedeliveryRepository.sendNotificationsForCertificates(
+              SANITIZED_IDS, STATUS_LIST))
+          .thenReturn(COUNT);
+    }
 
     @Test
-    void shouldThrowIfCountExceedLimit() {
-        doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-            .certificates(SANITIZED_REQUEST);
+    void shouldReturnResponseFromRepository() {
+      final var response = sendNotificationsForCertificatesService.send(REQUEST);
 
-        assertThrows(IllegalArgumentException.class, () -> sendNotificationsForCertificatesService.send(REQUEST));
+      assertEquals(COUNT, response.getCount());
     }
 
-    @Nested
-    class SendTests {
+    @Test
+    void shouldValidateIds() {
+      final var captor = ArgumentCaptor.forClass(List.class);
+      sendNotificationsForCertificatesService.send(REQUEST);
 
-        @BeforeEach
-        void setup() {
-            when(notificationRedeliveryRepository.sendNotificationsForCertificates(SANITIZED_IDS, STATUS_LIST))
-                .thenReturn(COUNT);
-        }
+      verify(sendNotificationRequestValidator).validateCertificateIds(captor.capture());
 
-        @Test
-        void shouldReturnResponseFromRepository() {
-            final var response = sendNotificationsForCertificatesService.send(REQUEST);
+      assertEquals(SANITIZED_IDS, captor.getValue());
+    }
+  }
 
-            assertEquals(COUNT, response.getCount());
-        }
+  @Nested
+  class CountNotifications {
 
-        @Test
-        void shouldValidateIds() {
-            final var captor = ArgumentCaptor.forClass(List.class);
-            sendNotificationsForCertificatesService.send(REQUEST);
-
-            verify(sendNotificationRequestValidator).validateCertificateIds(captor.capture());
-
-            assertEquals(SANITIZED_IDS, captor.getValue());
-        }
+    @BeforeEach
+    void setup() {
+      when(handelseRepository.countNotificationsForCertificates(SANITIZED_IDS, List.of("FAILURE")))
+          .thenReturn(COUNT);
     }
 
-    @Nested
-    class CountNotifications {
+    @Test
+    void shouldReturnResponseFromRepository() {
+      final var response = sendNotificationsForCertificatesService.count(COUNT_REQUEST);
 
-        @BeforeEach
-        void setup() {
-            when(
-                handelseRepository.countNotificationsForCertificates(SANITIZED_IDS, List.of("FAILURE")))
-                .thenReturn(COUNT);
-        }
-
-        @Test
-        void shouldReturnResponseFromRepository() {
-            final var response = sendNotificationsForCertificatesService.count(COUNT_REQUEST);
-
-            assertEquals(COUNT, response.getCount());
-        }
-
-        @Test
-        void shouldValidateIds() {
-            final var captor = ArgumentCaptor.forClass(List.class);
-            sendNotificationsForCertificatesService.count(COUNT_REQUEST);
-
-            verify(sendNotificationRequestValidator).validateCertificateIds(captor.capture());
-
-            assertEquals(SANITIZED_IDS, captor.getValue());
-        }
-
+      assertEquals(COUNT, response.getCount());
     }
+
+    @Test
+    void shouldValidateIds() {
+      final var captor = ArgumentCaptor.forClass(List.class);
+      sendNotificationsForCertificatesService.count(COUNT_REQUEST);
+
+      verify(sendNotificationRequestValidator).validateCertificateIds(captor.capture());
+
+      assertEquals(SANITIZED_IDS, captor.getValue());
+    }
+  }
 }

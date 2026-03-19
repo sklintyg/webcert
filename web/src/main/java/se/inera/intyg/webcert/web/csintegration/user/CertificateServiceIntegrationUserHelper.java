@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.user;
 
 import static java.util.Optional.ofNullable;
@@ -34,48 +33,48 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 @RequiredArgsConstructor
 public class CertificateServiceIntegrationUserHelper {
 
-    public CertificateServiceUserDTO get(IntygUser user) {
-        return CertificateServiceUserDTO.builder()
-            .id(user.getHsaId())
-            .firstName(user.getFornamn())
-            .lastName(user.getEfternamn())
-            .fullName(user.getNamn())
-            .blocked(false)
-            .agreement(true)
-            .paTitles(paTitles(user.getBefattningar()))
-            .specialities(user.getSpecialiseringar())
-            .role(getRole(user))
-            .accessScope(AccessScopeType.WITHIN_CARE_UNIT)
-            .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
-            .allowCopy(true)
-            .srsActive(isSrsActive(user))
-            .build();
-    }
+  public CertificateServiceUserDTO get(IntygUser user) {
+    return CertificateServiceUserDTO.builder()
+        .id(user.getHsaId())
+        .firstName(user.getFornamn())
+        .lastName(user.getEfternamn())
+        .fullName(user.getNamn())
+        .blocked(false)
+        .agreement(true)
+        .paTitles(paTitles(user.getBefattningar()))
+        .specialities(user.getSpecialiseringar())
+        .role(getRole(user))
+        .accessScope(AccessScopeType.WITHIN_CARE_UNIT)
+        .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
+        .allowCopy(true)
+        .srsActive(isSrsActive(user))
+        .build();
+  }
 
-    private Boolean isSrsActive(IntygUser user) {
-        return ofNullable(user.getFeatures().get(AuthoritiesConstants.FEATURE_SRS))
-            .filter(Feature::getGlobal)
-            .isPresent();
-    }
+  private Boolean isSrsActive(IntygUser user) {
+    return ofNullable(user.getFeatures().get(AuthoritiesConstants.FEATURE_SRS))
+        .filter(Feature::getGlobal)
+        .isPresent();
+  }
 
-    private List<PaTitleDTO> paTitles(List<String> befattningar) {
-        return befattningar.stream()
-            .map(befattning ->
+  private List<PaTitleDTO> paTitles(List<String> befattningar) {
+    return befattningar.stream()
+        .map(
+            befattning ->
                 PaTitleDTO.builder()
                     .code(befattning)
                     .description(
                         BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
-                    .build()
-            )
-            .toList();
+                    .build())
+        .toList();
+  }
+
+  private CertificateServiceUserRole getRole(IntygUser user) {
+    final var roles = user.getRoles();
+    if (roles == null || roles.isEmpty()) {
+      throw new IllegalStateException("User has no roles");
     }
 
-    private CertificateServiceUserRole getRole(IntygUser user) {
-        final var roles = user.getRoles();
-        if (roles == null || roles.isEmpty()) {
-            throw new IllegalStateException("User has no roles");
-        }
-
-        return convertRole(roles.values().stream().findFirst().orElseThrow().getName());
-    }
+    return convertRole(roles.values().stream().findFirst().orElseThrow().getName());
+  }
 }

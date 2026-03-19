@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,25 +20,24 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public class ListFilterNumberValue implements ListFilterValue {
 
-    private int value;
+  private int value;
 
-    public ListFilterNumberValue() {
-    }
+  public ListFilterNumberValue() {}
 
-    public ListFilterNumberValue(int value) {
-        this.value = value;
-    }
+  public ListFilterNumberValue(int value) {
+    this.value = value;
+  }
 
-    public int getValue() {
-        return value;
-    }
+  public int getValue() {
+    return value;
+  }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
+  public void setValue(int value) {
+    this.value = value;
+  }
 
-    @Override
-    public ListFilterType getType() {
-        return ListFilterType.NUMBER;
-    }
+  @Override
+  public ListFilterType getType() {
+    return ListFilterType.NUMBER;
+  }
 }

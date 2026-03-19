@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,43 +21,40 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 import java.io.Serializable;
 
 /**
- * The class is used to hold information (state) regarding a user
- * has been redirected to Webcert's 'enhetsväljare'.
+ * The class is used to hold information (state) regarding a user has been redirected to Webcert's
+ * 'enhetsväljare'.
  *
- * In the scenario 'djupintegration' a user might have access to multiple
- * healt care units when requesting a certificate from Webcert. If none is
- * provided with the request, the user must select a healt care unit. This
- * is done by redirecting the user to 'enhetsväljaren'.
+ * <p>In the scenario 'djupintegration' a user might have access to multiple healt care units when
+ * requesting a certificate from Webcert. If none is provided with the request, the user must select
+ * a healt care unit. This is done by redirecting the user to 'enhetsväljaren'.
  *
- * When user has selected the healt care unit, user will be redirected to
- * the certificate he/she requested.
+ * <p>When user has selected the healt care unit, user will be redirected to the certificate he/she
+ * requested.
  *
- * To prevent requests that intentional without to be
+ * <p>To prevent requests that intentional without to be
  *
- * To prevent requests that intentionally try to request the certificate without
- * selecting a unit, we need to keep this information in a state..
+ * <p>To prevent requests that intentionally try to request the certificate without selecting a
+ * unit, we need to keep this information in a state..
  *
  * @author Magnus Ekstrand on 2017-10-12.
  */
 public class IntegrationState implements Serializable {
 
-    private static final long serialVersionUID = 4076423364115275001L;
-    private boolean redirectToEnhetsval;
+  private static final long serialVersionUID = 4076423364115275001L;
+  private boolean redirectToEnhetsval;
 
-    /**
-     * If true, user has been redirected to 'enhetsväljaren' to select
-     * the healt care unit on which the certificate is written.
-     *
-     * @return true if user has been redirected to 'enhetsväljaren', otherwise false
-     */
-    public boolean hasUserBeenRedirectedToEnhetsval() {
-        return redirectToEnhetsval;
-    }
+  /**
+   * If true, user has been redirected to 'enhetsväljaren' to select the healt care unit on which
+   * the certificate is written.
+   *
+   * @return true if user has been redirected to 'enhetsväljaren', otherwise false
+   */
+  public boolean hasUserBeenRedirectedToEnhetsval() {
+    return redirectToEnhetsval;
+  }
 
-    /**
-     * Sets if user has been redirected to 'enhetsväljaren' or not.
-     */
-    void setRedirectToEnhetsval(boolean redirectToEnhetsval) {
-        this.redirectToEnhetsval = redirectToEnhetsval;
-    }
+  /** Sets if user has been redirected to 'enhetsväljaren' or not. */
+  void setRedirectToEnhetsval(boolean redirectToEnhetsval) {
+    this.redirectToEnhetsval = redirectToEnhetsval;
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -64,111 +64,110 @@ import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-/**
- * Created by pehr on 13/11/13.
- */
+/** Created by pehr on 13/11/13. */
 @RunWith(MockitoJUnitRunner.class)
 public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
-    private static final int DELAY = 10;
+  private static final int DELAY = 10;
 
-    @Mock
-    private JmsTemplate template = mock(JmsTemplate.class);
+  @Mock private JmsTemplate template = mock(JmsTemplate.class);
 
-    @Mock
-    private WebCertUserService userService = mock(WebCertUserService.class);
+  @Mock private WebCertUserService userService = mock(WebCertUserService.class);
 
-    @Mock
-    private LogRequestFactory logRequestFactory;
+  @Mock private LogRequestFactory logRequestFactory;
 
-    @InjectMocks
-    private LogServiceImpl logService = new LogServiceImpl();
+  @InjectMocks private LogServiceImpl logService = new LogServiceImpl();
 
-    private ObjectMapper objectMapper = new CustomObjectMapper();
+  private ObjectMapper objectMapper = new CustomObjectMapper();
 
-    @Before
-    public void setup() {
-        LogMessagePopulator logMessagePopulator = new LogMessagePopulatorImpl();
-        ReflectionTestUtils.setField(logMessagePopulator, "systemId", "webcert");
-        ReflectionTestUtils.setField(logMessagePopulator, "systemName", "WebCert");
-        logService.setLogMessagePopulator(logMessagePopulator);
-    }
+  @Before
+  public void setup() {
+    LogMessagePopulator logMessagePopulator = new LogMessagePopulatorImpl();
+    ReflectionTestUtils.setField(logMessagePopulator, "systemId", "webcert");
+    ReflectionTestUtils.setField(logMessagePopulator, "systemName", "WebCert");
+    logService.setLogMessagePopulator(logMessagePopulator);
+  }
 
-    @Test
-    public void serviceSendsDocumentAndIdForCreate() throws Exception {
-        when(userService.getUser()).thenReturn(createUser());
+  @Test
+  public void serviceSendsDocumentAndIdForCreate() throws Exception {
+    when(userService.getUser()).thenReturn(createUser());
 
-        ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
+    ArgumentCaptor<MessageCreator> messageCreatorCaptor =
+        ArgumentCaptor.forClass(MessageCreator.class);
 
-        final var logRequest = LogRequest.builder()
+    final var logRequest =
+        LogRequest.builder()
             .intygId("abc123")
             .patientId(createPnr("19121212-1212"))
             .patientName("Hans Olof van der Test")
             .testIntyg(false)
             .build();
 
-        logService.logReadIntyg(logRequest);
+    logService.logReadIntyg(logRequest);
 
-        verify(template, only()).send(messageCreatorCaptor.capture());
+    verify(template, only()).send(messageCreatorCaptor.capture());
 
-        MessageCreator messageCreator = messageCreatorCaptor.getValue();
+    MessageCreator messageCreator = messageCreatorCaptor.getValue();
 
-        Session session = mock(Session.class);
-        ArgumentCaptor<String> intygReadMessageCaptor = ArgumentCaptor.forClass(String.class);
-        when(session.createTextMessage(intygReadMessageCaptor.capture())).thenReturn(null);
+    Session session = mock(Session.class);
+    ArgumentCaptor<String> intygReadMessageCaptor = ArgumentCaptor.forClass(String.class);
+    when(session.createTextMessage(intygReadMessageCaptor.capture())).thenReturn(null);
 
-        messageCreator.createMessage(session);
+    messageCreator.createMessage(session);
 
-        String body = intygReadMessageCaptor.getValue();
+    String body = intygReadMessageCaptor.getValue();
 
-        PdlLogMessage intygReadMessage = objectMapper.readValue(body, PdlLogMessage.class);
-        assertNotNull(intygReadMessage.getLogId());
-        assertEquals(ActivityType.READ, intygReadMessage.getActivityType());
-        assertEquals(ActivityPurpose.CARE_TREATMENT, intygReadMessage.getPurpose());
-        assertEquals("Intyg", intygReadMessage.getPdlResourceList().get(0).getResourceType());
-        assertEquals("abc123", intygReadMessage.getActivityLevel());
+    PdlLogMessage intygReadMessage = objectMapper.readValue(body, PdlLogMessage.class);
+    assertNotNull(intygReadMessage.getLogId());
+    assertEquals(ActivityType.READ, intygReadMessage.getActivityType());
+    assertEquals(ActivityPurpose.CARE_TREATMENT, intygReadMessage.getPurpose());
+    assertEquals("Intyg", intygReadMessage.getPdlResourceList().get(0).getResourceType());
+    assertEquals("abc123", intygReadMessage.getActivityLevel());
 
-        assertEquals("HSAID", intygReadMessage.getUserId());
-        assertEquals("", intygReadMessage.getUserName());
-        assertEquals("Läkare på vårdcentralen", intygReadMessage.getUserAssignment());
-        assertEquals("Överläkare", intygReadMessage.getUserTitle());
+    assertEquals("HSAID", intygReadMessage.getUserId());
+    assertEquals("", intygReadMessage.getUserName());
+    assertEquals("Läkare på vårdcentralen", intygReadMessage.getUserAssignment());
+    assertEquals("Överläkare", intygReadMessage.getUserTitle());
 
-        assertEquals("VARDENHET_ID", intygReadMessage.getUserCareUnit().getEnhetsId());
-        assertEquals("Vårdenheten", intygReadMessage.getUserCareUnit().getEnhetsNamn());
-        assertEquals("VARDGIVARE_ID", intygReadMessage.getUserCareUnit().getVardgivareId());
-        assertEquals("Vårdgivaren", intygReadMessage.getUserCareUnit().getVardgivareNamn());
+    assertEquals("VARDENHET_ID", intygReadMessage.getUserCareUnit().getEnhetsId());
+    assertEquals("Vårdenheten", intygReadMessage.getUserCareUnit().getEnhetsNamn());
+    assertEquals("VARDGIVARE_ID", intygReadMessage.getUserCareUnit().getVardgivareId());
+    assertEquals("Vårdgivaren", intygReadMessage.getUserCareUnit().getVardgivareNamn());
 
-        assertEquals("191212121212", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId());
-        assertEquals("", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn());
+    assertEquals(
+        "191212121212", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId());
+    assertEquals("", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn());
 
-        assertTrue(intygReadMessage.getTimestamp().minusSeconds(DELAY).isBefore(now()));
-        assertTrue(intygReadMessage.getTimestamp().plusSeconds(DELAY).isAfter(now()));
+    assertTrue(intygReadMessage.getTimestamp().minusSeconds(DELAY).isBefore(now()));
+    assertTrue(intygReadMessage.getTimestamp().plusSeconds(DELAY).isAfter(now()));
 
-        assertEquals("webcert", intygReadMessage.getSystemId());
-        assertEquals("WebCert", intygReadMessage.getSystemName());
-    }
+    assertEquals("webcert", intygReadMessage.getSystemId());
+    assertEquals("WebCert", intygReadMessage.getSystemName());
+  }
 
-    @Test(expected = JmsException.class)
-    public void logServiceJmsException() throws Exception {
-        when(userService.getUser()).thenReturn(createUser());
-        doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  @Test(expected = JmsException.class)
+  public void logServiceJmsException() throws Exception {
+    when(userService.getUser()).thenReturn(createUser());
+    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
-        final var logRequest = LogRequest.builder()
+    final var logRequest =
+        LogRequest.builder()
             .intygId("abc123")
             .patientId(createPnr("19121212-1212"))
             .patientName("Hans Olof van der Test")
             .testIntyg(false)
             .build();
 
-        try {
-            logService.logReadIntyg(logRequest);
-        } finally {
-            verify(template, times(1)).send(any(MessageCreator.class));
-        }
+    try {
+      logService.logReadIntyg(logRequest);
+    } finally {
+      verify(template, times(1)).send(any(MessageCreator.class));
     }
+  }
 
-    public void testActivityArgsAreIdenticalToAdditionalInfo() {
-        final var logRequest = LogRequest.builder()
+  public void testActivityArgsAreIdenticalToAdditionalInfo() {
+    final var logRequest =
+        LogRequest.builder()
             .intygId("abc123")
             .patientId(createPnr("19121212-1212"))
             .patientName("Hans Olof van der Test")
@@ -176,74 +175,70 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
             .testIntyg(false)
             .build();
 
-        logService.logPrintIntygAsPDF(logRequest);
-    }
+    logService.logPrintIntygAsPDF(logRequest);
+  }
 
-    @Test
-    public void logServiceTestIntygShouldNotBeLogged() throws Exception {
-        when(userService.getUser()).thenReturn(createUser());
+  @Test
+  public void logServiceTestIntygShouldNotBeLogged() throws Exception {
+    when(userService.getUser()).thenReturn(createUser());
 
-        final var logRequest = LogRequest.builder()
+    final var logRequest =
+        LogRequest.builder()
             .intygId("abc123")
             .patientId(createPnr("19121212-1212"))
             .patientName("Hans Olof van der Test")
             .testIntyg(true)
             .build();
 
-        logService.logReadIntyg(logRequest);
+    logService.logReadIntyg(logRequest);
 
-        verify(template, times(0)).send(any(MessageCreator.class));
-    }
+    verify(template, times(0)).send(any(MessageCreator.class));
+  }
 
-    @Test
-    public void shouldLogReadLevelOne() {
-        final var user = createUser();
-        final var patientId = "191212121212";
-        final var populatedMessage = mock(PdlLogMessage.class);
-        final var logRequest = mock(LogRequest.class);
+  @Test
+  public void shouldLogReadLevelOne() {
+    final var user = createUser();
+    final var patientId = "191212121212";
+    final var populatedMessage = mock(PdlLogMessage.class);
+    final var logRequest = mock(LogRequest.class);
 
-        when(logRequest.getPatientId())
-            .thenReturn(createPnr(patientId));
-        when(logRequestFactory.createLogRequestFromUser(user, patientId))
-            .thenReturn(
-                logRequest
-            );
+    when(logRequest.getPatientId()).thenReturn(createPnr(patientId));
+    when(logRequestFactory.createLogRequestFromUser(user, patientId)).thenReturn(logRequest);
 
-        logService.logReadLevelOne(user, patientId);
+    logService.logReadLevelOne(user, patientId);
 
-        verify(template, only()).send(any(MessageCreator.class));
-    }
+    verify(template, only()).send(any(MessageCreator.class));
+  }
 
-    private WebCertUser createUser() {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+  private WebCertUser createUser() {
+    Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
-        Vardenhet ve = new Vardenhet("VARDENHET_ID", "Vårdenheten");
+    Vardenhet ve = new Vardenhet("VARDENHET_ID", "Vårdenheten");
 
-        Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
-        vg.setVardenheter(Collections.singletonList(ve));
+    Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
+    vg.setVardenheter(Collections.singletonList(ve));
 
-        WebCertUser user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-        user.setHsaId("HSAID");
-        user.setNamn("Markus Gran");
-        user.setVardgivare(Collections.singletonList(vg));
-        user.changeValdVardenhet("VARDENHET_ID");
-        user.setTitel("Överläkare");
-        user.setMiuNamnPerEnhetsId(buildMiUMap());
+    WebCertUser user = new WebCertUser();
+    user.setRoles(AuthoritiesResolverUtil.toMap(role));
+    user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+    user.setHsaId("HSAID");
+    user.setNamn("Markus Gran");
+    user.setVardgivare(Collections.singletonList(vg));
+    user.changeValdVardenhet("VARDENHET_ID");
+    user.setTitel("Överläkare");
+    user.setMiuNamnPerEnhetsId(buildMiUMap());
 
-        return user;
-    }
+    return user;
+  }
 
-    private Map<String, String> buildMiUMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("VARDENHET_ID", "Läkare på vårdcentralen");
-        return map;
-    }
+  private Map<String, String> buildMiUMap() {
+    Map<String, String> map = new HashMap<>();
+    map.put("VARDENHET_ID", "Läkare på vårdcentralen");
+    return map;
+  }
 
-    private Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer"));
-    }
-
+  private Personnummer createPnr(String personId) {
+    return Personnummer.createPersonnummer(personId)
+        .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer"));
+  }
 }

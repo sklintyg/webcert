@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,30 +32,30 @@ import org.springframework.stereotype.Component;
 @Setter
 public class ServiceNowStubState {
 
-    private boolean subscriptionReturnValue = true;
-    private static final List<String> NOT_SUBSCRIBED = List.of("121212-1212", "770523-2382");
-    private int httpErrorCode = 0;
-    private Map<String, List<String>> activeSubscriptions = new HashMap<>();
+  private boolean subscriptionReturnValue = true;
+  private static final List<String> NOT_SUBSCRIBED = List.of("121212-1212", "770523-2382");
+  private int httpErrorCode = 0;
+  private Map<String, List<String>> activeSubscriptions = new HashMap<>();
 
-    @Value("#{${servicenow.service.codes.eleg}}")
-    private List<String> elegServiceCodes;
+  @Value("#{${servicenow.service.codes.eleg}}")
+  private List<String> elegServiceCodes;
 
-    @Value("#{${servicenow.service.codes.siths}}")
-    private List<String> sithsServiceCodes;
+  @Value("#{${servicenow.service.codes.siths}}")
+  private List<String> sithsServiceCodes;
 
-    public List<String> getServiceCodeList() {
-        return Stream.concat(elegServiceCodes.stream(), sithsServiceCodes.stream()).toList();
-    }
+  public List<String> getServiceCodeList() {
+    return Stream.concat(elegServiceCodes.stream(), sithsServiceCodes.stream()).toList();
+  }
 
-    public boolean getSubscriptionReturnValue() {
-        return subscriptionReturnValue;
-    }
+  public boolean getSubscriptionReturnValue() {
+    return subscriptionReturnValue;
+  }
 
-    public boolean isNotSubscribed(String orgNumber) {
-        return NOT_SUBSCRIBED.contains(orgNumber);
-    }
+  public boolean isNotSubscribed(String orgNumber) {
+    return NOT_SUBSCRIBED.contains(orgNumber);
+  }
 
-    public void clearActiveSubscriptions() {
-        activeSubscriptions.clear();
-    }
+  public void clearActiveSubscriptions() {
+    activeSubscriptions.clear();
+  }
 }

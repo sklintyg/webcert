@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,47 +28,44 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "start",
-    "slut"
-})
+@JsonPropertyOrder({"start", "slut"})
 public class Giltighetsperiod {
 
-    @JsonProperty("start")
-    private String start;
-    @JsonProperty("slut")
-    private Object slut;
-    @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+  @JsonProperty("start")
+  private String start;
 
-    @JsonProperty("start")
-    public String getStart() {
-        return start;
-    }
+  @JsonProperty("slut")
+  private Object slut;
 
-    @JsonProperty("start")
-    public void setStart(String start) {
-        this.start = start;
-    }
+  @JsonIgnore private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("slut")
-    public Object getSlut() {
-        return slut;
-    }
+  @JsonProperty("start")
+  public String getStart() {
+    return start;
+  }
 
-    @JsonProperty("slut")
-    public void setSlut(Object slut) {
-        this.slut = slut;
-    }
+  @JsonProperty("start")
+  public void setStart(String start) {
+    this.start = start;
+  }
 
-    @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
+  @JsonProperty("slut")
+  public Object getSlut() {
+    return slut;
+  }
 
-    @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
+  @JsonProperty("slut")
+  public void setSlut(Object slut) {
+    this.slut = slut;
+  }
 
+  @JsonAnyGetter
+  public Map<String, Object> getAdditionalProperties() {
+    return this.additionalProperties;
+  }
+
+  @JsonAnySetter
+  public void setAdditionalProperty(String name, Object value) {
+    this.additionalProperties.put(name, value);
+  }
 }

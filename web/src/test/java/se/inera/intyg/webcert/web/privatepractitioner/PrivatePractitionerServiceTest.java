@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.privatepractitioner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,100 +52,103 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerServiceTest {
 
-    @Mock
-    WebCertUserService webCertUserService;
-    @Mock
-    PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    @Mock
-    RegisterPrivatePractitionerFactory registerPrivatePractitionerFactory;
-    @Mock
-    UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
-    @Mock
-    PrivatePractitionerAccessValidationService privatePractitionerAccessValidationService;
-    @InjectMocks
-    PrivatePractitionerService service;
+  @Mock WebCertUserService webCertUserService;
+  @Mock PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+  @Mock RegisterPrivatePractitionerFactory registerPrivatePractitionerFactory;
+  @Mock UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
+  @Mock PrivatePractitionerAccessValidationService privatePractitionerAccessValidationService;
+  @InjectMocks PrivatePractitionerService service;
 
-    WebCertUser user;
+  WebCertUser user;
 
-    void mockUser() {
-        user = new WebCertUser();
-        user.setPersonId(DR_KRANSTEGE_PERSON_ID);
-        user.setNamn(DR_KRANSTEGE_NAME);
-        user.setHsaId(DR_KRANSTEGE_HSA_ID);
-        when(webCertUserService.getUser()).thenReturn(user);
-    }
+  void mockUser() {
+    user = new WebCertUser();
+    user.setPersonId(DR_KRANSTEGE_PERSON_ID);
+    user.setNamn(DR_KRANSTEGE_NAME);
+    user.setHsaId(DR_KRANSTEGE_HSA_ID);
+    when(webCertUserService.getUser()).thenReturn(user);
+  }
 
-    @Test
-    void shouldThrowIfPrivatePractitionerIsNotUnauthorized() {
-        mockUser();
-        when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(false);
-        assertThrows(WebCertServiceException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO));
-    }
+  @Test
+  void shouldThrowIfPrivatePractitionerIsNotUnauthorized() {
+    mockUser();
+    when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(false);
+    assertThrows(
+        WebCertServiceException.class,
+        () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO));
+  }
 
-    @Test
-    void shouldRegisterPrivatePractitioner() {
-        mockUser();
-        when(registerPrivatePractitionerFactory.create(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO)).thenReturn(
-            DR_KRANSTEGE_REGISTRATION_REQUEST);
+  @Test
+  void shouldRegisterPrivatePractitioner() {
+    mockUser();
+    when(registerPrivatePractitionerFactory.create(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO))
+        .thenReturn(DR_KRANSTEGE_REGISTRATION_REQUEST);
 
-        when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(true);
+    when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(true);
 
-        service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
-        verify(privatePractitionerIntegrationService).registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST);
-    }
+    service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
+    verify(privatePractitionerIntegrationService)
+        .registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST);
+  }
 
-    @Test
-    void shouldReturnConfigResponse() {
-        when(privatePractitionerIntegrationService.getPrivatePractitionerConfig()).thenReturn(PRIVATE_PRACTITIONER_CONFIG);
-        PrivatePractitionerConfigResponse result = service.getPrivatePractitionerConfig();
-        assertEquals(PRIVATE_PRACTITIONER_CONFIG_DTO, result);
-    }
+  @Test
+  void shouldReturnConfigResponse() {
+    when(privatePractitionerIntegrationService.getPrivatePractitionerConfig())
+        .thenReturn(PRIVATE_PRACTITIONER_CONFIG);
+    PrivatePractitionerConfigResponse result = service.getPrivatePractitionerConfig();
+    assertEquals(PRIVATE_PRACTITIONER_CONFIG_DTO, result);
+  }
 
-    @Test
-    void shouldReturnHospInformation() {
-        mockUser();
-        when(privatePractitionerIntegrationService.getHospInformation(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
-        final var result = service.getHospInformation();
-        assertEquals(DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO, result);
-    }
+  @Test
+  void shouldReturnHospInformation() {
+    mockUser();
+    when(privatePractitionerIntegrationService.getHospInformation(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(DR_KRANSTEGE_HOSP_INFO);
+    final var result = service.getHospInformation();
+    assertEquals(DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO, result);
+  }
 
-    @Test
-    void shouldReturnLoggedInPrivatePractitioner() {
-        mockUser();
-        when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
-        final var actual = service.getLoggedInPrivatePractitioner();
-        assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
-    }
+  @Test
+  void shouldReturnLoggedInPrivatePractitioner() {
+    mockUser();
+    when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+        .thenReturn(DR_KRANSTEGE);
+    final var actual = service.getLoggedInPrivatePractitioner();
+    assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
+  }
 
-    @Test
-    void shouldReturnPrivatePractitioner() {
-        when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_HSA_ID)).thenReturn(DR_KRANSTEGE);
-        final var actual = service.getPrivatePractitioner(DR_KRANSTEGE_HSA_ID);
-        assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
-    }
+  @Test
+  void shouldReturnPrivatePractitioner() {
+    when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_HSA_ID))
+        .thenReturn(DR_KRANSTEGE);
+    final var actual = service.getPrivatePractitioner(DR_KRANSTEGE_HSA_ID);
+    assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
+  }
 
-    @Test
-    void shouldEditPrivatePractitioner() {
-        mockUser();
+  @Test
+  void shouldEditPrivatePractitioner() {
+    mockUser();
 
-        when(privatePractitionerAccessValidationService.hasAccessToEdit(user)).thenReturn(true);
+    when(privatePractitionerAccessValidationService.hasAccessToEdit(user)).thenReturn(true);
 
-        when(updatePrivatePractitionerFactory.create(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(
-            kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build());
+    when(updatePrivatePractitionerFactory.create(DR_KRANSTEGE_UPDATE_REQUEST_DTO))
+        .thenReturn(kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build());
 
-        when(privatePractitionerIntegrationService.updatePrivatePractitioner(
-            kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build())).thenReturn(
-            DR_KRANSTEGE);
+    when(privatePractitionerIntegrationService.updatePrivatePractitioner(
+            kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build()))
+        .thenReturn(DR_KRANSTEGE);
 
-        final var actual = service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
+    final var actual = service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
 
-        assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
-    }
+    assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
+  }
 
-    @Test
-    void shouldThrowIfPrivatePractitionerIsNotAuthorizedToEdit() {
-        mockUser();
-        when(privatePractitionerAccessValidationService.hasAccessToEdit(user)).thenReturn(false);
-        assertThrows(WebCertServiceException.class, () -> service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO));
-    }
+  @Test
+  void shouldThrowIfPrivatePractitionerIsNotAuthorizedToEdit() {
+    mockUser();
+    when(privatePractitionerAccessValidationService.hasAccessToEdit(user)).thenReturn(false);
+    assertThrows(
+        WebCertServiceException.class,
+        () -> service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO));
+  }
 }

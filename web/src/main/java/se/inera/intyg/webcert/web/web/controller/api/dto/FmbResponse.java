@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,85 +26,89 @@ import java.util.List;
 @ApiModel(description = "An ICD10 code and its associated form data")
 public final class FmbResponse {
 
-    @ApiModelProperty(name = "ICD10 code", dataType = "String")
-    private String icd10Code;
+  @ApiModelProperty(name = "ICD10 code", dataType = "String")
+  private String icd10Code;
 
-    @ApiModelProperty(name = "ICD10 description", dataType = "String")
-    private String icd10Description;
+  @ApiModelProperty(name = "ICD10 description", dataType = "String")
+  private String icd10Description;
 
-    @ApiModelProperty(name = "FMB diagnose title", dataType = "String")
-    private String diagnosTitle;
+  @ApiModelProperty(name = "FMB diagnose title", dataType = "String")
+  private String diagnosTitle;
 
-    @ApiModelProperty(name = "FMB related diagnose codes", dataType = "String")
-    private String relatedDiagnoses;
+  @ApiModelProperty(name = "FMB related diagnose codes", dataType = "String")
+  private String relatedDiagnoses;
 
-    @ApiModelProperty(name = "Reference description", dataType = "String")
-    private String referenceDescription;
+  @ApiModelProperty(name = "Reference description", dataType = "String")
+  private String referenceDescription;
 
-    @ApiModelProperty(name = "Reference Link", dataType = "String")
-    private String referenceLink;
+  @ApiModelProperty(name = "Reference Link", dataType = "String")
+  private String referenceLink;
 
-    @ApiModelProperty(name = "forms")
-    private List<FmbForm> forms;
+  @ApiModelProperty(name = "forms")
+  private List<FmbForm> forms;
 
-    public FmbResponse() {
-    }
+  public FmbResponse() {}
 
-    private FmbResponse(
-        final String icd10Code,
-        final String icd10Description,
-        final String diagnosTitle,
-        final String relatedDiagnoses,
-        final String referenceDescription,
-        final String referenceLink,
-        final List<FmbForm> forms) {
-        this.icd10Code = icd10Code;
-        this.icd10Description = icd10Description;
-        this.diagnosTitle = diagnosTitle;
-        this.relatedDiagnoses = relatedDiagnoses;
-        this.referenceDescription = referenceDescription;
-        this.referenceLink = referenceLink;
-        this.forms = Collections.unmodifiableList(forms);
+  private FmbResponse(
+      final String icd10Code,
+      final String icd10Description,
+      final String diagnosTitle,
+      final String relatedDiagnoses,
+      final String referenceDescription,
+      final String referenceLink,
+      final List<FmbForm> forms) {
+    this.icd10Code = icd10Code;
+    this.icd10Description = icd10Description;
+    this.diagnosTitle = diagnosTitle;
+    this.relatedDiagnoses = relatedDiagnoses;
+    this.referenceDescription = referenceDescription;
+    this.referenceLink = referenceLink;
+    this.forms = Collections.unmodifiableList(forms);
+  }
 
-    }
+  public static FmbResponse of(
+      final String icd10Code,
+      final String icd10Description,
+      final String diagnosTitle,
+      final String relatedDiagnoses,
+      final String referenceDescription,
+      final String referenceLink,
+      final List<FmbForm> forms) {
+    return new FmbResponse(
+        icd10Code,
+        icd10Description,
+        diagnosTitle,
+        relatedDiagnoses,
+        referenceDescription,
+        referenceLink,
+        forms);
+  }
 
-    public static FmbResponse of(
-        final String icd10Code,
-        final String icd10Description,
-        final String diagnosTitle,
-        final String relatedDiagnoses,
-        final String referenceDescription,
-        final String referenceLink,
-        final List<FmbForm> forms) {
-        return new FmbResponse(icd10Code, icd10Description, diagnosTitle, relatedDiagnoses, referenceDescription, referenceLink, forms);
-    }
+  public String getIcd10Code() {
+    return icd10Code;
+  }
 
-    public String getIcd10Code() {
-        return icd10Code;
-    }
+  public List<FmbForm> getForms() {
+    return forms;
+  }
 
-    public List<FmbForm> getForms() {
-        return forms;
-    }
+  public String getIcd10Description() {
+    return icd10Description;
+  }
 
-    public String getIcd10Description() {
-        return icd10Description;
-    }
+  public String getDiagnosTitle() {
+    return diagnosTitle;
+  }
 
-    public String getDiagnosTitle() {
-        return diagnosTitle;
-    }
+  public String getRelatedDiagnoses() {
+    return relatedDiagnoses;
+  }
 
-    public String getRelatedDiagnoses() {
-        return relatedDiagnoses;
-    }
+  public String getReferenceDescription() {
+    return referenceDescription;
+  }
 
-    public String getReferenceDescription() {
-        return referenceDescription;
-    }
-
-    public String getReferenceLink() {
-        return referenceLink;
-    }
-
+  public String getReferenceLink() {
+    return referenceLink;
+  }
 }

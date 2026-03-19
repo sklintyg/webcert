@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,37 +34,36 @@ import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradE
 
 public class IntegreradeEnheterBootstrapBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntegreradeEnheterBootstrapBean.class);
+  private static final Logger LOG = LoggerFactory.getLogger(IntegreradeEnheterBootstrapBean.class);
 
-    @Autowired
-    private IntegreradEnhetRepository integreradEnhetRepository;
+  @Autowired private IntegreradEnhetRepository integreradEnhetRepository;
 
-    @PostConstruct
-    public void initData() {
-        List<Resource> files = getResourceListing("bootstrap-integrerade-enheter/*.json");
-        for (Resource res : files) {
-            LOG.debug("Loading resource " + res.getFilename());
-            addIntegreradEnhet(res);
-        }
+  @PostConstruct
+  public void initData() {
+    List<Resource> files = getResourceListing("bootstrap-integrerade-enheter/*.json");
+    for (Resource res : files) {
+      LOG.debug("Loading resource " + res.getFilename());
+      addIntegreradEnhet(res);
     }
+  }
 
-    private void addIntegreradEnhet(Resource res) {
-        try {
-            IntegreradEnhet integreradEnhet = new CustomObjectMapper().readValue(res.getInputStream(), IntegreradEnhet.class);
-            integreradEnhet.setSkapadDatum(LocalDateTime.now());
-            integreradEnhetRepository.save(integreradEnhet);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+  private void addIntegreradEnhet(Resource res) {
+    try {
+      IntegreradEnhet integreradEnhet =
+          new CustomObjectMapper().readValue(res.getInputStream(), IntegreradEnhet.class);
+      integreradEnhet.setSkapadDatum(LocalDateTime.now());
+      integreradEnhetRepository.save(integreradEnhet);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    private List<Resource> getResourceListing(String classpathResourcePath) {
-        try {
-            PathMatchingResourcePatternResolver r = new PathMatchingResourcePatternResolver();
-            return Arrays.asList(r.getResources(classpathResourcePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+  private List<Resource> getResourceListing(String classpathResourcePath) {
+    try {
+      PathMatchingResourcePatternResolver r = new PathMatchingResourcePatternResolver();
+      return Arrays.asList(r.getResources(classpathResourcePath));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 }

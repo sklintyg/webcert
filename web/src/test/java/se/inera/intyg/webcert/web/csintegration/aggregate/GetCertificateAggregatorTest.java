@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,44 +34,39 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 @ExtendWith(MockitoExtension.class)
 class GetCertificateAggregatorTest {
 
-    private static final String ID = "ID";
-    private static final Certificate CERTIFICATE_FROM_CS = new Certificate();
-    private static final Certificate CERTIFICATE_FROM_WC = new Certificate();
+  private static final String ID = "ID";
+  private static final Certificate CERTIFICATE_FROM_CS = new Certificate();
+  private static final Certificate CERTIFICATE_FROM_WC = new Certificate();
 
-    GetCertificateFacadeService getCertificateFromWC;
-    GetCertificateFacadeService getCertificateFromCS;
-    GetCertificateFacadeService aggregator;
+  GetCertificateFacadeService getCertificateFromWC;
+  GetCertificateFacadeService getCertificateFromCS;
+  GetCertificateFacadeService aggregator;
 
-    @BeforeEach
-    void setup() {
-        getCertificateFromWC = mock(GetCertificateFacadeService.class);
-        getCertificateFromCS = mock(GetCertificateFacadeService.class);
+  @BeforeEach
+  void setup() {
+    getCertificateFromWC = mock(GetCertificateFacadeService.class);
+    getCertificateFromCS = mock(GetCertificateFacadeService.class);
 
-        aggregator = new GetCertificateAggregator(
-            getCertificateFromWC,
-            getCertificateFromCS
-        );
-    }
+    aggregator = new GetCertificateAggregator(getCertificateFromWC, getCertificateFromCS);
+  }
 
-    @Test
-    void shouldReturnCertificateFromCSIfExists() {
-        when(getCertificateFromCS.getCertificate(ID, false, true))
-            .thenReturn(CERTIFICATE_FROM_CS);
+  @Test
+  void shouldReturnCertificateFromCSIfExists() {
+    when(getCertificateFromCS.getCertificate(ID, false, true)).thenReturn(CERTIFICATE_FROM_CS);
 
-        final var response = aggregator.getCertificate(ID, false, true);
-        verify(getCertificateFromCS, times(1)).getCertificate(ID, false, true);
+    final var response = aggregator.getCertificate(ID, false, true);
+    verify(getCertificateFromCS, times(1)).getCertificate(ID, false, true);
 
-        assertEquals(CERTIFICATE_FROM_CS, response);
-    }
+    assertEquals(CERTIFICATE_FROM_CS, response);
+  }
 
-    @Test
-    void shouldReturnCertificateFromWCIfCertificateDoesNotExistInCS() {
-        when(getCertificateFromWC.getCertificate(ID, true, false))
-            .thenReturn(CERTIFICATE_FROM_WC);
+  @Test
+  void shouldReturnCertificateFromWCIfCertificateDoesNotExistInCS() {
+    when(getCertificateFromWC.getCertificate(ID, true, false)).thenReturn(CERTIFICATE_FROM_WC);
 
-        final var response = aggregator.getCertificate(ID, true, false);
-        verify(getCertificateFromWC, times(1)).getCertificate(ID, true, false);
+    final var response = aggregator.getCertificate(ID, true, false);
+    verify(getCertificateFromWC, times(1)).getCertificate(ID, true, false);
 
-        assertEquals(CERTIFICATE_FROM_WC, response);
-    }
+    assertEquals(CERTIFICATE_FROM_WC, response);
+  }
 }

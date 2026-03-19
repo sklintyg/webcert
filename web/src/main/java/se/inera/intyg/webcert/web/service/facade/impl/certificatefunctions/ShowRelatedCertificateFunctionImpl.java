@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,49 +37,51 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @Component
 public class ShowRelatedCertificateFunctionImpl implements ShowRelatedCertificateFunction {
 
-    private final UtkastService utkastService;
+  private final UtkastService utkastService;
 
-    public ShowRelatedCertificateFunctionImpl(UtkastService utkastService) {
-        this.utkastService = utkastService;
+  public ShowRelatedCertificateFunctionImpl(UtkastService utkastService) {
+    this.utkastService = utkastService;
+  }
+
+  @Override
+  public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
+    if (isShowDoiFromDb(certificate, webCertUser)) {
+      return Optional.of(
+          ResourceLinkDTO.create(
+              ResourceLinkTypeDTO.SHOW_RELATED_CERTIFICATE,
+              "Visa dödsorsaksintyg",
+              "Visa det dödsorsaksintyg som har skapats från dödsbeviset.",
+              true));
+    }
+    return Optional.empty();
+  }
+
+  private boolean isShowDoiFromDb(Certificate certificate, WebCertUser webCertUser) {
+    if (!DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificate.getMetadata().getType())) {
+      return false;
     }
 
-    @Override
-    public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {
-        if (isShowDoiFromDb(certificate, webCertUser)) {
-            return Optional.of(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.SHOW_RELATED_CERTIFICATE,
-                    "Visa dödsorsaksintyg",
-                    "Visa det dödsorsaksintyg som har skapats från dödsbeviset.",
-                    true
-                )
-            );
-        }
-        return Optional.empty();
-    }
-
-    private boolean isShowDoiFromDb(Certificate certificate, WebCertUser webCertUser) {
-        if (!DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificate.getMetadata().getType())) {
-            return false;
-        }
-
-        final var existingCertificates = utkastService.checkIfPersonHasExistingIntyg(
-            Personnummer.createPersonnummer(certificate.getMetadata().getPatient().getPersonId().getId()).orElseThrow(),
+    final var existingCertificates =
+        utkastService.checkIfPersonHasExistingIntyg(
+            Personnummer.createPersonnummer(
+                    certificate.getMetadata().getPatient().getPersonId().getId())
+                .orElseThrow(),
             webCertUser,
-            certificate.getMetadata().getId()
-        );
+            certificate.getMetadata().getId());
 
-        final var doiDraft = existingCertificates
+    final var doiDraft =
+        existingCertificates
             .getOrDefault(UTKAST_INDICATOR, Collections.emptyMap())
             .getOrDefault(DoiModuleEntryPoint.MODULE_ID, null);
-        final var doiCertificate = existingCertificates
+    final var doiCertificate =
+        existingCertificates
             .getOrDefault(INTYG_INDICATOR, Collections.emptyMap())
             .getOrDefault(DoiModuleEntryPoint.MODULE_ID, null);
 
-        return isShowDoiEnabled(doiDraft) || isShowDoiEnabled(doiCertificate);
-    }
+    return isShowDoiEnabled(doiDraft) || isShowDoiEnabled(doiCertificate);
+  }
 
-    private static boolean isShowDoiEnabled(PreviousIntyg existing) {
-        return existing != null && existing.isEnableShowDoiButton();
-    }
+  private static boolean isShowDoiEnabled(PreviousIntyg existing) {
+    return existing != null && existing.isEnableShowDoiButton();
+  }
 }

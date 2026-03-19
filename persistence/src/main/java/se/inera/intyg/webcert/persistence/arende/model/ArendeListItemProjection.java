@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,24 +24,24 @@ import lombok.Getter;
 import se.inera.intyg.webcert.persistence.model.Status;
 
 /**
- * Lightweight projection for Arende list queries.
- * Only contains fields needed for list display, avoiding EAGER fetch of collections.
+ * Lightweight projection for Arende list queries. Only contains fields needed for list display,
+ * avoiding EAGER fetch of collections.
  */
 @Getter
 @AllArgsConstructor
 public class ArendeListItemProjection {
 
-    private final String meddelandeId;
-    private final String intygId;
-    private final String intygTyp;
-    private final String signeratAv;
-    private final String signeratAvName;
-    private final Status status;
-    private final String patientPersonId;
-    private final LocalDateTime senasteHandelse;
-    private final Boolean vidarebefordrad;
-    private final String skickatAv;
-    private final ArendeAmne amne;
-    private final String enhetName;
-    private final String vardgivareName;
+  private final String meddelandeId;
+  private final String intygId;
+  private final String intygTyp;
+  private final String signeratAv;
+  private final String signeratAvName;
+  private final Status status;
+  private final String patientPersonId;
+  private final LocalDateTime senasteHandelse;
+  private final Boolean vidarebefordrad;
+  private final String skickatAv;
+  private final ArendeAmne amne;
+  private final String enhetName;
+  private final String vardgivareName;
 }
