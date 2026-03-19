@@ -52,9 +52,9 @@ subprojects {
         java {
             target 'src/*/java/**/*.java'
             licenseHeaderFile(rootProject.file('spotless.license.txt'), 'package ')
+            googleJavaFormat(googleJavaFormatVersion)
             removeUnusedImports()
             forbidWildcardImports()
-            googleJavaFormat(googleJavaFormatVersion)
             formatAnnotations()
         }
     }
