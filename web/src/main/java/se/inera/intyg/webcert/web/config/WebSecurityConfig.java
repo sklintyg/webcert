@@ -158,10 +158,10 @@ public class WebSecurityConfig {
   @Bean
   public RelyingPartyRegistrationRepository relyingPartyRegistrationRepository()
       throws KeyStoreException,
-      UnrecoverableKeyException,
-      NoSuchAlgorithmException,
-      IOException,
-      CertificateException {
+          UnrecoverableKeyException,
+          NoSuchAlgorithmException,
+          IOException,
+          CertificateException {
 
     final var keyStoreSiths = KeyStore.getInstance(keyStoreTypeSiths);
     keyStoreSiths.load(
@@ -297,11 +297,10 @@ public class WebSecurityConfig {
   Saml2AuthenticationRequestResolver authenticationRequestResolver(
       RelyingPartyRegistrationRepository registrations) {
     final var registrationResolver = new DefaultRelyingPartyRegistrationResolver(registrations);
-    final var authenticationRequestResolver = new OpenSaml4AuthenticationRequestResolver(
-        registrationResolver);
-    authenticationRequestResolver.setAuthnRequestCustomizer(context ->
-        context.getAuthnRequest().setAttributeConsumingServiceIndex(1)
-    );
+    final var authenticationRequestResolver =
+        new OpenSaml4AuthenticationRequestResolver(registrationResolver);
+    authenticationRequestResolver.setAuthnRequestCustomizer(
+        context -> context.getAuthnRequest().setAttributeConsumingServiceIndex(1));
     return authenticationRequestResolver;
   }
 
