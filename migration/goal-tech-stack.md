@@ -10,6 +10,10 @@ The target services (**certificate-service** and **intyg-proxy-service**) repres
 document defines what Webcert's tech stack should look like after migration, derived from what those two services already use and the
 acceptance criteria for this migration.
 
+> **Migration Philosophy:** Prefer incremental, non-breaking changes. Each step should leave the application in a working state.
+> Existing tests should remain structurally unchanged throughout the migration — do not rewrite tests unless directly required by an
+> acceptance criterion. Avoid introducing new test infrastructure (e.g., Testcontainers) as part of this migration.
+
 ### Acceptance Criteria
 
 1. Running as an executable Spring Boot application (JAR with embedded Tomcat)
@@ -46,7 +50,7 @@ acceptance criteria for this migration.
 | **SOAP Services**      | Apache CXF (cxf-rt-frontend-jaxws) — 6 server endpoints       | **Apache CXF** — retained, consistent with both target services; configured via Java `@Configuration` instead of XML |
 | **SOAP Clients**       | 15+ JAX-WS clients (ws-config.xml, TLS/NTJP)                  | **Apache CXF** JAX-WS clients — configured via Java `@Configuration` with programmatic TLS setup |
 | **SOAP Codegen**       | JAXB2 Basics + XJC (manual/pre-generated)                      | **WSDL2Java** plugin (`com.yupzip.wsdl2java`) + JAXB Runtime                 |
-| **Outbound REST**      | Spring `RestClient`, `RestTemplate`, Apache HttpClient 5       | **Spring Boot Starter WebFlux** (`WebClient`) — for outbound HTTP integrations; consolidate all REST clients |
+| **Outbound REST**      | Spring `RestClient`, `RestTemplate`, Apache HttpClient 5       | **Spring `RestClient`** (Spring Boot Starter Web) — for outbound HTTP integrations; consolidate all REST clients; no reactive stack |
 | **Health/Metrics**     | Prometheus `simpleclient_servlet` (manual MetricsServlet)      | **Spring Boot Actuator** — standardized health checks, metrics, management   |
 | **API Documentation**  | Swagger (swagger-jaxrs, non-prod)                              | **SpringDoc OpenAPI** — Spring MVC native OpenAPI documentation              |
 
@@ -61,7 +65,7 @@ acceptance criteria for this migration.
 | **JPA Config**       | `repository-context.xml` + `JpaConfig` Java   | **Spring Boot auto-configuration** — `spring.datasource.*` and `spring.jpa.*` properties |
 | **Schema Migration** | Liquibase                                     | **Liquibase** — auto-configured by Spring Boot             |
 | **Production DB**    | MySQL (mysql-connector-j)                     | **MySQL** — no change                                      |
-| **Test DB**          | H2 (in-memory, MySQL mode)                    | **Testcontainers MySQL** — real database in tests          |
+| **Test DB**          | H2 (in-memory, MySQL mode)                    | **H2 (in-memory, MySQL mode)** — retained for tests; no Testcontainers in this migration |
 
 ---
 
@@ -74,7 +78,7 @@ acceptance criteria for this migration.
 | **Camel Routing**    | Apache Camel with XML-configured routes (2 Camel contexts)           | **Spring Boot Starter Camel** with Java DSL routes — `RouteBuilder` beans, no XML contexts |
 | **Camel Contexts**   | `webcertNotification` + `webcertCertificateSender` (XML)             | **Single Camel context** managed by Spring Boot Camel auto-configuration |
 | **7 JMS Queues**     | Hardcoded queue names in XML and properties                          | **Externalized via `application.yml`** — same queues, Spring Boot managed |
-| **JMS Testing**      | —                                                                    | **Testcontainers ActiveMQ** — real broker in integration tests     |
+| **JMS Testing**      | —                                                                    | **Existing in-memory/stub setup retained** — no Testcontainers in this migration     |
 
 ---
 
@@ -177,9 +181,9 @@ Each of the 24 infra modules must be handled individually:
 | Infra Module                            | Strategy                                                                                 |
 |-----------------------------------------|------------------------------------------------------------------------------------------|
 | **hsa-integration-api**                 | **Replace** — call HSA via intyg-proxy-service REST APIs directly                        |
-| **hsa-integration-intyg-proxy-service** | **Replace** — internalize as local REST client using Spring `WebClient`                  |
+| **hsa-integration-intyg-proxy-service** | **Replace** — internalize as local REST client using Spring `RestClient`                 |
 | **pu-integration-api**                  | **Replace** — call PU via intyg-proxy-service REST APIs directly                         |
-| **pu-integration-intyg-proxy-service**  | **Replace** — internalize as local REST client using Spring `WebClient`                  |
+| **pu-integration-intyg-proxy-service**  | **Replace** — internalize as local REST client using Spring `RestClient`                 |
 | **security-authorities**                | **Internalize** — extract authority resolution logic into local module                   |
 | **security-common**                     | **Internalize** — extract common security utilities into local module                    |
 | **security-filter**                     | **Internalize** — rewrite filters as local Spring Security components                    |
@@ -210,12 +214,12 @@ Each of the 24 infra modules must be handled individually:
 | **Unit Testing**      | JUnit 5 (Jupiter) + JUnit 4 (~33% legacy)         | **JUnit 5 only** — migrate all JUnit 4 tests; remove vintage engine           |
 | **Mocking**           | Mockito (Java agent + mockito-junit-jupiter)       | **Mockito** (Java agent) — no change                                          |
 | **Assertions**        | AssertJ + JUnit assertions                         | **AssertJ** — standardize on fluent assertions                                |
-| **Integration Tests** | Spring Test + H2 + @ContextConfiguration           | **Testcontainers** (MySQL, ActiveMQ, MockServer) — real dependencies in tests |
+| **Integration Tests** | Spring Test + H2 + @ContextConfiguration           | **Spring Boot Test** (`@SpringBootTest`) — auto-configured test context; H2 retained; existing test structure preserved |
 | **Spring Testing**    | Spring Test (manual context, no @SpringBootTest)   | **Spring Boot Test** (`@SpringBootTest`) — auto-configured test context       |
 | **HTTP Mocking**      | —                                                  | **MockServer** and/or **OkHttp MockWebServer** — for external service mocking |
 | **Async Testing**     | Awaitility (notification-sender only)              | **Awaitility** — expand usage across all async/JMS test assertions            |
 | **Camel Testing**     | camel-test-spring-junit5                           | **Camel Test Spring Boot** — aligned with Spring Boot Camel starter           |
-| **Contract Testing**  | —                                                  | **Microcks Testcontainers** — if SOAP contract testing is needed              |
+| **Contract Testing**  | —                                                  | **Evaluate separately** — out of scope for this migration                     |
 | **XML Assertions**    | XMLUnit                                            | **XMLUnit** — retain if XML comparison is still needed                        |
 
 ---
@@ -268,8 +272,7 @@ webcert (goal)
 ├── integration-certificate-analytics      → Analytics JMS publisher (already exists, modernize)
 ├── integration-certificate-service        → Certificate Service REST client (consolidate csintegration)
 ├── integration-srs                        → SRS client (extracted from infra)
-├── stubs                                  → Stub implementations for local dev (retain, modernize)
-└── integration-test                       → Full integration tests with Testcontainers
+└── stubs                                  → Stub implementations for local dev (retain, modernize)
 ```
 
 **Key architectural shifts:**
@@ -295,7 +298,7 @@ webcert (goal)
 | 8  | **logback-ecs-encoder → Spring Boot native ECS logging**            | Medium | ✅ AC-7             |
 | 9  | **Camel XML routes → Java DSL routes**                              | Medium | ✅ AC-8             |
 | 10 | **Prometheus manual → Spring Boot Actuator**                        | Medium |                     |
-| 11 | **H2 test DB → Testcontainers**                                     | Medium |                     |
+| 11 | **H2 retained for tests** — no Testcontainers in this migration     | Low    |                     |
 | 12 | **Manual Spring config → Spring Boot auto-configuration**           | Medium | ✅ AC-2             |
 | 13 | **`@Value` → `@ConfigurationProperties`** records                   | Medium |                     |
 | 14 | **CXF SOAP XML config → Java-based CXF config**                    | Medium | ✅ AC-3             |
@@ -327,6 +330,6 @@ These items differ between the current state and the target services, or are uni
 8. **Camel consolidation** — Currently 2 separate Camel contexts. Merge into one or keep separate?
    Recommendation: **Merge** into a single Spring Boot-managed Camel context with separate `RouteBuilder` beans.
 9. **Mail stub** — Custom AspectJ-based mail interception. Replace with simpler approach?
-   Recommendation: **Replace** with profile-activated no-op `JavaMailSender` or Testcontainers MailHog.
+   Recommendation: **Replace** with profile-activated no-op `JavaMailSender` implementation.
 10. **csintegration layer** — ~240 files for certificate-service REST integration. Restructure?
     Recommendation: **Extract** into dedicated `integration-certificate-service` module.
