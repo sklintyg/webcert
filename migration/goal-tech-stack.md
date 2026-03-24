@@ -156,7 +156,7 @@ acceptance criteria for this migration.
 | Concern              | Current                                          | Goal                                                                  |
 |----------------------|--------------------------------------------------|-----------------------------------------------------------------------|
 | **Boilerplate**      | Lombok                                           | **Lombok** — no change                                                |
-| **DTO Mapping**      | Manual                                           | **MapStruct** (with Lombok binding) — from intyg-proxy-service        |
+| **DTO Mapping**      | Manual                                           | **Manual** — no MapStruct introduced in this migration                |
 | **General Utils**    | Guava + Commons IO + Commons Lang3               | **Guava** — retain; drop Commons IO and Commons Lang3 if replaceable by standard Java/Guava |
 | **Functional**       | Vavr                                             | **Evaluate** — not used in either target service; replace with standard Java Optional/Stream if possible |
 | **Search/Analysis**  | Apache Lucene (diagnosis code search)            | **Retain** if diagnosis search is still needed                        |
@@ -303,7 +303,7 @@ webcert (goal)
 | 13 | **`@Value` → `@ConfigurationProperties`** records                   | Medium |                     |
 | 14 | **CXF SOAP XML config → Java-based CXF config**                    | Medium | ✅ AC-3             |
 | 15 | **Swagger JAX-RS → SpringDoc OpenAPI**                              | Low    |                     |
-| 16 | **Add MapStruct** for DTO mapping                                   | Low    |                     |
+| 16 | **No MapStruct** — manual mapping retained                          | —      |                     |
 | 17 | **Docker image: WAR/Catalina → JAR/Spring Boot base**               | Medium |                     |
 | 18 | **Introduce domain module** (hexagonal architecture)                | Major  |                     |
 
