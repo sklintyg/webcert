@@ -10,9 +10,10 @@ The target services (**certificate-service** and **intyg-proxy-service**) repres
 document defines what Webcert's tech stack should look like after migration, derived from what those two services already use and the
 acceptance criteria for this migration.
 
-> **Migration Philosophy:** Prefer incremental, non-breaking changes. Each step should leave the application in a working state.
-> Existing tests should remain structurally unchanged throughout the migration — do not rewrite tests unless directly required by an
-> acceptance criterion. Avoid introducing new test infrastructure (e.g., Testcontainers) as part of this migration.
+> **Migration Philosophy:** This migration is a **functional-equivalent lift** to Spring Boot. The goal is to make the existing application
+> work under Spring Boot with the same behavior, not to optimize or restructure the code. Existing business logic, service implementations,
+> and test code should remain structurally unchanged unless directly required by an acceptance criterion. Avoid introducing new libraries,
+> patterns, or architectural changes beyond what the acceptance criteria demand.
 
 ### Acceptance Criteria
 
@@ -33,11 +34,11 @@ acceptance criteria for this migration.
 |----------------------|------------------------------------------------|-----------------------------------------------------------------|
 | **Language**         | Java 21                                        | **Java 21** — no change                                         |
 | **Framework**        | Spring Framework (no Boot)                     | **Spring Boot** — align with both target services               |
-| **Build System**     | Gradle (Groovy DSL)                            | **Gradle with Kotlin DSL version catalog** from centralized BOM |
+| **Build System**     | Gradle (Groovy DSL)                            | **Gradle (Groovy DSL)** — no change; Kotlin DSL migration deferred                 |
 | **Packaging**        | WAR deployed on external Tomcat 10             | **Executable JAR** with embedded server (Spring Boot)           |
 | **Containerization** | Docker (WAR into Catalina base image)          | **Docker** (JAR-based Spring Boot image)                        |
 | **Dependency Mgmt**  | Inera BOM (`se.inera.intyg.bom:platform`)      | **Inera BOM** — no change (already aligned)                     |
-| **Dev Server**       | Gretty 4.1.10 (embedded Tomcat 10)             | **Spring Boot DevTools** — replace Gretty; remove plugin        |
+| **Dev Server**       | Gretty 4.1.10 (embedded Tomcat 10)             | **Spring Boot embedded Tomcat** — replace Gretty; run via `./gradlew bootRun`       |
 
 ---
 
@@ -49,10 +50,10 @@ acceptance criteria for this migration.
 | **Servlet Architecture** | web.xml with 10 servlets, 13 filters, 4 listeners            | **Single embedded Tomcat** — Spring Boot auto-configured; filters registered as `@Bean FilterRegistrationBean`; eliminate web.xml entirely |
 | **SOAP Services**      | Apache CXF (cxf-rt-frontend-jaxws) — 6 server endpoints       | **Apache CXF** — retained, consistent with both target services; configured via Java `@Configuration` instead of XML |
 | **SOAP Clients**       | 15+ JAX-WS clients (ws-config.xml, TLS/NTJP)                  | **Apache CXF** JAX-WS clients — configured via Java `@Configuration` with programmatic TLS setup |
-| **SOAP Codegen**       | JAXB2 Basics + XJC (manual/pre-generated)                      | **WSDL2Java** plugin (`com.yupzip.wsdl2java`) + JAXB Runtime                 |
-| **Outbound REST**      | Spring `RestClient`, `RestTemplate`, Apache HttpClient 5       | **Spring `RestClient`** (Spring Boot Starter Web) — for outbound HTTP integrations; consolidate all REST clients; no reactive stack |
+| **SOAP Codegen**       | JAXB2 Basics + XJC (manual/pre-generated)                      | **JAXB2 Basics + XJC** — retain existing code generation approach; WSDL2Java migration deferred |
+| **Outbound REST**      | Spring `RestClient`, `RestTemplate`, Apache HttpClient 5       | **Retain existing clients** — no consolidation in this migration; each client continues to work as-is |
 | **Health/Metrics**     | Prometheus `simpleclient_servlet` (manual MetricsServlet)      | **Spring Boot Actuator** — standardized health checks, metrics, management   |
-| **API Documentation**  | Swagger (swagger-jaxrs, non-prod)                              | **SpringDoc OpenAPI** — Spring MVC native OpenAPI documentation              |
+| **API Documentation**  | Swagger (swagger-jaxrs, non-prod)                              | **SpringDoc OpenAPI** — replace Swagger JAX-RS with Spring MVC native; required since JAX-RS is removed |
 
 ---
 
@@ -65,7 +66,7 @@ acceptance criteria for this migration.
 | **JPA Config**       | `repository-context.xml` + `JpaConfig` Java   | **Spring Boot auto-configuration** — `spring.datasource.*` and `spring.jpa.*` properties |
 | **Schema Migration** | Liquibase                                     | **Liquibase** — auto-configured by Spring Boot             |
 | **Production DB**    | MySQL (mysql-connector-j)                     | **MySQL** — no change                                      |
-| **Test DB**          | H2 (in-memory, MySQL mode)                    | **H2 (in-memory, MySQL mode)** — retained for tests; no Testcontainers in this migration |
+| **Test DB**          | H2 (in-memory, MySQL mode)                    | **H2 (in-memory, MySQL mode)** — retained; Testcontainers deferred to future iteration |
 
 ---
 
@@ -77,8 +78,8 @@ acceptance criteria for this migration.
 | **JMS Config**       | `JmsConfig` Java + `jms-context.xml`                                 | **Spring Boot auto-configuration** — `spring.activemq.*` properties |
 | **Camel Routing**    | Apache Camel with XML-configured routes (2 Camel contexts)           | **Spring Boot Starter Camel** with Java DSL routes — `RouteBuilder` beans, no XML contexts |
 | **Camel Contexts**   | `webcertNotification` + `webcertCertificateSender` (XML)             | **Single Camel context** managed by Spring Boot Camel auto-configuration |
-| **7 JMS Queues**     | Hardcoded queue names in XML and properties                          | **Externalized via `application.yml`** — same queues, Spring Boot managed |
-| **JMS Testing**      | —                                                                    | **Existing in-memory/stub setup retained** — no Testcontainers in this migration     |
+| **7 JMS Queues**     | Hardcoded queue names in XML and properties                          | **Externalized via `application.properties`** — same queues, Spring Boot managed |
+| **JMS Testing**      | —                                                                    | **Existing test setup retained** — no new test infrastructure in this migration          |
 
 ---
 
@@ -87,11 +88,11 @@ acceptance criteria for this migration.
 | Concern              | Current                                                          | Goal                                                                             |
 |----------------------|------------------------------------------------------------------|----------------------------------------------------------------------------------|
 | **Session Store**    | Spring Session Data Redis (`@EnableRedisIndexedHttpSession`)     | **Spring Session Data Redis** — auto-configured via Spring Boot                  |
-| **App Caching**      | Inera Common Redis Cache (common-redis-cache-core, manual)       | **Spring Data Redis** (`spring-boot-starter-data-redis`) — auto-configured       |
-| **Cache TTLs**       | Per-cache expiry in application.properties (HSA, PU, LaunchId)   | **Spring Cache abstraction** with Redis — `@Cacheable`/`@CacheEvict` where applicable |
+| **App Caching**      | Inera Common Redis Cache (common-redis-cache-core, manual)       | **Spring Data Redis** (`spring-boot-starter-data-redis`) — replace infra module; retain existing cache logic as-is |
+| **Cache TTLs**       | Per-cache expiry in application.properties (HSA, PU, LaunchId)   | **Retain existing cache pattern** — same TTL properties, configured via Spring Boot Redis auto-configuration      |
 | **Distributed Lock** | ShedLock (shedlock-spring + redis provider)                      | **ShedLock** — retain; required for FMB sync and notification redelivery jobs    |
-| **Scheduling**       | `@EnableScheduling` + `@EnableAsync` (manual ThreadPoolTaskExecutor) | **Spring Boot auto-configured** — `spring.task.scheduling.*` and `spring.task.execution.*` |
-| **Async Execution**  | `@Async("threadPoolTaskExecutor")` (manual executor bean)        | **`@Async`** with Spring Boot auto-configured `TaskExecutor`                     |
+| **Scheduling**       | `@EnableScheduling` + `@EnableAsync` (manual ThreadPoolTaskExecutor) | **Retain existing scheduling** — `@EnableScheduling`, `@EnableAsync`, same `ThreadPoolTaskExecutor` bean         |
+| **Async Execution**  | `@Async("threadPoolTaskExecutor")` (manual executor bean)        | **Retain** — same `@Async` usage; executor bean defined in Java `@Configuration`                                 |
 
 > **Note:** ShedLock is not used in either target service. However, Webcert's scheduled job requirements (FMB data sync, notification
 > redelivery, draft locking) with clustered deployment justify keeping it. If these jobs can be redesigned to be idempotent/safe for
@@ -104,8 +105,8 @@ acceptance criteria for this migration.
 | Concern              | Current                                                     | Goal                                                                     |
 |----------------------|-------------------------------------------------------------|--------------------------------------------------------------------------|
 | **Mail Sending**     | JavaMailSender (manual config in `mail-config.xml`)         | **Spring Boot Starter Mail** — auto-configured via `spring.mail.*`       |
-| **Async Delivery**   | `@Async("threadPoolTaskExecutor")` on MailNotificationServiceImpl | **`@Async`** with Spring Boot auto-configured executor               |
-| **Mail Stub**        | Custom mail-stub module (AspectJ AOP interception)          | **Retain** or replace with profile-based no-op implementation            |
+| **Async Delivery**   | `@Async("threadPoolTaskExecutor")` on MailNotificationServiceImpl | **Retain** — same `@Async` usage; executor bean defined in Java `@Configuration` |
+| **Mail Stub**        | Custom mail-stub module (AspectJ AOP interception)          | **Retain** — keep existing stub implementation; activate via Spring profile   |
 
 ---
 
@@ -119,8 +120,8 @@ acceptance criteria for this migration.
 | **CSRF**                 | CookieCsrfTokenRepository                                                   | **CookieCsrfTokenRepository** — no change, configured in SecurityFilterChain          |
 | **Session Management**   | Redis-backed sessions (Spring Session)                                       | **Spring Session Data Redis** — auto-configured                                       |
 | **Security Filters**     | Inera Infra filters (security-filter, security-siths, etc.) + custom        | **Internalize** — rewrite needed filters as local `@Component` beans; remove infra dependency |
-| **Authorities/Roles**    | Inera security-authorities + YAML-based role config                          | **Internalize** — local authority resolution; retain YAML config format               |
-| **Feature Flags**        | features.yaml (custom loading)                                               | **Retain** — load via `@ConfigurationProperties` or dedicated configuration bean      |
+| **Authorities/Roles**    | Inera security-authorities + YAML-based role config                          | **Internalize** — extract authority resolution logic into local module; retain YAML config format |
+| **Feature Flags**        | features.yaml (custom loading)                                               | **Retain** — keep existing loading mechanism; convert XML config to Java if applicable |
 | **Auth Events**          | `@EventListener` for login/logout (AuthenticationEventListener)              | **`@EventListener`** — no change, already a modern pattern                            |
 
 ---
@@ -144,9 +145,9 @@ acceptance criteria for this migration.
 |---------------------|------------------------------------------|--------------------------------------------------------------------------------|
 | **SOAP Framework**  | Apache CXF (JAX-WS server + client)     | **Apache CXF** — no change; configured via Java `@Configuration`               |
 | **CXF Bus**         | XML-configured CXF Bus + LoggingFeature  | **Java-configured** CXF Bus bean with logging feature                          |
-| **XML Binding**     | JAXB2 Basics + XJC build-time gen        | **JAXB Runtime** (GlassFish) + **Jakarta XML WS**                              |
-| **Code Generation** | XJC Ant task + pre-generated code        | **WSDL2Java plugin** (`com.yupzip.wsdl2java`) — build-time generation          |
-| **XML Validation**  | Helger Schematron (test scope)           | **Helger Schematron** — retain if needed (from cert-service)                   |
+| **XML Binding**     | JAXB2 Basics + XJC build-time gen        | **JAXB2 Basics + XJC** — retain existing code generation; no change            |
+| **Code Generation** | XJC Ant task + pre-generated code        | **Retain** — keep existing XJC/Ant-based code generation approach              |
+| **XML Validation**  | Helger Schematron (test scope)           | **Retain** — keep if used in tests                                             |
 | **XML Signing**     | xmldsig (Inera Infra module)             | **Internalize** — extract XML signing logic; remove infra dependency           |
 
 ---
@@ -157,11 +158,11 @@ acceptance criteria for this migration.
 |----------------------|--------------------------------------------------|-----------------------------------------------------------------------|
 | **Boilerplate**      | Lombok                                           | **Lombok** — no change                                                |
 | **DTO Mapping**      | Manual                                           | **Manual** — no MapStruct introduced in this migration                |
-| **General Utils**    | Guava + Commons IO + Commons Lang3               | **Guava** — retain; drop Commons IO and Commons Lang3 if replaceable by standard Java/Guava |
-| **Functional**       | Vavr                                             | **Evaluate** — not used in either target service; replace with standard Java Optional/Stream if possible |
-| **Search/Analysis**  | Apache Lucene (diagnosis code search)            | **Retain** if diagnosis search is still needed                        |
-| **Excel Export**     | jxls-poi                                         | **Retain** if Excel export is still needed                            |
-| **JSON**             | Jackson (manual ObjectMapper config as CXF provider) | **Jackson** — auto-configured by Spring Boot; customize via `Jackson2ObjectMapperBuilderCustomizer` |
+| **General Utils**    | Guava + Commons IO + Commons Lang3               | **Retain all** — no library removals in this migration                |
+| **Functional**       | Vavr                                             | **Retain** — keep existing usage; removal deferred to future iteration |
+| **Search/Analysis**  | Apache Lucene (diagnosis code search)            | **Retain** — no change                                                |
+| **Excel Export**     | jxls-poi                                         | **Retain** — no change                                                |
+| **JSON**             | Jackson (manual ObjectMapper config as CXF provider) | **Jackson** — auto-configured by Spring Boot; retain existing ObjectMapper customizations as `@Bean` in Java `@Configuration` |
 
 ---
 
@@ -213,12 +214,12 @@ Each of the 24 infra modules must be handled individually:
 |-----------------------|---------------------------------------------------|-------------------------------------------------------------------------------|
 | **Unit Testing**      | JUnit 5 (Jupiter) + JUnit 4 (~33% legacy)         | **JUnit 5 only** — migrate all JUnit 4 tests; remove vintage engine           |
 | **Mocking**           | Mockito (Java agent + mockito-junit-jupiter)       | **Mockito** (Java agent) — no change                                          |
-| **Assertions**        | AssertJ + JUnit assertions                         | **AssertJ** — standardize on fluent assertions                                |
+| **Assertions**        | AssertJ + JUnit assertions                         | **Retain both** — no assertion library standardization in this migration      |
 | **Integration Tests** | Spring Test + H2 + @ContextConfiguration           | **Spring Boot Test** (`@SpringBootTest`) — auto-configured test context; H2 retained; existing test structure preserved |
 | **Spring Testing**    | Spring Test (manual context, no @SpringBootTest)   | **Spring Boot Test** (`@SpringBootTest`) — auto-configured test context       |
-| **HTTP Mocking**      | —                                                  | **MockServer** and/or **OkHttp MockWebServer** — for external service mocking |
-| **Async Testing**     | Awaitility (notification-sender only)              | **Awaitility** — expand usage across all async/JMS test assertions            |
-| **Camel Testing**     | camel-test-spring-junit5                           | **Camel Test Spring Boot** — aligned with Spring Boot Camel starter           |
+| **HTTP Mocking**      | —                                                  | **No change** — no new test infrastructure introduced in this migration       |
+| **Async Testing**     | Awaitility (notification-sender only)              | **Retain** — keep existing Awaitility usage as-is                             |
+| **Camel Testing**     | camel-test-spring-junit5                           | **Retain** — keep existing camel-test-spring-junit5; verify compatibility     |
 | **Contract Testing**  | —                                                  | **Evaluate separately** — out of scope for this migration                     |
 | **XML Assertions**    | XMLUnit                                            | **XMLUnit** — retain if XML comparison is still needed                        |
 
@@ -242,45 +243,42 @@ Each of the 24 infra modules must be handled individually:
 | Concern                | Current                                                       | Goal                                                                                |
 |------------------------|---------------------------------------------------------------|-------------------------------------------------------------------------------------|
 | **Spring Config**      | 24+ XML files + 18 Java @Configuration classes                | **Java @Configuration only** — zero XML; use `@Import`, `@ConditionalOnProfile`     |
-| **Properties**         | `application.properties` (~365 entries) + external overrides  | **`application.yml`** with profile-specific variants (`application-dev.yml`, etc.)   |
-| **Property Injection** | ~165 `@Value` injection points                                | **`@ConfigurationProperties`** records — type-safe, immutable, IDE-friendly         |
-| **Profiles**           | 14+ profiles (some via XML activation)                        | **Spring Boot profiles** — `spring.profiles.active` in application.yml              |
-| **Feature Flags**      | features.yaml (custom loading)                                | **Dedicated `@ConfigurationProperties`** bean loading features.yaml                 |
-| **Authorities**        | authorities.yaml (custom SecurityConfigurationLoader)         | **Retain YAML** — load via `@ConfigurationProperties` or `@Value` with SnakeYAML    |
+| **Properties**         | `application.properties` (~365 entries) + external overrides  | **`application.properties`** — retain properties format; add profile-specific variants (`application-dev.properties`, etc.) |
+| **Property Injection** | ~165 `@Value` injection points                                | **Retain `@Value`** — keep existing injection pattern; `@ConfigurationProperties` migration deferred |
+| **Profiles**           | 14+ profiles (some via XML activation)                        | **Spring Boot profiles** — `spring.profiles.active`; same profile names retained |
+| **Feature Flags**      | features.yaml (custom loading)                                | **Retain** — keep existing YAML loading mechanism                               |
+| **Authorities**        | authorities.yaml (custom SecurityConfigurationLoader)         | **Retain** — keep existing YAML loading mechanism                               |
 | **External Config**    | `dev.config.file` JVM arg, `application.dir` file paths       | **Spring Boot externalized config** — `spring.config.additional-location`, ConfigMaps in K8s |
 
 ---
 
 ## Module Architecture (Goal)
 
-The target module structure should follow the patterns established in certificate-service (hexagonal/clean architecture with separated
-domain) and intyg-proxy-service (dedicated integration modules):
+The target module structure retains the existing layout with minimal changes. The key change is introducing an `app` module
+for the Spring Boot application bootstrap and converting the `web` module into a library dependency:
 
 ```
 webcert (goal)
-├── app                                    → Spring Boot application (@SpringBootApplication, controllers, services, config)
-├── common                                 → Shared DTOs, exceptions, constants (retain, modernize)
-├── domain                                 → Pure business logic (minimal deps: Jackson, SLF4J only)
-├── logging                                → Cross-cutting logging/AOP (AspectJ, Logback) — already exists
-├── persistence                            → JPA entities, repositories, Liquibase — already exists
-├── notification-sender                    → Camel routes (Java DSL), notification/certificate processing
-├── integration-intygstjanst               → Intygstjänst SOAP client (CXF)
-├── integration-intyg-proxy-service        → HSA/PU via REST (replaces hsa-integration-api + pu-integration-api)
-├── integration-fmb                        → FMB REST client (already exists, modernize)
-├── integration-servicenow                 → ServiceNow REST client (already exists, modernize)
-├── integration-private-practitioner       → Private practitioner REST client (already exists)
-├── integration-certificate-analytics      → Analytics JMS publisher (already exists, modernize)
-├── integration-certificate-service        → Certificate Service REST client (consolidate csintegration)
-├── integration-srs                        → SRS client (extracted from infra)
-└── stubs                                  → Stub implementations for local dev (retain, modernize)
+├── app                                    → NEW: Spring Boot application (@SpringBootApplication, main class, boot config)
+├── web                                    → Retained: controllers (migrated to Spring MVC), services, config (Java only)
+├── common                                 → Retained: shared DTOs, exceptions, constants — no change
+├── logging                                → Retained: cross-cutting logging/AOP — no change
+├── persistence                            → Retained: JPA entities, repositories, Liquibase — no change
+├── notification-sender                    → Retained: Camel routes (converted to Java DSL), notification processing
+├── integration                            → Retained: existing integration submodules — no change
+├── integration-fmb                        → Retained — no change
+├── integration-servicenow                 → Retained — no change
+├── integration-private-practitioner       → Retained — no change (already separate module)
+├── integration-certificate-analytics      → Retained — no change (already separate module)
+├── stubs                                  → Retained: stub implementations for local dev — no change
+└── tools                                  → Retained: build/migration tooling — no change
 ```
 
-**Key architectural shifts:**
-1. **Introduce a domain module** with no framework dependencies (following certificate-service's hexagonal pattern), separating business
-   logic from infrastructure concerns.
-2. **Dedicated integration modules** for each external service — replaces monolithic web module and infra dependencies.
-3. **Consolidate csintegration** (~240 files currently scattered in web module) into a dedicated `integration-certificate-service` module.
-4. **Single application context** — eliminate the 8 CXF servlet contexts and web.xml-based wiring.
+**Key changes:**
+1. **New `app` module** — Spring Boot bootstrap (`@SpringBootApplication`, `main()`, Dockerfile, Spring Boot config).
+2. **`web` module becomes a library** — no longer produces WAR; controllers migrated from JAX-RS to Spring MVC; all XML config eliminated.
+3. **Single application context** — eliminate the 8 CXF servlet contexts and web.xml-based wiring.
+4. **Existing module boundaries preserved** — no domain extraction, no csintegration restructuring, no integration module reorganization in this iteration.
 
 ---
 
@@ -300,36 +298,25 @@ webcert (goal)
 | 10 | **Prometheus manual → Spring Boot Actuator**                        | Medium |                     |
 | 11 | **H2 retained for tests** — no Testcontainers in this migration     | Low    |                     |
 | 12 | **Manual Spring config → Spring Boot auto-configuration**           | Medium | ✅ AC-2             |
-| 13 | **`@Value` → `@ConfigurationProperties`** records                   | Medium |                     |
-| 14 | **CXF SOAP XML config → Java-based CXF config**                    | Medium | ✅ AC-3             |
-| 15 | **Swagger JAX-RS → SpringDoc OpenAPI**                              | Low    |                     |
-| 16 | **No MapStruct** — manual mapping retained                          | —      |                     |
-| 17 | **Docker image: WAR/Catalina → JAR/Spring Boot base**               | Medium |                     |
-| 18 | **Introduce domain module** (hexagonal architecture)                | Major  |                     |
+| 13 | **CXF SOAP XML config → Java-based CXF config**                    | Medium | ✅ AC-3             |
+| 14 | **Swagger JAX-RS → SpringDoc OpenAPI** (required by JAX-RS removal) | Low    |                     |
+| 15 | **Docker image: WAR/Catalina → JAR/Spring Boot base**               | Medium |                     |
 
 ---
 
 ## Items Requiring Decision
 
-These items differ between the current state and the target services, or are unique to Webcert, and need a deliberate decision:
+These items are unique to Webcert or have multiple reasonable approaches for this migration:
 
 1. **ShedLock** — Keep or remove? Not used in either target service, but Webcert has 5+ scheduled jobs that run in clustered environments.
    Recommendation: **Keep** until jobs can be redesigned.
-2. **Vavr** — Keep or remove? Not used in either target service. Used in FMB integration.
-   Recommendation: **Remove** — replace with standard Java Optional/Stream.
-3. **Commons IO / Commons Lang3** — Keep or replace? Not used in target services.
-   Recommendation: **Remove** — replace with standard Java/Guava equivalents.
-4. **Apache Lucene** — Keep or remove? Used for diagnosis code search. Not in target services.
-   Recommendation: **Evaluate** — keep if search functionality is required.
-5. **jxls-poi** — Keep or remove? Used for Excel export. Not in target services.
-   Recommendation: **Evaluate** — keep if Excel export is a required feature.
-6. **DSS (Digital Signing Service)** — Complex integration with ~12 `@Value` properties. Not in target services.
+2. **Apache Lucene** — Keep or remove? Used for diagnosis code search. Not in target services.
+   Recommendation: **Keep** — diagnosis search is existing functionality.
+3. **jxls-poi** — Keep or remove? Used for Excel export. Not in target services.
+   Recommendation: **Keep** — Excel export is existing functionality.
+4. **DSS (Digital Signing Service)** — Complex integration with ~12 `@Value` properties. Not in target services.
    Recommendation: **Keep** — this is core business functionality for qualified electronic signatures.
-7. **Certificate type modules (Inera Common)** — 21 implementation modules for 14 certificate types.
+5. **Certificate type modules (Inera Common)** — 21 implementation modules for 14 certificate types.
    Recommendation: **Retain** — these are `se.inera.intyg.common` (not infra) and represent core business logic.
-8. **Camel consolidation** — Currently 2 separate Camel contexts. Merge into one or keep separate?
+6. **Camel consolidation** — Currently 2 separate Camel contexts. Merge into one or keep separate?
    Recommendation: **Merge** into a single Spring Boot-managed Camel context with separate `RouteBuilder` beans.
-9. **Mail stub** — Custom AspectJ-based mail interception. Replace with simpler approach?
-   Recommendation: **Replace** with profile-activated no-op `JavaMailSender` implementation.
-10. **csintegration layer** — ~240 files for certificate-service REST integration. Restructure?
-    Recommendation: **Extract** into dedicated `integration-certificate-service` module.
