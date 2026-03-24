@@ -148,7 +148,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals("WebCertHostUrl/webcert/web/user/certificate/intygsId/questions", url);
+    assertEquals( url,"WebCertHostUrl/webcert/web/user/certificate/intygsId/questions");
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -165,7 +165,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions", url);
+    assertEquals( url,"WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions");
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -183,10 +183,10 @@ class MailNotificationServiceImplTest {
 
     // Then
     assertEquals(
+        url,
         "WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet="
             + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX
-            + "AndSomeOtherText",
-        url);
+            + "AndSomeOtherText");
     verifyNoInteractions(utkastRepository);
   }
 
@@ -202,7 +202,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals("WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions", url);
+    assertEquals( url,"WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions");
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -219,7 +219,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions", url);
+    assertEquals( url,"WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions");
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -238,10 +238,10 @@ class MailNotificationServiceImplTest {
 
     // Then
     assertEquals(
+        url,
         "WebCertHostUrl/webcert/web/user/pp-certificate/luse/intygsId/questions?enhet="
             + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX
-            + "AndSomeOtherText",
-        url);
+            + "AndSomeOtherText");
     verifyNoInteractions(utkastRepository);
   }
 

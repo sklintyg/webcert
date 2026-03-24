@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -35,12 +36,14 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -57,7 +60,8 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class IntygModuleFacadeTest {
 
   private static final String CERTIFICATE_TYPE = "fk7263";
@@ -72,7 +76,7 @@ public class IntygModuleFacadeTest {
 
   @InjectMocks private IntygModuleFacadeImpl moduleFacade = new IntygModuleFacadeImpl();
 
-  @Before
+  @BeforeEach
   public void setupCommonExpectations() throws Exception {
     // setup to return a mocked module API
     when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString())))
@@ -99,16 +103,16 @@ public class IntygModuleFacadeTest {
             UtkastStatus.SIGNED,
             false);
     assertNotNull(intygPdf.getPdfData());
-    assertEquals("file.pdf", intygPdf.getFilename());
+    assertEquals( intygPdf.getFilename(),"file.pdf");
 
     verify(moduleApi)
         .pdf(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), eq(UtkastStatus.SIGNED));
   }
 
   @SuppressWarnings("unchecked")
-  @Test(expected = IntygModuleFacadeException.class)
-  public void testConvertFromInternalToPdfDocumentModuleException()
-      throws IntygModuleFacadeException, ModuleException {
+  @Test
+  public void testConvertFromInternalToPdfDocumentModuleException() {
+    assertThrows(IntygModuleFacadeException.class, () -> {
     when(moduleApi.pdf(
             anyString(), anyList(), any(ApplicationOrigin.class), eq(UtkastStatus.SIGNED)))
         .thenThrow(new ModuleException(""));
@@ -119,11 +123,12 @@ public class IntygModuleFacadeTest {
         Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())),
         UtkastStatus.SIGNED,
         false);
+      });
   }
 
-  @Test(expected = IntygModuleFacadeException.class)
-  public void testConvertFromInternalToPdfDocumentModuleNotFoundException()
-      throws IntygModuleFacadeException, ModuleException, ModuleNotFoundException {
+  @Test
+  public void testConvertFromInternalToPdfDocumentModuleNotFoundException() {
+    assertThrows(IntygModuleFacadeException.class, () -> {
     when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
         .thenThrow(new ModuleNotFoundException());
 
@@ -133,6 +138,7 @@ public class IntygModuleFacadeTest {
         Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())),
         UtkastStatus.SIGNED,
         false);
+      });
   }
 
   @SuppressWarnings("unchecked")
@@ -157,7 +163,7 @@ public class IntygModuleFacadeTest {
             UtkastStatus.SIGNED,
             true);
     assertNotNull(intygPdf.getPdfData());
-    assertEquals("file.pdf", intygPdf.getFilename());
+    assertEquals( intygPdf.getFilename(),"file.pdf");
 
     verify(moduleApi)
         .pdfEmployer(
@@ -183,18 +189,22 @@ public class IntygModuleFacadeTest {
     verify(moduleApi).getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
   }
 
-  @Test(expected = IntygModuleFacadeException.class)
-  public void testGetCertificateModuleException() throws Exception {
+  @Test
+  public void testGetCertificateModuleException() {
+    assertThrows(IntygModuleFacadeException.class, () -> {
     when(moduleApi.getCertificate(anyString(), isNull(), eq(HSVARD_RECIPIENT_ID)))
         .thenThrow(new ModuleException());
     moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
+      });
   }
 
-  @Test(expected = IntygModuleFacadeException.class)
-  public void testGetCertificateModuleNotFoundException() throws Exception {
+  @Test
+  public void testGetCertificateModuleNotFoundException() {
+    assertThrows(IntygModuleFacadeException.class, () -> {
     when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
         .thenThrow(new ModuleNotFoundException());
     moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
+      });
   }
 
   @Test
@@ -206,17 +216,21 @@ public class IntygModuleFacadeTest {
     verify(moduleApi).registerCertificate(INT_JSON, logicalAddress);
   }
 
-  @Test(expected = ModuleException.class)
-  public void testRegisterCertificateModuleException() throws Exception {
+  @Test
+  public void testRegisterCertificateModuleException() {
+    assertThrows(ModuleException.class, () -> {
     doThrow(new ModuleException()).when(moduleApi).registerCertificate(any(), any());
     moduleFacade.registerCertificate(CERTIFICATE_TYPE, INT_JSON);
+      });
   }
 
-  @Test(expected = IntygModuleFacadeException.class)
-  public void testRegisterCertificateModuleNotFoundException() throws Exception {
+  @Test
+  public void testRegisterCertificateModuleNotFoundException() {
+    assertThrows(IntygModuleFacadeException.class, () -> {
     when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
         .thenThrow(new ModuleNotFoundException());
     moduleFacade.registerCertificate(CERTIFICATE_TYPE, INT_JSON);
+      });
   }
 
   @Test
@@ -227,20 +241,24 @@ public class IntygModuleFacadeTest {
     verify(moduleApi, times(1)).createRevokeRequest(eq(utlatande), eq(null), eq(message));
   }
 
-  @Test(expected = ModuleException.class)
-  public void testGetRevokeCertificateRequestModuleException() throws Exception {
+  @Test
+  public void testGetRevokeCertificateRequestModuleException() {
+    assertThrows(ModuleException.class, () -> {
     Utlatande utlatande = mock(Utlatande.class);
     when(moduleApi.createRevokeRequest(eq(utlatande), isNull(), anyString()))
         .thenThrow(new ModuleException());
     moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, utlatande, null, "message");
+      });
   }
 
-  @Test(expected = IntygModuleFacadeException.class)
-  public void testGetRevokeCertificateRequestModuleNotFoundException() throws Exception {
+  @Test
+  public void testGetRevokeCertificateRequestModuleNotFoundException() {
+    assertThrows(IntygModuleFacadeException.class, () -> {
     when(moduleRegistry.getModuleApi(eq(CERTIFICATE_TYPE), or(isNull(), anyString())))
         .thenThrow(new ModuleNotFoundException());
     moduleFacade.getRevokeCertificateRequest(
         CERTIFICATE_TYPE, mock(Utlatande.class), null, "message");
+      });
   }
 
   @Test
@@ -253,9 +271,11 @@ public class IntygModuleFacadeTest {
     verify(moduleApi).getUtlatandeFromJson(INT_JSON);
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testUtlatandBuiltFromInvalidJson() throws ModuleException, IOException {
+  @Test
+  public void testUtlatandBuiltFromInvalidJson() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(moduleApi.getUtlatandeFromJson(anyString())).thenThrow(new IOException());
     moduleFacade.getUtlatandeFromInternalModel(CERTIFICATE_TYPE, "X");
+      });
   }
 }

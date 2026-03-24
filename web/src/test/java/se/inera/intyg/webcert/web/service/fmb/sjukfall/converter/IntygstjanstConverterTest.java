@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.infra.sjukfall.dto.IntygData;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Befattning;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;

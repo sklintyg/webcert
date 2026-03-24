@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.relation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -32,12 +32,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
@@ -45,7 +47,8 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepositoryCust
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 /** Created by eriklupander on 2017-05-15. */
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class CertificateRelationServiceImplTest {
 
   private static final String INTYG_ID = "123";
@@ -57,7 +60,7 @@ public class CertificateRelationServiceImplTest {
 
   @InjectMocks private CertificateRelationServiceImpl testee;
 
-  @Before
+  @BeforeEach
   public void init() {
     when(utkastRepositoryCustom.findParentRelation(anyString())).thenReturn(new ArrayList<>());
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(new ArrayList<>());
@@ -82,7 +85,7 @@ public class CertificateRelationServiceImplTest {
   public void testGetWithChildRelations() {
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
     Relations relations = testee.getRelations(INTYG_ID);
-    assertNull(OTHER_INTYG_ID, relations.getParent());
+    assertNull(relations.getParent(), OTHER_INTYG_ID);
     assertFrontendRelationsIntygsIds(
         relations.getLatestChildRelations(), CHILD_INTYG_ID_2, null, null, CHILD_INTYG_ID_1);
   }

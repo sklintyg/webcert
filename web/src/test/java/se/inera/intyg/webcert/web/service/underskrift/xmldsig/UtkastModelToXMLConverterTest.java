@@ -18,21 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
@@ -44,7 +44,7 @@ import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.common.ts_bas.v6.rest.TsBasModuleApiV6;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     classes = {
       BefattningService.class,

@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.arende.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,13 +33,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.model.VantarPa;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
@@ -57,7 +57,7 @@ public class ArendeRepositoryTest {
 
   @Autowired private ArendeRepository repo;
 
-  @After
+  @AfterEach
   public void cleanup() {
     repo.deleteAll();
   }
@@ -1148,9 +1148,9 @@ public class ArendeRepositoryTest {
     List<GroupableItem> res = repo.getUnhandledByEnhetIdsAndIntygstyper(enhetsIds, intygsTyper);
     assertNotNull(res);
     assertEquals(4, res.size());
-    //        assertEquals("enhet1", res.get(0)[0]);
+    //        assertEquals( res.get(0)[0],"enhet1");
     //        assertEquals(new Long(3), res.get(0)[1]);
-    //        assertEquals("enhet2", res.get(1)[0]);
+    //        assertEquals( res.get(1)[0],"enhet2");
     //        assertEquals(new Long(1), res.get(1)[1]);
   }
 

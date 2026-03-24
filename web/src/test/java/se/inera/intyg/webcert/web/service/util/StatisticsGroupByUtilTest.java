@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
@@ -27,12 +27,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -54,7 +56,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  * <p>NOT: Intygen TS-BAS och TS-DIABETES får ej skrivas på patienter som har SekretessStatus.TRUE.
  * De intygen ska med andra ord inte räknas med.
  */
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup {
 
   private static final String HSA1 = "hsa-1";
@@ -74,7 +77,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
   @InjectMocks private StatisticsGroupByUtil testee;
 
-  @Before
+  @BeforeEach
   public void setup() {
     Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
     Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();

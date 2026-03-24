@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.logging;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.google.common.collect.ImmutableMap;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import se.inera.intyg.infra.security.common.model.Role;
@@ -36,12 +36,12 @@ public class RoleConverterTest {
 
   private RoleConverter converter = new RoleConverter();
 
-  @Before
+  @BeforeEach
   public void setup() {
     cleanup();
   }
 
-  @After
+  @AfterEach
   public void cleanup() {
     SecurityContextHolder.getContext().setAuthentication(null);
   }
@@ -65,7 +65,7 @@ public class RoleConverterTest {
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals("NO ROLE", res);
+    assertEquals( res,"NO ROLE");
   }
 
   @Test
@@ -76,6 +76,6 @@ public class RoleConverterTest {
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals("NO ROLE", res);
+    assertEquals( res,"NO ROLE");
   }
 }

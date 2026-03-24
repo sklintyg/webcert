@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -204,9 +204,9 @@ public class DssSignatureServiceTest {
 
     assertNotNull(capturedSignRequest);
     assertEquals(
-        "Profile",
         "http://id.elegnamnden.se/csig/1.1/dss-ext/profile",
-        capturedSignRequest.getProfile());
+        capturedSignRequest.getProfile(),
+        "Profile");
     assertNotNull(capturedSignRequest.getInputDocuments());
     assertNotNull(capturedSignRequest.getOptionalInputs());
     assertNotNull(capturedSignRequest.getOptionalInputs().getAny());
@@ -245,9 +245,9 @@ public class DssSignatureServiceTest {
             .toGregorianCalendar()
             .getTimeInMillis();
     assertEquals(
-        "SignRequest should be valid for 10 minutes (2 min before and 8 min after",
         10,
-        (notAfter - notBefore) / 60000);
+        (notAfter - notBefore) / 60000,
+        "SignRequest should be valid for 10 minutes (2 min before and 8 min after");
   }
 
   @Test
@@ -264,7 +264,7 @@ public class DssSignatureServiceTest {
         .netidSignature(
             ticketIdCaptor.capture(), signatureCaptor.capture(), certificateCaptor.capture());
 
-    assertEquals("0ff25a22-d78a-46c0-ae78-58e34b62ce90", ticketIdCaptor.getValue());
+    assertEquals( ticketIdCaptor.getValue(),"0ff25a22-d78a-46c0-ae78-58e34b62ce90");
 
     // CHECKSTYLE:OFF LineLength
     var certByteArray =

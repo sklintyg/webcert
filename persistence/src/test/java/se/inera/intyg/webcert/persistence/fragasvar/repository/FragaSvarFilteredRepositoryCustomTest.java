@@ -18,19 +18,19 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -45,7 +45,7 @@ import se.inera.intyg.webcert.persistence.model.VantarPa;
  *
  * @author nikpet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
@@ -68,7 +68,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(5, fsList.size());
+    Assertions.assertEquals(5, fsList.size());
   }
 
   private Filter buildDefaultFilter() {
@@ -87,7 +87,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     filter.getIntygsTyper().add("fk7263");
 
     int res = fragasvarRepository.filterCountFragaSvar(filter);
-    Assert.assertEquals(3, res);
+    Assertions.assertEquals(3, res);
   }
 
   /** Should filter all FS that belongs to ENHET_1 and is not CLOSED. */
@@ -99,10 +99,10 @@ public class FragaSvarFilteredRepositoryCustomTest {
     filter.setStartFrom(0);
 
     int res = fragasvarRepository.filterCountFragaSvar(filter);
-    Assert.assertEquals(14, res);
+    Assertions.assertEquals(14, res);
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
-    Assert.assertEquals(10, fsList.size());
+    Assertions.assertEquals(10, fsList.size());
   }
 
   @Test
@@ -113,7 +113,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(3, fsList.size());
+    Assertions.assertEquals(3, fsList.size());
   }
 
   @Test
@@ -124,7 +124,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(6, fsList.size());
+    Assertions.assertEquals(6, fsList.size());
   }
 
   @Test
@@ -135,7 +135,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(8, fsList.size());
+    Assertions.assertEquals(8, fsList.size());
   }
 
   /** Should filter out all FS that is not CLOSED and has <= changedFrom and >= changedTo. */
@@ -148,7 +148,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(8, fsList.size());
+    Assertions.assertEquals(8, fsList.size());
   }
 
   @Test
@@ -158,7 +158,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     filter.setVidarebefordrad(true);
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
-    Assert.assertEquals(3, fsList.size());
+    Assertions.assertEquals(3, fsList.size());
   }
 
   /**
@@ -172,7 +172,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     filter.setVantarPa(VantarPa.SVAR_FRAN_VARDEN);
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
-    Assert.assertEquals(6, fsList.size());
+    Assertions.assertEquals(6, fsList.size());
   }
 
   /** Should return FS with status PENDING_EXTERNAL_ACTION */
@@ -183,7 +183,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
-    Assert.assertEquals(4, fsList.size());
+    Assertions.assertEquals(4, fsList.size());
   }
 
   /**
@@ -198,7 +198,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(3, fsList.size());
+    Assertions.assertEquals(3, fsList.size());
   }
 
   /**
@@ -212,7 +212,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(1, fsList.size());
+    Assertions.assertEquals(1, fsList.size());
   }
 
   /** Should return all FS that is not CLOSED. */
@@ -224,7 +224,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(14, fsList.size());
+    Assertions.assertEquals(14, fsList.size());
   }
 
   /**
@@ -241,7 +241,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(4, fsList.size());
+    Assertions.assertEquals(4, fsList.size());
   }
 
   /**
@@ -259,7 +259,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
     List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-    Assert.assertEquals(7, fsList.size());
+    Assertions.assertEquals(7, fsList.size());
   }
 
   @Test
@@ -271,7 +271,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     assertEquals(20, res.size());
   }
 
-  @Before
+  @BeforeEach
   public void setupTestData() {
 
     fragasvarRepository.save(

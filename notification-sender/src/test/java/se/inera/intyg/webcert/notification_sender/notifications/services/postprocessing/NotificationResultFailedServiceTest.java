@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,12 +30,12 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
@@ -48,7 +48,7 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotificationResultFailedServiceTest {
 
   @Mock HandelseRepository handelseRepository;

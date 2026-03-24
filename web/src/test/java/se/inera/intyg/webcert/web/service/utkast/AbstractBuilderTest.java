@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -81,7 +81,7 @@ public class AbstractBuilderTest {
 
   protected Patient patient;
 
-  @Before
+  @BeforeEach
   public void setup() {
     hoSPerson = new HoSPersonal();
     hoSPerson.setPersonId(HOSPERSON_ID);
@@ -101,13 +101,13 @@ public class AbstractBuilderTest {
     patient.setPersonId(PATIENT_SSN);
   }
 
-  @Before
+  @BeforeEach
   public void expectCallToWebcertUserService() {
     when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true))
         .thenReturn(true);
   }
 
-  @Before
+  @BeforeEach
   public void expectCallIntygTextService() {
     when(intygTextsService.getLatestVersionForSameMajorVersion(anyString(), anyString()))
         .thenReturn("1.0");

@@ -20,14 +20,15 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.xml.ws.WebServiceException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcHelper;
@@ -36,7 +37,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CertificateSendProcessorTest {
 
   private static final String INTYGS_ID1 = "intygs-id-1";
@@ -68,8 +69,9 @@ public class CertificateSendProcessorTest {
         .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testSendCertificateThrowsTemporaryOnApplicationError() throws Exception {
+  @Test
+  public void testSendCertificateThrowsTemporaryOnApplicationError() {
+    assertThrows(TemporaryException.class, () -> {
     // Given
     SendCertificateToRecipientResponseType response =
         createResponse(ResultCodeType.ERROR, ErrorIdType.APPLICATION_ERROR);
@@ -84,10 +86,12 @@ public class CertificateSendProcessorTest {
     // Then
     verify(sendServiceClient)
         .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testSendCertificateThrowsTemporaryOnTechnicalError() throws Exception {
+  @Test
+  public void testSendCertificateThrowsTemporaryOnTechnicalError() {
+    assertThrows(TemporaryException.class, () -> {
     // Given
     SendCertificateToRecipientResponseType response =
         createResponse(ResultCodeType.ERROR, ErrorIdType.TECHNICAL_ERROR);
@@ -102,10 +106,12 @@ public class CertificateSendProcessorTest {
     // Then
     verify(sendServiceClient)
         .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testSendCertificateThrowsTemporaryOnRevokedError() throws Exception {
+  @Test
+  public void testSendCertificateThrowsTemporaryOnRevokedError() {
+    assertThrows(TemporaryException.class, () -> {
     // Given
     SendCertificateToRecipientResponseType response =
         createResponse(ResultCodeType.ERROR, ErrorIdType.REVOKED);
@@ -120,10 +126,12 @@ public class CertificateSendProcessorTest {
     // Then
     verify(sendServiceClient)
         .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testSendCertificateThrowsTemporaryOnValidationError() throws Exception {
+  @Test
+  public void testSendCertificateThrowsTemporaryOnValidationError() {
+    assertThrows(TemporaryException.class, () -> {
     // Given
     SendCertificateToRecipientResponseType response =
         createResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR);
@@ -138,10 +146,12 @@ public class CertificateSendProcessorTest {
     // Then
     verify(sendServiceClient)
         .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testSendCertificateThrowsTemporaryOnWebServiceException() throws Exception {
+  @Test
+  public void testSendCertificateThrowsTemporaryOnWebServiceException() {
+    assertThrows(TemporaryException.class, () -> {
     // Given
     when(sendServiceClient.sendCertificate(
             INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
@@ -154,6 +164,7 @@ public class CertificateSendProcessorTest {
     // Then
     verify(sendServiceClient)
         .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+      });
   }
 
   @Test

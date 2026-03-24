@@ -18,21 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SchVersionUtilTest {
 
   @Test
   public void testParseMajorMinor() {
     String schVersion = SchVersionUtil.formatToSchVersion("2.6");
-    assertEquals("v2", schVersion);
+    assertEquals( schVersion,"v2");
   }
 
   @Test
   public void testParseMajor() {
     String schVersion = SchVersionUtil.formatToSchVersion("2");
-    assertEquals("v2", schVersion);
+    assertEquals( schVersion,"v2");
   }
 }

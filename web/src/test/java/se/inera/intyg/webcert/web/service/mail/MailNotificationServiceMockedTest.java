@@ -29,12 +29,12 @@ import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPFactory;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MailNotificationServiceMockedTest {
 
   @Mock EmployeeNameService employeeNameService;
@@ -61,7 +61,7 @@ public class MailNotificationServiceMockedTest {
 
   @InjectMocks private MailNotificationServiceImpl mailNotificationService;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ReflectionTestUtils.setField(
         mailNotificationService, "fromAddress", "no-reply@webcert.intygstjanster.se");

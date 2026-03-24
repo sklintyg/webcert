@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -33,12 +33,12 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
@@ -54,7 +54,7 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotificationResultResendServiceTest {
 
   @Mock HandelseRepository handelseRepository;
@@ -398,8 +398,8 @@ public class NotificationResultResendServiceTest {
 
     verify(notificationRedeliveryRepository).save(captureRedelivery.capture());
     assertNotNull(
-        "Must update redelivery message if it didn't exist from before",
-        captureRedelivery.getValue().getMessage());
+        captureRedelivery.getValue().getMessage(),
+        "Must update redelivery message if it didn't exist from before");
     assertEquals(STATUS_UPDATE_XML, captureRedelivery.getValue().getMessage());
   }
 

@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -47,13 +48,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -105,7 +108,8 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   @Mock private WebCertUserService webCertUserService;
@@ -155,7 +159,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
   private WebCertUser user;
   private ModuleApi moduleApi = mock(ModuleApi.class);
 
-  @Before
+  @BeforeEach
   public void init() throws IOException, ModuleNotFoundException, ModuleException {
     vardperson = UnderskriftTestUtil.createVardperson();
     vardenhet = new Vardenhet(ENHET_ID, "testNamn");
@@ -222,15 +226,18 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     assertNotNull(sb.getHash());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testStartSignNoUtkastFound() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
     testee.startSigningProcess(
         INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+      });
   }
 
-  @Test(expected = OptimisticLockException.class)
+  @Test
   public void testStartSignUtkastVersionsDifferFound() {
+    assertThrows(OptimisticLockException.class, () -> {
     when(utkastRepository.findById(INTYG_ID))
         .thenReturn(
             Optional.of(
@@ -245,10 +252,12 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                     PERSON_ID)));
     testee.startSigningProcess(
         INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testStartSignUtkastNotReadyForSign() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(utkastRepository.findById(INTYG_ID))
         .thenReturn(
             Optional.of(
@@ -263,6 +272,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                     PERSON_ID)));
     testee.startSigningProcess(
         INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+      });
   }
 
   @Test
@@ -315,8 +325,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testStartSignUtkastAlreadySigned() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(utkastRepository.findById(INTYG_ID))
         .thenReturn(
             Optional.of(
@@ -331,10 +342,12 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                     PERSON_ID)));
     testee.startSigningProcess(
         INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testStartSignInvalidDraft() throws ModuleException, ModuleNotFoundException {
+  @Test
+  public void testStartSignInvalidDraft() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(utkastRepository.findById(INTYG_ID))
         .thenReturn(
             Optional.of(
@@ -354,6 +367,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     testee.startSigningProcess(
         INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+      });
   }
 
   @Test
@@ -365,12 +379,14 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     assertNotNull(signaturBiljett);
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testGetSigneringsStatusNoTicketFound() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(null);
 
     SignaturBiljett signaturBiljett = testee.signeringsStatus(TICKET_ID);
     assertNotNull(signaturBiljett);
+      });
   }
 
   @Test

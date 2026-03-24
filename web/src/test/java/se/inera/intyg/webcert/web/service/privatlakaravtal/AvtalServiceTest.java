@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.privatlakaravtal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,11 +31,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
@@ -42,7 +43,7 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvt
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /** Created by eriklupander on 2015-08-05. */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AvtalServiceTest {
 
   private static final String USER_ID = "userId";
@@ -65,7 +66,7 @@ public class AvtalServiceTest {
         .thenReturn(Optional.of(buildAvtal(AVTAL_VERSION_1)));
     Optional<Avtal> avtal = avtalService.getLatestAvtal();
     assertEquals(AVTAL_VERSION_1, avtal.orElse(null).getAvtalVersion());
-    assertEquals("TEXT", avtal.get().getAvtalText());
+    assertEquals( avtal.get().getAvtalText(),"TEXT");
   }
 
   @Test
@@ -92,8 +93,9 @@ public class AvtalServiceTest {
         .logPrivatePractitionerTermsApproved(anyString(), isNull(), anyInt());
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testApproveAvtalNoAvtalInDB() {
+    assertThrows(IllegalStateException.class, () -> {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(-1);
     try {
       avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
@@ -103,6 +105,7 @@ public class AvtalServiceTest {
           .logPrivatePractitionerTermsApproved(anyString(), any(Personnummer.class), anyInt());
       throw e;
     }
+      });
   }
 
   private Avtal buildAvtal(Integer avtalVersion) {

@@ -92,7 +92,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("191212121212", convertedFilter.getPatientPersonId());
+    assertEquals( convertedFilter.getPatientPersonId(),"191212121212");
   }
 
   @Test
@@ -103,7 +103,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("191212121212", convertedFilter.getPatientPersonId());
+    assertEquals( convertedFilter.getPatientPersonId(),"191212121212");
   }
 
   @Test
@@ -125,7 +125,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("receivedDate", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"receivedDate");
   }
 
   @Test
@@ -136,7 +136,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("patientId", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"patientId");
   }
 
   @Test
@@ -147,7 +147,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("signeratAvNamn", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"signeratAvNamn");
   }
 
   @Test
@@ -158,7 +158,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("amne", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"amne");
   }
 
   @Test
@@ -169,7 +169,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("vidarebefordrad", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"vidarebefordrad");
   }
 
   @Test
@@ -180,7 +180,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("fragestallare", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"fragestallare");
   }
 
   @Test
@@ -213,7 +213,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("UNIT_ID", convertedFilter.getEnhetId());
+    assertEquals( convertedFilter.getEnhetId(),"UNIT_ID");
   }
 
   @Test
@@ -246,7 +246,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("HANTERAD", convertedFilter.getVantarPa());
+    assertEquals( convertedFilter.getVantarPa(),"HANTERAD");
   }
 
   @Test
@@ -257,7 +257,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("ALLA_OHANTERADE", convertedFilter.getVantarPa());
+    assertEquals( convertedFilter.getVantarPa(),"ALLA_OHANTERADE");
   }
 
   @Test
@@ -268,7 +268,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("KOMPLETTERING_FRAN_VARDEN", convertedFilter.getVantarPa());
+    assertEquals( convertedFilter.getVantarPa(),"KOMPLETTERING_FRAN_VARDEN");
   }
 
   @Test
@@ -279,7 +279,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("SVAR_FRAN_VARDEN", convertedFilter.getVantarPa());
+    assertEquals( convertedFilter.getVantarPa(),"SVAR_FRAN_VARDEN");
   }
 
   @Test
@@ -290,7 +290,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("MARKERA_SOM_HANTERAD", convertedFilter.getVantarPa());
+    assertEquals( convertedFilter.getVantarPa(),"MARKERA_SOM_HANTERAD");
   }
 
   @Test
@@ -301,7 +301,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("SVAR_FRAN_FK", convertedFilter.getVantarPa());
+    assertEquals( convertedFilter.getVantarPa(),"SVAR_FRAN_FK");
   }
 
   @Test
@@ -312,7 +312,7 @@ class QuestionFilterConverterImplTest {
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals("ALLA", convertedFilter.getVantarPa());
+    assertEquals( convertedFilter.getVantarPa(),"ALLA");
   }
 
   @Test

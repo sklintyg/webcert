@@ -32,10 +32,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
 import se.inera.intyg.common.doi.v1.rest.DoiModuleApiV1;
 import se.inera.intyg.common.support.common.enumerations.KvIntygstyp;
@@ -44,7 +44,7 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AuthoritiesHelperUtilTest {
 
   private static final String DB = "db";
@@ -57,7 +57,7 @@ public class AuthoritiesHelperUtilTest {
 
   @Test
   public void testCreateDraftAllowed() {
-    Assert.assertNull(
+    Assertions.assertNull(
         AuthoritiesHelperUtil.performUniqueAndModuleValidation(
             new IntygUser(""), DB, createEmptyPreviousDraftAndCertificates(), dbModuleApiV1));
   }
@@ -82,7 +82,7 @@ public class AuthoritiesHelperUtilTest {
 
     var previousDraftCertificates = createDBDraftOnSameCareProviderAndSameUnit();
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         String.format(
             DRAFT_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS,
             KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
@@ -111,7 +111,7 @@ public class AuthoritiesHelperUtilTest {
 
     var previousDraftCertificates = createDBDraftOnSameCareProviderAndOtherUnit();
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         String.format(
             DRAFT_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS,
             KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
@@ -140,7 +140,7 @@ public class AuthoritiesHelperUtilTest {
 
     var previousDraftCertificates = createDBDraftOnOtherCareProvider();
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         String.format(
             DRAFT_FROM_OTHER_CARE_PROVIDER_EXISTS,
             KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
@@ -169,7 +169,7 @@ public class AuthoritiesHelperUtilTest {
 
     var previousDraftCertificates = createDBDraftAndCertificateOnSameCareProviderAndSameUnit();
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         String.format(
             CERTIFICATE_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS,
             KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
@@ -198,7 +198,7 @@ public class AuthoritiesHelperUtilTest {
 
     var previousDraftCertificates = createDBDraftAndCertificateOnSameCareProviderAndOtherUnit();
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         String.format(
             CERTIFICATE_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS,
             KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
@@ -227,7 +227,7 @@ public class AuthoritiesHelperUtilTest {
 
     var previousDraftCertificates = createDBDraftAndCertificateOnOtherCareProvider();
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         String.format(
             CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS,
             KvIntygstyp.getDisplayNameFromCodeValue(DB).toLowerCase()),
@@ -256,7 +256,7 @@ public class AuthoritiesHelperUtilTest {
 
     var previousDraftCertificates = createDOICertificateOnOtherCareProvider();
 
-    Assert.assertEquals(
+    Assertions.assertEquals(
         String.format(
             CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS_OVERRIDE,
             KvIntygstyp.getDisplayNameFromCodeValue(DOI).toLowerCase()),
@@ -285,11 +285,11 @@ public class AuthoritiesHelperUtilTest {
 
     var previousDraftCertificates = createEmptyPreviousDraftAndCertificates();
 
-    Assert.assertEquals(
-        "Det finns inget dödsbevis i nuläget inom vårdgivaren. Dödsorsaksintyget bör alltid skapas efter dödsbeviset.",
+    Assertions.assertEquals(
         AuthoritiesHelperUtil.performUniqueAndModuleValidation(
                 user, DOI, previousDraftCertificates, doiModuleApiV1)
-            .getMessage());
+            .getMessage(),
+        "Det finns inget dödsbevis i nuläget inom vårdgivaren. Dödsorsaksintyget bör alltid skapas efter dödsbeviset.");
   }
 
   private Map<String, Map<String, PreviousIntyg>> createEmptyPreviousDraftAndCertificates() {

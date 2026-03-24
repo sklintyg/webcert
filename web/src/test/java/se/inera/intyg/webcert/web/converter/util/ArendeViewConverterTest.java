@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.converter.util;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
@@ -43,12 +43,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
 import se.inera.intyg.common.luse.v1.model.internal.LuseUtlatandeV1;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -77,7 +79,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class ArendeViewConverterTest {
 
   private static final String PATIENT_PERSON_ID = "19121212-1212";
@@ -97,7 +100,7 @@ public class ArendeViewConverterTest {
   @Mock private ModuleApi moduleApi;
 
   @SuppressWarnings("unchecked")
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
     Map<String, List<String>> map = new HashMap<>();
@@ -112,7 +115,7 @@ public class ArendeViewConverterTest {
         .thenReturn(map);
   }
 
-  @Before
+  @BeforeEach
   public void setupDefaultMocksForIntygService() {
     when(intygService.fetchIntygData(any(String.class), any(String.class)))
         .thenReturn(
@@ -240,7 +243,7 @@ public class ArendeViewConverterTest {
     ArendeView result = converter.convertToDto(arende);
 
     assertEquals(1, result.getKompletteringar().size());
-    assertEquals("", result.getKompletteringar().get(0).getJsonPropertyHandle());
+    assertEquals( result.getKompletteringar().get(0).getJsonPropertyHandle(),"");
     assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
     assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
     assertEquals(ENHETS_NAMN, result.getEnhetsnamn());

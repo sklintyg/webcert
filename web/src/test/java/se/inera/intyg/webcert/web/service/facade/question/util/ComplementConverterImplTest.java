@@ -130,7 +130,7 @@ class ComplementConverterImplTest {
 
     final var actualComplements = complementConverter.convert(complementQuestion);
 
-    assertEquals("questionText", actualComplements[0].getQuestionText());
+    assertEquals( actualComplements[0].getQuestionText(),"questionText");
   }
 
   @Test
@@ -141,7 +141,7 @@ class ComplementConverterImplTest {
 
     final var actualComplements = complementConverter.convert(complementQuestion);
 
-    assertEquals("jsonProperty", actualComplements[0].getValueId());
+    assertEquals( actualComplements[0].getValueId(),"jsonProperty");
   }
 
   @Test
@@ -199,10 +199,10 @@ class ComplementConverterImplTest {
     final var actualComplements =
         complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
-    assertEquals(
-        "questionText", actualComplements.get("complementQuestionId")[0].getQuestionText());
-    assertEquals(
-        "questionText", actualComplements.get("anotherComplementQuestionId")[0].getQuestionText());
+    assertEquals( actualComplements.get("complementQuestionId")[0].getQuestionText(),
+        "questionText");
+    assertEquals( actualComplements.get("anotherComplementQuestionId")[0].getQuestionText(),
+        "questionText");
   }
 
   @Test
@@ -214,9 +214,9 @@ class ComplementConverterImplTest {
     final var actualComplements =
         complementConverter.convert(List.of(complementQuestion, anotherComplementQuestion));
 
-    assertEquals("jsonProperty", actualComplements.get("complementQuestionId")[0].getValueId());
-    assertEquals(
-        "jsonProperty", actualComplements.get("anotherComplementQuestionId")[0].getValueId());
+    assertEquals( actualComplements.get("complementQuestionId")[0].getValueId(),"jsonProperty");
+    assertEquals( actualComplements.get("anotherComplementQuestionId")[0].getValueId(),
+        "jsonProperty");
   }
 
   @Test

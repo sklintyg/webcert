@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PreviousIntygTest {
 
@@ -43,8 +43,8 @@ public class PreviousIntygTest {
     PreviousIntyg dto = PreviousIntyg.of(false, true, false, "Enhet", "intygsId", null, false);
 
     assertFalse(dto.isSameVardgivare());
-    assertEquals("Enhet", dto.getEnhetName());
-    assertEquals("intygsId", dto.getLatestIntygsId());
+    assertEquals( dto.getEnhetName(),"Enhet");
+    assertEquals( dto.getLatestIntygsId(),"intygsId");
     assertFalse(dto.isEnableShowDoiButton());
     assertTrue(dto.isSameEnhet());
   }
@@ -65,8 +65,8 @@ public class PreviousIntygTest {
     PreviousIntyg dto = PreviousIntyg.of(true, true, true, "Enhet", "intygsId", null);
 
     assertTrue(dto.isSameVardgivare());
-    assertEquals("Enhet", dto.getEnhetName());
-    assertEquals("intygsId", dto.getLatestIntygsId());
+    assertEquals( dto.getEnhetName(),"Enhet");
+    assertEquals( dto.getLatestIntygsId(),"intygsId");
     assertTrue(dto.isEnableShowDoiButton());
     assertTrue(dto.isSameEnhet());
   }
@@ -76,8 +76,8 @@ public class PreviousIntygTest {
     PreviousIntyg dto = PreviousIntyg.of(true, false, false, "Enhet", "intygsId", null);
 
     assertTrue(dto.isSameVardgivare());
-    assertEquals("Enhet", dto.getEnhetName());
-    assertEquals("intygsId", dto.getLatestIntygsId());
+    assertEquals( dto.getEnhetName(),"Enhet");
+    assertEquals( dto.getLatestIntygsId(),"intygsId");
     assertFalse(dto.isEnableShowDoiButton());
     assertFalse(dto.isSameEnhet());
   }

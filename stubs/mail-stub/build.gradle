@@ -6,6 +6,5 @@ dependencies {
     implementation "org.aspectj:aspectjweaver"
     implementation "org.springframework:spring-context-support"
 
-    testImplementation "junit:junit"
     testImplementation "org.mockito:mockito-junit-jupiter"
 }

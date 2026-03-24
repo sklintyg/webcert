@@ -28,23 +28,24 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 import org.hamcrest.Matchers;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:/DiagnosService/DiagnosServiceTest-context.xml")
 public class DiagnosServiceImplTest {
 
@@ -57,17 +58,17 @@ public class DiagnosServiceImplTest {
   @Test
   public void testGetICD10DiagnosisByCode() {
     assertEquals(
-        "Null should return invalid",
         DiagnosResponseType.INVALID_CODE,
-        service.getDiagnosisByCode(null, ICD_10).getResultat());
+        service.getDiagnosisByCode(null, ICD_10).getResultat(),
+        "Null should return invalid");
     assertEquals(
-        "Empty should return invalid",
         DiagnosResponseType.INVALID_CODE,
-        service.getDiagnosisByCode("", ICD_10).getResultat());
+        service.getDiagnosisByCode("", ICD_10).getResultat(),
+        "Empty should return invalid");
     assertEquals(
-        "Spaces should return invalid",
         DiagnosResponseType.INVALID_CODE,
-        service.getDiagnosisByCode(" ", ICD_10).getResultat());
+        service.getDiagnosisByCode(" ", ICD_10).getResultat(),
+        "Spaces should return invalid");
 
     assertEquals(
         DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("A11", ICD_10).getResultat());
@@ -80,17 +81,17 @@ public class DiagnosServiceImplTest {
   @Test
   public void testGetKSH97PDiagnosisByCode() {
     assertEquals(
-        "Null should return invalid",
         DiagnosResponseType.INVALID_CODE,
-        service.getDiagnosisByCode(null, KSH97P).getResultat());
+        service.getDiagnosisByCode(null, KSH97P).getResultat(),
+        "Null should return invalid");
     assertEquals(
-        "Empty should return invalid",
         DiagnosResponseType.INVALID_CODE,
-        service.getDiagnosisByCode("", KSH97P).getResultat());
+        service.getDiagnosisByCode("", KSH97P).getResultat(),
+        "Empty should return invalid");
     assertEquals(
-        "Spaces should return invalid",
         DiagnosResponseType.INVALID_CODE,
-        service.getDiagnosisByCode(" ", KSH97P).getResultat());
+        service.getDiagnosisByCode(" ", KSH97P).getResultat(),
+        "Spaces should return invalid");
 
     assertEquals(
         DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("A11", KSH97P).getResultat());
@@ -103,9 +104,9 @@ public class DiagnosServiceImplTest {
   @Test
   public void testGetICD10DiagnosisByCodeDiagnoskodverk() {
     assertEquals(
-        "Empty should return invalid",
         DiagnosResponseType.INVALID_CODE,
-        service.getDiagnosisByCode("", Diagnoskodverk.ICD_10_SE).getResultat());
+        service.getDiagnosisByCode("", Diagnoskodverk.ICD_10_SE).getResultat(),
+        "Empty should return invalid");
 
     assertEquals(
         DiagnosResponseType.NOT_FOUND,
@@ -119,9 +120,9 @@ public class DiagnosServiceImplTest {
   @Test
   public void testGetKSH97PDiagnosisByCodeDiagnoskodverk() {
     assertEquals(
-        "Empty should return invalid",
         DiagnosResponseType.INVALID_CODE,
-        service.getDiagnosisByCode("", Diagnoskodverk.KSH_97_P).getResultat());
+        service.getDiagnosisByCode("", Diagnoskodverk.KSH_97_P).getResultat(),
+        "Empty should return invalid");
 
     assertEquals(
         DiagnosResponseType.NOT_FOUND,
@@ -188,8 +189,9 @@ public class DiagnosServiceImplTest {
                                 hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testDiagnosServiceWithNbrOfResultsZero() {
+    assertThrows(IllegalArgumentException.class, () -> {
     // Given
     String anyString = "";
 
@@ -197,10 +199,12 @@ public class DiagnosServiceImplTest {
     service.searchDiagnosisByCode(anyString, anyString, 0);
 
     // Then throw IllegalArgumentException
+      });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testDiagnosServiceWithNbrOfResultsMinusOne() {
+    assertThrows(IllegalArgumentException.class, () -> {
     // Given
     String anyString = "";
 
@@ -208,6 +212,7 @@ public class DiagnosServiceImplTest {
     service.searchDiagnosisByCode(anyString, anyString, -1);
 
     // Then throw IllegalArgumentException
+      });
   }
 
   @Test
@@ -268,8 +273,8 @@ public class DiagnosServiceImplTest {
 
   @Test
   public void testDiagnosCodeValidationCanHandleEmptyArgument() {
-    assertFalse("Null should return false", service.validateDiagnosisCode(null, ICD_10));
-    assertFalse("Empty string should return false", service.validateDiagnosisCode("", ICD_10));
+    assertFalse( service.validateDiagnosisCode(null, ICD_10),"Null should return false");
+    assertFalse( service.validateDiagnosisCode("", ICD_10),"Empty string should return false");
   }
 
   @Test
@@ -295,17 +300,17 @@ public class DiagnosServiceImplTest {
                     .or(hasProperty("resultat", equalTo(DiagnosResponseType.NOT_FOUND))))));
 
     assertEquals(
-        "Null should return invalid",
         DiagnosResponseType.INVALID_SEARCH_STRING,
-        service.searchDiagnosisByDescription(null, ICD_10, 5).getResultat());
+        service.searchDiagnosisByDescription(null, ICD_10, 5).getResultat(),
+        "Null should return invalid");
     assertEquals(
-        "Empty should return invalid",
         DiagnosResponseType.INVALID_SEARCH_STRING,
-        service.searchDiagnosisByDescription("", ICD_10, 5).getResultat());
+        service.searchDiagnosisByDescription("", ICD_10, 5).getResultat(),
+        "Empty should return invalid");
     assertEquals(
-        "Spaces should return invalid",
         DiagnosResponseType.INVALID_SEARCH_STRING,
-        service.searchDiagnosisByDescription(" ", ICD_10, 5).getResultat());
+        service.searchDiagnosisByDescription(" ", ICD_10, 5).getResultat(),
+        "Spaces should return invalid");
   }
 
   @Test
@@ -340,14 +345,18 @@ public class DiagnosServiceImplTest {
                                 hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testSearchDiagnosisByDescriptionThrowsExceptionForIntegerMaxValue() {
+    assertThrows(IllegalArgumentException.class, () -> {
     service.searchDiagnosisByDescription(null, null, Integer.MAX_VALUE);
+      });
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testSearchDiagnosisByCodeThrowsExceptionForIntegerMaxValue() {
+    assertThrows(IllegalArgumentException.class, () -> {
     service.searchDiagnosisByCode(null, null, Integer.MAX_VALUE);
+      });
   }
 
   @Test

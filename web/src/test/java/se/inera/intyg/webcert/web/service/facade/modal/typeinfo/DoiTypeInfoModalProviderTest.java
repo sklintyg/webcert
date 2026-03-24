@@ -73,8 +73,8 @@ class DoiTypeInfoModalProviderTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals("Utkast på dödsorsaksintyg på annan vårdenhet", result.get().getTitle()),
-        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()),
+        () -> assertEquals( result.get().getTitle(),"Utkast på dödsorsaksintyg på annan vårdenhet"),
+        () -> assertEquals( result.get().getLink(),"Visa vårdenhetens namn och HSA-id"),
         () -> assertTrue(result.get().getDescription().contains(careProviderName)),
         () -> assertTrue(result.get().getDescription().contains(careUnitName)),
         () -> assertTrue(result.get().getDescription().contains(careUnitHsaId)));
@@ -100,8 +100,8 @@ class DoiTypeInfoModalProviderTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals("Signerat dödsorsaksintyg på annan vårdenhet", result.get().getTitle()),
-        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()),
+        () -> assertEquals( result.get().getTitle(),"Signerat dödsorsaksintyg på annan vårdenhet"),
+        () -> assertEquals( result.get().getLink(),"Visa vårdenhetens namn och HSA-id"),
         () -> assertTrue(result.get().getDescription().contains(careProviderName)),
         () -> assertTrue(result.get().getDescription().contains(careUnitName)),
         () -> assertTrue(result.get().getDescription().contains(careUnitHsaId)));
@@ -128,8 +128,8 @@ class DoiTypeInfoModalProviderTest {
     assertAll(
         () -> assertTrue(result.isPresent()),
         () ->
-            assertEquals("Utkast på dödsorsaksintyg hos annan vårdgivare", result.get().getTitle()),
-        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()));
+            assertEquals( result.get().getTitle(),"Utkast på dödsorsaksintyg hos annan vårdgivare"),
+        () -> assertEquals( result.get().getLink(),"Visa vårdenhetens namn och HSA-id"));
   }
 
   @Test
@@ -153,8 +153,8 @@ class DoiTypeInfoModalProviderTest {
     assertAll(
         () -> assertTrue(result.isPresent()),
         () ->
-            assertEquals("Signerat dödsorsaksintyg hos annan vårdgivare", result.get().getTitle()),
-        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()));
+            assertEquals( result.get().getTitle(),"Signerat dödsorsaksintyg hos annan vårdgivare"),
+        () -> assertEquals( result.get().getLink(),"Visa vårdenhetens namn och HSA-id"));
   }
 
   @Test

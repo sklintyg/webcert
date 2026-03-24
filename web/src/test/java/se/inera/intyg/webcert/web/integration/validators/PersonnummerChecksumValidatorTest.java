@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.integration.validators;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public class PersonnummerChecksumValidatorTest {

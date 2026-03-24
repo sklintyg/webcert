@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.webcert.web.logging;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -34,12 +34,12 @@ public class OriginConverterTest {
 
   private OriginConverter converter = new OriginConverter();
 
-  @Before
+  @BeforeEach
   public void setup() {
     cleanup();
   }
 
-  @After
+  @AfterEach
   public void cleanup() {
     SecurityContextHolder.getContext().setAuthentication(null);
   }
@@ -63,7 +63,7 @@ public class OriginConverterTest {
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals("NO ORIGIN", res);
+    assertEquals( res,"NO ORIGIN");
   }
 
   @Test
@@ -74,6 +74,6 @@ public class OriginConverterTest {
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals("NO ORIGIN", res);
+    assertEquals( res,"NO ORIGIN");
   }
 }

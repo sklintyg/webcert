@@ -10,6 +10,5 @@ dependencies {
     implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
-    testImplementation "junit:junit"
     testImplementation "org.springframework:spring-test"
 }

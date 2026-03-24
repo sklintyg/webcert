@@ -60,8 +60,8 @@ class ReactUriFactoryTest {
   void shallReturnUriForCertificate() {
     final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
     final var actualUri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
-    assertEquals(
-        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq", actualUri.toString());
+    assertEquals( actualUri.toString(),
+        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq");
   }
 
   @Test
@@ -71,8 +71,8 @@ class ReactUriFactoryTest {
         reactUriFactory.uriForCertificateWithSignError(
             uriInfo, certificateId, SignaturStatus.ERROR);
     assertEquals(
-        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error",
-        actualUri.toString());
+        actualUri.toString(),
+        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error");
   }
 
   @Test
@@ -80,15 +80,15 @@ class ReactUriFactoryTest {
     final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
     final var actualUri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
     assertEquals(
-        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions",
-        actualUri.toString());
+        actualUri.toString(),
+        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions");
   }
 
   @Test
   void shallReturnUriForError() {
     final var reason = "auth-exception";
     final var actualUri = reactUriFactory.uriForErrorResponse(uriInfo, reason);
-    assertEquals("https://wc.localtest.me/error?reason=auth-exception", actualUri.toString());
+    assertEquals( actualUri.toString(),"https://wc.localtest.me/error?reason=auth-exception");
   }
 
   @Test
@@ -96,7 +96,7 @@ class ReactUriFactoryTest {
     final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
     final var actualUri = reactUriFactory.uriForUnitSelection(uriInfo, certificateId);
     assertEquals(
-        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/launch-unit-selection",
-        actualUri.toString());
+        actualUri.toString(),
+        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/launch-unit-selection");
   }
 }

@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.integration.registry;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -32,12 +32,12 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
@@ -45,7 +45,7 @@ import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class IntegreradeEnheterRegistryImplTest {
 
   @Mock private IntegreradEnhetRepository integreradEnhetRepository;

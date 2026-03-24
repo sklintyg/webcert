@@ -92,7 +92,7 @@ class ListDraftsConfigFacadeServiceImplTest {
   @Test
   public void shouldSetTitle() {
     final var config = listDraftsConfigFacadeService.get();
-    assertEquals("Intyg visas för Enhetsnamn", config.getSecondaryTitle());
+    assertEquals( config.getSecondaryTitle(),"Intyg visas för Enhetsnamn");
   }
 
   @Test
@@ -139,7 +139,7 @@ class ListDraftsConfigFacadeServiceImplTest {
     @Test
     public void shouldSetTitle() {
       setupSavedBy();
-      assertEquals("Sparat av", filter.getTitle());
+      assertEquals( filter.getTitle(),"Sparat av");
     }
 
     @Test
@@ -157,7 +157,7 @@ class ListDraftsConfigFacadeServiceImplTest {
     @Test
     public void shouldSetShowAll() {
       setupSavedBy();
-      assertEquals("Visa alla", filter.getValues().get(0).getName());
+      assertEquals( filter.getValues().get(0).getName(),"Visa alla");
     }
 
     @Test
@@ -194,7 +194,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetTitle() {
-      assertEquals("Sparat datum", filter.getTitle());
+      assertEquals( filter.getTitle(),"Sparat datum");
     }
 
     @Test
@@ -239,7 +239,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetTitle() {
-      assertEquals("Vidarebefordrat", filter.getTitle());
+      assertEquals( filter.getTitle(),"Vidarebefordrat");
     }
 
     @Test
@@ -277,7 +277,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetTitle() {
-      assertEquals("Utkast", filter.getTitle());
+      assertEquals( filter.getTitle(),"Utkast");
     }
 
     @Test
@@ -315,7 +315,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetTitle() {
-      assertEquals("Patient", filter.getTitle());
+      assertEquals( filter.getTitle(),"Patient");
     }
 
     @Test
@@ -348,7 +348,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetEmptyTitle() {
-      assertEquals("", filter.getTitle());
+      assertEquals( filter.getTitle(),"");
     }
 
     @Test
@@ -414,7 +414,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetEmptyTitle() {
-      assertEquals("", filter.getTitle());
+      assertEquals( filter.getTitle(),"");
     }
 
     @Test

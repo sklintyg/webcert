@@ -18,10 +18,11 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
@@ -46,8 +47,10 @@ public class FragestallareConverterUtilTest {
     assertTrue(FrageStallare.WEBCERT.isNameEqual("Webcert"));
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testInvalidPartKod() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragestallareConverterUtil.partToFrageStallarKod("INVALID");
+      });
   }
 }

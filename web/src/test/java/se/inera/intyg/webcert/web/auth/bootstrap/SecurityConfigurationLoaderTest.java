@@ -18,18 +18,19 @@
  */
 package se.inera.intyg.webcert.web.auth.bootstrap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.intyg.infra.security.authorities.AuthoritiesConfiguration;
@@ -51,7 +52,7 @@ import se.inera.intyg.infra.security.common.model.TitleCode;
  *
  * <p>Created by eriklupander on 2015-10-19.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SecurityConfigurationLoaderTest {
 
   private static final String authoritiesConfigurationFile =
@@ -67,7 +68,7 @@ public class SecurityConfigurationLoaderTest {
       new SecurityConfigurationLoader(
           authoritiesConfigurationFile, featuresConfigurationFile, defaultMaxAliasesForCollections);
 
-  @Before
+  @BeforeEach
   public void setupAuthoritiesConfiguration() {
     // When
     try {
@@ -117,9 +118,11 @@ public class SecurityConfigurationLoaderTest {
     assertEquals(expected, actual);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void loadConfigurationWithBadLocation() {
+    assertThrows(IllegalArgumentException.class, () -> {
     new SecurityConfigurationLoader(null, null, null);
+      });
   }
 
   // ~ Private scope

@@ -18,7 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,10 +32,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -62,7 +65,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
   private static final String REVOKE_MSG = "This is revoked";
@@ -81,7 +85,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
   private Relations childRelations;
   private Relations parentRelations;
 
-  @Before
+  @BeforeEach
   public void setup() {
     HoSPersonal person = buildHosPerson();
     VardpersonReferens vardperson = buildVardpersonReferens(person);
@@ -97,7 +101,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
   }
 
   @Override
-  @Before
+  @BeforeEach
   public void setupMocks() throws Exception {
     json =
         Files.readString(
@@ -116,7 +120,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class), any())).thenReturn("MODEL");
   }
 
-  @Before
+  @BeforeEach
   public void setupDefaultAuthorization() {
     when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), eq(true)))
         .thenReturn(true);
@@ -152,8 +156,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     assertEquals(IntygServiceResult.OK, res);
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testRevokeIntygThatHasAlreadyBeenRevokedFails() throws IntygModuleFacadeException {
+  @Test
+  public void testRevokeIntygThatHasAlreadyBeenRevokedFails() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
     when(moduleFacade.getCertificate(anyString(), anyString(), anyString()))
         .thenThrow(new IntygModuleFacadeException(""));
@@ -166,6 +171,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
       verifyNoInteractions(notificationService);
       verifyNoInteractions(logService);
     }
+      });
   }
 
   @Test

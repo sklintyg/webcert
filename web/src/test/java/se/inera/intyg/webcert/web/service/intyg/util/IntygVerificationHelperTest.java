@@ -21,13 +21,14 @@ package se.inera.intyg.webcert.web.service.intyg.util;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotSent;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -37,7 +38,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl.IntygOperation;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class IntygVerificationHelperTest {
 
   @Test
@@ -47,11 +48,13 @@ public class IntygVerificationHelperTest {
     verifyIsNotSent(utkast, IntygOperation.SEND);
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testVerifyIsSent() throws Exception {
+  @Test
+  public void testVerifyIsSent() {
+    assertThrows(WebCertServiceException.class, () -> {
     Utkast utkast = mock(Utkast.class);
     doReturn("FKASSA").when(utkast).getSkickadTillMottagare();
     verifyIsNotSent(utkast, IntygOperation.SEND);
+      });
   }
 
   @Test
@@ -74,8 +77,9 @@ public class IntygVerificationHelperTest {
     verifyIsNotSent(certificate, IntygOperation.SEND);
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testVerifyIsSentFilledList() {
+    assertThrows(WebCertServiceException.class, () -> {
     CertificateResponse certificate = mock(CertificateResponse.class);
     Utlatande myUtlatande = mock(Utlatande.class);
     CertificateMetaData metaData = mock(CertificateMetaData.class);
@@ -89,5 +93,6 @@ public class IntygVerificationHelperTest {
     doReturn(myUtlatande).when(certificate).getUtlatande();
 
     verifyIsNotSent(certificate, IntygOperation.SEND);
+      });
   }
 }

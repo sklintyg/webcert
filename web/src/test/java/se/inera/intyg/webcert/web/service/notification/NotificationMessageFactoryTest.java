@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -35,11 +35,11 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -61,7 +61,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 
 /** Created by Magnus Ekstrand on 03/12/14. */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotificationMessageFactoryTest {
 
   private static final String INTYGS_ID = "1234";
@@ -97,8 +97,8 @@ public class NotificationMessageFactoryTest {
     assertNotNull(msg.getHandelseTid());
     assertEquals(INTYGS_ID, msg.getIntygsId());
     assertEquals(INTYGS_TYP, msg.getIntygsTyp());
-    assertEquals("SE12345678-1000", msg.getLogiskAdress());
-    assertEquals("{model}", msg.getUtkast());
+    assertEquals( msg.getLogiskAdress(),"SE12345678-1000");
+    assertEquals( msg.getUtkast(),"{model}");
     assertNotNull(msg.getFragaSvar());
     assertEquals(SchemaVersion.VERSION_1, msg.getVersion());
     assertEquals(reference, msg.getReference());
@@ -127,8 +127,8 @@ public class NotificationMessageFactoryTest {
     assertNotNull(msg.getHandelseTid());
     assertEquals(INTYGS_ID, msg.getIntygsId());
     assertEquals(INTYGS_TYP, msg.getIntygsTyp());
-    assertEquals("SE12345678-1000", msg.getLogiskAdress());
-    assertEquals("{model}", msg.getUtkast());
+    assertEquals( msg.getLogiskAdress(),"SE12345678-1000");
+    assertEquals( msg.getUtkast(),"{model}");
     assertEquals(SchemaVersion.VERSION_3, msg.getVersion());
     assertEquals(reference, msg.getReference());
     assertNull(msg.getFragaSvar());
@@ -157,8 +157,8 @@ public class NotificationMessageFactoryTest {
     assertNotNull(msg.getHandelseTid());
     assertEquals(INTYGS_ID, msg.getIntygsId());
     assertEquals(INTYGS_TYP, msg.getIntygsTyp());
-    assertEquals("SE12345678-1000", msg.getLogiskAdress());
-    assertEquals("{model}", msg.getUtkast());
+    assertEquals( msg.getLogiskAdress(),"SE12345678-1000");
+    assertEquals( msg.getUtkast(),"{model}");
     assertEquals(SchemaVersion.VERSION_1, msg.getVersion());
     assertEquals(reference, msg.getReference());
     assertNotNull(msg.getFragaSvar());
@@ -193,8 +193,8 @@ public class NotificationMessageFactoryTest {
     assertNotNull(msg.getHandelseTid());
     assertEquals(INTYGS_ID, msg.getIntygsId());
     assertEquals(INTYGS_TYP, msg.getIntygsTyp());
-    assertEquals("SE12345678-1000", msg.getLogiskAdress());
-    assertEquals("{model}", msg.getUtkast());
+    assertEquals( msg.getLogiskAdress(),"SE12345678-1000");
+    assertEquals( msg.getUtkast(),"{model}");
     assertEquals(SchemaVersion.VERSION_3, msg.getVersion());
     assertEquals(reference, msg.getReference());
     assertNull(msg.getFragaSvar());

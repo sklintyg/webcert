@@ -18,23 +18,23 @@
  */
 package se.inera.intyg.webcert.persistence.arende.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
@@ -42,7 +42,7 @@ public class ArendeDraftRepositoryTest {
 
   @Autowired private ArendeDraftRepository repo;
 
-  @After
+  @AfterEach
   public void cleanup() {
     repo.deleteAll();
   }
@@ -75,15 +75,15 @@ public class ArendeDraftRepositoryTest {
     res = repo.findByIntygIdAndQuestionId("i11", "q1");
 
     assertNotNull(res);
-    assertEquals("i11", res.getIntygId());
-    assertEquals("q1", res.getQuestionId());
+    assertEquals( res.getIntygId(),"i11");
+    assertEquals( res.getQuestionId(),"q1");
 
     repo.save(buildArendeDraft("i1"));
 
     res = repo.findByIntygIdAndQuestionId("i1", null);
 
     assertNotNull(res);
-    assertEquals("i1", res.getIntygId());
+    assertEquals( res.getIntygId(),"i1");
     assertNull(res.getQuestionId());
   }
 

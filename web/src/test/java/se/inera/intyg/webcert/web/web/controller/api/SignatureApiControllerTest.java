@@ -93,10 +93,10 @@ public class SignatureApiControllerTest {
     assertNotNull(response);
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     assertNotNull(response.getEntity());
-    assertEquals("application/samlmetadata+xml", response.getMediaType().toString());
+    assertEquals( response.getMediaType().toString(),"application/samlmetadata+xml");
     assertEquals(
-        "attachment; filename=\"wc_dss_client_metadata.xml\"",
-        response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION));
+        response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION),
+        "attachment; filename=\"wc_dss_client_metadata.xml\"");
   }
 
   @Test

@@ -18,22 +18,24 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -44,7 +46,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelperImpl;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class CertificateAccessServiceHelperTest {
 
   @Mock private CertificateAccessService certificateAccessService;
@@ -57,7 +60,7 @@ public class CertificateAccessServiceHelperTest {
 
   private Utlatande certificate;
 
-  @Before
+  @BeforeEach
   public void setup() {
     certificate = mock(Utlatande.class);
     doReturn("certificateType").when(certificate).getTyp();

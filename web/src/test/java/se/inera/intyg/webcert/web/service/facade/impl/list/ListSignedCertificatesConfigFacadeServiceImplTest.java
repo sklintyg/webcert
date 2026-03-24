@@ -75,7 +75,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
   @Test
   public void shouldSetTitle() {
     final var config = listSignedCertificatesConfigFacadeService.get();
-    assertEquals("Intyg visas för Enhetsnamn", config.getSecondaryTitle());
+    assertEquals( config.getSecondaryTitle(),"Intyg visas för Enhetsnamn");
   }
 
   @Test
@@ -121,7 +121,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetTitle() {
-      assertEquals("Signeringsdatum", filter.getTitle());
+      assertEquals( filter.getTitle(),"Signeringsdatum");
     }
 
     @Test
@@ -159,7 +159,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetTitle() {
-      assertEquals("Patient", filter.getTitle());
+      assertEquals( filter.getTitle(),"Patient");
     }
 
     @Test
@@ -192,7 +192,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetEmptyTitle() {
-      assertEquals("", filter.getTitle());
+      assertEquals( filter.getTitle(),"");
     }
 
     @Test
@@ -258,7 +258,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetEmptyTitle() {
-      assertEquals("", filter.getTitle());
+      assertEquals( filter.getTitle(),"");
     }
 
     @Test

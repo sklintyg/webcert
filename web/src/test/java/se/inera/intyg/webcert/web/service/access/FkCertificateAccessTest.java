@@ -18,26 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.extension.ExtendWith;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.LisjpAccessServiceTestData;
 
-@RunWith(Parameterized.class)
 public class FkCertificateAccessTest extends CertificateAccessTest {
 
-  @Parameterized.Parameters(name = "{0}")
-  public static Iterable<Object[]> data() {
-    return Arrays.asList(
-        new Object[][] {{LisjpEntryPoint.MODULE_ID, new LisjpAccessServiceTestData()}});
-  }
-
-  public FkCertificateAccessTest(String intygsTyp, AccessServiceTestData accessServiceTestData) {
-    super(intygsTyp, accessServiceTestData);
+  public FkCertificateAccessTest() {
+    super(LisjpEntryPoint.MODULE_ID, new LisjpAccessServiceTestData());
   }
 
   @Override

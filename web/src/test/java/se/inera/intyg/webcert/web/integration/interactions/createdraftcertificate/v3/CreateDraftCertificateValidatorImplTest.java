@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,11 +32,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.HashSet;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
@@ -56,13 +58,14 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class CreateDraftCertificateValidatorImplTest
     extends BaseCreateDraftCertificateValidatorTest {
 
   @InjectMocks private CreateDraftCertificateValidatorImpl validator;
 
-  @Before
+  @BeforeEach
   public void setup() throws ModuleNotFoundException {
     when(moduleRegistry.getModuleIdFromExternalId(anyString()))
         .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());

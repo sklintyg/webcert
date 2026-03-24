@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.testcertificate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -31,18 +32,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class TestCertificateServiceTest {
 
   @Mock private UtkastRepository utkastRepository;
@@ -276,6 +277,9 @@ public class TestCertificateServiceTest {
 
     doReturn(certificateIds).when(utkastRepository).findTestCertificatesByCreatedBefore(any());
 
+    doNothing()
+        .when(eraseTestCertificateService)
+        .eraseTestCertificates(argThat(argument -> argument.size() == 3));
     doThrow(new RuntimeException())
         .when(eraseTestCertificateService)
         .eraseTestCertificates(argThat(argument -> argument.size() == 1));

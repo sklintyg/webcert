@@ -103,7 +103,7 @@ class GetStaffInfoFacadeServiceImplTest {
 
       final var result = getStaffInfoFacadeService.getLoggedInStaffHsaId();
 
-      assertEquals("HSA_ID", result);
+      assertEquals( result,"HSA_ID");
     }
   }
 
@@ -127,7 +127,7 @@ class GetStaffInfoFacadeServiceImplTest {
       final var result = getStaffInfoFacadeService.get();
 
       assertEquals(1, result.size());
-      assertEquals("HSA_ID", result.get(0).getHsaId());
+      assertEquals( result.get(0).getHsaId(),"HSA_ID");
     }
 
     @Test
@@ -160,7 +160,7 @@ class GetStaffInfoFacadeServiceImplTest {
 
       final var result = getStaffInfoFacadeService.get();
 
-      assertEquals("HSA_ID", result.get(0).getHsaId());
+      assertEquals( result.get(0).getHsaId(),"HSA_ID");
     }
 
     @Test
@@ -171,7 +171,7 @@ class GetStaffInfoFacadeServiceImplTest {
 
       final var result = getStaffInfoFacadeService.get();
 
-      assertEquals("NAME", result.get(0).getName());
+      assertEquals( result.get(0).getName(),"NAME");
     }
   }
 

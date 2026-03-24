@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.util.resourcelink;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
@@ -27,11 +27,11 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -54,7 +54,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelperImpl;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ResourceLinkHelperImplTest {
 
   @Mock private DraftAccessServiceHelper draftAccessServiceHelper;
@@ -81,11 +81,11 @@ public class ResourceLinkHelperImplTest {
     final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
 
     assertNotNull(actualLinks);
-    assertEquals("Should be one link", 1, actualLinks.size());
+    assertEquals( 1, actualLinks.size(),"Should be one link");
     assertEquals(
-        "ActionLink type should be same",
         expectedActionLink.getType(),
-        actualLinks.getFirst().getType());
+        actualLinks.getFirst().getType(),
+        "ActionLink type should be same");
   }
 
   @Test
@@ -101,7 +101,7 @@ public class ResourceLinkHelperImplTest {
     final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
 
     assertNotNull(actualLinks);
-    assertEquals("Should be no links", 0, actualLinks.size());
+    assertEquals( 0, actualLinks.size(),"Should be no links");
   }
 
   private IntygModuleDTO createIntygModuleDTO(String intygsTyp) {

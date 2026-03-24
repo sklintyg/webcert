@@ -18,19 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 /** Created by eriklupander on 2015-06-23. */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UtkastIntygDecoratorTest {
 
   private static final String INTYG_JSON = "A bit of text representing json";
@@ -56,7 +56,7 @@ public class UtkastIntygDecoratorTest {
 
   @InjectMocks private UtkastIntygDecoratorImpl testee;
 
-  @Before
+  @BeforeEach
   public void setup() {
     HoSPersonal person = buildHosPerson();
     VardpersonReferens vardperson = buildVardpersonReferens(person);

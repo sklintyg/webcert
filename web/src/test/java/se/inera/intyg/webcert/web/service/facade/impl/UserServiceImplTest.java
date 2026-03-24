@@ -127,7 +127,7 @@ class UserServiceImplTest {
     @Test
     void shallReturnWithFormattedPersonId() {
       final var actualUser = userService.getLoggedInUser();
-      assertEquals("19121212-1212", actualUser.getPersonId());
+      assertEquals( actualUser.getPersonId(),"19121212-1212");
     }
 
     @Test
@@ -268,7 +268,7 @@ class UserServiceImplTest {
       doReturn(null).when(user).getRoles();
 
       final var actualUser = userService.getLoggedInUser();
-      assertEquals("Roll ej angiven", actualUser.getRole());
+      assertEquals( actualUser.getRole(),"Roll ej angiven");
     }
 
     @Test
@@ -278,7 +278,7 @@ class UserServiceImplTest {
       doReturn(Collections.emptyMap()).when(user).getRoles();
 
       final var actualUser = userService.getLoggedInUser();
-      assertEquals("Roll ej angiven", actualUser.getRole());
+      assertEquals( actualUser.getRole(),"Roll ej angiven");
     }
 
     @Test

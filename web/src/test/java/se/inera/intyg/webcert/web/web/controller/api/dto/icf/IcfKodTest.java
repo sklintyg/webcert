@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Created by marced on 2019-02-07. */
 public class IcfKodTest {

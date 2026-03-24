@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -99,7 +99,7 @@ public class IntygDraftsConverterTest {
     ListIntygEntry ref = res.get(0);
     assertEquals(id, ref.getIntygId());
     assertEquals(type, ref.getIntygType());
-    assertEquals("DRAFT_COMPLETE", ref.getStatus());
+    assertEquals( ref.getStatus(),"DRAFT_COMPLETE");
     assertEquals(updatedSignedBy, ref.getUpdatedSignedBy());
     assertEquals(modfied, ref.getLastUpdatedSigned());
     assertEquals(modfied, ref.getSigned());

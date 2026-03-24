@@ -28,12 +28,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.webcert.web.csintegration.aggregate.CreateDraftCertificateAggregator;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateTest;
@@ -47,7 +49,8 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
   private static final String LOGICAL_ADDR = "1234567890";
@@ -61,7 +64,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   @Mock private CreateDraftCertificateAggregator createDraftCertificateAggregator;
   @InjectMocks private CreateDraftCertificateResponderImpl responder;
 
-  @Before
+  @BeforeEach
   public void setup() throws ModuleNotFoundException {
     super.setup();
   }

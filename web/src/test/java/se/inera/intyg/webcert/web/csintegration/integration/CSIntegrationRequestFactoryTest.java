@@ -1430,8 +1430,8 @@ class CSIntegrationRequestFactoryTest {
               () -> csIntegrationRequestFactory.revokeCertificateRequest("", REVOKED_MESSAGE));
 
       assertEquals(
-          "Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'",
-          illegalArgumentException.getMessage());
+          illegalArgumentException.getMessage(),
+          "Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
     }
   }
 
@@ -1522,7 +1522,7 @@ class CSIntegrationRequestFactoryTest {
     void shouldReturnGetCitizenCertificatePdfRequestWithAdditonalInfo() {
       final var citizenCertificateRequest =
           csIntegrationRequestFactory.getCitizenCertificatePdfRequest(PATIENT_ID, CUSTOMIZATION_ID);
-      assertEquals("Utskriven från 1177 intyg", citizenCertificateRequest.getAdditionalInfo());
+      assertEquals( citizenCertificateRequest.getAdditionalInfo(),"Utskriven från 1177 intyg");
     }
 
     @Test

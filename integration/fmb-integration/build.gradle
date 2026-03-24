@@ -17,6 +17,5 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    testImplementation "junit:junit"
     testImplementation "org.mockito:mockito-junit-jupiter"
 }

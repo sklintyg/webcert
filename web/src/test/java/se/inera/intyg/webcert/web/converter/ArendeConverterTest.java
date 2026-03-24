@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,10 +34,10 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -62,7 +62,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Part;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ArendeConverterTest {
 
   private static final String FRAGESTALLARKOD_FORSAKRINGSKASSA = "FK";
@@ -162,7 +162,7 @@ public class ArendeConverterTest {
     assertEquals(enhetId, res.getEnhetId());
     assertEquals(enhetName, res.getEnhetName());
     assertEquals(vardgivareName, res.getVardgivareName());
-    assertEquals("Test Testorsson Svensson", res.getSigneratAvName());
+    assertEquals( res.getSigneratAvName(),"Test Testorsson Svensson");
   }
 
   @Test

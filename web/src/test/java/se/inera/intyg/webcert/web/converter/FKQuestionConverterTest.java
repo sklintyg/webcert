@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -27,7 +27,7 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.StringWriter;
 import java.io.Writer;
 import javax.xml.transform.stream.StreamSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.ObjectFactory;

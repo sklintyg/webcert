@@ -19,10 +19,10 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.redelivery;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,12 +43,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessagePostProcessor;
@@ -63,7 +63,7 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotificationRedeliveryServiceTest {
 
   @Mock private NotificationRedeliveryRepository notificationRedeliveryRepo;
@@ -94,8 +94,8 @@ public class NotificationRedeliveryServiceTest {
         expectedNotificationRedeliveryList.size(), actualNotificationRedeliveryList.size());
     for (var actualNotificationRedelivery : actualNotificationRedeliveryList) {
       assertTrue(
-          "Doesn't contain actual notification redelivery",
-          expectedNotificationRedeliveryList.contains(actualNotificationRedelivery));
+          expectedNotificationRedeliveryList.contains(actualNotificationRedelivery),
+          "Doesn't contain actual notification redelivery");
     }
   }
 
@@ -178,7 +178,7 @@ public class NotificationRedeliveryServiceTest {
 
     assertNotNull(actualNotificationRedeliveryList);
     for (var notificationRedelivery : actualNotificationRedeliveryList) {
-      assertNotNull("Missing correlation id", notificationRedelivery.getCorrelationId());
+      assertNotNull( notificationRedelivery.getCorrelationId(),"Missing correlation id");
     }
   }
 

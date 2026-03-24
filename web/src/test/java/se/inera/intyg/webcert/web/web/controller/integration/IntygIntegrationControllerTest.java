@@ -482,8 +482,8 @@ class IntygIntegrationControllerTest {
               httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
       assertEquals(
-          "https://wc.localtest.me/certificate/" + INTYGSID,
-          redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
+          redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString(),
+          "https://wc.localtest.me/certificate/" + INTYGSID);
     }
   }
 

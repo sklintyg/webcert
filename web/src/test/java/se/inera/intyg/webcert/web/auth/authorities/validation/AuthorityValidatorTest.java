@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.web.auth.authorities.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -128,8 +129,9 @@ public class AuthorityValidatorTest {
             .isVerified());
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustNotHaveAnyFeatureFails() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     user.setFeatures(
@@ -160,6 +162,7 @@ public class AuthorityValidatorTest {
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
             AuthoritiesConstants.FEATURE_FORNYA_INTYG)
         .orThrow();
+      });
   }
 
   @Test
@@ -174,8 +177,9 @@ public class AuthorityValidatorTest {
             .isVerified());
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testGlobalFalseShouldFailEvenIfAllowedIntygstyp() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
     for (Map.Entry<String, Feature> e : user.getFeatures().entrySet()) {
       e.getValue().setGlobal(false);
@@ -192,10 +196,12 @@ public class AuthorityValidatorTest {
         .given(user, "fk7263")
         .features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT)
         .orThrow();
+      });
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustHaveFeatureFail() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     assertFalse(
@@ -208,10 +214,12 @@ public class AuthorityValidatorTest {
         .given(user, "fk7263")
         .features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT)
         .orThrow();
+      });
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustNotHaveFeatureFail() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     assertFalse(
@@ -224,6 +232,7 @@ public class AuthorityValidatorTest {
         .given(user, "fk7263")
         .notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
         .orThrow();
+      });
   }
 
   @Test
@@ -233,11 +242,13 @@ public class AuthorityValidatorTest {
     assertTrue(validator.given(user).origins(UserOriginType.NORMAL).isVerified());
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustHaveOriginFail() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     validator.given(user).origins(UserOriginType.DJUPINTEGRATION).orThrow();
+      });
   }
 
   @Test
@@ -247,11 +258,13 @@ public class AuthorityValidatorTest {
     assertTrue(validator.given(user).notOrigins(UserOriginType.DJUPINTEGRATION).isVerified());
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustNotHaveOriginFail() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     validator.given(user).notOrigins(UserOriginType.NORMAL).orThrow();
+      });
   }
 
   @Test
@@ -262,18 +275,22 @@ public class AuthorityValidatorTest {
     validator.given(user).privilege("p1").orThrow();
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustHavePrevilegeFails() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     validator.given(user).privilege("p2").orThrow();
+      });
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustNotHavePrevilegeFails() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     validator.given(user).notPrivilege("p1").orThrow();
+      });
   }
 
   @Test
@@ -283,19 +300,23 @@ public class AuthorityValidatorTest {
     assertTrue(validator.given(user, "fk7263").privilege("p1").isVerified());
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustHavePrevilegeIntygsTypFails() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     validator.given(user, "ts-diabetes").privilege("p1").orThrow();
+      });
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustHavePrevilegeIntygsTypFailsOnMissingRequestOriginIntygsTyp() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
     user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
     validator.given(user, "fk7263").privilege("p1").orThrow();
+      });
   }
 
   @Test
@@ -341,11 +362,13 @@ public class AuthorityValidatorTest {
             .isVerified());
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustHaveRoleFails() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     validator.given(user).roles(AuthoritiesConstants.ROLE_ADMIN).orThrow();
+      });
   }
 
   @Test
@@ -355,11 +378,13 @@ public class AuthorityValidatorTest {
     assertTrue(validator.given(user).notRoles(AuthoritiesConstants.ROLE_ADMIN).isVerified());
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void testMustNotHaveRoleFails() {
+    assertThrows(AuthoritiesException.class, () -> {
     WebCertUser user = createDefaultUser();
 
     validator.given(user).notRoles(AuthoritiesConstants.ROLE_LAKARE).orThrow();
+      });
   }
 
   @Test

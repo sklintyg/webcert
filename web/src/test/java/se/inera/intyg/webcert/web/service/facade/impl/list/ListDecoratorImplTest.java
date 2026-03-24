@@ -96,7 +96,7 @@ class ListDecoratorImplTest {
 
       listDecorator.decorateWithStaffName(list);
       assertEquals(1, list.size());
-      assertEquals("EXAMPLE_NAME", list.get(0).getUpdatedSignedBy());
+      assertEquals( list.get(0).getUpdatedSignedBy(),"EXAMPLE_NAME");
     }
 
     @Test
@@ -108,7 +108,7 @@ class ListDecoratorImplTest {
 
       listDecorator.decorateWithStaffName(list);
       assertEquals(1, list.size());
-      assertEquals("FIRST MIDDLE LAST", list.get(0).getUpdatedSignedBy());
+      assertEquals( list.get(0).getUpdatedSignedBy(),"FIRST MIDDLE LAST");
     }
 
     @Test

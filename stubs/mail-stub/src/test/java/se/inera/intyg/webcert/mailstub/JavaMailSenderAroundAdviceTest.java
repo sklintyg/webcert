@@ -28,14 +28,13 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.util.List;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JavaMailSenderAroundAdviceTest {
 
   @Mock private MailStore mailStore;
@@ -48,17 +47,13 @@ public class JavaMailSenderAroundAdviceTest {
 
   @InjectMocks private JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
 
-  @Before
-  public void setUp() throws Exception {
+  @Test
+  public void testAroundAdviceInterceptsAndStoresMessageWhenMailServerNotSet() throws Throwable {
     when(mailStore.getMails()).thenReturn(mails);
     when(message.getFrom()).thenReturn(new Address[] {new InternetAddress("from")});
     when(message.getAllRecipients()).thenReturn(new Address[] {new InternetAddress("to")});
     when(message.getSubject()).thenReturn("subject");
     when(message.getContent()).thenReturn("body");
-  }
-
-  @Test
-  public void testAroundAdviceInterceptsAndStoresMessageWhenMailServerNotSet() throws Throwable {
     advice.setMailHost(null);
     Object[] args = new Object[] {new Object(), message, new Object()};
     when(pjp.getArgs()).thenReturn(args);

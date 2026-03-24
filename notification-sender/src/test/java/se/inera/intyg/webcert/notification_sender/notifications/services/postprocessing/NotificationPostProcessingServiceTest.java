@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.FAILURE;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.RESEND;
@@ -37,12 +37,12 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
@@ -51,7 +51,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.enumerations.Not
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotificationPostProcessingServiceTest {
 
   @Mock private NotificationResultSuccessService notificationResultSuccessService;
@@ -287,7 +287,7 @@ public class NotificationPostProcessingServiceTest {
 
     verify(appender).doAppend(captureLogMessage.capture());
     assertTrue(captureLogMessage.getValue().getFormattedMessage().contains("INFORMATION_TEXT"));
-    assertEquals("INFO", captureLogMessage.getValue().getLevel().levelStr);
+    assertEquals( captureLogMessage.getValue().getLevel().levelStr,"INFO");
   }
 
   private NotificationResultMessage createNotificationResultMessage() {

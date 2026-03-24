@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -57,14 +58,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
@@ -121,7 +124,8 @@ import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   private static final String INTYG_ID = "<intygsId>";
@@ -156,7 +160,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
   @InjectMocks private FragaSvarServiceImpl service;
 
-  @Before
+  @BeforeEach
   public void setupCommonBehaviour() {
     when(authoritiesHelper.isFeatureActive(
             eq(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR), anyString()))
@@ -318,45 +322,49 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     assertEquals(fragaSvarList.get(2), result.get(1).getFragaSvar());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testGetFragaSvarWithSekretessPatientForVardadminThrowsException() {
-    List<FragaSvar> fragaSvarList = new ArrayList<>();
-    fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
-    fragaSvarList.add(buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now()));
-    fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
+    assertThrows(WebCertServiceException.class, () -> {
+      List<FragaSvar> fragaSvarList = new ArrayList<>();
+      fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+      fragaSvarList.add(buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now()));
+      fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
 
-    // the second question/answer pair was sent to a unit out of the current user's range -> has to
-    // be filtered
-    fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
+      // the second question/answer pair was sent to a unit out of the current user's range -> has to
+      // be filtered
+      fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
 
-    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
-        .thenReturn(SekretessStatus.TRUE);
-    when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1"))
-        .thenReturn(new ArrayList<>(fragaSvarList));
-    when(webCertUserService.getUser())
-        .thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
+      when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+          .thenReturn(SekretessStatus.TRUE);
+      when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1"))
+          .thenReturn(new ArrayList<>(fragaSvarList));
+      when(webCertUserService.getUser())
+          .thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_ADMIN)));
 
-    service.getFragaSvar("intyg-1");
+      service.getFragaSvar("intyg-1");
+    });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testGetFragaSvarWithPuFailsForVardadminThrowsException() {
-    List<FragaSvar> fragaSvarList = new ArrayList<>();
-    fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
-    fragaSvarList.add(buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now()));
-    fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
+    assertThrows(WebCertServiceException.class, () -> {
+      List<FragaSvar> fragaSvarList = new ArrayList<>();
+      fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+      fragaSvarList.add(buildFragaSvar(2L, LocalDateTime.now(), LocalDateTime.now()));
+      fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
 
-    // the second question/answer pair was sent to a unit out of the current user's range -> has to
-    // be filtered
-    fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
+      // the second question/answer pair was sent to a unit out of the current user's range -> has to
+      // be filtered
+      fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
 
-    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
-        .thenReturn(SekretessStatus.UNDEFINED);
-    when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1"))
-        .thenReturn(new ArrayList<>(fragaSvarList));
-    when(webCertUserService.getUser()).thenReturn(createUser());
+      when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+          .thenReturn(SekretessStatus.UNDEFINED);
+      when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1"))
+          .thenReturn(new ArrayList<>(fragaSvarList));
+      when(webCertUserService.getUser()).thenReturn(createUser());
 
-    service.getFragaSvar("intyg-1");
+      service.getFragaSvar("intyg-1");
+    });
   }
 
   @Test
@@ -411,8 +419,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     verify(arendeDraftService).delete(INTYG_ID, null);
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveFragaNotSentToFK() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
     // create mocked Utlatande from intygstjansten
@@ -435,10 +444,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verifyNoInteractions(arendeDraftService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveFragaNoFrageText() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       service.saveNewQuestion("intygId", "intygTyp", Amne.OVRIGT, null);
     } finally {
@@ -447,10 +458,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verifyNoInteractions(arendeDraftService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveFragaNoAmne() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       service.saveNewQuestion("intygId", "intygTyp", null, "frageText");
     } finally {
@@ -459,10 +472,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verifyNoInteractions(arendeDraftService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveFragaNotAuthorizedForUnit() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
     // create mocked Utlatande from intygstjansten
@@ -486,10 +501,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verifyNoInteractions(arendeDraftService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveFragaOnRevokedCertificate() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
     // create mocked Utlatande from intygstjansten
@@ -512,10 +529,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verifyNoInteractions(arendeDraftService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testSaveFragaWsHTMLError() throws Exception {
+  @Test
+  public void testSaveFragaWsHTMLError() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
 
     when(intygServiceMock.fetchIntygData(
@@ -545,6 +564,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verifyNoInteractions(arendeDraftService);
     }
+      });
   }
 
   @Test
@@ -600,7 +620,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         .createCertificateEvent(
             INTYG_ID, HSA_ID, EventCode.HANFRFM, NotificationEvent.NEW_ANSWER_FROM_CARE.name());
 
-    assertEquals("svarsText", result.getSvarsText());
+    assertEquals( result.getSvarsText(),"svarsText");
     assertEquals(Status.CLOSED, result.getStatus());
     assertNotNull(result.getSvarSkickadDatum());
     verify(arendeDraftService).delete(INTYG_ID, Long.toString(1L));
@@ -660,8 +680,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     assertEquals(Status.PENDING_INTERNAL_ACTION, otherResult.getStatus());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testAnswerKomplNotPermitted() {
+    assertThrows(WebCertServiceException.class, () -> {
 
     FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
     fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
@@ -675,10 +696,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
 
     service.saveSvar(fragaSvar.getInternReferens(), "svarsText");
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testExceptionThrownWhenIntygIsUnsentToFK() {
+    assertThrows(WebCertServiceException.class, () -> {
 
     FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
     String intygsId = fraga.getIntygsReferens().getIntygsId();
@@ -703,10 +726,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verifyNoInteractions(fragasvarRepositoryMock);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testExceptionThrownWhenIntygIsRevoked() {
+    assertThrows(WebCertServiceException.class, () -> {
 
     FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, LocalDateTime.now());
     String intygsId = fraga.getIntygsReferens().getIntygsId();
@@ -730,6 +755,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verify(fragasvarRepositoryMock, times(0)).save(any(FragaSvar.class));
     }
+      });
   }
 
   private IntygContentHolder getIntygContentHolder() {
@@ -801,8 +827,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         .build();
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveSvarWsError() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
 
     when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
@@ -824,10 +851,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testSaveSvarWsHTMLError() throws Exception {
+  @Test
+  public void testSaveSvarWsHTMLError() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
 
     when(webCertUserService.getUser()).thenReturn(createUser());
@@ -850,10 +879,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveSvarWrongStateForAnswering() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
     fragaSvar.setStatus(Status.ANSWERED);
 
@@ -867,6 +898,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
   private Fk7263Utlatande getUtlatande() {
@@ -881,8 +913,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     }
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveSvarForPaminnelse() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
     fragaSvar.setAmne(Amne.PAMINNELSE);
     when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
@@ -894,10 +927,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveSvarNotAuthorizedForunit() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
     when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
     when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(false);
@@ -910,10 +945,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(certificateEventService);
       verifyNoInteractions(arendeDraftService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveMissingSvarsText() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       service.saveSvar(1L, null);
     } finally {
@@ -921,10 +958,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveMissingIntygsId() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       service.saveSvar(null, "svarsText");
     } finally {
@@ -932,10 +971,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testSaveSvarIntygNotFound() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.empty());
     try {
       service.saveSvar(1L, "svarsText");
@@ -944,6 +985,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
   @Test
@@ -1024,8 +1066,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     verifyNoInteractions(arendeDraftService);
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testCloseAshandledNotFound() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.empty());
     try {
       service.closeQuestionAsHandled(1L);
@@ -1034,6 +1077,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
   @Test
@@ -1119,8 +1163,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     assertEquals(Status.ANSWERED, capture.getValue().getStatus());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testOpenAsUnhandledNotFound() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.empty());
     try {
       service.openQuestionAsUnhandled(1L);
@@ -1129,10 +1174,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testOpenAsUnhandledInvalidState() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
     fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
     fragaSvar.setFrageText("Fråga från FK");
@@ -1148,6 +1195,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
       verifyNoInteractions(notificationServiceMock);
       verifyNoInteractions(certificateEventService);
     }
+      });
   }
 
   @Test
@@ -1158,10 +1206,12 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     verify(webCertUserService).isAuthorizedForUnit(anyString(), any(Boolean.class));
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testVerifyEnhetsAuthFail() {
+    assertThrows(WebCertServiceException.class, () -> {
     when(webCertUserService.isAuthorizedForUnit(anyString(), any(Boolean.class))).thenReturn(false);
     service.verifyEnhetsAuth("<doesnt-exist>");
+      });
   }
 
   @Test
@@ -1230,8 +1280,9 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     assertEquals(4, result.size());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void intygWithoutFragaSvarDoesNotAcceptFraga() {
+    assertThrows(WebCertServiceException.class, () -> {
     FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
     fragaSvar.getIntygsReferens().setIntygsTyp("ts-bas");
 
@@ -1240,6 +1291,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     service.processIncomingQuestion(fragaSvar);
     fail("Processing should have thrown an exception");
+      });
   }
 
   @Test

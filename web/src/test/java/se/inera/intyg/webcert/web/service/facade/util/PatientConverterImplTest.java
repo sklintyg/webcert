@@ -137,7 +137,7 @@ class PatientConverterImplTest {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-        assertEquals("PERSON_NUMMER", patient.getPersonId().getType());
+        assertEquals( patient.getPersonId().getType(),"PERSON_NUMMER");
       }
     }
 
@@ -493,7 +493,7 @@ class PatientConverterImplTest {
       final var patient =
           patientConverter.convert(
               originalPatient, ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-      assertEquals("", patient.getFirstName());
+      assertEquals( patient.getFirstName(),"");
     }
 
     @Test
@@ -504,7 +504,7 @@ class PatientConverterImplTest {
       final var patient =
           patientConverter.convert(
               originalPatient, ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-      assertEquals("", patient.getLastName());
+      assertEquals( patient.getLastName(),"");
     }
 
     @Test
@@ -515,7 +515,7 @@ class PatientConverterImplTest {
       final var patient =
           patientConverter.convert(
               originalPatient, ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-      assertEquals("", patient.getMiddleName());
+      assertEquals( patient.getMiddleName(),"");
     }
   }
 

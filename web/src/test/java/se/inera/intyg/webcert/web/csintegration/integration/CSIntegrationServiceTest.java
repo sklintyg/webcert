@@ -477,7 +477,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificatetypeinfo", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificatetypeinfo");
     }
   }
 
@@ -553,7 +553,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate");
     }
   }
 
@@ -626,7 +626,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.replaceCertificate(CERTIFICATE_ID, REPLACE_CERTIFICATE_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/certificateId/replace", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/certificateId/replace");
       }
     }
   }
@@ -699,7 +699,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.renewCertificate(CERTIFICATE_ID, RENEW_CERTIFICATE_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/certificateId/renew", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/certificateId/renew");
       }
     }
   }
@@ -775,7 +775,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.complementCertificate(CERTIFICATE_ID, COMPLEMENT_CERTIFICATE_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/certificateId/complement", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/certificateId/complement");
       }
     }
   }
@@ -865,7 +865,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.certificateTypeExists("type");
       verify(requestHeadersUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificatetypeinfo/type/exists", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificatetypeinfo/type/exists");
     }
 
     @Test
@@ -882,7 +882,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.certificateTypeExists(wcType);
       verify(requestHeadersUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificatetypeinfo/type/exists", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificatetypeinfo/type/exists");
     }
   }
 
@@ -983,8 +983,8 @@ class CSIntegrationServiceTest {
       verify(requestHeadersUriSpec).uri(captor.capture());
 
       assertEquals(
-          "baseUrl/api/certificatetypeinfo/" + CODE_SYSTEM + "/" + CODE + "/exists",
-          captor.getValue());
+          captor.getValue(),
+          "baseUrl/api/certificatetypeinfo/" + CODE_SYSTEM + "/" + CODE + "/exists");
     }
   }
 
@@ -1047,7 +1047,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getCertificate(ID, GET_CERTIFICATE_REQUEST);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate/" + ID, captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate/" + ID);
     }
   }
 
@@ -1102,7 +1102,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.certificateExists("ID");
         verify(requestHeadersUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/ID/exists", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/ID/exists");
       }
     }
   }
@@ -1159,7 +1159,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.placeholderCertificateExists("ID");
         verify(requestHeadersUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/internalapi/certificate/placeholder/ID/exists", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/internalapi/certificate/placeholder/ID/exists");
       }
     }
   }
@@ -1215,7 +1215,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.messageExists("ID");
         verify(requestHeadersUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/message/ID/exists", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/message/ID/exists");
       }
     }
   }
@@ -1274,7 +1274,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.citizenCertificateExists("ID");
         verify(requestHeadersUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/citizen/certificate/ID/exists", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/citizen/certificate/ID/exists");
       }
     }
   }
@@ -1353,7 +1353,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/ID", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/ID");
       }
     }
   }
@@ -1403,7 +1403,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate/ID/10", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate/ID/10");
     }
 
     @Test
@@ -1528,7 +1528,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/patient/certificates", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/patient/certificates");
     }
   }
 
@@ -1609,7 +1609,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/unit/certificates", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/unit/certificates");
     }
   }
 
@@ -1685,7 +1685,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/unit/certificates/info", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/unit/certificates/info");
     }
   }
 
@@ -1751,7 +1751,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.validateCertificate(VALIDATE_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/ID/validate", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/ID/validate");
       }
     }
   }
@@ -1813,7 +1813,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/xml", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate/" + CERTIFICATE_ID + "/xml");
     }
 
     @Test
@@ -1883,8 +1883,8 @@ class CSIntegrationServiceTest {
       csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals(
-          "baseUrl/api/certificate/" + CERTIFICATE_ID + "/sign/" + VERSION, captor.getValue());
+      assertEquals( captor.getValue(),
+          "baseUrl/api/certificate/" + CERTIFICATE_ID + "/sign/" + VERSION);
     }
 
     @Test
@@ -1963,8 +1963,8 @@ class CSIntegrationServiceTest {
       verify(requestBodyUriSpec).uri(captor.capture());
 
       assertEquals(
-          "baseUrl/api/certificate/" + CERTIFICATE_ID + "/signwithoutsignature/" + VERSION,
-          captor.getValue());
+          captor.getValue(),
+          "baseUrl/api/certificate/" + CERTIFICATE_ID + "/signwithoutsignature/" + VERSION);
     }
 
     @Test
@@ -2045,7 +2045,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.printCertificate(ID, PRINT_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/ID/pdf", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/ID/pdf");
       }
     }
   }
@@ -2110,7 +2110,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.sendCertificate(ID, SEND_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/ID/send", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/ID/send");
       }
     }
   }
@@ -2176,7 +2176,7 @@ class CSIntegrationServiceTest {
         csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/ID/revoke", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/ID/revoke");
       }
     }
   }
@@ -2240,7 +2240,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/citizen/certificate/" + ID, captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/citizen/certificate/" + ID);
     }
   }
 
@@ -2306,7 +2306,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/citizen/certificate/" + ID + "/print", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/citizen/certificate/" + ID + "/print");
     }
   }
 
@@ -2383,7 +2383,7 @@ class CSIntegrationServiceTest {
             CERTIFICATE_ID, ANSWER_COMPLEMENT_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/certificateId/answerComplement", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/certificateId/answerComplement");
       }
     }
   }
@@ -2428,7 +2428,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.postMessage(INCOMING_MESSAGE_REQUEST_DTO);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message");
     }
   }
 
@@ -2503,7 +2503,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + CERTIFICATE_ID, captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + CERTIFICATE_ID);
     }
   }
 
@@ -2572,7 +2572,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.handleMessage(HANDLE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/handle", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + MESSAGE_ID + "/handle");
     }
   }
 
@@ -2645,7 +2645,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getCertificate(GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO, MESSAGE_ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/certificate", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + MESSAGE_ID + "/certificate");
     }
   }
 
@@ -2698,7 +2698,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getQuestions(CERTIFICATE_ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/internalapi/message/" + CERTIFICATE_ID, captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/internalapi/message/" + CERTIFICATE_ID);
     }
   }
 
@@ -2750,7 +2750,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getInternalCertificate(ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/internalapi/certificate/" + ID, captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/internalapi/certificate/" + ID);
     }
   }
 
@@ -2801,7 +2801,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getInternalCertificateXml(ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/internalapi/certificate/ID/xml", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/internalapi/certificate/ID/xml");
     }
   }
 
@@ -2849,7 +2849,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/messageId/delete", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/messageId/delete");
     }
   }
 
@@ -2914,7 +2914,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + CERTIFICATE_ID + "/create", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + CERTIFICATE_ID + "/create");
     }
   }
 
@@ -2996,7 +2996,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/deleteanswer", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + MESSAGE_ID + "/deleteanswer");
     }
   }
 
@@ -3062,7 +3062,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/save", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + MESSAGE_ID + "/save");
     }
   }
 
@@ -3128,7 +3128,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/saveanswer", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + MESSAGE_ID + "/saveanswer");
     }
   }
 
@@ -3193,7 +3193,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/send", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + MESSAGE_ID + "/send");
     }
   }
 
@@ -3282,7 +3282,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/unit/messages", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/unit/messages");
     }
   }
 
@@ -3345,7 +3345,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/sendanswer", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/message/" + MESSAGE_ID + "/sendanswer");
     }
   }
 
@@ -3416,7 +3416,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate/" + ID + "/forward", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate/" + ID + "/forward");
     }
   }
 
@@ -3486,7 +3486,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate/" + ID + "/events", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate/" + ID + "/events");
     }
   }
 
@@ -3558,7 +3558,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/internalapi/certificate/qa", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/internalapi/certificate/qa");
     }
   }
 
@@ -3620,7 +3620,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/internalapi/certificate/lock", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/internalapi/certificate/lock");
     }
   }
 
@@ -3686,7 +3686,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/internalapi/draft/list", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/internalapi/draft/list");
     }
   }
 
@@ -3752,7 +3752,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/internalapi/draft", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/internalapi/draft");
     }
   }
 
@@ -3815,7 +3815,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/unit/certificates/statistics", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/unit/certificates/statistics");
     }
   }
 
@@ -3879,7 +3879,7 @@ class CSIntegrationServiceTest {
 
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate/" + ID + "/readyForSign", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate/" + ID + "/readyForSign");
     }
   }
 
@@ -3956,7 +3956,7 @@ class CSIntegrationServiceTest {
             CERTIFICATE_ID, RENEWLEGACY_CERTIFICATE_REQUEST);
         verify(requestBodyUriSpec).uri(captor.capture());
 
-        assertEquals("baseUrl/api/certificate/certificateId/renew/external", captor.getValue());
+        assertEquals( captor.getValue(),"baseUrl/api/certificate/certificateId/renew/external");
       }
     }
   }
@@ -4024,7 +4024,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, CREATE_FROM_TEMPLATE_REQUEST);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/draft", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate/" + CERTIFICATE_ID + "/draft");
     }
 
     @Test
@@ -4094,7 +4094,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getCandidateCertificate(CERTIFICATE_ID, REQUEST);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/candidate", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/api/certificate/" + CERTIFICATE_ID + "/candidate");
     }
 
     @Test
@@ -4171,8 +4171,8 @@ class CSIntegrationServiceTest {
       verify(requestBodyUriSpec).uri(captor.capture());
 
       assertEquals(
-          "baseUrl/api/certificate/" + CERTIFICATE_ID + "/candidate/" + CANDIDATE_CERTIFICATE_ID,
-          captor.getValue());
+          captor.getValue(),
+          "baseUrl/api/certificate/" + CERTIFICATE_ID + "/candidate/" + CANDIDATE_CERTIFICATE_ID);
     }
 
     @Test
@@ -4291,8 +4291,8 @@ class CSIntegrationServiceTest {
       csIntegrationService.getSickLeaveCertificate(CERTIFICATE_ID);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals(
-          "baseUrl/internalapi/certificate/" + CERTIFICATE_ID + "/sickleave", captor.getValue());
+      assertEquals( captor.getValue(),
+          "baseUrl/internalapi/certificate/" + CERTIFICATE_ID + "/sickleave");
     }
 
     @Test
@@ -4416,7 +4416,7 @@ class CSIntegrationServiceTest {
       csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
       verify(requestBodyUriSpec).uri(captor.capture());
 
-      assertEquals("baseUrl/internalapi/message/sent", captor.getValue());
+      assertEquals( captor.getValue(),"baseUrl/internalapi/message/sent");
     }
 
     @Test

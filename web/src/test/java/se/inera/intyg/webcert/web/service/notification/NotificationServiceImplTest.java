@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -46,14 +47,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import org.apache.activemq.command.ActiveMQTextMessage;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -92,7 +95,8 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensServiceImpl;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class NotificationServiceImplTest {
 
   private static final String INTYG_TYP_FK = "fk7263";
@@ -148,7 +152,7 @@ public class NotificationServiceImplTest {
 
   @InjectMocks private NotificationServiceImpl notificationService;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     setupMocks(SchemaVersion.VERSION_3);
 
@@ -326,8 +330,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.SKAPAT);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testDraftCreatedJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
     try {
       notificationService.sendNotificationForDraftCreated(createUtkast());
@@ -335,6 +340,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -343,8 +349,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.SIGNAT);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testDraftSignedJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
     try {
       notificationService.sendNotificationForDraftSigned(createUtkast());
@@ -352,6 +359,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -360,8 +368,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.ANDRAT);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testDraftChangedJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
     try {
       notificationService.sendNotificationForDraftChanged(createUtkast());
@@ -369,6 +378,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -377,8 +387,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.RADERA);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testDraftDeletedJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
     try {
       notificationService.sendNotificationForDraftDeleted(createUtkast());
@@ -386,6 +397,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -409,8 +421,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocationsForCertificate(HandelsekodEnum.SKICKA);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testIntygSentJmsException() {
+    assertThrows(JmsException.class, () -> {
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
     try {
@@ -419,6 +432,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -427,8 +441,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.MAKULE);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testUtkastRevokedJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
     try {
       notificationService.sendNotificationForDraftRevoked(createUtkast());
@@ -436,6 +451,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -459,8 +475,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocationsForCertificate(HandelsekodEnum.MAKULE);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testIntygRevokedJmsException() {
+    assertThrows(JmsException.class, () -> {
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
     try {
@@ -469,6 +486,7 @@ public class NotificationServiceImplTest {
       // verify(template).send(any(MessageCreator.class));
       // verifyZeroInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -479,8 +497,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.NYFRFM);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testQuestionReceivedFragaSvarIntegreradEnhetJmsException() {
+    assertThrows(JmsException.class, () -> {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
@@ -490,6 +509,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -520,8 +540,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.NYSVFM);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testAnswerRecievedFragaSvarIntegreradEnhetJmsException() {
+    assertThrows(JmsException.class, () -> {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
@@ -531,6 +552,7 @@ public class NotificationServiceImplTest {
       // verify(template).send(any(MessageCreator.class));
       // verifyZeroInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -562,8 +584,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.NYFRFM);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testQuestionReceivedArendeIntegreradEnhetJmsException() {
+    assertThrows(JmsException.class, () -> {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
@@ -574,6 +597,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -606,8 +630,9 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.NYSVFM);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testAnswerRecievedArendeIntegreradEnhetJmsException() {
+    assertThrows(JmsException.class, () -> {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
@@ -618,6 +643,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test
@@ -641,8 +667,9 @@ public class NotificationServiceImplTest {
     verifyNoInteractions(mockMonitoringLogService);
   }
 
-  @Test(expected = JmsException.class)
+  @Test
   public void testSendNotificationForQAsJmsException() {
+    assertThrows(JmsException.class, () -> {
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
     try {
@@ -652,6 +679,7 @@ public class NotificationServiceImplTest {
       verify(template).send(any(MessageCreator.class));
       verifyNoInteractions(mockMonitoringLogService);
     }
+      });
   }
 
   @Test

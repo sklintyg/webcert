@@ -516,7 +516,7 @@ class CertificateListEntryConverterImplTest {
       final var entry = ListTestHelper.createCertificateListEntry(true, true, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
 
-      assertEquals("Skickat", result.getValue("STATUS"));
+      assertEquals( result.getValue("STATUS"),"Skickat");
     }
 
     @Test
@@ -524,7 +524,7 @@ class CertificateListEntryConverterImplTest {
       final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
 
-      assertEquals("Ej skickat", result.getValue("STATUS"));
+      assertEquals( result.getValue("STATUS"),"Ej skickat");
     }
 
     @Test
@@ -684,7 +684,7 @@ class CertificateListEntryConverterImplTest {
       entry.setFragestallare("FK");
       final var result = certificateListItemConverter.convert(entry);
 
-      assertEquals("Försäkringskassan", result.getValue(ListColumnType.SENDER));
+      assertEquals( result.getValue(ListColumnType.SENDER),"Försäkringskassan");
     }
 
     @Test
@@ -693,7 +693,7 @@ class CertificateListEntryConverterImplTest {
       entry.setFragestallare("WC");
       final var result = certificateListItemConverter.convert(entry);
 
-      assertEquals("Vårdenheten", result.getValue(ListColumnType.SENDER));
+      assertEquals( result.getValue(ListColumnType.SENDER),"Vårdenheten");
     }
 
     @Test

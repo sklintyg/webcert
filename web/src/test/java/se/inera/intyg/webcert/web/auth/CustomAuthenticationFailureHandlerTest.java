@@ -87,7 +87,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals("/error?reason=login.failed", urlCaptor.getValue());
+    assertEquals( urlCaptor.getValue(),"/error?reason=login.failed");
   }
 
   @Test
@@ -99,7 +99,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals("/error?reason=login.hsaerror", urlCaptor.getValue());
+    assertEquals( urlCaptor.getValue(),"/error?reason=login.hsaerror");
   }
 
   @Test
@@ -112,7 +112,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals("/error?reason=login.medarbetaruppdrag", urlCaptor.getValue());
+    assertEquals( urlCaptor.getValue(),"/error?reason=login.medarbetaruppdrag");
   }
 
   @Test
@@ -125,7 +125,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals("/error?reason=auth-exception-subscription", urlCaptor.getValue());
+    assertEquals( urlCaptor.getValue(),"/error?reason=auth-exception-subscription");
   }
 
   @Test
@@ -134,7 +134,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals("/ppRegistrationUrl", urlCaptor.getValue());
+    assertEquals( urlCaptor.getValue(),"/ppRegistrationUrl");
   }
 
   @Test
@@ -145,6 +145,6 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals("/error?reason=login.failed", urlCaptor.getValue());
+    assertEquals( urlCaptor.getValue(),"/error?reason=login.failed");
   }
 }

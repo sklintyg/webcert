@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -41,12 +42,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -76,7 +79,8 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 /**
  * @author Magnus Ekstrand on 2017-10-13.
  */
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class IntygIntegrationServiceImplTest {
 
   private static final String REFERENS = "referens";
@@ -110,7 +114,7 @@ public class IntygIntegrationServiceImplTest {
 
   @InjectMocks private IntygIntegrationServiceImpl testee;
 
-  @Before
+  @BeforeEach
   public void setupMock() {
     doNothing()
         .when(monitoringLog)
@@ -406,8 +410,9 @@ public class IntygIntegrationServiceImplTest {
             anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void expectExceptionWhenSekretessStatusIsUndefined() {
+    assertThrows(WebCertServiceException.class, () -> {
     // given
     when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
     when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
@@ -438,6 +443,7 @@ public class IntygIntegrationServiceImplTest {
 
     // if code reaches this point we fail the test
     fail();
+      });
   }
 
   @Test

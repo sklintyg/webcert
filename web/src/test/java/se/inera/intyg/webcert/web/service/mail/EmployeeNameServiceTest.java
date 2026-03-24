@@ -53,7 +53,7 @@ class EmployeeNameServiceTest {
 
     final var actualName = employeeNameService.getEmployeeHsaName("employeeId");
 
-    assertEquals("givenName middleAnd surName", actualName);
+    assertEquals( actualName,"givenName middleAnd surName");
   }
 
   @Test
@@ -62,7 +62,7 @@ class EmployeeNameServiceTest {
 
     final var actualName = employeeNameService.getEmployeeHsaName("employeeId");
 
-    assertEquals("employeeId", actualName);
+    assertEquals( actualName,"employeeId");
   }
 
   @Test
@@ -75,7 +75,7 @@ class EmployeeNameServiceTest {
 
     final var actualName = employeeNameService.getEmployeeHsaName("employeeId");
 
-    assertEquals("employeeId", actualName);
+    assertEquals( actualName,"employeeId");
   }
 
   @Test
@@ -88,7 +88,7 @@ class EmployeeNameServiceTest {
 
     final var actualName = employeeNameService.getEmployeeHsaName("employeeId");
 
-    assertEquals("middleAnd surName", actualName);
+    assertEquals( actualName,"middleAnd surName");
   }
 
   @Test
@@ -99,6 +99,6 @@ class EmployeeNameServiceTest {
 
     final var actualName = employeeNameService.getEmployeeHsaName("employeeId");
 
-    assertEquals("employeeId", actualName);
+    assertEquals( actualName,"employeeId");
   }
 }

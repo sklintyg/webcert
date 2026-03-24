@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doReturn;
@@ -29,12 +29,12 @@ import java.util.Collections;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -51,7 +51,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
 
   private static final String INTYG_ID = "intyg-123";
@@ -67,17 +67,17 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
 
   private IntygTypeInfo intygTypeInfo;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     CONFIGURATION_LOADER.afterPropertiesSet();
     intygTypeInfo = new IntygTypeInfo(INTYG_ID, INTYG_TYP_FK7263, INTYG_TYPE_VERSION);
-    when(intygService.getIntygTypeInfo(any(String.class))).thenReturn(intygTypeInfo);
   }
 
   @Test
   public void testRedirectToIntygUserHasAccess() {
     when(webCertUserService.getUser()).thenReturn(createMockUser(false));
     when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
+    when(intygService.getIntygTypeInfo(any(String.class))).thenReturn(intygTypeInfo);
     when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID))
         .thenReturn(buildMockURI());
     ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
@@ -88,6 +88,7 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
   public void testFeaturesUpdatedWhenUserHasAccess() {
     final var webCertUser = createMockUser(false);
     when(webCertUserService.getUser()).thenReturn(webCertUser);
+    when(intygService.getIntygTypeInfo(any(String.class))).thenReturn(intygTypeInfo);
 
     final var expectedFeatures = Collections.emptyMap();
     doReturn(expectedFeatures).when(commonAuthoritiesResolver).getFeatures(anyList());
@@ -114,6 +115,7 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
     when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
     when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID))
         .thenReturn(null);
+    when(intygService.getIntygTypeInfo(any(String.class))).thenReturn(intygTypeInfo);
 
     ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
     assertEquals(404, result.getStatusCode().value());

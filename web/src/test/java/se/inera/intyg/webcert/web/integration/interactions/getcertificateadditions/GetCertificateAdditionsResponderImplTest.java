@@ -18,7 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.getcertificateadditions;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -26,11 +27,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
@@ -42,7 +43,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 /**
  * @author Magnus Ekstrand on 2019-05-16.
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class GetCertificateAdditionsResponderImplTest {
 
   private static final List<Long> ARENDE_IDS = Arrays.asList(1234567L, 2345678L, 3456789L);
@@ -77,9 +78,11 @@ public class GetCertificateAdditionsResponderImplTest {
     assertEquals(0, additions.getAdditions().get(2).getAddition().size());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void whenInvalidRequest() {
+    assertThrows(IllegalArgumentException.class, () -> {
     testee.getCertificateAdditions("", buildEmptyRequest());
+      });
   }
 
   private GetCertificateAdditionsType buildEmptyRequest() {

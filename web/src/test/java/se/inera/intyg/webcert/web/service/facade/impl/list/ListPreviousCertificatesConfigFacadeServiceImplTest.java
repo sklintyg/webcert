@@ -55,7 +55,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
   @Test
   public void shouldSetSecondaryTitle() {
     final var config = listPreviousCertificatesConfigFacadeService.get();
-    assertEquals("Tidigare intyg", config.getSecondaryTitle());
+    assertEquals( config.getSecondaryTitle(),"Tidigare intyg");
   }
 
   @Test
@@ -113,7 +113,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
     @Test
     public void shouldNotSetTitle() {
-      assertEquals("", filter.getTitle());
+      assertEquals( filter.getTitle(),"");
     }
 
     @Test
@@ -151,7 +151,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetEmptyTitle() {
-      assertEquals("", filter.getTitle());
+      assertEquals( filter.getTitle(),"");
     }
 
     @Test
@@ -217,7 +217,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
     @Test
     public void shouldSetEmptyTitle() {
-      assertEquals("", filter.getTitle());
+      assertEquals( filter.getTitle(),"");
     }
 
     @Test

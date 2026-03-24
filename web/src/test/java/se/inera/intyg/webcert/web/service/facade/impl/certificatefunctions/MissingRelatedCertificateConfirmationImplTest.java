@@ -88,7 +88,7 @@ class MissingRelatedCertificateConfirmationImplTest {
   void shallReturnResourceLinkIfItsDoiAndNoDbExistsWithCorrectName() {
     final var actualResourcelink =
         missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-    assertEquals("Dödsbevis saknas", actualResourcelink.get().getName());
+    assertEquals( actualResourcelink.get().getName(),"Dödsbevis saknas");
   }
 
   @Test
@@ -96,10 +96,10 @@ class MissingRelatedCertificateConfirmationImplTest {
     final var actualResourcelink =
         missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
     assertEquals(
+        actualResourcelink.get().getBody(),
         "Är du säker att du vill skapa ett dödsorsaksintyg? Det finns inget dödsbevis i nuläget inom vårdgivaren.\n"
             + "\n"
-            + "Dödsorsaksintyget bör alltid skapas efter dödsbeviset.",
-        actualResourcelink.get().getBody());
+            + "Dödsorsaksintyget bör alltid skapas efter dödsbeviset.");
   }
 
   @Test

@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.certificatesender;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -32,13 +33,15 @@ import jakarta.jms.Message;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -47,7 +50,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.Constants;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class CertificateSenderServiceImplTest {
 
   private static final String LOGICAL_ADDRESS = "logical address";
@@ -58,7 +62,7 @@ public class CertificateSenderServiceImplTest {
 
   @InjectMocks private CertificateSenderServiceImpl service;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     ReflectionTestUtils.setField(service, "logicalAddress", LOGICAL_ADDRESS);
     when(session.createTextMessage(anyString()))
@@ -83,8 +87,9 @@ public class CertificateSenderServiceImplTest {
     assertEquals(jsonBody, ((TextMessage) res).getText());
   }
 
-  @Test(expected = JmsException.class)
-  public void storeCertificateJmsException() throws Exception {
+  @Test
+  public void storeCertificateJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
     try {
@@ -92,6 +97,7 @@ public class CertificateSenderServiceImplTest {
     } finally {
       verify(template, times(1)).send(any(MessageCreator.class));
     }
+      });
   }
 
   @Test
@@ -132,12 +138,13 @@ public class CertificateSenderServiceImplTest {
     assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
     assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
     assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
-    assertEquals("true", res.getStringProperty(Constants.DELAY_MESSAGE));
+    assertEquals( res.getStringProperty(Constants.DELAY_MESSAGE),"true");
     assertEquals(jsonBody, ((TextMessage) res).getText());
   }
 
-  @Test(expected = JmsException.class)
-  public void sendCertificateJmsException() throws Exception {
+  @Test
+  public void sendCertificateJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
     try {
@@ -145,6 +152,7 @@ public class CertificateSenderServiceImplTest {
     } finally {
       verify(template, times(1)).send(any(MessageCreator.class));
     }
+      });
   }
 
   @Test
@@ -167,8 +175,9 @@ public class CertificateSenderServiceImplTest {
     assertEquals(xmlBody, ((TextMessage) res).getText());
   }
 
-  @Test(expected = JmsException.class)
-  public void revokeCertificateJmsException() throws Exception {
+  @Test
+  public void revokeCertificateJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
     try {
@@ -176,6 +185,7 @@ public class CertificateSenderServiceImplTest {
     } finally {
       verify(template, times(1)).send(any(MessageCreator.class));
     }
+      });
   }
 
   @Test
@@ -195,8 +205,9 @@ public class CertificateSenderServiceImplTest {
     assertEquals(xmlBody, ((TextMessage) res).getText());
   }
 
-  @Test(expected = JmsException.class)
-  public void sendMessageToRecipientJmsException() throws Exception {
+  @Test
+  public void sendMessageToRecipientJmsException() {
+    assertThrows(JmsException.class, () -> {
     doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
     try {
@@ -204,6 +215,7 @@ public class CertificateSenderServiceImplTest {
     } finally {
       verify(template, times(1)).send(any(MessageCreator.class));
     }
+      });
   }
 
   @Test

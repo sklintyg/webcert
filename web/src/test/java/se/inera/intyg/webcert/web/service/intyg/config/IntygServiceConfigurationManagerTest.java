@@ -18,19 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 public class IntygServiceConfigurationManagerTest {
 
   private IntygServiceConfigurationManagerImpl configurationManager;
 
-  @Before
+  @BeforeEach
   public void setup() {
     configurationManager = new IntygServiceConfigurationManagerImpl();
     configurationManager.setObjectMapper(new CustomObjectMapper());
@@ -45,7 +45,7 @@ public class IntygServiceConfigurationManagerTest {
         configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
     assertNotNull(config);
-    assertEquals("FKASSA", config.getRecipient());
+    assertEquals( config.getRecipient(),"FKASSA");
     assertTrue(config.getPatientConsentMessage().contains("mottagare FKASSA"));
   }
 
@@ -58,7 +58,7 @@ public class IntygServiceConfigurationManagerTest {
         configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
     assertNotNull(config);
-    assertEquals("TRANSP", config.getRecipient());
+    assertEquals( config.getRecipient(),"TRANSP");
     assertTrue(config.getPatientConsentMessage().contains("mottagare TRANSP"));
   }
 }

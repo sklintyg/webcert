@@ -87,7 +87,7 @@ class CertificateFilterConverterImplTest {
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals("19121212-1212", convertedFilter.getPatientId());
+    assertEquals( convertedFilter.getPatientId(),"19121212-1212");
   }
 
   @Test
@@ -98,7 +98,7 @@ class CertificateFilterConverterImplTest {
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals("signedDate", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"signedDate");
   }
 
   @Test
@@ -109,7 +109,7 @@ class CertificateFilterConverterImplTest {
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals("civicRegistrationNumber", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"civicRegistrationNumber");
   }
 
   @Test
@@ -120,7 +120,7 @@ class CertificateFilterConverterImplTest {
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals("status", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"status");
   }
 
   @Test
@@ -131,7 +131,7 @@ class CertificateFilterConverterImplTest {
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals("type", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"type");
   }
 
   @Test

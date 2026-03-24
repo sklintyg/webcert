@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -40,13 +40,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.w3._2000._09.xmldsig_.SignatureType;
 import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -91,7 +91,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotificationResultMessageCreatorTest {
 
   @Mock private IntygModuleRegistry moduleRegistry;
@@ -237,8 +237,8 @@ public class NotificationResultMessageCreatorTest {
             new TemporaryException("Temporary exception!"));
 
     assertNotNull(
-        "Must include a LocalDateTime for when it was (unsuccessfully) sent",
-        actualNotificationResultMessage.getNotificationSentTime());
+        actualNotificationResultMessage.getNotificationSentTime(),
+        "Must include a LocalDateTime for when it was (unsuccessfully) sent");
   }
 
   @Test
@@ -486,8 +486,8 @@ public class NotificationResultMessageCreatorTest {
         notificationResultMessageCreator.createFailureMessage(
             event, notificationRedelivery, exception);
 
-    assertEquals("java.lang.NullPointerException", resultMessage.getResultType().getException());
-    assertEquals("EXCEPTION", resultMessage.getResultType().getNotificationResultText());
+    assertEquals( resultMessage.getResultType().getException(),"java.lang.NullPointerException");
+    assertEquals( resultMessage.getResultType().getNotificationResultText(),"EXCEPTION");
     assertEquals(
         NotificationErrorTypeEnum.WEBCERT_EXCEPTION,
         resultMessage.getResultType().getNotificationErrorType());

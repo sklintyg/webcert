@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.temporal.ChronoUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
 public class NotificationRedeliveryStrategyStandardTest {

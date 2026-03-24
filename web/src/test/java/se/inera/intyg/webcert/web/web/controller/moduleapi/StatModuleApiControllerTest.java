@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -37,14 +37,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
@@ -66,7 +68,8 @@ import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
 
   private static final int OK = 200;
@@ -86,7 +89,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   private Map<String, Long> intygStatsMap;
   private Vardenhet ve1, ve2, ve3, ve4;
 
-  @Before
+  @BeforeEach
   public void setupDataAndExpectations() {
 
     fragaSvarStatsMap = new HashMap<>();

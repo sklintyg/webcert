@@ -34,11 +34,11 @@ import com.google.common.collect.Lists;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
@@ -47,7 +47,7 @@ import se.inera.intyg.webcert.web.service.fmb.icf.resource.IcfTextResource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class IcfServiceImplTest {
 
   @Mock private DiagnosInformationRepository repository;
@@ -94,9 +94,7 @@ public class IcfServiceImplTest {
 
     final String icd10Kod = "icd10";
 
-    doReturn(Optional.empty()).when(repository).findFirstByIcd10KodList_kod(eq(noMatch1));
-
-    doReturn(Optional.empty()).when(repository).findFirstByIcd10KodList_kod(eq(noMatch2));
+    doReturn(Optional.empty()).when(repository).findFirstByIcd10KodList_kod(anyString());
 
     doReturn(Optional.of(buildDiagnosInformationSingleMatch(icd10Kod, match1)))
         .when(repository)
@@ -146,7 +144,7 @@ public class IcfServiceImplTest {
     final String icd10Kod1 = "icd10";
     final String icd10Kod2 = "icd10";
 
-    doReturn(Optional.empty()).when(repository).findFirstByIcd10KodList_kod(eq(noMatch1));
+    doReturn(Optional.empty()).when(repository).findFirstByIcd10KodList_kod(anyString());
 
     doReturn(Optional.of(buildDiagnosInformation(icd10Kod1, match1)))
         .when(repository)
@@ -179,6 +177,7 @@ public class IcfServiceImplTest {
 
     List<String> expected = Lists.newArrayList(icd10KodGeneralized);
 
+    doReturn(Optional.empty()).when(repository).findFirstByIcd10KodList_kod(eq(icd10KodTooSpecific));
     doReturn(Optional.of(buildDiagnosInformation(icd10KodGeneralized, matchingCode)))
         .when(repository)
         .findFirstByIcd10KodList_kod(eq(icd10KodGeneralized));
@@ -216,6 +215,8 @@ public class IcfServiceImplTest {
 
     List<String> expected = Lists.newArrayList(icd10KodGeneralized);
 
+    doReturn(Optional.empty()).when(repository).findFirstByIcd10KodList_kod(eq(icd10KodTooSpecific1));
+    doReturn(Optional.empty()).when(repository).findFirstByIcd10KodList_kod(eq(icd10KodTooSpecific2));
     doReturn(Optional.of(buildDiagnosInformation(icd10KodGeneralized, matchingCode)))
         .when(repository)
         .findFirstByIcd10KodList_kod(eq(icd10KodGeneralized));

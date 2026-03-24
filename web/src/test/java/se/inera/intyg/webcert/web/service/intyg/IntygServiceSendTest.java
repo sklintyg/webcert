@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -37,10 +37,12 @@ import java.util.Collections;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
@@ -70,14 +72,15 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
   private static final String INTYG_TYPE_VERSION_1_0 = "1.0";
 
   private Utkast utkast;
 
-  @Before
+  @BeforeEach
   public void setupIntyg() throws Exception {
     json =
         Files.readString(

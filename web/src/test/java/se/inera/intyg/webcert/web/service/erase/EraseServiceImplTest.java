@@ -334,7 +334,7 @@ class EraseServiceImplTest {
             IllegalArgumentException.class,
             () -> eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize()));
 
-    assertEquals("TestException", exception.getMessage());
+    assertEquals( exception.getMessage(),"TestException");
   }
 
   @Test

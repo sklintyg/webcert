@@ -95,7 +95,7 @@ class DraftFilterConverterImplTest {
 
     final var convertedFilter = draftFilterConverter.convert(filter);
 
-    assertEquals("SAVED_BY_HSA_ID", convertedFilter.getSavedByHsaId());
+    assertEquals( convertedFilter.getSavedByHsaId(),"SAVED_BY_HSA_ID");
   }
 
   @Test
@@ -106,7 +106,7 @@ class DraftFilterConverterImplTest {
 
     final var convertedFilter = draftFilterConverter.convert(filter);
 
-    assertEquals("19121212-1212", convertedFilter.getPatientId());
+    assertEquals( convertedFilter.getPatientId(),"19121212-1212");
   }
 
   @Test
@@ -150,7 +150,7 @@ class DraftFilterConverterImplTest {
 
     final var convertedFilter = draftFilterConverter.convert(filter);
 
-    assertEquals("ORDER_BY_VALUE", convertedFilter.getOrderBy());
+    assertEquals( convertedFilter.getOrderBy(),"ORDER_BY_VALUE");
   }
 
   @Test

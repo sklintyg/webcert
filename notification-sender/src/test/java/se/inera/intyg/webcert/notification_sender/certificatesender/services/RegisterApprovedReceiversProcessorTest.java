@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,12 +32,12 @@ import jakarta.xml.ws.WebServiceException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.clinicalprocess.healthcond.certificate.receiver.types.v1.ApprovalStatusType;
 import se.inera.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.inera.clinicalprocess.healthcond.certificate.v3.ResultType;
@@ -47,7 +48,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedrec
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RegisterApprovedReceiversProcessorTest {
 
   private static final String INTYG_ID = "intyg-1";
@@ -73,9 +74,9 @@ public class RegisterApprovedReceiversProcessorTest {
         .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testRegisterThrowsTemporaryExceptionOnWebServiceException()
-      throws TemporaryException, JsonProcessingException {
+  @Test
+  public void testRegisterThrowsTemporaryExceptionOnWebServiceException() {
+    assertThrows(TemporaryException.class, () -> {
     when(registerApprovedReceiversClient.registerApprovedReceivers(
             anyString(), any(RegisterApprovedReceiversType.class)))
         .thenThrow(new WebServiceException(""));
@@ -85,11 +86,12 @@ public class RegisterApprovedReceiversProcessorTest {
       verify(registerApprovedReceiversClient, times(1))
           .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
     }
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testRegisterThrowsTemporaryExceptionOnError()
-      throws TemporaryException, JsonProcessingException {
+  @Test
+  public void testRegisterThrowsTemporaryExceptionOnError() {
+    assertThrows(TemporaryException.class, () -> {
     when(registerApprovedReceiversClient.registerApprovedReceivers(
             anyString(), any(RegisterApprovedReceiversType.class)))
         .thenReturn(buildResponse(ResultCodeType.ERROR));
@@ -99,45 +101,51 @@ public class RegisterApprovedReceiversProcessorTest {
       verify(registerApprovedReceiversClient, times(1))
           .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
     }
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testUnparsableBodyThrowsTemporaryException() throws TemporaryException {
+  @Test
+  public void testUnparsableBodyThrowsTemporaryException() {
+    assertThrows(TemporaryException.class, () -> {
     try {
       testee.process("this-is-not-json", INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
     } finally {
       verifyNoInteractions(registerApprovedReceiversClient);
     }
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testRegisterThrowsTemporaryExceptionOnMissingIntygsId()
-      throws TemporaryException, JsonProcessingException {
+  @Test
+  public void testRegisterThrowsTemporaryExceptionOnMissingIntygsId() {
+    assertThrows(TemporaryException.class, () -> {
     try {
       testee.process(buildRequestBody("FKASSA", "FBA"), null, INTYG_TYP, LOGICAL_ADDRESS);
     } finally {
       verifyNoInteractions(registerApprovedReceiversClient);
     }
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testRegisterThrowsTemporaryExceptionOnMissingIntygsTyp()
-      throws TemporaryException, JsonProcessingException {
+  @Test
+  public void testRegisterThrowsTemporaryExceptionOnMissingIntygsTyp() {
+    assertThrows(TemporaryException.class, () -> {
     try {
       testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, null, LOGICAL_ADDRESS);
     } finally {
       verifyNoInteractions(registerApprovedReceiversClient);
     }
+      });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void testRegisterThrowsTemporaryExceptionOnBlankIntygsTyp()
-      throws TemporaryException, JsonProcessingException {
+  @Test
+  public void testRegisterThrowsTemporaryExceptionOnBlankIntygsTyp() {
+    assertThrows(TemporaryException.class, () -> {
     try {
       testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, "", LOGICAL_ADDRESS);
     } finally {
       verifyNoInteractions(registerApprovedReceiversClient);
     }
+      });
   }
 
   private RegisterApprovedReceiversResponseType buildResponse(ResultCodeType resultCodeType) {

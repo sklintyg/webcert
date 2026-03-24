@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.auth.bootstrap;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeAll;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
@@ -49,7 +49,7 @@ public abstract class AuthoritiesConfigurationTestSetup {
     AUTHORITIES_RESOLVER.setConfigurationLoader(CONFIGURATION_LOADER);
   }
 
-  @BeforeClass
+  @BeforeAll
   public static void setupForJunit4() throws Exception {
     // Load configuration
     CONFIGURATION_LOADER.afterPropertiesSet();

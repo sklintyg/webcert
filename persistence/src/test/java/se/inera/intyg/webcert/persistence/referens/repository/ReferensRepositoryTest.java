@@ -18,20 +18,20 @@
  */
 package se.inera.intyg.webcert.persistence.referens.repository;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.referens.model.Referens;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
@@ -42,12 +42,12 @@ public class ReferensRepositoryTest {
 
   @Autowired private ReferensRepository repo;
 
-  @After
+  @AfterEach
   public void clean() {
     repo.deleteAll();
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     ref = new Referens();
     ref.setIntygsId(intygId);

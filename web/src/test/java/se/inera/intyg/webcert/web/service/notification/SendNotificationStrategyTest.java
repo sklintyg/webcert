@@ -18,19 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -39,7 +41,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class SendNotificationStrategyTest {
 
   private static final String INTYG_ID_1 = "intyg-1";
@@ -63,7 +66,7 @@ public class SendNotificationStrategyTest {
   @InjectMocks
   private SendNotificationStrategy sendStrategy = new DefaultSendNotificationStrategyImpl();
 
-  @Before
+  @BeforeEach
   public void setupIntegreradeEnheter() {
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_FK))
         .thenReturn(Optional.of(SchemaVersion.VERSION_1));

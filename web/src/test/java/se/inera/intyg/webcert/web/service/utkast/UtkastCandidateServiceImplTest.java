@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,14 +37,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.ag7804.v1.rest.Ag7804ModuleApiV1;
 import se.inera.intyg.common.doi.v1.rest.DoiModuleApiV1;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -72,7 +74,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 /**
  * @author Magnus Ekstrand on 2019-08-28.
  */
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class UtkastCandidateServiceImplTest {
 
   @Mock DraftAccessServiceHelper draftAccessServiceHelper;
@@ -93,7 +96,7 @@ public class UtkastCandidateServiceImplTest {
 
   @InjectMocks private UtkastCandidateServiceImpl utkastCandidateService;
 
-  @Before
+  @BeforeEach
   public void setup() {
     webCertUser = mock(WebCertUser.class);
     when(webCertUserService.getUser()).thenReturn(webCertUser);

@@ -18,24 +18,24 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class IntygDraftDecoratorTest {
 
   @Mock private IntygModuleRegistry intygModuleRegistry;
@@ -58,9 +58,9 @@ public class IntygDraftDecoratorTest {
     intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
 
     assertEquals(3, listIntygEntries.size());
-    assertEquals("TypeOneName", listIntygEntries.get(0).getIntygTypeName());
-    assertEquals("TypeTwoName", listIntygEntries.get(1).getIntygTypeName());
-    assertEquals("TypeOneName", listIntygEntries.get(2).getIntygTypeName());
+    assertEquals( listIntygEntries.get(0).getIntygTypeName(),"TypeOneName");
+    assertEquals( listIntygEntries.get(1).getIntygTypeName(),"TypeTwoName");
+    assertEquals( listIntygEntries.get(2).getIntygTypeName(),"TypeOneName");
   }
 
   @Test
@@ -87,10 +87,10 @@ public class IntygDraftDecoratorTest {
     intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
 
     assertEquals(4, listIntygEntries.size());
-    assertEquals("TypeOneName", listIntygEntries.get(0).getIntygTypeName());
-    assertEquals("TypeTwoName", listIntygEntries.get(1).getIntygTypeName());
-    assertEquals("TypeOneName", listIntygEntries.get(2).getIntygTypeName());
-    assertEquals("TypeThree", listIntygEntries.get(3).getIntygTypeName());
+    assertEquals( listIntygEntries.get(0).getIntygTypeName(),"TypeOneName");
+    assertEquals( listIntygEntries.get(1).getIntygTypeName(),"TypeTwoName");
+    assertEquals( listIntygEntries.get(2).getIntygTypeName(),"TypeOneName");
+    assertEquals( listIntygEntries.get(3).getIntygTypeName(),"TypeThree");
   }
 
   @Test
@@ -99,9 +99,9 @@ public class IntygDraftDecoratorTest {
     intygDraftDecorator.decorateWithCertificateStatusName(listIntygEntries);
 
     assertEquals(3, listIntygEntries.size());
-    assertEquals("Utkast, låst", listIntygEntries.get(0).getStatusName());
-    assertEquals("Utkast, kan signeras", listIntygEntries.get(1).getStatusName());
-    assertEquals("Utkast, uppgifter saknas", listIntygEntries.get(2).getStatusName());
+    assertEquals( listIntygEntries.get(0).getStatusName(),"Utkast, låst");
+    assertEquals( listIntygEntries.get(1).getStatusName(),"Utkast, kan signeras");
+    assertEquals( listIntygEntries.get(2).getStatusName(),"Utkast, uppgifter saknas");
   }
 
   private List<ListIntygEntry> getIntygEntryList() {

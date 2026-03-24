@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -26,13 +26,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
@@ -43,7 +43,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class NotificationWSSenderTest {
 
   @Mock private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
@@ -109,8 +109,8 @@ public class NotificationWSSenderTest {
 
     verify(notificationResultMessageCreator)
         .addToResultMessage(any(), any(), argumentCaptor.capture());
-    assertEquals(
-        "Result type should be added to the result message", result, argumentCaptor.getValue());
+    assertEquals( result, argumentCaptor.getValue(),
+        "Result type should be added to the result message");
   }
 
   @Test
@@ -129,8 +129,8 @@ public class NotificationWSSenderTest {
 
     verify(notificationResultMessageCreator)
         .addToResultMessage(any(), any(), argumentCaptor.capture());
-    assertEquals(
-        "Exception should be added to the result message", exception, argumentCaptor.getValue());
+    assertEquals( exception, argumentCaptor.getValue(),
+        "Exception should be added to the result message");
   }
 
   @Test

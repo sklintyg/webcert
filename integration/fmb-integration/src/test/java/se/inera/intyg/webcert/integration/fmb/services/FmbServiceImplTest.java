@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.integration.fmb.services;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 
@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -67,7 +67,7 @@ public class FmbServiceImplTest {
 
   @InjectMocks private FmbServiceImpl fmbServiceImpl;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     MockitoAnnotations.openMocks(this);
   }

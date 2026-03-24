@@ -18,56 +18,69 @@
  */
 package se.inera.intyg.webcert.web.web.util.access;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AccessResultExceptionHelperImplTest {
 
   @InjectMocks private AccessResultExceptionHelperImpl accessResultExceptionHelper;
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void throwPUProblemException() {
+    assertThrows(WebCertServiceException.class, () -> {
     accessResultExceptionHelper.throwException(
         AccessResult.create(AccessResultCode.PU_PROBLEM, ""));
+      });
   }
 
-  @Test(expected = AuthoritiesException.class)
+  @Test
   public void throwAuthoritiesException() {
+    assertThrows(AuthoritiesException.class, () -> {
     accessResultExceptionHelper.throwException(
         AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, ""));
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void throwAuthorizationSekretessException() {
+    assertThrows(WebCertServiceException.class, () -> {
     accessResultExceptionHelper.throwException(
         AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS, ""));
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void throwAuthorizationSekretessUnit() {
+    assertThrows(WebCertServiceException.class, () -> {
     accessResultExceptionHelper.throwException(
         AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, ""));
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void throwAnyOtherException() {
+    assertThrows(WebCertServiceException.class, () -> {
     accessResultExceptionHelper.throwException(
         AccessResult.create(AccessResultCode.RENEW_FALSE, ""));
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void throwIfAccessDenied() {
+    assertThrows(WebCertServiceException.class, () -> {
     accessResultExceptionHelper.throwExceptionIfDenied(
         AccessResult.create(AccessResultCode.RENEW_FALSE, ""));
+      });
   }
 
   @Test

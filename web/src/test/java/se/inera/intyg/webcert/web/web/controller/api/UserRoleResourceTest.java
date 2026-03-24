@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -48,7 +48,7 @@ public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
 
   @Captor private ArgumentCaptor<String> roleArrCaptor;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
   }

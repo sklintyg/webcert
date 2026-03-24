@@ -20,8 +20,8 @@ package se.inera.intyg.webcert.web.web.controller.api;
 
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static jakarta.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,18 +34,21 @@ import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringReques
 import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.infra.monitoring.logging.UserAgentInfo;
 import se.inera.intyg.infra.monitoring.logging.UserAgentParser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class JsLogApiControllerTest {
 
   private static final String userAgentString = "a user agent";
@@ -53,7 +56,7 @@ public class JsLogApiControllerTest {
   @Mock private UserAgentParser userAgentParser;
   @InjectMocks private JsLogApiController controller;
 
-  @Before
+  @BeforeEach
   public void setupMocks() {
     when(userAgentParser.parse(anyString()))
         .thenReturn(new UserAgentInfo("IE", "1.0", "OS", "1.1"));

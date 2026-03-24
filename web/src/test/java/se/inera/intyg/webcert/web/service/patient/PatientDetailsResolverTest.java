@@ -18,20 +18,22 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
 import se.inera.intyg.common.doi.v1.rest.DoiModuleApiV1;
 import se.inera.intyg.common.luae_fs.v1.rest.LuaefsModuleApiV1;
@@ -50,7 +52,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 /** Created by eriklupander on 2017-08-14. */
-@RunWith(MockitoJUnitRunner.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class PatientDetailsResolverTest {
 
   private static final String TS_BAS_VERSION = "6.0";
@@ -89,7 +92,7 @@ public class PatientDetailsResolverTest {
 
   @Mock private WebCertUser freeWebCertUser;
 
-  @Before
+  @BeforeEach
   public void init() throws Exception {
     when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
     when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParameters());

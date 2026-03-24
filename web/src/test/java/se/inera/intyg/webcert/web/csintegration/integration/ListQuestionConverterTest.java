@@ -191,35 +191,35 @@ class ListQuestionConverterTest {
     void shouldConvertSubjectCoordination() {
       final Question questionDto = buildQuestion(QuestionType.COORDINATION);
       final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-      assertEquals("AVSTMN", response.getAmne());
+      assertEquals( response.getAmne(),"AVSTMN");
     }
 
     @Test
     void shouldConvertSubjectContact() {
       final Question questionDto = buildQuestion(QuestionType.CONTACT);
       final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-      assertEquals("KONTKT", response.getAmne());
+      assertEquals( response.getAmne(),"KONTKT");
     }
 
     @Test
     void shouldConvertSubjectMissing() {
       final Question questionDto = buildQuestion(QuestionType.MISSING);
       final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-      assertEquals("OVRIGT", response.getAmne());
+      assertEquals( response.getAmne(),"OVRIGT");
     }
 
     @Test
     void shouldConvertSubjectOther() {
       final Question questionDto = buildQuestion(QuestionType.OTHER);
       final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-      assertEquals("OVRIGT", response.getAmne());
+      assertEquals( response.getAmne(),"OVRIGT");
     }
 
     @Test
     void shouldConvertSubjectComplement() {
       final Question questionDto = buildQuestion(QuestionType.COMPLEMENT);
       final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
-      assertEquals("KOMPLT", response.getAmne());
+      assertEquals( response.getAmne(),"KOMPLT");
     }
   }
 

@@ -21,15 +21,15 @@ package se.inera.intyg.webcert.web.service.fmb.icf.resource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:IcfTextResourceImplTest/test.properties")
 @ContextConfiguration(classes = {IcfTextResourceImpl.class})
 public class IcfTextResourceImplTest {

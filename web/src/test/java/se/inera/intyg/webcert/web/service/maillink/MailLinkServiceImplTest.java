@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.maillink;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.net.URI;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class MailLinkServiceImplTest {
@@ -36,7 +36,7 @@ public class MailLinkServiceImplTest {
 
   private MailLinkServiceImpl service = new MailLinkServiceImpl();
 
-  @Before
+  @BeforeEach
   public void setup() {
     ReflectionTestUtils.setField(service, "urlBaseTemplate", URL_BASE_TEMPLATE);
     ReflectionTestUtils.setField(
@@ -65,6 +65,6 @@ public class MailLinkServiceImplTest {
 
     assertNotNull(res);
     assertEquals(URL_BASE_TEMPLATE, res.getPath());
-    assertEquals("/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id", res.getFragment());
+    assertEquals( res.getFragment(),"/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id");
   }
 }

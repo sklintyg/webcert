@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,13 +33,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -60,7 +62,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateReq
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
   private static final String INTYG_TYPE_1 = "db";
@@ -79,7 +82,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
   private CreateUtkastFromTemplateBuilder createUtkastFromTemplateBuilder =
       new CreateUtkastFromTemplateBuilder();
 
-  @Before
+  @BeforeEach
   public void expectCallToModuleRegistry() throws Exception {
     this.mockModuleApi1 = mock(ModuleApi.class);
     this.mockModuleApi2 = mock(ModuleApi.class);

@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -63,15 +64,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -146,7 +149,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
   private static final LocalDateTime JANUARY = LocalDateTime.parse("2013-01-12T11:22:11");
@@ -226,7 +230,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
   @InjectMocks private ArendeServiceImpl service;
 
-  @Before
+  @BeforeEach
   @SuppressWarnings("unchecked")
   public void setUp() {
     service.setMockSystemClock(Clock.fixed(FIXED_TIME_INSTANT, ZoneId.systemDefault()));
@@ -777,8 +781,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     verify(logService, times(1)).logCreateMessage(any(), any(), any());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void answerSvarsTextNullTest() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       service.answer("svarPaMeddelandeId", null);
     } finally {
@@ -787,10 +792,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
       verifyNoInteractions(arendeDraftService);
       verifyNoInteractions(logService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void answerSvarsTextEmptyTest() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       service.answer("svarPaMeddelandeId", "");
     } finally {
@@ -799,10 +806,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
       verifyNoInteractions(arendeDraftService);
       verifyNoInteractions(logService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void answerQuestionWithInvalidStatusTest() {
+    assertThrows(WebCertServiceException.class, () -> {
     final String svarPaMeddelandeId = "svarPaMeddelandeId";
     Arende fraga = new Arende();
     fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
@@ -817,10 +826,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
       verifyNoInteractions(arendeDraftService);
       verifyNoInteractions(logService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void answerPaminnQuestionTest() {
+    assertThrows(WebCertServiceException.class, () -> {
     final String svarPaMeddelandeId = "svarPaMeddelandeId";
     Arende fraga = new Arende();
     fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
@@ -836,6 +847,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
       verifyNoInteractions(arendeDraftService);
       verifyNoInteractions(logService);
     }
+      });
   }
 
   @Test
@@ -969,8 +981,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     verify(logService, times(1)).logCreateMessage(any(), any(), any());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void setForwardedArendeNotFoundTest() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       setupMockForAccessService(ActionLinkType.VIDAREBEFODRA_FRAGA);
 
@@ -979,6 +992,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
       verify(arendeRepository, never()).save(any(Arende.class));
       verifyNoInteractions(notificationService);
     }
+      });
   }
 
   @Test
@@ -1031,8 +1045,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     verifyNoInteractions(notificationService);
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void closeArendeAsHandledArendeNotFoundTest() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       service.closeArendeAsHandled(MEDDELANDE_ID, INTYG_TYP);
     } finally {
@@ -1041,6 +1056,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
       verifyNoInteractions(arendeDraftService);
       verifyNoInteractions(logService);
     }
+      });
   }
 
   @Test
@@ -1141,8 +1157,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     verify(logService, times(1)).logCreateMessage(any(), any(), any());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void openArendeAsUnhandledArendeNotFoundTest() {
+    assertThrows(WebCertServiceException.class, () -> {
     try {
       service.openArendeAsUnhandled(MEDDELANDE_ID);
     } finally {
@@ -1150,10 +1167,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
       verifyNoInteractions(notificationService);
       verifyNoInteractions(logService);
     }
+      });
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void openArendeAsUnhandledFromFKAndAnsweredTest() {
+    assertThrows(WebCertServiceException.class, () -> {
     Arende arende = new Arende();
     arende.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
     arende.setIntygsId("34234");
@@ -1165,6 +1184,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     service.openArendeAsUnhandled(MEDDELANDE_ID);
     verifyNoMoreInteractions(notificationService);
     verify(logService, times(1)).logCreateMessage(any(), any(), any());
+      });
   }
 
   @Test
@@ -1438,8 +1458,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     assertEquals(JANUARY, result.get(3).getSenasteHandelse());
   }
 
-  @Test(expected = WebCertServiceException.class)
+  @Test
   public void testFilterArendeWithAuthFail() {
+    assertThrows(WebCertServiceException.class, () -> {
     WebCertUser webCertUser = createUser();
     when(webcertUserService.getUser()).thenReturn(webCertUser);
 
@@ -1447,6 +1468,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     params.setEnhetId("no-auth");
 
     service.filterArende(params);
+      });
   }
 
   @Test
@@ -1960,12 +1982,14 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     assertEquals(MEDDELANDE_ID, service.getLatestMeddelandeIdForCurrentCareUnit(INTYG_ID));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testGetLatestMeddelandeIdForCurrentCareUnitFailsWithNoKomplArende() {
+    assertThrows(IllegalArgumentException.class, () -> {
     when(webcertUserService.getUser()).thenReturn(createUser());
 
     service.getLatestMeddelandeIdForCurrentCareUnit(INTYG_ID);
     fail();
+      });
   }
 
   private Arende buildArende(String meddelandeId, String enhetId, LocalDateTime timestamp) {

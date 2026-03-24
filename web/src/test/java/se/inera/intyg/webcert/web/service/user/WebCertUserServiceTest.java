@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.eq;
@@ -36,11 +36,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,7 +59,7 @@ import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPr
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
   private static final String VARDGIVARE_1 = "VG1";
@@ -87,17 +87,17 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     WebCertUser user = createWebCertUser(false);
 
     assertTrue(
-        "ska kunna titta på ett intyg inom VE1",
-        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true),
+        "ska kunna titta på ett intyg inom VE1");
     assertFalse(
-        "ska INTE kunna titta på ett intyg inom VE2",
-        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true),
+        "ska INTE kunna titta på ett intyg inom VE2");
     assertTrue(
-        "ska kunna redigera ett intyg inom VE1",
-        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false),
+        "ska kunna redigera ett intyg inom VE1");
     assertFalse(
-        "ska INTE kunna redigera ett intyg inom VE2",
-        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false),
+        "ska INTE kunna redigera ett intyg inom VE2");
   }
 
   @Test
@@ -106,17 +106,17 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     WebCertUser user = createWebCertUser(true);
 
     assertTrue(
-        "ska kunna titta på ett intyg inom VE1",
-        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true),
+        "ska kunna titta på ett intyg inom VE1");
     assertTrue(
-        "ska kunna titta på ett intyg inom VE2",
-        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true),
+        "ska kunna titta på ett intyg inom VE2");
     assertTrue(
-        "ska kunna redigera ett intyg inom VE1",
-        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false),
+        "ska kunna redigera ett intyg inom VE1");
     assertFalse(
-        "ska INTE kunna redigera ett intyg inom VE2",
-        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
+        webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false),
+        "ska INTE kunna redigera ett intyg inom VE2");
   }
 
   @Test
@@ -127,7 +127,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         .thenReturn(new AnvandarPreference("HSA-id", "key1", "value1"));
 
     webcertUserService.storeUserPreference("key1", "value1");
-    assertEquals("value1", user.getAnvandarPreference().get("key1"));
+    assertEquals( user.getAnvandarPreference().get("key1"),"value1");
     verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
     verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
   }
@@ -139,7 +139,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1")).thenReturn(null);
 
     webcertUserService.storeUserPreference("key1", "value1");
-    assertEquals("value1", user.getAnvandarPreference().get("key1"));
+    assertEquals( user.getAnvandarPreference().get("key1"),"value1");
     verify(anvandarPreferenceRepository, times(1)).findByHsaIdAndKey("HSA-id", "key1");
     verify(anvandarPreferenceRepository, times(1)).save(any(AnvandarPreference.class));
   }
@@ -187,7 +187,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
   @Test
   public void testGetMiuOk() {
     WebCertUser user = createWebCertUser(false);
-    assertEquals("Mitt uppdrag", user.getSelectedMedarbetarUppdragNamn());
+    assertEquals( user.getSelectedMedarbetarUppdragNamn(),"Mitt uppdrag");
   }
 
   @Test
@@ -195,7 +195,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     WebCertUser user = createWebCertUser(false);
     ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning1());
     user.changeValdVardenhet(MOTTAGNING_1);
-    assertEquals("Mitt mottagningsuppdrag", user.getSelectedMedarbetarUppdragNamn());
+    assertEquals( user.getSelectedMedarbetarUppdragNamn(),"Mitt mottagningsuppdrag");
   }
 
   @Test

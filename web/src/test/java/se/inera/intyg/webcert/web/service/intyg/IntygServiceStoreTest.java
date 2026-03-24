@@ -18,7 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -27,10 +28,10 @@ import static org.mockito.Mockito.verify;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
@@ -40,10 +41,10 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class IntygServiceStoreTest extends AbstractIntygServiceTest {
 
-  @Before
+  @BeforeEach
   @Override
   public void setupMocks() throws Exception {
     json =
@@ -64,12 +65,14 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
     verify(monitoringService).logIntygRegistered(INTYG_ID, INTYG_TYP_FK);
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testStoreIntygThrowsCertificateSenderException() throws Exception {
+  @Test
+  public void testStoreIntygThrowsCertificateSenderException() {
+    assertThrows(WebCertServiceException.class, () -> {
     doThrow(new CertificateSenderException(""))
         .when(certificateSenderService)
         .storeCertificate(eq(INTYG_ID), eq(INTYG_TYP_FK), anyString());
     intygService.storeIntyg(createUtkast());
+      });
   }
 
   private Utkast createUtkast() {

@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.web.service.fmb;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,11 +41,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.assertj.core.util.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
@@ -63,7 +63,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FmbDiagnosInformationServiceImplTest {
 
   protected static final String DIAGNOSRUBRIK_PREFIX = "diagnosrubrik-";
@@ -189,9 +189,9 @@ public class FmbDiagnosInformationServiceImplTest {
             .orElse(Lists.emptyList());
 
     assertEquals(DIAGNOSRUBRIK_PREFIX + "A10", response.get().getDiagnosTitle());
-    assertEquals("A10, B20", response.get().getRelatedDiagnoses());
+    assertEquals( response.get().getRelatedDiagnoses(),"A10, B20");
     assertEquals(1, count);
-    assertEquals("test", contentList.get(0).getText());
+    assertEquals( contentList.get(0).getText(),"test");
     assertNull(contentList.get(0).getList());
   }
 

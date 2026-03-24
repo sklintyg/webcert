@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
