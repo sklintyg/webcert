@@ -12,40 +12,6 @@ Steps 15–20 progressively replace manual bean config with Spring Boot auto-con
 
 ---
 
-## Step 0 — Prerequisite Investigation: External JAR Configurations *(no code changes)*
-
-Before starting implementation, three external XML configs imported via `webcert-config.xml` must be analyzed because their contents are
-unknown and they could significantly expand scope.
-
-### 0a. Investigate `classpath*:module-config.xml` and `classpath*:wc-module-cxf-servlet.xml`
-
-These wildcard imports (webcert-config.xml lines 44–45) load Spring XML configs from **external JARs** — the `se.inera.intyg.common`
-certificate type modules. They form a plugin architecture where each certificate type registers its own beans and CXF REST endpoints.
-**No local files exist in the webcert project.**
-
-**What to investigate:**
-1. For each common certificate module (fk7263, ts-bas, db, etc.), extract and document what `module-config.xml` provides (beans, component
-   scans, property placeholders).
-2. For each module, extract and document what `wc-module-cxf-servlet.xml` provides (JAX-RS controller registrations, providers).
-3. Determine if the common modules can be updated to provide Java `@Configuration` instead of XML (coordinated release).
-4. If common modules cannot change in the same release: plan a temporary bridge using `@ImportResource("classpath*:module-config.xml")`
-   to preserve backward compatibility.
-5. **Critical:** The `wc-module-cxf-servlet.xml` files register JAX-RS controllers that **will break** when CXF REST is removed in Step 11.
-   A migration path for these endpoints must be defined before Step 11 begins.
-
-### 0b. Investigate `classpath:common-config.xml`
-
-This import (webcert-config.xml line 43) loads config from `se.inera.intyg.common:common-services`. **No local file exists.**
-
-**What to investigate:**
-1. Extract and document all beans defined in `common-config.xml`.
-2. For each bean, determine: is it needed? Is it already provided by component scanning? Can it be replaced?
-3. Create a concrete plan for each bean (retain via `@ImportResource`, replace with `@Bean`, or remove).
-
-**Output:** Create `migration/external-module-analysis.md` with findings from both investigations.
-
----
-
 ## Step 1 — Migrate all tests to JUnit 5 *(~162 files, zero runtime impact)*
 
 **Why first:** This is the only work item with **zero risk to the running application**. It only touches test code. It removes `junit:junit`
@@ -61,6 +27,7 @@ and `junit-vintage-engine` from all `build.gradle` files. You can do it module-b
    classes or direct bean setup.
 
 **Migration pattern:**
+
 - `org.junit.Test` → `org.junit.jupiter.api.Test`
 - `@Before` → `@BeforeEach`, `@After` → `@AfterEach`
 - `@RunWith(MockitoJUnitRunner.class)` → `@ExtendWith(MockitoExtension.class)`
@@ -158,6 +125,7 @@ This is the largest inlining step. The file count is significantly higher than i
    `se.inera.intyg.infra.security.common.cookie` package. This is critical for session/cookie management — do not overlook.
 
 **Approach:** Do this in sub-steps:
+
 - First: copy all security classes (including `IneraCookieSerializer`) into local packages.
 - Second: update imports across the entire codebase including csintegration (automated search-and-replace).
 - Third: verify compilation and test suite.
@@ -173,6 +141,7 @@ Replace `hsa-integration-api` + `hsa-integration-intyg-proxy-service` and `pu-in
 direct REST calls to `intyg-proxy-service`. Remove the `classpath:` XML imports for these services.
 
 **What to do:**
+
 1. Create local HSA REST client using Spring `RestClient` (or retain `RestTemplate` since we're not on Spring Boot yet).
 2. Create local PU REST client using the same approach.
 3. Define local DTOs for the responses.
@@ -187,6 +156,7 @@ direct REST calls to `intyg-proxy-service`. Remove the `classpath:` XML imports 
 ## Step 10 — Inline remaining infra modules + remove all infra dependencies
 
 Handle any remaining infra modules:
+
 - **privatepractitioner** — **internalize** (confirmed actively used in 19 files across web services, auth layer, and factory classes;
   the local module `integration-private-practitioner-service` provides REST client, DTOs, and service classes). Copy any infra-sourced
   classes into the local module and update imports.
@@ -194,6 +164,7 @@ Handle any remaining infra modules:
   `CacheConfig`, `RedisLaunchIdCacheConfiguration`, `CertificatesForPatientCacheConfiguration` beans but remove infra dependency).
 
 Then remove **all** `se.inera.intyg.infra` dependency lines from:
+
 - `web/build.gradle` (~24 lines)
 - `notification-sender/build.gradle` (~5 lines)
 - `common/build.gradle` (~1 line)
@@ -221,6 +192,7 @@ Convert all `@Path`/`@GET`/`@POST` controllers to `@RestController`/`@GetMapping
 8. **`/authtestability/*`** (1 controller) — auth testability.
 
 For each group:
+
 - Convert JAX-RS annotations to Spring MVC.
 - Remove the corresponding CXF servlet XML file.
 - Update `web.xml` to remove the CXF servlet mapping (narrow CXF to `/services/*` only).
@@ -232,6 +204,7 @@ The existing `DispatcherServlet` is mapped to **`/web/*` only** (web.xml lines 5
 need a DispatcherServlet serving the converted path prefixes.
 
 **Strategy:** After all CXF REST servlet groups are converted:
+
 1. Change the DispatcherServlet mapping in `web.xml` from `/web/*` to `/`.
 2. Keep CXF SOAP servlet at `/services/*` only.
 3. Merge the `WEB-INF/web-servlet.xml` component scan (`se.inera.intyg.webcert.web.web.controller`) and `<mvc:annotation-driven/>`
@@ -249,6 +222,7 @@ The project has **2 `ExceptionMapper` implementations** and **zero** `@Controlle
   responses (HTTP 303).
 
 **What to do:**
+
 1. Create a `@RestControllerAdvice` class replacing `WebcertRestExceptionHandler` — preserve the exact JSON error response format
    (this is an API contract).
 2. Create a `@ControllerAdvice` class replacing `WebcertRedirectIntegrationExceptionHandler` — replace `@Context UriInfo` with
@@ -258,7 +232,9 @@ The project has **2 `ExceptionMapper` implementations** and **zero** `@Controlle
 ### 11c. Register CustomObjectMapper for Spring MVC
 
 Jackson is currently configured as a CXF JSON provider via `webcert-config.xml`:
+
 ```xml
+
 <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider">
   <property name="mapper">
     <bean class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
@@ -271,6 +247,7 @@ inclusion, `WRITE_DATES_AS_TIMESTAMPS=false`, `FAIL_ON_UNKNOWN_PROPERTIES=false`
 `InternalDate`, `LocalDateTime`, `LocalDate` (from `se.inera.intyg.common`).
 
 **What to do:**
+
 1. Register `CustomObjectMapper` as a Spring `@Bean` so Spring MVC's `MappingJackson2HttpMessageConverter` uses it automatically.
    Spring Boot will use any `ObjectMapper` bean it finds.
 2. Alternatively, create a `WebMvcConfigurer` that explicitly configures the `HttpMessageConverter` with `CustomObjectMapper`.
@@ -284,6 +261,7 @@ The `classpath*:wc-module-cxf-servlet.xml` files from external certificate-type 
 CXF REST is removed. Apply the migration strategy defined in Step 0 (either coordinated common module update or compatibility bridge).
 
 After all groups are done:
+
 - Remove `jakarta.ws.rs:jakarta.ws.rs-api` dependency.
 - Remove `com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider` dependency.
 - Remove `swagger-jaxrs` dependency (replace with SpringDoc OpenAPI at Step 14).
@@ -311,8 +289,8 @@ Convert each remaining XML file to Java `@Configuration`:
 9. **Stub XML configs** → convert to `@Configuration` with `@Profile`.
 10. **Test XML contexts** (notification-sender test configs) → replace with Java test configurations.
 11. **`WEB-INF/web-servlet.xml`** → this is the DispatcherServlet's Spring context config containing `<mvc:annotation-driven/>` and
-   component scanning for `se.inera.intyg.webcert.web.web.controller`. Merge into main application context (may have been partially
-   handled in Step 11a). Ensure `@EnableWebMvc` or Spring Boot's auto-config replaces `<mvc:annotation-driven/>`.
+    component scanning for `se.inera.intyg.webcert.web.web.controller`. Merge into main application context (may have been partially
+    handled in Step 11a). Ensure `@EnableWebMvc` or Spring Boot's auto-config replaces `<mvc:annotation-driven/>`.
 
 Update `web.xml`'s `contextConfigLocation` to point to the Java config class instead of `webcert-config.xml`.
 
@@ -355,19 +333,19 @@ This is the most critical step. All preparation is done — the switch should be
 6. Move `application.properties` to the app module's `src/main/resources/`.
 7. Ensure CXF servlet is registered via `ServletRegistrationBean` at `/services/*`.
 8. Register all filters as `FilterRegistrationBean` beans in a new `WebFilterConfig.java`, preserving the exact filter order from web.xml:
-   - `springSessionRepositoryFilter` (order 1)
-   - `requestContextHolderUpdateFilter` (order 2)
-   - `MdcServletFilter` (order 3)
-   - `defaultCharacterEncodingFilter` (order 4, specific URL pattern)
-   - `sessionTimeoutFilter` (order 5)
-   - `springSecurityFilterChain` (order 6)
-   - `principalUpdatedFilter` (order 7)
-   - `unitSelectedAssuranceFilter` (order 8, specific URL patterns)
-   - `securityHeadersFilter` (order 9)
-   - `MdcUserServletFilter` (order 10)
-   - `internalApiFilter` (order 11, `/internalapi/*`)
-   - `launchIdValidationFilter` (order 12, specific URL patterns)
-   - `allowCorsFilter` (order 13, specific URL)
+    - `springSessionRepositoryFilter` (order 1)
+    - `requestContextHolderUpdateFilter` (order 2)
+    - `MdcServletFilter` (order 3)
+    - `defaultCharacterEncodingFilter` (order 4, specific URL pattern)
+    - `sessionTimeoutFilter` (order 5)
+    - `springSecurityFilterChain` (order 6)
+    - `principalUpdatedFilter` (order 7)
+    - `unitSelectedAssuranceFilter` (order 8, specific URL patterns)
+    - `securityHeadersFilter` (order 9)
+    - `MdcUserServletFilter` (order 10)
+    - `internalApiFilter` (order 11, `/internalapi/*`)
+    - `launchIdValidationFilter` (order 12, specific URL patterns)
+    - `allowCorsFilter` (order 13, specific URL)
 9. Handle the `classpath*:module-config.xml` and `classpath*:wc-module-cxf-servlet.xml` wildcard imports from common modules — apply
    the strategy defined in Step 0 investigation (Java equivalents or `@ImportResource` bridge).
 10. Remove `web.xml`.
@@ -391,15 +369,15 @@ as-is. They will still work under Spring Boot — Spring Boot auto-config backs 
 1. Remove `JpaConfig`, `repository-context.xml` remnants.
 2. Add `spring-boot-starter-data-jpa` (if not already pulled transitively).
 3. Move DB properties to Spring Boot conventions:
-   - `db.driver` → `spring.datasource.driver-class-name`
-   - `db.url` → `spring.datasource.url`
-   - `db.username` → `spring.datasource.username`
-   - `db.password` → `spring.datasource.password`
-   - `db.pool.maxSize` → `spring.datasource.hikari.maximum-pool-size`
-   - `hibernate.hbm2ddl.auto` → `spring.jpa.hibernate.ddl-auto`
-   - `hibernate.show_sql` → `spring.jpa.show-sql`
-   - `hibernate.format_sql` → `spring.jpa.properties.hibernate.format_sql`
-   - (Map all remaining `db.*` and `hibernate.*` properties)
+    - `db.driver` → `spring.datasource.driver-class-name`
+    - `db.url` → `spring.datasource.url`
+    - `db.username` → `spring.datasource.username`
+    - `db.password` → `spring.datasource.password`
+    - `db.pool.maxSize` → `spring.datasource.hikari.maximum-pool-size`
+    - `hibernate.hbm2ddl.auto` → `spring.jpa.hibernate.ddl-auto`
+    - `hibernate.show_sql` → `spring.jpa.show-sql`
+    - `hibernate.format_sql` → `spring.jpa.properties.hibernate.format_sql`
+    - (Map all remaining `db.*` and `hibernate.*` properties)
 4. Update `application.properties`, `application-dev.properties`, and note that `devops/` deployment configs and external Kubernetes
    ConfigMaps need coordinated updates for the new property names.
 5. Remove explicit `HikariCP`, `hibernate-core` dependencies from `persistence/build.gradle` (now provided by starter).
@@ -413,10 +391,10 @@ as-is. They will still work under Spring Boot — Spring Boot auto-config backs 
 1. Remove manual `ConnectionFactory`, `PooledConnectionFactory`, `JmsTemplate`, `JmsTransactionManager` beans.
 2. Add `spring-boot-starter-activemq`.
 3. Move properties to Spring Boot conventions:
-   - `activemq.broker.url` → `spring.activemq.broker-url`
-   - `activemq.broker.username` → `spring.activemq.user`
-   - `activemq.broker.password` → `spring.activemq.password`
-   - (Map all remaining `activemq.broker.*` properties)
+    - `activemq.broker.url` → `spring.activemq.broker-url`
+    - `activemq.broker.username` → `spring.activemq.user`
+    - `activemq.broker.password` → `spring.activemq.password`
+    - (Map all remaining `activemq.broker.*` properties)
 4. Update `application.properties`, `application-dev.properties`, and deployment configs.
 5. Keep custom `Queue` beans and `JmsListenerContainerFactory` customization if needed.
 
@@ -440,24 +418,24 @@ as-is. They will still work under Spring Boot — Spring Boot auto-config backs 
 
 1. **Redis:** Add `spring-boot-starter-data-redis` + `spring-session-data-redis`. Remove manual Redis config. Move properties to
    Spring Boot conventions:
-   - `redis.host` → `spring.data.redis.host`
-   - `redis.port` → `spring.data.redis.port`
-   - `redis.password` → `spring.data.redis.password`
-   - `redis.cache.default_entry_expiry_time_in_seconds` → custom `@ConfigurationProperties` (no direct Spring Boot equivalent)
-   - (Map all remaining `redis.*` properties)
-   Retain `RedisLaunchIdCacheConfiguration` and `CertificatesForPatientCacheConfiguration` (they'll use the
-   auto-configured `RedisConnectionFactory`).
-   **Session serialization warning:** Switching from manual to auto-configured Redis may change the default `RedisSerializer` for Spring
-   Session. If the current setup uses JDK serialization, and auto-config switches to a different format, **all active sessions will be
-   invalidated during deployment**. Mitigation options:
-   - Configure an explicit `RedisSerializer` bean matching the current serialization format.
-   - Plan for a rolling deployment with session draining.
-   - Or accept session invalidation as a one-time deployment cost.
+    - `redis.host` → `spring.data.redis.host`
+    - `redis.port` → `spring.data.redis.port`
+    - `redis.password` → `spring.data.redis.password`
+    - `redis.cache.default_entry_expiry_time_in_seconds` → custom `@ConfigurationProperties` (no direct Spring Boot equivalent)
+    - (Map all remaining `redis.*` properties)
+      Retain `RedisLaunchIdCacheConfiguration` and `CertificatesForPatientCacheConfiguration` (they'll use the
+      auto-configured `RedisConnectionFactory`).
+      **Session serialization warning:** Switching from manual to auto-configured Redis may change the default `RedisSerializer` for Spring
+      Session. If the current setup uses JDK serialization, and auto-config switches to a different format, **all active sessions will be
+      invalidated during deployment**. Mitigation options:
+    - Configure an explicit `RedisSerializer` bean matching the current serialization format.
+    - Plan for a rolling deployment with session draining.
+    - Or accept session invalidation as a one-time deployment cost.
 2. **Mail:** Add `spring-boot-starter-mail`. Remove manual mail config. Move properties:
-   - `mail.from` → `spring.mail.properties.mail.from` (or custom property)
-   - `mail.smtps.auth` → `spring.mail.properties.mail.smtps.auth`
-   - `mail.smtps.starttls.enable` → `spring.mail.properties.mail.smtps.starttls.enable`
-   - (Map all remaining `mail.*` properties; some are application-specific and won't map to Spring Boot conventions)
+    - `mail.from` → `spring.mail.properties.mail.from` (or custom property)
+    - `mail.smtps.auth` → `spring.mail.properties.mail.smtps.auth`
+    - `mail.smtps.starttls.enable` → `spring.mail.properties.mail.smtps.starttls.enable`
+    - (Map all remaining `mail.*` properties; some are application-specific and won't map to Spring Boot conventions)
 3. **Logging:** Remove `logback-ecs-encoder`, any remaining `logback-spring-base.xml`. Add
    `logging.structured.format.console=ecs` to `application.properties`.
 4. Update `application.properties`, `application-dev.properties`, and deployment configs for all property name changes.
@@ -474,11 +452,11 @@ as-is. They will still work under Spring Boot — Spring Boot auto-config backs 
    ENTRYPOINT ["java", "-jar", "app.jar"]
    ```
 2. **Final cleanup:**
-   - Remove empty XML directories (`webapp/WEB-INF/`).
-   - Remove Gretty-related configuration files.
-   - Update `devops/` configuration for Spring Boot conventions.
-   - Verify all Spring profiles still work (dev, test, prod).
-   - Remove redundant `@EnableScheduling` from `FmbServiceImpl.java` — `JobConfig.java` already enables it globally.
+    - Remove empty XML directories (`webapp/WEB-INF/`).
+    - Remove Gretty-related configuration files.
+    - Update `devops/` configuration for Spring Boot conventions.
+    - Verify all Spring profiles still work (dev, test, prod).
+    - Remove redundant `@EnableScheduling` from `FmbServiceImpl.java` — `JobConfig.java` already enables it globally.
 
 **Verify:** Docker build + run. Application starts in container. All endpoints respond. API documentation at `/swagger-ui.html`.
 
@@ -486,28 +464,28 @@ as-is. They will still work under Spring Boot — Spring Boot auto-config backs 
 
 ## Summary: When Is the App Working?
 
-| After Step | What You Can Verify                  | Runs On         | App Broken? |
-|------------|--------------------------------------|-----------------|-------------|
-| **0**      | External JAR configs documented      | N/A (analysis)  | ❌ No       |
-| **1**      | All tests on JUnit 5                 | WAR / Gretty    | ❌ No       |
-| **2**      | Simple infra DTOs inlined            | WAR / Gretty    | ❌ No       |
-| **3**      | log-messages inlined                 | WAR / Gretty    | ❌ No       |
-| **4**      | monitoring inlined                   | WAR / Gretty    | ❌ No       |
-| **5**      | xmldsig inlined                      | WAR / Gretty    | ❌ No       |
-| **6**      | sjukfall + IA + postnummer inlined   | WAR / Gretty    | ❌ No       |
-| **7**      | SRS inlined                          | WAR / Gretty    | ❌ No       |
-| **8**      | Security modules inlined             | WAR / Gretty    | ❌ No       |
-| **9**      | HSA/PU via REST                      | WAR / Gretty    | ❌ No       |
-| **10**     | All infra deps removed               | WAR / Gretty    | ❌ No       |
-| **11**     | All REST on Spring MVC               | WAR / Gretty    | ❌ No       |
-| **12**     | All XML config → Java                | WAR / Gretty    | ❌ No       |
-| **13**     | Camel routes in Java DSL             | WAR / Gretty    | ❌ No       |
-| **14**     | **Spring Boot runs + web.xml gone**  | **Spring Boot** | ❌ No       |
-| **15**     | JPA auto-configured                  | Spring Boot     | ❌ No       |
-| **16**     | JMS auto-configured                  | Spring Boot     | ❌ No       |
-| **17**     | Actuator/Micrometer live             | Spring Boot     | ❌ No       |
-| **18**     | Redis + Mail + Logging               | Spring Boot     | ❌ No       |
-| **19**     | Docker + cleanup                     | Spring Boot     | ❌ No       |
+| After Step | What You Can Verify                 | Runs On         | App Broken? |
+|------------|-------------------------------------|-----------------|-------------|
+| **0**      | External JAR configs documented     | N/A (analysis)  | ❌ No        |
+| **1**      | All tests on JUnit 5                | WAR / Gretty    | ❌ No        |
+| **2**      | Simple infra DTOs inlined           | WAR / Gretty    | ❌ No        |
+| **3**      | log-messages inlined                | WAR / Gretty    | ❌ No        |
+| **4**      | monitoring inlined                  | WAR / Gretty    | ❌ No        |
+| **5**      | xmldsig inlined                     | WAR / Gretty    | ❌ No        |
+| **6**      | sjukfall + IA + postnummer inlined  | WAR / Gretty    | ❌ No        |
+| **7**      | SRS inlined                         | WAR / Gretty    | ❌ No        |
+| **8**      | Security modules inlined            | WAR / Gretty    | ❌ No        |
+| **9**      | HSA/PU via REST                     | WAR / Gretty    | ❌ No        |
+| **10**     | All infra deps removed              | WAR / Gretty    | ❌ No        |
+| **11**     | All REST on Spring MVC              | WAR / Gretty    | ❌ No        |
+| **12**     | All XML config → Java               | WAR / Gretty    | ❌ No        |
+| **13**     | Camel routes in Java DSL            | WAR / Gretty    | ❌ No        |
+| **14**     | **Spring Boot runs + web.xml gone** | **Spring Boot** | ❌ No        |
+| **15**     | JPA auto-configured                 | Spring Boot     | ❌ No        |
+| **16**     | JMS auto-configured                 | Spring Boot     | ❌ No        |
+| **17**     | Actuator/Micrometer live            | Spring Boot     | ❌ No        |
+| **18**     | Redis + Mail + Logging              | Spring Boot     | ❌ No        |
+| **19**     | Docker + cleanup                    | Spring Boot     | ❌ No        |
 
 **Every step is a deployable, verifiable checkpoint.** Steps 0–13 don't change how the application runs (still WAR/Tomcat/Gretty). Step
 14 is the actual Spring Boot switch (including web.xml removal), and it's small because all the preparation is done. Steps 15–19 are safe
@@ -523,12 +501,14 @@ Complete this investigation before starting implementation.
 
 **Step 8** (Security inlining) is the riskiest inlining step. The original estimate of ~267 files is an undercount — the `csintegration`
 package alone has ~1,158 files importing infra security classes. To de-risk:
+
 - Copy classes first, then update imports in batches.
 - Test each authentication path (SITHS, eleg, fake) after each batch.
 - Test role-based access control after authorities are inlined.
 - Verify `IneraCookieSerializer` is correctly inlined — cookie/session management is critical.
 
 **Step 11** (JAX-RS → Spring MVC) is the largest API migration (~52 controllers). To de-risk:
+
 - Migrate one CXF servlet context at a time (8 groups).
 - Verify endpoint responses match before/after for each group.
 - Create `@ControllerAdvice` replacements for both `ExceptionMapper` implementations **before** removing JAX-RS exception handling.
@@ -536,6 +516,7 @@ package alone has ~1,158 files importing infra security classes. To de-risk:
 - Pay special attention to the DispatcherServlet URL mapping change (11a).
 
 **Step 14** (Spring Boot bootstrap + web.xml removal) is the most critical single step. To de-risk:
+
 - Consider doing a quick spike first: create a branch, add the Spring Boot plugin, create the main class, and see if it starts.
 - This validates CXF + Spring Boot coexistence early.
 - Verify OpenSamlConfig security hardening is preserved under Spring Boot SAML auto-config.
