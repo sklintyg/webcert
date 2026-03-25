@@ -1,0 +1,7 @@
+[{
+  "key": "key1",
+  "url": "http://path.to/something",
+  "text": "URL to something",
+  "tooltip": "Click here to go somewhere",
+  "target": "_blank"
+}]
