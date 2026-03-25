@@ -29,15 +29,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
@@ -56,6 +58,8 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 class FmbServiceImplTest {
 
   @Mock private FmbRepository fmbRepository;
@@ -66,11 +70,6 @@ class FmbServiceImplTest {
   @Captor private ArgumentCaptor<List<DiagnosInformation>> fmbCaptor;
 
   @InjectMocks private FmbServiceImpl fmbServiceImpl;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
 
   @Test
   void testGoldenMaster() throws Exception {

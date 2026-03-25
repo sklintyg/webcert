@@ -38,7 +38,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -71,7 +70,6 @@ class UserApiControllerTest {
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
     when(webCertUserService.getUser()).thenReturn(webCertUser);
   }
 

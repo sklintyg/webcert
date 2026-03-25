@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -59,10 +58,6 @@ class UtkastModelToXMLConverterTest {
   @InjectMocks private UtkastModelToXMLConverter testee;
 
   private String jsonModel;
-
-  public UtkastModelToXMLConverterTest() {
-    MockitoAnnotations.openMocks(this);
-  }
 
   @Test
   void testConvertDb() throws ModuleNotFoundException, IOException {

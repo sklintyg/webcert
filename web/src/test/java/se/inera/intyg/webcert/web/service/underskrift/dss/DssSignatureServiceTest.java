@@ -39,12 +39,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -66,6 +70,8 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 class DssSignatureServiceTest {
 
   public static final String IDP_URL = "https://idpurl.se/samlv2/idp/metadata";
@@ -123,8 +129,8 @@ class DssSignatureServiceTest {
         });
   }
 
-  public DssSignatureServiceTest() {
-    MockitoAnnotations.openMocks(this);
+  @BeforeEach
+  void setUp() {
     dssSignatureService =
         new DssSignatureService(
             dssMetadataService,

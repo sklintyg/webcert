@@ -20,9 +20,7 @@ package se.inera.intyg.webcert.web.service.access;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.extension.ExtendWith;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
-import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.DbAccessServiceTestData;
 
 class DbLockedDraftAccessTest extends LockedDraftAccessTest {

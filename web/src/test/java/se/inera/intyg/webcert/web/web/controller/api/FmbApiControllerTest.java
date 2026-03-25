@@ -28,10 +28,13 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
@@ -41,6 +44,8 @@ import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class FmbApiControllerTest {
 
   @InjectMocks private FmbApiController controller;
@@ -55,7 +60,6 @@ class FmbApiControllerTest {
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
     Mockito.when(diagnosService.getDiagnosisByCode(anyString(), any(Diagnoskodverk.class)))
         .thenReturn(DiagnosResponse.ok(makeDiagnoser(), false));
   }
