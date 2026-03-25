@@ -19,10 +19,10 @@
 package se.inera.intyg.webcert.infra.sjukfall.services;
 
 import java.util.List;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
-import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallPatient;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygParametrar;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallEnhet;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallPatient;
 
 /**
  * @author Magnus Ekstrand on 2017-02-10.

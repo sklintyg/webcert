@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
 
 /** Created by Magnus Ekstrand on 19/11/15. */
 public class Privilege implements Serializable {

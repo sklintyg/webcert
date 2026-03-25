@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
-import se.inera.intyg.infra.dynamiclink.repository.DynamicLinkRepository;
+import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
+import se.inera.intyg.webcert.infra.dynamiclink.repository.DynamicLinkRepository;
 
 /** Created by eriklupander on 2017-05-03. */
 @Service

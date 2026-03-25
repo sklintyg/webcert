@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.infra.xmldsig.model;
 
-import se.inera.intyg.infra.xmldsig.model.ValidationResult;
-
 public class ValidationResponse {
 
   private ValidationResult signatureValid = ValidationResult.NOT_CHCEKED;

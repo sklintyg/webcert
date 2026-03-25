@@ -36,9 +36,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 
-@Aspect("pertarget(se.inera.intyg.infra.monitoring.annotation.MethodTimer.timeable())")
+@Aspect("pertarget(se.inera.intyg.webcert.infra.monitoring.annotation.MethodTimer.timeable())")
 @Scope("prototype")
 @ControllerAdvice
 public class MethodTimer {
@@ -47,7 +46,7 @@ public class MethodTimer {
   private static final HashMap<String, Summary> SUMMARIES = new HashMap<>();
   private static final HashSet<String> NAME_SET = new HashSet<>();
 
-  @Pointcut("@annotation(se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod)")
+  @Pointcut("@annotation(se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod)")
   public void timeable() {}
 
   @Around("timeable()")

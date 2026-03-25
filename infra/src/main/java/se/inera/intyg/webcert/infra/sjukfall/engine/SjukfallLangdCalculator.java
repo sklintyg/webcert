@@ -26,10 +26,9 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
-import se.inera.intyg.infra.sjukfall.dto.Formaga;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallIntyg;
-import se.inera.intyg.infra.sjukfall.engine.LocalDateInterval;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Formaga;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallIntyg;
 
 /**
  * Calulates the effective length of all arbetsformaga intervals contained in the

@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.infra.security.authorities.validation;
 
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 
 /** Created by marced on 18/12/15. */
 public interface AuthExpectationSpecification {

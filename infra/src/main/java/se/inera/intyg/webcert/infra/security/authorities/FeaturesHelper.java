@@ -24,8 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.infra.security.authorities.CommonFeaturesResolver;
-import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
 
 @Component
 public class FeaturesHelper {

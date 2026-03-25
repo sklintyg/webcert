@@ -124,9 +124,8 @@ public final class PartialSignatureFactory {
     TransformsType transforms = new TransformsType();
     transforms
         .getTransform()
-        .add(
-            envelopedTransform); // Having envelopedTransform makes sure the <Signature> element is
-                                 // removed when
+        .add(envelopedTransform); // Having envelopedTransform makes sure the <Signature> element is
+    // removed when
     // digesting.
     transforms.getTransform().add(intygCanonicalizationTransform);
     transforms.getTransform().add(xpathFilterTransform);

@@ -34,10 +34,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
-import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.RequestOrigin;
 
 /**
  * @author Magnus Ekstrand on 2016-05-13.

@@ -22,9 +22,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import se.inera.intyg.infra.sjukfall.dto.DiagnosKod;
-import se.inera.intyg.infra.sjukfall.dto.Formaga;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.DiagnosKod;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Formaga;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
 
 /** Created by Magnus Ekstrand on 2016-02-10. */
 public final class IntygDataT {

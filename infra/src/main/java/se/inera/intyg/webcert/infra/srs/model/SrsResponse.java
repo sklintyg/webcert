@@ -20,9 +20,6 @@ package se.inera.intyg.webcert.infra.srs.model;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
-import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
-import se.inera.intyg.infra.integration.srs.model.SrsPrediction;
-import se.inera.intyg.infra.integration.srs.model.SrsRecommendation;
 
 // CHECKSTYLE:OFF ParameterNumber
 public class SrsResponse {

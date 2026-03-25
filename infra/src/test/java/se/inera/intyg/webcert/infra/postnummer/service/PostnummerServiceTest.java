@@ -33,13 +33,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import se.inera.intyg.infra.integration.postnummer.model.Omrade;
+import se.inera.intyg.webcert.infra.postnummer.model.Omrade;
 
 @SpringJUnitConfig(classes = PostnummerServiceTest.TestConfiguration.class)
 class PostnummerServiceTest {
 
   @Configuration
-  @ComponentScan("se.inera.intyg.infra.integration.postnummer")
+  @ComponentScan("se.inera.intyg.webcert.infra.postnummer")
   @PropertySource(
       value = {"classpath:/test.properties"},
       ignoreResourceNotFound = false)

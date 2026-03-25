@@ -23,7 +23,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import java.util.Objects;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 
 public class UserConverter extends ClassicConverter {
 

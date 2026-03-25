@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.infra.postnummer.repository;
 
 import java.util.List;
-import se.inera.intyg.infra.integration.postnummer.model.Omrade;
+import se.inera.intyg.webcert.infra.postnummer.model.Omrade;
 
 public interface PostnummerRepository {
 

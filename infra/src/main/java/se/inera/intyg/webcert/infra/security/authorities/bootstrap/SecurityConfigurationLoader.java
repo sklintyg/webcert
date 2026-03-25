@@ -29,9 +29,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import se.inera.intyg.infra.security.authorities.AuthoritiesConfiguration;
-import se.inera.intyg.infra.security.authorities.AuthoritiesException;
-import se.inera.intyg.infra.security.authorities.FeaturesConfiguration;
+import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesConfiguration;
+import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.infra.security.authorities.FeaturesConfiguration;
 
 /**
  * The security configuration is read from two seperate YAML files which are injected into the

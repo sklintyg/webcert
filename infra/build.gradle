@@ -1,20 +1,104 @@
-plugins {
-    id 'java'
-}
-
-group = 'se.inera.intyg.webcert'
-version = '0-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-}
+// ─── Third-party deps used by the inlined infra classes ───────────────────────
+// BOM-managed versions (no explicit version needed):
+//   Spring, Jackson, Guava, Commons-IO, Commons-Lang, Logback, SLF4J, Prometheus,
+//   AspectJ, ShedLock, SnakeYAML, Jakarta APIs, CXF, Spring Session, Spring Security
+//
+// Explicit versions (not in BOM):
+//   org.apache.santuario:xmlsec, com.github.ua-parser:uap-java
+//
+// NOTE: External se.inera.intyg.infra:* deps are intentionally NOT declared here.
+// They remain in web/build.gradle and notification-sender/build.gradle as the compile
+// safety net until Step 3 updates this module's own imports to use the new
+// se.inera.intyg.webcert.infra.* packages. Once Step 3 is done, this module
+// compiles cleanly against only the deps below.
+// ──────────────────────────────────────────────────────────────────────────────
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
 
-test {
-    useJUnitPlatform()
+    // ── Jackson ──────────────────────────────────────────────────────────────
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.core:jackson-core"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
+    // ── Spring Framework ─────────────────────────────────────────────────────
+    implementation "org.springframework:spring-context"
+    implementation "org.springframework:spring-context-support"
+    implementation "org.springframework:spring-web"
+    implementation "org.springframework:spring-webmvc"
+
+    // ── Spring Security ───────────────────────────────────────────────────────
+    implementation "org.springframework.security:spring-security-core"
+    implementation "org.springframework.security:spring-security-web"
+    implementation "org.springframework.security:spring-security-config"
+
+    // ── Spring Session ────────────────────────────────────────────────────────
+    implementation "org.springframework.session:spring-session-core"
+
+    // ── Spring Data ───────────────────────────────────────────────────────────
+    implementation "org.springframework.data:spring-data-redis"
+
+    // ── AOP (monitoring annotations) ─────────────────────────────────────────
+    implementation "org.aspectj:aspectjweaver"
+
+    // ── Prometheus (monitoring) ───────────────────────────────────────────────
+    implementation "io.prometheus:simpleclient"
+    implementation "io.prometheus:simpleclient_common"
+    implementation "io.prometheus:simpleclient_hotspot"
+    implementation "io.prometheus:simpleclient_servlet_jakarta"
+
+    // ── User-Agent parsing (monitoring) ──────────────────────────────────────
+    implementation "com.github.ua-parser:uap-java:1.6.1"
+
+    // ── Common utilities ──────────────────────────────────────────────────────
+    implementation "com.google.guava:guava"
+    implementation "commons-io:commons-io"
+    implementation "org.apache.commons:commons-lang3"
+
+    // ── Logback / SLF4J ───────────────────────────────────────────────────────
+    implementation "ch.qos.logback:logback-classic"
+
+    // ── ShedLock (ia-integration banner job) ─────────────────────────────────
+    implementation "net.javacrumbs.shedlock:shedlock-spring"
+
+    // ── SnakeYAML (security-authorities config loader) ────────────────────────
+    implementation "org.yaml:snakeyaml"
+
+    // ── XML / XMLDSIG ─────────────────────────────────────────────────────────
+    implementation "org.apache.santuario:xmlsec:4.0.4"
+
+    // ── Apache CXF (SRS stubs use JAX-RS / CXF annotations) ─────────────────
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
+
+    // ── Jakarta APIs ─────────────────────────────────────────────────────────
+    compileOnly "jakarta.servlet:jakarta.servlet-api"
+    implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api"
+
+    // ── Intyg schemas ─────────────────────────────────────────────────────────
+    implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
+    implementation "se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:${srsSchemasVersion}"
+    implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
+
+    // ── TEMPORARY: external infra deps removed once their modules are inlined ─
+    // hsa-integration-api: removed in Step 6 (HSA types inlined as local DTOs)
+    implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
+    // common-redis-cache-core: removed in Step 8 (replaced with direct Redis config)
+    implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
+
+    // ── Lombok ────────────────────────────────────────────────────────────────
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+
+    // ── Test dependencies ─────────────────────────────────────────────────────
+    testImplementation "jakarta.servlet:jakarta.servlet-api"
+    testCompileOnly "org.projectlombok:lombok"
+    testAnnotationProcessor "org.projectlombok:lombok"
+    testImplementation "org.mockito:mockito-junit-jupiter"
+    testImplementation "org.springframework:spring-test"
+    testImplementation "org.springframework.boot:spring-boot-test"
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.apache.cxf:cxf-core"
 }

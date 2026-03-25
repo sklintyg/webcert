@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.postnummer.model.Omrade;
-import se.inera.intyg.infra.integration.postnummer.repository.PostnummerRepository;
-import se.inera.intyg.infra.integration.postnummer.repository.PostnummerRepositoryFactory;
+import se.inera.intyg.webcert.infra.postnummer.model.Omrade;
+import se.inera.intyg.webcert.infra.postnummer.repository.PostnummerRepository;
+import se.inera.intyg.webcert.infra.postnummer.repository.PostnummerRepositoryFactory;
 
 @Service
 public class PostnummerServiceImpl implements PostnummerService {

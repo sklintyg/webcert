@@ -22,8 +22,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import se.inera.intyg.infra.sjukfall.dto.RekoStatusDTO;
-import se.inera.intyg.infra.sjukfall.dto.Vardgivare;
 
 /**
  * @author Magnus Ekstrand on 2017-02-10.

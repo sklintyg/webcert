@@ -30,9 +30,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
-import se.inera.intyg.infra.integration.postnummer.model.Omrade;
-import se.inera.intyg.infra.integration.postnummer.repository.PostnummerRepository;
-import se.inera.intyg.infra.integration.postnummer.repository.PostnummerRepositoryImpl;
+import se.inera.intyg.webcert.infra.postnummer.model.Omrade;
 
 @Component
 public class PostnummerRepositoryFactory {

@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
-import se.inera.intyg.infra.xmldsig.model.CertificateInfo;
-import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
-import se.inera.intyg.infra.xmldsig.service.XMLDSigServiceImpl;
+import se.inera.intyg.webcert.infra.xmldsig.model.CertificateInfo;
+import se.inera.intyg.webcert.infra.xmldsig.model.ValidationResponse;
+import se.inera.intyg.webcert.infra.xmldsig.service.XMLDSigServiceImpl;
 
 @Disabled("Temporarily disabled 2023-11-18 while experimenting with jakart and kjava 17")
 class XMLDSigServiceImplTest {

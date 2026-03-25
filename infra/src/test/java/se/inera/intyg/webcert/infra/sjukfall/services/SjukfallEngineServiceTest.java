@@ -38,18 +38,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.sjukfall.dto.Formaga;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
-import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
-import se.inera.intyg.infra.sjukfall.dto.Lakare;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallIntyg;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallPatient;
-import se.inera.intyg.infra.sjukfall.dto.Vardenhet;
-import se.inera.intyg.infra.sjukfall.dto.Vardgivare;
-import se.inera.intyg.infra.sjukfall.engine.SjukfallIntygEnhetCreator;
-import se.inera.intyg.infra.sjukfall.engine.SjukfallIntygEnhetResolver;
-import se.inera.intyg.infra.sjukfall.testdata.SjukfallIntygGenerator;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Formaga;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygParametrar;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Lakare;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallEnhet;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallIntyg;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallPatient;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Vardenhet;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Vardgivare;
+import se.inera.intyg.webcert.infra.sjukfall.engine.SjukfallIntygEnhetCreator;
+import se.inera.intyg.webcert.infra.sjukfall.engine.SjukfallIntygEnhetResolver;
+import se.inera.intyg.webcert.infra.sjukfall.testdata.SjukfallIntygGenerator;
 
 /** Created by martin on 11/02/16. */
 @ExtendWith(MockitoExtension.class)

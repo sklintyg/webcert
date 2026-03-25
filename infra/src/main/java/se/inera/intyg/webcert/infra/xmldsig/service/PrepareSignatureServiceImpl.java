@@ -58,11 +58,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import se.inera.intyg.infra.xmldsig.exception.IntygXMLDSigException;
-import se.inera.intyg.infra.xmldsig.factory.PartialSignatureFactory;
-import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
-import se.inera.intyg.infra.xmldsig.model.TransformAndDigestResponse;
-import se.inera.intyg.infra.xmldsig.util.XsltUtil;
+import se.inera.intyg.webcert.infra.xmldsig.exception.IntygXMLDSigException;
+import se.inera.intyg.webcert.infra.xmldsig.factory.PartialSignatureFactory;
+import se.inera.intyg.webcert.infra.xmldsig.model.IntygXMLDSignature;
+import se.inera.intyg.webcert.infra.xmldsig.model.TransformAndDigestResponse;
+import se.inera.intyg.webcert.infra.xmldsig.util.XsltUtil;
 
 @Service
 public class PrepareSignatureServiceImpl implements PrepareSignatureService {

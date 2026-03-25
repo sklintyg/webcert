@@ -48,9 +48,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.monitoring.MonitoringConfiguration;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.monitoring.MonitoringConfiguration;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {MonitoringConfiguration.class})

@@ -4,7 +4,7 @@
 
     <include resource="logback-ocp-base.xml"/>
 
-    <logger name="se.inera.intyg.infra.monitoring.logging.LogbackTest" level="INFO">
+    <logger name="se.inera.intyg.webcert.infra.monitoring.logging.LogbackTest" level="INFO">
         <appender-ref ref="PROCESS" />
         <appender-ref ref="MONITORING" />
     </logger>

@@ -52,5 +52,5 @@
                   address="${srs.setownopinion.endpoint.url}">
     </jaxws:client>
 
-    <bean id="srsService" class="se.inera.intyg.infra.integration.srs.services.SrsInfraServiceImpl"/>
+    <bean id="srsService" class="se.inera.intyg.webcert.infra.srs.services.SrsInfraServiceImpl"/>
 </beans>

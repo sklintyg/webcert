@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.infra.srs.stub.repository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import se.inera.intyg.infra.integration.srs.stub.repository.model.Consent;
-import se.inera.intyg.infra.integration.srs.stub.repository.model.Individ;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.srs.stub.repository.model.Consent;
+import se.inera.intyg.webcert.infra.srs.stub.repository.model.Individ;
 
 public class ConsentRepository {
 

@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.infra.xmldsig.service;
 
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_ALIAS;
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_NAME;
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_PASSWORD;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_ALIAS;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_NAME;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_PASSWORD;
 
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;

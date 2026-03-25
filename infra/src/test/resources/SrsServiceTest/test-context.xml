@@ -21,13 +21,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
-    <bean class="se.inera.intyg.infra.integration.srs.stub.GetSrsInformationStub"/>
-    <bean class="se.inera.intyg.infra.integration.srs.stub.GetPredictionQuestionsStub"/>
-    <bean class="se.inera.intyg.infra.integration.srs.stub.GetConsentStub"/>
-    <bean class="se.inera.intyg.infra.integration.srs.stub.SetConsentStub"/>
-    <bean class="se.inera.intyg.infra.integration.srs.stub.GetDiagnosisCodesStub"/>
-    <bean class="se.inera.intyg.infra.integration.srs.stub.GetSRSInformationForDiagnosisStub"/>
-    <bean class="se.inera.intyg.infra.integration.srs.services.SrsInfraServiceImpl"/>
-    <bean class="se.inera.intyg.infra.integration.srs.stub.repository.ConsentRepository"/>
-    <bean class="se.inera.intyg.infra.integration.srs.stub.SetOwnOpinionStub"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetSrsInformationStub"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetPredictionQuestionsStub"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetConsentStub"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.stub.SetConsentStub"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetDiagnosisCodesStub"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetSRSInformationForDiagnosisStub"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.services.SrsInfraServiceImpl"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository"/>
+    <bean class="se.inera.intyg.webcert.infra.srs.stub.SetOwnOpinionStub"/>
 </beans>

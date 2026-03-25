@@ -26,10 +26,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import se.inera.intyg.infra.sjukfall.dto.Formaga;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
-import se.inera.intyg.infra.sjukfall.testdata.builders.FormagaT;
-import se.inera.intyg.infra.sjukfall.testdata.builders.IntygDataT;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Formaga;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.testdata.builders.FormagaT;
+import se.inera.intyg.webcert.infra.sjukfall.testdata.builders.IntygDataT;
 
 /** Created by Magnus Ekstrand on 2016-02-11. */
 public class SjukfallIntygLineMapper {

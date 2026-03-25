@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.infra.dynamiclink.repository;
 
 import java.util.Map;
-import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
+import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 
 /** Created by eriklupander on 2017-05-03. */
 public interface DynamicLinkRepository {

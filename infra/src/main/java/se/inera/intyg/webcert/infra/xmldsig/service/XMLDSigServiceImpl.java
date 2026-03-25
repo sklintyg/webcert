@@ -46,12 +46,11 @@ import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import se.inera.intyg.infra.xmldsig.factory.PartialSignatureFactory;
-import se.inera.intyg.infra.xmldsig.model.CertificateInfo;
-import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
-import se.inera.intyg.infra.xmldsig.model.ValidationResult;
-import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
-import se.inera.intyg.infra.xmldsig.util.X509KeySelector;
+import se.inera.intyg.webcert.infra.xmldsig.factory.PartialSignatureFactory;
+import se.inera.intyg.webcert.infra.xmldsig.model.CertificateInfo;
+import se.inera.intyg.webcert.infra.xmldsig.model.ValidationResponse;
+import se.inera.intyg.webcert.infra.xmldsig.model.ValidationResult;
+import se.inera.intyg.webcert.infra.xmldsig.util.X509KeySelector;
 
 /**
  * Provides Intyg-specific functionality for preparing XMLDSig signatures.

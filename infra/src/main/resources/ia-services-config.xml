@@ -26,21 +26,21 @@
        ">
 
   <beans profile="ia-stub">
-    <bean class="se.inera.intyg.infra.integration.ia.stub.IABannerServiceStub" />
+    <bean class="se.inera.intyg.webcert.infra.ia.stub.IABannerServiceStub" />
   </beans>
 
   <beans profile="!ia-stub">
-    <bean class="se.inera.intyg.infra.integration.ia.services.IABannerServiceImpl" />
+    <bean class="se.inera.intyg.webcert.infra.ia.services.IABannerServiceImpl" />
   </beans>
 
   <beans profile="qa,prod">
-    <bean class="se.inera.intyg.infra.integration.ia.cache.IaCacheConfiguration" />
+    <bean class="se.inera.intyg.webcert.infra.ia.cache.IaCacheConfiguration" />
   </beans>
 
   <beans profile="!prod">
     <beans profile="!qa">
       <beans profile="caching-enabled">
-        <bean class="se.inera.intyg.infra.integration.ia.cache.IaCacheConfiguration" />
+        <bean class="se.inera.intyg.webcert.infra.ia.cache.IaCacheConfiguration" />
       </beans>
     </beans>
   </beans>

@@ -28,8 +28,8 @@ import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.UserCredentials;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.util.HsaAttributeExtractor;
-import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
-import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 
 /**
  * Provides a number of default implementations for decorating a IntygUser principal with various

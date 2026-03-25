@@ -27,7 +27,7 @@
     <property name="LINE" value="--- %-40.40logger{39} : %replace(%m%rEx){'[\r\n]+', '&#x000D;'}%nopex%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+        <filter class="se.inera.intyg.webcert.infra.monitoring.logging.MarkerFilter">
             <markers>Monitoring,Validation</markers>
             <onMatch>DENY</onMatch>
             <onMismatch>ACCEPT</onMismatch>
@@ -38,18 +38,18 @@
     </appender>
 
     <appender name="MONITORING" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+        <filter class="se.inera.intyg.webcert.infra.monitoring.logging.MarkerFilter">
             <marker>Monitoring</marker>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-        <encoder class="se.inera.intyg.infra.monitoring.logging.UserPatternLayout">
+        <encoder class="se.inera.intyg.webcert.infra.monitoring.logging.UserPatternLayout">
             <pattern>${TIMESTAMP} [monitoring,${SESSION},${TRACE},%user] ${LINE}</pattern>
         </encoder>
     </appender>
 
     <appender name="VALIDATION" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+        <filter class="se.inera.intyg.webcert.infra.monitoring.logging.MarkerFilter">
             <marker>Validation</marker>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
@@ -60,7 +60,7 @@
     </appender>
 
     <appender name="PROCESS" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+        <filter class="se.inera.intyg.webcert.infra.monitoring.logging.MarkerFilter">
             <markers>Monitoring,Validation</markers>
             <onMatch>DENY</onMatch>
             <onMismatch>ACCEPT</onMismatch>
@@ -71,7 +71,7 @@
     </appender>
 
     <appender name="ACCESS" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+        <filter class="se.inera.intyg.webcert.infra.monitoring.logging.MarkerFilter">
             <markers>Monitoring,Validation</markers>
             <onMatch>DENY</onMatch>
             <onMismatch>ACCEPT</onMismatch>
@@ -82,7 +82,7 @@
     </appender>
 
     <appender name="FRONTEND" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+        <filter class="se.inera.intyg.webcert.infra.monitoring.logging.MarkerFilter">
             <markers>Monitoring,Validation</markers>
             <onMatch>DENY</onMatch>
             <onMismatch>ACCEPT</onMismatch>

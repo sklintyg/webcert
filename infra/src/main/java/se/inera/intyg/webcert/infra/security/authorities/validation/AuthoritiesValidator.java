@@ -19,9 +19,7 @@
 package se.inera.intyg.webcert.infra.security.authorities.validation;
 
 import java.util.Optional;
-import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecImpl;
-import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
-import se.inera.intyg.infra.security.common.model.UserDetails;
+import se.inera.intyg.webcert.infra.security.common.model.UserDetails;
 
 /**
  * Utility class that makes it easy to express and enforce authority constraint rules in backend

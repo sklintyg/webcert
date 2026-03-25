@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.infra.certificate.builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import se.inera.intyg.infra.certificate.dto.DiagnosedCertificate;
+import se.inera.intyg.webcert.infra.certificate.dto.DiagnosedCertificate;
 
 public class DiagnosedCertificateBuilder {
 

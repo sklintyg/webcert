@@ -23,11 +23,11 @@ import static java.lang.String.format;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.List;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.Title;
-import se.inera.intyg.infra.security.common.model.TitleCode;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.Title;
+import se.inera.intyg.webcert.infra.security.common.model.TitleCode;
 
 /** Created by Magnus Ekstrand on 18/11/15. */
 public final class AuthoritiesConfiguration {

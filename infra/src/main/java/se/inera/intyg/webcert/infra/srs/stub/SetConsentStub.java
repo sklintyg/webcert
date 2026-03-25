@@ -25,8 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentRequestType;
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponseType;
-import se.inera.intyg.infra.integration.srs.stub.repository.ConsentRepository;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)

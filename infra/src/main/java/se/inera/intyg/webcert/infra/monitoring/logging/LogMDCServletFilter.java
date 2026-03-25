@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import se.inera.intyg.infra.monitoring.logging.LogMDCHelper;
 
 /** Tags log records with trace id and session id. */
 public class LogMDCServletFilter implements Filter {

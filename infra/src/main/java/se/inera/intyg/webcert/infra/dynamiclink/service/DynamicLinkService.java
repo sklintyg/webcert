@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.infra.dynamiclink.service;
 
 import java.util.List;
 import java.util.Map;
-import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
+import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 
 /** Created by eriklupander on 2017-05-03. */
 public interface DynamicLinkService {

@@ -34,8 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
-import se.inera.intyg.infra.dynamiclink.repository.DynamicLinkRepository;
+import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 
 /** Created by eriklupander on 2017-05-03. */
 @Service

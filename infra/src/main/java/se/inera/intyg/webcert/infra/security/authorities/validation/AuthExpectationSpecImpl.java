@@ -23,13 +23,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import se.inera.intyg.infra.security.authorities.AuthoritiesException;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.UserDetails;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.UserDetails;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 
 /** Created by marced on 18/12/15. */
 public class AuthExpectationSpecImpl implements AuthExpectationSpecification {

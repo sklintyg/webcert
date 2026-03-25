@@ -26,9 +26,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import se.inera.intyg.infra.sjukfall.dto.Formaga;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallIntyg;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Formaga;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallIntyg;
 
 /** Created by marced on 19/02/16. */
 class SjukfallLangdCalculatorTest {

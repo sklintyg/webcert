@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.infra.sjukfall.testdata.builders;
 
-import se.inera.intyg.infra.sjukfall.dto.Lakare;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Lakare;
 
 /** Created by Magnus Ekstrand on 2016-02-10. */
 public final class LakareT {

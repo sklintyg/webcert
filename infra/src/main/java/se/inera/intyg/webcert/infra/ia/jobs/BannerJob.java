@@ -24,10 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import se.inera.intyg.infra.driftbannerdto.Application;
-import se.inera.intyg.infra.driftbannerdto.Banner;
-import se.inera.intyg.infra.integration.ia.services.IABannerService;
-import se.inera.intyg.infra.monitoring.logging.LogMDCHelper;
+import se.inera.intyg.webcert.infra.driftbannerdto.Application;
+import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
+import se.inera.intyg.webcert.infra.ia.services.IABannerService;
+import se.inera.intyg.webcert.infra.monitoring.logging.LogMDCHelper;
 
 public abstract class BannerJob {
 

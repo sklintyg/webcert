@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
-import se.inera.intyg.infra.security.common.model.Feature;
 
 public final class Pilot implements Serializable {
 

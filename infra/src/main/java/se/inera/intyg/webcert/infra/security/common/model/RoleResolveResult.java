@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.infra.security.common.model;
 
-import se.inera.intyg.infra.security.common.model.Role;
-
 public class RoleResolveResult {
 
   /** The resolved role. */

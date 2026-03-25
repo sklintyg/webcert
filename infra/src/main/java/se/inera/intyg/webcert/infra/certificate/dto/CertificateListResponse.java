@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.infra.certificate.dto;
 
 import java.util.List;
 import lombok.Data;
-import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 
 @Data
 public class CertificateListResponse {

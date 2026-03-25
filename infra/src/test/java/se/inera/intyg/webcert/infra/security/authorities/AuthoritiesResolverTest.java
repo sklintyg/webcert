@@ -34,11 +34,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.RoleResolveResult;
+import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
+import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.RoleResolveResult;
 
 @ExtendWith(MockitoExtension.class)
 class AuthoritiesResolverTest {

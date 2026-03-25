@@ -23,9 +23,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import se.inera.intyg.infra.logmessages.ActivityPurpose;
-import se.inera.intyg.infra.logmessages.Enhet;
-import se.inera.intyg.infra.logmessages.PdlResource;
 
 /**
  * Class for all log messages. Each project sending PDL log messsages should implement their own

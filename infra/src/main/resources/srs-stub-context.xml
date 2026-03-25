@@ -28,16 +28,16 @@
 
     profile="dev,wc-all-stubs,wc-srs-stub">
 
-    <jaxws:endpoint address="/stubs/getsrs" implementor="se.inera.intyg.infra.integration.srs.stub.GetSrsInformationStub"/>
-    <jaxws:endpoint address="/stubs/predictionquestions" implementor="se.inera.intyg.infra.integration.srs.stub.GetPredictionQuestionsStub"/>
-    <jaxws:endpoint address="/stubs/get-consent" implementor="se.inera.intyg.infra.integration.srs.stub.GetConsentStub"/>
-    <jaxws:endpoint address="/stubs/set-consent" implementor="se.inera.intyg.infra.integration.srs.stub.SetConsentStub"/>
-    <jaxws:endpoint address="/stubs/diagnosiscodes" implementor="se.inera.intyg.infra.integration.srs.stub.GetDiagnosisCodesStub"/>
-    <jaxws:endpoint address="/stubs/getsrsfordiagnosis" implementor="se.inera.intyg.infra.integration.srs.stub.GetSRSInformationForDiagnosisStub"/>
+    <jaxws:endpoint address="/stubs/getsrs" implementor="se.inera.intyg.webcert.infra.srs.stub.GetSrsInformationStub"/>
+    <jaxws:endpoint address="/stubs/predictionquestions" implementor="se.inera.intyg.webcert.infra.srs.stub.GetPredictionQuestionsStub"/>
+    <jaxws:endpoint address="/stubs/get-consent" implementor="se.inera.intyg.webcert.infra.srs.stub.GetConsentStub"/>
+    <jaxws:endpoint address="/stubs/set-consent" implementor="se.inera.intyg.webcert.infra.srs.stub.SetConsentStub"/>
+    <jaxws:endpoint address="/stubs/diagnosiscodes" implementor="se.inera.intyg.webcert.infra.srs.stub.GetDiagnosisCodesStub"/>
+    <jaxws:endpoint address="/stubs/getsrsfordiagnosis" implementor="se.inera.intyg.webcert.infra.srs.stub.GetSRSInformationForDiagnosisStub"/>
 
-    <bean id="consentRepository" class="se.inera.intyg.infra.integration.srs.stub.repository.ConsentRepository" />
+    <bean id="consentRepository" class="se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository" />
 
-    <bean id="statisticsImageStub" class="se.inera.intyg.infra.integration.srs.stub.StatisticsImageStub"/>
+    <bean id="statisticsImageStub" class="se.inera.intyg.webcert.infra.srs.stub.StatisticsImageStub"/>
 
     <jaxrs:server address="/stubs/srs-statistics-stub">
         <jaxrs:serviceBeans>

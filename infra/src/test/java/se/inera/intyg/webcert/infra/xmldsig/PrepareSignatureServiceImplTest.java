@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.infra.xmldsig;
 
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_ALIAS;
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_NAME;
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_PASSWORD;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_ALIAS;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_NAME;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_PASSWORD;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,10 +39,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.SignatureValueType;
-import se.inera.intyg.infra.xmldsig.factory.PartialSignatureFactory;
-import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
-import se.inera.intyg.infra.xmldsig.service.PrepareSignatureServiceImpl;
-import se.inera.intyg.infra.xmldsig.service.XMLDSigServiceImpl;
+import se.inera.intyg.webcert.infra.xmldsig.factory.PartialSignatureFactory;
+import se.inera.intyg.webcert.infra.xmldsig.model.IntygXMLDSignature;
+import se.inera.intyg.webcert.infra.xmldsig.service.PrepareSignatureServiceImpl;
+import se.inera.intyg.webcert.infra.xmldsig.service.XMLDSigServiceImpl;
 
 class PrepareSignatureServiceImplTest {
 

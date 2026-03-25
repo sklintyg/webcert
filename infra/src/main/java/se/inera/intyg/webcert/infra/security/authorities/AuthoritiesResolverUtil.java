@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
 
 /** Created by Magnus Ekstrand on 25/11/15. */
 public final class AuthoritiesResolverUtil {

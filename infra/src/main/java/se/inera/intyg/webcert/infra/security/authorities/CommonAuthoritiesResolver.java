@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.infra.security.authorities;
 
-import static se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil.toMap;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.TITLECODE_AT_LAKARE;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.TITLECODE_BT_LAKARE;
+import static se.inera.intyg.webcert.infra.security.authorities.AuthoritiesResolverUtil.toMap;
+import static se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants.TITLECODE_AT_LAKARE;
+import static se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants.TITLECODE_BT_LAKARE;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,18 +42,17 @@ import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.UserCredentials;
 import se.inera.intyg.infra.integration.hsatk.util.HsaAttributeExtractor;
-import se.inera.intyg.infra.security.authorities.AuthoritiesException;
-import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.Pilot;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.RoleResolveResult;
-import se.inera.intyg.infra.security.common.model.Title;
-import se.inera.intyg.infra.security.common.model.TitleCode;
+import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
+import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.Pilot;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.RoleResolveResult;
+import se.inera.intyg.webcert.infra.security.common.model.Title;
+import se.inera.intyg.webcert.infra.security.common.model.TitleCode;
 
 /** Created by Magnus Ekstrand on 20/11/15. */
 @Service

@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.infra.xmldsig;
 
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_ALIAS;
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_NAME;
-import static se.inera.intyg.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_PASSWORD;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_ALIAS;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_NAME;
+import static se.inera.intyg.webcert.infra.xmldsig.model.FakeSignatureConstants.FAKE_KEYSTORE_PASSWORD;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -71,7 +71,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import se.inera.intyg.infra.xmldsig.util.X509KeySelector;
+import se.inera.intyg.webcert.infra.xmldsig.util.X509KeySelector;
 
 @Disabled("Temporarily disabled 2023-11-18 while experimenting with jakart and kjava 17")
 class ReferenceSignatureTesters {

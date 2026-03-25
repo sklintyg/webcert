@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
-import se.inera.intyg.infra.driftbannerdto.Banner;
-import se.inera.intyg.infra.integration.ia.cache.IaCacheConfiguration;
+import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
+import se.inera.intyg.webcert.infra.ia.cache.IaCacheConfiguration;
 
 public class IAStubRestApi {
 

@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.infra.xmldsig.service;
 
 import org.w3._2000._09.xmldsig_.SignatureType;
-import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
-import se.inera.intyg.infra.xmldsig.model.TransformAndDigestResponse;
+import se.inera.intyg.webcert.infra.xmldsig.model.IntygXMLDSignature;
+import se.inera.intyg.webcert.infra.xmldsig.model.TransformAndDigestResponse;
 
 public interface PrepareSignatureService {
 

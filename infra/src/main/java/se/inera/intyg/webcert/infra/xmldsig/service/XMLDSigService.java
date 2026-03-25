@@ -20,8 +20,8 @@ package se.inera.intyg.webcert.infra.xmldsig.service;
 
 import java.util.Map;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
-import se.inera.intyg.infra.xmldsig.model.CertificateInfo;
-import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
+import se.inera.intyg.webcert.infra.xmldsig.model.CertificateInfo;
+import se.inera.intyg.webcert.infra.xmldsig.model.ValidationResponse;
 
 public interface XMLDSigService {
 

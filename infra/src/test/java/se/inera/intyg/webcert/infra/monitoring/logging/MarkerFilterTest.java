@@ -37,7 +37,7 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import se.inera.intyg.infra.monitoring.MonitoringConfiguration;
+import se.inera.intyg.webcert.infra.monitoring.MonitoringConfiguration;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {MonitoringConfiguration.class})

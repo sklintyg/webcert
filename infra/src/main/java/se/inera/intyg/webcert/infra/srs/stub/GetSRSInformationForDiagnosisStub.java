@@ -30,7 +30,6 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp;
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Diagnosstatistik;
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik;
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus;
-import se.inera.intyg.infra.integration.srs.stub.GetDiagnosisCodesStub;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 

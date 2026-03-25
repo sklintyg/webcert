@@ -25,11 +25,10 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
-import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallIntyg;
-import se.inera.intyg.infra.sjukfall.engine.SjukfallIntygEnhetCreator;
-import se.inera.intyg.infra.sjukfall.services.SjukfallEngineServiceException;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygParametrar;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallIntyg;
+import se.inera.intyg.webcert.infra.sjukfall.services.SjukfallEngineServiceException;
 
 /**
  * @author Magnus Ekstrand on 2017-02-10.

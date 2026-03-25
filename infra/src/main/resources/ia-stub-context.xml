@@ -25,7 +25,7 @@
   http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
   profile="dev,ia-stub">
 
-  <bean id="iaStubRestApi" class="se.inera.intyg.infra.integration.ia.stub.IAStubRestApi"/>
+  <bean id="iaStubRestApi" class="se.inera.intyg.webcert.infra.ia.stub.IAStubRestApi"/>
 
   <jaxrs:server address="/api/ia-api">
     <jaxrs:serviceBeans>

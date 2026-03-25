@@ -29,22 +29,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.sjukfall.dto.DiagnosKod;
-import se.inera.intyg.infra.sjukfall.dto.Formaga;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
-import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
-import se.inera.intyg.infra.sjukfall.dto.Lakare;
-import se.inera.intyg.infra.sjukfall.dto.Patient;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallIntyg;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallPatient;
-import se.inera.intyg.infra.sjukfall.dto.Vardenhet;
-import se.inera.intyg.infra.sjukfall.dto.Vardgivare;
-import se.inera.intyg.infra.sjukfall.engine.SjukfallIntygEnhetCreator;
-import se.inera.intyg.infra.sjukfall.engine.SjukfallIntygEnhetResolver;
-import se.inera.intyg.infra.sjukfall.engine.SjukfallIntygPatientCreator;
-import se.inera.intyg.infra.sjukfall.engine.SjukfallIntygPatientResolver;
-import se.inera.intyg.infra.sjukfall.engine.SjukfallLangdCalculator;
+import se.inera.intyg.webcert.infra.sjukfall.dto.DiagnosKod;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Formaga;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygParametrar;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Lakare;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Patient;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallEnhet;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallIntyg;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallPatient;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Vardenhet;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Vardgivare;
+import se.inera.intyg.webcert.infra.sjukfall.engine.SjukfallIntygEnhetCreator;
+import se.inera.intyg.webcert.infra.sjukfall.engine.SjukfallIntygEnhetResolver;
+import se.inera.intyg.webcert.infra.sjukfall.engine.SjukfallIntygPatientCreator;
+import se.inera.intyg.webcert.infra.sjukfall.engine.SjukfallIntygPatientResolver;
+import se.inera.intyg.webcert.infra.sjukfall.engine.SjukfallLangdCalculator;
 
 /**
  * @author Magnus Ekstrand on 2017-02-10.

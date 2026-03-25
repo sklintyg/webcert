@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.infra.ia.stub;
 
 import java.util.List;
-import se.inera.intyg.infra.driftbannerdto.Application;
-import se.inera.intyg.infra.driftbannerdto.Banner;
-import se.inera.intyg.infra.integration.ia.services.IABannerServiceImpl;
+import se.inera.intyg.webcert.infra.driftbannerdto.Application;
+import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
+import se.inera.intyg.webcert.infra.ia.services.IABannerServiceImpl;
 
 public class IABannerServiceStub extends IABannerServiceImpl {
 

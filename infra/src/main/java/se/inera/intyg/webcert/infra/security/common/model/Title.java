@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.infra.security.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import se.inera.intyg.infra.security.common.model.Role;
 
 /** Created by Magnus Ekstrand on 19/11/15. */
 public class Title {

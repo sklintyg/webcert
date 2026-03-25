@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.infra.security.common.model;
 
 import java.io.Serializable;
 import java.util.Map;
-import se.inera.intyg.infra.security.common.model.Role;
 
 /** Created by Magnus Ekstrand on 2015-08-27. */
 public interface UserDetails extends Serializable {

@@ -27,9 +27,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallIntyg;
-import se.inera.intyg.infra.sjukfall.testdata.SjukfallIntygGenerator;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallIntyg;
+import se.inera.intyg.webcert.infra.sjukfall.testdata.SjukfallIntygGenerator;
 
 /** Created by Magnus Ekstrand on 2016-02-16. */
 @ExtendWith(MockitoExtension.class)

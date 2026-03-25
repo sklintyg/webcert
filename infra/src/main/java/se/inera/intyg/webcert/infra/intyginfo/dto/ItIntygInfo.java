@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.infra.intyginfo.dto;
 
 import java.time.LocalDateTime;
-import se.inera.intyg.infra.intyginfo.dto.IntygInfo;
 
 public class ItIntygInfo extends IntygInfo {
 

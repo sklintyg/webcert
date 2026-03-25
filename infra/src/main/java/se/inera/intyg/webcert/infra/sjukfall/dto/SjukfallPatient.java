@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.infra.sjukfall.dto;
 
 import java.time.LocalDate;
 import java.util.List;
-import se.inera.intyg.infra.sjukfall.dto.Patient;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallIntyg;
 
 /**
  * @author Magnus Ekstrand on 2017-02-10.

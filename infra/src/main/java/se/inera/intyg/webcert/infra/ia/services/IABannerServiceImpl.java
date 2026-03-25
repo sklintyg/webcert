@@ -30,18 +30,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.infra.driftbannerdto.Application;
-import se.inera.intyg.infra.driftbannerdto.Banner;
-import se.inera.intyg.infra.integration.ia.cache.IaCacheConfiguration;
-import se.inera.intyg.infra.integration.ia.services.IABannerService;
+import se.inera.intyg.webcert.infra.driftbannerdto.Application;
+import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
+import se.inera.intyg.webcert.infra.ia.cache.IaCacheConfiguration;
 
 public class IABannerServiceImpl implements IABannerService {
 
   private static final Logger LOG = LoggerFactory.getLogger(IABannerServiceImpl.class);
 
   @Autowired
-  @Qualifier("iaRestTemplate")
-  private RestTemplate restTemplate;
+  @Qualifier("iaRestTemplate") private RestTemplate restTemplate;
 
   @Autowired private Cache iaCache;
 

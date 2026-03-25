@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.infra.monitoring;
 
 import java.util.List;
 import org.springframework.stereotype.Controller;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 
 @Controller
 public class TestController {

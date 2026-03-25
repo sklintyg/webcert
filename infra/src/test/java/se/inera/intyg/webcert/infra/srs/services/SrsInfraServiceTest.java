@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.infra.services;
+package se.inera.intyg.webcert.infra.srs.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -47,16 +47,16 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
-import se.inera.intyg.infra.integration.srs.model.SrsForDiagnosisResponse;
-import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
-import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
-import se.inera.intyg.infra.integration.srs.model.SrsResponse;
-import se.inera.intyg.infra.integration.srs.stub.GetPredictionQuestionsStub;
-import se.inera.intyg.infra.integration.srs.stub.repository.ConsentRepository;
-import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.srs.model.SrsCertificate;
+import se.inera.intyg.webcert.infra.srs.model.SrsForDiagnosisResponse;
+import se.inera.intyg.webcert.infra.srs.model.SrsQuestion;
+import se.inera.intyg.webcert.infra.srs.model.SrsQuestionResponse;
+import se.inera.intyg.webcert.infra.srs.model.SrsResponse;
+import se.inera.intyg.webcert.infra.srs.stub.GetPredictionQuestionsStub;
+import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
 @SpringJUnitConfig(locations = "classpath:SrsServiceTest/test-context.xml")

@@ -32,8 +32,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import se.inera.intyg.infra.monitoring.MonitoringConfiguration;
-import se.inera.intyg.infra.monitoring.TestController;
+import se.inera.intyg.webcert.infra.monitoring.MonitoringConfiguration;
+import se.inera.intyg.webcert.infra.monitoring.TestController;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {MonitoringConfiguration.class, TestController.class})

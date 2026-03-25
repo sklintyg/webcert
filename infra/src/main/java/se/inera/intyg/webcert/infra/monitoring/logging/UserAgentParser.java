@@ -22,7 +22,6 @@ import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import se.inera.intyg.infra.monitoring.logging.UserAgentInfo;
 import ua_parser.Client;
 import ua_parser.OS;
 import ua_parser.Parser;

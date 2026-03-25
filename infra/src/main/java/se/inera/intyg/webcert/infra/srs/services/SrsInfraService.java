@@ -23,10 +23,14 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstat
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktionstatus;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Utdatafilter;
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.EgenBedomningRiskType;
-import se.inera.intyg.infra.integration.srs.model.*;
-import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.srs.model.SrsCertificate;
+import se.inera.intyg.webcert.infra.srs.model.SrsForDiagnosisResponse;
+import se.inera.intyg.webcert.infra.srs.model.SrsQuestion;
+import se.inera.intyg.webcert.infra.srs.model.SrsQuestionResponse;
+import se.inera.intyg.webcert.infra.srs.model.SrsResponse;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
 public interface SrsInfraService {

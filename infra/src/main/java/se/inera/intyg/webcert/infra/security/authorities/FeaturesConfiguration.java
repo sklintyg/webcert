@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.infra.security.authorities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.Pilot;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.Pilot;
 
 public final class FeaturesConfiguration {
 

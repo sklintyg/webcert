@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
 
 /** Created by Magnus Ekstrand on 2016-02-10. */
 public class SjukfallIntygGenerator {

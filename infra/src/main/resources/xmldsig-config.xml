@@ -23,14 +23,14 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
 
-  <bean id="xmldSigService" class="se.inera.intyg.infra.xmldsig.service.XMLDSigServiceImpl" />
-  <bean id="prepareSignatureService" class="se.inera.intyg.infra.xmldsig.service.PrepareSignatureServiceImpl" />
+  <bean id="xmldSigService" class="se.inera.intyg.webcert.infra.xmldsig.service.XMLDSigServiceImpl" />
+  <bean id="prepareSignatureService" class="se.inera.intyg.webcert.infra.xmldsig.service.PrepareSignatureServiceImpl" />
 
   <beans profile="!prod">
-    <bean id="fakeSignatureService" class="se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl" />
+    <bean id="fakeSignatureService" class="se.inera.intyg.webcert.infra.xmldsig.service.FakeSignatureServiceImpl" />
   </beans>
 
   <beans profile="prod">
-    <bean id="fakeSignatureService" class="se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceBlocked" />
+    <bean id="fakeSignatureService" class="se.inera.intyg.webcert.infra.xmldsig.service.FakeSignatureServiceBlocked" />
   </beans>
 </beans>

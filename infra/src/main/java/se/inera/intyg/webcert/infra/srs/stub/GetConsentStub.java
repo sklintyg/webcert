@@ -27,9 +27,9 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentReq
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
-import se.inera.intyg.infra.integration.srs.stub.repository.ConsentRepository;
-import se.inera.intyg.infra.integration.srs.stub.repository.model.Consent;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
+import se.inera.intyg.webcert.infra.srs.stub.repository.model.Consent;
 
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
 public class GetConsentStub implements GetConsentResponderInterface {

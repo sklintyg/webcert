@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
 
 @ExtendWith(MockitoExtension.class)
 public class FeaturesHelperTest {

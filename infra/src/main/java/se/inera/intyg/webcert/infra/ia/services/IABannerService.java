@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.infra.ia.services;
 
 import java.util.List;
-import se.inera.intyg.infra.driftbannerdto.Application;
-import se.inera.intyg.infra.driftbannerdto.Banner;
+import se.inera.intyg.webcert.infra.driftbannerdto.Application;
+import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
 
 public interface IABannerService {
 

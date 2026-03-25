@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.infra.monitoring.logging;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static se.inera.intyg.infra.monitoring.logging.UserAgentParser.NO_USER_AGENT_STRING;
-import static se.inera.intyg.infra.monitoring.logging.UserAgentParser.UNKNOWN_OS;
+import static se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser.NO_USER_AGENT_STRING;
+import static se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser.UNKNOWN_OS;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

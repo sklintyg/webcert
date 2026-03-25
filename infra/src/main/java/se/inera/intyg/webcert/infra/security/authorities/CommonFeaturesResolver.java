@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.infra.security.authorities;
 
-import static se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil.toMap;
+import static se.inera.intyg.webcert.infra.security.authorities.AuthoritiesResolverUtil.toMap;
 
 import java.util.List;
 import java.util.Map;
@@ -27,8 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
-import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
 
 /**
  * @Author Joy Zomborszki on 2018-06-18.

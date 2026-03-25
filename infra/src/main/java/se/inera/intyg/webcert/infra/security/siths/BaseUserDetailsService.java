@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.infra.security.siths;
 
-import static se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil.toMap;
+import static se.inera.intyg.webcert.infra.security.authorities.AuthoritiesResolverUtil.toMap;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -32,15 +32,14 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.UserCredentials;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.UserOrigin;
-import se.inera.intyg.infra.security.common.service.AuthenticationLogger;
-import se.inera.intyg.infra.security.exception.HsaServiceException;
-import se.inera.intyg.infra.security.exception.MissingHsaEmployeeInformation;
-import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
-import se.inera.intyg.infra.security.siths.DefaultUserDetailsDecorator;
+import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.UserOrigin;
+import se.inera.intyg.webcert.infra.security.common.service.AuthenticationLogger;
+import se.inera.intyg.webcert.infra.security.exception.HsaServiceException;
+import se.inera.intyg.webcert.infra.security.exception.MissingHsaEmployeeInformation;
+import se.inera.intyg.webcert.infra.security.exception.MissingMedarbetaruppdragException;
 
 @Slf4j
 public abstract class BaseUserDetailsService {

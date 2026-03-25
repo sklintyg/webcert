@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.integration.postnummer.model.Omrade;
+import se.inera.intyg.webcert.infra.postnummer.model.Omrade;
 
 @ExtendWith(MockitoExtension.class)
 class PostnummerRepositoryFactoryTest {

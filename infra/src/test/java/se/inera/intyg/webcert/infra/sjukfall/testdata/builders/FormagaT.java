@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.infra.sjukfall.testdata.builders;
 
 import java.time.LocalDate;
-import se.inera.intyg.infra.sjukfall.dto.Formaga;
+import se.inera.intyg.webcert.infra.sjukfall.dto.Formaga;
 
 /** Created by Magnus Ekstrand on 2016-02-10. */
 public final class FormagaT {
