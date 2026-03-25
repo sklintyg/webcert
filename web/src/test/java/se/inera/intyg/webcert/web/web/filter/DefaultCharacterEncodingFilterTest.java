@@ -27,18 +27,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * These tests check if {@link DefaultCharacterEncodingFilter} correctly sets encoding to requests.
  * When no encoding is set the filter should set request character encoding to UTF-8.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class DefaultCharacterEncodingFilterTest {
+@ExtendWith(MockitoExtension.class)
+class DefaultCharacterEncodingFilterTest {
 
   @Mock private HttpServletRequest httpServletRequest;
 
@@ -49,14 +49,14 @@ public class DefaultCharacterEncodingFilterTest {
   @InjectMocks private DefaultCharacterEncodingFilter testee = new DefaultCharacterEncodingFilter();
 
   @Test
-  public void testNoEncodingSet() throws ServletException, IOException {
+  void testNoEncodingSet() throws ServletException, IOException {
     testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
     verify(httpServletRequest, times(1)).setCharacterEncoding("UTF-8");
   }
 
   @Test
-  public void testEncodingSet() throws IOException, ServletException {
+  void testEncodingSet() throws IOException, ServletException {
     when(httpServletRequest.getCharacterEncoding()).thenReturn("UTF-8");
 
     testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);

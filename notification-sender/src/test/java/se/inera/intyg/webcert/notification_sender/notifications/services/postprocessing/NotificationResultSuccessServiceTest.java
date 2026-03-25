@@ -18,18 +18,18 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
@@ -39,8 +39,8 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationResultSuccessServiceTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationResultSuccessServiceTest {
 
   @Mock private HandelseRepository handelseRepository;
 
@@ -54,7 +54,7 @@ public class NotificationResultSuccessServiceTest {
   private static final Integer ATTEMPTED_DELIVERIES = 4;
 
   @Test
-  public void shallMakeMonitorLogOnProcessingOfNewNotification() {
+  void shallMakeMonitorLogOnProcessingOfNewNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     final var captureEventId = ArgumentCaptor.forClass(Long.class);
@@ -94,7 +94,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallMakeMonitorLogOnProcessingRedeliveredNotification() {
+  void shallMakeMonitorLogOnProcessingRedeliveredNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
     final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
@@ -137,7 +137,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallMonitorLogOneAttemptedDeliveryWhenRedeliveryHasNullSendAttempts() {
+  void shallMonitorLogOneAttemptedDeliveryWhenRedeliveryHasNullSendAttempts() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
     notificationRedelivery.setAttemptedDeliveries(null);
@@ -168,7 +168,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallCreateNewEventOnProcessResult() {
+  void shallCreateNewEventOnProcessResult() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     doReturn(eventAsSaved(notificationResultMessage.getEvent()))
@@ -184,7 +184,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallUpdateEventOnProcessResult() {
+  void shallUpdateEventOnProcessResult() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
     final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
@@ -209,7 +209,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallRemoveNotificationRedeliveryOnProcessResult() {
+  void shallRemoveNotificationRedeliveryOnProcessResult() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
     final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());

@@ -78,7 +78,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
   @Mock protected FeaturesHelper featuresHelper;
 
   //    @Before
-  public void setup() throws ModuleNotFoundException {
+  void setup() throws ModuleNotFoundException {
     when(authoritiesHelper.isFeatureActive(
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, FK7263.toLowerCase()))
         .thenReturn(true);

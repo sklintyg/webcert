@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.event;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,11 +37,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
@@ -62,8 +62,8 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CertificateEventServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class CertificateEventServiceImplTest {
 
   private static final String UTKAST_CERTIFICATE_ID = "1234";
   private static final String INTYG_CERTIFICATE_ID = "5678";
@@ -83,7 +83,7 @@ public class CertificateEventServiceImplTest {
   @InjectMocks private CertificateEventServiceImpl eventService;
 
   @Test
-  public void testGetEvents() {
+  void testGetEvents() {
     List<CertificateEvent> list = new ArrayList<>();
     list.add(getCertificateEvent(UTKAST_CERTIFICATE_ID));
 
@@ -96,7 +96,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGetEventsWithAdditionalMessages() {
+  void testGetEventsWithAdditionalMessages() {
     LocalDateTime earlierEventTimestamp = LocalDateTime.parse("2018-01-01T00:00:00");
     LocalDateTime latestEventTimestamp = LocalDateTime.parse("2019-01-01T00:00:00");
     LocalDateTime newMessageTimestamp = LocalDateTime.parse("2020-01-01T00:00:00");
@@ -136,30 +136,30 @@ public class CertificateEventServiceImplTest {
     verify(eventRepository).findByCertificateId(UTKAST_CERTIFICATE_ID);
     verify(intygService).fetchIntygDataForInternalUse(UTKAST_CERTIFICATE_ID, true);
     assertTrue(
-        "Expects a NYFRFM event",
         eventList.stream()
             .anyMatch(
                 certificateEvent ->
                     certificateEvent.getEventCode() == EventCode.NYFRFM
-                        && earlierEventTimestamp.equals(certificateEvent.getTimestamp())));
+                        && earlierEventTimestamp.equals(certificateEvent.getTimestamp())),
+        "Expects a NYFRFM event");
     assertTrue(
-        "Expects a KOMPLBEGARAN event",
         eventList.stream()
             .anyMatch(
                 certificateEvent ->
                     certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN
-                        && latestEventTimestamp.equals(certificateEvent.getTimestamp())));
+                        && latestEventTimestamp.equals(certificateEvent.getTimestamp())),
+        "Expects a KOMPLBEGARAN event");
     assertTrue(
-        "Expects a PAMINNELSE event",
         eventList.stream()
             .anyMatch(
                 certificateEvent ->
                     certificateEvent.getEventCode() == EventCode.PAMINNELSE
-                        && newMessageTimestamp.equals(certificateEvent.getTimestamp())));
+                        && newMessageTimestamp.equals(certificateEvent.getTimestamp())),
+        "Expects a PAMINNELSE event");
   }
 
   @Test
-  public void testGenerateEventsForUtkast() {
+  void testGenerateEventsForUtkast() {
 
     Utkast utkast = getCertificate();
 
@@ -178,7 +178,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateEventsForUtkastWithArende() {
+  void testGenerateEventsForUtkastWithArende() {
 
     Utkast utkast = getCertificate();
     utkast.setSignatur(new Signatur());
@@ -201,7 +201,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateEventsForIntyg() {
+  void testGenerateEventsForIntyg() {
 
     IntygContentHolder intyg = getIntygContentHolder();
 
@@ -221,7 +221,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateSentEventForIntygSentFromOutsideWebcert() {
+  void testGenerateSentEventForIntygSentFromOutsideWebcert() {
 
     final var intyg = getIntygContentHolder();
 
@@ -246,7 +246,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testDontGenerateSentEventForIntygSentFromWebcert() {
+  void testDontGenerateSentEventForIntygSentFromWebcert() {
 
     final var intyg = getIntygContentHolder();
 
@@ -276,7 +276,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateEventsForIntygWithArende() {
+  void testGenerateEventsForIntygWithArende() {
 
     IntygContentHolder intyg = getIntygContentHolder();
     Arende arende = getArende(INTYG_CERTIFICATE_ID);
@@ -299,7 +299,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateNoEventsForIntygWithArende() {
+  void testGenerateNoEventsForIntygWithArende() {
     final var timestampWithMilliseconds = LocalDateTime.parse("2021-01-01T00:00:00.750");
     final var timestampWithoutMilliseconds = LocalDateTime.parse("2021-01-01T00:00:01");
 
@@ -322,14 +322,14 @@ public class CertificateEventServiceImplTest {
 
     assertFalse(result.isEmpty());
     assertTrue(
-        "Expects a KOMPLBEGARAN event",
         result.stream()
             .anyMatch(
-                certificateEvent -> certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN));
+                certificateEvent -> certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN),
+        "Expects a KOMPLBEGARAN event");
   }
 
   @Test
-  public void testNoEventsGenerated() {
+  void testNoEventsGenerated() {
 
     IntygContentHolder intyg = getIntygContentHolderGeneratingNoEvents();
 
@@ -346,7 +346,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testSaveCertificateEvent() {
+  void testSaveCertificateEvent() {
     CertificateEvent certificateEvent = getCertificateEvent(UTKAST_CERTIFICATE_ID);
     eventService.createCertificateEvent(
         certificateEvent.getCertificateId(), HSA_ID, EventCode.SKAPAT, MESSAGE);

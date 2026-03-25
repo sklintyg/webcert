@@ -18,33 +18,33 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class UtkastRepositoryCustomTest {
+class UtkastRepositoryCustomTest {
 
   @Autowired private UtkastRepository utkastRepository;
 
@@ -52,7 +52,7 @@ public class UtkastRepositoryCustomTest {
 
   /** Testing several @Query methods in same test to save setup/teardown time. */
   @Test
-  public void testFindRelations() {
+  void testFindRelations() {
     // Create two hierarchies
     String intygIdParent = "intyg-1";
     String intygIdChild1 = "intyg-1-1";
@@ -158,7 +158,7 @@ public class UtkastRepositoryCustomTest {
   }
 
   @Test
-  public void testRemoveRelationsToDraft() {
+  void testRemoveRelationsToDraft() {
     // Create two hierarchies
     String intygIdParent = "intyg-1";
     String intygIdChild1 = "intyg-1-1";
@@ -198,7 +198,7 @@ public class UtkastRepositoryCustomTest {
   }
 
   @Test
-  public void testFindDraftsByNotLockedOrSignedAndSkapadBefore() {
+  void testFindDraftsByNotLockedOrSignedAndSkapadBefore() {
     // Create two hierarchies
     String intygId_signed = "intyg-1";
     String intygId_locked = "intyg-2";

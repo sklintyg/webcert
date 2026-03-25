@@ -80,7 +80,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
-public class IntygToCertificateConverterImplTest {
+class IntygToCertificateConverterImplTest {
 
   public static final String CERTIFICATE_ID = "certificateId";
   public static final String CERTIFICATE_TYPE = "certificateType";

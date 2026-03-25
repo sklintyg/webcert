@@ -18,23 +18,23 @@
  */
 package se.inera.intyg.webcert.web.service.referens;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.persistence.referens.model.Referens;
 import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ReferensServiceTest {
+@ExtendWith(MockitoExtension.class)
+class ReferensServiceTest {
 
   private String intygsId = "intygsId";
   private String referens = "referens";
@@ -44,36 +44,36 @@ public class ReferensServiceTest {
 
   @InjectMocks private ReferensService referensService = new ReferensServiceImpl();
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     ref.setReferens(referens);
     ref.setIntygsId(intygsId);
   }
 
   @Test
-  public void saveReferens() {
+  void saveReferens() {
     referensService.saveReferens(intygsId, referens);
     verify(repo).findByIntygId(intygsId);
     verify(repo).save(ref);
   }
 
   @Test
-  public void getReferensForIntygsId() {
+  void getReferensForIntygsId() {
     when(repo.findByIntygId(intygsId)).thenReturn(ref);
     String output = referensService.getReferensForIntygsId(intygsId);
     assertEquals(referens, output);
   }
 
   @Test
-  public void getReferensForIntygsIdReturnsNullWhenDoesntExist() {
+  void getReferensForIntygsIdReturnsNullWhenDoesntExist() {
     when(repo.findByIntygId(intygsId)).thenReturn(null);
     String output = referensService.getReferensForIntygsId(intygsId);
     assertNull(output);
   }
 
   @Test
-  public void referensExists() {
+  void referensExists() {
     when(repo.findByIntygId(intygsId)).thenReturn(ref);
-    assertTrue("Referens not found", referensService.referensExists(intygsId));
+    assertTrue(referensService.referensExists(intygsId), "Referens not found");
   }
 }

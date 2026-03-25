@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.intyginfo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -33,12 +33,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -68,8 +70,9 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 
-@RunWith(MockitoJUnitRunner.class)
-public class IntygInfoServiceTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class IntygInfoServiceTest {
 
   @Mock private UtkastRepository utkastRepository;
   @Mock private ArendeService arendeService;
@@ -81,13 +84,13 @@ public class IntygInfoServiceTest {
 
   @InjectMocks private IntygInfoService testee;
 
-  @Before
-  public void setup() throws ModuleNotFoundException {
+  @BeforeEach
+  void setup() throws ModuleNotFoundException {
     when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
   }
 
   @Test
-  public void notFound() {
+  void notFound() {
     when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
     when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
     when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString()))
@@ -101,7 +104,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void onlyHandelser() {
+  void onlyHandelser() {
     String intygId = "onlyHandelser";
     when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
     when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
@@ -123,7 +126,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void onlyArende() {
+  void onlyArende() {
     String intygId = "onlyArende";
     when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
     when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString()))
@@ -150,7 +153,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void onlyFragaSvar() {
+  void onlyFragaSvar() {
     String intygId = "onlyFragasvar";
     when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
     when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
@@ -177,7 +180,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void existingUtkastLocked() throws IOException, ModuleException {
+  void existingUtkastLocked() throws IOException, ModuleException {
     // Arrange
     String intygId = "existingIntyg";
     Utkast utkast = createUtkast(intygId, UtkastStatus.DRAFT_LOCKED);
@@ -220,7 +223,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void existingUtkastSigned() throws IOException, ModuleException, ModuleNotFoundException {
+  void existingUtkastSigned() throws IOException, ModuleException, ModuleNotFoundException {
     // Arrange
     String intygId = "existingIntyg";
     Utkast utkast = createUtkast(intygId, UtkastStatus.SIGNED);

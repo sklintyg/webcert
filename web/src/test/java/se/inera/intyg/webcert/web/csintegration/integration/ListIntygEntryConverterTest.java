@@ -136,7 +136,7 @@ class ListIntygEntryConverterTest {
     certificate.getMetadata().setSent(true);
 
     final var response = listIntygEntryConverter.convert(certificate);
-    assertEquals("SENT", response.getStatus());
+    assertEquals(response.getStatus(), "SENT");
   }
 
   @Test
@@ -157,7 +157,7 @@ class ListIntygEntryConverterTest {
     certificate.getMetadata().setSent(true);
 
     final var response = listIntygEntryConverter.convert(certificate);
-    assertEquals("CANCELLED", response.getStatus());
+    assertEquals(response.getStatus(), "CANCELLED");
   }
 
   @Test

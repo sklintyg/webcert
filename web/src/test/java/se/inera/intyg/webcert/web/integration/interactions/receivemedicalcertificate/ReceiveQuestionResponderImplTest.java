@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,12 +32,12 @@ import jakarta.xml.bind.Unmarshaller;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import javax.xml.transform.stream.StreamSource;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
@@ -57,8 +57,8 @@ import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ReceiveQuestionResponderImplTest {
+@ExtendWith(MockitoExtension.class)
+class ReceiveQuestionResponderImplTest {
 
   private static final Long QUESTION_ID = 1234L;
 
@@ -78,7 +78,7 @@ public class ReceiveQuestionResponderImplTest {
   @InjectMocks private ReceiveQuestionResponderImpl receiveQuestionResponder;
 
   @Test
-  public void testReceiveQuestionOK() {
+  void testReceiveQuestionOK() {
     FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
     when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
 
@@ -97,7 +97,7 @@ public class ReceiveQuestionResponderImplTest {
   }
 
   @Test
-  public void testReceiveQuestionValidationError() {
+  void testReceiveQuestionValidationError() {
     ReceiveMedicalCertificateQuestionType request =
         createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
     request.getQuestion().setAmne(null); // invalid
@@ -110,7 +110,7 @@ public class ReceiveQuestionResponderImplTest {
     assertNotNull(response);
     assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
     assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
-    assertEquals("Amne är felaktigt", response.getResult().getErrorText());
+    assertEquals(response.getResult().getErrorText(), "Amne är felaktigt");
   }
 
   private ReceiveMedicalCertificateQuestionType createRequest(String questionFile) {

@@ -18,20 +18,21 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.listcertificatesforcarewithqa;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -50,8 +51,8 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ListCertificatesForCareWithQAResponderImplTest {
+@ExtendWith(MockitoExtension.class)
+class ListCertificatesForCareWithQAResponderImplTest {
 
   private static final String CERTIFICATE_ID_FROM_CS = "certificateIdFromCS";
   private static final String CERTIFICATE_ID_FROM_WC = "certificateIdFromWC";
@@ -68,7 +69,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
   @InjectMocks private ListCertificatesForCareWithQAResponderImpl responder;
 
   @Test
-  public void testListCertificatesForCareWithQA() {
+  void testListCertificatesForCareWithQA() {
     final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
     final var deadline = LocalDate.of(2017, 1, 1);
     Handelse handelse = new Handelse();
@@ -139,7 +140,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
   }
 
   @Test
-  public void testListCertificatesForCareWithQAFromCertificateService() {
+  void testListCertificatesForCareWithQAFromCertificateService() {
     final var expectedListItem = new ListItem();
     final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
     final var deadline = LocalDate.of(2017, 1, 1);
@@ -173,7 +174,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
   }
 
   @Test
-  public void testListCertificatesForCareWithQAWithMergedResult() {
+  void testListCertificatesForCareWithQAWithMergedResult() {
     final var expectedListItem = new ListItem();
     final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
     final var deadline = LocalDate.of(2017, 1, 1);
@@ -265,18 +266,22 @@ public class ListCertificatesForCareWithQAResponderImplTest {
     return request;
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void missingBothEnhetAndVardgivareShouldThrow() {
-    ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-    PersonId personId = new PersonId();
-    personId.setExtension("191212121212");
-    request.setPersonId(personId);
+  @Test
+  void missingBothEnhetAndVardgivareShouldThrow() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+          PersonId personId = new PersonId();
+          personId.setExtension("191212121212");
+          request.setPersonId(personId);
 
-    responder.listCertificatesForCareWithQA("logicalAdress", request);
+          responder.listCertificatesForCareWithQA("logicalAdress", request);
+        });
   }
 
   @Test
-  public void bothEnhetAndVardgivareExistingShouldNotThrow() {
+  void bothEnhetAndVardgivareExistingShouldNotThrow() {
     ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
     PersonId personId = new PersonId();
     personId.setExtension("191212121212");
@@ -291,16 +296,20 @@ public class ListCertificatesForCareWithQAResponderImplTest {
     assertDoesNotThrow(() -> responder.listCertificatesForCareWithQA("logicalAdress", request));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void missingPersonnummerShouldThrow() {
-    ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-    HsaId hsaId = new HsaId();
-    hsaId.setExtension("enhetId");
-    request.getEnhetsId().add(hsaId);
-    HsaId vardgivarId = new HsaId();
-    hsaId.setExtension("vardgivarId");
-    request.setVardgivarId(vardgivarId);
+  @Test
+  void missingPersonnummerShouldThrow() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+          HsaId hsaId = new HsaId();
+          hsaId.setExtension("enhetId");
+          request.getEnhetsId().add(hsaId);
+          HsaId vardgivarId = new HsaId();
+          hsaId.setExtension("vardgivarId");
+          request.setVardgivarId(vardgivarId);
 
-    responder.listCertificatesForCareWithQA("logicalAdress", request);
+          responder.listCertificatesForCareWithQA("logicalAdress", request);
+        });
   }
 }

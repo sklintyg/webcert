@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.integration.fmb.services;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 
@@ -29,15 +29,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
@@ -56,7 +58,9 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 
-public class FmbServiceImplTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class FmbServiceImplTest {
 
   @Mock private FmbRepository fmbRepository;
   @Mock private DiagnosInformationRepository diagnosInformationRepository;
@@ -67,13 +71,8 @@ public class FmbServiceImplTest {
 
   @InjectMocks private FmbServiceImpl fmbServiceImpl;
 
-  @Before
-  public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
-  }
-
   @Test
-  public void testGoldenMaster() throws Exception {
+  void testGoldenMaster() throws Exception {
     // Given
     ObjectMapper mapper = new ObjectMapper();
     final URL typfallJson = getClass().getResource("/TypfallStubResponse.json");
@@ -100,7 +99,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testThatDotsInIcd10CodesAreRemoved() throws Exception {
+  void testThatDotsInIcd10CodesAreRemoved() throws Exception {
     // Given
     //
     // Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation("", "J22.2", "J22.4"));
@@ -121,7 +120,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testUpdateDiagnosInfoUpdatesCorrectlyOnEmptyDb() throws Exception {
+  void testUpdateDiagnosInfoUpdatesCorrectlyOnEmptyDb() throws Exception {
     // Given
     final String beskrivning = "test";
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
@@ -144,7 +143,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testUpdateDiagnosInfoUpdatesCorrectlyOnNonEmptyDb() throws Exception {
+  void testUpdateDiagnosInfoUpdatesCorrectlyOnNonEmptyDb() throws Exception {
     // Given
     final String beskrivning = "test";
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
@@ -167,7 +166,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testUpdateDiagnosInfoWillNotBeDoneIfTypfallCouldNotBeFetched() throws Exception {
+  void testUpdateDiagnosInfoWillNotBeDoneIfTypfallCouldNotBeFetched() throws Exception {
     // Given
     final String beskrivning = "test";
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
@@ -183,7 +182,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testUpdateDiagnosInfoWillNotBeDoneIfFmdxInfoCouldNotBeFetched() throws Exception {
+  void testUpdateDiagnosInfoWillNotBeDoneIfFmdxInfoCouldNotBeFetched() throws Exception {
     // Given
     final String beskrivning = "test";
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(null);

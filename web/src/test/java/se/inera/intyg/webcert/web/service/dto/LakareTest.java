@@ -18,18 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class LakareTest {
+class LakareTest {
 
   @Test
-  public void testMerge() {
+  void testMerge() {
     Lakare lakare1 = new Lakare("1", "1");
     Lakare lakare2 = new Lakare("2", "2");
     Lakare lakare3 = new Lakare("3", "3");

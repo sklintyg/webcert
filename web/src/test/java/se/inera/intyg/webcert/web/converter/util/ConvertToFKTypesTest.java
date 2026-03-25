@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import iso.v21090.dt.v1.II;
 import java.time.LocalDateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
@@ -35,24 +35,24 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 
-public class ConvertToFKTypesTest {
+class ConvertToFKTypesTest {
 
   @Test
-  public void testToIIRootNull() {
+  void testToIIRootNull() {
     II res = ConvertToFKTypes.toII(null, "ext");
 
     assertNull(res);
   }
 
   @Test
-  public void testToIIExtNull() {
+  void testToIIExtNull() {
     II res = ConvertToFKTypes.toII("root", null);
 
     assertNull(res);
   }
 
   @Test
-  public void testToII() {
+  void testToII() {
     final String root = "root";
     final String ext = "ext";
     II res = ConvertToFKTypes.toII(root, ext);
@@ -63,7 +63,7 @@ public class ConvertToFKTypesTest {
   }
 
   @Test
-  public void testToAmneTyp() {
+  void testToAmneTyp() {
     assertEquals(
         Amnetyp.ARBETSTIDSFORLAGGNING, ConvertToFKTypes.toAmneTyp(Amne.ARBETSTIDSFORLAGGNING));
     assertEquals(Amnetyp.AVSTAMNINGSMOTE, ConvertToFKTypes.toAmneTyp(Amne.AVSTAMNINGSMOTE));
@@ -79,7 +79,7 @@ public class ConvertToFKTypesTest {
   }
 
   @Test
-  public void testToInnehallType() {
+  void testToInnehallType() {
     final String text = "text";
     LocalDateTime signeringsdatum = LocalDateTime.now();
     InnehallType res = ConvertToFKTypes.toInnehallType(text, signeringsdatum);
@@ -90,7 +90,7 @@ public class ConvertToFKTypesTest {
   }
 
   @Test
-  public void testToInnehallTypeSigneringsdatumNull() {
+  void testToInnehallTypeSigneringsdatumNull() {
     final String text = "text";
     InnehallType res = ConvertToFKTypes.toInnehallType(text, null);
 
@@ -100,7 +100,7 @@ public class ConvertToFKTypesTest {
   }
 
   @Test
-  public void testToLakarUtlatande() {
+  void testToLakarUtlatande() {
     final String intygsId = "intygsId";
     final String patientNamn = "fullständigt namn";
     final String patientId = "19121212-1212";
@@ -115,13 +115,13 @@ public class ConvertToFKTypesTest {
     assertNotNull(res);
     assertEquals(intygsId, res.getLakarutlatandeId());
     assertNull(res.getPatient().getFullstandigtNamn());
-    assertEquals("1.2.752.129.2.1.3.1", res.getPatient().getPersonId().getRoot());
+    assertEquals(res.getPatient().getPersonId().getRoot(), "1.2.752.129.2.1.3.1");
     assertEquals(patientId, res.getPatient().getPersonId().getExtension());
     assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
   }
 
   @Test
-  public void testToLakarUtlatandeSamordningsnummer() {
+  void testToLakarUtlatandeSamordningsnummer() {
     final String intygsId = "intygsId";
     final String patientNamn = "fullständigt namn";
     final String patientId = "999999-9999";
@@ -138,20 +138,20 @@ public class ConvertToFKTypesTest {
     assertNotNull(res);
     assertEquals(intygsId, res.getLakarutlatandeId());
     assertNull(res.getPatient().getFullstandigtNamn());
-    assertEquals("1.2.752.129.2.1.3.3", res.getPatient().getPersonId().getRoot());
-    assertEquals("19999999-9999", res.getPatient().getPersonId().getExtension());
+    assertEquals(res.getPatient().getPersonId().getRoot(), "1.2.752.129.2.1.3.3");
+    assertEquals(res.getPatient().getPersonId().getExtension(), "19999999-9999");
     assertEquals(signeringsdatum, res.getSigneringsTidpunkt());
   }
 
   @Test
-  public void testToLakarUtlatandeIntygsReferensNull() {
+  void testToLakarUtlatandeIntygsReferensNull() {
     LakarutlatandeEnkelType res = ConvertToFKTypes.toLakarUtlatande(null);
 
     assertNull(res);
   }
 
   @Test
-  public void testToVardAdresseringsType() {
+  void testToVardAdresseringsType() {
     final String enhetsId = "enhetsId";
     final String enhetsnamn = "enhetsnamn";
     final String arbetsplatskod = "arbetsplatskod";
@@ -180,21 +180,21 @@ public class ConvertToFKTypesTest {
     VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(vp);
 
     assertNotNull(res);
-    assertEquals("1.2.752.129.2.1.4.1", res.getHosPersonal().getEnhet().getEnhetsId().getRoot());
+    assertEquals(res.getHosPersonal().getEnhet().getEnhetsId().getRoot(), "1.2.752.129.2.1.4.1");
     assertEquals(enhetsId, res.getHosPersonal().getEnhet().getEnhetsId().getExtension());
     assertEquals(enhetsnamn, res.getHosPersonal().getEnhet().getEnhetsnamn());
-    assertEquals("1.2.752.29.4.71", res.getHosPersonal().getEnhet().getArbetsplatskod().getRoot());
+    assertEquals(res.getHosPersonal().getEnhet().getArbetsplatskod().getRoot(), "1.2.752.29.4.71");
     assertEquals(
         arbetsplatskod, res.getHosPersonal().getEnhet().getArbetsplatskod().getExtension());
     assertEquals(
-        "1.2.752.129.2.1.4.1",
-        res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getRoot());
+        res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getRoot(),
+        "1.2.752.129.2.1.4.1");
     assertEquals(
         vardgivarid,
         res.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
     assertEquals(vardgivarnamn, res.getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
     assertEquals(fullstandigtNamn, res.getHosPersonal().getFullstandigtNamn());
-    assertEquals("1.2.752.129.2.1.4.1", res.getHosPersonal().getPersonalId().getRoot());
+    assertEquals(res.getHosPersonal().getPersonalId().getRoot(), "1.2.752.129.2.1.4.1");
     assertEquals(personalId, res.getHosPersonal().getPersonalId().getExtension());
     assertEquals(forskrivarkod, res.getHosPersonal().getForskrivarkod());
     assertEquals(epost, res.getHosPersonal().getEnhet().getEpost());
@@ -204,7 +204,7 @@ public class ConvertToFKTypesTest {
   }
 
   @Test
-  public void testToVardAdresseringsTypeNoArbetsplatskod() {
+  void testToVardAdresseringsTypeNoArbetsplatskod() {
     final String enhetsId = "enhetsId";
     final String enhetsnamn = "enhetsnamn";
     final String vardgivarid = "vardgivarid";
@@ -225,7 +225,7 @@ public class ConvertToFKTypesTest {
   }
 
   @Test
-  public void testToVardAdresseringsTypeNoVardgivarid() {
+  void testToVardAdresseringsTypeNoVardgivarid() {
     final String enhetsId = "enhetsId";
     final String enhetsnamn = "enhetsnamn";
     final String vardgivarnamn = "vardgivarnamn";
@@ -244,14 +244,14 @@ public class ConvertToFKTypesTest {
   }
 
   @Test
-  public void testToVardAdresseringsTypeVardpersonNull() {
+  void testToVardAdresseringsTypeVardpersonNull() {
     VardAdresseringsType res = ConvertToFKTypes.toVardAdresseringsType(null);
 
     assertNull(res);
   }
 
   @Test
-  public void testToEnhetTypeVardpersonNull() {
+  void testToEnhetTypeVardpersonNull() {
     EnhetType res = ConvertToFKTypes.toEnhetType(null);
 
     assertNull(res);

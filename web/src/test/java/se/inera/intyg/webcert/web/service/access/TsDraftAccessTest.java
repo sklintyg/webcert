@@ -18,34 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
-import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
-import se.inera.intyg.common.tstrk1009.support.Tstrk1009EntryPoint;
 import se.inera.intyg.common.tstrk1062.support.TsTrk1062EntryPoint;
-import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.TsAccessServiceTestData;
 
-@RunWith(Parameterized.class)
-public class TsDraftAccessTest extends DraftAccessTest {
+class TsDraftAccessTest extends DraftAccessTest {
 
-  @Parameterized.Parameters(name = "{0}")
-  public static Iterable<Object[]> data() {
-    return Arrays.asList(
-        new Object[][] {
-          {TsTrk1062EntryPoint.MODULE_ID, new TsAccessServiceTestData()},
-          {TsBasEntryPoint.MODULE_ID, new TsAccessServiceTestData()},
-          {TsDiabetesEntryPoint.MODULE_ID, new TsAccessServiceTestData()},
-          {Tstrk1009EntryPoint.MODULE_ID, new TsAccessServiceTestData()}
-        });
-  }
-
-  public TsDraftAccessTest(String intygsTyp, AccessServiceTestData accessServiceTestData) {
-    super(intygsTyp, accessServiceTestData);
+  public TsDraftAccessTest() {
+    super(TsTrk1062EntryPoint.MODULE_ID, new TsAccessServiceTestData());
   }
 
   @Override

@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 
 @ExtendWith(MockitoExtension.class)
-public class SendCertificateFacadeServiceImplTest {
+class SendCertificateFacadeServiceImplTest {
 
   @Mock private IntygService intygService;
   @Mock private CertificateReceiverService certificateReceiverService;

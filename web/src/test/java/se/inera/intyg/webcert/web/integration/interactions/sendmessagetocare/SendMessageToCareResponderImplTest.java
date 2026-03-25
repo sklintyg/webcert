@@ -18,17 +18,17 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.sendmessagetocare;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -47,8 +47,8 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SendMessageToCareResponderImplTest {
+@ExtendWith(MockitoExtension.class)
+class SendMessageToCareResponderImplTest {
 
   private static final String DEFAULT_LOGICAL_ADDRESS = "webcert";
   private static final String DEFAULT_INTYG_ID = "intyg-1";
@@ -62,7 +62,7 @@ public class SendMessageToCareResponderImplTest {
   @InjectMocks private SendMessageToCareResponderImpl responder;
 
   @Test
-  public void testSendRequestToService() throws WebCertServiceException {
+  void testSendRequestToService() throws WebCertServiceException {
     final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
     final var resultType = new ResultType();
     resultType.setResultCode(ResultCodeType.OK);
@@ -76,7 +76,7 @@ public class SendMessageToCareResponderImplTest {
   }
 
   @Test
-  public void testSendRequestToServiceFailed() throws WebCertServiceException {
+  void testSendRequestToServiceFailed() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(
             new WebCertServiceException(
@@ -89,7 +89,7 @@ public class SendMessageToCareResponderImplTest {
   }
 
   @Test
-  public void testSendRequestToServiceFailedMessageAlreadyExists() throws WebCertServiceException {
+  void testSendRequestToServiceFailedMessageAlreadyExists() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(
             new WebCertServiceException(
@@ -102,7 +102,7 @@ public class SendMessageToCareResponderImplTest {
   }
 
   @Test
-  public void testSendRequestToServiceFailedNotSigned() throws WebCertServiceException {
+  void testSendRequestToServiceFailedNotSigned() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(
             new WebCertServiceException(
@@ -115,7 +115,7 @@ public class SendMessageToCareResponderImplTest {
   }
 
   @Test
-  public void testSendRequestToServiceFailedNotFound() throws WebCertServiceException {
+  void testSendRequestToServiceFailedNotFound() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(
             new WebCertServiceException(
@@ -128,8 +128,7 @@ public class SendMessageToCareResponderImplTest {
   }
 
   @Test
-  public void testSendRequestToServiceFailedExternalServiceProblem()
-      throws WebCertServiceException {
+  void testSendRequestToServiceFailedExternalServiceProblem() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(
             new WebCertServiceException(
@@ -142,7 +141,7 @@ public class SendMessageToCareResponderImplTest {
   }
 
   @Test
-  public void testSendRequestToServiceFailedWithRuntimeException() throws WebCertServiceException {
+  void testSendRequestToServiceFailedWithRuntimeException() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(new IllegalStateException("Exception message"));
     SendMessageToCareResponseType response =
@@ -153,8 +152,7 @@ public class SendMessageToCareResponderImplTest {
   }
 
   @Test
-  public void testSendRequestToServiceFailedWithBadRequestException()
-      throws WebCertServiceException {
+  void testSendRequestToServiceFailedWithBadRequestException() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Exception message"));
     SendMessageToCareResponseType response =
@@ -165,8 +163,7 @@ public class SendMessageToCareResponderImplTest {
   }
 
   @Test
-  public void testSendRequestToServiceFailedWithHttpClientException()
-      throws WebCertServiceException {
+  void testSendRequestToServiceFailedWithHttpClientException() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(
             new HttpClientErrorException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, "Exception message"));

@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.certificate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,12 +32,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -54,8 +54,8 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
-public class CertificateServiceTest {
+@ExtendWith(MockitoExtension.class)
+class CertificateServiceTest {
 
   @Mock private WebCertUserService webCertUserService;
   @Mock private LogService logService;
@@ -69,7 +69,7 @@ public class CertificateServiceTest {
   private final String CERTIFICATE_TYPE = "lisjp";
 
   @Test
-  public void errorGettingCertificatesFromIT() {
+  void errorGettingCertificatesFromIT() {
     Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
     var certificateListResponse = certificateService.listCertificatesForDoctor(null);
     verify(logService, times(0)).logReadLevelTwo(any(), any());
@@ -77,7 +77,7 @@ public class CertificateServiceTest {
   }
 
   @Test
-  public void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
+  void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
     Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
     var certificateListResponse = certificateService.listCertificatesForDoctor(null);
     verify(logService, times(0)).logReadLevelTwo(any(), any());
@@ -85,22 +85,22 @@ public class CertificateServiceTest {
   }
 
   @Test
-  public void decoratePatientWithAllFlags() {
+  void decoratePatientWithAllFlags() {
     testDecorateWithPatientFlags(true, false);
   }
 
   @Test
-  public void decoratePatientWithNoFlags() {
+  void decoratePatientWithNoFlags() {
     testDecorateWithPatientFlags(false, false);
   }
 
   @Test
-  public void decoratePatientWithOnlyUndefinedSekretessStatus() {
+  void decoratePatientWithOnlyUndefinedSekretessStatus() {
     testDecorateWithPatientFlags(false, true);
   }
 
   @Test
-  public void decoratePatientWithUndefinedSekretessStatus() {
+  void decoratePatientWithUndefinedSekretessStatus() {
     testDecorateWithPatientFlags(true, true);
   }
 

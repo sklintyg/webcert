@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.collect.Iterables;
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -34,7 +34,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-public class NotificationStoreTest {
+class NotificationStoreTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationStoreTest.class);
 
@@ -44,7 +44,7 @@ public class NotificationStoreTest {
           "intyg10");
 
   @Test
-  public void testPurge() {
+  void testPurge() {
 
     NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl();
     notificationStore.initForTesting();

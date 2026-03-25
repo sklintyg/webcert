@@ -107,8 +107,8 @@ class SrsCertificateExtensionChainServiceTest {
     final var result = srsCertificateExtensionChainService.get(CERTIFICATE_ID);
 
     assertEquals(2, result.size());
-    assertEquals("base", result.get(0).getCertificateId());
-    assertEquals("extended", result.get(1).getCertificateId());
+    assertEquals(result.get(0).getCertificateId(), "base");
+    assertEquals(result.get(1).getCertificateId(), "extended");
   }
 
   @Test

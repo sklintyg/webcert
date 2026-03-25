@@ -64,7 +64,7 @@ class ResourceLinkListHelperImplTest {
 
   WebCertUser user = null;
 
-  public void setup(boolean renew, boolean read) {
+  void setup(boolean renew, boolean read) {
     final var relations =
         CertificateRelations.builder().children(new CertificateRelation[0]).build();
 
@@ -87,7 +87,7 @@ class ResourceLinkListHelperImplTest {
   class RenewCertificate {
 
     @Test
-    public void shouldIncludeRenewResourceLinkIfActionLinkExists() {
+    void shouldIncludeRenewResourceLinkIfActionLinkExists() {
       setup(true, false);
       final var entry =
           setupListIntygEntry(
@@ -98,7 +98,7 @@ class ResourceLinkListHelperImplTest {
     }
 
     @Test
-    public void shouldNotIncludeRenewResourceLinkIfActionLinkDoesNotExist() {
+    void shouldNotIncludeRenewResourceLinkIfActionLinkDoesNotExist() {
       setup(true, false);
       final var entry = setupListIntygEntry(CertificateListItemStatus.SIGNED.toString(), null);
       final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.SIGNED);
@@ -106,7 +106,7 @@ class ResourceLinkListHelperImplTest {
     }
 
     @Test
-    public void shouldNotIncludeRenewResourceLinkIfDraft() {
+    void shouldNotIncludeRenewResourceLinkIfDraft() {
       setup(true, false);
       final var entry =
           setupListIntygEntry(
@@ -133,7 +133,7 @@ class ResourceLinkListHelperImplTest {
   class ForwardCertificate {
 
     @Test
-    public void shouldIncludeForwardResourceLinkIfActionLinkExists() {
+    void shouldIncludeForwardResourceLinkIfActionLinkExists() {
       setup(false, false);
       final var entry =
           setupListIntygEntry(
@@ -146,7 +146,7 @@ class ResourceLinkListHelperImplTest {
     }
 
     @Test
-    public void shouldNotIncludeForwardResourceLinkIfActionLinkDoesNotExist() {
+    void shouldNotIncludeForwardResourceLinkIfActionLinkDoesNotExist() {
       setup(false, false);
       final var entry = setupListIntygEntry(CertificateListItemStatus.INCOMPLETE.toString(), null);
       final var resourceLinks =
@@ -155,7 +155,7 @@ class ResourceLinkListHelperImplTest {
     }
 
     @Test
-    public void shouldNotIncludeForwardResourceLinkIfLockedDraft() {
+    void shouldNotIncludeForwardResourceLinkIfLockedDraft() {
       setup(false, false);
       final var entry =
           setupListIntygEntry(
@@ -165,7 +165,7 @@ class ResourceLinkListHelperImplTest {
     }
 
     @Test
-    public void shouldNotIncludeForwardResourceLinkIfSigned() {
+    void shouldNotIncludeForwardResourceLinkIfSigned() {
       setup(false, false);
       final var entry =
           setupListIntygEntry(
@@ -175,7 +175,7 @@ class ResourceLinkListHelperImplTest {
     }
 
     @Test
-    public void shouldIncludeForwardResourceLinkIfCompleteDraft() {
+    void shouldIncludeForwardResourceLinkIfCompleteDraft() {
       setup(false, false);
       final var entry =
           setupListIntygEntry(
@@ -187,7 +187,7 @@ class ResourceLinkListHelperImplTest {
     }
 
     @Test
-    public void shouldNotIncludeForwardResourceLinkIfPrivateDoctor() {
+    void shouldNotIncludeForwardResourceLinkIfPrivateDoctor() {
       setup(false, false);
       final var entry =
           setupListIntygEntry(
@@ -207,7 +207,7 @@ class ResourceLinkListHelperImplTest {
   class ReadCertificate {
 
     @Test
-    public void shouldIncludeReadResourceLinkIfActionLinkExists() {
+    void shouldIncludeReadResourceLinkIfActionLinkExists() {
       setup(false, false);
       final var entry =
           setupListIntygEntry(
@@ -219,7 +219,7 @@ class ResourceLinkListHelperImplTest {
     }
 
     @Test
-    public void shouldNotIncludeForwardResourceLinkIfActionLinkDoesNotExist() {
+    void shouldNotIncludeForwardResourceLinkIfActionLinkDoesNotExist() {
       setup(false, false);
       final var entry = setupListIntygEntry(CertificateListItemStatus.INCOMPLETE.toString(), null);
       final var resourceLinks =

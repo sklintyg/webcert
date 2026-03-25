@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.temporal.ChronoUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
-public class NotificationRedeliveryStrategyStandardTest {
+class NotificationRedeliveryStrategyStandardTest {
 
   private static final String INVALID_STRATEGY_TEMPLATE = "30#1:m,";
   private static final String VALID_STRATEGY_TEMPLATE = "5#11:s,22:m,33:h,44:d";
@@ -33,14 +33,14 @@ public class NotificationRedeliveryStrategyStandardTest {
       NotificationRedeliveryStrategyEnum.STANDARD;
 
   @Test
-  public void shouldThrowIllegalArgumentExceptionWhenInitializedWithInvalidTemplate() {
+  void shouldThrowIllegalArgumentExceptionWhenInitializedWithInvalidTemplate() {
     assertThrows(
         IllegalArgumentException.class,
         () -> new NotificationRedeliveryStrategyStandard(INVALID_STRATEGY_TEMPLATE));
   }
 
   @Test
-  public void shouldReturnCorrectStrategyIdentifyingEnum() {
+  void shouldReturnCorrectStrategyIdentifyingEnum() {
     final NotificationRedeliveryStrategyStandard standardStrategy =
         new NotificationRedeliveryStrategyStandard(VALID_STRATEGY_TEMPLATE);
     final var strategyNameEnum = standardStrategy.getName();
@@ -49,7 +49,7 @@ public class NotificationRedeliveryStrategyStandardTest {
   }
 
   @Test
-  public void shouldReturnCorrectValueMaxDeliveries() {
+  void shouldReturnCorrectValueMaxDeliveries() {
     final NotificationRedeliveryStrategyStandard standardStrategy =
         new NotificationRedeliveryStrategyStandard(VALID_STRATEGY_TEMPLATE);
     final var maxDeliveries = standardStrategy.getMaxDeliveries();
@@ -58,7 +58,7 @@ public class NotificationRedeliveryStrategyStandardTest {
   }
 
   @Test
-  public void shouldReturnCorrectTimeValuesForAttemptedDeliveriesLowerThanScheduleSize() {
+  void shouldReturnCorrectTimeValuesForAttemptedDeliveriesLowerThanScheduleSize() {
     final NotificationRedeliveryStrategyStandard standardStrategy =
         new NotificationRedeliveryStrategyStandard(VALID_STRATEGY_TEMPLATE);
 
@@ -74,7 +74,7 @@ public class NotificationRedeliveryStrategyStandardTest {
   }
 
   @Test
-  public void shouldReturnCorrectTimeUnitForAttemptedDeliveriesLowerThanScheduleSize() {
+  void shouldReturnCorrectTimeUnitForAttemptedDeliveriesLowerThanScheduleSize() {
     final NotificationRedeliveryStrategyStandard standardStrategy =
         new NotificationRedeliveryStrategyStandard(VALID_STRATEGY_TEMPLATE);
 
@@ -90,7 +90,7 @@ public class NotificationRedeliveryStrategyStandardTest {
   }
 
   @Test
-  public void shouldReturnLastTimeValueForAttemptedDeliveriesHigherThanScheduleSize() {
+  void shouldReturnLastTimeValueForAttemptedDeliveriesHigherThanScheduleSize() {
     final NotificationRedeliveryStrategyStandard standardStrategy =
         new NotificationRedeliveryStrategyStandard(VALID_STRATEGY_TEMPLATE);
 
@@ -102,7 +102,7 @@ public class NotificationRedeliveryStrategyStandardTest {
   }
 
   @Test
-  public void shouldReturnCorrectTimeUnitForAttemptedDeliveriesHigherThanScheduleSize() {
+  void shouldReturnCorrectTimeUnitForAttemptedDeliveriesHigherThanScheduleSize() {
     final NotificationRedeliveryStrategyStandard standardStrategy =
         new NotificationRedeliveryStrategyStandard(VALID_STRATEGY_TEMPLATE);
 

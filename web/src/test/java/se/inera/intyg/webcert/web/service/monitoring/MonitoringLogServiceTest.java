@@ -28,14 +28,14 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
@@ -44,8 +44,8 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
  *
  * @author npet
  */
-@RunWith(MockitoJUnitRunner.class)
-public class MonitoringLogServiceTest {
+@ExtendWith(MockitoExtension.class)
+class MonitoringLogServiceTest {
 
   @Mock private Appender<ILoggingEvent> mockAppender;
 
@@ -53,20 +53,20 @@ public class MonitoringLogServiceTest {
 
   private final MonitoringLogService monitoringLogService = new MonitoringLogServiceImpl();
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     logger.addAppender(mockAppender);
   }
 
-  @After
-  public void teardown() {
+  @AfterEach
+  void teardown() {
     final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     logger.detachAppender(mockAppender);
   }
 
   @Test
-  public void testThatMonitoringLogProducesLogMessage() {
+  void testThatMonitoringLogProducesLogMessage() {
     monitoringLogService.logUserLogin(
         "ABC123", "user-role", "role-type-name", "test-scheme", UserOriginType.NORMAL.name());
 

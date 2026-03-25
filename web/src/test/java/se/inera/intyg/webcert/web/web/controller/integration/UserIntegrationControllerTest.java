@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,12 +29,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import org.junit.Test;
 import org.junit.jupiter.api.Nested;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
@@ -42,8 +42,8 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@RunWith(MockitoJUnitRunner.class)
-public class UserIntegrationControllerTest {
+@ExtendWith(MockitoExtension.class)
+class UserIntegrationControllerTest {
 
   private static final String GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION.name();
   private static final String NON_GRANTED_ORIGIN = UserOriginType.NORMAL.name();
@@ -55,7 +55,7 @@ public class UserIntegrationControllerTest {
   UserIntegrationController userIntegrationController = new UserIntegrationController();
 
   @Test
-  public void testLogoutNowWithDjupintegration() {
+  void testLogoutNowWithDjupintegration() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
 
@@ -73,7 +73,7 @@ public class UserIntegrationControllerTest {
   }
 
   @Test
-  public void testLogoutNowWithoutDjupintegration() {
+  void testLogoutNowWithoutDjupintegration() {
     HttpServletRequest request = mock(HttpServletRequest.class);
 
     WebCertUser webCertUser = new WebCertUser();
@@ -90,33 +90,33 @@ public class UserIntegrationControllerTest {
   }
 
   @Nested
-  public class GrantedRoleTest {
+  class GrantedRoleTest {
 
     @Test
-    public void shouldReturnLakare() {
+    void shouldReturnLakare() {
       assertEquals(
           AuthoritiesConstants.ROLE_LAKARE, userIntegrationController.getGrantedRoles()[0]);
     }
 
     @Test
-    public void shouldReturnAdmin() {
+    void shouldReturnAdmin() {
       assertEquals(AuthoritiesConstants.ROLE_ADMIN, userIntegrationController.getGrantedRoles()[1]);
     }
 
     @Test
-    public void shouldReturnTandlakare() {
+    void shouldReturnTandlakare() {
       assertEquals(
           AuthoritiesConstants.ROLE_TANDLAKARE, userIntegrationController.getGrantedRoles()[2]);
     }
 
     @Test
-    public void shouldReturnBarnmorska() {
+    void shouldReturnBarnmorska() {
       assertEquals(
           AuthoritiesConstants.ROLE_BARNMORSKA, userIntegrationController.getGrantedRoles()[3]);
     }
 
     @Test
-    public void shouldReturnSjukskoterska() {
+    void shouldReturnSjukskoterska() {
       assertEquals(
           AuthoritiesConstants.ROLE_SJUKSKOTERSKA, userIntegrationController.getGrantedRoles()[4]);
     }

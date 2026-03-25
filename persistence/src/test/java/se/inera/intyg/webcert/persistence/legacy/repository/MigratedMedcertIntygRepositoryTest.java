@@ -18,30 +18,30 @@
  */
 package se.inera.intyg.webcert.persistence.legacy.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDateTime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class MigratedMedcertIntygRepositoryTest {
+class MigratedMedcertIntygRepositoryTest {
 
   @Autowired private MigreratMedcertIntygRepository medcertIntygRepository;
 
   @Test
-  public void testSaveMigreratIntyg() {
+  void testSaveMigreratIntyg() {
 
     MigreratMedcertIntyg intyg1 = new MigreratMedcertIntyg();
 
@@ -60,8 +60,8 @@ public class MigratedMedcertIntygRepositoryTest {
 
     MigreratMedcertIntyg intyg2 = medcertIntygRepository.findById("intyg1").orElse(null);
     assertNotNull(intyg2);
-    assertEquals("intyg1", intyg2.getIntygsId());
-    assertEquals("Test Testsson", intyg2.getPatientNamn());
+    assertEquals(intyg2.getIntygsId(), "intyg1");
+    assertEquals(intyg2.getPatientNamn(), "Test Testsson");
     assertEquals(LocalDateTime.parse("2013-03-01T12:34:56"), intyg2.getSkickad());
     assertNotNull(intyg2.getIntygsData());
   }

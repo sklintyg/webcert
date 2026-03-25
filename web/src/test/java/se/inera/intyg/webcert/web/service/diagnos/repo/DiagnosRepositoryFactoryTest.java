@@ -60,7 +60,7 @@ class DiagnosRepositoryFactoryTest {
   @Autowired private DiagnosRepositoryFactory factory;
 
   @BeforeEach
-  public void setup() {}
+  void setup() {}
 
   @Test
   void testCreateRepository() {
@@ -129,8 +129,8 @@ class DiagnosRepositoryFactoryTest {
     Diagnos res =
         factory.createDiagnosFromString(REALLY_MESSY_LINE, false, StandardCharsets.ISO_8859_1);
     assertNotNull(res);
-    assertEquals("A050", res.getKod());
-    assertEquals("Matförgiftning orsakad av stafylokocker", res.getBeskrivning());
+    assertEquals(res.getKod(), "A050");
+    assertEquals(res.getBeskrivning(), "Matförgiftning orsakad av stafylokocker");
   }
 
   @Test
@@ -138,8 +138,8 @@ class DiagnosRepositoryFactoryTest {
 
     Diagnos res = factory.createDiagnosFromString(LINE_WITH_BOM, true, StandardCharsets.ISO_8859_1);
     assertNotNull(res);
-    assertEquals("A050", res.getKod());
-    assertEquals("Matförgiftning orsakad av stafylokocker", res.getBeskrivning());
+    assertEquals(res.getKod(), "A050");
+    assertEquals(res.getBeskrivning(), "Matförgiftning orsakad av stafylokocker");
   }
 
   @Test
@@ -151,7 +151,7 @@ class DiagnosRepositoryFactoryTest {
 
     Diagnos res = factory.createDiagnosFromString(tsvContent, true, StandardCharsets.UTF_8);
     assertNotNull(res);
-    assertEquals("A022", res.getKod());
-    assertEquals("Lokaliserade salmonellainfektioner", res.getBeskrivning());
+    assertEquals(res.getKod(), "A022");
+    assertEquals(res.getBeskrivning(), "Lokaliserade salmonellainfektioner");
   }
 }

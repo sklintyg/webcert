@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.integration.builders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -34,8 +34,8 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SendMessageToRecipientTypeBuilderTest {
+@ExtendWith(MockitoExtension.class)
+class SendMessageToRecipientTypeBuilderTest {
 
   private static final ArendeAmne AMNE = ArendeAmne.AVSTMN;
   private static final String MEDDELANDE = "meddelande";
@@ -65,7 +65,7 @@ public class SendMessageToRecipientTypeBuilderTest {
   private static final String VARDGIVARE_NAMN = "vardgivare namn";
 
   @Test
-  public void buildTest() {
+  void buildTest() {
     final Arende arende = buildArende();
     final WebCertUser skickatAv = buildWebCertUser(true);
     final String logiskAdressMottagare = "logical address";
@@ -114,7 +114,7 @@ public class SendMessageToRecipientTypeBuilderTest {
   }
 
   @Test
-  public void buildQuestionTest() {
+  void buildQuestionTest() {
     final Arende arende = buildArende();
     arende.setSvarPaId(null); // question
     final WebCertUser skickatAv = buildWebCertUser(true);
@@ -128,20 +128,20 @@ public class SendMessageToRecipientTypeBuilderTest {
   }
 
   @Test
-  public void buildTestNullToEmptyString() {
+  void buildTestNullToEmptyString() {
     final Arende arende = buildArende();
     final WebCertUser skickatAv = buildWebCertUser(false);
     final String logiskAdressMottagare = "logical address";
     SendMessageToRecipientType result =
         SendMessageToRecipientTypeBuilder.build(arende, skickatAv, logiskAdressMottagare);
 
-    assertEquals("", result.getSkickatAv().getEnhet().getEnhetsnamn());
-    assertEquals("", result.getSkickatAv().getEnhet().getPostadress());
-    assertEquals("", result.getSkickatAv().getEnhet().getPostnummer());
-    assertEquals("", result.getSkickatAv().getEnhet().getPostort());
-    assertEquals("", result.getSkickatAv().getEnhet().getTelefonnummer());
+    assertEquals(result.getSkickatAv().getEnhet().getEnhetsnamn(), "");
+    assertEquals(result.getSkickatAv().getEnhet().getPostadress(), "");
+    assertEquals(result.getSkickatAv().getEnhet().getPostnummer(), "");
+    assertEquals(result.getSkickatAv().getEnhet().getPostort(), "");
+    assertEquals(result.getSkickatAv().getEnhet().getTelefonnummer(), "");
     assertNull(result.getSkickatAv().getEnhet().getEpost());
-    assertEquals("", result.getSkickatAv().getEnhet().getVardgivare().getVardgivarnamn());
+    assertEquals(result.getSkickatAv().getEnhet().getVardgivare().getVardgivarnamn(), "");
   }
 
   private Arende buildArende() {

@@ -36,7 +36,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class IcfControllerTest {
+class IcfControllerTest {
 
   @Mock private IcfFacadeService icfFacadeService;
 

@@ -96,10 +96,10 @@ class GetSrsCertificateFromCertificateServiceTest {
     final var result = getSrsCertificateFromCertificateService.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("cert-1", result.getCertificateId());
-    assertEquals("F438A", result.getMainDiagnosisCode());
+    assertEquals(result.getCertificateId(), "cert-1");
+    assertEquals(result.getMainDiagnosisCode(), "F438A");
     assertEquals(signingDateTime.toLocalDate(), result.getSignedDate());
-    assertEquals("parent-cert-1", result.getExtendsCertificateId());
+    assertEquals(result.getExtendsCertificateId(), "parent-cert-1");
   }
 
   @Test
@@ -123,10 +123,10 @@ class GetSrsCertificateFromCertificateServiceTest {
     final var result = getSrsCertificateFromCertificateService.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("cert-1", result.getCertificateId());
-    assertEquals("F438A", result.getMainDiagnosisCode());
+    assertEquals(result.getCertificateId(), "cert-1");
+    assertEquals(result.getMainDiagnosisCode(), "F438A");
     assertNull(result.getSignedDate());
-    assertEquals("parent-cert-1", result.getExtendsCertificateId());
+    assertEquals(result.getExtendsCertificateId(), "parent-cert-1");
   }
 
   @Test
@@ -151,8 +151,8 @@ class GetSrsCertificateFromCertificateServiceTest {
     final var result = getSrsCertificateFromCertificateService.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("cert-1", result.getCertificateId());
-    assertEquals("F438A", result.getMainDiagnosisCode());
+    assertEquals(result.getCertificateId(), "cert-1");
+    assertEquals(result.getMainDiagnosisCode(), "F438A");
     assertEquals(signingDateTime.toLocalDate(), result.getSignedDate());
     assertNull(result.getExtendsCertificateId());
   }
@@ -178,8 +178,8 @@ class GetSrsCertificateFromCertificateServiceTest {
     final var result = getSrsCertificateFromCertificateService.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("cert-1", result.getCertificateId());
-    assertEquals("F438A", result.getMainDiagnosisCode());
+    assertEquals(result.getCertificateId(), "cert-1");
+    assertEquals(result.getMainDiagnosisCode(), "F438A");
     assertNull(result.getSignedDate());
     assertNull(result.getExtendsCertificateId());
   }

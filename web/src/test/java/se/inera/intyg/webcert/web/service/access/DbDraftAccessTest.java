@@ -18,26 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
-import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.DbAccessServiceTestData;
 
-@RunWith(Parameterized.class)
-public class DbDraftAccessTest extends DraftAccessTest {
+class DbDraftAccessTest extends DraftAccessTest {
 
-  @Parameterized.Parameters(name = "{0}")
-  public static Iterable<Object[]> data() {
-    return Arrays.asList(
-        new Object[][] {{DbModuleEntryPoint.MODULE_ID, new DbAccessServiceTestData()}});
-  }
-
-  public DbDraftAccessTest(String intygsTyp, AccessServiceTestData accessServiceTestData) {
-    super(intygsTyp, accessServiceTestData);
+  public DbDraftAccessTest() {
+    super(DbModuleEntryPoint.MODULE_ID, new DbAccessServiceTestData());
   }
 
   @Override

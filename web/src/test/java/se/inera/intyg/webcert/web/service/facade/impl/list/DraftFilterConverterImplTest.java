@@ -52,7 +52,7 @@ class DraftFilterConverterImplTest {
   @InjectMocks private DraftFilterConverterImpl draftFilterConverter;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     final var user = new WebCertUser();
     final var unit = ListTestHelper.buildVardenhet();
     user.setValdVardenhet(unit);
@@ -60,7 +60,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertSavedFrom() {
+  void shouldConvertSavedFrom() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterDateRangeValue();
     final var now = LocalDateTime.now();
@@ -74,7 +74,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertSavedTo() {
+  void shouldConvertSavedTo() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterDateRangeValue();
     final var now = LocalDateTime.now();
@@ -88,29 +88,29 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertSavedBy() {
+  void shouldConvertSavedBy() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("SAVED_BY_HSA_ID");
     filter.addValue(filterValue, "SAVED_BY");
 
     final var convertedFilter = draftFilterConverter.convert(filter);
 
-    assertEquals("SAVED_BY_HSA_ID", convertedFilter.getSavedByHsaId());
+    assertEquals(convertedFilter.getSavedByHsaId(), "SAVED_BY_HSA_ID");
   }
 
   @Test
-  public void shouldConvertPatientId() {
+  void shouldConvertPatientId() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterPersonIdValue("19121212-1212");
     filter.addValue(filterValue, "PATIENT_ID");
 
     final var convertedFilter = draftFilterConverter.convert(filter);
 
-    assertEquals("19121212-1212", convertedFilter.getPatientId());
+    assertEquals(convertedFilter.getPatientId(), "19121212-1212");
   }
 
   @Test
-  public void shouldConvertForwarded() {
+  void shouldConvertForwarded() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue(ForwardedType.FORWARDED.toString());
     filter.addValue(filterValue, "FORWARDED");
@@ -121,7 +121,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertNotForwarded() {
+  void shouldConvertNotForwarded() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue(ForwardedType.NOT_FORWARDED.toString());
     filter.addValue(filterValue, "FORWARDED");
@@ -132,7 +132,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertShowAllForwardedAsNull() {
+  void shouldConvertShowAllForwardedAsNull() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue(ForwardedType.SHOW_ALL.toString());
     filter.addValue(filterValue, "FORWARDED");
@@ -143,18 +143,18 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertOrder() {
+  void shouldConvertOrder() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("ORDER_BY_VALUE");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = draftFilterConverter.convert(filter);
 
-    assertEquals("ORDER_BY_VALUE", convertedFilter.getOrderBy());
+    assertEquals(convertedFilter.getOrderBy(), "ORDER_BY_VALUE");
   }
 
   @Test
-  public void shouldConvertAscending() {
+  void shouldConvertAscending() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterBooleanValue(true);
     filter.addValue(filterValue, "ASCENDING");
@@ -165,7 +165,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertDescending() {
+  void shouldConvertDescending() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterBooleanValue(false);
     filter.addValue(filterValue, "ASCENDING");
@@ -176,7 +176,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertStatusToShowAllIfEmpty() {
+  void shouldConvertStatusToShowAllIfEmpty() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("");
     filter.addValue(filterValue, "STATUS");
@@ -187,7 +187,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertStatusComplete() {
+  void shouldConvertStatusComplete() {
     final var filter = new ListFilter();
     final var filterValue =
         new ListFilterSelectValue(CertificateListItemStatus.COMPLETE.toString());
@@ -200,7 +200,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertStatusIncomplete() {
+  void shouldConvertStatusIncomplete() {
     final var filter = new ListFilter();
     final var filterValue =
         new ListFilterSelectValue(CertificateListItemStatus.INCOMPLETE.toString());
@@ -213,7 +213,7 @@ class DraftFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertStatusLocked() {
+  void shouldConvertStatusLocked() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue(CertificateListItemStatus.LOCKED.toString());
     filter.addValue(filterValue, "STATUS");

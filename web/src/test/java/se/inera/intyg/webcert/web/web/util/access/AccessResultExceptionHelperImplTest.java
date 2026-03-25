@@ -18,60 +18,85 @@
  */
 package se.inera.intyg.webcert.web.web.util.access;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AccessResultExceptionHelperImplTest {
+@ExtendWith(MockitoExtension.class)
+class AccessResultExceptionHelperImplTest {
 
   @InjectMocks private AccessResultExceptionHelperImpl accessResultExceptionHelper;
 
-  @Test(expected = WebCertServiceException.class)
-  public void throwPUProblemException() {
-    accessResultExceptionHelper.throwException(
-        AccessResult.create(AccessResultCode.PU_PROBLEM, ""));
-  }
-
-  @Test(expected = AuthoritiesException.class)
-  public void throwAuthoritiesException() {
-    accessResultExceptionHelper.throwException(
-        AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, ""));
-  }
-
-  @Test(expected = WebCertServiceException.class)
-  public void throwAuthorizationSekretessException() {
-    accessResultExceptionHelper.throwException(
-        AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS, ""));
-  }
-
-  @Test(expected = WebCertServiceException.class)
-  public void throwAuthorizationSekretessUnit() {
-    accessResultExceptionHelper.throwException(
-        AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, ""));
-  }
-
-  @Test(expected = WebCertServiceException.class)
-  public void throwAnyOtherException() {
-    accessResultExceptionHelper.throwException(
-        AccessResult.create(AccessResultCode.RENEW_FALSE, ""));
-  }
-
-  @Test(expected = WebCertServiceException.class)
-  public void throwIfAccessDenied() {
-    accessResultExceptionHelper.throwExceptionIfDenied(
-        AccessResult.create(AccessResultCode.RENEW_FALSE, ""));
+  @Test
+  void throwPUProblemException() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          accessResultExceptionHelper.throwException(
+              AccessResult.create(AccessResultCode.PU_PROBLEM, ""));
+        });
   }
 
   @Test
-  public void dontThrowIfAccessNoProblem() {
+  void throwAuthoritiesException() {
+    assertThrows(
+        AuthoritiesException.class,
+        () -> {
+          accessResultExceptionHelper.throwException(
+              AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, ""));
+        });
+  }
+
+  @Test
+  void throwAuthorizationSekretessException() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          accessResultExceptionHelper.throwException(
+              AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS, ""));
+        });
+  }
+
+  @Test
+  void throwAuthorizationSekretessUnit() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          accessResultExceptionHelper.throwException(
+              AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, ""));
+        });
+  }
+
+  @Test
+  void throwAnyOtherException() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          accessResultExceptionHelper.throwException(
+              AccessResult.create(AccessResultCode.RENEW_FALSE, ""));
+        });
+  }
+
+  @Test
+  void throwIfAccessDenied() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          accessResultExceptionHelper.throwExceptionIfDenied(
+              AccessResult.create(AccessResultCode.RENEW_FALSE, ""));
+        });
+  }
+
+  @Test
+  void dontThrowIfAccessNoProblem() {
     accessResultExceptionHelper.throwExceptionIfDenied(
         AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
     assertTrue(true);

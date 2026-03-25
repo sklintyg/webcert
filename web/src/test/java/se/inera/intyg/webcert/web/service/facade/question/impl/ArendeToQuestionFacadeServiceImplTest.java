@@ -60,7 +60,7 @@ import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConvert
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @ExtendWith(MockitoExtension.class)
-public class ArendeToQuestionFacadeServiceImplTest {
+class ArendeToQuestionFacadeServiceImplTest {
 
   @Mock private ArendeService arendeService;
 

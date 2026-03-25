@@ -18,23 +18,23 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 
 /** Created by eriklupander on 2017-04-24. */
-public class LogMessagePopulatorImplTest {
+class LogMessagePopulatorImplTest {
 
   private static final String ADDITIONAL_INFO = "additional info";
   private static final String ACTIVITY_ARGS = "activity args";
   private final LogMessagePopulator testee = new LogMessagePopulatorImpl();
 
   @Test
-  public void testActivityArgsAddedFromAdditionalInfoWhenActivityArgsAbsent() {
+  void testActivityArgsAddedFromAdditionalInfoWhenActivityArgsAbsent() {
     PdlLogMessage logMessage =
         testee.populateLogMessage(
             buildPdlLogMessage(""), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
@@ -42,7 +42,7 @@ public class LogMessagePopulatorImplTest {
   }
 
   @Test
-  public void testActivityArgsAppendedFromAdditionalInfoWhenActivityArgsExists() {
+  void testActivityArgsAppendedFromAdditionalInfoWhenActivityArgsExists() {
     PdlLogMessage logMessage =
         testee.populateLogMessage(
             buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
@@ -50,7 +50,7 @@ public class LogMessagePopulatorImplTest {
   }
 
   @Test
-  public void testActivityArgsUntouchedWhenActivityArgsExistsButNoAdditionalInfo() {
+  void testActivityArgsUntouchedWhenActivityArgsExistsButNoAdditionalInfo() {
     PdlLogMessage logMessage =
         testee.populateLogMessage(
             buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(""), buildLogUser());
@@ -58,7 +58,7 @@ public class LogMessagePopulatorImplTest {
   }
 
   @Test
-  public void testActivityArgsUntouchedWhenActivityArgsIsEqualToAdditionalInfo() {
+  void testActivityArgsUntouchedWhenActivityArgsIsEqualToAdditionalInfo() {
     PdlLogMessage logMessage =
         testee.populateLogMessage(
             buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ACTIVITY_ARGS), buildLogUser());

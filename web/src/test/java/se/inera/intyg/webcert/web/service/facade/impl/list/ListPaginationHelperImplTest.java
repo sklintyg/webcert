@@ -37,20 +37,20 @@ class ListPaginationHelperImplTest {
   @InjectMocks private ListPaginationHelperImpl listPaginationHelper;
 
   @Test
-  public void shouldHandleEmptyList() {
+  void shouldHandleEmptyList() {
     final var result = listPaginationHelper.paginate(new ArrayList<>(), new ListFilter());
     assertEquals(0, result.size());
   }
 
   @Test
-  public void shouldHandleEmptyFilter() {
+  void shouldHandleEmptyFilter() {
     final var result =
         listPaginationHelper.paginate(List.of(new CertificateListItem()), new ListFilter());
     assertEquals(1, result.size());
   }
 
   @Test
-  public void shouldReturnEmptyListIfZeroPageSize() {
+  void shouldReturnEmptyListIfZeroPageSize() {
     final var filter = new ListFilter();
     filter.addValue(new ListFilterNumberValue(0), "PAGESIZE");
     final var result = listPaginationHelper.paginate(new ArrayList<>(), filter);
@@ -58,7 +58,7 @@ class ListPaginationHelperImplTest {
   }
 
   @Test
-  public void shouldReturnEmptyListIfListIsSmallerThanStartFrom() {
+  void shouldReturnEmptyListIfListIsSmallerThanStartFrom() {
     final var filter = new ListFilter();
     filter.addValue(new ListFilterNumberValue(5), "PAGESIZE");
     filter.addValue(new ListFilterNumberValue(10), "START_FROM");
@@ -67,7 +67,7 @@ class ListPaginationHelperImplTest {
   }
 
   @Test
-  public void shouldPaginateWithDefaultValuesIfNotSet() {
+  void shouldPaginateWithDefaultValuesIfNotSet() {
     final var filter = new ListFilter();
     final var originalList = createList(20);
     final var result = listPaginationHelper.paginate(originalList, filter);
@@ -77,7 +77,7 @@ class ListPaginationHelperImplTest {
   }
 
   @Test
-  public void shouldReturnAllHitsIfListIsSmallerThanPageSize() {
+  void shouldReturnAllHitsIfListIsSmallerThanPageSize() {
     final var filter = new ListFilter();
     final var originalList = createList(8);
     final var result = listPaginationHelper.paginate(originalList, filter);
@@ -87,7 +87,7 @@ class ListPaginationHelperImplTest {
   }
 
   @Test
-  public void shouldReturnListStartingFromStartFrom() {
+  void shouldReturnListStartingFromStartFrom() {
     final var filter = new ListFilter();
     final var originalList = createList(10);
     filter.addValue(new ListFilterNumberValue(2), "START_FROM");

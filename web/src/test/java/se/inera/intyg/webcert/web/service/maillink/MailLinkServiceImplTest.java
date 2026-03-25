@@ -18,16 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.maillink;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.net.URI;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-public class MailLinkServiceImplTest {
+class MailLinkServiceImplTest {
 
   private static final Object URL_BASE_TEMPLATE = "url/base/template";
   private static final Object URL_UTKAST_FRAGMENT_TEMPLATE =
@@ -36,35 +36,35 @@ public class MailLinkServiceImplTest {
 
   private MailLinkServiceImpl service = new MailLinkServiceImpl();
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     ReflectionTestUtils.setField(service, "urlBaseTemplate", URL_BASE_TEMPLATE);
     ReflectionTestUtils.setField(
         service, "urlUtkastFragmentTemplate", URL_UTKAST_FRAGMENT_TEMPLATE);
   }
 
   @Test
-  public void testIntygRedirectIntygIdMissing() {
+  void testIntygRedirectIntygIdMissing() {
     URI res = service.intygRedirect("typ", INTYG_TYPE_VERSION, null);
 
     assertNull(res);
   }
 
   @Test
-  public void testIntygRedirectTypMissing() {
+  void testIntygRedirectTypMissing() {
     URI res = service.intygRedirect(null, INTYG_TYPE_VERSION, "intygId");
 
     assertNull(res);
   }
 
   @Test
-  public void testIntygRedirect() {
+  void testIntygRedirect() {
     final String typ = "typ";
     final String intygId = "intyg-id";
     URI res = service.intygRedirect(typ, INTYG_TYPE_VERSION, intygId);
 
     assertNotNull(res);
     assertEquals(URL_BASE_TEMPLATE, res.getPath());
-    assertEquals("/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id", res.getFragment());
+    assertEquals(res.getFragment(), "/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id");
   }
 }

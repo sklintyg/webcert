@@ -57,7 +57,7 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @ExtendWith(MockitoExtension.class)
-public class InternalNotificationMessageListenerTest {
+class InternalNotificationMessageListenerTest {
 
   private static final String INTYG_1 = "intyg-1";
   private static final String LIJSP = "lijsp";
@@ -75,7 +75,7 @@ public class InternalNotificationMessageListenerTest {
   private InternalNotificationMessageListener testee = new InternalNotificationMessageListener();
 
   @BeforeEach
-  public void init() {
+  void init() {
     ReflectionTestUtils.setField(testee, "logicalAddress", "logisk-adress");
   }
 

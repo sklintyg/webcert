@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -36,7 +36,7 @@ import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
 @ExtendWith(MockitoExtension.class)
-public class InvalidateSessionApiControllerTest {
+class InvalidateSessionApiControllerTest {
 
   private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
   private static final String USER_HSA_ID = "TSTNMT2321000156-1079";
@@ -46,7 +46,7 @@ public class InvalidateSessionApiControllerTest {
   @InjectMocks private InvalidateSessionApiController controller;
 
   @Test
-  public void assertThatControllerRunsWhenGivenCorrectValues() {
+  void assertThatControllerRunsWhenGivenCorrectValues() {
     invalidateRequest = getInvalidateRequest();
     Response response = controller.invalidateSession(invalidateRequest);
     verify(invalidateSessionService).invalidateSessionIfActive(any());
@@ -54,7 +54,7 @@ public class InvalidateSessionApiControllerTest {
   }
 
   @Test
-  public void assertThatControllerRunsWhenGivenWrongValues() {
+  void assertThatControllerRunsWhenGivenWrongValues() {
     invalidateRequest = getInvalidateRequest();
     invalidateRequest.setLaunchId(null);
 
@@ -65,7 +65,7 @@ public class InvalidateSessionApiControllerTest {
   }
 
   @Test
-  public void shouldStillReturnNoContentAfterThrowingException() {
+  void shouldStillReturnNoContentAfterThrowingException() {
     invalidateRequest = getInvalidateRequest();
     Response response = controller.invalidateSession(invalidateRequest);
 
@@ -80,7 +80,7 @@ public class InvalidateSessionApiControllerTest {
   class InvalidateRequestValidation {
 
     @Test
-    public void validateRequestIfCorrectFormat() {
+    void validateRequestIfCorrectFormat() {
       invalidateRequest = getInvalidateRequest();
       Response response = controller.invalidateSession(invalidateRequest);
 
@@ -88,7 +88,7 @@ public class InvalidateSessionApiControllerTest {
     }
 
     @Test
-    public void invalidateRequestWithWrongValuesShouldReturnBadRequest() {
+    void invalidateRequestWithWrongValuesShouldReturnBadRequest() {
       invalidateRequest = getInvalidateRequest();
       invalidateRequest.setUserHsaId(null);
       Response response = controller.invalidateSession(invalidateRequest);
@@ -97,7 +97,7 @@ public class InvalidateSessionApiControllerTest {
     }
 
     @Test
-    public void invalidateRequestWithLaunchIdSetToNull() {
+    void invalidateRequestWithLaunchIdSetToNull() {
       invalidateRequest = getInvalidateRequest();
       invalidateRequest.setLaunchId(null);
       invalidateRequest.setUserHsaId(USER_HSA_ID);
@@ -108,7 +108,7 @@ public class InvalidateSessionApiControllerTest {
     }
 
     @Test
-    public void invalidateRequestWithHsaIdSetToNull() {
+    void invalidateRequestWithHsaIdSetToNull() {
       invalidateRequest = getInvalidateRequest();
       invalidateRequest.setLaunchId(LAUNCH_ID);
       invalidateRequest.setUserHsaId(null);

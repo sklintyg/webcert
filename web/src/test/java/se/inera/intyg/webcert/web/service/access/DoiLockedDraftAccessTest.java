@@ -18,26 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
-import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.DoiAccessServiceTestData;
 
-@RunWith(Parameterized.class)
-public class DoiLockedDraftAccessTest extends LockedDraftAccessTest {
+class DoiLockedDraftAccessTest extends LockedDraftAccessTest {
 
-  @Parameterized.Parameters(name = "{0}")
-  public static Iterable<Object[]> data() {
-    return Arrays.asList(
-        new Object[][] {{DoiModuleEntryPoint.MODULE_ID, new DoiAccessServiceTestData()}});
-  }
-
-  public DoiLockedDraftAccessTest(String intygsTyp, AccessServiceTestData accessServiceTestData) {
-    super(intygsTyp, accessServiceTestData);
+  public DoiLockedDraftAccessTest() {
+    super(DoiModuleEntryPoint.MODULE_ID, new DoiAccessServiceTestData());
   }
 
   @Override

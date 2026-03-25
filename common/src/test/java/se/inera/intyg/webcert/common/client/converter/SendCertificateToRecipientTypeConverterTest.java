@@ -18,19 +18,19 @@
  */
 package se.inera.intyg.webcert.common.client.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
 
-public class SendCertificateToRecipientTypeConverterTest {
+class SendCertificateToRecipientTypeConverterTest {
 
   @Test
-  public void testConvert() throws Exception {
+  void testConvert() throws Exception {
     final String intygsId = "intygsid";
     final String enhetsId = "enhetsid";
     final String enhetsnamn = "enhetsnamn";
@@ -115,7 +115,7 @@ public class SendCertificateToRecipientTypeConverterTest {
     assertEquals(forskrivarKod, result.getSkickatAv().getHosPersonal().getForskrivarkod());
     assertNotNull(result.getSkickatTidpunkt());
     assertNotNull(result.getMottagare().getCodeSystem());
-    assertEquals("TRANSP", result.getMottagare().getCode());
+    assertEquals(result.getMottagare().getCode(), "TRANSP");
   }
 
   private HoSPersonal buildHosPersonal(

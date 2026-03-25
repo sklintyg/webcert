@@ -180,8 +180,8 @@ class SubscriptionServiceTest {
         () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
         () ->
             assertEquals(
-                "CARE_PROVIDER_HSA_ID_1",
-                restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst()));
+                restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst(),
+                "CARE_PROVIDER_HSA_ID_1"));
   }
 
   @Test
@@ -320,8 +320,8 @@ class SubscriptionServiceTest {
         () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
         () ->
             assertEquals(
-                "CARE_PROVIDER_HSA_ID_1",
-                restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst()));
+                restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst(),
+                "CARE_PROVIDER_HSA_ID_1"));
   }
 
   @Test
@@ -393,7 +393,7 @@ class SubscriptionServiceTest {
 
     verify(subscriptionIntegrationService)
         .isMissingSubscriptionUnregisteredElegUser(restServiceParamCaptor.capture());
-    assertEquals("121212-1212", restServiceParamCaptor.getValue());
+    assertEquals(restServiceParamCaptor.getValue(), "121212-1212");
   }
 
   @Test

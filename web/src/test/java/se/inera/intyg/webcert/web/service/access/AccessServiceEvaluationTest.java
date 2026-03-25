@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -44,8 +46,9 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AccessServiceEvaluationTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class AccessServiceEvaluationTest {
 
   @Mock private WebCertUserService webCertUserService;
   @Mock private PatientDetailsResolver patientDetailsResolver;
@@ -55,15 +58,15 @@ public class AccessServiceEvaluationTest {
 
   private AccessServiceEvaluation accessServiceEvaluation;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     accessServiceEvaluation =
         AccessServiceEvaluation.create(
             webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
   }
 
   @Test
-  public void shallNotAllowIfFeatureInactiveCertificateTypeIsTrue() {
+  void shallNotAllowIfFeatureInactiveCertificateTypeIsTrue() {
     final var feature = new Feature();
     feature.setGlobal(true);
     feature.setIntygstyper(Collections.singletonList("ts-bas"));
@@ -78,7 +81,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfFeatureInactiveCertificateTypeIsFalse() {
+  void shallAllowIfFeatureInactiveCertificateTypeIsFalse() {
     final var feature = new Feature();
     feature.setGlobal(true);
     feature.setIntygstyper(Collections.singletonList("ts-bas"));
@@ -96,7 +99,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallBlockIfNotOfLatestMajorVersion() {
+  void shallBlockIfNotOfLatestMajorVersion() {
     final var feature = new Feature();
     feature.setGlobal(true);
     feature.setIntygstyper(Collections.singletonList("ts-bas"));
@@ -115,7 +118,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallBlockIfNotOfLatestMajorVersionWhenAddCheck() {
+  void shallBlockIfNotOfLatestMajorVersionWhenAddCheck() {
     final var feature = new Feature();
     feature.setGlobal(true);
     feature.setIntygstyper(Collections.singletonList("ts-bas"));
@@ -134,7 +137,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfNotOfLatestMajorVersionWhenNotAddCheck() {
+  void shallAllowIfNotOfLatestMajorVersionWhenNotAddCheck() {
     final var actualAccessResult =
         accessServiceEvaluation
             .given(user, "ts-bas")
@@ -147,7 +150,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfLatestMajorVersion() {
+  void shallAllowIfLatestMajorVersion() {
     final var feature = new Feature();
     feature.setGlobal(true);
     feature.setIntygstyper(Collections.singletonList("ts-bas"));
@@ -167,7 +170,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfNotLatestMajorVersionWhenNotActive() {
+  void shallAllowIfNotLatestMajorVersionWhenNotActive() {
     final var feature = new Feature();
     feature.setGlobal(true);
     feature.setIntygstyper(Collections.singletonList("ts-bas"));
@@ -186,7 +189,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfNotLatestMajorVersionWhenFeatureMissing() {
+  void shallAllowIfNotLatestMajorVersionWhenFeatureMissing() {
     when(user.getFeatures()).thenReturn(Collections.emptyMap());
 
     final var actualAccessResult =
@@ -199,7 +202,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfNoBlockRuleActive() {
+  void shallAllowIfNoBlockRuleActive() {
     final var feature = new Feature();
     feature.setGlobal(false);
 
@@ -216,7 +219,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfNoBlockRuleExists() {
+  void shallAllowIfNoBlockRuleExists() {
     when(user.getFeatures()).thenReturn(Collections.emptyMap());
 
     final var actualAccessResult =
@@ -229,7 +232,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallBlockIfBlockRuleValid() {
+  void shallBlockIfBlockRuleValid() {
     final var feature = new Feature();
     feature.setGlobal(true);
 
@@ -246,7 +249,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfHasSubscriptionWhenSubscriptionRequired() {
+  void shallAllowIfHasSubscriptionWhenSubscriptionRequired() {
     setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 2, UserOriginType.NORMAL);
 
     final var actualAccessResult =
@@ -256,7 +259,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallNotAllowIfMissingSubscriptionWhenSubscriptionRequired() {
+  void shallNotAllowIfMissingSubscriptionWhenSubscriptionRequired() {
     setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 3, UserOriginType.NORMAL);
 
     final var actualAccessResult =
@@ -266,7 +269,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfMissingSubscriptionWhenSubscriptionRequiredButNotFristaende() {
+  void shallAllowIfMissingSubscriptionWhenSubscriptionRequiredButNotFristaende() {
     setupMocksForSubscriptionCheck(SubscriptionAction.BLOCK, 3, UserOriginType.DJUPINTEGRATION);
 
     final var actualAccessResult =
@@ -276,7 +279,7 @@ public class AccessServiceEvaluationTest {
   }
 
   @Test
-  public void shallAllowIfMissingSubscriptionWhenSubscriptionNotRequired() {
+  void shallAllowIfMissingSubscriptionWhenSubscriptionNotRequired() {
     setupMocksForSubscriptionCheck(SubscriptionAction.NONE, 3, UserOriginType.NORMAL);
 
     final var actualAccessResult =

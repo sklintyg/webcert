@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.certificatesender;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -32,13 +33,15 @@ import jakarta.jms.Message;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -47,8 +50,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.Constants;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CertificateSenderServiceImplTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class CertificateSenderServiceImplTest {
 
   private static final String LOGICAL_ADDRESS = "logical address";
 
@@ -58,15 +62,15 @@ public class CertificateSenderServiceImplTest {
 
   @InjectMocks private CertificateSenderServiceImpl service;
 
-  @Before
-  public void setup() throws Exception {
+  @BeforeEach
+  void setup() throws Exception {
     ReflectionTestUtils.setField(service, "logicalAddress", LOGICAL_ADDRESS);
     when(session.createTextMessage(anyString()))
         .thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
   }
 
   @Test
-  public void storeCertificateTest() throws Exception {
+  void storeCertificateTest() throws Exception {
     final String intygsId = "intygsId";
     final String jsonBody = "jsonBody";
     final String intygsTyp = "intygsTyp";
@@ -83,19 +87,25 @@ public class CertificateSenderServiceImplTest {
     assertEquals(jsonBody, ((TextMessage) res).getText());
   }
 
-  @Test(expected = JmsException.class)
-  public void storeCertificateJmsException() throws Exception {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  @Test
+  void storeCertificateJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    try {
-      service.storeCertificate("intygsId", "intygsTyp", "jsonBody");
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
+          try {
+            service.storeCertificate("intygsId", "intygsTyp", "jsonBody");
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
   @Test
-  public void sendCertificateTest() throws Exception {
+  void sendCertificateTest() throws Exception {
     final String intygsId = "intygsId";
     final Personnummer personId = createPnr("19121212-1212");
     final String jsonBody = "jsonBody";
@@ -116,7 +126,7 @@ public class CertificateSenderServiceImplTest {
   }
 
   @Test
-  public void sendCertificateWithDelayTest() throws Exception {
+  void sendCertificateWithDelayTest() throws Exception {
     final String intygsId = "intygsId";
     final Personnummer personId = createPnr("19121212-1212");
     final String jsonBody = "jsonBody";
@@ -132,23 +142,30 @@ public class CertificateSenderServiceImplTest {
     assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
     assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
     assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
-    assertEquals("true", res.getStringProperty(Constants.DELAY_MESSAGE));
+    assertEquals(res.getStringProperty(Constants.DELAY_MESSAGE), "true");
     assertEquals(jsonBody, ((TextMessage) res).getText());
   }
 
-  @Test(expected = JmsException.class)
-  public void sendCertificateJmsException() throws Exception {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  @Test
+  void sendCertificateJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    try {
-      service.sendCertificate("intygsId", createPnr("19121212-1212"), "jsonBody", "recipientId");
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
+          try {
+            service.sendCertificate(
+                "intygsId", createPnr("19121212-1212"), "jsonBody", "recipientId");
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
   @Test
-  public void revokeCertificateTest() throws Exception {
+  void revokeCertificateTest() throws Exception {
     final String intygsId = "intygsId";
     final String xmlBody = "xmlBody";
     final String intygsTyp = "intygsTyp";
@@ -167,19 +184,25 @@ public class CertificateSenderServiceImplTest {
     assertEquals(xmlBody, ((TextMessage) res).getText());
   }
 
-  @Test(expected = JmsException.class)
-  public void revokeCertificateJmsException() throws Exception {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  @Test
+  void revokeCertificateJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    try {
-      service.revokeCertificate("intygsId", "xmlBody", "intygsTyp", "1.0");
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
+          try {
+            service.revokeCertificate("intygsId", "xmlBody", "intygsTyp", "1.0");
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
   @Test
-  public void sendMessageToRecipientTest() throws Exception {
+  void sendMessageToRecipientTest() throws Exception {
     final String intygsId = "intygsId";
     final String xmlBody = "xmlBody";
 
@@ -195,19 +218,25 @@ public class CertificateSenderServiceImplTest {
     assertEquals(xmlBody, ((TextMessage) res).getText());
   }
 
-  @Test(expected = JmsException.class)
-  public void sendMessageToRecipientJmsException() throws Exception {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  @Test
+  void sendMessageToRecipientJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    try {
-      service.sendMessageToRecipient("intygsId", "xmlBody");
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
+          try {
+            service.sendMessageToRecipient("intygsId", "xmlBody");
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
   @Test
-  public void testCheckJmsTemplateNoTemplateAvailable() {
+  void testCheckJmsTemplateNoTemplateAvailable() {
     ReflectionTestUtils.setField(service, "jmsTemplate", null);
     service.checkJmsTemplate();
     // no exception is thrown

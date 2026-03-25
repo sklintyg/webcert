@@ -18,29 +18,29 @@
  */
 package se.inera.intyg.webcert.persistence.anvandarmetadata.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 
 /** Created by eriklupander on 2015-08-05. */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class AnvandarPreferenceRepositoryTest {
+class AnvandarPreferenceRepositoryTest {
 
   private static final String HSA_ID = "hsaId1";
   public static final String KEY_1 = "key1";
@@ -53,7 +53,7 @@ public class AnvandarPreferenceRepositoryTest {
   @PersistenceContext private EntityManager em;
 
   @Test
-  public void testFindOne() {
+  void testFindOne() {
     AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
     anvandarMetadataRepository.save(saved);
     AnvandarPreference read =
@@ -64,7 +64,7 @@ public class AnvandarPreferenceRepositoryTest {
   }
 
   @Test
-  public void testGetAnvandarPreference() {
+  void testGetAnvandarPreference() {
     AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
     anvandarMetadataRepository.save(saved);
     AnvandarPreference saved2 = buildAnvandarPreference(HSA_ID, KEY_2, VALUE_2);
@@ -79,14 +79,14 @@ public class AnvandarPreferenceRepositoryTest {
   }
 
   @Test
-  public void testFindByHsaAndKeyWhenNotExists() {
+  void testFindByHsaAndKeyWhenNotExists() {
     AnvandarPreference anvandarPreference =
         anvandarMetadataRepository.findByHsaIdAndKey(HSA_ID, KEY_1);
     assertNull(anvandarPreference);
   }
 
   @Test
-  public void testFindByHsaAndKey() {
+  void testFindByHsaAndKey() {
     AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
     anvandarMetadataRepository.save(saved);
 
@@ -96,7 +96,7 @@ public class AnvandarPreferenceRepositoryTest {
   }
 
   @Test
-  public void testDeleteAnvandarPreferenceThatExists() {
+  void testDeleteAnvandarPreferenceThatExists() {
     AnvandarPreference saved = buildAnvandarPreference(HSA_ID, KEY_1, VALUE_1);
     anvandarMetadataRepository.save(saved);
     anvandarMetadataRepository.delete(saved);

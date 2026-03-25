@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Created by marced on 2019-02-07. */
-public class IcfKodTest {
+class IcfKodTest {
 
   private static final String KOD = "kod";
   private static final String BENAMNING = "benamning";
@@ -32,7 +32,7 @@ public class IcfKodTest {
   private static final String INNEFATTAR = "innefattar";
 
   @Test
-  public void testEqualsWhenEqual() {
+  void testEqualsWhenEqual() {
     IcfKod icfKod = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
     IcfKod icfKod2 = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
     IcfCentralKod icfCentralKod = new IcfCentralKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
@@ -55,7 +55,7 @@ public class IcfKodTest {
   }
 
   @Test
-  public void testNotEqualsWhenNotEqual() {
+  void testNotEqualsWhenNotEqual() {
     IcfKod icfKod = new IcfKod(KOD, BENAMNING, BESKRIVNING, INNEFATTAR);
     IcfKod icfKod2 = new IcfKod(KOD, BENAMNING, BESKRIVNING, "");
     IcfCentralKod icfCentralKod = new IcfCentralKod(KOD, "", BESKRIVNING, INNEFATTAR);

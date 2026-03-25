@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -26,12 +26,15 @@ import static org.mockito.Mockito.doReturn;
 import jakarta.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
@@ -41,7 +44,9 @@ import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 
-public class FmbApiControllerTest {
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+class FmbApiControllerTest {
 
   @InjectMocks private FmbApiController controller;
 
@@ -53,9 +58,8 @@ public class FmbApiControllerTest {
 
   @Mock private DiagnosService diagnosService;
 
-  @Before
-  public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+  @BeforeEach
+  void setUp() {
     Mockito.when(diagnosService.getDiagnosisByCode(anyString(), any(Diagnoskodverk.class)))
         .thenReturn(DiagnosResponse.ok(makeDiagnoser(), false));
   }
@@ -68,19 +72,19 @@ public class FmbApiControllerTest {
   }
 
   @Test
-  public void testGetFmbForIcd10HandlesNull() throws Exception {
+  void testGetFmbForIcd10HandlesNull() throws Exception {
     Response response = controller.getFmbForIcd10(null);
     assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
   }
 
   @Test
-  public void testGetFmbForIcd10HandlesEmptyInput() throws Exception {
+  void testGetFmbForIcd10HandlesEmptyInput() throws Exception {
     Response response = controller.getFmbForIcd10("");
     assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
   }
 
   @Test
-  public void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData()
+  void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData()
       throws Exception {
     // Given
     doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));

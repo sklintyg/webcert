@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,12 +39,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -97,8 +100,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CopyUtkastServiceImplTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class CopyUtkastServiceImplTest {
 
   private static final String INTYG_ID = "abc123";
   private static final String INTYG_COPY_ID = "def456";
@@ -198,8 +202,8 @@ public class CopyUtkastServiceImplTest {
             () -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
   }
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     hoSPerson = new HoSPersonal();
     hoSPerson.setPersonId(HOSPERSON_ID);
     hoSPerson.setFullstandigtNamn(HOSPERSON_NAME);
@@ -222,8 +226,8 @@ public class CopyUtkastServiceImplTest {
     when(patientDetailsResolver.isTestIndicator(any())).thenReturn(false);
   }
 
-  @Before
-  public void expectCallToPUService() {
+  @BeforeEach
+  void expectCallToPUService() {
     PersonSvar personSvar =
         PersonSvar.found(
             new Person(
@@ -240,96 +244,105 @@ public class CopyUtkastServiceImplTest {
     when(mockPUService.getPerson(PATIENT_SSN)).thenReturn(personSvar);
   }
 
-  @Before
-  public void expectSaveOfUtkast() {
+  @BeforeEach
+  void expectSaveOfUtkast() {
     when(mockUtkastRepository.save(any(Utkast.class)))
         .thenAnswer(invocation -> invocation.getArguments()[0]);
   }
 
-  @Before
-  public void expectIsRevokedCallToIntygService() {
+  @BeforeEach
+  void expectIsRevokedCallToIntygService() {
     when(intygService.isRevoked(anyString(), anyString())).thenReturn(false);
   }
 
-  @Before
-  public void byDefaultReturnNoRelationsFromRelationService() {
+  @BeforeEach
+  void byDefaultReturnNoRelationsFromRelationService() {
     when(certificateRelationService.getNewestRelationOfType(
             anyString(), any(RelationKod.class), any(List.class)))
         .thenReturn(Optional.empty());
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testRenewalCopyFailIfSignedReplacementExists() {
+  @Test
+  void testRenewalCopyFailIfSignedReplacementExists() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          final String reference = "ref";
+          WebCertUser user = new WebCertUser();
+          user.setParameters(
+              new IntegrationParameters(
+                  reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
 
-    final String reference = "ref";
-    WebCertUser user = new WebCertUser();
-    user.setParameters(
-        new IntegrationParameters(
-            reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
+          WebcertCertificateRelation ersattRelation =
+              new WebcertCertificateRelation(
+                  INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false);
+          when(certificateRelationService.getNewestRelationOfType(
+                  INTYG_ID, RelationKod.ERSATT, Collections.singletonList(UtkastStatus.SIGNED)))
+              .thenReturn(Optional.of(ersattRelation));
 
-    WebcertCertificateRelation ersattRelation =
-        new WebcertCertificateRelation(
-            INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false);
-    when(certificateRelationService.getNewestRelationOfType(
-            INTYG_ID, RelationKod.ERSATT, Collections.singletonList(UtkastStatus.SIGNED)))
-        .thenReturn(Optional.of(ersattRelation));
+          CreateRenewalCopyRequest renewalCopyRequest = buildRenewalRequest();
 
-    CreateRenewalCopyRequest renewalCopyRequest = buildRenewalRequest();
-
-    try {
-      setupMockForGettingUtlatande();
-      CreateRenewalCopyResponse copyResp = copyService.createRenewalCopy(renewalCopyRequest);
-      fail("An exception should have been thrown.");
-    } catch (Exception e) {
-      verifyNoInteractions(mockNotificationService);
-      verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
-      // Assert no pdl logging
-      verifyNoInteractions(logService);
-      verifyNoInteractions(certificateEventService);
-      throw e;
-    }
-  }
-
-  @Test(expected = WebCertServiceException.class)
-  public void testRenewalCopyFailIfOriginalNotSigned() {
-
-    final String reference = "ref";
-
-    WebCertUser user = new WebCertUser();
-    user.setParameters(
-        new IntegrationParameters(
-            reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
-
-    try {
-      setupMockForGettingUtlatande();
-      copyService.createRenewalCopy(buildRenewalRequest());
-      fail("An exception should have been thrown.");
-    } catch (Exception e) {
-      throw e;
-    }
-  }
-
-  @Test(expected = WebCertServiceException.class)
-  public void testReplacementCopyFailIfOriginalNotSigned() {
-
-    final String reference = "ref";
-
-    WebCertUser user = new WebCertUser();
-    user.setParameters(
-        new IntegrationParameters(
-            reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
-
-    try {
-      setupMockForGettingUtlatande();
-      copyService.createReplacementCopy(buildReplacementCopyRequest());
-      fail("An exception should have been thrown.");
-    } catch (Exception e) {
-      throw e;
-    }
+          try {
+            setupMockForGettingUtlatande();
+            CreateRenewalCopyResponse copyResp = copyService.createRenewalCopy(renewalCopyRequest);
+            fail("An exception should have been thrown.");
+          } catch (Exception e) {
+            verifyNoInteractions(mockNotificationService);
+            verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+            // Assert no pdl logging
+            verifyNoInteractions(logService);
+            verifyNoInteractions(certificateEventService);
+            throw e;
+          }
+        });
   }
 
   @Test
-  public void testCreateReplacementCopy() throws Exception {
+  void testRenewalCopyFailIfOriginalNotSigned() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          final String reference = "ref";
+
+          WebCertUser user = new WebCertUser();
+          user.setParameters(
+              new IntegrationParameters(
+                  reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
+
+          try {
+            setupMockForGettingUtlatande();
+            copyService.createRenewalCopy(buildRenewalRequest());
+            fail("An exception should have been thrown.");
+          } catch (Exception e) {
+            throw e;
+          }
+        });
+  }
+
+  @Test
+  void testReplacementCopyFailIfOriginalNotSigned() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          final String reference = "ref";
+
+          WebCertUser user = new WebCertUser();
+          user.setParameters(
+              new IntegrationParameters(
+                  reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
+
+          try {
+            setupMockForGettingUtlatande();
+            copyService.createReplacementCopy(buildReplacementCopyRequest());
+            fail("An exception should have been thrown.");
+          } catch (Exception e) {
+            throw e;
+          }
+        });
+  }
+
+  @Test
+  void testCreateReplacementCopy() throws Exception {
 
     final String reference = "ref";
     WebCertUser user = new WebCertUser();
@@ -372,51 +385,54 @@ public class CopyUtkastServiceImplTest {
     verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testCreateReplacementCopyFailedIfAlreadyReplacedBySignedIntyg() throws Exception {
+  @Test
+  void testCreateReplacementCopyFailedIfAlreadyReplacedBySignedIntyg() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          final String reference = "ref";
+          WebCertUser user = new WebCertUser();
+          user.setParameters(
+              new IntegrationParameters(
+                  reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
+          when(userService.getUser()).thenReturn(user);
 
-    final String reference = "ref";
-    WebCertUser user = new WebCertUser();
-    user.setParameters(
-        new IntegrationParameters(
-            reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
-    when(userService.getUser()).thenReturn(user);
+          UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
 
-    UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+          WebcertCertificateRelation ersattRelation =
+              new WebcertCertificateRelation(
+                  INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false);
+          when(certificateRelationService.getNewestRelationOfType(
+                  INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.values())))
+              .thenReturn(Optional.of(ersattRelation));
 
-    WebcertCertificateRelation ersattRelation =
-        new WebcertCertificateRelation(
-            INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false);
-    when(certificateRelationService.getNewestRelationOfType(
-            INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.values())))
-        .thenReturn(Optional.of(ersattRelation));
+          setupMockForGettingUtlatande();
 
-    setupMockForGettingUtlatande();
+          CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
 
-    CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
+          CreateReplacementCopyResponse copyResp = copyService.createReplacementCopy(copyReq);
 
-    CreateReplacementCopyResponse copyResp = copyService.createReplacementCopy(copyReq);
+          assertNotNull(copyResp);
+          assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
+          assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
-    assertNotNull(copyResp);
-    assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
-    assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
-
-    verify(mockPUService).getPerson(PATIENT_SSN);
-    verify(createReplacementUtkastBuilder)
-        .populateCopyUtkastFromSignedIntyg(
-            any(CreateReplacementCopyRequest.class), any(Person.class), any(boolean.class));
-    verify(mockUtkastRepository).save(any(Utkast.class));
-    verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
-    verify(certificateEventService)
-        .createCertificateEventFromCopyUtkast(
-            resp.getUtkast(), user.getHsaId(), EventCode.ERSATTER, INTYG_ID);
-    verify(userService).getUser();
-    verify(logService).logCreateIntyg(any(LogRequest.class));
-    verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+          verify(mockPUService).getPerson(PATIENT_SSN);
+          verify(createReplacementUtkastBuilder)
+              .populateCopyUtkastFromSignedIntyg(
+                  any(CreateReplacementCopyRequest.class), any(Person.class), any(boolean.class));
+          verify(mockUtkastRepository).save(any(Utkast.class));
+          verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+          verify(certificateEventService)
+              .createCertificateEventFromCopyUtkast(
+                  resp.getUtkast(), user.getHsaId(), EventCode.ERSATTER, INTYG_ID);
+          verify(userService).getUser();
+          verify(logService).logCreateIntyg(any(LogRequest.class));
+          verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+        });
   }
 
   @Test
-  public void testCreateCompletion() throws Exception {
+  void testCreateCompletion() throws Exception {
 
     final String reference = "ref";
     WebCertUser user = new WebCertUser();
@@ -459,7 +475,7 @@ public class CopyUtkastServiceImplTest {
   }
 
   @Test
-  public void testCreateRenewal() throws Exception {
+  void testCreateRenewal() throws Exception {
 
     final String reference = "ref";
     WebCertUser user = new WebCertUser();
@@ -508,36 +524,39 @@ public class CopyUtkastServiceImplTest {
     verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testCreateRenewalFailsWhenReplacedBySignedIntyg() {
+  @Test
+  void testCreateRenewalFailsWhenReplacedBySignedIntyg() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          final String reference = "ref";
 
-    final String reference = "ref";
+          WebcertCertificateRelation ersattRelation =
+              new WebcertCertificateRelation(
+                  INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false);
+          when(certificateRelationService.getNewestRelationOfType(
+                  INTYG_ID, RelationKod.ERSATT, Collections.singletonList(UtkastStatus.SIGNED)))
+              .thenReturn(Optional.of(ersattRelation));
 
-    WebcertCertificateRelation ersattRelation =
-        new WebcertCertificateRelation(
-            INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false);
-    when(certificateRelationService.getNewestRelationOfType(
-            INTYG_ID, RelationKod.ERSATT, Collections.singletonList(UtkastStatus.SIGNED)))
-        .thenReturn(Optional.of(ersattRelation));
+          CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
-    CreateRenewalCopyRequest copyReq = buildRenewalRequest();
-
-    try {
-      setupMockForGettingUtlatande();
-      copyService.createRenewalCopy(copyReq);
-      fail("An exception should have been thrown.");
-    } catch (Exception e) {
-      verifyNoInteractions(mockNotificationService);
-      verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
-      // Assert no pdl logging
-      verifyNoInteractions(logService);
-      verifyNoInteractions(certificateEventService);
-      throw e;
-    }
+          try {
+            setupMockForGettingUtlatande();
+            copyService.createRenewalCopy(copyReq);
+            fail("An exception should have been thrown.");
+          } catch (Exception e) {
+            verifyNoInteractions(mockNotificationService);
+            verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+            // Assert no pdl logging
+            verifyNoInteractions(logService);
+            verifyNoInteractions(certificateEventService);
+            throw e;
+          }
+        });
   }
 
   @Test
-  public void testCreateRenewalWhenIntegratedAndSjfTrue() throws Exception {
+  void testCreateRenewalWhenIntegratedAndSjfTrue() throws Exception {
 
     final String reference = "ref";
     WebCertUser user = new WebCertUser();
@@ -586,7 +605,7 @@ public class CopyUtkastServiceImplTest {
   }
 
   @Test
-  public void testCreateRenewalWhenIntegrated() throws Exception {
+  void testCreateRenewalWhenIntegrated() throws Exception {
 
     final String reference = "ref";
     WebCertUser user = new WebCertUser();
@@ -636,7 +655,7 @@ public class CopyUtkastServiceImplTest {
   }
 
   @Test
-  public void testCreateCopyWhenIntegratedAndWithUpdatedSSN() throws Exception {
+  void testCreateCopyWhenIntegratedAndWithUpdatedSSN() throws Exception {
     final String reference = "ref";
     WebCertUser user = new WebCertUser();
     user.setParameters(
@@ -686,7 +705,7 @@ public class CopyUtkastServiceImplTest {
   }
 
   @Test
-  public void testCreateUtkastFromTemplate() throws Exception {
+  void testCreateUtkastFromTemplate() throws Exception {
 
     final String reference = "ref";
     WebCertUser user = new WebCertUser();
@@ -730,7 +749,7 @@ public class CopyUtkastServiceImplTest {
   }
 
   @Test
-  public void testCreateUtkastCopy() throws Exception {
+  void testCreateUtkastCopy() throws Exception {
 
     final String reference = "ref";
     WebCertUser user = new WebCertUser();
@@ -774,98 +793,133 @@ public class CopyUtkastServiceImplTest {
     verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testCreateUtkastCopyWhenStatusNotLocked() {
-    Utkast utkast = new Utkast();
-    utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
-    utkast.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
+  @Test
+  void testCreateUtkastCopyWhenStatusNotLocked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          Utkast utkast = new Utkast();
+          utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
+          utkast.setPatientPersonnummer(
+              Personnummer.createPersonnummer("191212121212").orElse(null));
 
-    when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
+          when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
 
-    CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
-    setupMockForGettingUtlatande();
-    copyService.createUtkastCopy(copyReq);
+          CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
+          setupMockForGettingUtlatande();
+          copyService.createUtkastCopy(copyReq);
+        });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testCreateUtkastCopyWhenRevoked() {
-    Utkast utkast = new Utkast();
-    utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
-    utkast.setAterkalladDatum(LocalDateTime.now());
-    utkast.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
+  @Test
+  void testCreateUtkastCopyWhenRevoked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          Utkast utkast = new Utkast();
+          utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+          utkast.setAterkalladDatum(LocalDateTime.now());
+          utkast.setPatientPersonnummer(
+              Personnummer.createPersonnummer("191212121212").orElse(null));
 
-    when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
+          when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
 
-    CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
-    setupMockForGettingUtlatande();
-    copyService.createUtkastCopy(copyReq);
+          CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
+          setupMockForGettingUtlatande();
+          copyService.createUtkastCopy(copyReq);
+        });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testCreateUtkastCopyWhenCopyAlreadyExists() {
-    Utkast utkast = new Utkast();
-    utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
-    utkast.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElse(null));
+  @Test
+  void testCreateUtkastCopyWhenCopyAlreadyExists() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          Utkast utkast = new Utkast();
+          utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+          utkast.setPatientPersonnummer(
+              Personnummer.createPersonnummer("191212121212").orElse(null));
 
-    when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
+          when(utkastService.getDraft(INTYG_ID, INTYG_TYPE, false)).thenReturn(utkast);
 
-    WebcertCertificateRelation webcertRelation =
-        new WebcertCertificateRelation(
-            INTYG_COPY_ID,
-            RelationKod.KOPIA,
-            LocalDateTime.now(),
-            UtkastStatus.DRAFT_INCOMPLETE,
-            false);
-    when(certificateRelationService.getNewestRelationOfType(
-            eq(INTYG_ID), eq(RelationKod.KOPIA), any()))
-        .thenReturn(Optional.of(webcertRelation));
+          WebcertCertificateRelation webcertRelation =
+              new WebcertCertificateRelation(
+                  INTYG_COPY_ID,
+                  RelationKod.KOPIA,
+                  LocalDateTime.now(),
+                  UtkastStatus.DRAFT_INCOMPLETE,
+                  false);
+          when(certificateRelationService.getNewestRelationOfType(
+                  eq(INTYG_ID), eq(RelationKod.KOPIA), any()))
+              .thenReturn(Optional.of(webcertRelation));
 
-    CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
-    setupMockForGettingUtlatande();
-    copyService.createUtkastCopy(copyReq);
+          CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
+          setupMockForGettingUtlatande();
+          copyService.createUtkastCopy(copyReq);
+        });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testRenewThrowsExceptionWhenOriginalCertificateIsRevoked() {
-    when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
+  @Test
+  void testRenewThrowsExceptionWhenOriginalCertificateIsRevoked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
 
-    CreateRenewalCopyRequest copyReq = buildRenewalRequest();
-    setupMockForGettingUtlatande();
-    copyService.createRenewalCopy(copyReq);
+          CreateRenewalCopyRequest copyReq = buildRenewalRequest();
+          setupMockForGettingUtlatande();
+          copyService.createRenewalCopy(copyReq);
+        });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testCompletionThrowsExceptionWhenOriginalCertificateIsRevoked() {
-    when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
+  @Test
+  void testCompletionThrowsExceptionWhenOriginalCertificateIsRevoked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
 
-    CreateCompletionCopyRequest completionRequest = buildCompletionRequest();
-    setupMockForGettingUtlatande();
-    copyService.createCompletion(completionRequest);
+          CreateCompletionCopyRequest completionRequest = buildCompletionRequest();
+          setupMockForGettingUtlatande();
+          copyService.createCompletion(completionRequest);
+        });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testRenewalThrowsExceptionWhenOriginalCertificateIsRevoked() {
-    when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
+  @Test
+  void testRenewalThrowsExceptionWhenOriginalCertificateIsRevoked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
 
-    CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
-    setupMockForGettingUtlatande();
-    copyService.createRenewalCopy(renewalRequest);
+          CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
+          setupMockForGettingUtlatande();
+          copyService.createRenewalCopy(renewalRequest);
+        });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testUtkastFromTemplateThrowsExceptionWhenOriginalCertificateIsRevoked() {
-    when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
+  @Test
+  void testUtkastFromTemplateThrowsExceptionWhenOriginalCertificateIsRevoked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
 
-    CreateUtkastFromTemplateRequest renewalRequest = buildUtkastFromTemplateRequest();
-    copyService.createUtkastFromSignedTemplate(renewalRequest);
+          CreateUtkastFromTemplateRequest renewalRequest = buildUtkastFromTemplateRequest();
+          copyService.createUtkastFromSignedTemplate(renewalRequest);
+        });
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void testUtkastCopyThrowsExceptionWhenOriginalCertificateIsRevoked() {
-    when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
+  @Test
+  void testUtkastCopyThrowsExceptionWhenOriginalCertificateIsRevoked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(intygService.isRevoked(anyString(), anyString())).thenReturn(true);
 
-    CreateUtkastFromTemplateRequest renewalRequest = buildUtkastCopyRequest();
-    copyService.createUtkastCopy(renewalRequest);
+          CreateUtkastFromTemplateRequest renewalRequest = buildUtkastCopyRequest();
+          copyService.createUtkastCopy(renewalRequest);
+        });
   }
 
   private UtkastBuilderResponse createCopyUtkastBuilderResponse() {

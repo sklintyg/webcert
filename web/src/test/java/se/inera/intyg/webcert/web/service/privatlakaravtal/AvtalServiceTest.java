@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.privatlakaravtal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,11 +31,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
@@ -42,8 +43,8 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvt
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /** Created by eriklupander on 2015-08-05. */
-@RunWith(MockitoJUnitRunner.class)
-public class AvtalServiceTest {
+@ExtendWith(MockitoExtension.class)
+class AvtalServiceTest {
 
   private static final String USER_ID = "userId";
   private static final String PERSON_ID = "personId";
@@ -59,17 +60,17 @@ public class AvtalServiceTest {
   @InjectMocks private AvtalServiceImpl avtalService;
 
   @Test
-  public void testGetLatestAvtal() {
+  void testGetLatestAvtal() {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
     when(avtalRepository.findById(AVTAL_VERSION_1))
         .thenReturn(Optional.of(buildAvtal(AVTAL_VERSION_1)));
     Optional<Avtal> avtal = avtalService.getLatestAvtal();
     assertEquals(AVTAL_VERSION_1, avtal.orElse(null).getAvtalVersion());
-    assertEquals("TEXT", avtal.get().getAvtalText());
+    assertEquals(avtal.get().getAvtalText(), "TEXT");
   }
 
   @Test
-  public void testUserHasApprovedLatestAvtal() {
+  void testUserHasApprovedLatestAvtal() {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
     when(godkantAvtalRepository.userHasApprovedAvtal(USER_ID, AVTAL_VERSION_1)).thenReturn(true);
     boolean approved = avtalService.userHasApprovedLatestAvtal(USER_ID);
@@ -77,14 +78,14 @@ public class AvtalServiceTest {
   }
 
   @Test
-  public void testUserHasApprovedOldAvtal() {
+  void testUserHasApprovedOldAvtal() {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_2);
     boolean approved = avtalService.userHasApprovedLatestAvtal(USER_ID);
     assertFalse(approved);
   }
 
   @Test
-  public void testApproveAvtal() {
+  void testApproveAvtal() {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
     avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
     verify(godkantAvtalRepository, times(1)).approveAvtal(anyString(), anyInt());
@@ -92,17 +93,22 @@ public class AvtalServiceTest {
         .logPrivatePractitionerTermsApproved(anyString(), isNull(), anyInt());
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testApproveAvtalNoAvtalInDB() {
-    when(avtalRepository.getLatestAvtalVersion()).thenReturn(-1);
-    try {
-      avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
-    } catch (Exception e) {
-      verify(godkantAvtalRepository, times(0)).approveAvtal(anyString(), anyInt());
-      verify(monitoringLogService, times(0))
-          .logPrivatePractitionerTermsApproved(anyString(), any(Personnummer.class), anyInt());
-      throw e;
-    }
+  @Test
+  void testApproveAvtalNoAvtalInDB() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> {
+          when(avtalRepository.getLatestAvtalVersion()).thenReturn(-1);
+          try {
+            avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
+          } catch (Exception e) {
+            verify(godkantAvtalRepository, times(0)).approveAvtal(anyString(), anyInt());
+            verify(monitoringLogService, times(0))
+                .logPrivatePractitionerTermsApproved(
+                    anyString(), any(Personnummer.class), anyInt());
+            throw e;
+          }
+        });
   }
 
   private Avtal buildAvtal(Integer avtalVersion) {

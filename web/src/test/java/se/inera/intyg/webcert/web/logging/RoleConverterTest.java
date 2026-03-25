@@ -18,36 +18,36 @@
  */
 package se.inera.intyg.webcert.web.logging;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.google.common.collect.ImmutableMap;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-public class RoleConverterTest {
+class RoleConverterTest {
 
   private RoleConverter converter = new RoleConverter();
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     cleanup();
   }
 
-  @After
-  public void cleanup() {
+  @AfterEach
+  void cleanup() {
     SecurityContextHolder.getContext().setAuthentication(null);
   }
 
   @Test
-  public void testConvert() {
+  void testConvert() {
     String role = "user role";
     WebCertUser user = new WebCertUser();
     user.setRoles(ImmutableMap.of(role, new Role()));
@@ -61,21 +61,21 @@ public class RoleConverterTest {
   }
 
   @Test
-  public void testConvertNoAuth() {
+  void testConvertNoAuth() {
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals("NO ROLE", res);
+    assertEquals(res, "NO ROLE");
   }
 
   @Test
-  public void testConvertAuthNotWebCertUser() {
+  void testConvertAuthNotWebCertUser() {
     Authentication authentication = mock(Authentication.class);
     when(authentication.getPrincipal()).thenReturn("user");
     SecurityContextHolder.getContext().setAuthentication(authentication);
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals("NO ROLE", res);
+    assertEquals(res, "NO ROLE");
   }
 }

@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -41,12 +42,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -76,8 +79,9 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 /**
  * @author Magnus Ekstrand on 2017-10-13.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class IntygIntegrationServiceImplTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class IntygIntegrationServiceImplTest {
 
   private static final String REFERENS = "referens";
   private static final String ALTERNATE_SSN = "19010101-0101";
@@ -110,8 +114,8 @@ public class IntygIntegrationServiceImplTest {
 
   @InjectMocks private IntygIntegrationServiceImpl testee;
 
-  @Before
-  public void setupMock() {
+  @BeforeEach
+  void setupMock() {
     doNothing()
         .when(monitoringLog)
         .logIntegratedOtherCaregiver(
@@ -122,7 +126,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void shallStoreReferenceIfProvidedAndNotYetAdded() {
+  void shallStoreReferenceIfProvidedAndNotYetAdded() {
     final var user = createDefaultUser();
     final var integrationParameters = mock(IntegrationParameters.class);
     user.setParameters(integrationParameters);
@@ -136,7 +140,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void shallNotStoreReferenceIfNotProvided() {
+  void shallNotStoreReferenceIfNotProvided() {
     final var user = createDefaultUser();
     final var integrationParameters = mock(IntegrationParameters.class);
     user.setParameters(integrationParameters);
@@ -149,7 +153,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void prepareRedirectToIntygSuccess() {
+  void prepareRedirectToIntygSuccess() {
     // given
     when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
     when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
@@ -191,7 +195,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void prepareRedirectToIntygSuccessWithoutUpdatingPatient() {
+  void prepareRedirectToIntygSuccessWithoutUpdatingPatient() {
     // given
     when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
     when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
@@ -233,7 +237,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void ensurePreparationLockedDraft() {
+  void ensurePreparationLockedDraft() {
     // given
     Utkast utkast = createUtkast();
     utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
@@ -277,7 +281,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void userIsAuthorizedToHandleSekretessmarkeradPatient() {
+  void userIsAuthorizedToHandleSekretessmarkeradPatient() {
     // given
     when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
     when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
@@ -329,7 +333,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardgivare() {
+  void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardgivare() {
     // given
     when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
     when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
@@ -368,7 +372,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardenhet() {
+  void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardenhet() {
     // given
     when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
     when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
@@ -406,42 +410,46 @@ public class IntygIntegrationServiceImplTest {
             anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
   }
 
-  @Test(expected = WebCertServiceException.class)
-  public void expectExceptionWhenSekretessStatusIsUndefined() {
-    // given
-    when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
-    when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
-        .thenReturn(SekretessStatus.UNDEFINED);
+  @Test
+  void expectExceptionWhenSekretessStatusIsUndefined() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          // given
+          when(utkastRepository.findById(anyString())).thenReturn(Optional.of(createUtkast()));
+          when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
+              .thenReturn(SekretessStatus.UNDEFINED);
 
-    IntegrationParameters parameters =
-        new IntegrationParameters(
-            null,
-            null,
-            ALTERNATE_SSN,
-            "Nollan",
-            null,
-            "Nollansson",
-            "Nollgatan",
-            "000000",
-            "Nollby",
-            false,
-            false,
-            false,
-            false,
-            null);
+          IntegrationParameters parameters =
+              new IntegrationParameters(
+                  null,
+                  null,
+                  ALTERNATE_SSN,
+                  "Nollan",
+                  null,
+                  "Nollansson",
+                  "Nollgatan",
+                  "000000",
+                  "Nollby",
+                  false,
+                  false,
+                  false,
+                  false,
+                  null);
 
-    WebCertUser user = createDefaultUser();
-    user.setParameters(parameters);
+          WebCertUser user = createDefaultUser();
+          user.setParameters(parameters);
 
-    // when
-    testee.prepareRedirectToIntyg(INTYGSID, user);
+          // when
+          testee.prepareRedirectToIntyg(INTYGSID, user);
 
-    // if code reaches this point we fail the test
-    fail();
+          // if code reaches this point we fail the test
+          fail();
+        });
   }
 
   @Test
-  public void ensureDraftPatientInfoUpdated() {
+  void ensureDraftPatientInfoUpdated() {
     IntegrationParameters parameters =
         new IntegrationParameters(
             null,
@@ -468,7 +476,7 @@ public class IntygIntegrationServiceImplTest {
   }
 
   @Test
-  public void ensureDraftPatientInfoUpdated_whenAlternatePatientSsnIsEmptyString() {
+  void ensureDraftPatientInfoUpdated_whenAlternatePatientSsnIsEmptyString() {
     IntegrationParameters parameters =
         new IntegrationParameters(
             null, null, "", null, null, null, null, null, null, false, false, false, false, null);

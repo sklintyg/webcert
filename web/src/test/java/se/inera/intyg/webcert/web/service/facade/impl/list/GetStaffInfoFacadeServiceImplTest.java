@@ -61,7 +61,7 @@ class GetStaffInfoFacadeServiceImplTest {
   SelectableVardenhet unit = Mockito.mock(SelectableVardenhet.class);
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     doReturn(user).when(webCertUserService).getUser();
   }
 
@@ -69,7 +69,7 @@ class GetStaffInfoFacadeServiceImplTest {
   class IsLoggedInUserDoctor {
 
     @Test
-    public void shouldReturnTrueIfUserIsDoctor() {
+    void shouldReturnTrueIfUserIsDoctor() {
       doReturn(true).when(user).isLakare();
 
       final var result = getStaffInfoFacadeService.isLoggedInUserDoctor();
@@ -78,7 +78,7 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldReturnTrueIfUserIsPrivateDoctor() {
+    void shouldReturnTrueIfUserIsPrivateDoctor() {
       doReturn(true).when(user).isPrivatLakare();
 
       final var result = getStaffInfoFacadeService.isLoggedInUserDoctor();
@@ -87,7 +87,7 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldReturnFalseIfUserIsNotDoctor() {
+    void shouldReturnFalseIfUserIsNotDoctor() {
       final var result = getStaffInfoFacadeService.isLoggedInUserDoctor();
 
       assertFalse(result);
@@ -98,12 +98,12 @@ class GetStaffInfoFacadeServiceImplTest {
   class GetLoggedInStaffHsaId {
 
     @Test
-    public void shouldReturnHsaIdOfLoggedInStaff() {
+    void shouldReturnHsaIdOfLoggedInStaff() {
       doReturn("HSA_ID").when(user).getHsaId();
 
       final var result = getStaffInfoFacadeService.getLoggedInStaffHsaId();
 
-      assertEquals("HSA_ID", result);
+      assertEquals(result, "HSA_ID");
     }
   }
 
@@ -111,7 +111,7 @@ class GetStaffInfoFacadeServiceImplTest {
   class GetStaffListInfo {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       doReturn("UNIT_ID").when(unit).getId();
 
       doReturn(unit).when(user).getValdVardenhet();
@@ -120,18 +120,18 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldAddUserToListIfItDoesNotExistsAndIsDoctorOrDentist() {
+    void shouldAddUserToListIfItDoesNotExistsAndIsDoctorOrDentist() {
       doReturn(new ArrayList<Lakare>()).when(utkastService).getLakareWithDraftsByEnhet(any());
       doReturn(true).when(user).isLakare();
 
       final var result = getStaffInfoFacadeService.get();
 
       assertEquals(1, result.size());
-      assertEquals("HSA_ID", result.get(0).getHsaId());
+      assertEquals(result.get(0).getHsaId(), "HSA_ID");
     }
 
     @Test
-    public void shouldNotAddUserToListIfNotDoctorOrDentist() {
+    void shouldNotAddUserToListIfNotDoctorOrDentist() {
       doReturn(new ArrayList<Lakare>()).when(utkastService).getLakareWithDraftsByEnhet(any());
       doReturn(false).when(user).isLakare();
 
@@ -141,7 +141,7 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldNotAddUserToListIfItExistsAndIsDoctorOrDentist() {
+    void shouldNotAddUserToListIfItExistsAndIsDoctorOrDentist() {
       doReturn(true).when(user).isLakare();
       doReturn(List.of(new Lakare("HSA_ID", "NAME")))
           .when(utkastService)
@@ -153,25 +153,25 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldConvertLakareHsaId() {
+    void shouldConvertLakareHsaId() {
       doReturn(List.of(new Lakare("HSA_ID", "NAME")))
           .when(utkastService)
           .getLakareWithDraftsByEnhet(any());
 
       final var result = getStaffInfoFacadeService.get();
 
-      assertEquals("HSA_ID", result.get(0).getHsaId());
+      assertEquals(result.get(0).getHsaId(), "HSA_ID");
     }
 
     @Test
-    public void shouldConvertLakareName() {
+    void shouldConvertLakareName() {
       doReturn(List.of(new Lakare("HSA_ID", "NAME")))
           .when(utkastService)
           .getLakareWithDraftsByEnhet(any());
 
       final var result = getStaffInfoFacadeService.get();
 
-      assertEquals("NAME", result.get(0).getName());
+      assertEquals(result.get(0).getName(), "NAME");
     }
   }
 
@@ -194,7 +194,7 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldConvertLakareName() {
+    void shouldConvertLakareName() {
       setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
 
       final var result = getStaffInfoFacadeService.get(UNIT_ID);
@@ -203,7 +203,7 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldConvertLakareHsaId() {
+    void shouldConvertLakareHsaId() {
       setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
 
       final var result = getStaffInfoFacadeService.get(UNIT_ID);
@@ -212,7 +212,7 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldNotAddUserToListIfItExistsAndIsDoctorOrDentist() {
+    void shouldNotAddUserToListIfItExistsAndIsDoctorOrDentist() {
       doReturn(true).when(user).isLakare();
       setup(LOGGED_IN_STAFF_ID, STAFF_NAME);
 
@@ -223,7 +223,7 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldAddUserToListIfItDoesNotExistsAndIsDoctor() {
+    void shouldAddUserToListIfItDoesNotExistsAndIsDoctor() {
       doReturn(true).when(user).isLakare();
       setup(STAFF_ID, STAFF_NAME);
 
@@ -234,7 +234,7 @@ class GetStaffInfoFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldNotAddUserToListIfNotDoctorOrDentist() {
+    void shouldNotAddUserToListIfNotDoctorOrDentist() {
       doReturn(false).when(user).isLakare();
       setup(STAFF_ID, STAFF_NAME);
 

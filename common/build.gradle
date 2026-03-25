@@ -10,9 +10,6 @@ dependencies {
 
     annotationProcessor "org.projectlombok:lombok"
 
-    testImplementation "junit:junit"
     testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-test"
-
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
 }

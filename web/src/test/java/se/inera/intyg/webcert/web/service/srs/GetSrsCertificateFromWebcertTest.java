@@ -116,7 +116,7 @@ class GetSrsCertificateFromWebcertTest {
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("cert-1", result.getCertificateId());
+    assertEquals(result.getCertificateId(), "cert-1");
   }
 
   @Test
@@ -157,7 +157,7 @@ class GetSrsCertificateFromWebcertTest {
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("F438A", result.getMainDiagnosisCode());
+    assertEquals(result.getMainDiagnosisCode(), "F438A");
   }
 
   @Test
@@ -179,7 +179,7 @@ class GetSrsCertificateFromWebcertTest {
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("parent-cert-1", result.getExtendsCertificateId());
+    assertEquals(result.getExtendsCertificateId(), "parent-cert-1");
   }
 
   @Test
@@ -253,10 +253,10 @@ class GetSrsCertificateFromWebcertTest {
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("cert-1", result.getCertificateId());
-    assertEquals("F438A", result.getMainDiagnosisCode());
+    assertEquals(result.getCertificateId(), "cert-1");
+    assertEquals(result.getMainDiagnosisCode(), "F438A");
     assertEquals(signingDateTime.toLocalDate(), result.getSignedDate());
-    assertEquals("parent-cert-1", result.getExtendsCertificateId());
+    assertEquals(result.getExtendsCertificateId(), "parent-cert-1");
   }
 
   @Test
@@ -279,7 +279,7 @@ class GetSrsCertificateFromWebcertTest {
     final var result = getSrsCertificateFromWebcert.getSrsCertificate("cert-1");
 
     assertNotNull(result);
-    assertEquals("cert-1", result.getCertificateId());
+    assertEquals(result.getCertificateId(), "cert-1");
     assertNull(result.getSignedDate());
     assertNull(result.getExtendsCertificateId());
   }

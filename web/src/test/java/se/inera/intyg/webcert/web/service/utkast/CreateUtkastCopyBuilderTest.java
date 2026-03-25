@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,13 +32,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -60,8 +62,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateReq
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
-public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
 
   private static final String INTYG_TYPE_1 = "db";
   private static final String INTYG_TYPE_2 = "doi";
@@ -79,8 +82,8 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
   @InjectMocks
   private CreateUtkastCopyBuilder createUtkastCopyBuilder = new CreateUtkastCopyBuilder();
 
-  @Before
-  public void expectCallToModuleRegistry() throws Exception {
+  @BeforeEach
+  void expectCallToModuleRegistry() throws Exception {
     this.mockModuleApiDB = mock(ModuleApi.class);
     this.mockModuleApiDOI = mock(ModuleApi.class);
     when(moduleRegistry.getModuleApi(INTYG_TYPE_1, INTYG_TEXT_VERSION)).thenReturn(mockModuleApiDB);
@@ -89,7 +92,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
+  void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
 
     IntygContentHolder ich = createIntygContentHolder();
     when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE_1)).thenReturn(ich);
@@ -142,7 +145,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateCopyUtkastFromOriginalUtkast() throws Exception {
+  void testPopulateCopyUtkastFromOriginalUtkast() throws Exception {
 
     Utkast orgUtkast = createOriginalUtkast();
     when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));

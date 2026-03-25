@@ -54,32 +54,32 @@ class IntygConverterUtilTest {
 
     assertTrue(res.getVardReferensId().contains("SEND-123-"));
 
-    assertEquals("123", res.getLakarutlatande().getLakarutlatandeId());
+    assertEquals(res.getLakarutlatande().getLakarutlatandeId(), "123");
     assertNull(res.getLakarutlatande().getPatient().getFullstandigtNamn());
     assertEquals(
-        "19121212-1212", res.getLakarutlatande().getPatient().getPersonId().getExtension());
+        res.getLakarutlatande().getPatient().getPersonId().getExtension(), "19121212-1212");
     assertNotNull(res.getLakarutlatande().getSigneringsTidpunkt());
     assertNull(res.getAdressVard().getHosPersonal().getForskrivarkod());
-    assertEquals("En Läkare", res.getAdressVard().getHosPersonal().getFullstandigtNamn());
+    assertEquals(res.getAdressVard().getHosPersonal().getFullstandigtNamn(), "En Läkare");
     assertEquals(
-        "Personal HSA-ID", res.getAdressVard().getHosPersonal().getPersonalId().getExtension());
-    assertEquals("Kir mott", res.getAdressVard().getHosPersonal().getEnhet().getEnhetsnamn());
+        res.getAdressVard().getHosPersonal().getPersonalId().getExtension(), "Personal HSA-ID");
+    assertEquals(res.getAdressVard().getHosPersonal().getEnhet().getEnhetsnamn(), "Kir mott");
     assertEquals(
-        "VardenhetY", res.getAdressVard().getHosPersonal().getEnhet().getEnhetsId().getExtension());
+        res.getAdressVard().getHosPersonal().getEnhet().getEnhetsId().getExtension(), "VardenhetY");
     assertEquals(
-        "123456789011",
-        res.getAdressVard().getHosPersonal().getEnhet().getArbetsplatskod().getExtension());
+        res.getAdressVard().getHosPersonal().getEnhet().getArbetsplatskod().getExtension(),
+        "123456789011");
     assertEquals(
-        "Landstinget Norrland",
-        res.getAdressVard().getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
+        res.getAdressVard().getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn(),
+        "Landstinget Norrland");
     assertEquals(
-        "VardgivarId",
         res.getAdressVard()
             .getHosPersonal()
             .getEnhet()
             .getVardgivare()
             .getVardgivareId()
-            .getExtension());
+            .getExtension(),
+        "VardgivarId");
   }
 
   @Test
@@ -90,7 +90,7 @@ class IntygConverterUtilTest {
 
     final var name = IntygConverterUtil.concatPatientName(fName, mName, lName);
 
-    assertEquals("Adam Bertil Cesar Davidsson Eriksson", name);
+    assertEquals(name, "Adam Bertil Cesar Davidsson Eriksson");
   }
 
   @Test
@@ -100,7 +100,7 @@ class IntygConverterUtilTest {
 
     final var name = IntygConverterUtil.concatPatientName(fName, null, lName);
 
-    assertEquals("Adam Bertil Eriksson", name);
+    assertEquals(name, "Adam Bertil Eriksson");
   }
 
   @Test
@@ -110,7 +110,7 @@ class IntygConverterUtilTest {
 
     final var name = IntygConverterUtil.concatPatientName(fName, " ", lName);
 
-    assertEquals("Adam Bertil Eriksson", name);
+    assertEquals(name, "Adam Bertil Eriksson");
   }
 
   @Test
@@ -121,7 +121,7 @@ class IntygConverterUtilTest {
     final var res = IntygConverterUtil.buildVardReferensId("ABC123", ts);
 
     assertNotNull(res);
-    assertEquals("SEND-ABC123-20140101T123456.123", res);
+    assertEquals(res, "SEND-ABC123-20140101T123456.123");
   }
 
   @Test

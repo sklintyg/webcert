@@ -18,19 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -42,8 +42,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 /** Created by eriklupander on 2015-06-23. */
-@RunWith(MockitoJUnitRunner.class)
-public class UtkastIntygDecoratorTest {
+@ExtendWith(MockitoExtension.class)
+class UtkastIntygDecoratorTest {
 
   private static final String INTYG_JSON = "A bit of text representing json";
   private static final String INTYG_TYPE = "fk7263";
@@ -56,8 +56,8 @@ public class UtkastIntygDecoratorTest {
 
   @InjectMocks private UtkastIntygDecoratorImpl testee;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     HoSPersonal person = buildHosPerson();
     VardpersonReferens vardperson = buildVardpersonReferens(person);
 
@@ -65,7 +65,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testNotAWebcertIntygDoesNotAddAnyStatuses() {
+  void testNotAWebcertIntygDoesNotAddAnyStatuses() {
 
     CertificateResponse response = buildCertificateResponse();
 
@@ -74,7 +74,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testRevokedStatusOnIntygDoesNotAddAnyStatuses() {
+  void testRevokedStatusOnIntygDoesNotAddAnyStatuses() {
 
     CertificateResponse response = buildCertificateResponse();
     response
@@ -87,7 +87,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testRevokedIntygDoesNotAddAnyStatuses() {
+  void testRevokedIntygDoesNotAddAnyStatuses() {
 
     CertificateResponse response = buildCertificateResponse();
     CertificateResponse revokedResponse =
@@ -99,7 +99,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testSentIntygDoesNotAddAnySentStatus() {
+  void testSentIntygDoesNotAddAnySentStatus() {
 
     CertificateResponse response = buildCertificateResponse();
     response
@@ -112,7 +112,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
+  void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
     signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
     signedUtkast.setAterkalladDatum(LocalDateTime.now());
     when(utkastRepository.findById(nullable(String.class)))
@@ -129,7 +129,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testSentStatusIsAddedFromUtkast() {
+  void testSentStatusIsAddedFromUtkast() {
     signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
     when(utkastRepository.findById(nullable(String.class)))
         .thenReturn(Optional.ofNullable(signedUtkast));
@@ -144,7 +144,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testRevokedStatusIsAddedFromUtkast() {
+  void testRevokedStatusIsAddedFromUtkast() {
     signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
     signedUtkast.setAterkalladDatum(LocalDateTime.now());
     when(utkastRepository.findById(nullable(String.class)))

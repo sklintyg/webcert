@@ -50,9 +50,9 @@ class ConfigApiControllerTest {
 
     assertAll(
         () -> assertEquals(ZIP_CODE, response.getFirst().zipCode()),
-        () -> assertEquals("City", response.getFirst().city()),
-        () -> assertEquals("Municipality", response.getFirst().municipality()),
-        () -> assertEquals("County", response.getFirst().county()));
+        () -> assertEquals(response.getFirst().city(), "City"),
+        () -> assertEquals(response.getFirst().municipality(), "Municipality"),
+        () -> assertEquals(response.getFirst().county(), "County"));
   }
 
   @Test

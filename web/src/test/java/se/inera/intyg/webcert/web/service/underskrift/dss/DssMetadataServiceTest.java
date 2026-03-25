@@ -38,7 +38,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-public class DssMetadataServiceTest {
+class DssMetadataServiceTest {
 
   private DssMetadataService service;
 
@@ -73,11 +73,11 @@ public class DssMetadataServiceTest {
 
     service.initDssMetadata();
     assertEquals(
-        "http://localhost:8020/api/signature/signservice/v1/response", service.getDssActionUrl());
+        service.getDssActionUrl(), "http://localhost:8020/api/signature/signservice/v1/response");
 
     ReflectionTestUtils.setField(service, "actionUrlProperty", "");
     assertEquals(
-        "http://localhost:8020/api/signature/signservice/v1/response", service.getDssActionUrl());
+        service.getDssActionUrl(), "http://localhost:8020/api/signature/signservice/v1/response");
   }
 
   @Test
@@ -111,7 +111,7 @@ public class DssMetadataServiceTest {
     final var dssKeyStore = service.getDssKeyStore();
     final var dss0 = dssKeyStore.getCertificate("dss0");
     assertNotNull(dss0);
-    assertEquals("X.509", dss0.getType(), "Certificate Type");
+    assertEquals("X.509", dss0.getType());
   }
 
   @Test

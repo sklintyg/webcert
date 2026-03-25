@@ -32,7 +32,7 @@ import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeSe
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class FMBControllerTest {
+class FMBControllerTest {
 
   @Mock private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
 

@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,14 +35,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
@@ -75,8 +75,8 @@ import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsLista;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Patient;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
 
-@RunWith(MockitoJUnitRunner.class)
-public class FmbSjukfallServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class FmbSjukfallServiceImplTest {
 
   private static final LocalDate START_DATUM = LocalDate.of(2019, 12, 12);
   private static final LocalDate SLUT_DATUM = LocalDate.of(2019, 12, 20);
@@ -113,7 +113,7 @@ public class FmbSjukfallServiceImplTest {
   private List<Period> PERIODS = Collections.emptyList();
 
   @Test
-  public void totalSjukskrivningstidForPatientAndCareUnit() {
+  void totalSjukskrivningstidForPatientAndCareUnit() {
 
     final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
     final ListActiveSickLeavesForCareUnitResponseType response = createResponse();
@@ -144,7 +144,7 @@ public class FmbSjukfallServiceImplTest {
   }
 
   @Test
-  public void totalSjukskrivningstidForPatientAndCareUnitWithoutPreviousSickLeaves() {
+  void totalSjukskrivningstidForPatientAndCareUnitWithoutPreviousSickLeaves() {
 
     final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
     final ListActiveSickLeavesForCareUnitResponseType response = createEmptyResponse();
@@ -180,7 +180,7 @@ public class FmbSjukfallServiceImplTest {
   }
 
   @Test
-  public void totalSjukskrivningstidForPatientAndCareUnitChainOfSjukfall() {
+  void totalSjukskrivningstidForPatientAndCareUnitChainOfSjukfall() {
 
     final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
     final ListActiveSickLeavesForCareUnitResponseType response = createResponse();
@@ -221,7 +221,7 @@ public class FmbSjukfallServiceImplTest {
   }
 
   @Test
-  public void totalSjukskrivningstidForPatientAndCareUnitMottagning() {
+  void totalSjukskrivningstidForPatientAndCareUnitMottagning() {
 
     final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
     user.setValdVardenhet(

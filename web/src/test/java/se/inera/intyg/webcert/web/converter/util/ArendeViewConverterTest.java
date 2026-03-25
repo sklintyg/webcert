@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.converter.util;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
@@ -43,12 +43,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
 import se.inera.intyg.common.luse.v1.model.internal.LuseUtlatandeV1;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -77,8 +79,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ArendeViewConverterTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class ArendeViewConverterTest {
 
   private static final String PATIENT_PERSON_ID = "19121212-1212";
   private static final String SKAPADAV_PERSON_ID = "19121212-1212";
@@ -97,8 +100,8 @@ public class ArendeViewConverterTest {
   @Mock private ModuleApi moduleApi;
 
   @SuppressWarnings("unchecked")
-  @Before
-  public void setup() throws Exception {
+  @BeforeEach
+  void setup() throws Exception {
     when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
     Map<String, List<String>> map = new HashMap<>();
     map.put(
@@ -112,8 +115,8 @@ public class ArendeViewConverterTest {
         .thenReturn(map);
   }
 
-  @Before
-  public void setupDefaultMocksForIntygService() {
+  @BeforeEach
+  void setupDefaultMocksForIntygService() {
     when(intygService.fetchIntygData(any(String.class), any(String.class)))
         .thenReturn(
             IntygContentHolder.builder()
@@ -146,7 +149,7 @@ public class ArendeViewConverterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConvertToArendeForLuse() throws ModuleNotFoundException, ModuleException {
+  void testConvertToArendeForLuse() throws ModuleNotFoundException, ModuleException {
     ArendeView result = converter.convertToDto(buildArende("luse"));
 
     assertNotNull(result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -166,7 +169,7 @@ public class ArendeViewConverterTest {
   }
 
   @Test
-  public void convertToJson() throws IOException {
+  void convertToJson() throws IOException {
     Arende arende = buildArende("lisjp");
     StringWriter jsonWriter = new StringWriter();
     CustomObjectMapper objectMapper = new CustomObjectMapper();
@@ -175,7 +178,7 @@ public class ArendeViewConverterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConvertToArendeForLisjp() throws ModuleNotFoundException, ModuleException {
+  void testConvertToArendeForLisjp() throws ModuleNotFoundException, ModuleException {
     ArendeView result = converter.convertToDto(buildArende("lisjp"));
 
     assertEquals(
@@ -198,7 +201,7 @@ public class ArendeViewConverterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConvertKompletteringWithoutInstans() throws ModuleException {
+  void testConvertKompletteringWithoutInstans() throws ModuleException {
     Arende arende = buildArende("lisjp");
     arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
     ArendeView result = converter.convertToDto(arende);
@@ -216,7 +219,7 @@ public class ArendeViewConverterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConvertKompletteringInstansTooHigh() throws ModuleException {
+  void testConvertKompletteringInstansTooHigh() throws ModuleException {
     Arende arende = buildArende("lisjp");
     arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", 3, "arende1")));
     ArendeView result = converter.convertToDto(arende);
@@ -234,13 +237,13 @@ public class ArendeViewConverterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConvertKompletteringUnknownQuestionId() throws ModuleException {
+  void testConvertKompletteringUnknownQuestionId() throws ModuleException {
     Arende arende = buildArende("lisjp");
     arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));
     ArendeView result = converter.convertToDto(arende);
 
     assertEquals(1, result.getKompletteringar().size());
-    assertEquals("", result.getKompletteringar().get(0).getJsonPropertyHandle());
+    assertEquals(result.getKompletteringar().get(0).getJsonPropertyHandle(), "");
     assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
     assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
     assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
@@ -250,7 +253,7 @@ public class ArendeViewConverterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConvertToArendeWithoutKomplettering() throws ModuleException {
+  void testConvertToArendeWithoutKomplettering() throws ModuleException {
     ArendeView result =
         converter.convertToDto(
             buildArende("meddelandeId", LocalDateTime.now(), LocalDateTime.now()));
@@ -264,7 +267,7 @@ public class ArendeViewConverterTest {
   }
 
   @Test
-  public void convertToArendeConversationViewTest() {
+  void convertToArendeConversationViewTest() {
     final String fragaMeddelandeId = "fragaId";
     final LocalDateTime senasteHandelseFraga = LocalDateTime.now();
     final String svarMeddelandeId = "svarId";
@@ -297,7 +300,7 @@ public class ArendeViewConverterTest {
   }
 
   @Test
-  public void buildArendeConversationsTest() {
+  void buildArendeConversationsTest() {
     final LocalDateTime january = LocalDateTime.parse("2013-01-12T11:22:11");
     final LocalDateTime february = LocalDateTime.parse("2013-02-12T11:22:11");
     final LocalDateTime decemberYear9999 = LocalDateTime.parse("9999-12-11T10:22:00");
@@ -334,7 +337,7 @@ public class ArendeViewConverterTest {
   }
 
   @Test
-  public void paminnelserInArendeConversionViewShouldBeReverseSortedOnDate() {
+  void paminnelserInArendeConversionViewShouldBeReverseSortedOnDate() {
     // Given
     LocalDateTime fragaTimestamp = LocalDateTime.parse("2016-03-01T11:22:11");
     Arende fraga = createValidArendeForLuse("fraga", fragaTimestamp, "fraga1-id", null);
@@ -363,7 +366,7 @@ public class ArendeViewConverterTest {
   }
 
   @Test
-  public void differentMessageThreadsShouldBeSeparatedAndSortedOnSenasteHandelse() {
+  void differentMessageThreadsShouldBeSeparatedAndSortedOnSenasteHandelse() {
     // Given
     LocalDateTime startOfFirstThread = LocalDateTime.parse("2016-03-01T11:22:11");
     Arende fraga1 = createValidArendeForLuse("fraga", startOfFirstThread, "fraga1-id", null);
@@ -418,7 +421,7 @@ public class ArendeViewConverterTest {
   }
 
   @Test
-  public void emptyListOfKompletterandeIntygIsOk() {
+  void emptyListOfKompletterandeIntygIsOk() {
     // Given
     LocalDateTime fragaTimestamp = LocalDateTime.parse("2016-03-01T11:22:11");
     Arende fraga = createValidArendeForLuse("fraga", fragaTimestamp, "unique id of fraga", null);
@@ -442,7 +445,7 @@ public class ArendeViewConverterTest {
   }
 
   @Test
-  public void nullListOfKompltIntygShouldThrowException() {
+  void nullListOfKompltIntygShouldThrowException() {
     // Given
     LocalDateTime fragaTimestamp = LocalDateTime.parse("2016-03-01T11:22:11");
     Arende fraga = createValidArendeForLuse("fraga", fragaTimestamp, "unique id of fraga", null);
@@ -465,7 +468,7 @@ public class ArendeViewConverterTest {
   }
 
   @Test
-  public void ifMultipleKompltIntygClosestInTimeShouldBeChoosen() {
+  void ifMultipleKompltIntygClosestInTimeShouldBeChoosen() {
     // Given
     LocalDateTime fragaDate = LocalDateTime.parse("2016-03-01T11:22:11");
     Arende fraga = createValidArendeForLuse("fraga", fragaDate, "fraga-id", null);

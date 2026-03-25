@@ -152,7 +152,7 @@ class SendNotificationRequestSanitizerTest {
       final var stringWithBlankSpace = "string ";
       final var result = SendNotificationRequestSanitizer.sanitize(stringWithBlankSpace);
 
-      assertEquals("string", result);
+      assertEquals(result, "string");
     }
   }
 

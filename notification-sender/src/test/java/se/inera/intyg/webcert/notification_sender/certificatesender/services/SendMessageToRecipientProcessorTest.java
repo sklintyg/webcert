@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,13 +28,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import jakarta.xml.ws.WebServiceException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcHelper;
@@ -43,8 +44,8 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.S
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SendMessageToRecipientProcessorTest {
+@ExtendWith(MockitoExtension.class)
+class SendMessageToRecipientProcessorTest {
 
   private static final String INTYG_ID = "intyg-id";
   private static final String LOGICAL_ADDRESS = "logicalAddress";
@@ -60,7 +61,7 @@ public class SendMessageToRecipientProcessorTest {
   @InjectMocks private SendMessageToRecipientProcessor sendMessageProcessor;
 
   @Test
-  public void processTest() throws Exception {
+  void processTest() throws Exception {
     when(sendMessageToRecipientResponder.sendMessageToRecipient(
             anyString(), any(SendMessageToRecipientType.class)))
         .thenReturn(buildResponse(ResultTypeUtil.okResult()));
@@ -76,7 +77,7 @@ public class SendMessageToRecipientProcessorTest {
   }
 
   @Test
-  public void processInfoResponseTest() throws Exception {
+  void processInfoResponseTest() throws Exception {
     when(sendMessageToRecipientResponder.sendMessageToRecipient(
             anyString(), any(SendMessageToRecipientType.class)))
         .thenReturn(buildResponse(ResultTypeUtil.infoResult("info")));
@@ -91,49 +92,76 @@ public class SendMessageToRecipientProcessorTest {
     assertEquals(MESSAGE_ID, requestCaptor.getValue().getMeddelandeId());
   }
 
-  @Test(expected = TemporaryException.class)
-  public void processJaxbExceptionTest() throws Exception {
-    sendMessageProcessor.process("invalid-xml", INTYG_ID, LOGICAL_ADDRESS);
+  @Test
+  void processJaxbExceptionTest() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          sendMessageProcessor.process("invalid-xml", INTYG_ID, LOGICAL_ADDRESS);
+        });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void processWebServiceExceptionTest() throws Exception {
-    when(sendMessageToRecipientResponder.sendMessageToRecipient(
-            anyString(), any(SendMessageToRecipientType.class)))
-        .thenThrow(new WebServiceException());
-    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  @Test
+  void processWebServiceExceptionTest() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          when(sendMessageToRecipientResponder.sendMessageToRecipient(
+                  anyString(), any(SendMessageToRecipientType.class)))
+              .thenThrow(new WebServiceException());
+          sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+        });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void processErrorIdRevokedTest() throws Exception {
-    when(sendMessageToRecipientResponder.sendMessageToRecipient(
-            anyString(), any(SendMessageToRecipientType.class)))
-        .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.REVOKED, "")));
-    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  @Test
+  void processErrorIdRevokedTest() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          when(sendMessageToRecipientResponder.sendMessageToRecipient(
+                  anyString(), any(SendMessageToRecipientType.class)))
+              .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.REVOKED, "")));
+          sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+        });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void processErrorIdValidationErrorTest() throws Exception {
-    when(sendMessageToRecipientResponder.sendMessageToRecipient(
-            anyString(), any(SendMessageToRecipientType.class)))
-        .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.VALIDATION_ERROR, "")));
-    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  @Test
+  void processErrorIdValidationErrorTest() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          when(sendMessageToRecipientResponder.sendMessageToRecipient(
+                  anyString(), any(SendMessageToRecipientType.class)))
+              .thenReturn(
+                  buildResponse(ResultTypeUtil.errorResult(ErrorIdType.VALIDATION_ERROR, "")));
+          sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+        });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void processErrorIdApplicationErrorTest() throws Exception {
-    when(sendMessageToRecipientResponder.sendMessageToRecipient(
-            anyString(), any(SendMessageToRecipientType.class)))
-        .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.APPLICATION_ERROR, "")));
-    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  @Test
+  void processErrorIdApplicationErrorTest() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          when(sendMessageToRecipientResponder.sendMessageToRecipient(
+                  anyString(), any(SendMessageToRecipientType.class)))
+              .thenReturn(
+                  buildResponse(ResultTypeUtil.errorResult(ErrorIdType.APPLICATION_ERROR, "")));
+          sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+        });
   }
 
-  @Test(expected = TemporaryException.class)
-  public void processErrorIdTechnicalErrorTest() throws Exception {
-    when(sendMessageToRecipientResponder.sendMessageToRecipient(
-            anyString(), any(SendMessageToRecipientType.class)))
-        .thenReturn(buildResponse(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "")));
-    sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+  @Test
+  void processErrorIdTechnicalErrorTest() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          when(sendMessageToRecipientResponder.sendMessageToRecipient(
+                  anyString(), any(SendMessageToRecipientType.class)))
+              .thenReturn(
+                  buildResponse(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "")));
+          sendMessageProcessor.process(XML_BODY, INTYG_ID, LOGICAL_ADDRESS);
+        });
   }
 
   private SendMessageToRecipientResponseType buildResponse(ResultType result) {

@@ -18,26 +18,26 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TermsApiControllerTest {
+@ExtendWith(MockitoExtension.class)
+class TermsApiControllerTest {
 
   @Mock private AvtalService avtalService;
 
   @InjectMocks private TermsApiController termsApiController;
 
   @Test
-  public void shouldReturnFetchedValue() {
+  void shouldReturnFetchedValue() {
     when(avtalService.userHasApprovedLatestAvtal(any(String.class))).thenReturn(true);
 
     final var response = termsApiController.getWebcertTermsApproved("HSA_ID");

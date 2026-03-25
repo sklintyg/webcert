@@ -18,31 +18,31 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = NotificationRedeliveryStrategyFactory.class)
 @TestPropertySource(properties = {"notification.redelivery.strategy.template.standard=1#1:s"})
-public class NotificationRedeliveryStrategyFactoryTest {
+class NotificationRedeliveryStrategyFactoryTest {
 
   @Autowired NotificationRedeliveryStrategyFactory factory;
 
   @Test
-  public void shouldReturnStandardStrategyWhenRequested() {
+  void shouldReturnStandardStrategyWhenRequested() {
     final var strategy = factory.getResendStrategy(NotificationRedeliveryStrategyEnum.STANDARD);
     assertTrue(strategy instanceof NotificationRedeliveryStrategyStandard);
   }
 
   @Test
-  public void shouldReturnStrategySingleWhenRequested() {
+  void shouldReturnStrategySingleWhenRequested() {
     final var strategy = factory.getResendStrategy(NotificationRedeliveryStrategyEnum.SINGLE);
     assertTrue(strategy instanceof NotificationRedeliveryStrategySingle);
   }

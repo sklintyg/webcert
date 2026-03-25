@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -36,7 +36,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
-public class AbstractBuilderTest {
+class AbstractBuilderTest {
 
   protected static final String INTYG_ID = "abc123";
 
@@ -81,8 +81,8 @@ public class AbstractBuilderTest {
 
   protected Patient patient;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     hoSPerson = new HoSPersonal();
     hoSPerson.setPersonId(HOSPERSON_ID);
     hoSPerson.setFullstandigtNamn(HOSPERSON_NAME);
@@ -101,14 +101,14 @@ public class AbstractBuilderTest {
     patient.setPersonId(PATIENT_SSN);
   }
 
-  @Before
-  public void expectCallToWebcertUserService() {
+  @BeforeEach
+  void expectCallToWebcertUserService() {
     when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true))
         .thenReturn(true);
   }
 
-  @Before
-  public void expectCallIntygTextService() {
+  @BeforeEach
+  void expectCallIntygTextService() {
     when(intygTextsService.getLatestVersionForSameMajorVersion(anyString(), anyString()))
         .thenReturn("1.0");
   }

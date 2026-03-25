@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -46,14 +47,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import org.apache.activemq.command.ActiveMQTextMessage;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -92,8 +95,9 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensServiceImpl;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationServiceImplTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class NotificationServiceImplTest {
 
   private static final String INTYG_TYP_FK = "fk7263";
   private static final String INTYG_ID = "1234";
@@ -148,8 +152,8 @@ public class NotificationServiceImplTest {
 
   @InjectMocks private NotificationServiceImpl notificationService;
 
-  @Before
-  public void setup() throws Exception {
+  @BeforeEach
+  void setup() throws Exception {
     setupMocks(SchemaVersion.VERSION_3);
 
     when(session.createTextMessage(anyString()))
@@ -175,7 +179,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testCreateAndSendNotification() throws Exception {
+  void testCreateAndSendNotification() throws Exception {
 
     ArgumentCaptor<MessageCreator> messageCreatorCaptor =
         ArgumentCaptor.forClass(MessageCreator.class);
@@ -234,7 +238,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testCreateAndSendNotificationWithReference() throws Exception {
+  void testCreateAndSendNotificationWithReference() throws Exception {
     ArgumentCaptor<MessageCreator> messageCreatorCaptor =
         ArgumentCaptor.forClass(MessageCreator.class);
 
@@ -291,7 +295,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testIntygsutkastCreated() {
+  void testIntygsutkastCreated() {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
 
@@ -321,82 +325,106 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testDraftCreated() throws Exception {
+  void testDraftCreated() throws Exception {
     notificationService.sendNotificationForDraftCreated(createUtkast());
     verifySuccessfulInvocations(HandelsekodEnum.SKAPAT);
   }
 
-  @Test(expected = JmsException.class)
-  public void testDraftCreatedJmsException() {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForDraftCreated(createUtkast());
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testDraftCreatedJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForDraftCreated(createUtkast());
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testDraftSigned() throws Exception {
+  void testDraftSigned() throws Exception {
     notificationService.sendNotificationForDraftSigned(createUtkast());
     verifySuccessfulInvocations(HandelsekodEnum.SIGNAT);
   }
 
-  @Test(expected = JmsException.class)
-  public void testDraftSignedJmsException() {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForDraftSigned(createUtkast());
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testDraftSignedJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForDraftSigned(createUtkast());
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testDraftChanged() throws Exception {
+  void testDraftChanged() throws Exception {
     notificationService.sendNotificationForDraftChanged(createUtkast());
     verifySuccessfulInvocations(HandelsekodEnum.ANDRAT);
   }
 
-  @Test(expected = JmsException.class)
-  public void testDraftChangedJmsException() {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForDraftChanged(createUtkast());
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testDraftChangedJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForDraftChanged(createUtkast());
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testDraftDeleted() throws Exception {
+  void testDraftDeleted() throws Exception {
     notificationService.sendNotificationForDraftDeleted(createUtkast());
     verifySuccessfulInvocations(HandelsekodEnum.RADERA);
   }
 
-  @Test(expected = JmsException.class)
-  public void testDraftDeletedJmsException() {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForDraftDeleted(createUtkast());
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testDraftDeletedJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForDraftDeleted(createUtkast());
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testIntygSent() throws Exception {
+  void testIntygSent() throws Exception {
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForIntygSent(INTYG_ID);
     verifySuccessfulInvocations(HandelsekodEnum.SKICKA);
   }
 
   @Test
-  public void testIntygSentMissingInWC() throws Exception {
+  void testIntygSentMissingInWC() throws Exception {
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
     doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
     doReturn(Optional.of(SchemaVersion.VERSION_3))
@@ -409,44 +437,56 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocationsForCertificate(HandelsekodEnum.SKICKA);
   }
 
-  @Test(expected = JmsException.class)
-  public void testIntygSentJmsException() {
-    when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForIntygSent(INTYG_ID);
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testIntygSentJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForIntygSent(INTYG_ID);
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testUtkastRevoked() throws Exception {
+  void testUtkastRevoked() throws Exception {
     notificationService.sendNotificationForDraftRevoked(createUtkast());
     verifySuccessfulInvocations(HandelsekodEnum.MAKULE);
   }
 
-  @Test(expected = JmsException.class)
-  public void testUtkastRevokedJmsException() {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForDraftRevoked(createUtkast());
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testUtkastRevokedJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForDraftRevoked(createUtkast());
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testIntygRevoked() throws Exception {
+  void testIntygRevoked() throws Exception {
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForIntygRevoked(INTYG_ID);
     verifySuccessfulInvocations(HandelsekodEnum.MAKULE);
   }
 
   @Test
-  public void testIntygRevokedMissingInWC() throws Exception {
+  void testIntygRevokedMissingInWC() throws Exception {
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
     doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
     doReturn(Optional.of(SchemaVersion.VERSION_3))
@@ -459,41 +499,54 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocationsForCertificate(HandelsekodEnum.MAKULE);
   }
 
-  @Test(expected = JmsException.class)
-  public void testIntygRevokedJmsException() {
-    when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForIntygRevoked(INTYG_ID);
-    } finally {
-      // verify(template).send(any(MessageCreator.class));
-      // verifyZeroInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testIntygRevokedJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForIntygRevoked(INTYG_ID);
+          } finally {
+            // verify(template).send(any(MessageCreator.class));
+            // verifyZeroInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testQuestionReceivedFragaSvarIntegreradEnhet() throws Exception {
+  void testQuestionReceivedFragaSvarIntegreradEnhet() throws Exception {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQuestionReceived(createFragaSvar());
     verifySuccessfulInvocations(HandelsekodEnum.NYFRFM);
   }
 
-  @Test(expected = JmsException.class)
-  public void testQuestionReceivedFragaSvarIntegreradEnhetJmsException() {
-    when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
-    when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForQuestionReceived(createFragaSvar());
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testQuestionReceivedFragaSvarIntegreradEnhetJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK))
+              .thenReturn(true);
+          when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForQuestionReceived(createFragaSvar());
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testQuestionReceivedFragaSvarSendsMail() {
+  void testQuestionReceivedFragaSvarSendsMail() {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
     notificationService.sendNotificationForQuestionReceived(createFragaSvar());
 
@@ -513,28 +566,35 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testAnswerRecievedFragaSvarIntegreradEnhet() throws Exception {
+  void testAnswerRecievedFragaSvarIntegreradEnhet() throws Exception {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForAnswerRecieved(createFragaSvar());
     verifySuccessfulInvocations(HandelsekodEnum.NYSVFM);
   }
 
-  @Test(expected = JmsException.class)
-  public void testAnswerRecievedFragaSvarIntegreradEnhetJmsException() {
-    when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
-    when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForAnswerRecieved(createFragaSvar());
-    } finally {
-      // verify(template).send(any(MessageCreator.class));
-      // verifyZeroInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testAnswerRecievedFragaSvarIntegreradEnhetJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK))
+              .thenReturn(true);
+          when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForAnswerRecieved(createFragaSvar());
+          } finally {
+            // verify(template).send(any(MessageCreator.class));
+            // verifyZeroInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testAnswerRecievedFragaSvarSendsMail() {
+  void testAnswerRecievedFragaSvarSendsMail() {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
     notificationService.sendNotificationForAnswerRecieved(createFragaSvar());
 
@@ -554,7 +614,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testQuestionReceivedArendeIntegreradEnhet() throws Exception {
+  void testQuestionReceivedArendeIntegreradEnhet() throws Exception {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQuestionReceived(
@@ -562,22 +622,29 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.NYFRFM);
   }
 
-  @Test(expected = JmsException.class)
-  public void testQuestionReceivedArendeIntegreradEnhetJmsException() {
-    when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
-    when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForQuestionReceived(
-          createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testQuestionReceivedArendeIntegreradEnhetJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK))
+              .thenReturn(true);
+          when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForQuestionReceived(
+                createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testQuestionReceivedArendeSendsMail() {
+  void testQuestionReceivedArendeSendsMail() {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
     notificationService.sendNotificationForQuestionReceived(
         createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
@@ -598,7 +665,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testAnswerRecievedArendeIntegreradEnhet() throws Exception {
+  void testAnswerRecievedArendeIntegreradEnhet() throws Exception {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForAnswerRecieved(
@@ -606,22 +673,29 @@ public class NotificationServiceImplTest {
     verifySuccessfulInvocations(HandelsekodEnum.NYSVFM);
   }
 
-  @Test(expected = JmsException.class)
-  public void testAnswerRecievedArendeIntegreradEnhetJmsException() {
-    when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
-    when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForAnswerRecieved(
-          createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testAnswerRecievedArendeIntegreradEnhetJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK))
+              .thenReturn(true);
+          when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForAnswerRecieved(
+                createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testAnswerRecievedArendeSendsMail() {
+  void testAnswerRecievedArendeSendsMail() {
     when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
     notificationService.sendNotificationForAnswerRecieved(
         createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
@@ -641,21 +715,27 @@ public class NotificationServiceImplTest {
     verifyNoInteractions(mockMonitoringLogService);
   }
 
-  @Test(expected = JmsException.class)
-  public void testSendNotificationForQAsJmsException() {
-    when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
-    try {
-      notificationService.sendNotificationForQAs(
-          INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
-    } finally {
-      verify(template).send(any(MessageCreator.class));
-      verifyNoInteractions(mockMonitoringLogService);
-    }
+  @Test
+  void testSendNotificationForQAsJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
+          try {
+            notificationService.sendNotificationForQAs(
+                INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
+          } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyNoInteractions(mockMonitoringLogService);
+          }
+        });
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionReceivedSchemaVersion1() throws Exception {
+  void testSendNotificationForQAsQuestionReceivedSchemaVersion1() throws Exception {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(
@@ -664,7 +744,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionHandledSchemaVersion1() throws Exception {
+  void testSendNotificationForQAsQuestionHandledSchemaVersion1() throws Exception {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(
@@ -673,7 +753,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionUnhandledSchemaVersion1() throws Exception {
+  void testSendNotificationForQAsQuestionUnhandledSchemaVersion1() throws Exception {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(
@@ -682,7 +762,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionSentSchemaVersion1() throws Exception {
+  void testSendNotificationForQAsQuestionSentSchemaVersion1() throws Exception {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_CARE);
@@ -690,7 +770,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionFromCareHandledSchemaVersion1() {
+  void testSendNotificationForQAsQuestionFromCareHandledSchemaVersion1() {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(
@@ -703,7 +783,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionFromCareUnhandledSchemaVersion1() {
+  void testSendNotificationForQAsQuestionFromCareUnhandledSchemaVersion1() {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(
@@ -716,7 +796,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsAnswerReceivedSchemaVersion1() throws Exception {
+  void testSendNotificationForQAsAnswerReceivedSchemaVersion1() throws Exception {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(
@@ -725,7 +805,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsAnswerHandledSchemaVersion1() throws Exception {
+  void testSendNotificationForQAsAnswerHandledSchemaVersion1() throws Exception {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(
@@ -734,7 +814,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsAnswerUnhandledSchemaVersion1() throws Exception {
+  void testSendNotificationForQAsAnswerUnhandledSchemaVersion1() throws Exception {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(
@@ -743,7 +823,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsAnswerSentSchemaVersion1() throws Exception {
+  void testSendNotificationForQAsAnswerSentSchemaVersion1() throws Exception {
     setupMocks(SchemaVersion.VERSION_1);
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
     notificationService.sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
@@ -751,7 +831,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionReceivedSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsQuestionReceivedSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -761,7 +841,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionHandledSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsQuestionHandledSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -771,7 +851,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionUnhandledSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsQuestionUnhandledSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -781,7 +861,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionSentSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsQuestionSentSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -790,7 +870,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionFromCareHandledSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsQuestionFromCareHandledSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -800,7 +880,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsQuestionFromCareUnhandledSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsQuestionFromCareUnhandledSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -810,7 +890,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsAnswerReceivedSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsAnswerReceivedSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -820,7 +900,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsAnswerHandledSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsAnswerHandledSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -830,7 +910,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsAnswerUnhandledSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsAnswerUnhandledSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -840,7 +920,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsAnswerSentSchemaVersion2() throws Exception {
+  void testSendNotificationForQAsAnswerSentSchemaVersion2() throws Exception {
     when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class)))
         .thenReturn(Optional.of(SchemaVersion.VERSION_3));
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
@@ -849,7 +929,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testSendNotificationForQAsForCertificate() throws Exception {
+  void testSendNotificationForQAsForCertificate() throws Exception {
     when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.empty());
     doReturn(createCertificate()).when(intygService).fetchIntygDataForInternalUse(INTYG_ID, false);
     doReturn(Optional.of(SchemaVersion.VERSION_3))
@@ -863,7 +943,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testFindNotificationsOnUnitsWithoutTimestamp() {
+  void testFindNotificationsOnUnitsWithoutTimestamp() {
     final var unitIds = Arrays.asList("UnitId1", "UnitId2");
     final var patientId = Personnummer.createPersonnummer("191212121212").get();
     final var request = new IntygWithNotificationsRequest(null, null, unitIds, null, patientId);
@@ -880,7 +960,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testFindNotificationsOnUnitsWithTimestamp() {
+  void testFindNotificationsOnUnitsWithTimestamp() {
     final var unitIds = Arrays.asList("UnitId1", "UnitId2");
     final var patientId = Personnummer.createPersonnummer("191212121212").get();
     final var from = LocalDateTime.now();
@@ -900,7 +980,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testFindNotificationsOnUnitsWithFromTimestamp() {
+  void testFindNotificationsOnUnitsWithFromTimestamp() {
     final var unitIds = Arrays.asList("UnitId1", "UnitId2");
     final var patientId = Personnummer.createPersonnummer("191212121212").get();
     final var from = LocalDateTime.now();
@@ -919,7 +999,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testFindNotificationsOnUnitsWithToTimestamp() {
+  void testFindNotificationsOnUnitsWithToTimestamp() {
     final var unitIds = Arrays.asList("UnitId1", "UnitId2");
     final var patientId = Personnummer.createPersonnummer("191212121212").get();
     final var to = LocalDateTime.now();
@@ -938,7 +1018,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testFindNotificationsOnCareProvierWithoutTimestamp() {
+  void testFindNotificationsOnCareProvierWithoutTimestamp() {
     final var unitIds = Collections.EMPTY_LIST;
     final var careProviderId = "careProviderId";
     final var patientId = Personnummer.createPersonnummer("191212121212").get();
@@ -957,7 +1037,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testFindNotificationsOnCareProviderWithTimestamp() {
+  void testFindNotificationsOnCareProviderWithTimestamp() {
     final var unitIds = Collections.EMPTY_LIST;
     final var careProviderId = "careProviderId";
     final var patientId = Personnummer.createPersonnummer("191212121212").get();
@@ -979,7 +1059,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testFindNotificationsOnCareProviderWithFromTimestamp() {
+  void testFindNotificationsOnCareProviderWithFromTimestamp() {
     final var unitIds = Collections.EMPTY_LIST;
     final var careProviderId = "careProviderId";
     final var patientId = Personnummer.createPersonnummer("191212121212").get();
@@ -1000,7 +1080,7 @@ public class NotificationServiceImplTest {
   }
 
   @Test
-  public void testFindNotificationsOnCareProviderWithToTimestamp() {
+  void testFindNotificationsOnCareProviderWithToTimestamp() {
     final var unitIds = Collections.EMPTY_LIST;
     final var careProviderId = "careProviderId";
     final var patientId = Personnummer.createPersonnummer("191212121212").get();

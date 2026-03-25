@@ -121,9 +121,9 @@ class GrpRestServiceTest {
       grpRestService.init(PERSON_ID, ticket);
       verify(uriSpec).uri(uriCaptor.capture());
       assertAll(
-          () -> assertEquals("https", uriCaptor.getValue().getScheme()),
+          () -> assertEquals(uriCaptor.getValue().getScheme(), "https"),
           () -> assertEquals(INIT_PATH, uriCaptor.getValue().getPath()),
-          () -> assertEquals("baseUrl.test", uriCaptor.getValue().getHost()));
+          () -> assertEquals(uriCaptor.getValue().getHost(), "baseUrl.test"));
     }
 
     @Test
@@ -186,9 +186,9 @@ class GrpRestServiceTest {
       grpRestService.collect(REF_ID, TRANSACTION_ID);
       verify(uriSpec).uri(uriCaptor.capture());
       assertAll(
-          () -> assertEquals("https", uriCaptor.getValue().getScheme()),
+          () -> assertEquals(uriCaptor.getValue().getScheme(), "https"),
           () -> assertEquals(COLLECT_PATH, uriCaptor.getValue().getPath()),
-          () -> assertEquals("baseUrl.test", uriCaptor.getValue().getHost()));
+          () -> assertEquals(uriCaptor.getValue().getHost(), "baseUrl.test"));
     }
 
     @Test

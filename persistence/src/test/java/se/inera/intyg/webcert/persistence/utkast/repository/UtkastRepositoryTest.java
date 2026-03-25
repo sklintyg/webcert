@@ -18,16 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.in;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.persistence.utkast.repository.UtkastTestUtil.PERSON_NUMMER;
 
 import com.google.common.collect.Sets;
@@ -42,49 +36,49 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class UtkastRepositoryTest {
+class UtkastRepositoryTest {
 
   @Autowired private UtkastRepository utkastRepository;
 
   @PersistenceContext private EntityManager em;
 
   @Test
-  public void testFindOne() {
+  void testFindOne() {
     Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID));
     Utkast read = utkastRepository.findById(saved.getIntygsId()).orElse(null);
 
     assertNotNull(read);
-    assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
-    assertThat(read.getPatientPersonnummer(), is(equalTo(saved.getPatientPersonnummer())));
-    assertThat(read.getPatientFornamn(), is(equalTo(saved.getPatientFornamn())));
-    assertThat(read.getPatientMellannamn(), is(equalTo(saved.getPatientMellannamn())));
-    assertThat(read.getPatientEfternamn(), is(equalTo(saved.getPatientEfternamn())));
+    assertEquals(saved.getIntygsId(), read.getIntygsId());
+    assertEquals(saved.getPatientPersonnummer(), read.getPatientPersonnummer());
+    assertEquals(saved.getPatientFornamn(), read.getPatientFornamn());
+    assertEquals(saved.getPatientMellannamn(), read.getPatientMellannamn());
+    assertEquals(saved.getPatientEfternamn(), read.getPatientEfternamn());
 
-    assertThat(read.getEnhetsId(), is(notNullValue()));
+    assertNotNull(read.getEnhetsId());
 
-    assertThat(read.getModel(), is(equalTo(UtkastTestUtil.MODEL)));
+    assertEquals(UtkastTestUtil.MODEL, read.getModel());
 
-    assertThat(read.getSignatur(), is(nullValue()));
+    assertNull(read.getSignatur());
   }
 
   @Test
-  public void testFindOneWithSignature() {
+  void testFindOneWithSignature() {
 
     Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
     String intygsId = utkast.getIntygsId();
@@ -94,12 +88,12 @@ public class UtkastRepositoryTest {
     Utkast read = utkastRepository.findById(intygsId).orElse(null);
 
     assertNotNull(read);
-    assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
-    assertThat(read.getSignatur(), is(notNullValue()));
+    assertEquals(saved.getIntygsId(), read.getIntygsId());
+    assertNotNull(read.getSignatur());
   }
 
   @Test
-  public void testFindByEnhetsIdDontReturnSigned() {
+  void testFindByEnhetsIdDontReturnSigned() {
 
     Utkast utkast1 =
         utkastRepository.save(
@@ -120,15 +114,15 @@ public class UtkastRepositoryTest {
             Arrays.asList(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.ENHET_3_ID),
             Collections.singletonList(UtkastStatus.DRAFT_COMPLETE));
 
-    assertThat(result.size(), is(3));
+    assertEquals(3, result.size());
 
-    assertThat(utkast1, is(in(result)));
-    assertThat(utkast2, is(in(result)));
-    assertThat(utkast3, is(in(result)));
+    assertTrue(result.contains(utkast1));
+    assertTrue(result.contains(utkast2));
+    assertTrue(result.contains(utkast3));
   }
 
   @Test
-  public void testCountIntygWithStatusesGroupedByEnhetsId() {
+  void testCountIntygWithStatusesGroupedByEnhetsId() {
 
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
@@ -151,16 +145,16 @@ public class UtkastRepositoryTest {
             UtkastStatus.getEditableDraftStatuses(),
             Stream.of(UtkastTestUtil.INTYGSTYP_FK7263)
                 .collect(Collectors.toCollection(HashSet::new)));
-    assertThat(result.size(), is(3));
+    assertEquals(3, result.size());
 
     GroupableItem resObjs = result.get(0);
-    assertThat(resObjs.getEnhetsId(), equalTo(UtkastTestUtil.ENHET_1_ID));
-    assertThat(resObjs.getPersonnummer(), equalTo(PERSON_NUMMER.getPersonnummerWithDash()));
-    assertThat(resObjs.getIntygsTyp(), equalTo("fk7263"));
+    assertEquals(UtkastTestUtil.ENHET_1_ID, resObjs.getEnhetsId());
+    assertEquals(PERSON_NUMMER.getPersonnummerWithDash(), resObjs.getPersonnummer());
+    assertEquals(resObjs.getIntygsTyp(), "fk7263");
   }
 
   @Test
-  public void testFindDraftsByPatientAndEnhetAndStatus() {
+  void testFindDraftsByPatientAndEnhetAndStatus() {
 
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED));
@@ -178,11 +172,11 @@ public class UtkastRepositoryTest {
         utkastRepository.findDraftsByPatientAndEnhetAndStatus(
             PERSON_NUMMER.getPersonnummerWithDash(), enhetsIds, statuses, allIntygsTyper());
 
-    assertThat(results.size(), is(2));
+    assertEquals(2, results.size());
   }
 
   @Test
-  public void testFindDraftsByPatientAndVardgivarIdAndStatus() {
+  void testFindDraftsByPatientAndVardgivarIdAndStatus() {
 
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED));
@@ -200,7 +194,7 @@ public class UtkastRepositoryTest {
         utkastRepository.findDraftsByPatientAndVardgivareAndStatus(
             PERSON_NUMMER.getPersonnummerWithDash(), vardgivarId, statuses, allIntygsTyper());
 
-    assertThat(results.size(), is(2));
+    assertEquals(2, results.size());
   }
 
   private Set<String> allIntygsTyper() {
@@ -212,7 +206,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindDistinctIntygHsaIdByEnhet() {
+  void testFindDistinctIntygHsaIdByEnhet() {
 
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(
@@ -261,11 +255,11 @@ public class UtkastRepositoryTest {
         utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(
             UtkastTestUtil.ENHET_1_ID, UtkastStatus.getEditableDraftStatuses());
 
-    assertThat(res.size(), is(2));
+    assertEquals(2, res.size());
   }
 
   @Test
-  public void testDelete() {
+  void testDelete() {
 
     Utkast intyg1 =
         utkastRepository.save(
@@ -278,16 +272,16 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testGetIntygsStatus() {
+  void testGetIntygsStatus() {
     Utkast intyg3 =
         utkastRepository.save(
             UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastStatus.DRAFT_COMPLETE));
     UtkastStatus status = utkastRepository.getIntygsStatus(intyg3.getIntygsId());
-    assertThat(status, is(UtkastStatus.DRAFT_COMPLETE));
+    assertEquals(UtkastStatus.DRAFT_COMPLETE, status);
   }
 
   @Test
-  public void testSaveRelation() {
+  void testSaveRelation() {
     final String relationIntygsId = "relationIntygsId";
     final RelationKod relationKod = RelationKod.FRLANG;
     Utkast saved =
@@ -303,7 +297,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindAllByRelationIntygsId() {
+  void testFindAllByRelationIntygsId() {
     String relationIntygsId = "parentCertificate";
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(
@@ -324,14 +318,14 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindAllByRelationIntygsIdNoMatches() {
+  void testFindAllByRelationIntygsIdNoMatches() {
     List<Utkast> res = utkastRepository.findAllByRelationIntygsId("parentCertificate");
     assertNotNull(res);
     assertTrue(res.isEmpty());
   }
 
   @Test
-  public void testFindOneByIntygsIdAndIntygsTyp() {
+  void testFindOneByIntygsIdAndIntygsTyp() {
     final String intygsId = "intygsId";
     final String intygsTyp = "intygsTyp";
     Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
@@ -344,7 +338,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindOneByIntygsIdAndIntygsTypNotFound() {
+  void testFindOneByIntygsIdAndIntygsTypNotFound() {
     final String intygsId = "intygsId";
     final String intygsTyp = "intygsTyp";
 
@@ -353,7 +347,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindOneByIntygsIdAndIntygsTypInvalidIntygstyp() {
+  void testFindOneByIntygsIdAndIntygsTypInvalidIntygstyp() {
     final String intygsId = "intygsId";
     final String intygsTyp = "intygsTyp";
     Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
@@ -366,7 +360,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testfindAllByPatientPersonnummerAndIntygsTypIn() {
+  void testfindAllByPatientPersonnummerAndIntygsTypIn() {
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.INTYGSTYP_FK7263));
     utkastRepository.save(

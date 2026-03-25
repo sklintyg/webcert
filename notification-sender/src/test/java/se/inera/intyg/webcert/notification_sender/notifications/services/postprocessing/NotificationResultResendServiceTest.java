@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -33,12 +33,12 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
@@ -54,8 +54,8 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationResultResendServiceTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationResultResendServiceTest {
 
   @Mock HandelseRepository handelseRepository;
 
@@ -84,7 +84,7 @@ public class NotificationResultResendServiceTest {
   private static final int ATTEMPTED_DELIVERIES = 2;
 
   @Test
-  public void shouldMonitorLogResendOnProcessingNewNotification() {
+  void shouldMonitorLogResendOnProcessingNewNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     final var captureEventId = ArgumentCaptor.forClass(Long.class);
@@ -138,7 +138,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldMonitorLogResendOnProcessingRedeliveredNotification() {
+  void shouldMonitorLogResendOnProcessingRedeliveredNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
     final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
@@ -196,7 +196,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldMonitorLogFailureWhenReachingMaxDeliveries() {
+  void shouldMonitorLogFailureWhenReachingMaxDeliveries() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
 
@@ -245,7 +245,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldCreateNewEventRecordWhenprocessingNewNotification() {
+  void shouldCreateNewEventRecordWhenprocessingNewNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
@@ -273,7 +273,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldNotRedundantlyUpdateExistingEventWhenNoStatusChange() {
+  void shouldNotRedundantlyUpdateExistingEventWhenNoStatusChange() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
     final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;
@@ -299,7 +299,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldCreateNewRedeliveryRecordWhenProcessingNewNotification() {
+  void shouldCreateNewRedeliveryRecordWhenProcessingNewNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
     var testStartTime = LocalDateTime.now();
 
@@ -337,7 +337,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldUpdateRedeliveryTimeAndSendAttemptOnExistingRedelivery() {
+  void shouldUpdateRedeliveryTimeAndSendAttemptOnExistingRedelivery() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
     final var expectedRedeliveryTimeAfterServiceCall =
@@ -371,7 +371,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldUpdateRedeliveryMessageOnExistingRedeliveryIfMissing() {
+  void shouldUpdateRedeliveryMessageOnExistingRedeliveryIfMissing() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
     notificationRedelivery.setMessage(null);
@@ -398,13 +398,13 @@ public class NotificationResultResendServiceTest {
 
     verify(notificationRedeliveryRepository).save(captureRedelivery.capture());
     assertNotNull(
-        "Must update redelivery message if it didn't exist from before",
-        captureRedelivery.getValue().getMessage());
+        captureRedelivery.getValue().getMessage(),
+        "Must update redelivery message if it didn't exist from before");
     assertEquals(STATUS_UPDATE_XML, captureRedelivery.getValue().getMessage());
   }
 
   @Test
-  public void shouldUpdateEventDeliveryStatusOnFailure() {
+  void shouldUpdateEventDeliveryStatusOnFailure() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
 
@@ -431,7 +431,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldDeleteRedeliveryRecordOnFailure() {
+  void shouldDeleteRedeliveryRecordOnFailure() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
 
@@ -459,7 +459,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shallConsiderNullRedeliveryAttemptsAsOne() {
+  void shallConsiderNullRedeliveryAttemptsAsOne() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
     notificationRedelivery.setAttemptedDeliveries(null);
@@ -493,7 +493,7 @@ public class NotificationResultResendServiceTest {
   }
 
   @Test
-  public void shouldUpdateDeliveryStatusOnManualResendIfNeeded() {
+  void shouldUpdateDeliveryStatusOnManualResendIfNeeded() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
     final var valueToNotHitMaxDeliveries = ATTEMPTED_DELIVERIES + 2;

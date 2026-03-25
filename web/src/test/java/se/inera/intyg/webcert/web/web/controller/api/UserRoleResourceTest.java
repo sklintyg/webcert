@@ -18,21 +18,23 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
@@ -40,7 +42,9 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.authtestability.UserResource;
 
-public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
 
   @Mock private WebCertUserService webCertUserService;
 
@@ -48,13 +52,8 @@ public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
 
   @Captor private ArgumentCaptor<String> roleArrCaptor;
 
-  @Before
-  public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
-  }
-
   @Test
-  public void testGetUserRoles() throws Exception {
+  void testGetUserRoles() throws Exception {
     Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
     // Given
@@ -74,7 +73,7 @@ public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testSetUserRole() throws Exception {
+  void testSetUserRole() throws Exception {
     // Given
     final WebCertUser user = Mockito.mock(WebCertUser.class);
     Mockito.when(webCertUserService.getUser()).thenReturn(user);

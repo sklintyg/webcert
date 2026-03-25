@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.notification_sender.filter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,36 +33,35 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultMessage;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
 
 /** Created by eriklupander on 2016-07-04. */
-public class NotificationMessageDiscardFilterTest {
+class NotificationMessageDiscardFilterTest {
 
   private final ObjectMapper om = new CustomObjectMapper();
   private final NotificationMessageDiscardFilter testee = new NotificationMessageDiscardFilter();
   private final CamelContext camelContext = new DefaultCamelContext();
 
   @Test
-  public void testReturnsNothingWhenBothSignedAndSavedExists() throws IOException {
+  void testReturnsNothingWhenBothSignedAndSavedExists() throws IOException {
     List<Message> processed =
         testee.process(buildMsgList(HandelsekodEnum.SIGNAT, HandelsekodEnum.ANDRAT));
     assertEquals(0, processed.size());
   }
 
   @Test
-  public void testReturnsNothingWhenBothSignedAndSavedExistsAndratBeforeSignerat()
-      throws IOException {
+  void testReturnsNothingWhenBothSignedAndSavedExistsAndratBeforeSignerat() throws IOException {
     List<Message> processed =
         testee.process(buildMsgList(HandelsekodEnum.ANDRAT, HandelsekodEnum.SIGNAT));
     assertEquals(0, processed.size());
   }
 
   @Test
-  public void testFiltersOutAndratAndSignatButRetainsOthers() throws JsonProcessingException {
+  void testFiltersOutAndratAndSignatButRetainsOthers() throws JsonProcessingException {
     List<Message> processed =
         testee.process(
             buildMsgList(
@@ -75,7 +74,7 @@ public class NotificationMessageDiscardFilterTest {
   }
 
   @Test
-  public void testReturnsLatestSaved() throws IOException {
+  void testReturnsLatestSaved() throws IOException {
     String intygsId = UUID.randomUUID().toString();
     LocalDateTime first = LocalDateTime.now().minusSeconds(5).truncatedTo(ChronoUnit.MILLIS);
     NotificationMessage nm2 =

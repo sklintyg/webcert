@@ -18,19 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -39,8 +41,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SendNotificationStrategyTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class SendNotificationStrategyTest {
 
   private static final String INTYG_ID_1 = "intyg-1";
   private static final String INTYG_ID_2 = "intyg-2";
@@ -63,8 +66,8 @@ public class SendNotificationStrategyTest {
   @InjectMocks
   private SendNotificationStrategy sendStrategy = new DefaultSendNotificationStrategyImpl();
 
-  @Before
-  public void setupIntegreradeEnheter() {
+  @BeforeEach
+  void setupIntegreradeEnheter() {
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_FK))
         .thenReturn(Optional.of(SchemaVersion.VERSION_1));
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2, INTYG_FK))
@@ -74,7 +77,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastOk() {
+  void testUtkastOk() {
 
     Optional<SchemaVersion> res =
         sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
@@ -85,7 +88,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastUnitNotIntegrated() {
+  void testUtkastUnitNotIntegrated() {
     Optional<SchemaVersion> res =
         sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
     assertFalse(res.isPresent());
@@ -94,7 +97,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastWrongType() {
+  void testUtkastWrongType() {
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_TS))
         .thenReturn(Optional.empty());
     Optional<SchemaVersion> res =
@@ -104,7 +107,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastWrongSchemaVersionLuse() {
+  void testUtkastWrongSchemaVersionLuse() {
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE))
         .thenReturn(Optional.empty());
     Optional<SchemaVersion> res =
@@ -115,7 +118,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastVersion2() {
+  void testUtkastVersion2() {
     Optional<SchemaVersion> res =
         sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
     assertTrue(res.isPresent());

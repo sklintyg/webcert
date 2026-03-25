@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -124,8 +124,8 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
   protected Fk7263Utlatande utlatande;
   protected CertificateResponse certificateResponse;
 
-  @Before
-  public void setupMocks() throws Exception {
+  @BeforeEach
+  void setupMocks() throws Exception {
     json =
         Files.readString(
             Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));

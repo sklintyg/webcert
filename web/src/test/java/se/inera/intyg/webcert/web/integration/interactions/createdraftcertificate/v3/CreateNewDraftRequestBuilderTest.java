@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -31,12 +31,14 @@ import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
@@ -59,8 +61,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Svar;
 import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 import se.riv.clinicalprocess.healthcond.certificate.v33.ObjectFactory;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
 
   public static final String PERSONNUMMER = "191212121212";
   public static final String FORNAMN = "Adam";
@@ -88,7 +91,8 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
 
   private Person person;
 
-  @Before
+  @Override
+  @BeforeEach
   public void setup() {
     user = buildWebCertUser();
     user.changeValdVardenhet(UNIT_HSAID);
@@ -113,7 +117,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void testBuildCreateNewDraftRequest() {
+  void testBuildCreateNewDraftRequest() {
 
     CreateNewDraftRequest res =
         builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
@@ -142,7 +146,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
+  void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
     CreateNewDraftRequest res =
         builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
 
@@ -154,7 +158,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void testBuildCreateNewDraftRequestWithForifyllnadFeatureEnabled() {
+  void testBuildCreateNewDraftRequestWithForifyllnadFeatureEnabled() {
 
     final Intyg intyg = createIntyg();
     Forifyllnad forifyllnad = new ObjectFactory().createForifyllnad();
@@ -186,7 +190,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void testBuildCreateNewDraftRequestWithForifyllnadFeatureDisabled() {
+  void testBuildCreateNewDraftRequestWithForifyllnadFeatureDisabled() {
 
     final Intyg intyg = createIntyg();
     Forifyllnad forifyllnad = new ObjectFactory().createForifyllnad();
@@ -217,7 +221,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void shouldUsePatientInformationFromPU() {
+  void shouldUsePatientInformationFromPU() {
     person =
         new Person(
             Personnummer.createPersonnummer(PERSONNUMMER).get(),

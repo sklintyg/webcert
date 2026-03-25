@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -34,11 +34,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -57,8 +57,8 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationRedeliveryStatusUpdateCreatorServiceTest {
 
   private final LocalDate LAST_DAY_FOR_ANSWER = LocalDate.now().plusDays(1);
   private final LocalDateTime EVENT_TIMESTAMP = LocalDateTime.now();
@@ -84,7 +84,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
       notificationRedeliveryStatusUpdateCreatorService;
 
   @Test
-  public void shallUseStatusUpdateXmlFromNotificationRedeliveryMessageIfExists() throws Exception {
+  void shallUseStatusUpdateXmlFromNotificationRedeliveryMessageIfExists() throws Exception {
     final var notificationRedelivery = createNotificationRedelivery();
     final var event = createEvent();
     final var expectedStatusUpdateXml = "STATUS_UPDATE_XML";
@@ -100,7 +100,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
   }
 
   @Test
-  public void shallCreateStatusUpdateFromDraftIfRedeliveryMessageIsMissing() throws Exception {
+  void shallCreateStatusUpdateFromDraftIfRedeliveryMessageIsMissing() throws Exception {
     final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
     final var event = createEvent();
     final var expectedDraft = mock(Utkast.class);
@@ -116,8 +116,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
   }
 
   @Test
-  public void shallCreateStatusUpdateFromCertificateIfRedeliveryMessageIsMissing()
-      throws Exception {
+  void shallCreateStatusUpdateFromCertificateIfRedeliveryMessageIsMissing() throws Exception {
     final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
     final var event = createEvent();
     final var expectedCertificate = mock(IntygContentHolder.class);
@@ -134,7 +133,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
   }
 
   @Test
-  public void
+  void
       shallCreateStatusUpdateWithoutDraftOrCertificateIfRedeliveryMessageIsMissingAndEventIsRadera()
           throws Exception {
     final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();

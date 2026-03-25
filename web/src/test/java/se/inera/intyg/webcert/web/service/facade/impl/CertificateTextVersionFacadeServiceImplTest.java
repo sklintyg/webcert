@@ -78,7 +78,7 @@ class CertificateTextVersionFacadeServiceImplTest {
   class NoTextVersionUpdate {
 
     @Test
-    public void shouldReturnNullIfUtkastIsNull() {
+    void shouldReturnNullIfUtkastIsNull() {
       final var actual = certificateTextVersionFacadeService.upgradeToLatestMinorTextVersion(null);
 
       assertNull(actual);
@@ -88,7 +88,7 @@ class CertificateTextVersionFacadeServiceImplTest {
     }
 
     @Test
-    public void shoulNotUpdateIfDraftIsLockedl() throws JsonProcessingException {
+    void shoulNotUpdateIfDraftIsLockedl() throws JsonProcessingException {
       final var input = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_LOCKED);
       final var expected =
           createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_LOCKED);
@@ -101,7 +101,7 @@ class CertificateTextVersionFacadeServiceImplTest {
     }
 
     @Test
-    public void shoulNotUpdateIfDraftIsSignedl() throws JsonProcessingException {
+    void shoulNotUpdateIfDraftIsSignedl() throws JsonProcessingException {
       final var input = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.SIGNED);
       final var expected = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.SIGNED);
       final var actual = certificateTextVersionFacadeService.upgradeToLatestMinorTextVersion(input);
@@ -117,7 +117,7 @@ class CertificateTextVersionFacadeServiceImplTest {
   class TextVersionUpdatesAndExceptions {
 
     @BeforeEach
-    public void setup() throws ModuleNotFoundException {
+    void setup() throws ModuleNotFoundException {
       doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), anyString());
       doReturn(LATEST_VERSION)
           .when(intygTextsService)
@@ -125,7 +125,7 @@ class CertificateTextVersionFacadeServiceImplTest {
     }
 
     @Test
-    public void shouldNotUpdateIfAlreadyLatestVersion() throws IOException, ModuleException {
+    void shouldNotUpdateIfAlreadyLatestVersion() throws IOException, ModuleException {
       doReturn(getUtlatande(LATEST_VERSION))
           .when(moduleApi)
           .getUtlatandeFromJson(anyString(), any());
@@ -144,12 +144,12 @@ class CertificateTextVersionFacadeServiceImplTest {
     class TextVersionUpdates {
 
       @BeforeEach
-      public void setup() throws ModuleNotFoundException, IOException, ModuleException {
+      void setup() throws ModuleNotFoundException, IOException, ModuleException {
         when(utkastRepository.save(any(Utkast.class))).thenAnswer(i -> i.getArguments()[0]);
       }
 
       @Test
-      public void shouldUpdateIfNotLatestObjectTextVersion() throws IOException, ModuleException {
+      void shouldUpdateIfNotLatestObjectTextVersion() throws IOException, ModuleException {
         doReturn(getUtlatande(LATEST_VERSION))
             .when(moduleApi)
             .getUtlatandeFromJson(anyString(), any());
@@ -167,8 +167,7 @@ class CertificateTextVersionFacadeServiceImplTest {
       }
 
       @Test
-      public void shouldUpdateIfNotLatestJsonModelTextVersion()
-          throws IOException, ModuleException {
+      void shouldUpdateIfNotLatestJsonModelTextVersion() throws IOException, ModuleException {
         doReturn(getUtlatande(PREVIOUS_VERSION))
             .when(moduleApi)
             .getUtlatandeFromJson(anyString(), any());
@@ -185,7 +184,7 @@ class CertificateTextVersionFacadeServiceImplTest {
       }
 
       @Test
-      public void shouldUpdateIfNotLatestObjectAndJsonModelTextVersion()
+      void shouldUpdateIfNotLatestObjectAndJsonModelTextVersion()
           throws IOException, ModuleException {
         doReturn(getUtlatande(PREVIOUS_VERSION))
             .when(moduleApi)
@@ -207,7 +206,7 @@ class CertificateTextVersionFacadeServiceImplTest {
     class Exceptions {
 
       @Test
-      public void shouldThrowWebcertServiceExceptionIfOptimisticLockOnSave()
+      void shouldThrowWebcertServiceExceptionIfOptimisticLockOnSave()
           throws IOException, ModuleException {
         doReturn(getUtlatande(PREVIOUS_VERSION))
             .when(moduleApi)
@@ -229,7 +228,7 @@ class CertificateTextVersionFacadeServiceImplTest {
       }
 
       @Test
-      public void shouldNotUpdateIfFailureUpdatingJsonModel() throws IOException, ModuleException {
+      void shouldNotUpdateIfFailureUpdatingJsonModel() throws IOException, ModuleException {
         doReturn(getUtlatande(PREVIOUS_VERSION))
             .when(moduleApi)
             .getUtlatandeFromJson(anyString(), any());
@@ -247,7 +246,7 @@ class CertificateTextVersionFacadeServiceImplTest {
       }
 
       @Test
-      public void shouldNotUpdateIfModuleApiFailure() throws IOException, ModuleException {
+      void shouldNotUpdateIfModuleApiFailure() throws IOException, ModuleException {
         doThrow(IOException.class).when(moduleApi).getUtlatandeFromJson(anyString(), any());
 
         final var input =

@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +26,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
 import java.io.IOException;
 import javax.xml.transform.stream.StreamSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
@@ -35,17 +35,17 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 /**
  * @author andreaskaltenbach
  */
-public class FragaSvarConverterTest {
+class FragaSvarConverterTest {
 
   @Test
-  public void testConvertQuestion() throws Exception {
+  void testConvertQuestion() throws Exception {
     FragaSvar fragaSvar =
         new FragaSvarConverter().convert(question("FragaSvarConverterTest/question.xml"));
     compareObjectWithReferenceFile(fragaSvar, "FragaSvarConverterTest/question.json");
   }
 
   @Test
-  public void testConvertQuestionLongMeddelandeRubrik() throws Exception {
+  void testConvertQuestionLongMeddelandeRubrik() throws Exception {
     FragaSvar fragaSvar =
         new FragaSvarConverter()
             .convert(question("FragaSvarConverterTest/question_long_meddelande_rubrik.xml"));
@@ -58,9 +58,9 @@ public class FragaSvarConverterTest {
     JsonNode tree = objectMapper.valueToTree(object);
     JsonNode expectedTree = objectMapper.readTree(new ClassPathResource(fileName).getInputStream());
     assertEquals(
-        "JSON does not match expectation. Resulting JSON is \n" + tree.toString() + "\n",
         expectedTree,
-        tree);
+        tree,
+        "JSON does not match expectation. Resulting JSON is \n" + tree.toString() + "\n");
   }
 
   private QuestionFromFkType question(String fileName) throws Exception {

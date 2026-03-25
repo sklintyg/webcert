@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.FAILURE;
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.RESEND;
@@ -37,12 +37,12 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
@@ -51,8 +51,8 @@ import se.inera.intyg.webcert.notification_sender.notifications.enumerations.Not
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationPostProcessingServiceTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationPostProcessingServiceTest {
 
   @Mock private NotificationResultSuccessService notificationResultSuccessService;
 
@@ -76,7 +76,7 @@ public class NotificationPostProcessingServiceTest {
   private static final String UNMARSHALLING_ERROR = "Unmarshalling Error";
 
   @Test
-  public void shouldProduceFailureOnUnrecoverableWebcertException() {
+  void shouldProduceFailureOnUnrecoverableWebcertException() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(
@@ -99,7 +99,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceFailureOnSoapFaultExceptionWithMarshallingError() {
+  void shouldProduceFailureOnSoapFaultExceptionWithMarshallingError() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(
@@ -119,7 +119,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceFailureOnSoapFaultExceptionWithUnMarshallingError() {
+  void shouldProduceFailureOnSoapFaultExceptionWithUnMarshallingError() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(
@@ -139,7 +139,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceFailureOnValidationError() {
+  void shouldProduceFailureOnValidationError() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(ERROR, VALIDATION_ERROR, "VALIDATION_ERROR", null));
@@ -158,7 +158,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceFailureOnApplicationError() {
+  void shouldProduceFailureOnApplicationError() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(ERROR, APPLICATION_ERROR, "APPLICATION_ERROR", null));
@@ -177,7 +177,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceFailureOnRevoked() {
+  void shouldProduceFailureOnRevoked() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(ERROR, REVOKED, "REVOKED", null));
@@ -196,7 +196,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceResendOnTechnicalError() {
+  void shouldProduceResendOnTechnicalError() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(ERROR, TECHNICAL_ERROR, "TECHNICAL_ERROR", null));
@@ -215,7 +215,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceResendOnRecoverableWebcertException() {
+  void shouldProduceResendOnRecoverableWebcertException() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(
@@ -235,7 +235,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceSuccessOnReturnTypeOk() {
+  void shouldProduceSuccessOnReturnTypeOk() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(createNotificationResultType(OK, null, null, null));
 
@@ -253,7 +253,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldProduceSuccessOnReturnTypeInfo() {
+  void shouldProduceSuccessOnReturnTypeInfo() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(INFO, null, "INFORMATION_TEXT", null));
@@ -272,7 +272,7 @@ public class NotificationPostProcessingServiceTest {
   }
 
   @Test
-  public void shouldInfoLogResultTextOnReturnTypeInfo() {
+  void shouldInfoLogResultTextOnReturnTypeInfo() {
     final var notificationResultMessage = createNotificationResultMessage();
     notificationResultMessage.setResultType(
         createNotificationResultType(INFO, null, "INFORMATION_TEXT", null));
@@ -287,7 +287,7 @@ public class NotificationPostProcessingServiceTest {
 
     verify(appender).doAppend(captureLogMessage.capture());
     assertTrue(captureLogMessage.getValue().getFormattedMessage().contains("INFORMATION_TEXT"));
-    assertEquals("INFO", captureLogMessage.getValue().getLevel().levelStr);
+    assertEquals(captureLogMessage.getValue().getLevel().levelStr, "INFO");
   }
 
   private NotificationResultMessage createNotificationResultMessage() {

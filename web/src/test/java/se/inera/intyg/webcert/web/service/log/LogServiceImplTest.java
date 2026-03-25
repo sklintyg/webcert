@@ -19,9 +19,10 @@
 package se.inera.intyg.webcert.web.service.log;
 
 import static java.time.LocalDateTime.now;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -35,13 +36,13 @@ import jakarta.jms.Session;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -65,8 +66,8 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /** Created by pehr on 13/11/13. */
-@RunWith(MockitoJUnitRunner.class)
-public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
+@ExtendWith(MockitoExtension.class)
+class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   private static final int DELAY = 10;
 
@@ -80,8 +81,8 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   private ObjectMapper objectMapper = new CustomObjectMapper();
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     LogMessagePopulator logMessagePopulator = new LogMessagePopulatorImpl();
     ReflectionTestUtils.setField(logMessagePopulator, "systemId", "webcert");
     ReflectionTestUtils.setField(logMessagePopulator, "systemName", "WebCert");
@@ -89,7 +90,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void serviceSendsDocumentAndIdForCreate() throws Exception {
+  void serviceSendsDocumentAndIdForCreate() throws Exception {
     when(userService.getUser()).thenReturn(createUser());
 
     ArgumentCaptor<MessageCreator> messageCreatorCaptor =
@@ -121,51 +122,57 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
     assertNotNull(intygReadMessage.getLogId());
     assertEquals(ActivityType.READ, intygReadMessage.getActivityType());
     assertEquals(ActivityPurpose.CARE_TREATMENT, intygReadMessage.getPurpose());
-    assertEquals("Intyg", intygReadMessage.getPdlResourceList().get(0).getResourceType());
-    assertEquals("abc123", intygReadMessage.getActivityLevel());
+    assertEquals(intygReadMessage.getPdlResourceList().get(0).getResourceType(), "Intyg");
+    assertEquals(intygReadMessage.getActivityLevel(), "abc123");
 
-    assertEquals("HSAID", intygReadMessage.getUserId());
-    assertEquals("", intygReadMessage.getUserName());
-    assertEquals("Läkare på vårdcentralen", intygReadMessage.getUserAssignment());
-    assertEquals("Överläkare", intygReadMessage.getUserTitle());
+    assertEquals(intygReadMessage.getUserId(), "HSAID");
+    assertEquals(intygReadMessage.getUserName(), "");
+    assertEquals(intygReadMessage.getUserAssignment(), "Läkare på vårdcentralen");
+    assertEquals(intygReadMessage.getUserTitle(), "Överläkare");
 
-    assertEquals("VARDENHET_ID", intygReadMessage.getUserCareUnit().getEnhetsId());
-    assertEquals("Vårdenheten", intygReadMessage.getUserCareUnit().getEnhetsNamn());
-    assertEquals("VARDGIVARE_ID", intygReadMessage.getUserCareUnit().getVardgivareId());
-    assertEquals("Vårdgivaren", intygReadMessage.getUserCareUnit().getVardgivareNamn());
+    assertEquals(intygReadMessage.getUserCareUnit().getEnhetsId(), "VARDENHET_ID");
+    assertEquals(intygReadMessage.getUserCareUnit().getEnhetsNamn(), "Vårdenheten");
+    assertEquals(intygReadMessage.getUserCareUnit().getVardgivareId(), "VARDGIVARE_ID");
+    assertEquals(intygReadMessage.getUserCareUnit().getVardgivareNamn(), "Vårdgivaren");
 
     assertEquals(
-        "191212121212", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId());
-    assertEquals("", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn());
+        intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId(), "191212121212");
+    assertEquals(intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn(), "");
 
     assertTrue(intygReadMessage.getTimestamp().minusSeconds(DELAY).isBefore(now()));
     assertTrue(intygReadMessage.getTimestamp().plusSeconds(DELAY).isAfter(now()));
 
-    assertEquals("webcert", intygReadMessage.getSystemId());
-    assertEquals("WebCert", intygReadMessage.getSystemName());
+    assertEquals(intygReadMessage.getSystemId(), "webcert");
+    assertEquals(intygReadMessage.getSystemName(), "WebCert");
   }
 
-  @Test(expected = JmsException.class)
-  public void logServiceJmsException() throws Exception {
-    when(userService.getUser()).thenReturn(createUser());
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  @Test
+  void logServiceJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(userService.getUser()).thenReturn(createUser());
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    final var logRequest =
-        LogRequest.builder()
-            .intygId("abc123")
-            .patientId(createPnr("19121212-1212"))
-            .patientName("Hans Olof van der Test")
-            .testIntyg(false)
-            .build();
+          final var logRequest =
+              LogRequest.builder()
+                  .intygId("abc123")
+                  .patientId(createPnr("19121212-1212"))
+                  .patientName("Hans Olof van der Test")
+                  .testIntyg(false)
+                  .build();
 
-    try {
-      logService.logReadIntyg(logRequest);
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
+          try {
+            logService.logReadIntyg(logRequest);
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
-  public void testActivityArgsAreIdenticalToAdditionalInfo() {
+  void testActivityArgsAreIdenticalToAdditionalInfo() {
     final var logRequest =
         LogRequest.builder()
             .intygId("abc123")
@@ -179,7 +186,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void logServiceTestIntygShouldNotBeLogged() throws Exception {
+  void logServiceTestIntygShouldNotBeLogged() throws Exception {
     when(userService.getUser()).thenReturn(createUser());
 
     final var logRequest =
@@ -196,7 +203,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void shouldLogReadLevelOne() {
+  void shouldLogReadLevelOne() {
     final var user = createUser();
     final var patientId = "191212121212";
     final var populatedMessage = mock(PdlLogMessage.class);

@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 
 @ExtendWith(MockitoExtension.class)
-public class GetQuestionsFacadeServiceImplTest {
+class GetQuestionsFacadeServiceImplTest {
 
   @Mock private IntygService intygService;
   private GetQuestionsFacadeService arendeToQuestionFacadeService;

@@ -62,7 +62,7 @@ class SubscriptionRestClientTest {
   private static final String SERVICENOW_PASSWORD = "serviceNowPassword";
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     ReflectionTestUtils.setField(subscriptionRestClient, SERVICENOW_USERNAME, SERVICENOW_USERNAME);
     ReflectionTestUtils.setField(subscriptionRestClient, SERVICENOW_PASSWORD, SERVICENOW_PASSWORD);
     ReflectionTestUtils.setField(

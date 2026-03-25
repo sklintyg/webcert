@@ -18,28 +18,28 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelperImpl;
 
-@RunWith(MockitoJUnitRunner.class)
-public class DraftAccessServiceHelperTest {
+@ExtendWith(MockitoExtension.class)
+class DraftAccessServiceHelperTest {
 
   @Mock private DraftAccessService draftAccessService;
 
@@ -51,8 +51,8 @@ public class DraftAccessServiceHelperTest {
 
   private Utkast draft;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     draft = new Utkast();
     draft.setIntygsTyp("certificateType");
     draft.setIntygTypeVersion("certificateTypeVersion");
@@ -61,7 +61,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToCreate() {
+  void shallThrowExceptionIfNoAccessToCreate() {
     try {
       doReturn(createNoAccessResult())
           .when(draftAccessService)
@@ -75,7 +75,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToCreate() {
+  void shallNotThrowExeptionIfAllowAccessToCreate() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToCreateDraft(any(AccessEvaluationParameters.class));
@@ -85,7 +85,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToCreate() {
+  void shallAllowIfAllowAccessToCreate() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToCreateDraft(any(AccessEvaluationParameters.class));
@@ -96,7 +96,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToCreate() {
+  void shallNotAllowIfNoAccessToCreate() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToCreateDraft(any(AccessEvaluationParameters.class));
@@ -107,7 +107,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToRead() {
+  void shallThrowExceptionIfNoAccessToRead() {
     try {
       doReturn(createNoAccessResult())
           .when(draftAccessService)
@@ -120,7 +120,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToRead() {
+  void shallNotThrowExeptionIfAllowAccessToRead() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToReadDraft(any(AccessEvaluationParameters.class));
@@ -129,7 +129,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToRead() {
+  void shallAllowIfAllowAccessToRead() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToReadDraft(any(AccessEvaluationParameters.class));
@@ -138,7 +138,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToRead() {
+  void shallNotAllowIfNoAccessToRead() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToReadDraft(any(AccessEvaluationParameters.class));
@@ -147,7 +147,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToEdit() {
+  void shallThrowExceptionIfNoAccessToEdit() {
     try {
       doReturn(createNoAccessResult())
           .when(draftAccessService)
@@ -160,7 +160,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToEdit() {
+  void shallNotThrowExeptionIfAllowAccessToEdit() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToEditDraft(any(AccessEvaluationParameters.class));
@@ -169,7 +169,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToEdit() {
+  void shallAllowIfAllowAccessToEdit() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToEditDraft(any(AccessEvaluationParameters.class));
@@ -178,7 +178,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToEdit() {
+  void shallNotAllowIfNoAccessToEdit() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToEditDraft(any(AccessEvaluationParameters.class));
@@ -187,7 +187,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToEditCertificatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToEditCertificatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToEditDraft(any(AccessEvaluationParameters.class));
@@ -197,7 +197,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToEditCertificatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToEditCertificatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToEditDraft(any(AccessEvaluationParameters.class));
@@ -207,7 +207,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToDelete() {
+  void shallThrowExceptionIfNoAccessToDelete() {
     try {
       doReturn(createNoAccessResult())
           .when(draftAccessService)
@@ -220,7 +220,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToDelete() {
+  void shallNotThrowExeptionIfAllowAccessToDelete() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToDeleteDraft(any(AccessEvaluationParameters.class));
@@ -229,7 +229,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToDelete() {
+  void shallAllowIfAllowAccessToDelete() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToDeleteDraft(any(AccessEvaluationParameters.class));
@@ -238,7 +238,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToDelete() {
+  void shallNotAllowIfNoAccessToDelete() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToDeleteDraft(any(AccessEvaluationParameters.class));
@@ -247,7 +247,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToDeleteCertificatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToDeleteCertificatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToDeleteDraft(any(AccessEvaluationParameters.class));
@@ -257,7 +257,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToDeleteCertificatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToDeleteCertificatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToDeleteDraft(any(AccessEvaluationParameters.class));
@@ -267,7 +267,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToPrint() {
+  void shallThrowExceptionIfNoAccessToPrint() {
     try {
       doReturn(createNoAccessResult())
           .when(draftAccessService)
@@ -280,7 +280,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToPrint() {
+  void shallNotThrowExeptionIfAllowAccessToPrint() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToPrintDraft(any(AccessEvaluationParameters.class));
@@ -289,7 +289,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToPrint() {
+  void shallAllowIfAllowAccessToPrint() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToPrintDraft(any(AccessEvaluationParameters.class));
@@ -298,7 +298,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToPrint() {
+  void shallNotAllowIfNoAccessToPrint() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToPrintDraft(any(AccessEvaluationParameters.class));
@@ -307,7 +307,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToPrintCertificatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToPrintCertificatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToPrintDraft(any(AccessEvaluationParameters.class));
@@ -317,7 +317,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToPrintCertificatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToPrintCertificatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToPrintDraft(any(AccessEvaluationParameters.class));
@@ -327,7 +327,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToForward() {
+  void shallThrowExceptionIfNoAccessToForward() {
     try {
       doReturn(createNoAccessResult())
           .when(draftAccessService)
@@ -340,7 +340,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToForward() {
+  void shallNotThrowExeptionIfAllowAccessToForward() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToForwardDraft(any(AccessEvaluationParameters.class));
@@ -349,7 +349,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToForward() {
+  void shallAllowIfAllowAccessToForward() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToForwardDraft(any(AccessEvaluationParameters.class));
@@ -358,7 +358,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToForward() {
+  void shallNotAllowIfNoAccessToForward() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToForwardDraft(any(AccessEvaluationParameters.class));
@@ -367,7 +367,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToForwardCertificatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToForwardCertificatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToForwardDraft(any(AccessEvaluationParameters.class));
@@ -377,7 +377,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToForwardCertificatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToForwardCertificatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToForwardDraft(any(AccessEvaluationParameters.class));
@@ -387,7 +387,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToReadyForSign() {
+  void shallThrowExceptionIfNoAccessToReadyForSign() {
     try {
       doReturn(createNoAccessResult())
           .when(draftAccessService)
@@ -400,7 +400,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToReadyForSign() {
+  void shallNotThrowExeptionIfAllowAccessToReadyForSign() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToReadyForSign(any(AccessEvaluationParameters.class));
@@ -409,7 +409,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToReadyForSign() {
+  void shallAllowIfAllowAccessToReadyForSign() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToReadyForSign(any(AccessEvaluationParameters.class));
@@ -418,7 +418,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToReadyForSign() {
+  void shallNotAllowIfNoAccessToReadyForSign() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToReadyForSign(any(AccessEvaluationParameters.class));
@@ -427,7 +427,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToReadyForSignCertificatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToReadyForSignCertificatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToReadyForSign(any(AccessEvaluationParameters.class));
@@ -437,7 +437,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToReadyForSignCertificatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToReadyForSignCertificatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToReadyForSign(any(AccessEvaluationParameters.class));
@@ -447,7 +447,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToCopyFromCandidate() {
+  void shallThrowExceptionIfNoAccessToCopyFromCandidate() {
     try {
       doReturn(createNoAccessResult())
           .when(draftAccessService)
@@ -460,7 +460,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToCopyFromCandidate() {
+  void shallNotThrowExeptionIfAllowAccessToCopyFromCandidate() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
@@ -469,7 +469,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToCopyFromCandidate() {
+  void shallAllowIfAllowAccessToCopyFromCandidate() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
@@ -478,7 +478,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToCopyFromCandidate() {
+  void shallNotAllowIfNoAccessToCopyFromCandidate() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
@@ -487,7 +487,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToCopyFromCandidatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToCopyFromCandidatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(draftAccessService)
         .allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
@@ -498,7 +498,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToCopyFromCandidatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToCopyFromCandidatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(draftAccessService)
         .allowToCopyFromCandidate(any(AccessEvaluationParameters.class));
@@ -509,7 +509,7 @@ public class DraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowToSignWithConfirmation() {
+  void shallAllowToSignWithConfirmation() {
     final var accessEvaluationParameters = mock(AccessEvaluationParameters.class);
     doReturn(createAccessResult())
         .when(draftAccessService)

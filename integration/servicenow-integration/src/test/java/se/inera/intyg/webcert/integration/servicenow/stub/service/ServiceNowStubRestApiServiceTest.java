@@ -60,7 +60,7 @@ class ServiceNowStubRestApiServiceTest {
           "Webcert integrerad - direktanslutning");
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     ReflectionTestUtils.setField(
         stubState, ServiceNowStubState.class, "elegServiceCodes", ELEG_SERVICE_CODES, List.class);
     ReflectionTestUtils.setField(

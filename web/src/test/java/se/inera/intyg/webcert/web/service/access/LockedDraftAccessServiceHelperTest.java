@@ -18,27 +18,27 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelperImpl;
 
-@RunWith(MockitoJUnitRunner.class)
-public class LockedDraftAccessServiceHelperTest {
+@ExtendWith(MockitoExtension.class)
+class LockedDraftAccessServiceHelperTest {
 
   @Mock private LockedDraftAccessService lockedDraftAccessService;
 
@@ -50,8 +50,8 @@ public class LockedDraftAccessServiceHelperTest {
 
   private Utkast draft;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     draft = new Utkast();
     draft.setIntygsTyp("certificateType");
     draft.setIntygTypeVersion("certificateTypeVersion");
@@ -60,20 +60,20 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToRead() {
+  void shallThrowExceptionIfNoAccessToRead() {
     try {
       doReturn(createNoAccessResult())
           .when(lockedDraftAccessService)
           .allowToRead(any(AccessEvaluationParameters.class));
       lockedDraftAccessServiceHelper.validateAccessToRead(draft);
-      assertTrue("Should throw exception if no access", false);
+      assertTrue(false, "Should throw exception if no access");
     } catch (AuthoritiesException ex) {
       assertTrue(true);
     }
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToRead() {
+  void shallNotThrowExeptionIfAllowAccessToRead() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -82,7 +82,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToRead() {
+  void shallAllowIfAllowAccessToRead() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -91,7 +91,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToRead() {
+  void shallNotAllowIfNoAccessToRead() {
     doReturn(createNoAccessResult())
         .when(lockedDraftAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -100,7 +100,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToReadPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToReadPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -110,7 +110,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToReadPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToReadPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(lockedDraftAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -120,20 +120,20 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToCopy() {
+  void shallThrowExceptionIfNoAccessToCopy() {
     try {
       doReturn(createNoAccessResult())
           .when(lockedDraftAccessService)
           .allowToCopy(any(AccessEvaluationParameters.class));
       lockedDraftAccessServiceHelper.validateAccessToCopy(draft);
-      assertTrue("Should throw exception if no access", false);
+      assertTrue(false, "Should throw exception if no access");
     } catch (AuthoritiesException ex) {
       assertTrue(true);
     }
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToCopy() {
+  void shallNotThrowExeptionIfAllowAccessToCopy() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToCopy(any(AccessEvaluationParameters.class));
@@ -142,7 +142,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToCopy() {
+  void shallAllowIfAllowAccessToCopy() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToCopy(any(AccessEvaluationParameters.class));
@@ -151,7 +151,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToCopy() {
+  void shallNotAllowIfNoAccessToCopy() {
     doReturn(createNoAccessResult())
         .when(lockedDraftAccessService)
         .allowToCopy(any(AccessEvaluationParameters.class));
@@ -160,7 +160,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToCopyPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToCopyPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToCopy(any(AccessEvaluationParameters.class));
@@ -170,7 +170,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToCopyPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToCopyPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(lockedDraftAccessService)
         .allowToCopy(any(AccessEvaluationParameters.class));
@@ -180,20 +180,20 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToInvalidate() {
+  void shallThrowExceptionIfNoAccessToInvalidate() {
     try {
       doReturn(createNoAccessResult())
           .when(lockedDraftAccessService)
           .allowToInvalidate(any(AccessEvaluationParameters.class));
       lockedDraftAccessServiceHelper.validateAccessToInvalidate(draft);
-      assertTrue("Should throw exception if no access", false);
+      assertTrue(false, "Should throw exception if no access");
     } catch (AuthoritiesException ex) {
       assertTrue(true);
     }
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToInvalidate() {
+  void shallNotThrowExeptionIfAllowAccessToInvalidate() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -202,7 +202,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToInvalidate() {
+  void shallAllowIfAllowAccessToInvalidate() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -211,7 +211,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToInvalidate() {
+  void shallNotAllowIfNoAccessToInvalidate() {
     doReturn(createNoAccessResult())
         .when(lockedDraftAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -220,7 +220,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToInvalidatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToInvalidatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -230,7 +230,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToInvalidatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToInvalidatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(lockedDraftAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -240,20 +240,20 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToPrint() {
+  void shallThrowExceptionIfNoAccessToPrint() {
     try {
       doReturn(createNoAccessResult())
           .when(lockedDraftAccessService)
           .allowToPrint(any(AccessEvaluationParameters.class));
       lockedDraftAccessServiceHelper.validateAccessToPrint(draft);
-      assertTrue("Should throw exception if no access", false);
+      assertTrue(false, "Should throw exception if no access");
     } catch (AuthoritiesException ex) {
       assertTrue(true);
     }
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToPrint() {
+  void shallNotThrowExeptionIfAllowAccessToPrint() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class));
@@ -262,7 +262,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToPrint() {
+  void shallAllowIfAllowAccessToPrint() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class));
@@ -271,7 +271,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToPrint() {
+  void shallNotAllowIfNoAccessToPrint() {
     doReturn(createNoAccessResult())
         .when(lockedDraftAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class));
@@ -280,7 +280,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToPrintPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToPrintPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(lockedDraftAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class));
@@ -290,7 +290,7 @@ public class LockedDraftAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToPrintPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToPrintPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(lockedDraftAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class));

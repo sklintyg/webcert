@@ -18,32 +18,32 @@
  */
 package se.inera.intyg.webcert.web.service.modules;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
-@RunWith(MockitoJUnitRunner.class)
-public class WebcertModuleServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class WebcertModuleServiceImplTest {
 
   @Mock private DiagnosService diagnosService;
 
   @InjectMocks private WebcertModuleServiceImpl service;
 
   @Test
-  public void testValidateDiagnosisCode() {
+  void testValidateDiagnosisCode() {
     final String codeFragment = "code";
     final String codeSystem = "codesystem";
     when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem))
@@ -54,7 +54,7 @@ public class WebcertModuleServiceImplTest {
   }
 
   @Test
-  public void testValidateDiagnosisCodeFalse() {
+  void testValidateDiagnosisCodeFalse() {
     final String codeFragment = "code";
     final String codeSystem = "codesystem";
     when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem))
@@ -65,7 +65,7 @@ public class WebcertModuleServiceImplTest {
   }
 
   @Test
-  public void testValidateDiagnosisCodeDiagnoskodverk() {
+  void testValidateDiagnosisCodeDiagnoskodverk() {
     final String codeFragment = "code";
     final Diagnoskodverk codeSystem = Diagnoskodverk.ICD_10_SE;
     when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem))
@@ -76,7 +76,7 @@ public class WebcertModuleServiceImplTest {
   }
 
   @Test
-  public void testValidateDiagnosisCodeDiagnoskodverkFalse() {
+  void testValidateDiagnosisCodeDiagnoskodverkFalse() {
     final String codeFragment = "code";
     final Diagnoskodverk codeSystem = Diagnoskodverk.ICD_10_SE;
     when(diagnosService.getDiagnosisByCode(codeFragment, codeSystem))
@@ -87,18 +87,18 @@ public class WebcertModuleServiceImplTest {
   }
 
   @Test
-  public void testGetDescriptionFromDiagnosKodNull() {
+  void testGetDescriptionFromDiagnosKodNull() {
     final String code = "code";
     final String codeSystemStr = "codesystem";
     when(diagnosService.getDiagnosisByCode(code, codeSystemStr))
         .thenReturn(DiagnosResponse.notFound());
     String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
 
-    assertEquals("", res);
+    assertEquals(res, "");
   }
 
   @Test
-  public void testGetDescriptionFromDiagnosKod() {
+  void testGetDescriptionFromDiagnosKod() {
     final String code = "code";
     final String codeSystemStr = "codesystem";
     final String description = "description";
@@ -113,7 +113,7 @@ public class WebcertModuleServiceImplTest {
   }
 
   @Test
-  public void testGetDescriptionFromDiagnosKodMoreThanOneResult() {
+  void testGetDescriptionFromDiagnosKodMoreThanOneResult() {
     final String code = "code";
     final String codeSystemStr = "codesystem";
 
@@ -121,6 +121,6 @@ public class WebcertModuleServiceImplTest {
         .thenReturn(DiagnosResponse.ok(Arrays.asList(new Diagnos(), new Diagnos()), false));
     String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
 
-    assertEquals("", res);
+    assertEquals(res, "");
   }
 }

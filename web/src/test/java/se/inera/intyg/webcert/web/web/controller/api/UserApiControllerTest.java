@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -31,15 +31,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -50,8 +51,9 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
-@RunWith(MockitoJUnitRunner.class)
-public class UserApiControllerTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class UserApiControllerTest {
 
   private static final String ID = "id";
   @InjectMocks UserApiController userApiController;
@@ -66,14 +68,13 @@ public class UserApiControllerTest {
 
   @Captor private ArgumentCaptor<Map<String, Feature>> captor;
 
-  @Before
-  public void setUp() {
-    MockitoAnnotations.initMocks(this);
+  @BeforeEach
+  void setUp() {
     when(webCertUserService.getUser()).thenReturn(webCertUser);
   }
 
   @Test
-  public void testUserFeaturesEnableDisabled() {
+  void testUserFeaturesEnableDisabled() {
     // Given
     final WebUserFeaturesRequest webUserFeaturesRequest = new WebUserFeaturesRequest();
     webUserFeaturesRequest.setJsLoggning(true);
@@ -90,7 +91,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testUserFeaturesDisableEnabled() {
+  void testUserFeaturesDisableEnabled() {
     // Given
     final WebUserFeaturesRequest webUserFeaturesRequest = new WebUserFeaturesRequest();
     webUserFeaturesRequest.setJsLoggning(false);
@@ -110,7 +111,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testUserFeaturesEnableEnabled() {
+  void testUserFeaturesEnableEnabled() {
     // Given
     final WebUserFeaturesRequest webUserFeaturesRequest = new WebUserFeaturesRequest();
     webUserFeaturesRequest.setJsLoggning(true);
@@ -130,7 +131,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testUserFeaturesDisableDisabled() {
+  void testUserFeaturesDisableDisabled() {
     // Given
     final WebUserFeaturesRequest webUserFeaturesRequest = new WebUserFeaturesRequest();
     webUserFeaturesRequest.setJsLoggning(false);
@@ -147,7 +148,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testLogout() {
+  void testLogout() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
 
@@ -159,7 +160,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testLogoutCancel() {
+  void testLogoutCancel() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
 
@@ -171,7 +172,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void shallSetUseSigningServiceToTrueIfUnitIsNotWhiteListed() {
+  void shallSetUseSigningServiceToTrueIfUnitIsNotWhiteListed() {
     final var request = new ChangeSelectedUnitRequest();
     request.setId(ID);
     final var selectedUnit = new Mottagning();
@@ -192,7 +193,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void shallSetUseSigningServiceToFalseIfUnitIsWhiteListed() {
+  void shallSetUseSigningServiceToFalseIfUnitIsWhiteListed() {
     final var request = new ChangeSelectedUnitRequest();
     request.setId(ID);
     final var selectedUnit = new Mottagning();

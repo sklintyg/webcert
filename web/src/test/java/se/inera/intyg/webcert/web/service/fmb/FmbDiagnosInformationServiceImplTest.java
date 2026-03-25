@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.web.service.fmb;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,11 +41,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.assertj.core.util.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
@@ -63,8 +63,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 
-@RunWith(MockitoJUnitRunner.class)
-public class FmbDiagnosInformationServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class FmbDiagnosInformationServiceImplTest {
 
   protected static final String DIAGNOSRUBRIK_PREFIX = "diagnosrubrik-";
   @Mock private DiagnosService diagnosService;
@@ -80,7 +80,7 @@ public class FmbDiagnosInformationServiceImplTest {
   private List<Period> PERIODS = Collections.emptyList();
 
   @Test
-  public void validateSjukskrivningtidForPatientShouldReturnOK() {
+  void validateSjukskrivningtidForPatientShouldReturnOK() {
 
     final int rekommenderad = 14;
     final int total = 12;
@@ -121,7 +121,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void validateSjukskrivningtidForPatientShouldReturnNotOK() {
+  void validateSjukskrivningtidForPatientShouldReturnNotOK() {
 
     final int rekommenderad = 7;
     final int total = 12;
@@ -162,7 +162,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void testDuplicateTexts() {
+  void testDuplicateTexts() {
 
     final DiagnosInformation diagnosInformation =
         createDiagnosInformation("test", "test", "A10", "B20");
@@ -189,14 +189,14 @@ public class FmbDiagnosInformationServiceImplTest {
             .orElse(Lists.emptyList());
 
     assertEquals(DIAGNOSRUBRIK_PREFIX + "A10", response.get().getDiagnosTitle());
-    assertEquals("A10, B20", response.get().getRelatedDiagnoses());
+    assertEquals(response.get().getRelatedDiagnoses(), "A10, B20");
     assertEquals(1, count);
-    assertEquals("test", contentList.get(0).getText());
+    assertEquals(contentList.get(0).getText(), "test");
     assertNull(contentList.get(0).getList());
   }
 
   @Test
-  public void testMultipleTypFall() {
+  void testMultipleTypFall() {
     final DiagnosInformation diagnosInformation = createDiagnosInformation("test1", "test2", "A10");
 
     doReturn(Optional.of(diagnosInformation))
@@ -225,7 +225,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void faultySearch() {
+  void faultySearch() {
     doReturn(Optional.empty())
         .when(diagnosInformationRepository)
         .findFirstByIcd10KodList_kod(anyString());
@@ -237,7 +237,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void testGetFmbForIcd10IsReturningCorrectIcdCode() throws Exception {
+  void testGetFmbForIcd10IsReturningCorrectIcdCode() throws Exception {
     final String icd10 = "asdf";
     final DiagnosInformation diagnosInformation = createDiagnosInformation("test1", "test2", icd10);
 
@@ -252,7 +252,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void testWithSpecificIcd10CodeResultingInItsParentIcd10Kod() {
+  void testWithSpecificIcd10CodeResultingInItsParentIcd10Kod() {
 
     final int foreslagen = 1;
     final int tidigare = 12;

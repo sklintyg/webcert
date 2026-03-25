@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.relation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -32,12 +32,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
@@ -45,8 +47,9 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepositoryCust
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 /** Created by eriklupander on 2017-05-15. */
-@RunWith(MockitoJUnitRunner.class)
-public class CertificateRelationServiceImplTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class CertificateRelationServiceImplTest {
 
   private static final String INTYG_ID = "123";
   private static final String OTHER_INTYG_ID = "456";
@@ -57,21 +60,21 @@ public class CertificateRelationServiceImplTest {
 
   @InjectMocks private CertificateRelationServiceImpl testee;
 
-  @Before
-  public void init() {
+  @BeforeEach
+  void init() {
     when(utkastRepositoryCustom.findParentRelation(anyString())).thenReturn(new ArrayList<>());
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(new ArrayList<>());
   }
 
   @Test
-  public void testGetWithNoRelations() {
+  void testGetWithNoRelations() {
     Relations relations = testee.getRelations(INTYG_ID);
     assertNull(relations.getParent());
     assertFrontendRelations(relations.getLatestChildRelations(), null, null, null, null);
   }
 
   @Test
-  public void testGetWithParentRelation() {
+  void testGetWithParentRelation() {
     when(utkastRepositoryCustom.findParentRelation(anyString())).thenReturn(buildParentRelations());
     Relations relations = testee.getRelations(INTYG_ID);
     assertEquals(OTHER_INTYG_ID, relations.getParent().getIntygsId());
@@ -79,16 +82,16 @@ public class CertificateRelationServiceImplTest {
   }
 
   @Test
-  public void testGetWithChildRelations() {
+  void testGetWithChildRelations() {
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
     Relations relations = testee.getRelations(INTYG_ID);
-    assertNull(OTHER_INTYG_ID, relations.getParent());
+    assertNull(relations.getParent(), OTHER_INTYG_ID);
     assertFrontendRelationsIntygsIds(
         relations.getLatestChildRelations(), CHILD_INTYG_ID_2, null, null, CHILD_INTYG_ID_1);
   }
 
   @Test
-  public void testGetRelationOfPresentType() {
+  void testGetRelationOfPresentType() {
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
     Optional<WebcertCertificateRelation> relationOfType =
         testee.getNewestRelationOfType(
@@ -98,7 +101,7 @@ public class CertificateRelationServiceImplTest {
   }
 
   @Test
-  public void testGetRelationOfNonPresentType() {
+  void testGetRelationOfNonPresentType() {
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
     Optional<WebcertCertificateRelation> relationOfType =
         testee.getNewestRelationOfType(

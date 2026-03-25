@@ -73,8 +73,8 @@ class DbTypeInfoModalProviderTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals("Utkast på dödsbevis på annan vårdenhet", result.get().getTitle()),
-        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()),
+        () -> assertEquals(result.get().getTitle(), "Utkast på dödsbevis på annan vårdenhet"),
+        () -> assertEquals(result.get().getLink(), "Visa vårdenhetens namn och HSA-id"),
         () -> assertTrue(result.get().getDescription().contains(careProviderName)),
         () -> assertTrue(result.get().getDescription().contains(careUnitName)),
         () -> assertTrue(result.get().getDescription().contains(careUnitHsaId)));
@@ -100,8 +100,8 @@ class DbTypeInfoModalProviderTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals("Signerat dödsbevis på annan vårdenhet", result.get().getTitle()),
-        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()),
+        () -> assertEquals(result.get().getTitle(), "Signerat dödsbevis på annan vårdenhet"),
+        () -> assertEquals(result.get().getLink(), "Visa vårdenhetens namn och HSA-id"),
         () -> assertTrue(result.get().getDescription().contains(careProviderName)),
         () -> assertTrue(result.get().getDescription().contains(careUnitName)),
         () -> assertTrue(result.get().getDescription().contains(careUnitHsaId)));
@@ -127,8 +127,8 @@ class DbTypeInfoModalProviderTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals("Utkast på dödsbevis hos annan vårdgivare", result.get().getTitle()),
-        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()));
+        () -> assertEquals(result.get().getTitle(), "Utkast på dödsbevis hos annan vårdgivare"),
+        () -> assertEquals(result.get().getLink(), "Visa vårdenhetens namn och HSA-id"));
   }
 
   @Test
@@ -151,8 +151,8 @@ class DbTypeInfoModalProviderTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals("Signerat dödsbevis hos annan vårdgivare", result.get().getTitle()),
-        () -> assertEquals("Visa vårdenhetens namn och HSA-id", result.get().getLink()));
+        () -> assertEquals(result.get().getTitle(), "Signerat dödsbevis hos annan vårdgivare"),
+        () -> assertEquals(result.get().getLink(), "Visa vårdenhetens namn och HSA-id"));
   }
 
   @Test

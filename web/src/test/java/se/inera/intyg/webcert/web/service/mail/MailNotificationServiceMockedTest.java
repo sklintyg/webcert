@@ -29,12 +29,12 @@ import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPFactory;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -46,8 +46,8 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MailNotificationServiceMockedTest {
+@ExtendWith(MockitoExtension.class)
+class MailNotificationServiceMockedTest {
 
   @Mock EmployeeNameService employeeNameService;
 
@@ -61,14 +61,14 @@ public class MailNotificationServiceMockedTest {
 
   @InjectMocks private MailNotificationServiceImpl mailNotificationService;
 
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     ReflectionTestUtils.setField(
         mailNotificationService, "fromAddress", "no-reply@webcert.intygstjanster.se");
   }
 
   @Test
-  public void sendMailForIncomingQuestionWithTimeoutThrowsNoException() throws Exception {
+  void sendMailForIncomingQuestionWithTimeoutThrowsNoException() throws Exception {
     doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
     mockOrganizationUnitServiceGetUnit();
     when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
@@ -76,7 +76,7 @@ public class MailNotificationServiceMockedTest {
   }
 
   @Test
-  public void sendMailForIncomingAnswerWithTimeoutThrowsNoException() throws Exception {
+  void sendMailForIncomingAnswerWithTimeoutThrowsNoException() throws Exception {
     doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
     mockOrganizationUnitServiceGetUnit();
     when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
@@ -90,7 +90,7 @@ public class MailNotificationServiceMockedTest {
   }
 
   @Test
-  public void testNoHSAResponse() throws HsaServiceCallException {
+  void testNoHSAResponse() throws HsaServiceCallException {
     try {
       SOAPFault soapFault = SOAPFactory.newInstance().createFault();
       soapFault.setFaultString("Connection reset");
@@ -103,7 +103,7 @@ public class MailNotificationServiceMockedTest {
   }
 
   @Test
-  public void setAdminMailAddress() throws Exception {}
+  void setAdminMailAddress() throws Exception {}
 
   private MailNotification mailNotification(String enhetsId) {
     return new MailNotification(null, "1L", Fk7263EntryPoint.MODULE_ID, enhetsId, null, null);

@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class ValidateSickLeavePeriodFacadeServiceImplTest {
+class ValidateSickLeavePeriodFacadeServiceImplTest {
 
   @Mock private FmbDiagnosInformationService fmbDiagnosInformationService;
 

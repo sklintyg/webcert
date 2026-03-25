@@ -180,7 +180,6 @@ dependencies {
 
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
 
     testImplementation "com.helger.schematron:ph-schematron-xslt"
     testImplementation "org.glassfish.jaxb:jaxb-runtime"

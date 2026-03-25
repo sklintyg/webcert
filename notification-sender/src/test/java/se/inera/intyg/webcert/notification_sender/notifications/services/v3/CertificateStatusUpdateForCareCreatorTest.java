@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -37,11 +37,11 @@ import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -66,8 +66,8 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CertificateStatusUpdateForCareCreatorTest {
+@ExtendWith(MockitoExtension.class)
+class CertificateStatusUpdateForCareCreatorTest {
 
   @Mock private IntygModuleRegistry moduleRegistry;
 
@@ -100,7 +100,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
   private static final String SUBJECT_CODE = "KOMPLT";
 
   @Test
-  public void shouldDoProperMethodCallsWhenCreatingStatusUpdateFromNotificationMessage()
+  void shouldDoProperMethodCallsWhenCreatingStatusUpdateFromNotificationMessage()
       throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
     final var notificationMessage = createNotificationMessage();
     final var utlatande = createUtlatande();
@@ -122,7 +122,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
   }
 
   @Test
-  public void shouldSetPropertiesInStatusUpdateCorrectlyWhenCreatingFromEvent()
+  void shouldSetPropertiesInStatusUpdateCorrectlyWhenCreatingFromEvent()
       throws ModuleNotFoundException, TemporaryException {
     final var event = createEvent();
     final var careProvider = createCareProvider();
@@ -188,7 +188,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
   }
 
   @Test
-  public void shouldEnrichCertificateWithPatientWhenCreatingStatusUpdateFromEvent()
+  void shouldEnrichCertificateWithPatientWhenCreatingStatusUpdateFromEvent()
       throws ModuleNotFoundException, TemporaryException {
     final var event = createEvent();
     final var careProvider = createCareProvider();
@@ -209,7 +209,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
   }
 
   @Test
-  public void shouldReturnXmlStringAfterCallToMarshalWithStatusUpdate() throws JAXBException {
+  void shouldReturnXmlStringAfterCallToMarshalWithStatusUpdate() throws JAXBException {
     final var statusUpdate = new CertificateStatusUpdateForCareType();
 
     final var stringXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);

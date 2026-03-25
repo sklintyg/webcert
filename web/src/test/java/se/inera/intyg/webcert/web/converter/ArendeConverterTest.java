@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,10 +34,10 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -62,8 +62,8 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Part;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ArendeConverterTest {
+@ExtendWith(MockitoExtension.class)
+class ArendeConverterTest {
 
   private static final String FRAGESTALLARKOD_FORSAKRINGSKASSA = "FK";
   private static final String PARTKOD_FKASSA = "FKASSA";
@@ -71,7 +71,7 @@ public class ArendeConverterTest {
   @Mock EmployeeNameService employeeNameService;
 
   @Test
-  public void testConvertArende() {
+  void testConvertArende() {
     final ArendeAmne amneskod = ArendeAmne.AVSTMN;
     final String intygId = "intygId";
     final String kontaktInfo = "kontaktInfo";
@@ -129,7 +129,7 @@ public class ArendeConverterTest {
   }
 
   @Test
-  public void testDecorateArendeFromUtkast() throws WebCertServiceException {
+  void testDecorateArendeFromUtkast() throws WebCertServiceException {
     final String intygTyp = "intygTyp";
     final String signeratAv = "signeratAv";
     final String enhetId = "enhetId";
@@ -162,11 +162,11 @@ public class ArendeConverterTest {
     assertEquals(enhetId, res.getEnhetId());
     assertEquals(enhetName, res.getEnhetName());
     assertEquals(vardgivareName, res.getVardgivareName());
-    assertEquals("Test Testorsson Svensson", res.getSigneratAvName());
+    assertEquals(res.getSigneratAvName(), "Test Testorsson Svensson");
   }
 
   @Test
-  public void testDecorateMessageFromCertificatet() throws WebCertServiceException {
+  void testDecorateMessageFromCertificatet() throws WebCertServiceException {
     final String certificateType = "certificateType";
     final String signedBy = "signedBy";
     final String unitId = "unitId";
@@ -208,7 +208,7 @@ public class ArendeConverterTest {
   }
 
   @Test
-  public void testCreateArendeQuestionFromUtkast() {
+  void testCreateArendeQuestionFromUtkast() {
     final ArendeAmne amne = ArendeAmne.OVRIGT;
     final String enhetsId = "enhetsId";
     final String intygsId = "intygsId";
@@ -267,7 +267,7 @@ public class ArendeConverterTest {
   }
 
   @Test
-  public void testCreateMessageFromCertificate() {
+  void testCreateMessageFromCertificate() {
     final var subject = ArendeAmne.OVRIGT;
     final var unitId = "unitId";
     final var certificateId = "certificateId";
@@ -340,7 +340,7 @@ public class ArendeConverterTest {
   }
 
   @Test
-  public void testCreateArendeAnswerFromQuestion() {
+  void testCreateArendeAnswerFromQuestion() {
     final String nyttMeddelande = "nytt meddelande";
     final String meddelandeId = "meddelandeId";
     final ArendeAmne amne = ArendeAmne.KONTKT;
@@ -404,7 +404,7 @@ public class ArendeConverterTest {
   }
 
   @Test
-  public void getNamesByHsaIds() {
+  void getNamesByHsaIds() {
     String id1 = "not_found";
     String id2 = "foundId";
     final var givenName = "Test";

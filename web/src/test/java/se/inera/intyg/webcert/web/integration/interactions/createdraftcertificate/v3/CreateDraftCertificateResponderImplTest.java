@@ -28,13 +28,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.webcert.web.csintegration.aggregate.CreateDraftCertificateAggregator;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateTest;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
@@ -47,8 +48,9 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
   private static final String LOGICAL_ADDR = "1234567890";
   private static final String USER_HSAID = "SE1234567890";
@@ -61,13 +63,13 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   @Mock private CreateDraftCertificateAggregator createDraftCertificateAggregator;
   @InjectMocks private CreateDraftCertificateResponderImpl responder;
 
-  @Before
-  public void setup() throws ModuleNotFoundException {
+  @BeforeEach
+  public void setup() {
     super.setup();
   }
 
   @Test
-  public void shallReturnMIUErrorIfWebcertUserDetailsServiceThrows() {
+  void shallReturnMIUErrorIfWebcertUserDetailsServiceThrows() {
     doThrow(IllegalStateException.class)
         .when(webcertUserDetailsService)
         .buildUserPrincipal(anyString(), anyString());
@@ -77,7 +79,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnValidationErrorIfDraftParametersValidationHasErrors() {
+  void shallReturnValidationErrorIfDraftParametersValidationHasErrors() {
     final var expectedErrorMessage = "expected error message";
     final var resultValidator = mock(ResultValidator.class);
     final var certificateType = createCertificateType();
@@ -95,7 +97,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnMIUErrorIfHealthPersonalDontHaveMIURightsOnCareUnit() {
+  void shallReturnMIUErrorIfHealthPersonalDontHaveMIURightsOnCareUnit() {
     final var certificateType = createCertificateType();
     final var resultValidator = mock(ResultValidator.class);
     final var webCertUser = buildWebCertUser();
@@ -115,7 +117,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnApplicationErrorsIfHasErrorsIsTrue() {
+  void shallReturnApplicationErrorsIfHasErrorsIsTrue() {
     final var expectedErrorMessage = "expected error message";
 
     final var certificateType = createCertificateType();
@@ -140,7 +142,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnCreateDraftCertificateResponseType() {
+  void shallReturnCreateDraftCertificateResponseType() {
     final var expectedResponse = new CreateDraftCertificateResponseType();
     final var certificateType = createCertificateType();
     final var validationErrors = mock(ResultValidator.class);

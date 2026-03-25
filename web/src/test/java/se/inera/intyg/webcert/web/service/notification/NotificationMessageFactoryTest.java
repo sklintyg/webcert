@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -35,11 +35,11 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Optional;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -61,8 +61,8 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 
 /** Created by Magnus Ekstrand on 03/12/14. */
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationMessageFactoryTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationMessageFactoryTest {
 
   private static final String INTYGS_ID = "1234";
   private static final String INTYGS_TYP = "fk7263";
@@ -82,7 +82,7 @@ public class NotificationMessageFactoryTest {
       new NotificationMessageFactoryImpl();
 
   @Test
-  public void testCreateNotificationMessageForUtkast() {
+  void testCreateNotificationMessageForUtkast() {
 
     Utkast utkast = createUtkast(INTYGS_ID);
     String reference = "ref";
@@ -97,8 +97,8 @@ public class NotificationMessageFactoryTest {
     assertNotNull(msg.getHandelseTid());
     assertEquals(INTYGS_ID, msg.getIntygsId());
     assertEquals(INTYGS_TYP, msg.getIntygsTyp());
-    assertEquals("SE12345678-1000", msg.getLogiskAdress());
-    assertEquals("{model}", msg.getUtkast());
+    assertEquals(msg.getLogiskAdress(), "SE12345678-1000");
+    assertEquals(msg.getUtkast(), "{model}");
     assertNotNull(msg.getFragaSvar());
     assertEquals(SchemaVersion.VERSION_1, msg.getVersion());
     assertEquals(reference, msg.getReference());
@@ -112,7 +112,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void testCreateNotificationMessageForUtkastSchemaVersion3() {
+  void testCreateNotificationMessageForUtkastSchemaVersion3() {
 
     Utkast utkast = createUtkast(INTYGS_ID);
     String reference = "ref";
@@ -127,8 +127,8 @@ public class NotificationMessageFactoryTest {
     assertNotNull(msg.getHandelseTid());
     assertEquals(INTYGS_ID, msg.getIntygsId());
     assertEquals(INTYGS_TYP, msg.getIntygsTyp());
-    assertEquals("SE12345678-1000", msg.getLogiskAdress());
-    assertEquals("{model}", msg.getUtkast());
+    assertEquals(msg.getLogiskAdress(), "SE12345678-1000");
+    assertEquals(msg.getUtkast(), "{model}");
     assertEquals(SchemaVersion.VERSION_3, msg.getVersion());
     assertEquals(reference, msg.getReference());
     assertNull(msg.getFragaSvar());
@@ -141,7 +141,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void testCreateNotificationMessageForUsesFragorOchSvarSchemaVersion1() {
+  void testCreateNotificationMessageForUsesFragorOchSvarSchemaVersion1() {
     when(mockFragorOchSvarCreator.createFragorOchSvar(INTYGS_ID))
         .thenReturn(new FragorOchSvar(1, 1, 1, 1));
 
@@ -157,8 +157,8 @@ public class NotificationMessageFactoryTest {
     assertNotNull(msg.getHandelseTid());
     assertEquals(INTYGS_ID, msg.getIntygsId());
     assertEquals(INTYGS_TYP, msg.getIntygsTyp());
-    assertEquals("SE12345678-1000", msg.getLogiskAdress());
-    assertEquals("{model}", msg.getUtkast());
+    assertEquals(msg.getLogiskAdress(), "SE12345678-1000");
+    assertEquals(msg.getUtkast(), "{model}");
     assertEquals(SchemaVersion.VERSION_1, msg.getVersion());
     assertEquals(reference, msg.getReference());
     assertNotNull(msg.getFragaSvar());
@@ -176,7 +176,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void testCreateNotificationMessageForUsesFragorOchSvarSchemaVersion3() {
+  void testCreateNotificationMessageForUsesFragorOchSvarSchemaVersion3() {
     when(mockFragorOchSvarCreator.createArenden(INTYGS_ID, INTYGS_TYP))
         .thenReturn(Pair.of(new ArendeCount(1, 1, 1, 1), new ArendeCount(2, 2, 2, 2)));
 
@@ -193,8 +193,8 @@ public class NotificationMessageFactoryTest {
     assertNotNull(msg.getHandelseTid());
     assertEquals(INTYGS_ID, msg.getIntygsId());
     assertEquals(INTYGS_TYP, msg.getIntygsTyp());
-    assertEquals("SE12345678-1000", msg.getLogiskAdress());
-    assertEquals("{model}", msg.getUtkast());
+    assertEquals(msg.getLogiskAdress(), "SE12345678-1000");
+    assertEquals(msg.getUtkast(), "{model}");
     assertEquals(SchemaVersion.VERSION_3, msg.getVersion());
     assertEquals(reference, msg.getReference());
     assertNull(msg.getFragaSvar());
@@ -236,7 +236,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void shallDecideSchemaStrategyBasedOnUtlatandeWhenCreatingFromEvent() throws Exception {
+  void shallDecideSchemaStrategyBasedOnUtlatandeWhenCreatingFromEvent() throws Exception {
     final var event = createEvent();
     final var json = "DRAFT_JSON";
     final var expectedSchemaVersion = SchemaVersion.VERSION_1;
@@ -256,7 +256,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void shallUseSchemaV3StrategyAsDefaultWhenCreatingFromEvent() throws Exception {
+  void shallUseSchemaV3StrategyAsDefaultWhenCreatingFromEvent() throws Exception {
     final var event = createEvent();
     final var json = "DRAFT_JSON";
     final var expectedSchemaVersion = SchemaVersion.VERSION_3;
@@ -274,7 +274,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void shallIncludeReferenceWhenCreatingFromEvent() throws Exception {
+  void shallIncludeReferenceWhenCreatingFromEvent() throws Exception {
     final var event = createEvent();
     final var json = "DRAFT_JSON";
     final var expectedReference = "REFERENCE";
@@ -292,7 +292,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void shallAddTopicFromEventWhenCreatingFromEvent() throws Exception {
+  void shallAddTopicFromEventWhenCreatingFromEvent() throws Exception {
     final var event = createEvent();
     final var json = "DRAFT_JSON";
 
@@ -310,7 +310,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void shallLeaveTopicAsNullIfMissingWhenCreatingFromEvent() throws Exception {
+  void shallLeaveTopicAsNullIfMissingWhenCreatingFromEvent() throws Exception {
     final var event = createEvent();
     final var json = "DRAFT_JSON";
     event.setAmne(null);
@@ -327,7 +327,7 @@ public class NotificationMessageFactoryTest {
   }
 
   @Test
-  public void shallResetEventTimestampBasedOnEventRecord()
+  void shallResetEventTimestampBasedOnEventRecord()
       throws ModuleNotFoundException, IOException, ModuleException {
     final var event = createEvent();
     final var json = "DRAFT_JSON";

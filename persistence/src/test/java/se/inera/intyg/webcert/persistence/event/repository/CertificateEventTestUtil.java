@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 
-public class CertificateEventTestUtil {
+class CertificateEventTestUtil {
 
   private CertificateEventTestUtil() {}
 

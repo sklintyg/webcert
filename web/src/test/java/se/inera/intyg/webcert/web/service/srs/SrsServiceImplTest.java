@@ -19,8 +19,9 @@
 package se.inera.intyg.webcert.web.service.srs;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -32,12 +33,14 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Utdatafilter;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
@@ -56,8 +59,9 @@ import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SrsServiceImplTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class SrsServiceImplTest {
 
   private static Diagnos buildDiagnosis(String code, String description) {
     Diagnos diagnosis = new Diagnos();
@@ -97,8 +101,8 @@ public class SrsServiceImplTest {
 
   @InjectMocks private SrsServiceImpl srsServiceUnderTest;
 
-  @Before
-  public void init() throws Exception {
+  @BeforeEach
+  void init() throws Exception {
     SrsResponse srsResponse =
         new SrsResponse(
             asList(SrsRecommendation.create("please observe", "text")),
@@ -197,50 +201,62 @@ public class SrsServiceImplTest {
         .thenReturn(List.of(new SrsCertificate("parent-intyg-id-3", "F438A", null, null)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void getSrsMissingPersonalIdentityNumberShouldThrowException() throws Exception {
-    srsServiceUnderTest.getSrs(
-        user,
-        "intyg-id-123",
-        "",
-        "F438A",
-        true,
-        true,
-        true,
-        new ArrayList<SrsQuestionResponse>(),
-        null);
-  }
-
-  @Test(expected = InvalidPersonNummerException.class)
-  public void getSrsIllFormedPersonalIdentityNumberShouldThrowException() throws Exception {
-    srsServiceUnderTest.getSrs(
-        user,
-        "intyg-id-123",
-        "incorrectform1912-12-12-1212",
-        "F438A",
-        true,
-        true,
-        true,
-        new ArrayList<SrsQuestionResponse>(),
-        15);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void getSrsMissingDiagnosisCodeShouldThrowException() throws Exception {
-    srsServiceUnderTest.getSrs(
-        user,
-        "intyg-id-123",
-        "191212121212",
-        "",
-        true,
-        true,
-        true,
-        new ArrayList<SrsQuestionResponse>(),
-        15);
+  @Test
+  void getSrsMissingPersonalIdentityNumberShouldThrowException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          srsServiceUnderTest.getSrs(
+              user,
+              "intyg-id-123",
+              "",
+              "F438A",
+              true,
+              true,
+              true,
+              new ArrayList<SrsQuestionResponse>(),
+              null);
+        });
   }
 
   @Test
-  public void getSrsShouldLogShowPredictionIfPredictionIsIncluded() throws Exception {
+  void getSrsIllFormedPersonalIdentityNumberShouldThrowException() {
+    assertThrows(
+        InvalidPersonNummerException.class,
+        () -> {
+          srsServiceUnderTest.getSrs(
+              user,
+              "intyg-id-123",
+              "incorrectform1912-12-12-1212",
+              "F438A",
+              true,
+              true,
+              true,
+              new ArrayList<SrsQuestionResponse>(),
+              15);
+        });
+  }
+
+  @Test
+  void getSrsMissingDiagnosisCodeShouldThrowException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          srsServiceUnderTest.getSrs(
+              user,
+              "intyg-id-123",
+              "191212121212",
+              "",
+              true,
+              true,
+              true,
+              new ArrayList<SrsQuestionResponse>(),
+              15);
+        });
+  }
+
+  @Test
+  void getSrsShouldLogShowPredictionIfPredictionIsIncluded() throws Exception {
     srsServiceUnderTest.getSrs(
         user,
         "intyg-id-123",
@@ -255,7 +271,7 @@ public class SrsServiceImplTest {
   }
 
   @Test
-  public void getSrsShouldNotLogShowPredictionIfPredictionIsNotIncluded() throws Exception {
+  void getSrsShouldNotLogShowPredictionIfPredictionIsNotIncluded() throws Exception {
     srsServiceUnderTest.getSrs(
         user,
         "intyg-id-123",
@@ -270,7 +286,7 @@ public class SrsServiceImplTest {
   }
 
   @Test
-  public void getSrsShouldAddDiagnosisDescriptions() throws Exception {
+  void getSrsShouldAddDiagnosisDescriptions() throws Exception {
     SrsResponse resp =
         srsServiceUnderTest.getSrs(
             user,
@@ -284,16 +300,16 @@ public class SrsServiceImplTest {
             15);
     assertNotNull(resp);
     assertEquals(
-        "Andra specificerade reaktioner på svår stress",
-        resp.getPredictions().get(0).getDiagnosisDescription());
-    assertEquals("Utmattningssyndrom", resp.getAtgarderDiagnosisDescription());
+        resp.getPredictions().get(0).getDiagnosisDescription(),
+        "Andra specificerade reaktioner på svår stress");
+    assertEquals(resp.getAtgarderDiagnosisDescription(), "Utmattningssyndrom");
     assertEquals(
-        "Anpassningsstörningar och reaktion på svår stress",
-        resp.getStatistikDiagnosisDescription());
+        resp.getStatistikDiagnosisDescription(),
+        "Anpassningsstörningar och reaktion på svår stress");
   }
 
   @Test
-  public void getSrsShouldAddCertificateExtensionChainWithMaxThreeEntries() throws Exception {
+  void getSrsShouldAddCertificateExtensionChainWithMaxThreeEntries() throws Exception {
     SrsResponse resp =
         srsServiceUnderTest.getSrs(
             user,
@@ -308,13 +324,13 @@ public class SrsServiceImplTest {
     assertNotNull(resp);
     assertNotNull(resp.getExtensionChain());
     assertEquals(3, resp.getExtensionChain().size());
-    assertEquals("intyg-id-123", resp.getExtensionChain().get(0).getCertificateId());
-    assertEquals("parent-intyg-id-1", resp.getExtensionChain().get(1).getCertificateId());
-    assertEquals("parent-intyg-id-2", resp.getExtensionChain().get(2).getCertificateId());
+    assertEquals(resp.getExtensionChain().get(0).getCertificateId(), "intyg-id-123");
+    assertEquals(resp.getExtensionChain().get(1).getCertificateId(), "parent-intyg-id-1");
+    assertEquals(resp.getExtensionChain().get(2).getCertificateId(), "parent-intyg-id-2");
   }
 
   @Test
-  public void getSrsShouldAddCertificateExtensionChainEvenIfNoExtension() throws Exception {
+  void getSrsShouldAddCertificateExtensionChainEvenIfNoExtension() throws Exception {
     SrsResponse resp =
         srsServiceUnderTest.getSrs(
             user,
@@ -329,6 +345,6 @@ public class SrsServiceImplTest {
     assertNotNull(resp);
     assertNotNull(resp.getExtensionChain());
     assertEquals(1, resp.getExtensionChain().size());
-    assertEquals("parent-intyg-id-3", resp.getExtensionChain().get(0).getCertificateId());
+    assertEquals(resp.getExtensionChain().get(0).getCertificateId(), "parent-intyg-id-3");
   }
 }

@@ -21,9 +21,6 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok"
 
     testImplementation "com.h2database:h2"
-    testImplementation "junit:junit"
     testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.springframework:spring-test"
-
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
 }

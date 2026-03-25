@@ -79,7 +79,7 @@ class PatientConverterImplTest {
   class PatientWithName {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       doReturn(puPatient)
           .when(patientDetailsResolver)
           .resolvePatient(
@@ -92,7 +92,7 @@ class PatientConverterImplTest {
     class PatientValues {
 
       @Test
-      public void shallConvertPatientFirstName() {
+      void shallConvertPatientFirstName() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -100,7 +100,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientLastName() {
+      void shallConvertPatientLastName() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -108,7 +108,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientMiddle() {
+      void shallConvertPatientMiddle() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -116,7 +116,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientFullName() {
+      void shallConvertPatientFullName() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -124,7 +124,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientIdAndIncludeDash() {
+      void shallConvertPatientIdAndIncludeDash() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -133,11 +133,11 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientIdType() {
+      void shallConvertPatientIdType() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-        assertEquals("PERSON_NUMMER", patient.getPersonId().getType());
+        assertEquals(patient.getPersonId().getType(), "PERSON_NUMMER");
       }
     }
 
@@ -148,7 +148,7 @@ class PatientConverterImplTest {
       class PatientId {
 
         @Test
-        public void shallHaveAlternateSSNAsPatientIdIfPatientIdHasBeenReplaced() {
+        void shallHaveAlternateSSNAsPatientIdIfPatientIdHasBeenReplaced() {
           final var parameters =
               getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
           parameters.setBeforeAlternateSsn(PATIENT_ID);
@@ -164,7 +164,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallHaveOriginalIdIfAlternateSSNIsEmpty() {
+        void shallHaveOriginalIdIfAlternateSSNIsEmpty() {
           final var parameters = getIntegrationParameters("", FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
           final var patient =
@@ -175,7 +175,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallHaveOriginalPatientIdIfAlternateSSNIsNull() {
+        void shallHaveOriginalPatientIdIfAlternateSSNIsNull() {
           final var parameters = getIntegrationParameters(null, FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
           final var patient =
@@ -186,7 +186,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallHaveAlternateSSNAsPatientIdIfSet() {
+        void shallHaveAlternateSSNAsPatientIdIfSet() {
           final var parameters =
               getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
@@ -202,7 +202,7 @@ class PatientConverterImplTest {
       class PreviousId {
 
         @Test
-        public void shallNotSetPreviousIdIfAlternateSSNIsEmpty() {
+        void shallNotSetPreviousIdIfAlternateSSNIsEmpty() {
           final var parameters = getIntegrationParameters("", FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
           final var patient =
@@ -213,7 +213,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallNotSetPreviousIdIfAlternateSSNIsNull() {
+        void shallNotSetPreviousIdIfAlternateSSNIsNull() {
           final var parameters = getIntegrationParameters(null, FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
           final var patient =
@@ -224,7 +224,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsReplaced() {
+        void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsReplaced() {
           final var parameters =
               getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
           parameters.setBeforeAlternateSsn(PATIENT_ID);
@@ -240,7 +240,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsNotReplaced() {
+        void shallSetPreviousPersonIdToOriginalIdIfPersonIdIsNotReplaced() {
           final var parameters =
               getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
           parameters.setBeforeAlternateSsn(PATIENT_ID);
@@ -253,7 +253,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetPreviousPersonIdToOriginalIdIfAlternatePatientSSnIsReserveId() {
+        void shallSetPreviousPersonIdToOriginalIdIfAlternatePatientSSnIsReserveId() {
           final var parameters = getIntegrationParameters(PATIENT_RESERVE_ID, FIRSTNAME, LASTNAME);
           parameters.setBeforeAlternateSsn(PATIENT_ID);
           user.setParameters(parameters);
@@ -268,7 +268,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsNotAReserveId() {
+        void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsNotAReserveId() {
           final var parameters = getIntegrationParameters(PATIENT_RESERVE_ID, FIRSTNAME, LASTNAME);
           parameters.setBeforeAlternateSsn(PATIENT_ID.replace("-", ""));
           user.setParameters(parameters);
@@ -283,7 +283,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsAReserveId() {
+        void shallSetPreviousIdWithCorrectFormatIfBeforeAlternateSsnIsAReserveId() {
           final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
           parameters.setBeforeAlternateSsn(PATIENT_RESERVE_ID);
           user.setParameters(parameters);
@@ -302,7 +302,7 @@ class PatientConverterImplTest {
       class PersonIdChanged {
 
         @Test
-        public void shallSetFlagIfAlternateAndBeforeSsnIsSetAndDiffers() {
+        void shallSetFlagIfAlternateAndBeforeSsnIsSetAndDiffers() {
           final var parameters =
               getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
           parameters.setBeforeAlternateSsn(PATIENT_ID);
@@ -317,7 +317,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetFlagIfBeforeSsnIsNotSetButPersonIdAndAlternateSsnDiffers() {
+        void shallSetFlagIfBeforeSsnIsNotSetButPersonIdAndAlternateSsnDiffers() {
           final var parameters =
               getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
@@ -328,7 +328,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallNotSetFlagIfPersonIdIsNotValid() {
+        void shallNotSetFlagIfPersonIdIsNotValid() {
           final var parameters = getIntegrationParameters(PATIENT_RESERVE_ID, FIRSTNAME, LASTNAME);
           parameters.setBeforeAlternateSsn(PATIENT_ID);
           user.setParameters(parameters);
@@ -339,7 +339,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallNotSetFlagForPersonIdIfNoParametersAreSent() {
+        void shallNotSetFlagForPersonIdIfNoParametersAreSent() {
           final var patient =
               patientConverter.convert(
                   originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -351,7 +351,7 @@ class PatientConverterImplTest {
       class ReserveId {
 
         @Test
-        public void shallSetReserveIdFlagIfPersonIdIsReserveId() {
+        void shallSetReserveIdFlagIfPersonIdIsReserveId() {
           final var parameters = getIntegrationParameters(PATIENT_RESERVE_ID, FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
           final var patient =
@@ -361,7 +361,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallNotSetReserveIdFlagIfPersonIdIsValid() {
+        void shallNotSetReserveIdFlagIfPersonIdIsValid() {
           final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
           final var patient =
@@ -373,7 +373,7 @@ class PatientConverterImplTest {
 
       @ParameterizedTest
       @ValueSource(booleans = {true, false})
-      public void shallSetIsPatientDeceasedFromPU(boolean isDeceased) {
+      void shallSetIsPatientDeceasedFromPU(boolean isDeceased) {
         puPatient.setAvliden(isDeceased);
         final var patient =
             patientConverter.convert(
@@ -385,7 +385,7 @@ class PatientConverterImplTest {
       class ProtectedIdentity {
 
         @Test
-        public void shallSetThatPatientHasProtectedIdentityIfTrue() {
+        void shallSetThatPatientHasProtectedIdentityIfTrue() {
           doReturn(SekretessStatus.TRUE).when(patientDetailsResolver).getSekretessStatus(any());
           final var patient =
               patientConverter.convert(
@@ -394,7 +394,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetThatPatientHasProtectedIdentityIfTrueIfUndefined() {
+        void shallSetThatPatientHasProtectedIdentityIfTrueIfUndefined() {
           doReturn(SekretessStatus.UNDEFINED)
               .when(patientDetailsResolver)
               .getSekretessStatus(any());
@@ -405,7 +405,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallNotSetThatPatientHasProtectedIdentityIfFalse() {
+        void shallNotSetThatPatientHasProtectedIdentityIfFalse() {
           doReturn(SekretessStatus.FALSE).when(patientDetailsResolver).getSekretessStatus(any());
           final var patient =
               patientConverter.convert(
@@ -418,7 +418,7 @@ class PatientConverterImplTest {
       class PatientNameDifferent {
 
         @Test
-        public void shallSetIsPatientNameDifferentIfFirstnameChanges() {
+        void shallSetIsPatientNameDifferentIfFirstnameChanges() {
           final var parameters =
               getIntegrationParameters(PATIENT_ID, ALTERNATE_FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
@@ -429,7 +429,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetIsPatientNameDifferentIfLastnameChanges() {
+        void shallSetIsPatientNameDifferentIfLastnameChanges() {
           final var parameters =
               getIntegrationParameters(PATIENT_ID, FIRSTNAME, ALTERNATE_LASTNAME);
           user.setParameters(parameters);
@@ -440,7 +440,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallSetIsPatientNameDifferentIfBothChange() {
+        void shallSetIsPatientNameDifferentIfBothChange() {
           final var parameters =
               getIntegrationParameters(PATIENT_ID, ALTERNATE_FIRSTNAME, ALTERNATE_LASTNAME);
           user.setParameters(parameters);
@@ -451,7 +451,7 @@ class PatientConverterImplTest {
         }
 
         @Test
-        public void shallNotSetIsPatientNameDifferentIfNameIsSame() {
+        void shallNotSetIsPatientNameDifferentIfNameIsSame() {
           final var parameters = getIntegrationParameters(PATIENT_ID, FIRSTNAME, LASTNAME);
           user.setParameters(parameters);
           final var patient =
@@ -462,7 +462,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallNotStausesIfNoIntegrationParameters() {
+      void shallNotStausesIfNoIntegrationParameters() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -476,7 +476,7 @@ class PatientConverterImplTest {
   class PatientWithNoName {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       doReturn(createPUPatientWithNoName())
           .when(patientDetailsResolver)
           .resolvePatient(
@@ -486,36 +486,36 @@ class PatientConverterImplTest {
     }
 
     @Test
-    public void shallSetFirstNameToEmptyStringForPatientWithNameAsNull() {
+    void shallSetFirstNameToEmptyStringForPatientWithNameAsNull() {
       final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
       parameters.setBeforeAlternateSsn(PATIENT_ID);
       user.setParameters(parameters);
       final var patient =
           patientConverter.convert(
               originalPatient, ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-      assertEquals("", patient.getFirstName());
+      assertEquals(patient.getFirstName(), "");
     }
 
     @Test
-    public void shallSetLastNameToEmptyStringForPatientWithNameAsNull() {
+    void shallSetLastNameToEmptyStringForPatientWithNameAsNull() {
       final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
       parameters.setBeforeAlternateSsn(PATIENT_ID);
       user.setParameters(parameters);
       final var patient =
           patientConverter.convert(
               originalPatient, ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-      assertEquals("", patient.getLastName());
+      assertEquals(patient.getLastName(), "");
     }
 
     @Test
-    public void shallSetMiddleNameToEmptyStringForPatientWithNameAsNull() {
+    void shallSetMiddleNameToEmptyStringForPatientWithNameAsNull() {
       final var parameters = getIntegrationParameters(ALTERNATE_PATIENT_ID, FIRSTNAME, LASTNAME);
       parameters.setBeforeAlternateSsn(PATIENT_ID);
       user.setParameters(parameters);
       final var patient =
           patientConverter.convert(
               originalPatient, ALTERNATE_PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
-      assertEquals("", patient.getMiddleName());
+      assertEquals(patient.getMiddleName(), "");
     }
   }
 
@@ -526,7 +526,7 @@ class PatientConverterImplTest {
     class PatientAddressInPU {
 
       @BeforeEach
-      public void setup() {
+      void setup() {
         doReturn(puPatient)
             .when(patientDetailsResolver)
             .resolvePatient(
@@ -536,7 +536,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientCity() {
+      void shallConvertPatientCity() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -544,7 +544,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientZipCode() {
+      void shallConvertPatientZipCode() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -552,7 +552,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientStreet() {
+      void shallConvertPatientStreet() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -560,7 +560,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientAddressFromPU() {
+      void shallConvertPatientAddressFromPU() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -574,7 +574,7 @@ class PatientConverterImplTest {
       private se.inera.intyg.common.support.facade.model.Patient originalPatient;
 
       @BeforeEach
-      public void setup() {
+      void setup() {
         originalPatient =
             se.inera.intyg.common.support.facade.model.Patient.builder()
                 .addressFromPU(false)
@@ -592,7 +592,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientCity() {
+      void shallConvertPatientCity() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -600,7 +600,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientZipCode() {
+      void shallConvertPatientZipCode() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -608,7 +608,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientStreet() {
+      void shallConvertPatientStreet() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
@@ -616,7 +616,7 @@ class PatientConverterImplTest {
       }
 
       @Test
-      public void shallConvertPatientAddressFromPU() {
+      void shallConvertPatientAddressFromPU() {
         final var patient =
             patientConverter.convert(
                 originalPatient, PERSON_NUMMER, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);

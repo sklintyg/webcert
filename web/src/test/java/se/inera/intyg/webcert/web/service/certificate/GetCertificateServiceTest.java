@@ -18,16 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.certificate;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -39,8 +41,9 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-@RunWith(MockitoJUnitRunner.class)
-public class GetCertificateServiceTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class GetCertificateServiceTest {
 
   @Mock private IntygModuleRegistry intygModuleRegistry;
 
@@ -51,7 +54,7 @@ public class GetCertificateServiceTest {
   @InjectMocks private GetCertificateServiceImpl getCertificateService;
 
   @Test
-  public void shallReturnIntygFromWebcertIfExists() throws Exception {
+  void shallReturnIntygFromWebcertIfExists() throws Exception {
     final var certificateId = "CERTIFICATE_ID";
     final var certificateType = "CERTIFICATE_TYPE";
 
@@ -67,7 +70,7 @@ public class GetCertificateServiceTest {
   }
 
   @Test
-  public void shallReturnIntygFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
+  void shallReturnIntygFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
     final var certificateId = "CERTIFICATE_ID";
     final var certificateType = "CERTIFICATE_TYPE";
 
@@ -84,7 +87,7 @@ public class GetCertificateServiceTest {
   }
 
   @Test
-  public void shallReturnUtlatandeFromWebcertIfExists() throws Exception {
+  void shallReturnUtlatandeFromWebcertIfExists() throws Exception {
     final var certificateId = "CERTIFICATE_ID";
     final var certificateType = "CERTIFICATE_TYPE";
 
@@ -99,7 +102,7 @@ public class GetCertificateServiceTest {
   }
 
   @Test
-  public void shallReturnUtlatandeFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
+  void shallReturnUtlatandeFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
     final var certificateId = "CERTIFICATE_ID";
     final var certificateType = "CERTIFICATE_TYPE";
 

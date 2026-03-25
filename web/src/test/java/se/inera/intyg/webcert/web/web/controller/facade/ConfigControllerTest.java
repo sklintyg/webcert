@@ -39,7 +39,7 @@ import se.inera.intyg.infra.integration.ia.services.IABannerService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class ConfigControllerTest {
+class ConfigControllerTest {
 
   @Mock private DynamicLinkService dynamicLinkService;
 

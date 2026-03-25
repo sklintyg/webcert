@@ -20,15 +20,20 @@ package se.inera.intyg.webcert.web.service.access;
 
 import static org.mockito.Mockito.doReturn;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public abstract class CertificateAccessTest extends AccessTest {
 
   @InjectMocks private CertificateAccessServiceImpl accessService;
@@ -39,16 +44,15 @@ public abstract class CertificateAccessTest extends AccessTest {
     super(intygsTyp, accessServiceTestData);
   }
 
-  @Before
-  public void initMocks() {
-    MockitoAnnotations.initMocks(this);
+  @BeforeEach
+  void initMocks() {
     accessEvaluationParameters =
         AccessEvaluationParameters.create(
             intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false);
   }
 
   @Test
-  public void isAllowToReadNoConditions() {
+  void isAllowToReadNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToReadNoConditions(accessService.allowToRead(accessEvaluationParameters));
@@ -57,7 +61,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadNotLatestMajorVersion() {
+  void isAllowToReadNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToReadNotLatestMajorVersion(accessService.allowToRead(accessEvaluationParameters));
@@ -66,7 +70,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadNotLatestMajorVersion(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadWhenMissingSubscription() {
+  void isAllowToReadWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToReadWhenMissingSubscription(accessService.allowToRead(accessEvaluationParameters));
@@ -75,7 +79,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadWhenMissingSubscription(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadOnDeceasedPatient() {
+  void isAllowToReadOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToReadOnDeceasedPatient(accessService.allowToRead(accessEvaluationParameters));
@@ -84,7 +88,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadOnInactiveUnit() {
+  void isAllowToReadOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToReadOnInactiveUnit(accessService.allowToRead(accessEvaluationParameters));
@@ -93,7 +97,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadOnRenewFalse() {
+  void isAllowToReadOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToReadOnRenewFalse(accessService.allowToRead(accessEvaluationParameters));
@@ -102,7 +106,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadOnSekretessPatientOnSameUnit() {
+  void isAllowToReadOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToReadOnSekretessPatientOnSameUnit(
@@ -112,7 +116,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadOnSekretessPatientOnSameUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadOnSekretessPatientOnDifferentUnit() {
+  void isAllowToReadOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToReadOnSekretessPatientOnDifferentUnit(
@@ -123,7 +127,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadNoConditionsOnDifferentUnit() {
+  void isAllowToReadNoConditionsOnDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToReadNoConditionsOnDifferentUnit(
@@ -133,7 +137,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadNoConditionsOnDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToReadOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToReadOnDeceasedPatientOnDifferentUnit(
@@ -144,7 +148,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadOnInactiveUnitOnDifferentUnit() {
+  void isAllowToReadOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToReadOnInactiveUnitOnDifferentUnit(
@@ -154,7 +158,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadOnRenewFalseOnDifferentUnit() {
+  void isAllowToReadOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToReadOnRenewFalseOnDifferentUnit(
@@ -164,7 +168,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadOnRenewFalseOnDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceNoConditions() {
+  void isAllowToReplaceNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToReplaceNoConditions(accessService.allowToReplace(accessEvaluationParameters));
@@ -173,7 +177,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReplaceNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceWhenMissingSubscription() {
+  void isAllowToReplaceWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToReplaceWhenMissingSubscription(
@@ -183,7 +187,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReplaceWhenMissingSubscription(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceNotLatestMajorVersion() {
+  void isAllowToReplaceNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToReplaceNotLatestMajorVersion(
@@ -193,7 +197,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReplaceNotLatestMajorVersion(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceOnDeceasedPatient() {
+  void isAllowToReplaceOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToReplaceOnDeceasedPatient(accessService.allowToReplace(accessEvaluationParameters));
@@ -202,7 +206,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReplaceOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceOnInactiveUnit() {
+  void isAllowToReplaceOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToReplaceOnInactiveCareUnit(
@@ -212,7 +216,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReplaceOnInactiveCareUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceOnRenewFalse() {
+  void isAllowToReplaceOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToReplaceOnRenewFalse(accessService.allowToReplace(accessEvaluationParameters));
@@ -221,7 +225,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReplaceOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceNoConditionsDifferentUnit() {
+  void isAllowToReplaceNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToReplaceNoConditionsDifferentUnit(
@@ -231,7 +235,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReplaceNoConditionsDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceNotLatestMajorVersionDifferentUnit() {
+  void isAllowToReplaceNotLatestMajorVersionDifferentUnit() {
     setupMocksForNotLatestMajorVersionDifferentUnit();
 
     assertAllowToReplaceNotLatestMajorVersionDifferentUnit(
@@ -242,7 +246,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceOnDeceasedPatientDifferentUnit() {
+  void isAllowToReplaceOnDeceasedPatientDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToReplaceOnDeceasedPatientDifferentUnit(
@@ -253,7 +257,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceOnInactiveUnitDifferentUnit() {
+  void isAllowToReplaceOnInactiveUnitDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToReplaceOnInactiveCareUnitDifferentUnit(
@@ -264,7 +268,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceOnRenewFalseDifferentUnit() {
+  void isAllowToReplaceOnRenewFalseDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToReplaceOnRenewFalseDifferentUnit(
@@ -274,7 +278,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReplaceOnRenewFalseDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceOnSekretessPatientOnSameUnit() {
+  void isAllowToReplaceOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToReplaceOnSekretessPatientOnSameUnit(
@@ -285,7 +289,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReplaceOnSekretessPatientOnDifferentUnit() {
+  void isAllowToReplaceOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToReplaceOnSekretessPatientOnDifferentUnit(
@@ -296,7 +300,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewNoConditions() {
+  void isAllowToRenewNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToRenewNoConditions(accessService.allowToRenew(accessEvaluationParameters));
@@ -305,7 +309,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewWhenMissingSubscription() {
+  void isAllowToRenewWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToRenewWhenMissingSubscription(
@@ -315,7 +319,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewWhenMissingSubscription(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewNotLatestMajorVersion() {
+  void isAllowToRenewNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToRenewNotLatestMajorVersion(accessService.allowToRenew(accessEvaluationParameters));
@@ -324,7 +328,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewNotLatestMajorVersion(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnDeceasedPatient() {
+  void isAllowToRenewOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToRenewOnDeceasedPatient(accessService.allowToRenew(accessEvaluationParameters));
@@ -333,7 +337,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnInactiveUnit() {
+  void isAllowToRenewOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToRenewOnInactiveCareUnit(accessService.allowToRenew(accessEvaluationParameters));
@@ -342,7 +346,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewOnInactiveCareUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnRenewFalse() {
+  void isAllowToRenewOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToRenewOnRenewFalse(accessService.allowToRenew(accessEvaluationParameters));
@@ -351,7 +355,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnSameCareProviderWhenSameVGExists() {
+  void isAllowToRenewOnSameCareProviderWhenSameVGExists() {
     final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
     doReturn(user).when(webCertUserService).getUser();
     // TODO Manage this
@@ -371,7 +375,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnDifferentCareProviderWhenIntygSameVGExists() {
+  void isAllowToRenewOnDifferentCareProviderWhenIntygSameVGExists() {
     final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
     doReturn(user).when(webCertUserService).getUser();
     // TODO Manage this
@@ -391,7 +395,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnSameCareProviderWhenIntygExists() {
+  void isAllowToRenewOnSameCareProviderWhenIntygExists() {
     final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
     doReturn(user).when(webCertUserService).getUser();
     // TODO Manage this
@@ -411,7 +415,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewNoConditionsDifferentUnit() {
+  void isAllowToRenewNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToRenewNoConditionsDifferentUnit(
@@ -421,7 +425,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewNoConditionsDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnDeceasedPatientDifferentUnit() {
+  void isAllowToRenewOnDeceasedPatientDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToRenewOnDeceasedPatientDifferentUnit(
@@ -432,7 +436,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnInactiveUnitDifferentUnit() {
+  void isAllowToRenewOnInactiveUnitDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToRenewOnInactiveCareUnitDifferentUnit(
@@ -443,7 +447,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnRenewFalseDifferentUnit() {
+  void isAllowToRenewOnRenewFalseDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToRenewOnRenewFalseDifferentUnit(
@@ -453,7 +457,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewOnRenewFalseDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnSekretessPatientOnSameUnit() {
+  void isAllowToRenewOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToRenewOnSekretessPatientOnSameUnit(
@@ -463,7 +467,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToRenewOnSekretessPatientOnSameUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToRenewOnSekretessPatientOnDifferentUnit() {
+  void isAllowToRenewOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToRenewOnSekretessPatientOnDifferentUnit(
@@ -474,7 +478,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteNoConditions() {
+  void isAllowToDeleteNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToDeleteNoConditions(accessService.allowToInvalidate(accessEvaluationParameters));
@@ -483,7 +487,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteWhenNoSubscription() {
+  void isAllowToDeleteWhenNoSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToDeleteWhenNoSubscription(
@@ -493,7 +497,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteWhenNoSubscription(AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteNotLatestMajorVersion() {
+  void isAllowToDeleteNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToDeleteNotLatestMajorVersion(
@@ -503,7 +507,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteNotLatestMajorVersion(AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteOnDeceasedPatient() {
+  void isAllowToDeleteOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToDeleteOnDeceasedPatient(
@@ -513,7 +517,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteOnInactiveUnit() {
+  void isAllowToDeleteOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToDeleteOnInactiveUnit(accessService.allowToInvalidate(accessEvaluationParameters));
@@ -522,7 +526,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteOnRenewFalse() {
+  void isAllowToDeleteOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToDeleteOnRenewFalse(accessService.allowToInvalidate(accessEvaluationParameters));
@@ -531,7 +535,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteOnSekretessPatientOnSameUnit() {
+  void isAllowToDeleteOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToDeleteOnSekretessPatientOnSameUnit(
@@ -541,7 +545,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteOnSekretessPatientOnSameUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteOnSekretessPatientOnDifferentUnit() {
+  void isAllowToDeleteOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToDeleteOnSekretessPatientOnDifferentUnit(
@@ -552,7 +556,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToDeleteOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToDeleteOnDeceasedPatientOnDifferentUnit(
@@ -563,7 +567,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteOnInactiveUnitOnDifferentUnit() {
+  void isAllowToDeleteOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToDeleteOnInactiveUnitOnDifferentUnit(
@@ -574,7 +578,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteOnRenewFalseOnDifferentUnit() {
+  void isAllowToDeleteOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToDeleteOnRenewFalseOnDifferentUnit(
@@ -584,7 +588,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteOnRenewFalseOnDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToDeleteNoConditionsDifferentUnit() {
+  void isAllowToDeleteNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToDeleteNoConditionsDifferentUnit(
@@ -594,7 +598,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToDeleteNoConditionsDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintNoConditions() {
+  void isAllowToPrintNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToPrintNoConditions(
@@ -604,7 +608,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintWhenMissingSubscription() {
+  void isAllowToPrintWhenMissingSubscription() {
     setupMocksForNoConditions();
 
     assertAllowToPrintWhenMissingSubscription(
@@ -614,7 +618,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintWhenMissingSubscription(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintNotLatestMajorVersion() {
+  void isAllowToPrintNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToPrintNotLatestMajorVersion(
@@ -624,7 +628,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintNotLatestMajorVersion(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintOnDeceasedPatient() {
+  void isAllowToPrintOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToPrintOnDeceasedPatient(
@@ -634,7 +638,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintOnInactiveUnit() {
+  void isAllowToPrintOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToPrintOnInactiveUnit(
@@ -644,7 +648,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintOnRenewFalse() {
+  void isAllowToPrintOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToPrintOnRenewFalse(
@@ -654,7 +658,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintOnSekretessPatientOnSameUnit() {
+  void isAllowToPrintOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToPrintOnSekretessPatientOnSameUnit(
@@ -664,7 +668,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintOnSekretessPatientOnSameUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintOnSekretessPatientOnDifferentUnit() {
+  void isAllowToPrintOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToPrintOnSekretessPatientOnDifferentUnit(
@@ -675,7 +679,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToPrintOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToPrintOnDeceasedPatientOnDifferentUnit(
@@ -686,7 +690,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintOnInactiveUnitOnDifferentUnit() {
+  void isAllowToPrintOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToPrintOnInactiveUnitOnDifferentUnit(
@@ -696,7 +700,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintOnRenewFalseOnDifferentUnit() {
+  void isAllowToPrintOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToPrintOnRenewFalseOnDifferentUnit(
@@ -706,7 +710,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintOnRenewFalseOnDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToPrintNoConditionsDifferentUnit() {
+  void isAllowToPrintNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToPrintNoConditionsDifferentUnit(
@@ -716,7 +720,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToPrintNoConditionsDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendNoConditions() {
+  void isAllowToSendNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToSendNoConditions(accessService.allowToSend(accessEvaluationParameters));
@@ -725,7 +729,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendWhenMissingSubscription() {
+  void isAllowToSendWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToSendWhenMissingSubscription(accessService.allowToSend(accessEvaluationParameters));
@@ -734,7 +738,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendWhenMissingSubscription(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendNotLatestMajorVersion() {
+  void isAllowToSendNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToSendNotLatestMajorVersion(accessService.allowToSend(accessEvaluationParameters));
@@ -743,7 +747,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendNotLatestMajorVersion(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendOnDeceasedPatient() {
+  void isAllowToSendOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToSendOnDeceasedPatient(accessService.allowToSend(accessEvaluationParameters));
@@ -752,7 +756,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendOnInactiveUnit() {
+  void isAllowToSendOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToSendOnInactiveUnit(accessService.allowToSend(accessEvaluationParameters));
@@ -761,7 +765,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendOnRenewFalse() {
+  void isAllowToSendOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToSendOnRenewFalse(accessService.allowToSend(accessEvaluationParameters));
@@ -770,7 +774,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendOnSekretessPatientOnSameUnit() {
+  void isAllowToSendOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToSendOnSekretessPatientOnSameUnit(
@@ -780,7 +784,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendOnSekretessPatientOnSameUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendOnSekretessPatientOnDifferentUnit() {
+  void isAllowToSendOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToSendOnSekretessPatientOnDifferentUnit(
@@ -791,7 +795,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSendOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToSendOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToSendOnDeceasedPatientOnDifferentUnit(
@@ -802,7 +806,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSendOnInactiveUnitOnDifferentUnit() {
+  void isAllowToSendOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToSendOnInactiveUnitOnDifferentUnit(
@@ -812,7 +816,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendOnRenewFalseOnDifferentUnit() {
+  void isAllowToSendOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToSendOnRenewFalseOnDifferentUnit(
@@ -822,7 +826,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendOnRenewFalseOnDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToSendNoConditionsDifferentUnit() {
+  void isAllowToSendNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToSendNoConditionsDifferentUnit(
@@ -832,7 +836,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSendNoConditionsDifferentUnit(AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionNoConditions() {
+  void isallowToCreateQuestionNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToCreateQuestionNoConditions(
@@ -842,7 +846,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToCreateQuestionNoConditions(AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionWhenMissingSubscription() {
+  void isallowToCreateQuestionWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToCreateQuestionWhenMissingSubscription(
@@ -853,7 +857,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToCreateQuestionNotLatestMajorVersion() {
+  void isAllowToCreateQuestionNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToCreateQuestionNotLatestMajorVersion(
@@ -864,7 +868,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionOnDeceasedPatient() {
+  void isallowToCreateQuestionOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToCreateQuestionOnDeceasedPatient(
@@ -874,7 +878,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToCreateQuestionOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionOnInactiveUnit() {
+  void isallowToCreateQuestionOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToCreateQuestionOnInactiveUnit(
@@ -884,7 +888,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToCreateQuestionOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionOnRenewFalse() {
+  void isallowToCreateQuestionOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToCreateQuestionOnRenewFalse(
@@ -894,7 +898,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToCreateQuestionOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionOnSekretessPatientOnSameUnit() {
+  void isallowToCreateQuestionOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToCreateQuestionOnSekretessPatientOnSameUnit(
@@ -905,7 +909,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionOnSekretessPatientOnDifferentUnit() {
+  void isallowToCreateQuestionOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToCreateQuestionOnSekretessPatientOnDifferentUnit(
@@ -916,7 +920,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionOnDeceasedPatientOnDifferentUnit() {
+  void isallowToCreateQuestionOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToCreateQuestionOnDeceasedPatientOnDifferentUnit(
@@ -927,7 +931,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionOnInactiveUnitOnDifferentUnit() {
+  void isallowToCreateQuestionOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToCreateQuestionOnInactiveUnitOnDifferentUnit(
@@ -938,7 +942,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionOnRenewFalseOnDifferentUnit() {
+  void isallowToCreateQuestionOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToCreateQuestionOnRenewFalseOnDifferentUnit(
@@ -949,7 +953,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isallowToCreateQuestionNoConditionsDifferentUnit() {
+  void isallowToCreateQuestionNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToCreateQuestionNoConditionsDifferentUnit(
@@ -960,7 +964,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementNoConditions() {
+  void isAllowToAnswerComplementNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToAnswerComplementNoConditions(
@@ -970,7 +974,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerComplementNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementWhenMissingSubscription() {
+  void isAllowToAnswerComplementWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToAnswerComplementWhenMissingSubscription(
@@ -981,7 +985,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementNotLatestMajorVersion() {
+  void isAllowToAnswerComplementNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToAnswerComplementNotLatestMajorVersion(
@@ -992,7 +996,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementOnDeceasedPatient() {
+  void isAllowToAnswerComplementOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToAnswerComplementOnDeceasedPatient(
@@ -1002,7 +1006,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerComplementOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementOnInactiveUnit() {
+  void isAllowToAnswerComplementOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToAnswerComplementOnInactiveUnit(
@@ -1012,7 +1016,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerComplementOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementOnRenewFalse() {
+  void isAllowToAnswerComplementOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToAnswerComplementOnRenewFalse(
@@ -1022,7 +1026,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerComplementOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementOnSekretessPatientOnSameUnit() {
+  void isAllowToAnswerComplementOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToAnswerComplementOnSekretessPatientOnSameUnit(
@@ -1033,7 +1037,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementOnSekretessPatientOnDifferentUnit() {
+  void isAllowToAnswerComplementOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToAnswerComplementOnSekretessPatientOnDifferentUnit(
@@ -1044,7 +1048,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToAnswerComplementOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToAnswerComplementOnDeceasedPatientOnDifferentUnit(
@@ -1055,7 +1059,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementOnInactiveUnitOnDifferentUnit() {
+  void isAllowToAnswerComplementOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToAnswerComplementOnInactiveUnitOnDifferentUnit(
@@ -1066,7 +1070,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementOnRenewFalseOnDifferentUnit() {
+  void isAllowToAnswerComplementOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToAnswerComplementOnRenewFalseOnDifferentUnit(
@@ -1077,7 +1081,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerComplementNoConditionsDifferentUnit() {
+  void isAllowToAnswerComplementNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToAnswerComplementNoConditionsDifferentUnit(
@@ -1088,7 +1092,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionNoConditions() {
+  void isAllowToAnswerQuestionNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToAnswerQuestionNoConditions(
@@ -1098,7 +1102,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerQuestionNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionWhenMissingSubscription() {
+  void isAllowToAnswerQuestionWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToAnswerQuestionWhenMissingSubscription(
@@ -1109,7 +1113,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionNotLatestMajorVersion() {
+  void isAllowToAnswerQuestionNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToAnswerQuestionNotLatestMajorVersion(
@@ -1120,7 +1124,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionOnDeceasedPatient() {
+  void isAllowToAnswerQuestionOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToAnswerQuestionOnDeceasedPatient(
@@ -1130,7 +1134,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerQuestionOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionOnInactiveUnit() {
+  void isAllowToAnswerQuestionOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToAnswerQuestionOnInactiveUnit(
@@ -1140,7 +1144,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerQuestionOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionOnRenewFalse() {
+  void isAllowToAnswerQuestionOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToAnswerQuestionOnRenewFalse(
@@ -1150,7 +1154,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerQuestionOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionOnSekretessPatientOnSameUnit() {
+  void isAllowToAnswerQuestionOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToAnswerQuestionOnSekretessPatientOnSameUnit(
@@ -1161,7 +1165,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionOnSekretessPatientOnDifferentUnit() {
+  void isAllowToAnswerQuestionOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToAnswerQuestionOnSekretessPatientOnDifferentUnit(
@@ -1172,7 +1176,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToAnswerQuestionOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToAnswerQuestionOnDeceasedPatientOnDifferentUnit(
@@ -1183,7 +1187,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionOnInactiveUnitOnDifferentUnit() {
+  void isAllowToAnswerQuestionOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToAnswerQuestionOnInactiveUnitOnDifferentUnit(
@@ -1194,7 +1198,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionOnRenewFalseOnDifferentUnit() {
+  void isAllowToAnswerQuestionOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToAnswerQuestionOnRenewFalseOnDifferentUnit(
@@ -1205,7 +1209,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerQuestionNoConditionsDifferentUnit() {
+  void isAllowToAnswerQuestionNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToAnswerQuestionNoConditionsDifferentUnit(
@@ -1216,7 +1220,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionNoConditions() {
+  void isAllowToAnswerAdminQuestionNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToAnswerAdminQuestionNoConditions(
@@ -1226,7 +1230,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerAdminQuestionNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionWhenMissingSubscription() {
+  void isAllowToAnswerAdminQuestionWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToAnswerAdminQuestionWhenMissingSubscription(
@@ -1237,7 +1241,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionNotLatestMajorVersion() {
+  void isAllowToAnswerAdminQuestionNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToAnswerAdminQuestionNotLatestMajorVersion(
@@ -1248,7 +1252,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionOnDeceasedPatient() {
+  void isAllowToAnswerAdminQuestionOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToAnswerAdminQuestionOnDeceasedPatient(
@@ -1259,7 +1263,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionOnInactiveUnit() {
+  void isAllowToAnswerAdminQuestionOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToAnswerAdminQuestionOnInactiveUnit(
@@ -1269,7 +1273,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerAdminQuestionOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionOnRenewFalse() {
+  void isAllowToAnswerAdminQuestionOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToAnswerAdminQuestionOnRenewFalse(
@@ -1279,7 +1283,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToAnswerAdminQuestionOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit() {
+  void isAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit(
@@ -1290,7 +1294,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit() {
+  void isAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit(
@@ -1301,7 +1305,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit(
@@ -1312,7 +1316,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit() {
+  void isAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit(
@@ -1323,7 +1327,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit() {
+  void isAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit(
@@ -1334,7 +1338,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToAnswerAdminQuestionNoConditionsDifferentUnit() {
+  void isAllowToAnswerAdminQuestionNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToAnswerAdminQuestionNoConditionsDifferentUnit(
@@ -1345,7 +1349,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledNoConditions() {
+  void isAllowToSetComplementAsHandledNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToSetComplementAsHandledNoConditions(
@@ -1355,7 +1359,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSetComplementAsHandledNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledWhenMissingSubscription() {
+  void isAllowToSetComplementAsHandledWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToSetComplementAsHandledWhenMissingSubscription(
@@ -1366,7 +1370,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledNotLatestMajorVersion() {
+  void isAllowToSetComplementAsHandledNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToSetComplementAsHandledNotLatestMajorVersion(
@@ -1377,7 +1381,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledOnDeceasedPatient() {
+  void isAllowToSetComplementAsHandledOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToSetComplementAsHandledOnDeceasedPatient(
@@ -1388,7 +1392,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledOnInactiveUnit() {
+  void isAllowToSetComplementAsHandledOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToSetComplementAsHandledOnInactiveUnit(
@@ -1399,7 +1403,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledOnRenewFalse() {
+  void isAllowToSetComplementAsHandledOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToSetComplementAsHandledOnRenewFalse(
@@ -1409,7 +1413,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSetComplementAsHandledOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit() {
+  void isAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit(
@@ -1420,7 +1424,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit() {
+  void isAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit(
@@ -1431,7 +1435,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit(
@@ -1442,7 +1446,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit() {
+  void isAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit(
@@ -1453,7 +1457,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit() {
+  void isAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit(
@@ -1464,7 +1468,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetComplementAsHandledNoConditionsDifferentUnit() {
+  void isAllowToSetComplementAsHandledNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToSetComplementAsHandledNoConditionsDifferentUnit(
@@ -1475,7 +1479,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledNoConditions() {
+  void isAllowToSetQuestionAsHandledNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToSetQuestionAsHandledNoConditions(
@@ -1485,7 +1489,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSetQuestionAsHandledNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledWhenMissingSubscription() {
+  void isAllowToSetQuestionAsHandledWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToSetQuestionAsHandledWhenMissingSubscription(
@@ -1496,7 +1500,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledNotLatestMajorVersion() {
+  void isAllowToSetQuestionAsHandledNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToSetQuestionAsHandledNotLatestMajorVersion(
@@ -1507,7 +1511,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledOnDeceasedPatient() {
+  void isAllowToSetQuestionAsHandledOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToSetQuestionAsHandledOnDeceasedPatient(
@@ -1518,7 +1522,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledOnInactiveUnit() {
+  void isAllowToSetQuestionAsHandledOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToSetQuestionAsHandledOnInactiveUnit(
@@ -1528,7 +1532,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSetQuestionAsHandledOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledOnRenewFalse() {
+  void isAllowToSetQuestionAsHandledOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToSetQuestionAsHandledOnRenewFalse(
@@ -1538,7 +1542,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToSetQuestionAsHandledOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledOnSekretessPatientOnSameUnit() {
+  void isAllowToSetQuestionAsHandledOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToSetQuestionAsHandledOnSekretessPatientOnSameUnit(
@@ -1549,7 +1553,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledOnSekretessPatientOnDifferentUnit() {
+  void isAllowToSetQuestionAsHandledOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToSetQuestionAsHandledOnSekretessPatientOnDifferentUnit(
@@ -1560,7 +1564,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToSetQuestionAsHandledOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToSetQuestionAsHandledOnDeceasedPatientOnDifferentUnit(
@@ -1571,7 +1575,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledOnInactiveUnitOnDifferentUnit() {
+  void isAllowToSetQuestionAsHandledOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToSetQuestionAsHandledOnInactiveUnitOnDifferentUnit(
@@ -1582,7 +1586,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledOnRenewFalseOnDifferentUnit() {
+  void isAllowToSetQuestionAsHandledOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToSetQuestionAsHandledOnRenewFalseOnDifferentUnit(
@@ -1593,7 +1597,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToSetQuestionAsHandledNoConditionsDifferentUnit() {
+  void isAllowToSetQuestionAsHandledNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToSetQuestionAsHandledNoConditionsDifferentUnit(
@@ -1604,7 +1608,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsNoConditions() {
+  void isAllowToReadQuestionsNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToReadQuestionsNoConditions(
@@ -1614,7 +1618,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadQuestionsNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsWhenMissingSubscription() {
+  void isAllowToReadQuestionsWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToReadQuestionsWhenMissingSubscription(
@@ -1625,7 +1629,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsNotLatestMajorVersion() {
+  void isAllowToReadQuestionsNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToReadQuestionsNotLatestMajorVersion(
@@ -1635,7 +1639,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadQuestionsNotLatestMajorVersion(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsOnDeceasedPatient() {
+  void isAllowToReadQuestionsOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToReadQuestionsOnDeceasedPatient(
@@ -1645,7 +1649,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadQuestionsOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsOnInactiveUnit() {
+  void isAllowToReadQuestionsOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToReadQuestionsOnInactiveUnit(
@@ -1655,7 +1659,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadQuestionsOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsOnRenewFalse() {
+  void isAllowToReadQuestionsOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToReadQuestionsOnRenewFalse(
@@ -1665,7 +1669,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToReadQuestionsOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsOnSekretessPatientOnSameUnit() {
+  void isAllowToReadQuestionsOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToReadQuestionsOnSekretessPatientOnSameUnit(
@@ -1676,7 +1680,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsOnSekretessPatientOnDifferentUnit() {
+  void isAllowToReadQuestionsOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToReadQuestionsOnSekretessPatientOnDifferentUnit(
@@ -1687,7 +1691,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToReadQuestionsOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToReadQuestionsOnDeceasedPatientOnDifferentUnit(
@@ -1698,7 +1702,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsOnInactiveUnitOnDifferentUnit() {
+  void isAllowToReadQuestionsOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToReadQuestionsOnInactiveUnitOnDifferentUnit(
@@ -1709,7 +1713,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsOnRenewFalseOnDifferentUnit() {
+  void isAllowToReadQuestionsOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToReadQuestionsOnRenewFalseOnDifferentUnit(
@@ -1720,7 +1724,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToReadQuestionsNoConditionsDifferentUnit() {
+  void isAllowToReadQuestionsNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToReadQuestionsNoConditionsDifferentUnit(
@@ -1731,7 +1735,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsNoConditions() {
+  void isAllowToForwardQuestionsNoConditions() {
     setupMocksForNoConditions();
 
     assertAllowToForwardQuestionsNoConditions(
@@ -1741,7 +1745,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToForwardQuestionsNoConditions(AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsWhenMissingSubscription() {
+  void isAllowToForwardQuestionsWhenMissingSubscription() {
     setupMocksForMissingSubscription();
 
     assertAllowToForwardQuestionsWhenMissingSubscription(
@@ -1752,7 +1756,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsNotLatestMajorVersion() {
+  void isAllowToForwardQuestionsNotLatestMajorVersion() {
     setupMocksForNotLatestMajorVersion();
 
     assertAllowToForwardQuestionsNotLatestMajorVersion(
@@ -1763,7 +1767,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsOnDeceasedPatient() {
+  void isAllowToForwardQuestionsOnDeceasedPatient() {
     setupMocksForDeceasedPatient();
 
     assertAllowToForwardQuestionsOnDeceasedPatient(
@@ -1773,7 +1777,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToForwardQuestionsOnDeceasedPatient(AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsOnInactiveUnit() {
+  void isAllowToForwardQuestionsOnInactiveUnit() {
     setupMocksForInactiveUnit();
 
     assertAllowToForwardQuestionsOnInactiveUnit(
@@ -1783,7 +1787,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToForwardQuestionsOnInactiveUnit(AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsOnRenewFalse() {
+  void isAllowToForwardQuestionsOnRenewFalse() {
     setupMocksForOnRenewFalse();
 
     assertAllowToForwardQuestionsOnRenewFalse(
@@ -1793,7 +1797,7 @@ public abstract class CertificateAccessTest extends AccessTest {
   protected abstract void assertAllowToForwardQuestionsOnRenewFalse(AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsOnSekretessPatientOnSameUnit() {
+  void isAllowToForwardQuestionsOnSekretessPatientOnSameUnit() {
     setupMocksForOnSekretessPatient();
 
     assertAllowToForwardQuestionsOnSekretessPatientOnSameUnit(
@@ -1804,7 +1808,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsOnSekretessPatientOnDifferentUnit() {
+  void isAllowToForwardQuestionsOnSekretessPatientOnDifferentUnit() {
     setupMocksForOnSekretessPatientDifferentUnit();
 
     assertAllowToForwardQuestionsOnSekretessPatientOnDifferentUnit(
@@ -1815,7 +1819,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsOnDeceasedPatientOnDifferentUnit() {
+  void isAllowToForwardQuestionsOnDeceasedPatientOnDifferentUnit() {
     setupMocksForDeceasedPatientDifferentUnit();
 
     assertAllowToForwardQuestionsOnDeceasedPatientOnDifferentUnit(
@@ -1826,7 +1830,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsOnInactiveUnitOnDifferentUnit() {
+  void isAllowToForwardQuestionsOnInactiveUnitOnDifferentUnit() {
     setupMocksForInactiveUnitDifferentUnit();
 
     assertAllowToForwardQuestionsOnInactiveUnitOnDifferentUnit(
@@ -1837,7 +1841,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsOnRenewFalseOnDifferentUnit() {
+  void isAllowToForwardQuestionsOnRenewFalseOnDifferentUnit() {
     setupMocksForOnRenewFalseDifferentUnit();
 
     assertAllowToForwardQuestionsOnRenewFalseOnDifferentUnit(
@@ -1848,7 +1852,7 @@ public abstract class CertificateAccessTest extends AccessTest {
       AccessResult actualValue);
 
   @Test
-  public void isAllowToForwardQuestionsNoConditionsDifferentUnit() {
+  void isAllowToForwardQuestionsNoConditionsDifferentUnit() {
     setupMocksForNoConditionsDifferentUnit();
 
     assertAllowToForwardQuestionsNoConditionsDifferentUnit(

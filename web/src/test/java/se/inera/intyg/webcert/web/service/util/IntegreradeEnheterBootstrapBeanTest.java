@@ -18,28 +18,28 @@
  */
 package se.inera.intyg.webcert.web.service.util;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 
-@RunWith(MockitoJUnitRunner.class)
-public class IntegreradeEnheterBootstrapBeanTest {
+@ExtendWith(MockitoExtension.class)
+class IntegreradeEnheterBootstrapBeanTest {
 
   @Mock private IntegreradEnhetRepository integreradEnhetRepository;
 
   @InjectMocks private IntegreradeEnheterBootstrapBean bootstrapBean;
 
   @Test
-  public void testInitDataRequiredFields() {
+  void testInitDataRequiredFields() {
     bootstrapBean.initData();
     ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
     verify(integreradEnhetRepository, atLeastOnce()).save(enhetCaptor.capture());

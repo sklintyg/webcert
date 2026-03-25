@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -37,14 +37,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
@@ -66,8 +68,9 @@ import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
 
-@RunWith(MockitoJUnitRunner.class)
-public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
 
   private static final int OK = 200;
 
@@ -86,8 +89,8 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   private Map<String, Long> intygStatsMap;
   private Vardenhet ve1, ve2, ve3, ve4;
 
-  @Before
-  public void setupDataAndExpectations() {
+  @BeforeEach
+  void setupDataAndExpectations() {
 
     fragaSvarStatsMap = new HashMap<>();
 
@@ -141,7 +144,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testGetStatisticsWithSelectedUnitVE2() {
+  void testGetStatisticsWithSelectedUnitVE2() {
 
     mockUser.setValdVardenhet(ve2);
 
@@ -167,7 +170,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testGetStatisticsWithSelectedUnitVE3() {
+  void testGetStatisticsWithSelectedUnitVE3() {
 
     mockUser.setValdVardenhet(ve3);
 
@@ -193,7 +196,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testGetStatisticsWithSelectedUnitVE4() {
+  void testGetStatisticsWithSelectedUnitVE4() {
 
     mockUser.setValdVardenhet(ve4);
 
@@ -224,7 +227,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testGetStatisticsWithSelectedUnitVE1() {
+  void testGetStatisticsWithSelectedUnitVE1() {
 
     mockUser.setValdVardenhet(ve1);
 
@@ -261,7 +264,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testWebcertUserIsNull() {
+  void testWebcertUserIsNull() {
     when(webCertUserService.getUser()).thenReturn(null);
 
     Response response = statController.getStatistics();
@@ -272,7 +275,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testWebcertUserIsDjupintegrerad() {
+  void testWebcertUserIsDjupintegrerad() {
     mockUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
     Response response = statController.getStatistics();
@@ -297,7 +300,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testMergeMaps() {
+  void testMergeMaps() {
     Map<String, Long> m1 = new HashMap<>();
     m1.put("enhet-1", 2l);
     m1.put("enhet-2", 3l);

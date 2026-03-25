@@ -90,7 +90,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SendCertificateRespo
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateControllerTest {
+class CertificateControllerTest {
 
   private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
   private static final long CERTIFICATE_VERSION = 1L;

@@ -18,20 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.validator;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -42,8 +41,8 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleValidat
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 
-@RunWith(MockitoJUnitRunner.class)
-public class DraftModelToXmlValidatorTest {
+@ExtendWith(MockitoExtension.class)
+class DraftModelToXmlValidatorTest {
 
   @Mock private IntygModuleRegistry intygModuleRegistry;
 
@@ -51,13 +50,8 @@ public class DraftModelToXmlValidatorTest {
 
   @InjectMocks private DraftModelToXmlValidator draftModelToXmlValidator;
 
-  public DraftModelToXmlValidatorTest() {
-    MockitoAnnotations.initMocks(this);
-  }
-
   @Test
-  public void validateDraftModelAsXmlValid()
-      throws ModuleNotFoundException, IOException, ModuleException {
+  void validateDraftModelAsXmlValid() throws ModuleNotFoundException, IOException, ModuleException {
     String xml = toString("DraftModelToXmlValidatorTest/db_valid.xml");
     Utkast draft = createDraft();
     DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
@@ -72,7 +66,7 @@ public class DraftModelToXmlValidatorTest {
   }
 
   @Test
-  public void validateDraftModelAsXmlInvalid()
+  void validateDraftModelAsXmlInvalid()
       throws ModuleNotFoundException, IOException, ModuleException {
     String xml = toString("DraftModelToXmlValidatorTest/db_invalid.xml");
     Utkast draft = createDraft();

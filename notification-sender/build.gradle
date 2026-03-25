@@ -59,7 +59,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation project(':notification-stub')
-    testImplementation "junit:junit"
     testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.apache.activemq:activemq-spring"
     testImplementation "org.apache.camel:camel-test-spring-junit5"

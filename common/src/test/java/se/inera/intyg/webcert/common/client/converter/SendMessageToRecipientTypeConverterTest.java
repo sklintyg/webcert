@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.common.client.converter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.xml.bind.JAXBException;
 import java.time.LocalDateTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
@@ -34,10 +34,10 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
-public class SendMessageToRecipientTypeConverterTest {
+class SendMessageToRecipientTypeConverterTest {
 
   @Test
-  public void convertTest() throws JAXBException {
+  void convertTest() throws JAXBException {
     SendMessageToRecipientType request = buildSendMessageToRecipientType();
     String xmlString = SendMessageToRecipientTypeConverter.toXml(request);
     SendMessageToRecipientType requestRes = SendMessageToRecipientTypeConverter.fromXml(xmlString);

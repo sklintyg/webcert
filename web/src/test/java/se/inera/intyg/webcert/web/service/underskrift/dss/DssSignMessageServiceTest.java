@@ -58,7 +58,7 @@ import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
 
 @ExtendWith(MockitoExtension.class)
-public class DssSignMessageServiceTest {
+class DssSignMessageServiceTest {
 
   private DssMetadataService dssMetadataService;
 

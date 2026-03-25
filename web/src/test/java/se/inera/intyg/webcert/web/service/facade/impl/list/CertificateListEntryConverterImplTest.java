@@ -73,7 +73,7 @@ class CertificateListEntryConverterImplTest {
   class ListDrafts {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       when(resourceLinkListHelper.get(
               any(ListIntygEntry.class), any(CertificateListItemStatus.class)))
           .thenReturn(LINKS);
@@ -82,7 +82,7 @@ class CertificateListEntryConverterImplTest {
     private final ListType LIST_TYPE = ListType.DRAFTS;
 
     @Test
-    public void shouldSetCertificateId() {
+    void shouldSetCertificateId() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -91,7 +91,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetCertificateTypeName() {
+    void shouldSetCertificateTypeName() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -101,7 +101,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientId() {
+    void shouldSetPatientId() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -112,7 +112,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsProtectedPerson() {
+    void shouldSetPatientIsProtectedPerson() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -122,7 +122,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsDeceased() {
+    void shouldSetPatientIsDeceased() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -132,7 +132,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsTestIndicated() {
+    void shouldSetPatientIsTestIndicated() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -142,7 +142,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsNotProtectedPerson() {
+    void shouldSetPatientIsNotProtectedPerson() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -152,7 +152,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsNotDeceased() {
+    void shouldSetPatientIsNotDeceased() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -162,7 +162,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsNotTestIndicated() {
+    void shouldSetPatientIsNotTestIndicated() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), false, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -172,7 +172,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetDraftStatusComplete() {
+    void shouldSetDraftStatusComplete() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -182,7 +182,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetDraftStatusIncomplete() {
+    void shouldSetDraftStatusIncomplete() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_INCOMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -192,7 +192,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetDraftStatusLocked() {
+    void shouldSetDraftStatusLocked() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_LOCKED.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -202,7 +202,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetSaved() {
+    void shouldSetSaved() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -211,7 +211,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetSavedBy() {
+    void shouldSetSavedBy() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -220,7 +220,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetLinks() {
+    void shouldSetLinks() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -231,7 +231,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldNotSetForwardedInfoIfLinkDoesNotExist() {
+    void shouldNotSetForwardedInfoIfLinkDoesNotExist() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -249,7 +249,7 @@ class CertificateListEntryConverterImplTest {
         List.of(ResourceLinkFactory.read(), CertificateForwardFunction.createResourceLink());
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       final var unit = new Vardenhet();
       final var careProvider = new Vardgivare();
 
@@ -264,7 +264,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetIsForwarded() {
+    void shouldSetIsForwarded() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -274,7 +274,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetUnitName() {
+    void shouldSetUnitName() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -285,7 +285,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetCareProviderName() {
+    void shouldSetCareProviderName() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -296,7 +296,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetIsNotForwarded() {
+    void shouldSetIsNotForwarded() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -306,7 +306,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetCertificateType() {
+    void shouldSetCertificateType() {
       final var listIntygEntry =
           ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, false);
       final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
@@ -442,14 +442,14 @@ class CertificateListEntryConverterImplTest {
   class ListSignedCertificates {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       when(resourceLinkListHelper.get(
               any(CertificateListEntry.class), any(CertificateListItemStatus.class)))
           .thenReturn(LINKS);
     }
 
     @Test
-    public void shouldSetLinks() {
+    void shouldSetLinks() {
       final var entry = ListTestHelper.createCertificateListEntry();
       final var result = certificateListItemConverter.convert(entry);
       final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
@@ -459,7 +459,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetCertificateId() {
+    void shouldSetCertificateId() {
       final var entry = ListTestHelper.createCertificateListEntry();
       final var result = certificateListItemConverter.convert(entry);
 
@@ -467,7 +467,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetCertificateTypeName() {
+    void shouldSetCertificateTypeName() {
       final var entry = ListTestHelper.createCertificateListEntry();
       final var result = certificateListItemConverter.convert(entry);
 
@@ -476,7 +476,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientId() {
+    void shouldSetPatientId() {
       final var entry = ListTestHelper.createCertificateListEntry();
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -485,7 +485,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsProtectedPerson() {
+    void shouldSetPatientIsProtectedPerson() {
       final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -494,7 +494,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsDeceased() {
+    void shouldSetPatientIsDeceased() {
       final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -503,7 +503,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsTestIndicated() {
+    void shouldSetPatientIsTestIndicated() {
       final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -512,23 +512,23 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetIsSent() {
+    void shouldSetIsSent() {
       final var entry = ListTestHelper.createCertificateListEntry(true, true, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
 
-      assertEquals("Skickat", result.getValue("STATUS"));
+      assertEquals(result.getValue("STATUS"), "Skickat");
     }
 
     @Test
-    public void shouldSetIsNotSent() {
+    void shouldSetIsNotSent() {
       final var entry = ListTestHelper.createCertificateListEntry(false, true, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
 
-      assertEquals("Ej skickat", result.getValue("STATUS"));
+      assertEquals(result.getValue("STATUS"), "Ej skickat");
     }
 
     @Test
-    public void shouldSetPatientIsNotProtectedPerson() {
+    void shouldSetPatientIsNotProtectedPerson() {
       final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -537,7 +537,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsNotDeceased() {
+    void shouldSetPatientIsNotDeceased() {
       final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -546,7 +546,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsNotTestIndicated() {
+    void shouldSetPatientIsNotTestIndicated() {
       final var entry = ListTestHelper.createCertificateListEntry(false, false, "191212121212");
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -555,7 +555,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetSigned() {
+    void shouldSetSigned() {
       final var entry = ListTestHelper.createCertificateListEntry();
       final var result = certificateListItemConverter.convert(entry);
 
@@ -567,14 +567,14 @@ class CertificateListEntryConverterImplTest {
   class ListQuestions {
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       when(resourceLinkListHelper.get(
               any(ArendeListItem.class), any(CertificateListItemStatus.class)))
           .thenReturn(LINKS);
     }
 
     @Test
-    public void shouldSetLinks() {
+    void shouldSetLinks() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
       final var links = (List<ResourceLinkDTO>) result.getValue(ListColumnType.LINKS);
@@ -584,7 +584,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetCertificateId() {
+    void shouldSetCertificateId() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
 
@@ -592,7 +592,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientId() {
+    void shouldSetPatientId() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -601,7 +601,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsProtectedPerson() {
+    void shouldSetPatientIsProtectedPerson() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -610,7 +610,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsDeceased() {
+    void shouldSetPatientIsDeceased() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -619,7 +619,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsTestIndicated() {
+    void shouldSetPatientIsTestIndicated() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -628,7 +628,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsNotProtectedPerson() {
+    void shouldSetPatientIsNotProtectedPerson() {
       final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -637,7 +637,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsNotDeceased() {
+    void shouldSetPatientIsNotDeceased() {
       final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -646,7 +646,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetPatientIsNotTestIndicated() {
+    void shouldSetPatientIsNotTestIndicated() {
       final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
       final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
@@ -655,7 +655,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetSignedBy() {
+    void shouldSetSignedBy() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
 
@@ -663,7 +663,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetQuestionAction() {
+    void shouldSetQuestionAction() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
 
@@ -671,7 +671,7 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetSentReceived() {
+    void shouldSetSentReceived() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       final var result = certificateListItemConverter.convert(entry);
 
@@ -679,25 +679,25 @@ class CertificateListEntryConverterImplTest {
     }
 
     @Test
-    public void shouldSetSenderFK() {
+    void shouldSetSenderFK() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       entry.setFragestallare("FK");
       final var result = certificateListItemConverter.convert(entry);
 
-      assertEquals("Försäkringskassan", result.getValue(ListColumnType.SENDER));
+      assertEquals(result.getValue(ListColumnType.SENDER), "Försäkringskassan");
     }
 
     @Test
-    public void shouldSetSenderWC() {
+    void shouldSetSenderWC() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       entry.setFragestallare("WC");
       final var result = certificateListItemConverter.convert(entry);
 
-      assertEquals("Vårdenheten", result.getValue(ListColumnType.SENDER));
+      assertEquals(result.getValue(ListColumnType.SENDER), "Vårdenheten");
     }
 
     @Test
-    public void shouldSetForwarded() {
+    void shouldSetForwarded() {
       final var entry = ListTestHelper.createQuestionListEntry(true, PATIENT_ID);
       entry.setVidarebefordrad(true);
       final var result = certificateListItemConverter.convert(entry);

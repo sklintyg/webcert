@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.eq;
@@ -32,13 +32,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -63,8 +65,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
-public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
 
   private static final String INTYG_TYPE = "fk7263";
 
@@ -85,14 +88,14 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
   @InjectMocks
   private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
 
-  @Before
-  public void expectCallToModuleRegistry() throws Exception {
+  @BeforeEach
+  void expectCallToModuleRegistry() throws Exception {
     this.mockModuleApi = mock(ModuleApi.class);
     when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
   }
 
   @Test
-  public void testPopulateCompletionFromSignedIntyg() throws Exception {
+  void testPopulateCompletionFromSignedIntyg() throws Exception {
 
     IntygContentHolder ich = createIntygContentHolder();
     when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
@@ -142,7 +145,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateCompletionFromOriginal() throws Exception {
+  void testPopulateCompletionFromOriginal() throws Exception {
 
     Utkast orgUtkast = createOriginalUtkast();
     when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
@@ -182,7 +185,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateCompletionFromSignedIntygDecoratesWithReferensId() throws Exception {
+  void testPopulateCompletionFromSignedIntygDecoratesWithReferensId() throws Exception {
     final String intygsTyp = "luse";
     final String intygsTypVersion = "1.0";
     final String meddelandeId = "meddelandeId";
@@ -232,7 +235,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateCompletionFromOriginalDecoratesWithReferensId() throws Exception {
+  void testPopulateCompletionFromOriginalDecoratesWithReferensId() throws Exception {
     final String intygsTyp = "lisjp";
     final String intygsTypVersion = "1.0";
     final String meddelandeId = "meddelandeId";

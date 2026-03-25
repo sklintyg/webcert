@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -39,12 +39,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -66,7 +70,9 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-public class DssSignatureServiceTest {
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
+class DssSignatureServiceTest {
 
   public static final String IDP_URL = "https://idpurl.se/samlv2/idp/metadata";
 
@@ -123,8 +129,8 @@ public class DssSignatureServiceTest {
         });
   }
 
-  public DssSignatureServiceTest() {
-    MockitoAnnotations.openMocks(this);
+  @BeforeEach
+  void setUp() {
     dssSignatureService =
         new DssSignatureService(
             dssMetadataService,
@@ -139,7 +145,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void createSignatureRequestDTO() throws ModuleNotFoundException {
+  void createSignatureRequestDTO() throws ModuleNotFoundException {
     when(dssMetadataService.getDssActionUrl()).thenReturn("ActionUrl");
     when(webCertUserService.getUser()).thenReturn(user);
     when(user.getPersonId()).thenReturn("191212121212");
@@ -204,9 +210,9 @@ public class DssSignatureServiceTest {
 
     assertNotNull(capturedSignRequest);
     assertEquals(
-        "Profile",
         "http://id.elegnamnden.se/csig/1.1/dss-ext/profile",
-        capturedSignRequest.getProfile());
+        capturedSignRequest.getProfile(),
+        "Profile");
     assertNotNull(capturedSignRequest.getInputDocuments());
     assertNotNull(capturedSignRequest.getOptionalInputs());
     assertNotNull(capturedSignRequest.getOptionalInputs().getAny());
@@ -245,13 +251,13 @@ public class DssSignatureServiceTest {
             .toGregorianCalendar()
             .getTimeInMillis();
     assertEquals(
-        "SignRequest should be valid for 10 minutes (2 min before and 8 min after",
         10,
-        (notAfter - notBefore) / 60000);
+        (notAfter - notBefore) / 60000,
+        "SignRequest should be valid for 10 minutes (2 min before and 8 min after");
   }
 
   @Test
-  public void receiveSignatureResponse()
+  void receiveSignatureResponse()
       throws IOException { // TODO Update test case with more accurate sign response
     var stream = new ClassPathResource("dss/signResponse.xml").getInputStream();
     var string =
@@ -264,7 +270,7 @@ public class DssSignatureServiceTest {
         .netidSignature(
             ticketIdCaptor.capture(), signatureCaptor.capture(), certificateCaptor.capture());
 
-    assertEquals("0ff25a22-d78a-46c0-ae78-58e34b62ce90", ticketIdCaptor.getValue());
+    assertEquals(ticketIdCaptor.getValue(), "0ff25a22-d78a-46c0-ae78-58e34b62ce90");
 
     // CHECKSTYLE:OFF LineLength
     var certByteArray =
@@ -280,7 +286,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void findReturnUrl() {
+  void findReturnUrl() {
     String intygsId = UUID.randomUUID().toString();
     Utkast utkastLocal = new Utkast();
     utkastLocal.setIntygsTyp("lisjp");
@@ -302,7 +308,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void findReturnErrorUrl() {
+  void findReturnErrorUrl() {
     String intygsId = UUID.randomUUID().toString();
     Utkast utkastLocal = new Utkast();
     utkastLocal.setIntygsTyp("lisjp");
@@ -325,7 +331,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void updateSignatureTicketWithError() {
+  void updateSignatureTicketWithError() {
 
     String relayState = "TransactionID";
 
@@ -338,7 +344,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void isUnitInIeWhitelist() {
+  void isUnitInIeWhitelist() {
     assertTrue(dssSignatureService.shouldUseSigningService(""));
     assertTrue(dssSignatureService.shouldUseSigningService(null));
     assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));

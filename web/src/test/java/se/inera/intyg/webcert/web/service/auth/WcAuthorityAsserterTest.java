@@ -28,11 +28,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.util.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -46,8 +46,8 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@RunWith(MockitoJUnitRunner.class)
-public class WcAuthorityAsserterTest {
+@ExtendWith(MockitoExtension.class)
+class WcAuthorityAsserterTest {
 
   @Mock private PatientDetailsResolver patientDetailsResolver;
 
@@ -56,7 +56,7 @@ public class WcAuthorityAsserterTest {
   @InjectMocks private WcAuthorityAsserter authorityAsserter;
 
   @Test
-  public void assertIsAuthorizedOK() {
+  void assertIsAuthorizedOK() {
 
     WebCertUser webCertUser = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
@@ -72,7 +72,7 @@ public class WcAuthorityAsserterTest {
   }
 
   @Test
-  public void assertIsAuthorizedNOK() {
+  void assertIsAuthorizedNOK() {
 
     WebCertUser webCertUser =
         createDefaultUser(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG); // Not correct privilegie

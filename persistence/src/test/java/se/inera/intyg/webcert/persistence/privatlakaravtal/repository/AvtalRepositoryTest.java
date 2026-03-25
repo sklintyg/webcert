@@ -18,30 +18,30 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
 /** Created by eriklupander on 2015-08-05. */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class AvtalRepositoryTest {
+class AvtalRepositoryTest {
 
   private static final String AVTAL_TEXT = "En väldigt lång avtalstext";
   private static final String HSA_ID = "userId1234";
@@ -52,13 +52,13 @@ public class AvtalRepositoryTest {
 
   @PersistenceContext private EntityManager em;
 
-  @Before
-  public void before() {
+  @BeforeEach
+  void before() {
     avtalRepository.deleteAll();
   }
 
   @Test
-  public void testFindById() {
+  void testFindById() {
     Avtal saved = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved);
     Avtal read = avtalRepository.findById(saved.getAvtalVersion()).orElse(null);
@@ -67,7 +67,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testGetLatestAvtalVersion() {
+  void testGetLatestAvtalVersion() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
     Avtal saved3 = buildAvtal(3, AVTAL_TEXT);
@@ -80,13 +80,13 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testGetLatestAvtalVersionNoAvtalStored() {
+  void testGetLatestAvtalVersionNoAvtalStored() {
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
     assertEquals(-1, latestAvtalVersion.intValue());
   }
 
   @Test
-  public void testUserHasNotApprovedAvtal() {
+  void testUserHasNotApprovedAvtal() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved1);
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
@@ -95,7 +95,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testUserHasApprovedOldAvtal() {
+  void testUserHasApprovedOldAvtal() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
 
@@ -111,7 +111,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testApproveAvtal() {
+  void testApproveAvtal() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved1);
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
@@ -123,7 +123,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testApproveSameAvtalTwice() {
+  void testApproveSameAvtalTwice() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved1);
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
@@ -138,7 +138,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testRemoveApprovedAvtal() {
+  void testRemoveApprovedAvtal() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved1);
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
@@ -151,7 +151,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testRemoveAllApprovedAvtalForUser() {
+  void testRemoveAllApprovedAvtalForUser() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
     Avtal saved3 = buildAvtal(3, AVTAL_TEXT);
