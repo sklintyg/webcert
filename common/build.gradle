@@ -6,7 +6,6 @@ dependencies {
     implementation "jakarta.xml.ws:jakarta.xml.ws-api"
     implementation "org.springframework.security:spring-security-config"
     implementation "se.inera.intyg.common:common-support:${commonVersion}"
-    implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
