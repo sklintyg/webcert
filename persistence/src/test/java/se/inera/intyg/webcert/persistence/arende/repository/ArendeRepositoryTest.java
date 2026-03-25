@@ -53,17 +53,17 @@ import se.inera.intyg.webcert.persistence.model.VantarPa;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class ArendeRepositoryTest {
+class ArendeRepositoryTest {
 
   @Autowired private ArendeRepository repo;
 
   @AfterEach
-  public void cleanup() {
+  void cleanup() {
     repo.deleteAll();
   }
 
   @Test
-  public void testFindOne() {
+  void testFindOne() {
     Arende saved = buildArende();
     repo.save(saved);
     Arende read = repo.findById(saved.getId()).orElse(null);
@@ -99,7 +99,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFindOneByMeddelandeId() {
+  void testFindOneByMeddelandeId() {
     final String meddelandeId = "meddelande2";
     repo.save(buildArende("meddelande1"));
     repo.save(buildArende(meddelandeId));
@@ -113,7 +113,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFindSigneratAvByEnhet() {
+  void testFindSigneratAvByEnhet() {
     final String signeratAv1HsaId = "signerat av 1 - hsa id";
     final String signeratAv1Namn = "signerat av 1 - namn";
     final String signeratAv2HsaId = "signerat av 2 - hsa id";
@@ -134,7 +134,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFindSigneratAvByEnhetNoMatch() {
+  void testFindSigneratAvByEnhetNoMatch() {
     final String signeratAv1HsaId = "signerat av 1 - hsa id";
     final String signeratAv1Namn = "signerat av 1 - namn";
     final String signeratAv2HsaId = "signerat av 2 - hsa id";
@@ -148,7 +148,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFindSigneratAvByEnhetMultipleUnits() {
+  void testFindSigneratAvByEnhetMultipleUnits() {
     final String signeratAv1HsaId = "signerat av 1 - hsa id";
     final String signeratAv1Namn = "signerat av 1 - namn";
     final String signeratAv2HsaId = "signerat av 2 - hsa id";
@@ -166,7 +166,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFindSigneratAvByEnhetNull() {
+  void testFindSigneratAvByEnhetNull() {
     repo.save(buildArende("hsaid", "namn", "enhet"));
     repo.save(buildArende("hsaid", "namn", "enhet"));
 
@@ -175,7 +175,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFindByEnhet() {
+  void testFindByEnhet() {
     final String enhet = "enhet";
     repo.save(buildArende(enhet, Status.PENDING_INTERNAL_ACTION));
     repo.save(buildArende(enhet, Status.CLOSED));
@@ -187,7 +187,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeByEnhet() {
+  void testFilterArendeByEnhet() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -215,7 +215,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeIgnoresSvarAndPaminnelse() {
+  void testFilterArendeIgnoresSvarAndPaminnelse() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -244,7 +244,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeQuestionFromFK() {
+  void testFilterArendeQuestionFromFK() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -273,7 +273,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeQuestionFromWC() {
+  void testFilterArendeQuestionFromWC() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -309,7 +309,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeByHsaId() {
+  void testFilterArendeByHsaId() {
     final String enhet = "enhet";
     final String signeratAvHsaId = "hsaid1";
     repo.save(
@@ -339,7 +339,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeVidarebefordradTrue() {
+  void testFilterArendeVidarebefordradTrue() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -392,7 +392,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeVidarebefordradFalse() {
+  void testFilterArendeVidarebefordradFalse() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -445,7 +445,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeChangedFrom() {
+  void testFilterArendeChangedFrom() {
     final String enhet = "enhet";
     final LocalDateTime changedFrom = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
     final LocalDateTime beforeChangedFrom = changedFrom.minusDays(1);
@@ -501,7 +501,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeChangedTo() {
+  void testFilterArendeChangedTo() {
     final String enhet = "enhet";
     final LocalDateTime changedTo = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
     final LocalDateTime beforeChangedTo = changedTo.minusDays(1);
@@ -557,7 +557,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeByReplyLatest() {
+  void testFilterArendeByReplyLatest() {
     final String enhet = "enhet";
     final LocalDate replyLatest = LocalDate.now();
     final LocalDate beforeReplyLatest = replyLatest.minusDays(1);
@@ -598,7 +598,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeAllaOhanterade() {
+  void testFilterArendeAllaOhanterade() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -645,7 +645,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeHanterad() {
+  void testFilterArendeHanterad() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -692,7 +692,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeKomplettering() {
+  void testFilterArendeKomplettering() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -733,7 +733,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeSvarFranVarden() {
+  void testFilterArendeSvarFranVarden() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -804,7 +804,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeSvarFranFK() {
+  void testFilterArendeSvarFranFK() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -851,7 +851,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeMarkeraSomHanterad() {
+  void testFilterArendeMarkeraSomHanterad() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -908,7 +908,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeCount() {
+  void testFilterArendeCount() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -954,7 +954,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeByIntygsTypMatches() {
+  void testFilterArendeByIntygsTypMatches() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -973,7 +973,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeByIntygsReturnsEmptyWhenNoneSpecified() {
+  void testFilterArendeByIntygsReturnsEmptyWhenNoneSpecified() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -993,7 +993,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeByIntygsTypNotMatched() {
+  void testFilterArendeByIntygsTypNotMatched() {
     final String enhet = "enhet";
     repo.save(
         buildArende(
@@ -1014,7 +1014,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFindBySvarPaId() {
+  void testFindBySvarPaId() {
     Arende fraga = repo.save(buildArende());
     Arende svar = buildArende();
     svar.setSvarPaId(fraga.getMeddelandeId());
@@ -1026,7 +1026,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFindByPaminnelseMeddelandeId() {
+  void testFindByPaminnelseMeddelandeId() {
     Arende fraga = repo.save(buildArende());
     Arende paminnelse = buildArende();
     paminnelse.setPaminnelseMeddelandeId(fraga.getMeddelandeId());
@@ -1038,7 +1038,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testCountUnhandledGroupedByEnhetIdsAndIntygstyper() {
+  void testCountUnhandledGroupedByEnhetIdsAndIntygstyper() {
     // Question on enhet 1
     repo.save(
         buildArende(
@@ -1155,7 +1155,7 @@ public class ArendeRepositoryTest {
   }
 
   @Test
-  public void testFilterArendeForList() {
+  void testFilterArendeForList() {
     final var enhet = "enhet";
     repo.save(
         buildArende(

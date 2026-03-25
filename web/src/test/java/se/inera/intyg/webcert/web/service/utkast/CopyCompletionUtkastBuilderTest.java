@@ -67,7 +67,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
+class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
 
   private static final String INTYG_TYPE = "fk7263";
 
@@ -89,13 +89,13 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
   private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
 
   @BeforeEach
-  public void expectCallToModuleRegistry() throws Exception {
+  void expectCallToModuleRegistry() throws Exception {
     this.mockModuleApi = mock(ModuleApi.class);
     when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
   }
 
   @Test
-  public void testPopulateCompletionFromSignedIntyg() throws Exception {
+  void testPopulateCompletionFromSignedIntyg() throws Exception {
 
     IntygContentHolder ich = createIntygContentHolder();
     when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
@@ -145,7 +145,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateCompletionFromOriginal() throws Exception {
+  void testPopulateCompletionFromOriginal() throws Exception {
 
     Utkast orgUtkast = createOriginalUtkast();
     when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
@@ -185,7 +185,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateCompletionFromSignedIntygDecoratesWithReferensId() throws Exception {
+  void testPopulateCompletionFromSignedIntygDecoratesWithReferensId() throws Exception {
     final String intygsTyp = "luse";
     final String intygsTypVersion = "1.0";
     final String meddelandeId = "meddelandeId";
@@ -235,7 +235,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateCompletionFromOriginalDecoratesWithReferensId() throws Exception {
+  void testPopulateCompletionFromOriginalDecoratesWithReferensId() throws Exception {
     final String intygsTyp = "lisjp";
     final String intygsTypVersion = "1.0";
     final String meddelandeId = "meddelandeId";

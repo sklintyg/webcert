@@ -32,12 +32,12 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:IcfTextResourceImplTest/test.properties")
 @ContextConfiguration(classes = {IcfTextResourceImpl.class})
-public class IcfTextResourceImplTest {
+class IcfTextResourceImplTest {
 
   @Autowired private IcfTextResource icfTextResource;
 
   @Test
-  public void testReadFromFileAndLookupMatchingKod() {
+  void testReadFromFileAndLookupMatchingKod() {
 
     final String matchingCode = "b114"; // den här koden finns i testfilen
 

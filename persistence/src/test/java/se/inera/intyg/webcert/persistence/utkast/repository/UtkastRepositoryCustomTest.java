@@ -44,7 +44,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class UtkastRepositoryCustomTest {
+class UtkastRepositoryCustomTest {
 
   @Autowired private UtkastRepository utkastRepository;
 
@@ -52,7 +52,7 @@ public class UtkastRepositoryCustomTest {
 
   /** Testing several @Query methods in same test to save setup/teardown time. */
   @Test
-  public void testFindRelations() {
+  void testFindRelations() {
     // Create two hierarchies
     String intygIdParent = "intyg-1";
     String intygIdChild1 = "intyg-1-1";
@@ -158,7 +158,7 @@ public class UtkastRepositoryCustomTest {
   }
 
   @Test
-  public void testRemoveRelationsToDraft() {
+  void testRemoveRelationsToDraft() {
     // Create two hierarchies
     String intygIdParent = "intyg-1";
     String intygIdChild1 = "intyg-1-1";
@@ -198,7 +198,7 @@ public class UtkastRepositoryCustomTest {
   }
 
   @Test
-  public void testFindDraftsByNotLockedOrSignedAndSkapadBefore() {
+  void testFindDraftsByNotLockedOrSignedAndSkapadBefore() {
     // Create two hierarchies
     String intygId_signed = "intyg-1";
     String intygId_locked = "intyg-2";

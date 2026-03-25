@@ -76,7 +76,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class UtkastCandidateServiceImplTest {
+class UtkastCandidateServiceImplTest {
 
   @Mock DraftAccessServiceHelper draftAccessServiceHelper;
   private WebCertUser webCertUser;
@@ -97,7 +97,7 @@ public class UtkastCandidateServiceImplTest {
   @InjectMocks private UtkastCandidateServiceImpl utkastCandidateService;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     webCertUser = mock(WebCertUser.class);
     when(webCertUserService.getUser()).thenReturn(webCertUser);
 
@@ -114,7 +114,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getCandidateMetaDataWhenMatchingCriterias() {
+  void getCandidateMetaDataWhenMatchingCriterias() {
     String intygIdCandidate = "correct-candidate-intygid";
     String intygTypeCandidate = "lisjp";
     String intygTypeVersion = "1.0";
@@ -246,7 +246,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getCandidateMetaDataWhenMissingCopyFromCriteria() {
+  void getCandidateMetaDataWhenMissingCopyFromCriteria() {
     String utkastType = "ag7804";
     String intygTypeVersion = "1.0";
     Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
@@ -263,7 +263,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getCandidateMetaDataWhenAccessIsDenied() {
+  void getCandidateMetaDataWhenAccessIsDenied() {
     String intygTypeCandidate = "lisjp";
     String intygType = "ag7804";
     String intygTypeVersion = "1.0";
@@ -291,7 +291,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getCandidateMetaDataWhenNoMatchingCriterias() {
+  void getCandidateMetaDataWhenNoMatchingCriterias() {
     String intygTypeCandidate = "lisjp";
     String intygTypeVersion = "1.0";
     String intygType = "ag7804";
@@ -438,7 +438,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getCandidateMetaDataShouldSelectCorrectCandidateIntyg() {
+  void getCandidateMetaDataShouldSelectCorrectCandidateIntyg() {
     String intygTypeCandidate = "lisjp";
     String intygTypeVersion = "1.0";
     String intygType = "ag7804";
@@ -531,7 +531,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getCandidateMetaDataWhenPatientIsSekretessmarkerad() {
+  void getCandidateMetaDataWhenPatientIsSekretessmarkerad() {
     String intygIdCandidate = "correct-candidate-intygid";
     String intygTypeCandidate = "lisjp";
     String intygTypeVersion = "1.0";
@@ -762,7 +762,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getDbCandidateMetaDataShouldReturnCorrectCandidate() {
+  void getDbCandidateMetaDataShouldReturnCorrectCandidate() {
     String intygTypeCandidate = "db";
     String intygTypeVersion = "1.0";
     String intygType = "doi";
@@ -909,7 +909,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getDdCandidateMetaDataWhenNoMatchingCriterias() {
+  void getDdCandidateMetaDataWhenNoMatchingCriterias() {
     String intygTypeCandidate = "db";
     String intygTypeVersion = "1.0";
     String intygType = "doi";
@@ -1066,7 +1066,7 @@ public class UtkastCandidateServiceImplTest {
   }
 
   @Test
-  public void getDbCandidateMetaDataWhenMatchingCriterias() {
+  void getDbCandidateMetaDataWhenMatchingCriterias() {
     String intygIdCandidate = "correct-candidate-intygid";
     String intygTypeCandidate = "db";
     String intygTypeVersion = "1.0";

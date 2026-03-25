@@ -41,7 +41,7 @@ import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 
-public class FmbApiControllerTest {
+class FmbApiControllerTest {
 
   @InjectMocks private FmbApiController controller;
 
@@ -54,7 +54,7 @@ public class FmbApiControllerTest {
   @Mock private DiagnosService diagnosService;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     Mockito.when(diagnosService.getDiagnosisByCode(anyString(), any(Diagnoskodverk.class)))
         .thenReturn(DiagnosResponse.ok(makeDiagnoser(), false));
@@ -68,19 +68,19 @@ public class FmbApiControllerTest {
   }
 
   @Test
-  public void testGetFmbForIcd10HandlesNull() throws Exception {
+  void testGetFmbForIcd10HandlesNull() throws Exception {
     Response response = controller.getFmbForIcd10(null);
     assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
   }
 
   @Test
-  public void testGetFmbForIcd10HandlesEmptyInput() throws Exception {
+  void testGetFmbForIcd10HandlesEmptyInput() throws Exception {
     Response response = controller.getFmbForIcd10("");
     assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
   }
 
   @Test
-  public void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData()
+  void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData()
       throws Exception {
     // Given
     doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));

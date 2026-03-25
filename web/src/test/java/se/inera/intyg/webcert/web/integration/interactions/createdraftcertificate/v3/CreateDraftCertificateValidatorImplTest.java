@@ -60,13 +60,12 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CreateDraftCertificateValidatorImplTest
-    extends BaseCreateDraftCertificateValidatorTest {
+class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCertificateValidatorTest {
 
   @InjectMocks private CreateDraftCertificateValidatorImpl validator;
 
   @BeforeEach
-  public void setup() throws ModuleNotFoundException {
+  void setup() throws ModuleNotFoundException {
     when(moduleRegistry.getModuleIdFromExternalId(anyString()))
         .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
     when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
@@ -79,7 +78,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testInactiveCertificateTypeDoesNotValidate() {
+  void testInactiveCertificateTypeDoesNotValidate() {
     doReturn(true)
         .when(featuresHelper)
         .isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, FK7263);
@@ -98,7 +97,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidate() {
+  void testValidate() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -107,7 +106,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidateInvalidIntygsTyp() {
+  void testValidateInvalidIntygsTyp() {
     when(moduleRegistry.moduleExists(LUSE.toLowerCase())).thenReturn(false);
     ResultValidator result =
         validator.validateCertificateErrors(
@@ -118,7 +117,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidatePatientEfternamnMissing() {
+  void testValidatePatientEfternamnMissing() {
     ResultValidator result =
         validator.validate(
             buildIntyg(LUSE, null, "förnamn", "fullständigt namn", "enhetsId", "enhetsnamn", true));
@@ -126,7 +125,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidatePatientFornamnMissing() {
+  void testValidatePatientFornamnMissing() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -135,7 +134,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidatePatientPersonIdMissing() {
+  void testValidatePatientPersonIdMissing() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -151,7 +150,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidatePatientPersonIdExtensionMissing() {
+  void testValidatePatientPersonIdExtensionMissing() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -167,7 +166,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidatePatientPersonnummerOk() {
+  void testValidatePatientPersonnummerOk() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -183,7 +182,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidatePatientSamordningsnummerOk() {
+  void testValidatePatientSamordningsnummerOk() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -199,7 +198,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidatePatientInvalidPersonnummer() {
+  void testValidatePatientInvalidPersonnummer() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -215,7 +214,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidateHoSPersonalFullstandigtnamnMissing() {
+  void testValidateHoSPersonalFullstandigtnamnMissing() {
     ResultValidator result =
         validator.validate(
             buildIntyg(LUSE, "efternamn", "fornamn", null, "enhetsId", "enhetsnamn", true));
@@ -223,7 +222,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidateHoSPersonalEnhetMissing() {
+  void testValidateHoSPersonalEnhetMissing() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -238,7 +237,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidateHoSPersonalEnhetsIdMissing() {
+  void testValidateHoSPersonalEnhetsIdMissing() {
     ResultValidator result =
         validator.validate(
             buildIntyg(
@@ -247,7 +246,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidateHoSPersonalEnhetsnamnMissing() {
+  void testValidateHoSPersonalEnhetsnamnMissing() {
     ResultValidator result =
         validator.validate(
             buildIntyg(LUSE, "efternamn", "fornamn", "fullständigt namn", "enhetsId", null, true));
@@ -255,7 +254,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidationOfPersonnummerDoesNotExistInPU() {
+  void testValidationOfPersonnummerDoesNotExistInPU() {
     when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
         .thenReturn(PersonSvar.notFound());
 
@@ -270,7 +269,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testPuServiceLooksUpPatientForTsBas() throws ModuleNotFoundException {
+  void testPuServiceLooksUpPatientForTsBas() throws ModuleNotFoundException {
     when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class)))
         .thenReturn(SekretessStatus.FALSE);
     when(moduleRegistry.moduleExists(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(true);
@@ -285,8 +284,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu()
-      throws ModuleNotFoundException {
+  void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu() throws ModuleNotFoundException {
     when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
         .thenReturn(PersonSvar.notFound());
     ResultValidator result =
@@ -299,7 +297,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() throws ModuleNotFoundException {
+  void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() throws ModuleNotFoundException {
     final var mockEntryPoint = mock(DoiModuleEntryPoint.class);
     final var certificate =
         buildIntyg(
@@ -320,7 +318,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void testValidateIntygstypPrivilege() {
+  void testValidateIntygstypPrivilege() {
     // We do the same validation as to view the utkast when CreateDraftCertificate.
     ResultValidator result =
         validator.validateCertificateErrors(
@@ -333,8 +331,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void shouldIncludeModuleNameInErrorMessageForSekretessmarkerad()
-      throws ModuleNotFoundException {
+  void shouldIncludeModuleNameInErrorMessageForSekretessmarkerad() throws ModuleNotFoundException {
     final var user = buildUserUnauthorized();
     final var certificateType = LuseEntryPoint.MODULE_ID;
     final var certificateDisplayName = LuseEntryPoint.MODULE_NAME;
@@ -357,7 +354,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void shouldUseModuleIdInSekretessErrorMessageWhenFailureGettingName()
+  void shouldUseModuleIdInSekretessErrorMessageWhenFailureGettingName()
       throws ModuleNotFoundException {
     final var user = buildUserUnauthorized();
     final var certificateType = LuseEntryPoint.MODULE_ID;
@@ -379,9 +376,8 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void
-      shouldNotAddSecondErrorMessageWhenVardadminAndCertificateNotAllowedForSekretessmarkerad()
-          throws ModuleNotFoundException {
+  void shouldNotAddSecondErrorMessageWhenVardadminAndCertificateNotAllowedForSekretessmarkerad()
+      throws ModuleNotFoundException {
     final var user = buildUserUnauthorized();
     user.getAuthorities().remove(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT);
     final var certificateType = LuseEntryPoint.MODULE_ID;
@@ -404,7 +400,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void shouldReturnErrorWhenSekretessStatusUndefined() throws ModuleNotFoundException {
+  void shouldReturnErrorWhenSekretessStatusUndefined() throws ModuleNotFoundException {
     final var user = buildUserUnauthorized();
     final var certificateDisplayName = LuseEntryPoint.MODULE_NAME;
     final var certificate =
@@ -422,7 +418,7 @@ public class CreateDraftCertificateValidatorImplTest
   }
 
   @Test
-  public void shouldReturnErrorWhenInvalidPersonIdIsProvided() {
+  void shouldReturnErrorWhenInvalidPersonIdIsProvided() {
     final var user = buildUser();
     final var certificate =
         buildIntyg(LUSE, "lastName", "firstName", "fullName", "unitId", "unitName", true);

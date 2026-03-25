@@ -58,7 +58,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup {
+class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup {
 
   private static final String HSA1 = "hsa-1";
   private static final String HSA2 = "hsa-2";
@@ -78,7 +78,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   @InjectMocks private StatisticsGroupByUtil testee;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
     Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
     Personnummer pnr3 = Personnummer.createPersonnummer(PNR3).get();
@@ -92,7 +92,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   }
 
   @Test
-  public void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForLakare() {
+  void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForLakare() {
 
     when(webCertUserService.getUser()).thenReturn(createUser());
 
@@ -107,7 +107,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   }
 
   @Test
-  public void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForVardadmin() {
+  void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForVardadmin() {
 
     when(webCertUserService.getUser())
         .thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
@@ -132,7 +132,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   }
 
   @Test
-  public void testFilterAndGroupForThreeResultsOfSameUnitTwoIsSekrForOfWhichOneIsTS() {
+  void testFilterAndGroupForThreeResultsOfSameUnitTwoIsSekrForOfWhichOneIsTS() {
 
     when(webCertUserService.getUser()).thenReturn(createUser());
 
@@ -149,7 +149,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   }
 
   @Test
-  public void testFilterAndGroupForMultipleUnitsForLakare() {
+  void testFilterAndGroupForMultipleUnitsForLakare() {
 
     when(webCertUserService.getUser()).thenReturn(createUser());
 
@@ -170,7 +170,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   }
 
   @Test
-  public void testFilterAndGroupForMultipleUnitsForVardadmin() {
+  void testFilterAndGroupForMultipleUnitsForVardadmin() {
 
     when(webCertUserService.getUser())
         .thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
@@ -192,7 +192,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   }
 
   @Test
-  public void testAssumeNotSekrWhenPUNotResponding() {
+  void testAssumeNotSekrWhenPUNotResponding() {
 
     when(webCertUserService.getUser()).thenReturn(createUser());
 
@@ -206,13 +206,13 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   }
 
   @Test
-  public void testFilterEmptyMap() {
+  void testFilterEmptyMap() {
     Map<String, Long> result = testee.toSekretessFilteredMap(new ArrayList<>());
     assertEquals(0, result.size());
   }
 
   @Test
-  public void testFilterInvalidPersonnummer() {
+  void testFilterInvalidPersonnummer() {
     List<GroupableItem> queryResult = new ArrayList<>();
     queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
     queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
@@ -226,7 +226,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
   }
 
   @Test
-  public void testFilterInvalidGroupableItems() {
+  void testFilterInvalidGroupableItems() {
     List<GroupableItem> queryResult = new ArrayList<>();
     queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
     queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));

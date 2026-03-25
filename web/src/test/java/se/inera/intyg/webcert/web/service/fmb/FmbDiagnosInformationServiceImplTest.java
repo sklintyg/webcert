@@ -64,7 +64,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 
 @ExtendWith(MockitoExtension.class)
-public class FmbDiagnosInformationServiceImplTest {
+class FmbDiagnosInformationServiceImplTest {
 
   protected static final String DIAGNOSRUBRIK_PREFIX = "diagnosrubrik-";
   @Mock private DiagnosService diagnosService;
@@ -80,7 +80,7 @@ public class FmbDiagnosInformationServiceImplTest {
   private List<Period> PERIODS = Collections.emptyList();
 
   @Test
-  public void validateSjukskrivningtidForPatientShouldReturnOK() {
+  void validateSjukskrivningtidForPatientShouldReturnOK() {
 
     final int rekommenderad = 14;
     final int total = 12;
@@ -121,7 +121,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void validateSjukskrivningtidForPatientShouldReturnNotOK() {
+  void validateSjukskrivningtidForPatientShouldReturnNotOK() {
 
     final int rekommenderad = 7;
     final int total = 12;
@@ -162,7 +162,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void testDuplicateTexts() {
+  void testDuplicateTexts() {
 
     final DiagnosInformation diagnosInformation =
         createDiagnosInformation("test", "test", "A10", "B20");
@@ -189,14 +189,14 @@ public class FmbDiagnosInformationServiceImplTest {
             .orElse(Lists.emptyList());
 
     assertEquals(DIAGNOSRUBRIK_PREFIX + "A10", response.get().getDiagnosTitle());
-    assertEquals( response.get().getRelatedDiagnoses(),"A10, B20");
+    assertEquals(response.get().getRelatedDiagnoses(), "A10, B20");
     assertEquals(1, count);
-    assertEquals( contentList.get(0).getText(),"test");
+    assertEquals(contentList.get(0).getText(), "test");
     assertNull(contentList.get(0).getList());
   }
 
   @Test
-  public void testMultipleTypFall() {
+  void testMultipleTypFall() {
     final DiagnosInformation diagnosInformation = createDiagnosInformation("test1", "test2", "A10");
 
     doReturn(Optional.of(diagnosInformation))
@@ -225,7 +225,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void faultySearch() {
+  void faultySearch() {
     doReturn(Optional.empty())
         .when(diagnosInformationRepository)
         .findFirstByIcd10KodList_kod(anyString());
@@ -237,7 +237,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void testGetFmbForIcd10IsReturningCorrectIcdCode() throws Exception {
+  void testGetFmbForIcd10IsReturningCorrectIcdCode() throws Exception {
     final String icd10 = "asdf";
     final DiagnosInformation diagnosInformation = createDiagnosInformation("test1", "test2", icd10);
 
@@ -252,7 +252,7 @@ public class FmbDiagnosInformationServiceImplTest {
   }
 
   @Test
-  public void testWithSpecificIcd10CodeResultingInItsParentIcd10Kod() {
+  void testWithSpecificIcd10CodeResultingInItsParentIcd10Kod() {
 
     final int foreslagen = 1;
     final int tidigare = 12;

@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class PreviousIntygTest {
+class PreviousIntygTest {
 
   @Test
-  public void testNotSameVardgivareWithHideValues() {
+  void testNotSameVardgivareWithHideValues() {
     PreviousIntyg dto = PreviousIntyg.of(false, true, false, "Enhet", "intygsId", null, true);
 
     assertFalse(dto.isSameVardgivare());
@@ -39,18 +39,18 @@ public class PreviousIntygTest {
   }
 
   @Test
-  public void testNotSameVardgivareWithoutHideValues() {
+  void testNotSameVardgivareWithoutHideValues() {
     PreviousIntyg dto = PreviousIntyg.of(false, true, false, "Enhet", "intygsId", null, false);
 
     assertFalse(dto.isSameVardgivare());
-    assertEquals( dto.getEnhetName(),"Enhet");
-    assertEquals( dto.getLatestIntygsId(),"intygsId");
+    assertEquals(dto.getEnhetName(), "Enhet");
+    assertEquals(dto.getLatestIntygsId(), "intygsId");
     assertFalse(dto.isEnableShowDoiButton());
     assertTrue(dto.isSameEnhet());
   }
 
   @Test
-  public void testNotSameVardgivareDefaultBehavior() {
+  void testNotSameVardgivareDefaultBehavior() {
     PreviousIntyg dto = PreviousIntyg.of(false, true, false, "Enhet", "intygsId", null);
 
     assertFalse(dto.isSameVardgivare());
@@ -61,23 +61,23 @@ public class PreviousIntygTest {
   }
 
   @Test
-  public void testSameVardgivareSameEnhet() {
+  void testSameVardgivareSameEnhet() {
     PreviousIntyg dto = PreviousIntyg.of(true, true, true, "Enhet", "intygsId", null);
 
     assertTrue(dto.isSameVardgivare());
-    assertEquals( dto.getEnhetName(),"Enhet");
-    assertEquals( dto.getLatestIntygsId(),"intygsId");
+    assertEquals(dto.getEnhetName(), "Enhet");
+    assertEquals(dto.getLatestIntygsId(), "intygsId");
     assertTrue(dto.isEnableShowDoiButton());
     assertTrue(dto.isSameEnhet());
   }
 
   @Test
-  public void testSameVardgivareNotSameEnhet() {
+  void testSameVardgivareNotSameEnhet() {
     PreviousIntyg dto = PreviousIntyg.of(true, false, false, "Enhet", "intygsId", null);
 
     assertTrue(dto.isSameVardgivare());
-    assertEquals( dto.getEnhetName(),"Enhet");
-    assertEquals( dto.getLatestIntygsId(),"intygsId");
+    assertEquals(dto.getEnhetName(), "Enhet");
+    assertEquals(dto.getLatestIntygsId(), "intygsId");
     assertFalse(dto.isEnableShowDoiButton());
     assertFalse(dto.isSameEnhet());
   }

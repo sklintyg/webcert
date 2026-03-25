@@ -34,10 +34,10 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.VantarPa;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 
-public class FilterConverterTest {
+class FilterConverterTest {
 
   @Test
-  public void testConvert() {
+  void testConvert() {
     final LocalDateTime changedFrom = LocalDateTime.now();
     final LocalDateTime changedTo = LocalDateTime.now().plusDays(1);
     final String enhetId = "enhetId";
@@ -85,7 +85,7 @@ public class FilterConverterTest {
   }
 
   @Test
-  public void testNullSafeBoolean() {
+  void testNullSafeBoolean() {
     QueryFragaSvarParameter source =
         createQueryFragaSvarParameter(
             LocalDateTime.now(),
@@ -108,7 +108,7 @@ public class FilterConverterTest {
   }
 
   @Test
-  public void testNoPageSizeNorStartFrom() {
+  void testNoPageSizeNorStartFrom() {
     QueryFragaSvarParameter source =
         createQueryFragaSvarParameter(
             LocalDateTime.now(),

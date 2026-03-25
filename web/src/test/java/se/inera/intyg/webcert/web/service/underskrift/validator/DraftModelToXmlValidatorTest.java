@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 
 @ExtendWith(MockitoExtension.class)
-public class DraftModelToXmlValidatorTest {
+class DraftModelToXmlValidatorTest {
 
   @Mock private IntygModuleRegistry intygModuleRegistry;
 
@@ -56,8 +56,7 @@ public class DraftModelToXmlValidatorTest {
   }
 
   @Test
-  public void validateDraftModelAsXmlValid()
-      throws ModuleNotFoundException, IOException, ModuleException {
+  void validateDraftModelAsXmlValid() throws ModuleNotFoundException, IOException, ModuleException {
     String xml = toString("DraftModelToXmlValidatorTest/db_valid.xml");
     Utkast draft = createDraft();
     DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
@@ -72,7 +71,7 @@ public class DraftModelToXmlValidatorTest {
   }
 
   @Test
-  public void validateDraftModelAsXmlInvalid()
+  void validateDraftModelAsXmlInvalid()
       throws ModuleNotFoundException, IOException, ModuleException {
     String xml = toString("DraftModelToXmlValidatorTest/db_invalid.xml");
     Utkast draft = createDraft();

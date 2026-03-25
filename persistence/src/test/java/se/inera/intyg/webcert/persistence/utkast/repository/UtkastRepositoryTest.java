@@ -52,14 +52,14 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class UtkastRepositoryTest {
+class UtkastRepositoryTest {
 
   @Autowired private UtkastRepository utkastRepository;
 
   @PersistenceContext private EntityManager em;
 
   @Test
-  public void testFindOne() {
+  void testFindOne() {
     Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID));
     Utkast read = utkastRepository.findById(saved.getIntygsId()).orElse(null);
 
@@ -78,7 +78,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindOneWithSignature() {
+  void testFindOneWithSignature() {
 
     Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
     String intygsId = utkast.getIntygsId();
@@ -93,7 +93,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindByEnhetsIdDontReturnSigned() {
+  void testFindByEnhetsIdDontReturnSigned() {
 
     Utkast utkast1 =
         utkastRepository.save(
@@ -122,7 +122,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testCountIntygWithStatusesGroupedByEnhetsId() {
+  void testCountIntygWithStatusesGroupedByEnhetsId() {
 
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
@@ -150,11 +150,11 @@ public class UtkastRepositoryTest {
     GroupableItem resObjs = result.get(0);
     assertEquals(UtkastTestUtil.ENHET_1_ID, resObjs.getEnhetsId());
     assertEquals(PERSON_NUMMER.getPersonnummerWithDash(), resObjs.getPersonnummer());
-    assertEquals( resObjs.getIntygsTyp(),"fk7263");
+    assertEquals(resObjs.getIntygsTyp(), "fk7263");
   }
 
   @Test
-  public void testFindDraftsByPatientAndEnhetAndStatus() {
+  void testFindDraftsByPatientAndEnhetAndStatus() {
 
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED));
@@ -176,7 +176,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindDraftsByPatientAndVardgivarIdAndStatus() {
+  void testFindDraftsByPatientAndVardgivarIdAndStatus() {
 
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED));
@@ -206,7 +206,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindDistinctIntygHsaIdByEnhet() {
+  void testFindDistinctIntygHsaIdByEnhet() {
 
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(
@@ -259,7 +259,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testDelete() {
+  void testDelete() {
 
     Utkast intyg1 =
         utkastRepository.save(
@@ -272,7 +272,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testGetIntygsStatus() {
+  void testGetIntygsStatus() {
     Utkast intyg3 =
         utkastRepository.save(
             UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastStatus.DRAFT_COMPLETE));
@@ -281,7 +281,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testSaveRelation() {
+  void testSaveRelation() {
     final String relationIntygsId = "relationIntygsId";
     final RelationKod relationKod = RelationKod.FRLANG;
     Utkast saved =
@@ -297,7 +297,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindAllByRelationIntygsId() {
+  void testFindAllByRelationIntygsId() {
     String relationIntygsId = "parentCertificate";
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(
@@ -318,14 +318,14 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindAllByRelationIntygsIdNoMatches() {
+  void testFindAllByRelationIntygsIdNoMatches() {
     List<Utkast> res = utkastRepository.findAllByRelationIntygsId("parentCertificate");
     assertNotNull(res);
     assertTrue(res.isEmpty());
   }
 
   @Test
-  public void testFindOneByIntygsIdAndIntygsTyp() {
+  void testFindOneByIntygsIdAndIntygsTyp() {
     final String intygsId = "intygsId";
     final String intygsTyp = "intygsTyp";
     Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
@@ -338,7 +338,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindOneByIntygsIdAndIntygsTypNotFound() {
+  void testFindOneByIntygsIdAndIntygsTypNotFound() {
     final String intygsId = "intygsId";
     final String intygsTyp = "intygsTyp";
 
@@ -347,7 +347,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testFindOneByIntygsIdAndIntygsTypInvalidIntygstyp() {
+  void testFindOneByIntygsIdAndIntygsTypInvalidIntygstyp() {
     final String intygsId = "intygsId";
     final String intygsTyp = "intygsTyp";
     Utkast utkast = UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID);
@@ -360,7 +360,7 @@ public class UtkastRepositoryTest {
   }
 
   @Test
-  public void testfindAllByPatientPersonnummerAndIntygsTypIn() {
+  void testfindAllByPatientPersonnummerAndIntygsTypIn() {
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.INTYGSTYP_FK7263));
     utkastRepository.save(

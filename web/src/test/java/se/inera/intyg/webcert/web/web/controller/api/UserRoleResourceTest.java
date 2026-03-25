@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.authtestability.UserResource;
 
-public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
+class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
 
   @Mock private WebCertUserService webCertUserService;
 
@@ -49,12 +49,12 @@ public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
   @Captor private ArgumentCaptor<String> roleArrCaptor;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
   }
 
   @Test
-  public void testGetUserRoles() throws Exception {
+  void testGetUserRoles() throws Exception {
     Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
     // Given
@@ -74,7 +74,7 @@ public class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testSetUserRole() throws Exception {
+  void testSetUserRole() throws Exception {
     // Given
     final WebCertUser user = Mockito.mock(WebCertUser.class);
     Mockito.when(webCertUserService.getUser()).thenReturn(user);

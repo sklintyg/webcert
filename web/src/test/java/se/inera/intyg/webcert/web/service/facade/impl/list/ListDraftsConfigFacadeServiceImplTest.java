@@ -68,7 +68,7 @@ class ListDraftsConfigFacadeServiceImplTest {
   private final String DEFAULT_HSA_NAME = "Name default";
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     when(getStaffInfoFacadeService.getLoggedInStaffHsaId()).thenReturn(DEFAULT_HSA_ID);
     when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(true);
     when(getStaffInfoFacadeService.get())
@@ -84,91 +84,91 @@ class ListDraftsConfigFacadeServiceImplTest {
   }
 
   @Test
-  public void shouldSetSecondaryTitle() {
+  void shouldSetSecondaryTitle() {
     final var config = listDraftsConfigFacadeService.get();
     assertEquals(TITLE, config.getTitle());
   }
 
   @Test
-  public void shouldSetTitle() {
+  void shouldSetTitle() {
     final var config = listDraftsConfigFacadeService.get();
-    assertEquals( config.getSecondaryTitle(),"Intyg visas för Enhetsnamn");
+    assertEquals(config.getSecondaryTitle(), "Intyg visas för Enhetsnamn");
   }
 
   @Test
-  public void shouldSetOpenCertificateTooltip() {
+  void shouldSetOpenCertificateTooltip() {
     final var config = listDraftsConfigFacadeService.get();
     assertTrue(config.getButtonTooltips().containsKey("OPEN_BUTTON"));
   }
 
   @Test
-  public void shouldSetFilters() {
+  void shouldSetFilters() {
     final var config = listDraftsConfigFacadeService.get();
     assertEquals(8, config.getFilters().size());
   }
 
   @Test
-  public void shouldSetTableHeadings() {
+  void shouldSetTableHeadings() {
     final var config = listDraftsConfigFacadeService.get();
     assertEquals(8, config.getTableHeadings().length);
   }
 
   @Test
-  public void shouldSetSearchCertificateTooltip() {
+  void shouldSetSearchCertificateTooltip() {
     final var config = listDraftsConfigFacadeService.get();
     assertTrue(config.getButtonTooltips().containsKey("SEARCH_BUTTON"));
   }
 
   @Nested
-  public class SavedBy {
+  class SavedBy {
 
     ListFilterSelectConfig filter;
     ListConfig config;
 
-    public void setupSavedBy() {
+    void setupSavedBy() {
       config = listDraftsConfigFacadeService.get();
       filter = (ListFilterSelectConfig) getFilterById(config, "SAVED_BY");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       setupSavedBy();
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
+    void shouldSetTitle() {
       setupSavedBy();
-      assertEquals( filter.getTitle(),"Sparat av");
+      assertEquals(filter.getTitle(), "Sparat av");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       setupSavedBy();
       assertEquals(ListFilterType.SELECT, filter.getType());
     }
 
     @Test
-    public void shouldSetList() {
+    void shouldSetList() {
       setupSavedBy();
       assertEquals(3, filter.getValues().size());
     }
 
     @Test
-    public void shouldSetShowAll() {
+    void shouldSetShowAll() {
       setupSavedBy();
-      assertEquals( filter.getValues().get(0).getName(),"Visa alla");
+      assertEquals(filter.getValues().get(0).getName(), "Visa alla");
     }
 
     @Test
-    public void shouldSetDefaultValueOfSavedByAsLoggedInDoctor() {
+    void shouldSetDefaultValueOfSavedByAsLoggedInDoctor() {
       when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(true);
       setupSavedBy();
       assertTrue(filter.getValues().get(2).isDefaultValue());
     }
 
     @Test
-    public void shouldSetUserAsDefaultIfNotDoctor() {
+    void shouldSetUserAsDefaultIfNotDoctor() {
       when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(false);
       setupSavedBy();
       assertTrue(filter.getValues().get(2).isDefaultValue());
@@ -176,39 +176,39 @@ class ListDraftsConfigFacadeServiceImplTest {
   }
 
   @Nested
-  public class Saved {
+  class Saved {
 
     ListFilterDateRangeConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setupSaved() {
+    void setupSaved() {
       config = listDraftsConfigFacadeService.get();
       filter = (ListFilterDateRangeConfig) getFilterById(config, "SAVED");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
-      assertEquals( filter.getTitle(),"Sparat datum");
+    void shouldSetTitle() {
+      assertEquals(filter.getTitle(), "Sparat datum");
     }
 
     @Test
-    public void shouldSetTitleOfTo() {
+    void shouldSetTitleOfTo() {
       assertTrue(filter.getTo().getTitle().length() > 0);
     }
 
     @Test
-    public void shouldSetTitleOfFrom() {
+    void shouldSetTitleOfFrom() {
       assertTrue(filter.getFrom().getTitle().length() > 0);
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.DATE_RANGE, filter.getType());
     }
 
@@ -221,209 +221,209 @@ class ListDraftsConfigFacadeServiceImplTest {
   }
 
   @Nested
-  public class Forwarded {
+  class Forwarded {
 
     ListFilterSelectConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listDraftsConfigFacadeService.get();
       filter = (ListFilterSelectConfig) getFilterById(config, "FORWARDED");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
-      assertEquals( filter.getTitle(),"Vidarebefordrat");
+    void shouldSetTitle() {
+      assertEquals(filter.getTitle(), "Vidarebefordrat");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.SELECT, filter.getType());
     }
 
     @Test
-    public void shouldSetList() {
+    void shouldSetList() {
       assertEquals(3, filter.getValues().size());
     }
 
     @Test
-    public void shouldSetFirstValueInListAsDefault() {
+    void shouldSetFirstValueInListAsDefault() {
       assertTrue(filter.getValues().get(0).isDefaultValue());
     }
   }
 
   @Nested
-  public class Status {
+  class Status {
 
     ListFilterSelectConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listDraftsConfigFacadeService.get();
       filter = (ListFilterSelectConfig) getFilterById(config, "STATUS");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
-      assertEquals( filter.getTitle(),"Utkast");
+    void shouldSetTitle() {
+      assertEquals(filter.getTitle(), "Utkast");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.SELECT, filter.getType());
     }
 
     @Test
-    public void shouldSetList() {
+    void shouldSetList() {
       assertEquals(4, filter.getValues().size());
     }
 
     @Test
-    public void shouldSetFirstValueInListAsDefault() {
+    void shouldSetFirstValueInListAsDefault() {
       assertTrue(filter.getValues().get(0).isDefaultValue());
     }
   }
 
   @Nested
-  public class PatientId {
+  class PatientId {
 
     ListFilterPersonIdConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listDraftsConfigFacadeService.get();
       filter = (ListFilterPersonIdConfig) getFilterById(config, "PATIENT_ID");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
-      assertEquals( filter.getTitle(),"Patient");
+    void shouldSetTitle() {
+      assertEquals(filter.getTitle(), "Patient");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.PERSON_ID, filter.getType());
     }
 
     @Test
-    public void shouldSetPlaceholder() {
+    void shouldSetPlaceholder() {
       assertTrue(filter.getPlaceholder().length() > 0);
     }
   }
 
   @Nested
-  public class OrderBy {
+  class OrderBy {
 
     ListFilterOrderConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listDraftsConfigFacadeService.get();
       filter = (ListFilterOrderConfig) getFilterById(config, "ORDER_BY");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetEmptyTitle() {
-      assertEquals( filter.getTitle(),"");
+    void shouldSetEmptyTitle() {
+      assertEquals(filter.getTitle(), "");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.ORDER, filter.getType());
     }
 
     @Test
-    public void shouldSetDefaultOrder() {
+    void shouldSetDefaultOrder() {
       assertEquals(ListColumnType.SAVED, filter.getDefaultValue());
     }
   }
 
   @Nested
-  public class PageSize {
+  class PageSize {
 
     ListFilterPageSizeConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listDraftsConfigFacadeService.get();
       filter = (ListFilterPageSizeConfig) getFilterById(config, "PAGESIZE");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
+    void shouldSetTitle() {
       assertTrue(filter.getTitle().length() > 0);
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.PAGESIZE, filter.getType());
     }
 
     @Test
-    public void shouldSetList() {
+    void shouldSetList() {
       assertEquals(4, filter.getPageSizes().length);
     }
   }
 
   @Nested
-  public class Ascending {
+  class Ascending {
 
     ListFilterBooleanConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listDraftsConfigFacadeService.get();
       filter = (ListFilterBooleanConfig) getFilterById(config, "ASCENDING");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetEmptyTitle() {
-      assertEquals( filter.getTitle(),"");
+    void shouldSetEmptyTitle() {
+      assertEquals(filter.getTitle(), "");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.BOOLEAN, filter.getType());
     }
 
     @Test
-    public void shouldSetDefaultValue() {
+    void shouldSetDefaultValue() {
       assertFalse(filter.getDefaultValue());
     }
   }

@@ -52,7 +52,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @ExtendWith(MockitoExtension.class)
-public class ListCertificatesForCareWithQAResponderImplTest {
+class ListCertificatesForCareWithQAResponderImplTest {
 
   private static final String CERTIFICATE_ID_FROM_CS = "certificateIdFromCS";
   private static final String CERTIFICATE_ID_FROM_WC = "certificateIdFromWC";
@@ -69,7 +69,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
   @InjectMocks private ListCertificatesForCareWithQAResponderImpl responder;
 
   @Test
-  public void testListCertificatesForCareWithQA() {
+  void testListCertificatesForCareWithQA() {
     final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
     final var deadline = LocalDate.of(2017, 1, 1);
     Handelse handelse = new Handelse();
@@ -140,7 +140,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
   }
 
   @Test
-  public void testListCertificatesForCareWithQAFromCertificateService() {
+  void testListCertificatesForCareWithQAFromCertificateService() {
     final var expectedListItem = new ListItem();
     final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
     final var deadline = LocalDate.of(2017, 1, 1);
@@ -174,7 +174,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
   }
 
   @Test
-  public void testListCertificatesForCareWithQAWithMergedResult() {
+  void testListCertificatesForCareWithQAWithMergedResult() {
     final var expectedListItem = new ListItem();
     final var personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
     final var deadline = LocalDate.of(2017, 1, 1);
@@ -267,19 +267,21 @@ public class ListCertificatesForCareWithQAResponderImplTest {
   }
 
   @Test
-  public void missingBothEnhetAndVardgivareShouldThrow() {
-    assertThrows(IllegalArgumentException.class, () -> {
-    ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-    PersonId personId = new PersonId();
-    personId.setExtension("191212121212");
-    request.setPersonId(personId);
+  void missingBothEnhetAndVardgivareShouldThrow() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+          PersonId personId = new PersonId();
+          personId.setExtension("191212121212");
+          request.setPersonId(personId);
 
-    responder.listCertificatesForCareWithQA("logicalAdress", request);
-      });
+          responder.listCertificatesForCareWithQA("logicalAdress", request);
+        });
   }
 
   @Test
-  public void bothEnhetAndVardgivareExistingShouldNotThrow() {
+  void bothEnhetAndVardgivareExistingShouldNotThrow() {
     ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
     PersonId personId = new PersonId();
     personId.setExtension("191212121212");
@@ -295,17 +297,19 @@ public class ListCertificatesForCareWithQAResponderImplTest {
   }
 
   @Test
-  public void missingPersonnummerShouldThrow() {
-    assertThrows(IllegalArgumentException.class, () -> {
-    ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-    HsaId hsaId = new HsaId();
-    hsaId.setExtension("enhetId");
-    request.getEnhetsId().add(hsaId);
-    HsaId vardgivarId = new HsaId();
-    hsaId.setExtension("vardgivarId");
-    request.setVardgivarId(vardgivarId);
+  void missingPersonnummerShouldThrow() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+          HsaId hsaId = new HsaId();
+          hsaId.setExtension("enhetId");
+          request.getEnhetsId().add(hsaId);
+          HsaId vardgivarId = new HsaId();
+          hsaId.setExtension("vardgivarId");
+          request.setVardgivarId(vardgivarId);
 
-    responder.listCertificatesForCareWithQA("logicalAdress", request);
-      });
+          responder.listCertificatesForCareWithQA("logicalAdress", request);
+        });
   }
 }

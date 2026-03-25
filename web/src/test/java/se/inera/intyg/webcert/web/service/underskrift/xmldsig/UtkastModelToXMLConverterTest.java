@@ -52,7 +52,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
       UnitMapperUtil.class,
       InternalConverterUtil.class
     })
-public class UtkastModelToXMLConverterTest {
+class UtkastModelToXMLConverterTest {
 
   @Mock private IntygModuleRegistry intygModuleRegistry;
 
@@ -65,7 +65,7 @@ public class UtkastModelToXMLConverterTest {
   }
 
   @Test
-  public void testConvertDb() throws ModuleNotFoundException, IOException {
+  void testConvertDb() throws ModuleNotFoundException, IOException {
     loadJsonModel("UtkastModelToXMLConverter/db.json");
 
     DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
@@ -79,7 +79,7 @@ public class UtkastModelToXMLConverterTest {
   }
 
   @Test
-  public void testConvertTsBasConcrete() throws IOException, ModuleNotFoundException {
+  void testConvertTsBasConcrete() throws IOException, ModuleNotFoundException {
     loadJsonModel("UtkastModelToXMLConverter/ts-bas.json");
 
     TsBasModuleApiV6 tsBaModuleApi = new TsBasModuleApiV6();

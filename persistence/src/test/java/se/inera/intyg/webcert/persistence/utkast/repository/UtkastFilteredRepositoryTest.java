@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class UtkastFilteredRepositoryTest {
+class UtkastFilteredRepositoryTest {
 
   @Autowired private UtkastRepository utkastRepository;
 
@@ -51,7 +51,7 @@ public class UtkastFilteredRepositoryTest {
       Stream.of(UtkastTestUtil.INTYGSTYP_FK7263).collect(Collectors.toCollection(HashSet::new));
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     utkastRepository.save(
         UtkastTestUtil.buildUtkast(
             UtkastTestUtil.ENHET_1_ID,
@@ -139,7 +139,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithEmptyFilter() {
+  void testFindWithEmptyFilter() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
 
@@ -149,7 +149,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithHsaId() {
+  void testFindWithHsaId() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
@@ -160,7 +160,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithChangedFrom() {
+  void testFindWithChangedFrom() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedFrom(LocalDate.parse("2014-03-03").atStartOfDay());
@@ -171,7 +171,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithChangedTo() {
+  void testFindWithChangedTo() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_2_ID);
     filter.setSavedTo(LocalDate.parse("2014-03-03").atStartOfDay());
@@ -182,7 +182,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithChangedFromAndChangedTo() {
+  void testFindWithChangedFromAndChangedTo() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedFrom(LocalDate.parse("2014-03-03").atStartOfDay());
@@ -194,7 +194,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithStatuses() {
+  void testFindWithStatuses() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setStatusList(Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
@@ -205,7 +205,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithHsaIdAndStatuses() {
+  void testFindWithHsaIdAndStatuses() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
@@ -217,7 +217,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithHsaIdAndDatesAndStatuses() {
+  void testFindWithHsaIdAndDatesAndStatuses() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
@@ -231,7 +231,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testFindWithPageSizeAndStartFrom() {
+  void testFindWithPageSizeAndStartFrom() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setPageSize(2);
@@ -249,7 +249,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testCountWithEmptyFilter() {
+  void testCountWithEmptyFilter() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
 
@@ -259,7 +259,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testCountWithHsaId() {
+  void testCountWithHsaId() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
@@ -270,7 +270,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testCountWithChangedFrom() {
+  void testCountWithChangedFrom() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedFrom(LocalDate.parse("2014-03-03").atStartOfDay());
@@ -281,7 +281,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testCountWithChangedTo() {
+  void testCountWithChangedTo() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_2_ID);
     filter.setSavedTo(LocalDate.parse("2014-03-03").atStartOfDay());
@@ -292,7 +292,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testCountWithChangedFromAndChangedTo() {
+  void testCountWithChangedFromAndChangedTo() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedFrom(LocalDate.parse("2014-03-03").atStartOfDay());
@@ -304,7 +304,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testCountWithStatuses() {
+  void testCountWithStatuses() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setStatusList(Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
@@ -315,7 +315,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testCountWithHsaIdAndStatuses() {
+  void testCountWithHsaIdAndStatuses() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);
@@ -327,7 +327,7 @@ public class UtkastFilteredRepositoryTest {
   }
 
   @Test
-  public void testCountWithHsaIdAndDatesAndStatuses() {
+  void testCountWithHsaIdAndDatesAndStatuses() {
 
     UtkastFilter filter = new UtkastFilter(UtkastTestUtil.ENHET_1_ID);
     filter.setSavedByHsaId(UtkastTestUtil.HOS_PERSON2_ID);

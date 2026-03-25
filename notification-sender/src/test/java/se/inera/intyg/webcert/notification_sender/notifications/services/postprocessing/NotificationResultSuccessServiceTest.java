@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationResultSuccessServiceTest {
+class NotificationResultSuccessServiceTest {
 
   @Mock private HandelseRepository handelseRepository;
 
@@ -54,7 +54,7 @@ public class NotificationResultSuccessServiceTest {
   private static final Integer ATTEMPTED_DELIVERIES = 4;
 
   @Test
-  public void shallMakeMonitorLogOnProcessingOfNewNotification() {
+  void shallMakeMonitorLogOnProcessingOfNewNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     final var captureEventId = ArgumentCaptor.forClass(Long.class);
@@ -94,7 +94,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallMakeMonitorLogOnProcessingRedeliveredNotification() {
+  void shallMakeMonitorLogOnProcessingRedeliveredNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
     final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
@@ -137,7 +137,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallMonitorLogOneAttemptedDeliveryWhenRedeliveryHasNullSendAttempts() {
+  void shallMonitorLogOneAttemptedDeliveryWhenRedeliveryHasNullSendAttempts() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
     notificationRedelivery.setAttemptedDeliveries(null);
@@ -168,7 +168,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallCreateNewEventOnProcessResult() {
+  void shallCreateNewEventOnProcessResult() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     doReturn(eventAsSaved(notificationResultMessage.getEvent()))
@@ -184,7 +184,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallUpdateEventOnProcessResult() {
+  void shallUpdateEventOnProcessResult() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
     final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());
@@ -209,7 +209,7 @@ public class NotificationResultSuccessServiceTest {
   }
 
   @Test
-  public void shallRemoveNotificationRedeliveryOnProcessResult() {
+  void shallRemoveNotificationRedeliveryOnProcessResult() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery(notificationResultMessage);
     final var eventAsSaved = eventAsSaved(notificationResultMessage.getEvent());

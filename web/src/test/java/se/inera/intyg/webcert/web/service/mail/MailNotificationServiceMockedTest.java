@@ -47,7 +47,7 @@ import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
-public class MailNotificationServiceMockedTest {
+class MailNotificationServiceMockedTest {
 
   @Mock EmployeeNameService employeeNameService;
 
@@ -62,13 +62,13 @@ public class MailNotificationServiceMockedTest {
   @InjectMocks private MailNotificationServiceImpl mailNotificationService;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     ReflectionTestUtils.setField(
         mailNotificationService, "fromAddress", "no-reply@webcert.intygstjanster.se");
   }
 
   @Test
-  public void sendMailForIncomingQuestionWithTimeoutThrowsNoException() throws Exception {
+  void sendMailForIncomingQuestionWithTimeoutThrowsNoException() throws Exception {
     doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
     mockOrganizationUnitServiceGetUnit();
     when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
@@ -76,7 +76,7 @@ public class MailNotificationServiceMockedTest {
   }
 
   @Test
-  public void sendMailForIncomingAnswerWithTimeoutThrowsNoException() throws Exception {
+  void sendMailForIncomingAnswerWithTimeoutThrowsNoException() throws Exception {
     doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
     mockOrganizationUnitServiceGetUnit();
     when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
@@ -90,7 +90,7 @@ public class MailNotificationServiceMockedTest {
   }
 
   @Test
-  public void testNoHSAResponse() throws HsaServiceCallException {
+  void testNoHSAResponse() throws HsaServiceCallException {
     try {
       SOAPFault soapFault = SOAPFactory.newInstance().createFault();
       soapFault.setFaultString("Connection reset");
@@ -103,7 +103,7 @@ public class MailNotificationServiceMockedTest {
   }
 
   @Test
-  public void setAdminMailAddress() throws Exception {}
+  void setAdminMailAddress() throws Exception {}
 
   private MailNotification mailNotification(String enhetsId) {
     return new MailNotification(null, "1L", Fk7263EntryPoint.MODULE_ID, enhetsId, null, null);

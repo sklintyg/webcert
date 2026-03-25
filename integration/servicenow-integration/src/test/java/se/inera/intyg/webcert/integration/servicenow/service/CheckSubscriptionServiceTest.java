@@ -41,7 +41,7 @@ class CheckSubscriptionServiceTest {
           "Webcert integrerad - direktanslutning");
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     checkSubscriptionService = new CheckSubscriptionService();
     ReflectionTestUtils.setField(
         checkSubscriptionService,

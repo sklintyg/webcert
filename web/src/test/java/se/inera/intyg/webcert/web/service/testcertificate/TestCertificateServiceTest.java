@@ -44,7 +44,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
-public class TestCertificateServiceTest {
+class TestCertificateServiceTest {
 
   @Mock private UtkastRepository utkastRepository;
 
@@ -142,7 +142,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseTestCertificateSingleCertificate() {
+  void testEraseTestCertificateSingleCertificate() {
     setupTestCertificatesForSingle();
 
     final var certificateIds = new ArrayList<String>(1);
@@ -159,7 +159,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseTestCertificateSingleCertificateFailed() {
+  void testEraseTestCertificateSingleCertificateFailed() {
     setupTestCertificatesForSingle();
 
     final var certificateIds = new ArrayList<String>(1);
@@ -178,7 +178,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseFullGraphWhenAllMatchFindQuery() {
+  void testEraseFullGraphWhenAllMatchFindQuery() {
     setupTestCertificatesWithRelations();
 
     final var certificateIds = new ArrayList<String>(3);
@@ -197,7 +197,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseFullGraphWhenRootMatchFindQuery() {
+  void testEraseFullGraphWhenRootMatchFindQuery() {
     setupTestCertificatesWithRelations();
 
     final var certificateIds = new ArrayList<String>(1);
@@ -214,7 +214,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseFullGraphWhenBranchMatchFindQuery() {
+  void testEraseFullGraphWhenBranchMatchFindQuery() {
     setupTestCertificatesWithRelations();
 
     final var certificateIds = new ArrayList<String>(1);
@@ -231,7 +231,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseFullGraphWhenLeafMatchFindQuery() {
+  void testEraseFullGraphWhenLeafMatchFindQuery() {
     setupTestCertificatesWithRelations();
 
     final var certificateIds = new ArrayList<String>(1);
@@ -248,7 +248,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseFullGraphAndSingleCertificate() {
+  void testEraseFullGraphAndSingleCertificate() {
     setupTestCertificatesWithRelations();
     setupTestCertificatesForSingle();
 
@@ -267,7 +267,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseFullGraphSucessAndSingleCertificateFailed() {
+  void testEraseFullGraphSucessAndSingleCertificateFailed() {
     setupTestCertificatesWithRelations();
     setupTestCertificatesForSingle();
 
@@ -293,7 +293,7 @@ public class TestCertificateServiceTest {
   }
 
   @Test
-  public void testEraseFullGraphFailedAndSingleCertificateSuccess() {
+  void testEraseFullGraphFailedAndSingleCertificateSuccess() {
     setupTestCertificatesWithRelations();
     setupTestCertificatesForSingle();
 

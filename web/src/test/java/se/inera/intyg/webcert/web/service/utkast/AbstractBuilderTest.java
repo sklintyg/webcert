@@ -36,7 +36,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
-public class AbstractBuilderTest {
+class AbstractBuilderTest {
 
   protected static final String INTYG_ID = "abc123";
 
@@ -82,7 +82,7 @@ public class AbstractBuilderTest {
   protected Patient patient;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     hoSPerson = new HoSPersonal();
     hoSPerson.setPersonId(HOSPERSON_ID);
     hoSPerson.setFullstandigtNamn(HOSPERSON_NAME);
@@ -102,13 +102,13 @@ public class AbstractBuilderTest {
   }
 
   @BeforeEach
-  public void expectCallToWebcertUserService() {
+  void expectCallToWebcertUserService() {
     when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true))
         .thenReturn(true);
   }
 
   @BeforeEach
-  public void expectCallIntygTextService() {
+  void expectCallIntygTextService() {
     when(intygTextsService.getLatestVersionForSameMajorVersion(anyString(), anyString()))
         .thenReturn("1.0");
   }

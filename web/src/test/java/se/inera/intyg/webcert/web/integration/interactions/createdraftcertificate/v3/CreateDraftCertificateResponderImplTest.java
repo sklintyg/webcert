@@ -51,7 +51,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
+class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
   private static final String LOGICAL_ADDR = "1234567890";
   private static final String USER_HSAID = "SE1234567890";
@@ -70,7 +70,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnMIUErrorIfWebcertUserDetailsServiceThrows() {
+  void shallReturnMIUErrorIfWebcertUserDetailsServiceThrows() {
     doThrow(IllegalStateException.class)
         .when(webcertUserDetailsService)
         .buildUserPrincipal(anyString(), anyString());
@@ -80,7 +80,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnValidationErrorIfDraftParametersValidationHasErrors() {
+  void shallReturnValidationErrorIfDraftParametersValidationHasErrors() {
     final var expectedErrorMessage = "expected error message";
     final var resultValidator = mock(ResultValidator.class);
     final var certificateType = createCertificateType();
@@ -98,7 +98,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnMIUErrorIfHealthPersonalDontHaveMIURightsOnCareUnit() {
+  void shallReturnMIUErrorIfHealthPersonalDontHaveMIURightsOnCareUnit() {
     final var certificateType = createCertificateType();
     final var resultValidator = mock(ResultValidator.class);
     final var webCertUser = buildWebCertUser();
@@ -118,7 +118,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnApplicationErrorsIfHasErrorsIsTrue() {
+  void shallReturnApplicationErrorsIfHasErrorsIsTrue() {
     final var expectedErrorMessage = "expected error message";
 
     final var certificateType = createCertificateType();
@@ -143,7 +143,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
   }
 
   @Test
-  public void shallReturnCreateDraftCertificateResponseType() {
+  void shallReturnCreateDraftCertificateResponseType() {
     final var expectedResponse = new CreateDraftCertificateResponseType();
     final var certificateType = createCertificateType();
     final var validationErrors = mock(ResultValidator.class);

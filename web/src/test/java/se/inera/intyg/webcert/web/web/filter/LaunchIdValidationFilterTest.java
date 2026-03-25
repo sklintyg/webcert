@@ -47,7 +47,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
-public class LaunchIdValidationFilterTest {
+class LaunchIdValidationFilterTest {
 
   private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
   private static final String NEW_LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f5";
@@ -63,8 +63,7 @@ public class LaunchIdValidationFilterTest {
   @InjectMocks private LaunchIdValidationFilter filter = new LaunchIdValidationFilter();
 
   @Test
-  public void filterChainShouldContinueWhenRequestLaunchIdIsNull()
-      throws ServletException, IOException {
+  void filterChainShouldContinueWhenRequestLaunchIdIsNull() throws ServletException, IOException {
     when(httpServletRequest.getHeader("launchId")).thenReturn(null);
 
     filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
@@ -74,7 +73,7 @@ public class LaunchIdValidationFilterTest {
   }
 
   @Test
-  public void filterChainShouldContinueWhenUserIsNull() throws ServletException, IOException {
+  void filterChainShouldContinueWhenUserIsNull() throws ServletException, IOException {
     when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
 
     filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
@@ -84,7 +83,7 @@ public class LaunchIdValidationFilterTest {
   }
 
   @Test
-  public void filterChainShouldStopWhenLaunchIdDoesNotMatchAndGiveError()
+  void filterChainShouldStopWhenLaunchIdDoesNotMatchAndGiveError()
       throws ServletException, IOException {
     when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
     when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
@@ -97,7 +96,7 @@ public class LaunchIdValidationFilterTest {
   }
 
   @Test
-  public void filterChainShouldContinueWhenUserDoesNotHaveIntegrationsParametersSet()
+  void filterChainShouldContinueWhenUserDoesNotHaveIntegrationsParametersSet()
       throws ServletException, IOException {
     when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
     when(webCertUserService.getUser()).thenReturn(createNormalUser());
@@ -109,7 +108,7 @@ public class LaunchIdValidationFilterTest {
   }
 
   @Test
-  public void filterShouldReturnMessageContainingErrorCodeInvalidLaunchId()
+  void filterShouldReturnMessageContainingErrorCodeInvalidLaunchId()
       throws IOException, ServletException {
     when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
     when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
@@ -124,7 +123,7 @@ public class LaunchIdValidationFilterTest {
   }
 
   @Test
-  public void filterShouldReturnMessageContainingMessageInvalidLaunchId()
+  void filterShouldReturnMessageContainingMessageInvalidLaunchId()
       throws IOException, ServletException {
     when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
     when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
@@ -135,7 +134,7 @@ public class LaunchIdValidationFilterTest {
     filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
     verify(mapper).writeValue(any(PrintWriter.class), mapArgumentCaptor.capture());
-    assertEquals( mapArgumentCaptor.getValue().get("message"),"Invalid launchId");
+    assertEquals(mapArgumentCaptor.getValue().get("message"), "Invalid launchId");
   }
 
   private WebCertUser createUserWithIntegrationsParameters() {

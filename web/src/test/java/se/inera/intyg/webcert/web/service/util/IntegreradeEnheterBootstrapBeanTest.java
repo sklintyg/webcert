@@ -32,14 +32,14 @@ import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class IntegreradeEnheterBootstrapBeanTest {
+class IntegreradeEnheterBootstrapBeanTest {
 
   @Mock private IntegreradEnhetRepository integreradEnhetRepository;
 
   @InjectMocks private IntegreradeEnheterBootstrapBean bootstrapBean;
 
   @Test
-  public void testInitDataRequiredFields() {
+  void testInitDataRequiredFields() {
     bootstrapBean.initData();
     ArgumentCaptor<IntegreradEnhet> enhetCaptor = ArgumentCaptor.forClass(IntegreradEnhet.class);
     verify(integreradEnhetRepository, atLeastOnce()).save(enhetCaptor.capture());

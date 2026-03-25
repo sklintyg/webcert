@@ -72,7 +72,7 @@ import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class IntygInfoServiceTest {
+class IntygInfoServiceTest {
 
   @Mock private UtkastRepository utkastRepository;
   @Mock private ArendeService arendeService;
@@ -85,12 +85,12 @@ public class IntygInfoServiceTest {
   @InjectMocks private IntygInfoService testee;
 
   @BeforeEach
-  public void setup() throws ModuleNotFoundException {
+  void setup() throws ModuleNotFoundException {
     when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
   }
 
   @Test
-  public void notFound() {
+  void notFound() {
     when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
     when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
     when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString()))
@@ -104,7 +104,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void onlyHandelser() {
+  void onlyHandelser() {
     String intygId = "onlyHandelser";
     when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
     when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
@@ -126,7 +126,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void onlyArende() {
+  void onlyArende() {
     String intygId = "onlyArende";
     when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
     when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString()))
@@ -153,7 +153,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void onlyFragaSvar() {
+  void onlyFragaSvar() {
     String intygId = "onlyFragasvar";
     when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
     when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
@@ -180,7 +180,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void existingUtkastLocked() throws IOException, ModuleException {
+  void existingUtkastLocked() throws IOException, ModuleException {
     // Arrange
     String intygId = "existingIntyg";
     Utkast utkast = createUtkast(intygId, UtkastStatus.DRAFT_LOCKED);
@@ -223,7 +223,7 @@ public class IntygInfoServiceTest {
   }
 
   @Test
-  public void existingUtkastSigned() throws IOException, ModuleException, ModuleNotFoundException {
+  void existingUtkastSigned() throws IOException, ModuleException, ModuleNotFoundException {
     // Arrange
     String intygId = "existingIntyg";
     Utkast utkast = createUtkast(intygId, UtkastStatus.SIGNED);

@@ -27,7 +27,7 @@ import org.w3c.dom.Node;
 /**
  * @author andreaskaltenbach
  */
-public class NamespacePrefixNameIgnoringListener implements DifferenceListener {
+class NamespacePrefixNameIgnoringListener implements DifferenceListener {
 
   @Override
   public int differenceFound(Difference difference) {

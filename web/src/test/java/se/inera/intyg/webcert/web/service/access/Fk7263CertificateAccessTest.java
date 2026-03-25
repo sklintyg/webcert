@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.Fk7263AccessServiceTestData;
 
-public class Fk7263CertificateAccessTest extends CertificateAccessTest {
+class Fk7263CertificateAccessTest extends CertificateAccessTest {
 
   public Fk7263CertificateAccessTest() {
     super(Fk7263EntryPoint.MODULE_ID, new Fk7263AccessServiceTestData());

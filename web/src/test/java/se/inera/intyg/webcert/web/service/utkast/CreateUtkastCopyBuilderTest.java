@@ -64,7 +64,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
+class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
 
   private static final String INTYG_TYPE_1 = "db";
   private static final String INTYG_TYPE_2 = "doi";
@@ -83,7 +83,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
   private CreateUtkastCopyBuilder createUtkastCopyBuilder = new CreateUtkastCopyBuilder();
 
   @BeforeEach
-  public void expectCallToModuleRegistry() throws Exception {
+  void expectCallToModuleRegistry() throws Exception {
     this.mockModuleApiDB = mock(ModuleApi.class);
     this.mockModuleApiDOI = mock(ModuleApi.class);
     when(moduleRegistry.getModuleApi(INTYG_TYPE_1, INTYG_TEXT_VERSION)).thenReturn(mockModuleApiDB);
@@ -92,7 +92,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
+  void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
 
     IntygContentHolder ich = createIntygContentHolder();
     when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE_1)).thenReturn(ich);
@@ -145,7 +145,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
   }
 
   @Test
-  public void testPopulateCopyUtkastFromOriginalUtkast() throws Exception {
+  void testPopulateCopyUtkastFromOriginalUtkast() throws Exception {
 
     Utkast orgUtkast = createOriginalUtkast();
     when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));

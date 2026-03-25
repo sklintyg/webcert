@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 
 @ExtendWith(MockitoExtension.class)
-public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
+class PageControllerTest extends AuthoritiesConfigurationTestSetup {
 
   private static final String INTYG_ID = "intyg-123";
   private static final String INTYG_TYPE_VERSION = "1.0";
@@ -68,13 +68,13 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
   private IntygTypeInfo intygTypeInfo;
 
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() throws Exception {
     CONFIGURATION_LOADER.afterPropertiesSet();
     intygTypeInfo = new IntygTypeInfo(INTYG_ID, INTYG_TYP_FK7263, INTYG_TYPE_VERSION);
   }
 
   @Test
-  public void testRedirectToIntygUserHasAccess() {
+  void testRedirectToIntygUserHasAccess() {
     when(webCertUserService.getUser()).thenReturn(createMockUser(false));
     when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
     when(intygService.getIntygTypeInfo(any(String.class))).thenReturn(intygTypeInfo);
@@ -85,7 +85,7 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testFeaturesUpdatedWhenUserHasAccess() {
+  void testFeaturesUpdatedWhenUserHasAccess() {
     final var webCertUser = createMockUser(false);
     when(webCertUserService.getUser()).thenReturn(webCertUser);
     when(intygService.getIntygTypeInfo(any(String.class))).thenReturn(intygTypeInfo);
@@ -103,14 +103,14 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testRedirectToIntygNoUnitFoundForIntyg() {
+  void testRedirectToIntygNoUnitFoundForIntyg() {
     when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn(null);
     ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
     assertEquals(404, result.getStatusCode().value());
   }
 
   @Test
-  public void testRedirectToIntygMaillinkReturnsNull() {
+  void testRedirectToIntygMaillinkReturnsNull() {
     when(webCertUserService.getUser()).thenReturn(createMockUser(false));
     when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("ve-1");
     when(mailLinkService.intygRedirect(INTYG_TYP_FK7263, INTYG_TYPE_VERSION, INTYG_ID))

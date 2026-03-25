@@ -61,7 +61,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class SrsServiceImplTest {
+class SrsServiceImplTest {
 
   private static Diagnos buildDiagnosis(String code, String description) {
     Diagnos diagnosis = new Diagnos();
@@ -102,7 +102,7 @@ public class SrsServiceImplTest {
   @InjectMocks private SrsServiceImpl srsServiceUnderTest;
 
   @BeforeEach
-  public void init() throws Exception {
+  void init() throws Exception {
     SrsResponse srsResponse =
         new SrsResponse(
             asList(SrsRecommendation.create("please observe", "text")),
@@ -202,55 +202,61 @@ public class SrsServiceImplTest {
   }
 
   @Test
-  public void getSrsMissingPersonalIdentityNumberShouldThrowException() {
-    assertThrows(IllegalArgumentException.class, () -> {
-    srsServiceUnderTest.getSrs(
-        user,
-        "intyg-id-123",
-        "",
-        "F438A",
-        true,
-        true,
-        true,
-        new ArrayList<SrsQuestionResponse>(),
-        null);
-      });
+  void getSrsMissingPersonalIdentityNumberShouldThrowException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          srsServiceUnderTest.getSrs(
+              user,
+              "intyg-id-123",
+              "",
+              "F438A",
+              true,
+              true,
+              true,
+              new ArrayList<SrsQuestionResponse>(),
+              null);
+        });
   }
 
   @Test
-  public void getSrsIllFormedPersonalIdentityNumberShouldThrowException() {
-    assertThrows(InvalidPersonNummerException.class, () -> {
-    srsServiceUnderTest.getSrs(
-        user,
-        "intyg-id-123",
-        "incorrectform1912-12-12-1212",
-        "F438A",
-        true,
-        true,
-        true,
-        new ArrayList<SrsQuestionResponse>(),
-        15);
-      });
+  void getSrsIllFormedPersonalIdentityNumberShouldThrowException() {
+    assertThrows(
+        InvalidPersonNummerException.class,
+        () -> {
+          srsServiceUnderTest.getSrs(
+              user,
+              "intyg-id-123",
+              "incorrectform1912-12-12-1212",
+              "F438A",
+              true,
+              true,
+              true,
+              new ArrayList<SrsQuestionResponse>(),
+              15);
+        });
   }
 
   @Test
-  public void getSrsMissingDiagnosisCodeShouldThrowException() {
-    assertThrows(IllegalArgumentException.class, () -> {
-    srsServiceUnderTest.getSrs(
-        user,
-        "intyg-id-123",
-        "191212121212",
-        "",
-        true,
-        true,
-        true,
-        new ArrayList<SrsQuestionResponse>(),
-        15);
-      });
+  void getSrsMissingDiagnosisCodeShouldThrowException() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          srsServiceUnderTest.getSrs(
+              user,
+              "intyg-id-123",
+              "191212121212",
+              "",
+              true,
+              true,
+              true,
+              new ArrayList<SrsQuestionResponse>(),
+              15);
+        });
   }
 
   @Test
-  public void getSrsShouldLogShowPredictionIfPredictionIsIncluded() throws Exception {
+  void getSrsShouldLogShowPredictionIfPredictionIsIncluded() throws Exception {
     srsServiceUnderTest.getSrs(
         user,
         "intyg-id-123",
@@ -265,7 +271,7 @@ public class SrsServiceImplTest {
   }
 
   @Test
-  public void getSrsShouldNotLogShowPredictionIfPredictionIsNotIncluded() throws Exception {
+  void getSrsShouldNotLogShowPredictionIfPredictionIsNotIncluded() throws Exception {
     srsServiceUnderTest.getSrs(
         user,
         "intyg-id-123",
@@ -280,7 +286,7 @@ public class SrsServiceImplTest {
   }
 
   @Test
-  public void getSrsShouldAddDiagnosisDescriptions() throws Exception {
+  void getSrsShouldAddDiagnosisDescriptions() throws Exception {
     SrsResponse resp =
         srsServiceUnderTest.getSrs(
             user,
@@ -296,14 +302,14 @@ public class SrsServiceImplTest {
     assertEquals(
         resp.getPredictions().get(0).getDiagnosisDescription(),
         "Andra specificerade reaktioner på svår stress");
-    assertEquals( resp.getAtgarderDiagnosisDescription(),"Utmattningssyndrom");
+    assertEquals(resp.getAtgarderDiagnosisDescription(), "Utmattningssyndrom");
     assertEquals(
         resp.getStatistikDiagnosisDescription(),
         "Anpassningsstörningar och reaktion på svår stress");
   }
 
   @Test
-  public void getSrsShouldAddCertificateExtensionChainWithMaxThreeEntries() throws Exception {
+  void getSrsShouldAddCertificateExtensionChainWithMaxThreeEntries() throws Exception {
     SrsResponse resp =
         srsServiceUnderTest.getSrs(
             user,
@@ -318,13 +324,13 @@ public class SrsServiceImplTest {
     assertNotNull(resp);
     assertNotNull(resp.getExtensionChain());
     assertEquals(3, resp.getExtensionChain().size());
-    assertEquals( resp.getExtensionChain().get(0).getCertificateId(),"intyg-id-123");
-    assertEquals( resp.getExtensionChain().get(1).getCertificateId(),"parent-intyg-id-1");
-    assertEquals( resp.getExtensionChain().get(2).getCertificateId(),"parent-intyg-id-2");
+    assertEquals(resp.getExtensionChain().get(0).getCertificateId(), "intyg-id-123");
+    assertEquals(resp.getExtensionChain().get(1).getCertificateId(), "parent-intyg-id-1");
+    assertEquals(resp.getExtensionChain().get(2).getCertificateId(), "parent-intyg-id-2");
   }
 
   @Test
-  public void getSrsShouldAddCertificateExtensionChainEvenIfNoExtension() throws Exception {
+  void getSrsShouldAddCertificateExtensionChainEvenIfNoExtension() throws Exception {
     SrsResponse resp =
         srsServiceUnderTest.getSrs(
             user,
@@ -339,6 +345,6 @@ public class SrsServiceImplTest {
     assertNotNull(resp);
     assertNotNull(resp.getExtensionChain());
     assertEquals(1, resp.getExtensionChain().size());
-    assertEquals( resp.getExtensionChain().get(0).getCertificateId(),"parent-intyg-id-3");
+    assertEquals(resp.getExtensionChain().get(0).getCertificateId(), "parent-intyg-id-3");
   }
 }

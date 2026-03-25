@@ -45,7 +45,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
  * @author npet
  */
 @ExtendWith(MockitoExtension.class)
-public class MonitoringLogServiceTest {
+class MonitoringLogServiceTest {
 
   @Mock private Appender<ILoggingEvent> mockAppender;
 
@@ -54,19 +54,19 @@ public class MonitoringLogServiceTest {
   private final MonitoringLogService monitoringLogService = new MonitoringLogServiceImpl();
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     logger.addAppender(mockAppender);
   }
 
   @AfterEach
-  public void teardown() {
+  void teardown() {
     final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     logger.detachAppender(mockAppender);
   }
 
   @Test
-  public void testThatMonitoringLogProducesLogMessage() {
+  void testThatMonitoringLogProducesLogMessage() {
     monitoringLogService.logUserLogin(
         "ABC123", "user-role", "role-type-name", "test-scheme", UserOriginType.NORMAL.name());
 

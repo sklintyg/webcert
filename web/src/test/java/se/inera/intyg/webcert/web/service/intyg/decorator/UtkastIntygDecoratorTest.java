@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 /** Created by eriklupander on 2015-06-23. */
 @ExtendWith(MockitoExtension.class)
-public class UtkastIntygDecoratorTest {
+class UtkastIntygDecoratorTest {
 
   private static final String INTYG_JSON = "A bit of text representing json";
   private static final String INTYG_TYPE = "fk7263";
@@ -57,7 +57,7 @@ public class UtkastIntygDecoratorTest {
   @InjectMocks private UtkastIntygDecoratorImpl testee;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     HoSPersonal person = buildHosPerson();
     VardpersonReferens vardperson = buildVardpersonReferens(person);
 
@@ -65,7 +65,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testNotAWebcertIntygDoesNotAddAnyStatuses() {
+  void testNotAWebcertIntygDoesNotAddAnyStatuses() {
 
     CertificateResponse response = buildCertificateResponse();
 
@@ -74,7 +74,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testRevokedStatusOnIntygDoesNotAddAnyStatuses() {
+  void testRevokedStatusOnIntygDoesNotAddAnyStatuses() {
 
     CertificateResponse response = buildCertificateResponse();
     response
@@ -87,7 +87,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testRevokedIntygDoesNotAddAnyStatuses() {
+  void testRevokedIntygDoesNotAddAnyStatuses() {
 
     CertificateResponse response = buildCertificateResponse();
     CertificateResponse revokedResponse =
@@ -99,7 +99,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testSentIntygDoesNotAddAnySentStatus() {
+  void testSentIntygDoesNotAddAnySentStatus() {
 
     CertificateResponse response = buildCertificateResponse();
     response
@@ -112,7 +112,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
+  void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
     signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
     signedUtkast.setAterkalladDatum(LocalDateTime.now());
     when(utkastRepository.findById(nullable(String.class)))
@@ -129,7 +129,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testSentStatusIsAddedFromUtkast() {
+  void testSentStatusIsAddedFromUtkast() {
     signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
     when(utkastRepository.findById(nullable(String.class)))
         .thenReturn(Optional.ofNullable(signedUtkast));
@@ -144,7 +144,7 @@ public class UtkastIntygDecoratorTest {
   }
 
   @Test
-  public void testRevokedStatusIsAddedFromUtkast() {
+  void testRevokedStatusIsAddedFromUtkast() {
     signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
     signedUtkast.setAterkalladDatum(LocalDateTime.now());
     when(utkastRepository.findById(nullable(String.class)))

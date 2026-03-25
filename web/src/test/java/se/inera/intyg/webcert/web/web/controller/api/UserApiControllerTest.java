@@ -54,7 +54,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class UserApiControllerTest {
+class UserApiControllerTest {
 
   private static final String ID = "id";
   @InjectMocks UserApiController userApiController;
@@ -70,13 +70,13 @@ public class UserApiControllerTest {
   @Captor private ArgumentCaptor<Map<String, Feature>> captor;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     MockitoAnnotations.initMocks(this);
     when(webCertUserService.getUser()).thenReturn(webCertUser);
   }
 
   @Test
-  public void testUserFeaturesEnableDisabled() {
+  void testUserFeaturesEnableDisabled() {
     // Given
     final WebUserFeaturesRequest webUserFeaturesRequest = new WebUserFeaturesRequest();
     webUserFeaturesRequest.setJsLoggning(true);
@@ -93,7 +93,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testUserFeaturesDisableEnabled() {
+  void testUserFeaturesDisableEnabled() {
     // Given
     final WebUserFeaturesRequest webUserFeaturesRequest = new WebUserFeaturesRequest();
     webUserFeaturesRequest.setJsLoggning(false);
@@ -113,7 +113,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testUserFeaturesEnableEnabled() {
+  void testUserFeaturesEnableEnabled() {
     // Given
     final WebUserFeaturesRequest webUserFeaturesRequest = new WebUserFeaturesRequest();
     webUserFeaturesRequest.setJsLoggning(true);
@@ -133,7 +133,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testUserFeaturesDisableDisabled() {
+  void testUserFeaturesDisableDisabled() {
     // Given
     final WebUserFeaturesRequest webUserFeaturesRequest = new WebUserFeaturesRequest();
     webUserFeaturesRequest.setJsLoggning(false);
@@ -150,7 +150,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testLogout() {
+  void testLogout() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
 
@@ -162,7 +162,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void testLogoutCancel() {
+  void testLogoutCancel() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
 
@@ -174,7 +174,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void shallSetUseSigningServiceToTrueIfUnitIsNotWhiteListed() {
+  void shallSetUseSigningServiceToTrueIfUnitIsNotWhiteListed() {
     final var request = new ChangeSelectedUnitRequest();
     request.setId(ID);
     final var selectedUnit = new Mottagning();
@@ -195,7 +195,7 @@ public class UserApiControllerTest {
   }
 
   @Test
-  public void shallSetUseSigningServiceToFalseIfUnitIsWhiteListed() {
+  void shallSetUseSigningServiceToFalseIfUnitIsWhiteListed() {
     final var request = new ChangeSelectedUnitRequest();
     request.setId(ID);
     final var selectedUnit = new Mottagning();

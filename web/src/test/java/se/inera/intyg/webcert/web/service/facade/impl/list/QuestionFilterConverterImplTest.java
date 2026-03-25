@@ -45,7 +45,7 @@ class QuestionFilterConverterImplTest {
   @InjectMocks private QuestionFilterConverterImpl questionFilterConverter;
 
   @Test
-  public void shouldConvertSentFrom() {
+  void shouldConvertSentFrom() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterDateRangeValue();
     final var now = LocalDateTime.now();
@@ -59,7 +59,7 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertSentToAndAddOneDay() {
+  void shouldConvertSentToAndAddOneDay() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterDateRangeValue();
     final var now = LocalDateTime.now();
@@ -73,7 +73,7 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldSetHsaId() {
+  void shouldSetHsaId() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue();
     filterValue.setValue(HSA_ID);
@@ -85,29 +85,29 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertPatientIdWithDash() {
+  void shouldConvertPatientIdWithDash() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterPersonIdValue("19121212-1212");
     filter.addValue(filterValue, "PATIENT_ID");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getPatientPersonId(),"191212121212");
+    assertEquals(convertedFilter.getPatientPersonId(), "191212121212");
   }
 
   @Test
-  public void shouldConvertPatientIdWithoutDash() {
+  void shouldConvertPatientIdWithoutDash() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterPersonIdValue("191212121212");
     filter.addValue(filterValue, "PATIENT_ID");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getPatientPersonId(),"191212121212");
+    assertEquals(convertedFilter.getPatientPersonId(), "191212121212");
   }
 
   @Test
-  public void shouldConvertEmptyPatientIdToNull() {
+  void shouldConvertEmptyPatientIdToNull() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterPersonIdValue("");
     filter.addValue(filterValue, "PATIENT_ID");
@@ -118,73 +118,73 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertOrderReceivedDate() {
+  void shouldConvertOrderReceivedDate() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("SENT_RECEIVED");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getOrderBy(),"receivedDate");
+    assertEquals(convertedFilter.getOrderBy(), "receivedDate");
   }
 
   @Test
-  public void shouldConvertOrderPatientId() {
+  void shouldConvertOrderPatientId() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("PATIENT_ID");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getOrderBy(),"patientId");
+    assertEquals(convertedFilter.getOrderBy(), "patientId");
   }
 
   @Test
-  public void shouldConvertOrderSignedBy() {
+  void shouldConvertOrderSignedBy() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("SIGNED_BY");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getOrderBy(),"signeratAvNamn");
+    assertEquals(convertedFilter.getOrderBy(), "signeratAvNamn");
   }
 
   @Test
-  public void shouldConvertOrderQuestionAction() {
+  void shouldConvertOrderQuestionAction() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("QUESTION_ACTION");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getOrderBy(),"amne");
+    assertEquals(convertedFilter.getOrderBy(), "amne");
   }
 
   @Test
-  public void shouldConvertOrderForwarded() {
+  void shouldConvertOrderForwarded() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("FORWARDED");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getOrderBy(),"vidarebefordrad");
+    assertEquals(convertedFilter.getOrderBy(), "vidarebefordrad");
   }
 
   @Test
-  public void shouldConvertOrderSender() {
+  void shouldConvertOrderSender() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("SENDER");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getOrderBy(),"fragestallare");
+    assertEquals(convertedFilter.getOrderBy(), "fragestallare");
   }
 
   @Test
-  public void shouldConvertAscending() {
+  void shouldConvertAscending() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterBooleanValue(true);
     filter.addValue(filterValue, "ASCENDING");
@@ -195,7 +195,7 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertDescending() {
+  void shouldConvertDescending() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterBooleanValue(false);
     filter.addValue(filterValue, "ASCENDING");
@@ -206,18 +206,18 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertUnit() {
+  void shouldConvertUnit() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("UNIT_ID");
     filter.addValue(filterValue, "UNIT");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getEnhetId(),"UNIT_ID");
+    assertEquals(convertedFilter.getEnhetId(), "UNIT_ID");
   }
 
   @Test
-  public void shouldConvertPageSize() {
+  void shouldConvertPageSize() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterNumberValue(10);
     filter.addValue(filterValue, "PAGESIZE");
@@ -228,7 +228,7 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertStartFrom() {
+  void shouldConvertStartFrom() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterNumberValue(10);
     filter.addValue(filterValue, "START_FROM");
@@ -239,84 +239,84 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertStatusHandled() {
+  void shouldConvertStatusHandled() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("HANDLED");
     filter.addValue(filterValue, "STATUS");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getVantarPa(),"HANTERAD");
+    assertEquals(convertedFilter.getVantarPa(), "HANTERAD");
   }
 
   @Test
-  public void shouldConvertStatusNotHandled() {
+  void shouldConvertStatusNotHandled() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("NOT_HANDLED");
     filter.addValue(filterValue, "STATUS");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getVantarPa(),"ALLA_OHANTERADE");
+    assertEquals(convertedFilter.getVantarPa(), "ALLA_OHANTERADE");
   }
 
   @Test
-  public void shouldConvertStatusComplement() {
+  void shouldConvertStatusComplement() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("COMPLEMENT");
     filter.addValue(filterValue, "STATUS");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getVantarPa(),"KOMPLETTERING_FRAN_VARDEN");
+    assertEquals(convertedFilter.getVantarPa(), "KOMPLETTERING_FRAN_VARDEN");
   }
 
   @Test
-  public void shouldConvertStatusAnswer() {
+  void shouldConvertStatusAnswer() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("ANSWER");
     filter.addValue(filterValue, "STATUS");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getVantarPa(),"SVAR_FRAN_VARDEN");
+    assertEquals(convertedFilter.getVantarPa(), "SVAR_FRAN_VARDEN");
   }
 
   @Test
-  public void shouldConvertStatusReadAnswer() {
+  void shouldConvertStatusReadAnswer() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("READ_ANSWER");
     filter.addValue(filterValue, "STATUS");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getVantarPa(),"MARKERA_SOM_HANTERAD");
+    assertEquals(convertedFilter.getVantarPa(), "MARKERA_SOM_HANTERAD");
   }
 
   @Test
-  public void shouldConvertStatusWait() {
+  void shouldConvertStatusWait() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("WAIT");
     filter.addValue(filterValue, "STATUS");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getVantarPa(),"SVAR_FRAN_FK");
+    assertEquals(convertedFilter.getVantarPa(), "SVAR_FRAN_FK");
   }
 
   @Test
-  public void shouldConvertStatusAll() {
+  void shouldConvertStatusAll() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("SHOW_ALL");
     filter.addValue(filterValue, "STATUS");
 
     final var convertedFilter = questionFilterConverter.convert(filter);
 
-    assertEquals( convertedFilter.getVantarPa(),"ALLA");
+    assertEquals(convertedFilter.getVantarPa(), "ALLA");
   }
 
   @Test
-  public void shouldConvertSenderFK() {
+  void shouldConvertSenderFK() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("FK");
     filter.addValue(filterValue, "SENDER");
@@ -327,7 +327,7 @@ class QuestionFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertSenderWC() {
+  void shouldConvertSenderWC() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterSelectValue("WC");
     filter.addValue(filterValue, "SENDER");

@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class ValidateSickLeavePeriodFacadeServiceImplTest {
+class ValidateSickLeavePeriodFacadeServiceImplTest {
 
   @Mock private FmbDiagnosInformationService fmbDiagnosInformationService;
 

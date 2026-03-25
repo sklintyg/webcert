@@ -38,17 +38,17 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class ArendeDraftRepositoryTest {
+class ArendeDraftRepositoryTest {
 
   @Autowired private ArendeDraftRepository repo;
 
   @AfterEach
-  public void cleanup() {
+  void cleanup() {
     repo.deleteAll();
   }
 
   @Test
-  public void testFindByIntygId() {
+  void testFindByIntygId() {
     repo.save(buildArendeDraft("0"));
     repo.save(buildArendeDraft("1"));
     repo.save(buildArendeDraft("11"));
@@ -66,7 +66,7 @@ public class ArendeDraftRepositoryTest {
   }
 
   @Test
-  public void testFindByIntygIdAndQuestionId() {
+  void testFindByIntygIdAndQuestionId() {
     ArendeDraft res = repo.findByIntygIdAndQuestionId("-1", "-1");
     assertNull(res);
 
@@ -75,15 +75,15 @@ public class ArendeDraftRepositoryTest {
     res = repo.findByIntygIdAndQuestionId("i11", "q1");
 
     assertNotNull(res);
-    assertEquals( res.getIntygId(),"i11");
-    assertEquals( res.getQuestionId(),"q1");
+    assertEquals(res.getIntygId(), "i11");
+    assertEquals(res.getQuestionId(), "q1");
 
     repo.save(buildArendeDraft("i1"));
 
     res = repo.findByIntygIdAndQuestionId("i1", null);
 
     assertNotNull(res);
-    assertEquals( res.getIntygId(),"i1");
+    assertEquals(res.getIntygId(), "i1");
     assertNull(res.getQuestionId());
   }
 

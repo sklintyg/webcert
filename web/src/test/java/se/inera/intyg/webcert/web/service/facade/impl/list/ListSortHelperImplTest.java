@@ -37,13 +37,13 @@ class ListSortHelperImplTest {
   @InjectMocks private ListSortHelperImpl listSortHelper;
 
   @Test
-  public void shouldHandleEmptyList() {
+  void shouldHandleEmptyList() {
     final var result = listSortHelper.sort(new ArrayList<CertificateListItem>(), "SAVED", true);
     assertEquals(0, result.size());
   }
 
   @Test
-  public void shouldHandleListWithOneItem() {
+  void shouldHandleListWithOneItem() {
     final var list =
         new ArrayList<CertificateListItem>(
             List.of(ListTestHelper.createCertificateListItemWithSavedBy("EXAMPLE")));
@@ -52,7 +52,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortOnSavedAsByDefault() {
+  void shouldSortOnSavedAsByDefault() {
     final var item1 = ListTestHelper.createCertificateListItemWithPersonId("191212121212");
     item1.addValue(ListColumnType.SAVED, LocalDateTime.now());
     final var item2 = ListTestHelper.createCertificateListItemWithPersonId("201212121212");
@@ -66,7 +66,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortPersonIdAscending() {
+  void shouldSortPersonIdAscending() {
     final var item1 = ListTestHelper.createCertificateListItemWithPersonId("191212121212");
     final var item2 = ListTestHelper.createCertificateListItemWithPersonId("201212121212");
     final var result =
@@ -78,7 +78,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortPersonIdDescending() {
+  void shouldSortPersonIdDescending() {
     final var item1 = ListTestHelper.createCertificateListItemWithPersonId("191212121212");
     final var item2 = ListTestHelper.createCertificateListItemWithPersonId("201212121212");
     final var result =
@@ -90,7 +90,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortSavedByAscending() {
+  void shouldSortSavedByAscending() {
     final var item1 = ListTestHelper.createCertificateListItemWithSavedBy("AAAA");
     final var item2 = ListTestHelper.createCertificateListItemWithSavedBy("BBBB");
     final var result =
@@ -102,7 +102,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortSavedByDescending() {
+  void shouldSortSavedByDescending() {
     final var item1 = ListTestHelper.createCertificateListItemWithSavedBy("AAAA");
     final var item2 = ListTestHelper.createCertificateListItemWithSavedBy("BBBB");
     final var result =
@@ -114,7 +114,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortSavedAscending() {
+  void shouldSortSavedAscending() {
     final var item1 = ListTestHelper.createCertificateListItemWithSaved(LocalDateTime.now());
     final var item2 =
         ListTestHelper.createCertificateListItemWithSaved(LocalDateTime.now().plusDays(5));
@@ -127,7 +127,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortSavedDescending() {
+  void shouldSortSavedDescending() {
     final var item1 = ListTestHelper.createCertificateListItemWithSaved(LocalDateTime.now());
     final var item2 =
         ListTestHelper.createCertificateListItemWithSaved(LocalDateTime.now().plusDays(5));
@@ -140,7 +140,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortForwardedAscending() {
+  void shouldSortForwardedAscending() {
     final var item1 = ListTestHelper.createCertificateListItemWithForwarded(true);
     final var item2 = ListTestHelper.createCertificateListItemWithForwarded(false);
     final var item3 = ListTestHelper.createCertificateListItemWithForwarded(true);
@@ -154,7 +154,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortForwardedDescending() {
+  void shouldSortForwardedDescending() {
     final var item1 = ListTestHelper.createCertificateListItemWithForwarded(true);
     final var item2 = ListTestHelper.createCertificateListItemWithForwarded(false);
     final var item3 = ListTestHelper.createCertificateListItemWithForwarded(true);
@@ -168,7 +168,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortTypeNameAscending() {
+  void shouldSortTypeNameAscending() {
     final var item1 = ListTestHelper.createCertificateListItemWithCertificateTypeName("LISJP");
     final var item2 = ListTestHelper.createCertificateListItemWithCertificateTypeName("AG7804");
     final var result =
@@ -182,7 +182,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortTypeNameDescending() {
+  void shouldSortTypeNameDescending() {
     final var item1 = ListTestHelper.createCertificateListItemWithCertificateTypeName("LISJP");
     final var item2 = ListTestHelper.createCertificateListItemWithCertificateTypeName("AG7804");
     final var result =
@@ -196,7 +196,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortStatusAscending() {
+  void shouldSortStatusAscending() {
     final var item1 = ListTestHelper.createCertificateListItemWithStatus("STATUS1");
     final var item2 = ListTestHelper.createCertificateListItemWithStatus("STATUS0");
     final var result =
@@ -208,7 +208,7 @@ class ListSortHelperImplTest {
   }
 
   @Test
-  public void shouldSortStatusDescending() {
+  void shouldSortStatusDescending() {
     final var item1 = ListTestHelper.createCertificateListItemWithStatus("STATUS1");
     final var item2 = ListTestHelper.createCertificateListItemWithStatus("STATUS0");
     final var result =

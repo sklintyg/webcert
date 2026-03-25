@@ -57,7 +57,7 @@ class DiagnosRepositoryTest {
   private DiagnosRepository repo;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     List<String> fileList = List.of(FILE);
     DiagnosRepositoryImpl repoImpl =
         (DiagnosRepositoryImpl)
@@ -74,20 +74,20 @@ class DiagnosRepositoryTest {
     assertNull(repoImpl.sanitizeCodeValue("  "), "spaces should return null");
     assertNull(repoImpl.sanitizeCodeValue("."), ". should return null");
     assertNull(repoImpl.sanitizeCodeValue(". "), ". and spaces should return null");
-    assertEquals( repoImpl.sanitizeCodeValue("A"),"A");
-    assertEquals( repoImpl.sanitizeCodeValue("a"),"A");
-    assertEquals( repoImpl.sanitizeCodeValue(" A "),"A");
-    assertEquals( repoImpl.sanitizeCodeValue("A1"),"A1");
-    assertEquals( repoImpl.sanitizeCodeValue(" A1 "),"A1");
-    assertEquals( repoImpl.sanitizeCodeValue(" A 1 "),"A1");
-    assertEquals( repoImpl.sanitizeCodeValue("A.1"),"A1");
-    assertEquals( repoImpl.sanitizeCodeValue("A1.1"),"A11");
-    assertEquals( repoImpl.sanitizeCodeValue(" A1 1"),"A11");
-    assertEquals( repoImpl.sanitizeCodeValue("A11.1"),"A111");
-    assertEquals( repoImpl.sanitizeCodeValue(" A11.1 "),"A111");
-    assertEquals( repoImpl.sanitizeCodeValue("a11.1"),"A111");
-    assertEquals( repoImpl.sanitizeCodeValue("A11.1"),"A111");
-    assertEquals( repoImpl.sanitizeCodeValue("A 11.1"),"A111");
+    assertEquals(repoImpl.sanitizeCodeValue("A"), "A");
+    assertEquals(repoImpl.sanitizeCodeValue("a"), "A");
+    assertEquals(repoImpl.sanitizeCodeValue(" A "), "A");
+    assertEquals(repoImpl.sanitizeCodeValue("A1"), "A1");
+    assertEquals(repoImpl.sanitizeCodeValue(" A1 "), "A1");
+    assertEquals(repoImpl.sanitizeCodeValue(" A 1 "), "A1");
+    assertEquals(repoImpl.sanitizeCodeValue("A.1"), "A1");
+    assertEquals(repoImpl.sanitizeCodeValue("A1.1"), "A11");
+    assertEquals(repoImpl.sanitizeCodeValue(" A1 1"), "A11");
+    assertEquals(repoImpl.sanitizeCodeValue("A11.1"), "A111");
+    assertEquals(repoImpl.sanitizeCodeValue(" A11.1 "), "A111");
+    assertEquals(repoImpl.sanitizeCodeValue("a11.1"), "A111");
+    assertEquals(repoImpl.sanitizeCodeValue("A11.1"), "A111");
+    assertEquals(repoImpl.sanitizeCodeValue("A 11.1"), "A111");
   }
 
   @Test
@@ -104,7 +104,7 @@ class DiagnosRepositoryTest {
     String code = "A184";
     List<Diagnos> res = repo.getDiagnosesByCode(code);
     assertEquals(1, res.size());
-    assertEquals( res.getFirst().getKod(),"A184");
+    assertEquals(res.getFirst().getKod(), "A184");
     assertThat(res.getFirst().getBeskrivning(), containsString("Tuberkulos"));
   }
 
@@ -113,7 +113,7 @@ class DiagnosRepositoryTest {
     String code = "A18.4";
     List<Diagnos> res = repo.getDiagnosesByCode(code);
     assertEquals(1, res.size());
-    assertEquals( res.getFirst().getKod(),"A184");
+    assertEquals(res.getFirst().getKod(), "A184");
     assertThat(res.getFirst().getBeskrivning(), containsString("Tuberkulos"));
   }
 
@@ -122,7 +122,7 @@ class DiagnosRepositoryTest {
     String code = "A184E";
     List<Diagnos> res = repo.getDiagnosesByCode(code);
     assertEquals(1, res.size());
-    assertEquals( res.getFirst().getKod(),"A184E");
+    assertEquals(res.getFirst().getKod(), "A184E");
     assertThat(res.getFirst().getBeskrivning(), containsString("Tuberkulöst"));
   }
 
@@ -131,7 +131,7 @@ class DiagnosRepositoryTest {
     String code = "A18.4E";
     List<Diagnos> res = repo.getDiagnosesByCode(code);
     assertEquals(1, res.size());
-    assertEquals( res.getFirst().getKod(),"A184E");
+    assertEquals(res.getFirst().getKod(), "A184E");
     assertThat(res.getFirst().getBeskrivning(), containsString("Tuberkulöst"));
   }
 
@@ -141,7 +141,7 @@ class DiagnosRepositoryTest {
     List<Diagnos> res = repo.getDiagnosesByCode(code);
     assertEquals(1, res.size());
     assertNotNull(res);
-    assertEquals( res.getFirst().getKod(),"C76");
+    assertEquals(res.getFirst().getKod(), "C76");
   }
 
   @Test

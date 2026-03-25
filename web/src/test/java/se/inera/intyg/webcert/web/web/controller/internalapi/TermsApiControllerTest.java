@@ -30,14 +30,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 
 @ExtendWith(MockitoExtension.class)
-public class TermsApiControllerTest {
+class TermsApiControllerTest {
 
   @Mock private AvtalService avtalService;
 
   @InjectMocks private TermsApiController termsApiController;
 
   @Test
-  public void shouldReturnFetchedValue() {
+  void shouldReturnFetchedValue() {
     when(avtalService.userHasApprovedLatestAvtal(any(String.class))).thenReturn(true);
 
     final var response = termsApiController.getWebcertTermsApproved("HSA_ID");

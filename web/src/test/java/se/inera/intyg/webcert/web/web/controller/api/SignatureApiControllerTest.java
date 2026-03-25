@@ -54,7 +54,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class SignatureApiControllerTest {
+class SignatureApiControllerTest {
 
   @Mock private MonitoringLogService mockMonitoringService;
   @Mock private FakeSignatureService fakeSignatureService;
@@ -79,12 +79,12 @@ public class SignatureApiControllerTest {
   private static final long VERSION = 3L;
 
   @Test
-  public void signServiceResponse() {
+  void signServiceResponse() {
     // TODO
   }
 
   @Test
-  public void signServiceClientMetadata() {
+  void signServiceClientMetadata() {
     when(dssMetadataService.getClientMetadataAsString())
         .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Test>Inera AB</Test>");
 
@@ -93,14 +93,14 @@ public class SignatureApiControllerTest {
     assertNotNull(response);
     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     assertNotNull(response.getEntity());
-    assertEquals( response.getMediaType().toString(),"application/samlmetadata+xml");
+    assertEquals(response.getMediaType().toString(), "application/samlmetadata+xml");
     assertEquals(
         response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION),
         "attachment; filename=\"wc_dss_client_metadata.xml\"");
   }
 
   @Test
-  public void shouldFetchRedirectUrl() {
+  void shouldFetchRedirectUrl() {
     final var signatureTicket = getSignatureTicket(SignaturStatus.SIGNERAD);
 
     when(dssSignMessageService.validateDssMessageSignature(any(String.class)))
@@ -120,7 +120,7 @@ public class SignatureApiControllerTest {
   }
 
   @Test
-  public void shouldFetchRedirectUrlWithErrorStatus() {
+  void shouldFetchRedirectUrlWithErrorStatus() {
     final var signatureTicket = getSignatureTicket(SignaturStatus.ERROR);
 
     when(dssSignMessageService.validateDssMessageSignature(any(String.class)))

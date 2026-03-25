@@ -32,22 +32,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-public class RoleConverterTest {
+class RoleConverterTest {
 
   private RoleConverter converter = new RoleConverter();
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     cleanup();
   }
 
   @AfterEach
-  public void cleanup() {
+  void cleanup() {
     SecurityContextHolder.getContext().setAuthentication(null);
   }
 
   @Test
-  public void testConvert() {
+  void testConvert() {
     String role = "user role";
     WebCertUser user = new WebCertUser();
     user.setRoles(ImmutableMap.of(role, new Role()));
@@ -61,21 +61,21 @@ public class RoleConverterTest {
   }
 
   @Test
-  public void testConvertNoAuth() {
+  void testConvertNoAuth() {
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals( res,"NO ROLE");
+    assertEquals(res, "NO ROLE");
   }
 
   @Test
-  public void testConvertAuthNotWebCertUser() {
+  void testConvertAuthNotWebCertUser() {
     Authentication authentication = mock(Authentication.class);
     when(authentication.getPrincipal()).thenReturn("user");
     SecurityContextHolder.getContext().setAuthentication(authentication);
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals( res,"NO ROLE");
+    assertEquals(res, "NO ROLE");
   }
 }

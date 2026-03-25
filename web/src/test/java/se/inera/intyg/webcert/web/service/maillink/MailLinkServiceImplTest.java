@@ -27,7 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-public class MailLinkServiceImplTest {
+class MailLinkServiceImplTest {
 
   private static final Object URL_BASE_TEMPLATE = "url/base/template";
   private static final Object URL_UTKAST_FRAGMENT_TEMPLATE =
@@ -37,34 +37,34 @@ public class MailLinkServiceImplTest {
   private MailLinkServiceImpl service = new MailLinkServiceImpl();
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     ReflectionTestUtils.setField(service, "urlBaseTemplate", URL_BASE_TEMPLATE);
     ReflectionTestUtils.setField(
         service, "urlUtkastFragmentTemplate", URL_UTKAST_FRAGMENT_TEMPLATE);
   }
 
   @Test
-  public void testIntygRedirectIntygIdMissing() {
+  void testIntygRedirectIntygIdMissing() {
     URI res = service.intygRedirect("typ", INTYG_TYPE_VERSION, null);
 
     assertNull(res);
   }
 
   @Test
-  public void testIntygRedirectTypMissing() {
+  void testIntygRedirectTypMissing() {
     URI res = service.intygRedirect(null, INTYG_TYPE_VERSION, "intygId");
 
     assertNull(res);
   }
 
   @Test
-  public void testIntygRedirect() {
+  void testIntygRedirect() {
     final String typ = "typ";
     final String intygId = "intyg-id";
     URI res = service.intygRedirect(typ, INTYG_TYPE_VERSION, intygId);
 
     assertNotNull(res);
     assertEquals(URL_BASE_TEMPLATE, res.getPath());
-    assertEquals( res.getFragment(),"/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id");
+    assertEquals(res.getFragment(), "/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id");
   }
 }

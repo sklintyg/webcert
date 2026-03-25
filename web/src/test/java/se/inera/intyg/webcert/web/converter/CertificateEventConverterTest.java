@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateEventConverterTest {
+class CertificateEventConverterTest {
 
   @Mock IntygService intygService;
 
@@ -52,7 +52,7 @@ public class CertificateEventConverterTest {
   private final String PARENT_CERTIFICATE_ID = "parentId";
 
   @Test
-  public void testConvertToCertificateEventDTO() {
+  void testConvertToCertificateEventDTO() {
     CertificateEvent event = new CertificateEvent();
     event.setCertificateId(CERTIFICATE_ID);
     event.setEventCode(EventCode.SKAPAT);
@@ -65,7 +65,7 @@ public class CertificateEventConverterTest {
   }
 
   @Test
-  public void testConvertToCertificateEventDTOWithExtendedMessage() {
+  void testConvertToCertificateEventDTOWithExtendedMessage() {
     IntygContentHolder intygContentHolder = getIntygContentHolder();
     when(intygService.fetchIntygDataForInternalUse(anyString(), anyBoolean()))
         .thenReturn(intygContentHolder);

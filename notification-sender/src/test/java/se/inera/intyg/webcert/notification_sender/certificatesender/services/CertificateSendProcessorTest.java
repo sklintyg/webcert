@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.xml.ws.WebServiceException;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateSendProcessorTest {
+class CertificateSendProcessorTest {
 
   private static final String INTYGS_ID1 = "intygs-id-1";
   private static final String PERSON_ID1 = "19121212-1212";
@@ -53,7 +53,7 @@ public class CertificateSendProcessorTest {
   private CertificateSendProcessor certificateSendProcessor = new CertificateSendProcessor();
 
   @Test
-  public void testSendCertificate() throws Exception {
+  void testSendCertificate() throws Exception {
     // Given
     SendCertificateToRecipientResponseType response = createResponse(ResultCodeType.OK, null);
     when(sendServiceClient.sendCertificate(
@@ -70,105 +70,115 @@ public class CertificateSendProcessorTest {
   }
 
   @Test
-  public void testSendCertificateThrowsTemporaryOnApplicationError() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    SendCertificateToRecipientResponseType response =
-        createResponse(ResultCodeType.ERROR, ErrorIdType.APPLICATION_ERROR);
-    when(sendServiceClient.sendCertificate(
-            INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
-        .thenReturn(response);
+  void testSendCertificateThrowsTemporaryOnApplicationError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          SendCertificateToRecipientResponseType response =
+              createResponse(ResultCodeType.ERROR, ErrorIdType.APPLICATION_ERROR);
+          when(sendServiceClient.sendCertificate(
+                  INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
+              .thenReturn(response);
 
-    // When
-    certificateSendProcessor.process(
-        SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
+          // When
+          certificateSendProcessor.process(
+              SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
-    // Then
-    verify(sendServiceClient)
-        .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
-      });
+          // Then
+          verify(sendServiceClient)
+              .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testSendCertificateThrowsTemporaryOnTechnicalError() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    SendCertificateToRecipientResponseType response =
-        createResponse(ResultCodeType.ERROR, ErrorIdType.TECHNICAL_ERROR);
-    when(sendServiceClient.sendCertificate(
-            INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
-        .thenReturn(response);
+  void testSendCertificateThrowsTemporaryOnTechnicalError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          SendCertificateToRecipientResponseType response =
+              createResponse(ResultCodeType.ERROR, ErrorIdType.TECHNICAL_ERROR);
+          when(sendServiceClient.sendCertificate(
+                  INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
+              .thenReturn(response);
 
-    // When
-    certificateSendProcessor.process(
-        SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
+          // When
+          certificateSendProcessor.process(
+              SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
-    // Then
-    verify(sendServiceClient)
-        .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
-      });
+          // Then
+          verify(sendServiceClient)
+              .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testSendCertificateThrowsTemporaryOnRevokedError() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    SendCertificateToRecipientResponseType response =
-        createResponse(ResultCodeType.ERROR, ErrorIdType.REVOKED);
-    when(sendServiceClient.sendCertificate(
-            INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
-        .thenReturn(response);
+  void testSendCertificateThrowsTemporaryOnRevokedError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          SendCertificateToRecipientResponseType response =
+              createResponse(ResultCodeType.ERROR, ErrorIdType.REVOKED);
+          when(sendServiceClient.sendCertificate(
+                  INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
+              .thenReturn(response);
 
-    // When
-    certificateSendProcessor.process(
-        SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
+          // When
+          certificateSendProcessor.process(
+              SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
-    // Then
-    verify(sendServiceClient)
-        .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
-      });
+          // Then
+          verify(sendServiceClient)
+              .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testSendCertificateThrowsTemporaryOnValidationError() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    SendCertificateToRecipientResponseType response =
-        createResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR);
-    when(sendServiceClient.sendCertificate(
-            INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
-        .thenReturn(response);
+  void testSendCertificateThrowsTemporaryOnValidationError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          SendCertificateToRecipientResponseType response =
+              createResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR);
+          when(sendServiceClient.sendCertificate(
+                  INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
+              .thenReturn(response);
 
-    // When
-    certificateSendProcessor.process(
-        SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
+          // When
+          certificateSendProcessor.process(
+              SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
-    // Then
-    verify(sendServiceClient)
-        .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
-      });
+          // Then
+          verify(sendServiceClient)
+              .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testSendCertificateThrowsTemporaryOnWebServiceException() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    when(sendServiceClient.sendCertificate(
-            INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
-        .thenThrow(new WebServiceException());
+  void testSendCertificateThrowsTemporaryOnWebServiceException() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          when(sendServiceClient.sendCertificate(
+                  INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
+              .thenThrow(new WebServiceException());
 
-    // When
-    certificateSendProcessor.process(
-        SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
+          // When
+          certificateSendProcessor.process(
+              SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
-    // Then
-    verify(sendServiceClient)
-        .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
-      });
+          // Then
+          verify(sendServiceClient)
+              .sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testSendCertificateOnInfoMessage() throws Exception {
+  void testSendCertificateOnInfoMessage() throws Exception {
     // Given
     SendCertificateToRecipientResponseType response = createResponse(ResultCodeType.INFO, null);
     when(sendServiceClient.sendCertificate(

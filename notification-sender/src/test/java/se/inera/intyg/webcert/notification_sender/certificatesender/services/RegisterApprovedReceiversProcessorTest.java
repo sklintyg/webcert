@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
 @ExtendWith(MockitoExtension.class)
-public class RegisterApprovedReceiversProcessorTest {
+class RegisterApprovedReceiversProcessorTest {
 
   private static final String INTYG_ID = "intyg-1";
   private static final String INTYG_TYP = "lijsp";
@@ -64,7 +64,7 @@ public class RegisterApprovedReceiversProcessorTest {
   @InjectMocks private RegisterApprovedReceiversProcessor testee;
 
   @Test
-  public void testRegisterOk() throws TemporaryException, JsonProcessingException {
+  void testRegisterOk() throws TemporaryException, JsonProcessingException {
     when(registerApprovedReceiversClient.registerApprovedReceivers(
             anyString(), any(RegisterApprovedReceiversType.class)))
         .thenReturn(buildResponse(ResultCodeType.OK));
@@ -75,77 +75,89 @@ public class RegisterApprovedReceiversProcessorTest {
   }
 
   @Test
-  public void testRegisterThrowsTemporaryExceptionOnWebServiceException() {
-    assertThrows(TemporaryException.class, () -> {
-    when(registerApprovedReceiversClient.registerApprovedReceivers(
-            anyString(), any(RegisterApprovedReceiversType.class)))
-        .thenThrow(new WebServiceException(""));
-    try {
-      testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
-    } finally {
-      verify(registerApprovedReceiversClient, times(1))
-          .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
-    }
-      });
+  void testRegisterThrowsTemporaryExceptionOnWebServiceException() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          when(registerApprovedReceiversClient.registerApprovedReceivers(
+                  anyString(), any(RegisterApprovedReceiversType.class)))
+              .thenThrow(new WebServiceException(""));
+          try {
+            testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
+          } finally {
+            verify(registerApprovedReceiversClient, times(1))
+                .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
+          }
+        });
   }
 
   @Test
-  public void testRegisterThrowsTemporaryExceptionOnError() {
-    assertThrows(TemporaryException.class, () -> {
-    when(registerApprovedReceiversClient.registerApprovedReceivers(
-            anyString(), any(RegisterApprovedReceiversType.class)))
-        .thenReturn(buildResponse(ResultCodeType.ERROR));
-    try {
-      testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
-    } finally {
-      verify(registerApprovedReceiversClient, times(1))
-          .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
-    }
-      });
+  void testRegisterThrowsTemporaryExceptionOnError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          when(registerApprovedReceiversClient.registerApprovedReceivers(
+                  anyString(), any(RegisterApprovedReceiversType.class)))
+              .thenReturn(buildResponse(ResultCodeType.ERROR));
+          try {
+            testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
+          } finally {
+            verify(registerApprovedReceiversClient, times(1))
+                .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
+          }
+        });
   }
 
   @Test
-  public void testUnparsableBodyThrowsTemporaryException() {
-    assertThrows(TemporaryException.class, () -> {
-    try {
-      testee.process("this-is-not-json", INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
-    } finally {
-      verifyNoInteractions(registerApprovedReceiversClient);
-    }
-      });
+  void testUnparsableBodyThrowsTemporaryException() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          try {
+            testee.process("this-is-not-json", INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
+          } finally {
+            verifyNoInteractions(registerApprovedReceiversClient);
+          }
+        });
   }
 
   @Test
-  public void testRegisterThrowsTemporaryExceptionOnMissingIntygsId() {
-    assertThrows(TemporaryException.class, () -> {
-    try {
-      testee.process(buildRequestBody("FKASSA", "FBA"), null, INTYG_TYP, LOGICAL_ADDRESS);
-    } finally {
-      verifyNoInteractions(registerApprovedReceiversClient);
-    }
-      });
+  void testRegisterThrowsTemporaryExceptionOnMissingIntygsId() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          try {
+            testee.process(buildRequestBody("FKASSA", "FBA"), null, INTYG_TYP, LOGICAL_ADDRESS);
+          } finally {
+            verifyNoInteractions(registerApprovedReceiversClient);
+          }
+        });
   }
 
   @Test
-  public void testRegisterThrowsTemporaryExceptionOnMissingIntygsTyp() {
-    assertThrows(TemporaryException.class, () -> {
-    try {
-      testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, null, LOGICAL_ADDRESS);
-    } finally {
-      verifyNoInteractions(registerApprovedReceiversClient);
-    }
-      });
+  void testRegisterThrowsTemporaryExceptionOnMissingIntygsTyp() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          try {
+            testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, null, LOGICAL_ADDRESS);
+          } finally {
+            verifyNoInteractions(registerApprovedReceiversClient);
+          }
+        });
   }
 
   @Test
-  public void testRegisterThrowsTemporaryExceptionOnBlankIntygsTyp() {
-    assertThrows(TemporaryException.class, () -> {
-    try {
-      testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, "", LOGICAL_ADDRESS);
-    } finally {
-      verifyNoInteractions(registerApprovedReceiversClient);
-    }
-      });
+  void testRegisterThrowsTemporaryExceptionOnBlankIntygsTyp() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          try {
+            testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, "", LOGICAL_ADDRESS);
+          } finally {
+            verifyNoInteractions(registerApprovedReceiversClient);
+          }
+        });
   }
 
   private RegisterApprovedReceiversResponseType buildResponse(ResultCodeType resultCodeType) {

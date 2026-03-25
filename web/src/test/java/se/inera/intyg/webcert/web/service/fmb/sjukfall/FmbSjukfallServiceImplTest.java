@@ -76,7 +76,7 @@ import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Patient;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
 
 @ExtendWith(MockitoExtension.class)
-public class FmbSjukfallServiceImplTest {
+class FmbSjukfallServiceImplTest {
 
   private static final LocalDate START_DATUM = LocalDate.of(2019, 12, 12);
   private static final LocalDate SLUT_DATUM = LocalDate.of(2019, 12, 20);
@@ -113,7 +113,7 @@ public class FmbSjukfallServiceImplTest {
   private List<Period> PERIODS = Collections.emptyList();
 
   @Test
-  public void totalSjukskrivningstidForPatientAndCareUnit() {
+  void totalSjukskrivningstidForPatientAndCareUnit() {
 
     final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
     final ListActiveSickLeavesForCareUnitResponseType response = createResponse();
@@ -144,7 +144,7 @@ public class FmbSjukfallServiceImplTest {
   }
 
   @Test
-  public void totalSjukskrivningstidForPatientAndCareUnitWithoutPreviousSickLeaves() {
+  void totalSjukskrivningstidForPatientAndCareUnitWithoutPreviousSickLeaves() {
 
     final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
     final ListActiveSickLeavesForCareUnitResponseType response = createEmptyResponse();
@@ -180,7 +180,7 @@ public class FmbSjukfallServiceImplTest {
   }
 
   @Test
-  public void totalSjukskrivningstidForPatientAndCareUnitChainOfSjukfall() {
+  void totalSjukskrivningstidForPatientAndCareUnitChainOfSjukfall() {
 
     final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
     final ListActiveSickLeavesForCareUnitResponseType response = createResponse();
@@ -221,7 +221,7 @@ public class FmbSjukfallServiceImplTest {
   }
 
   @Test
-  public void totalSjukskrivningstidForPatientAndCareUnitMottagning() {
+  void totalSjukskrivningstidForPatientAndCareUnitMottagning() {
 
     final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
     user.setValdVardenhet(

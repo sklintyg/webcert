@@ -25,7 +25,7 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.LisjpAccessServiceTestData;
 
-public class FkCertificateAccessTest extends CertificateAccessTest {
+class FkCertificateAccessTest extends CertificateAccessTest {
 
   public FkCertificateAccessTest() {
     super(LisjpEntryPoint.MODULE_ID, new LisjpAccessServiceTestData());

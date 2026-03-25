@@ -67,7 +67,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateStatusUpdateForCareCreatorTest {
+class CertificateStatusUpdateForCareCreatorTest {
 
   @Mock private IntygModuleRegistry moduleRegistry;
 
@@ -100,7 +100,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
   private static final String SUBJECT_CODE = "KOMPLT";
 
   @Test
-  public void shouldDoProperMethodCallsWhenCreatingStatusUpdateFromNotificationMessage()
+  void shouldDoProperMethodCallsWhenCreatingStatusUpdateFromNotificationMessage()
       throws ModuleNotFoundException, TemporaryException, ModuleException, IOException {
     final var notificationMessage = createNotificationMessage();
     final var utlatande = createUtlatande();
@@ -122,7 +122,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
   }
 
   @Test
-  public void shouldSetPropertiesInStatusUpdateCorrectlyWhenCreatingFromEvent()
+  void shouldSetPropertiesInStatusUpdateCorrectlyWhenCreatingFromEvent()
       throws ModuleNotFoundException, TemporaryException {
     final var event = createEvent();
     final var careProvider = createCareProvider();
@@ -188,7 +188,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
   }
 
   @Test
-  public void shouldEnrichCertificateWithPatientWhenCreatingStatusUpdateFromEvent()
+  void shouldEnrichCertificateWithPatientWhenCreatingStatusUpdateFromEvent()
       throws ModuleNotFoundException, TemporaryException {
     final var event = createEvent();
     final var careProvider = createCareProvider();
@@ -209,7 +209,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
   }
 
   @Test
-  public void shouldReturnXmlStringAfterCallToMarshalWithStatusUpdate() throws JAXBException {
+  void shouldReturnXmlStringAfterCallToMarshalWithStatusUpdate() throws JAXBException {
     final var statusUpdate = new CertificateStatusUpdateForCareType();
 
     final var stringXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);

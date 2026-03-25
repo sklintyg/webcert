@@ -70,7 +70,7 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
+class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
 
   private static final int OK = 200;
 
@@ -90,7 +90,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   private Vardenhet ve1, ve2, ve3, ve4;
 
   @BeforeEach
-  public void setupDataAndExpectations() {
+  void setupDataAndExpectations() {
 
     fragaSvarStatsMap = new HashMap<>();
 
@@ -144,7 +144,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testGetStatisticsWithSelectedUnitVE2() {
+  void testGetStatisticsWithSelectedUnitVE2() {
 
     mockUser.setValdVardenhet(ve2);
 
@@ -170,7 +170,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testGetStatisticsWithSelectedUnitVE3() {
+  void testGetStatisticsWithSelectedUnitVE3() {
 
     mockUser.setValdVardenhet(ve3);
 
@@ -196,7 +196,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testGetStatisticsWithSelectedUnitVE4() {
+  void testGetStatisticsWithSelectedUnitVE4() {
 
     mockUser.setValdVardenhet(ve4);
 
@@ -227,7 +227,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testGetStatisticsWithSelectedUnitVE1() {
+  void testGetStatisticsWithSelectedUnitVE1() {
 
     mockUser.setValdVardenhet(ve1);
 
@@ -264,7 +264,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testWebcertUserIsNull() {
+  void testWebcertUserIsNull() {
     when(webCertUserService.getUser()).thenReturn(null);
 
     Response response = statController.getStatistics();
@@ -275,7 +275,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testWebcertUserIsDjupintegrerad() {
+  void testWebcertUserIsDjupintegrerad() {
     mockUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
     Response response = statController.getStatistics();
@@ -300,7 +300,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
   }
 
   @Test
-  public void testMergeMaps() {
+  void testMergeMaps() {
     Map<String, Long> m1 = new HashMap<>();
     m1.put("enhet-1", 2l);
     m1.put("enhet-2", 3l);

@@ -131,7 +131,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
+class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   private static final long UTKAST_VERSION = 1;
   private static final long INTYG_VERSION = 2;
@@ -200,7 +200,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @BeforeEach
-  public void setup() throws ModuleNotFoundException {
+  void setup() throws ModuleNotFoundException {
     hoSPerson = new HoSPersonal();
     hoSPerson.setPersonId("AAA");
     hoSPerson.setFullstandigtNamn("Dr Dengroth");
@@ -294,8 +294,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testDraftStatusIncomplete()
-      throws IOException, ModuleNotFoundException, ModuleException {
+  void testDraftStatusIncomplete() throws IOException, ModuleNotFoundException, ModuleException {
     CreateNewDraftRequest request = buildCreateNewDraftRequest();
     request.setReferens(REFERENS);
     setupReferensMocks();
@@ -307,7 +306,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testDraftStatusPrefilledIncomplete()
+  void testDraftStatusPrefilledIncomplete()
       throws ModuleNotFoundException, IOException, ModuleException {
     CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.INVALID);
     Utkast res = utkastService.createNewDraft(request);
@@ -318,7 +317,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testDraftStatusPrefilledComplete()
+  void testDraftStatusPrefilledComplete()
       throws ModuleNotFoundException, IOException, ModuleException {
     CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.VALID);
     Utkast res = utkastService.createNewDraft(request);
@@ -352,7 +351,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testReferensGetsPersistedWhenSupplied()
+  void testReferensGetsPersistedWhenSupplied()
       throws ModuleNotFoundException, IOException, ModuleException {
     CreateNewDraftRequest request = buildCreateNewDraftRequest();
     request.setReferens(REFERENS);
@@ -365,7 +364,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testEmptyReferensNotPersisted()
+  void testEmptyReferensNotPersisted()
       throws ModuleNotFoundException, IOException, ModuleException {
     CreateNewDraftRequest request = buildCreateNewDraftRequest();
     request.setReferens("");
@@ -378,8 +377,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testNullReferensNotPersisted()
-      throws ModuleNotFoundException, IOException, ModuleException {
+  void testNullReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
     CreateNewDraftRequest request = buildCreateNewDraftRequest();
     request.setReferens(null);
 
@@ -391,7 +389,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testDeleteDraftThatIsUnsigned() {
+  void testDeleteDraftThatIsUnsigned() {
     final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
     when(certificateAnalyticsMessageFactory.draftDeleted(any(Utkast.class)))
         .thenReturn(analyticsMessage);
@@ -413,7 +411,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testDeleteDraftWrongVersion() {
+  void testDeleteDraftWrongVersion() {
     when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
     final var version = utkast.getVersion() - 1;
 
@@ -437,47 +435,55 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testDeleteDraftThatIsSigned() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
-    utkastService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion());
-      });
+  void testDeleteDraftThatIsSigned() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
+          utkastService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion());
+        });
   }
 
   @Test
-  public void testDeleteDraftThatDoesNotExist() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-    utkastService.deleteUnsignedDraft(INTYG_ID, 0);
-      });
+  void testDeleteDraftThatDoesNotExist() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
+          utkastService.deleteUnsignedDraft(INTYG_ID, 0);
+        });
   }
 
   @Test
-  public void testDeleteDraftThatIsSignedWrongVersion() {
-    assertThrows(OptimisticLockException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
-    utkastService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion() - 1);
-      });
+  void testDeleteDraftThatIsSignedWrongVersion() {
+    assertThrows(
+        OptimisticLockException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
+          utkastService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion() - 1);
+        });
   }
 
   @Test
-  public void testDeleteDraftThatIsLocked() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
-    utkastService.deleteUnsignedDraft(INTYG_ID, lockedUtkast.getVersion());
+  void testDeleteDraftThatIsLocked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
+          utkastService.deleteUnsignedDraft(INTYG_ID, lockedUtkast.getVersion());
 
-    // Assert notification message
-    verifyNoInteractions(notificationService);
+          // Assert notification message
+          verifyNoInteractions(notificationService);
 
-    // Assert pdl log
-    verifyNoInteractions(logService);
+          // Assert pdl log
+          verifyNoInteractions(logService);
 
-    verifyNoInteractions(monitoringService);
-      });
+          verifyNoInteractions(monitoringService);
+        });
   }
 
   @Test
-  public void testSaveDraftDraftFirstSave() throws Exception {
+  void testSaveDraftDraftFirstSave() throws Exception {
     ValidationMessage valMsg =
         new ValidationMessage(
             "a.category", "a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
@@ -516,12 +522,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
 
-    assertNotNull( res,"An DraftValidation should be returned");
-    assertEquals( UtkastStatus.DRAFT_INCOMPLETE, res.getStatus(),"Validation should fail");
+    assertNotNull(res, "An DraftValidation should be returned");
+    assertEquals(UtkastStatus.DRAFT_INCOMPLETE, res.getStatus(), "Validation should fail");
   }
 
   @Test
-  public void testSaveDraftSecondSave() throws Exception {
+  void testSaveDraftSecondSave() throws Exception {
     ValidationMessage valMsg =
         new ValidationMessage(
             "a.category", "a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
@@ -554,57 +560,62 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     verifyNoInteractions(logService);
     verifyNoInteractions(monitoringService);
 
-    assertNotNull( res,"An DraftValidation should be returned");
-    assertEquals( UtkastStatus.DRAFT_INCOMPLETE, res.getStatus(),"Validation should fail");
+    assertNotNull(res, "An DraftValidation should be returned");
+    assertEquals(UtkastStatus.DRAFT_INCOMPLETE, res.getStatus(), "Validation should fail");
   }
 
   @Test
-  public void testSaveDraftThatIsSigned() {
-    assertThrows(WebCertServiceException.class, () -> {
+  void testSaveDraftThatIsSigned() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
+          utkastService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
 
-    utkastService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
-
-    verify(utkastRepository).findById(INTYG_ID);
-      });
+          verify(utkastRepository).findById(INTYG_ID);
+        });
   }
 
   @Test
-  public void testSaveDraftThatIsLocked() {
-    assertThrows(WebCertServiceException.class, () -> {
+  void testSaveDraftThatIsLocked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
 
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
+          utkastService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
 
-    utkastService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
-
-    verify(utkastRepository).findById(INTYG_ID);
-      });
+          verify(utkastRepository).findById(INTYG_ID);
+        });
   }
 
   @Test
-  public void testSaveDraftWithExceptionInModule() {
-    assertThrows(WebCertServiceException.class, () -> {
-    WebCertUser user = createUser();
-    Utlatande utlatande = mock(Utlatande.class);
-    GrundData grunddata = new GrundData();
-    grunddata.setSkapadAv(new HoSPersonal());
-    grunddata.setPatient(defaultPatient);
-    when(utlatande.getGrundData()).thenReturn(grunddata);
+  void testSaveDraftWithExceptionInModule() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          WebCertUser user = createUser();
+          Utlatande utlatande = mock(Utlatande.class);
+          GrundData grunddata = new GrundData();
+          grunddata.setSkapadAv(new HoSPersonal());
+          grunddata.setPatient(defaultPatient);
+          when(utlatande.getGrundData()).thenReturn(grunddata);
 
-    when(userService.getUser()).thenReturn(user);
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
-    when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-    when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any())).thenReturn("{}");
-    when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
-    when(moduleApi.validateDraft(anyString(), any())).thenThrow(ModuleException.class);
+          when(userService.getUser()).thenReturn(user);
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
+          when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+          when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any()))
+              .thenReturn("{}");
+          when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
+          when(moduleApi.validateDraft(anyString(), any())).thenThrow(ModuleException.class);
 
-    utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
-      });
+          utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
+        });
   }
 
   @Test
-  public void testValidateDraft() throws Exception {
+  void testValidateDraft() throws Exception {
     ValidationMessage valMsg =
         new ValidationMessage(
             "a", "field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
@@ -624,7 +635,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testNotifyDraft() {
+  void testNotifyDraft() {
     when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
     when(utkastRepository.save(utkast)).thenReturn(utkast);
 
@@ -634,39 +645,47 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testNotifyDraftThatDoesNotExist() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-    utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
-      });
+  void testNotifyDraftThatDoesNotExist() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
+          utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
+        });
   }
 
   @Test
-  public void testNotifyDraftWrongVersion() {
-    assertThrows(OptimisticLockException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
-    utkastService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
-      });
+  void testNotifyDraftWrongVersion() {
+    assertThrows(
+        OptimisticLockException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
+          utkastService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
+        });
   }
 
   @Test
-  public void testNotifyDraftThatIsSigned() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
-    utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
-      });
+  void testNotifyDraftThatIsSigned() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
+          utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
+        });
   }
 
   @Test
-  public void testNotifyDraftThatIsLocked() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
-    utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
-      });
+  void testNotifyDraftThatIsLocked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
+          utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
+        });
   }
 
   @Test
-  public void testSaveUpdatesChangedPatientName() throws Exception {
+  void testSaveUpdatesChangedPatientName() throws Exception {
     ValidateDraftResponse validationResponse =
         new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList());
 
@@ -701,7 +720,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testUpdatePatientOnDraft() throws Exception {
+  void testUpdatePatientOnDraft() throws Exception {
     utkast.setEnhetsId(UTKAST_ENHETS_ID);
 
     Patient newPatient = getUpdatedPatient();
@@ -741,7 +760,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testUpdatePatientOnDraftEmptyPatientId() throws Exception {
+  void testUpdatePatientOnDraftEmptyPatientId() throws Exception {
     utkast.setEnhetsId(UTKAST_ENHETS_ID);
 
     UpdatePatientOnDraftRequest request =
@@ -776,7 +795,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testUpdatePatientOnDraftSamePatientId() throws Exception {
+  void testUpdatePatientOnDraftSamePatientId() throws Exception {
     utkast.setEnhetsId(UTKAST_ENHETS_ID);
 
     UpdatePatientOnDraftRequest request =
@@ -812,64 +831,71 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testUpdatePatientOnDraftNoMedarbetaruppdragThrowsException() {
-    assertThrows(WebCertServiceException.class, () -> {
-    utkast.setEnhetsId("<unknownenhet>");
-    Patient newPatient = getUpdatedPatient();
+  void testUpdatePatientOnDraftNoMedarbetaruppdragThrowsException() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          utkast.setEnhetsId("<unknownenhet>");
+          Patient newPatient = getUpdatedPatient();
 
-    UpdatePatientOnDraftRequest request =
-        new UpdatePatientOnDraftRequest(
-            newPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
+          UpdatePatientOnDraftRequest request =
+              new UpdatePatientOnDraftRequest(
+                  newPatient.getPersonId(), utkast.getIntygsId(), utkast.getVersion());
 
-    WebCertUser user = createUser();
-    Utlatande utlatande = mock(Utlatande.class);
-    GrundData grunddata = new GrundData();
+          WebCertUser user = createUser();
+          Utlatande utlatande = mock(Utlatande.class);
+          GrundData grunddata = new GrundData();
 
-    grunddata.setPatient(defaultPatient);
-    grunddata.setSkapadAv(new HoSPersonal());
+          grunddata.setPatient(defaultPatient);
+          grunddata.setSkapadAv(new HoSPersonal());
 
-    // Make a spy out of the utkast so we can verify invocations on the setters with proper names
-    // further down.
-    utkast = spy(utkast);
+          // Make a spy out of the utkast so we can verify invocations on the setters with proper
+          // names
+          // further down.
+          utkast = spy(utkast);
 
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
-    when(userService.getUser()).thenReturn(user);
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
+          when(userService.getUser()).thenReturn(user);
 
-    utkastService.updatePatientOnDraft(request);
+          utkastService.updatePatientOnDraft(request);
 
-    verifyNoMoreInteractions(utkastRepository, notificationService);
-      });
+          verifyNoMoreInteractions(utkastRepository, notificationService);
+        });
   }
 
   @Test
-  public void testUpdatePatientOnDraftThatIsLocked() {
-    assertThrows(WebCertServiceException.class, () -> {
-    UpdatePatientOnDraftRequest request =
-        new UpdatePatientOnDraftRequest(
-            defaultPatient.getPersonId(), lockedUtkast.getIntygsId(), lockedUtkast.getVersion());
+  void testUpdatePatientOnDraftThatIsLocked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          UpdatePatientOnDraftRequest request =
+              new UpdatePatientOnDraftRequest(
+                  defaultPatient.getPersonId(),
+                  lockedUtkast.getIntygsId(),
+                  lockedUtkast.getVersion());
 
-    WebCertUser user = createUser();
+          WebCertUser user = createUser();
 
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
-    when(userService.getUser()).thenReturn(user);
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
+          when(userService.getUser()).thenReturn(user);
 
-    utkastService.updatePatientOnDraft(request);
+          utkastService.updatePatientOnDraft(request);
 
-    verify(utkastRepository, never()).save(any(Utkast.class));
-    verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
+          verify(utkastRepository, never()).save(any(Utkast.class));
+          verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
 
-    // Assert notification message
-    verifyNoInteractions(notificationService);
+          // Assert notification message
+          verifyNoInteractions(notificationService);
 
-    // Assert pdl log
-    verifyNoInteractions(logService);
+          // Assert pdl log
+          verifyNoInteractions(logService);
 
-    verifyNoInteractions(monitoringService);
-      });
+          verifyNoInteractions(monitoringService);
+        });
   }
 
   @Test
-  public void testSaveDoesNotUpdateOnEmptyFornamn() throws Exception {
+  void testSaveDoesNotUpdateOnEmptyFornamn() throws Exception {
     final String utkastFornamn = "fornamn";
     final String utkastEfternamn = "efternamn";
     ValidateDraftResponse validationResponse =
@@ -906,7 +932,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testValidateValidDraftWithWarningsIncludesWarningsInResponse()
+  void testValidateValidDraftWithWarningsIncludesWarningsInResponse()
       throws ModuleException, ModuleNotFoundException {
     when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
     when(moduleApi.validateDraft(anyString(), any())).thenReturn(buildValidationResponse());
@@ -917,7 +943,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testSetKlarForSigneraStatusMessageSent() {
+  void testSetKlarForSigneraStatusMessageSent() {
     WebCertUser user = createUser();
     when(userService.getUser()).thenReturn(user);
     when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(utkast);
@@ -938,59 +964,69 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForLakare() {
-    assertThrows(WebCertServiceException.class, () -> {
-    utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
-      });
+  void testSetKlarForSigneraStatusMessageSentThrowsExceptionForLakare() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
+        });
   }
 
   @Test
-  public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForInvalidIntygsTyp() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
-        .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
-    utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
-      });
+  void testSetKlarForSigneraStatusMessageSentThrowsExceptionForInvalidIntygsTyp() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
+              .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+          utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
+        });
   }
 
   @Test
-  public void testSetKlarForSigneraStatusMessageSentThatIsSigned() {
-    assertThrows(WebCertServiceException.class, () -> {
-    WebCertUser user = createUser();
-    when(userService.getUser()).thenReturn(user);
-    when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
-        .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
-    when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(signedUtkast);
+  void testSetKlarForSigneraStatusMessageSentThatIsSigned() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          WebCertUser user = createUser();
+          when(userService.getUser()).thenReturn(user);
+          when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+              .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+          when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs"))
+              .thenReturn(signedUtkast);
 
-    utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
+          utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
-    // Assert notification message
-    verifyNoInteractions(notificationService);
+          // Assert notification message
+          verifyNoInteractions(notificationService);
 
-    verifyNoInteractions(monitoringService);
-      });
+          verifyNoInteractions(monitoringService);
+        });
   }
 
   @Test
-  public void testSetKlarForSigneraStatusMessageSentThatIsLocked() {
-    assertThrows(WebCertServiceException.class, () -> {
-    WebCertUser user = createUser();
-    when(userService.getUser()).thenReturn(user);
-    when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
-        .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
-    when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(lockedUtkast);
+  void testSetKlarForSigneraStatusMessageSentThatIsLocked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          WebCertUser user = createUser();
+          when(userService.getUser()).thenReturn(user);
+          when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+              .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+          when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs"))
+              .thenReturn(lockedUtkast);
 
-    utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
+          utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
-    // Assert notification message
-    verifyNoInteractions(notificationService);
+          // Assert notification message
+          verifyNoInteractions(notificationService);
 
-    verifyNoInteractions(monitoringService);
-      });
+          verifyNoInteractions(monitoringService);
+        });
   }
 
   @Test
-  public void testCheckIfPersonHasExistingUtkast() {
+  void testCheckIfPersonHasExistingUtkast() {
     final String personId = PERSON_ID;
     final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
     final String vardgivareId = "vardgivarid";
@@ -1016,7 +1052,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     assertNotNull(res.get("utkast"));
     assertTrue(res.get("utkast").get("db").isSameVardgivare());
-    assertEquals( res.get("utkast").get("db").getLatestIntygsId(),"db2");
+    assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db2");
     assertFalse(res.get("utkast").get("doi").isSameVardgivare());
 
     verify(utkastRepository)
@@ -1025,7 +1061,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testCheckIfPersonHasExistingUtkastLatest() {
+  void testCheckIfPersonHasExistingUtkastLatest() {
     final String personId = PERSON_ID;
     final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
     final String vardgivareId = "vardgivarid";
@@ -1049,7 +1085,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     assertNotNull(res.get("utkast"));
     assertTrue(res.get("utkast").get("db").isSameVardgivare());
-    assertEquals( res.get("utkast").get("db").getLatestIntygsId(),"db1");
+    assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db1");
 
     verify(utkastRepository)
         .findAllByPatientPersonnummerAndIntygsTypIn(
@@ -1057,7 +1093,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testCheckIfPersonHasExistingIntyg() {
+  void testCheckIfPersonHasExistingIntyg() {
     final String personId = PERSON_ID;
     final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
     final String vardgivareId = "vardgivarid";
@@ -1106,7 +1142,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     assertNotNull(res.get("intyg"));
     assertTrue(res.get("intyg").get("db").isSameVardgivare());
-    assertEquals( res.get("intyg").get("db").getLatestIntygsId(),"db2");
+    assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
     assertFalse(res.get("intyg").get("doi").isSameVardgivare());
 
     verify(utkastRepository)
@@ -1115,7 +1151,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testCheckIfPersonHasExistingIntygReverseOrder() {
+  void testCheckIfPersonHasExistingIntygReverseOrder() {
     final String personId = PERSON_ID;
     final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
     final String vardgivareId = "vardgivarid";
@@ -1153,7 +1189,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     assertNotNull(res.get("intyg"));
     assertTrue(res.get("intyg").get("db").isSameVardgivare());
-    assertEquals( res.get("intyg").get("db").getLatestIntygsId(),"db2");
+    assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
 
     verify(utkastRepository)
         .findAllByPatientPersonnummerAndIntygsTypIn(
@@ -1161,7 +1197,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testCheckIfPersonHasExistingIntygReverseOrderSamevardgivare() {
+  void testCheckIfPersonHasExistingIntygReverseOrderSamevardgivare() {
     final String personId = PERSON_ID;
     final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
     final String vardgivareId = "vardgivarid";
@@ -1199,7 +1235,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     assertNotNull(res.get("intyg"));
     assertTrue(res.get("intyg").get("db").isSameVardgivare());
-    assertEquals( res.get("intyg").get("db").getLatestIntygsId(),"db1");
+    assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db1");
 
     verify(utkastRepository)
         .findAllByPatientPersonnummerAndIntygsTypIn(
@@ -1207,7 +1243,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testNumberOfUnsignedDraftsByCareUnits() {
+  void testNumberOfUnsignedDraftsByCareUnits() {
     List<GroupableItem> queryResult = new ArrayList<>();
 
     when(userService.getUser()).thenReturn(createUser());
@@ -1231,7 +1267,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testLockOldDrafts() {
+  void testLockOldDrafts() {
     int lockedAfterDay = 14;
 
     Utkast utkast1 = new Utkast();
@@ -1263,7 +1299,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testRevokeLockedDraft() {
+  void testRevokeLockedDraft() {
     WebCertUser user = createUser();
     when(userService.getUser()).thenReturn(user);
     when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
@@ -1286,62 +1322,72 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void testRevokeLockedDraftNull() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
+  void testRevokeLockedDraftNull() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
 
-    utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-    verifyNoInteractions(monitoringService);
-    verifyNoInteractions(logService);
-      });
+          utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+          verifyNoInteractions(monitoringService);
+          verifyNoInteractions(logService);
+        });
   }
 
   @Test
-  public void testRevokeLockedDraftNotLocked() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
+  void testRevokeLockedDraftNotLocked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
-    utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-    verifyNoInteractions(monitoringService);
-    verifyNoInteractions(logService);
-      });
+          utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+          verifyNoInteractions(monitoringService);
+          verifyNoInteractions(logService);
+        });
   }
 
   @Test
-  public void testRevokeLockedDraftSigned() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
+  void testRevokeLockedDraftSigned() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
-    utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-    verifyNoInteractions(monitoringService);
-    verifyNoInteractions(logService);
-      });
+          utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+          verifyNoInteractions(monitoringService);
+          verifyNoInteractions(logService);
+        });
   }
 
   @Test
-  public void testRevokeLockedDraftTypeMissMatch() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
+  void testRevokeLockedDraftTypeMissMatch() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
 
-    utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
-    verifyNoInteractions(monitoringService);
-    verifyNoInteractions(logService);
-      });
+          utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
+          verifyNoInteractions(monitoringService);
+          verifyNoInteractions(logService);
+        });
   }
 
   @Test
-  public void testRevokeLockedDraftAlreadyRevoked() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
+  void testRevokeLockedDraftAlreadyRevoked() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
 
-    utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
-    verifyNoInteractions(monitoringService);
-    verifyNoInteractions(logService);
-      });
+          utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
+          verifyNoInteractions(monitoringService);
+          verifyNoInteractions(logService);
+        });
   }
 
   @Test
-  public void testUpdateDraftFromCandidate() throws Exception {
+  void testUpdateDraftFromCandidate() throws Exception {
     String fromIntygId = INTYG_ID;
     String fromIntygType = INTYG_TYPE2;
     String toIntygId = "ghi789";
@@ -1408,21 +1454,21 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     verify(monitoringService).logUtkastEdited(toIntygId, toIntygType);
 
-    assertNotNull( res,"An DraftValidation should be returned");
-    assertEquals( UtkastStatus.DRAFT_INCOMPLETE, res.getStatus(),
-        "The status should still be incomplete");
-    assertTrue( res.getVersion() > 0,"The saved draft version should be greater than zero");
+    assertNotNull(res, "An DraftValidation should be returned");
+    assertEquals(
+        UtkastStatus.DRAFT_INCOMPLETE, res.getStatus(), "The status should still be incomplete");
+    assertTrue(res.getVersion() > 0, "The saved draft version should be greater than zero");
   }
 
   @Test
-  public void shallReturnDraftIfItExists() {
+  void shallReturnDraftIfItExists() {
     when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
     final var actualDraft = utkastService.getDraft(INTYG_ID, INTYG_TYPE, false);
-    assertNotNull( actualDraft,"Expected a draft but instead it is null");
+    assertNotNull(actualDraft, "Expected a draft but instead it is null");
   }
 
   @Test
-  public void shallThrowDataNotFoundIfItDoesntExists() {
+  void shallThrowDataNotFoundIfItDoesntExists() {
     when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(null);
 
     try {
@@ -1434,7 +1480,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void shallPdlLogReadActivityByDefault() {
+  void shallPdlLogReadActivityByDefault() {
     final var expectedLogRequest = LogRequest.builder().build();
     final var user = createUser();
     when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
@@ -1446,7 +1492,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void shallPdlLogReadActivityWithSjfWhenDifferentCareProvider() {
+  void shallPdlLogReadActivityWithSjfWhenDifferentCareProvider() {
     final var expectedLogRequest = LogRequest.builder().build();
     final var user = createUser(true);
     utkast.setVardgivarId("Vardgivare2");
@@ -1459,7 +1505,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void shallMonitorLogWhenPdlLogging() {
+  void shallMonitorLogWhenPdlLogging() {
     when(utkastRepository.getIntygsTyp(INTYG_ID)).thenReturn(INTYG_TYPE);
     when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
     utkastService.getDraft(INTYG_ID, true);
@@ -1467,7 +1513,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void shouldReturnNumberOfDeletedDrafts() {
+  void shouldReturnNumberOfDeletedDrafts() {
     final var expectedDeletedDrafts = 2;
 
     final var utkast1 =
@@ -1510,7 +1556,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void shouldDeletedDrafts() {
+  void shouldDeletedDrafts() {
     final var utkast1 =
         createUtkast(
             INTYG_ID,

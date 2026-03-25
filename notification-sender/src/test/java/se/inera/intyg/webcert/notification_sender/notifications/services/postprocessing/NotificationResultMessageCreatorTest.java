@@ -92,7 +92,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationResultMessageCreatorTest {
+class NotificationResultMessageCreatorTest {
 
   @Mock private IntygModuleRegistry moduleRegistry;
 
@@ -137,8 +137,7 @@ public class NotificationResultMessageCreatorTest {
       "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
   @Test
-  public void testCreateFailureMessage()
-      throws ModuleNotFoundException, IOException, ModuleException {
+  void testCreateFailureMessage() throws ModuleNotFoundException, IOException, ModuleException {
     final var notificationMessage = createNotificationMessage();
 
     doReturn(moduleApi)
@@ -186,7 +185,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shallReturnNotificationResultErrorOnTemporaryException()
+  void shallReturnNotificationResultErrorOnTemporaryException()
       throws ModuleNotFoundException, IOException, ModuleException {
     final var notificationMessage = createNotificationMessage();
 
@@ -213,7 +212,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shallAddANotificationDateTimeForFailureMessages()
+  void shallAddANotificationDateTimeForFailureMessages()
       throws ModuleNotFoundException, IOException, ModuleException {
     final var notificationMessage = createNotificationMessage();
 
@@ -242,7 +241,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void testCreateResultMessageWhenNotSigned() {
+  void testCreateResultMessageWhenNotSigned() {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     final var enhet = statusUpdate.getIntyg().getSkapadAv().getEnhet();
 
@@ -282,7 +281,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void testCreateResultMessageWhenSigned() {
+  void testCreateResultMessageWhenSigned() {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     statusUpdate.getIntyg().setSigneringstidpunkt(LocalDateTime.now());
     final var enhet = statusUpdate.getIntyg().getSkapadAv().getEnhet();
@@ -323,7 +322,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void redeliveryMessageXmlShouldHaveCorrectDataWhenSignedCertificate()
+  void redeliveryMessageXmlShouldHaveCorrectDataWhenSignedCertificate()
       throws JsonProcessingException {
     final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
     final var notificationResultMessage = new NotificationResultMessage();
@@ -344,7 +343,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void redeliveryMessageXmlShouldHaveCorrectDataWhenUnsignedCertificate()
+  void redeliveryMessageXmlShouldHaveCorrectDataWhenUnsignedCertificate()
       throws JsonProcessingException {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     final var notificationResultMessage = new NotificationResultMessage();
@@ -365,7 +364,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void redeliveryMessageXmlShouldHaveProperlySetArenden() throws JsonProcessingException {
+  void redeliveryMessageXmlShouldHaveProperlySetArenden() throws JsonProcessingException {
     final var statusUpdate = createStatusUpdateForCareWithArenden();
     final var notificationResultMessage = new NotificationResultMessage();
     final var resultTypeV3 = new ResultType();
@@ -385,7 +384,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shouldAddResultTypeToNotificationReslutMessage() {
+  void shouldAddResultTypeToNotificationReslutMessage() {
     final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
     final var notificationResultMessage = new NotificationResultMessage();
     final var resultTypeV3 = createNotificationResultType();
@@ -404,7 +403,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shouldAddResultTypeToNotificationReslutMessageOnException() {
+  void shouldAddResultTypeToNotificationReslutMessageOnException() {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     final var notificationResultMessage = new NotificationResultMessage();
 
@@ -422,7 +421,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shouldSetRedeliveryMessageToNullIfExceptionInBytesConversion()
+  void shouldSetRedeliveryMessageToNullIfExceptionInBytesConversion()
       throws JsonProcessingException {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     final var resultTypeV3 = createNotificationResultType();
@@ -439,8 +438,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shouldSetReResultTypeNormallyIfExceptionInBytesConversion()
-      throws JsonProcessingException {
+  void shouldSetReResultTypeNormallyIfExceptionInBytesConversion() throws JsonProcessingException {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     final var resultTypeV3 = createNotificationResultType();
     final var notificationResultMessage = new NotificationResultMessage();
@@ -460,7 +458,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shouldReturnResultMessageWithCorrectData() {
+  void shouldReturnResultMessageWithCorrectData() {
     final var event = createEvent();
     final var notificationRedelivery = createNotificationRedelivery();
     final var exception = new NullPointerException("EXCEPTION");
@@ -477,7 +475,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shouldReturnResultMessageWithCorrectResultType() {
+  void shouldReturnResultMessageWithCorrectResultType() {
     final var event = createEvent();
     final var notificationRedelivery = createNotificationRedelivery();
     final var exception = new NullPointerException("EXCEPTION");
@@ -486,15 +484,15 @@ public class NotificationResultMessageCreatorTest {
         notificationResultMessageCreator.createFailureMessage(
             event, notificationRedelivery, exception);
 
-    assertEquals( resultMessage.getResultType().getException(),"java.lang.NullPointerException");
-    assertEquals( resultMessage.getResultType().getNotificationResultText(),"EXCEPTION");
+    assertEquals(resultMessage.getResultType().getException(), "java.lang.NullPointerException");
+    assertEquals(resultMessage.getResultType().getNotificationResultText(), "EXCEPTION");
     assertEquals(
         NotificationErrorTypeEnum.WEBCERT_EXCEPTION,
         resultMessage.getResultType().getNotificationErrorType());
   }
 
   @Test
-  public void shouldReturnResultTypeUnrecoverableErrorOnWebcertServiceEception() {
+  void shouldReturnResultTypeUnrecoverableErrorOnWebcertServiceEception() {
     final var event = createEvent();
     final var notificationRedelivery = createNotificationRedelivery();
     final var exception =
@@ -510,7 +508,7 @@ public class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  public void shouldReturnResultTypeErrorOnOtherThanWebcertServiceEception() {
+  void shouldReturnResultTypeErrorOnOtherThanWebcertServiceEception() {
     final var event = createEvent();
     final var notificationRedelivery = createNotificationRedelivery();
     final var exception = new NullPointerException("EXCEPTION");

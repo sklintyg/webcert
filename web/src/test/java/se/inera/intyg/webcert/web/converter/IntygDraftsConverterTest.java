@@ -42,10 +42,10 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 
-public class IntygDraftsConverterTest {
+class IntygDraftsConverterTest {
 
   @Test
-  public void testMergeWithEmptyLists() {
+  void testMergeWithEmptyLists() {
     List<ListIntygEntry> intygList = new ArrayList<>();
     List<Utkast> utkastList = new ArrayList<>();
 
@@ -56,7 +56,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testMergeWithBothListsFilled() {
+  void testMergeWithBothListsFilled() {
     List<ListIntygEntry> intygList = TestIntygFactory.createListWithIntygItems();
     List<Utkast> utkastList = TestIntygFactory.createListWithUtkast();
 
@@ -69,7 +69,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertIntygToListEntries() {
+  void testConvertIntygToListEntries() {
 
     LocalDateTime modfied = LocalDateTime.parse("2014-01-01T10:00:00");
 
@@ -99,7 +99,7 @@ public class IntygDraftsConverterTest {
     ListIntygEntry ref = res.get(0);
     assertEquals(id, ref.getIntygId());
     assertEquals(type, ref.getIntygType());
-    assertEquals( ref.getStatus(),"DRAFT_COMPLETE");
+    assertEquals(ref.getStatus(), "DRAFT_COMPLETE");
     assertEquals(updatedSignedBy, ref.getUpdatedSignedBy());
     assertEquals(modfied, ref.getLastUpdatedSigned());
     assertEquals(modfied, ref.getSigned());
@@ -107,7 +107,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntrySetsStatusSentIfApplicable() {
+  void testConvertUtkastToListIntygEntrySetsStatusSentIfApplicable() {
     Utkast utkast = createUtkast();
     utkast.setStatus(UtkastStatus.SIGNED);
     utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
@@ -119,7 +119,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntrySetsStatusCancelledIfApplicable() {
+  void testConvertUtkastToListIntygEntrySetsStatusCancelledIfApplicable() {
     Utkast utkast = createUtkast();
     utkast.setStatus(UtkastStatus.SIGNED);
     utkast.setAterkalladDatum(LocalDateTime.now());
@@ -131,7 +131,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntrySetsStatusReceivedIfApplicable() {
+  void testConvertUtkastToListIntygEntrySetsStatusReceivedIfApplicable() {
     Signatur signatur = mock(Signatur.class);
 
     Utkast utkast = createUtkast();
@@ -147,7 +147,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntrySetsUtkastStatusIfNoOtherAvailable() {
+  void testConvertUtkastToListIntygEntrySetsUtkastStatusIfNoOtherAvailable() {
     ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(createUtkast());
 
     assertNotNull(res);
@@ -155,7 +155,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntrySetsCancelledFirst() {
+  void testConvertUtkastToListIntygEntrySetsCancelledFirst() {
     Signatur signatur = mock(Signatur.class);
 
     Utkast utkast = createUtkast();
@@ -173,7 +173,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntrySetsSentBeforeReceived() {
+  void testConvertUtkastToListIntygEntrySetsSentBeforeReceived() {
     Signatur signatur = mock(Signatur.class);
 
     Utkast utkast = createUtkast();
@@ -190,7 +190,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntryResolvesSignedByNameNoSignatur() {
+  void testConvertUtkastToListIntygEntryResolvesSignedByNameNoSignatur() {
     final String senastSparadAvName = "Anders Andersson";
 
     Utkast utkast = createUtkast();
@@ -203,7 +203,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntryResolvesSignedByNameFromSkapadAv() {
+  void testConvertUtkastToListIntygEntryResolvesSignedByNameFromSkapadAv() {
     Signatur signatur = mock(Signatur.class);
 
     final String skapadAvName = "Bengt Bengtsson";
@@ -223,7 +223,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntryResolvesSignedByNameFromSenastSparadAv() {
+  void testConvertUtkastToListIntygEntryResolvesSignedByNameFromSenastSparadAv() {
     Utkast utkast = createUtkast();
     utkast.setStatus(UtkastStatus.SIGNED);
 
@@ -234,7 +234,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testConvertUtkastToListIntygEntryResolvesSignedByNameReturnsSignaturHsaId() {
+  void testConvertUtkastToListIntygEntryResolvesSignedByNameReturnsSignaturHsaId() {
     Signatur signatur = mock(Signatur.class);
 
     Utkast utkast = createUtkast();
@@ -250,7 +250,7 @@ public class IntygDraftsConverterTest {
   }
 
   @Test
-  public void testFindLatestStatus() {
+  void testFindLatestStatus() {
 
     LocalDateTime defaultTime = LocalDateTime.now();
     CertificateState res;

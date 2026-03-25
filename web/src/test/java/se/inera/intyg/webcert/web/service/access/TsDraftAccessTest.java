@@ -28,7 +28,7 @@ import se.inera.intyg.common.tstrk1062.support.TsTrk1062EntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.TsAccessServiceTestData;
 
-public class TsDraftAccessTest extends DraftAccessTest {
+class TsDraftAccessTest extends DraftAccessTest {
 
   public TsDraftAccessTest() {
     super(TsTrk1062EntryPoint.MODULE_ID, new TsAccessServiceTestData());

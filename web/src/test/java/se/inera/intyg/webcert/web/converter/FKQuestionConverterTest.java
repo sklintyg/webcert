@@ -36,7 +36,7 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /** This test makes use of Equals and HashCode from JAXB basics. All types must implement this. */
-public class FKQuestionConverterTest {
+class FKQuestionConverterTest {
 
   private FragaSvarConverter fragaSvarConverter = new FragaSvarConverter();
 
@@ -78,7 +78,7 @@ public class FKQuestionConverterTest {
   }
 
   @Test
-  public void testConvertQuestion() throws Exception {
+  void testConvertQuestion() throws Exception {
 
     QuestionFromFkType questionFromFK = inflateQuestionFromFK();
     QuestionToFkType referenceQuestionToFK = inflateQuestionToFK();

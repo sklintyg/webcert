@@ -35,7 +35,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswe
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /** This test makes use of Equals and HashCode from JAXB basics. All types must implement this. */
-public class FKAnswerConverterTest {
+class FKAnswerConverterTest {
 
   private FragaSvarConverter fragaSvarConverter = new FragaSvarConverter();
 
@@ -76,7 +76,7 @@ public class FKAnswerConverterTest {
   }
 
   @Test
-  public void testConvertAnswer() throws Exception {
+  void testConvertAnswer() throws Exception {
 
     QuestionFromFkType questionFromFK = inflateQuestionFromFK();
     AnswerToFkType referenceAnswerToFK = inflateAnswerToFK();

@@ -127,7 +127,7 @@ class UserServiceImplTest {
     @Test
     void shallReturnWithFormattedPersonId() {
       final var actualUser = userService.getLoggedInUser();
-      assertEquals( actualUser.getPersonId(),"19121212-1212");
+      assertEquals(actualUser.getPersonId(), "19121212-1212");
     }
 
     @Test
@@ -268,7 +268,7 @@ class UserServiceImplTest {
       doReturn(null).when(user).getRoles();
 
       final var actualUser = userService.getLoggedInUser();
-      assertEquals( actualUser.getRole(),"Roll ej angiven");
+      assertEquals(actualUser.getRole(), "Roll ej angiven");
     }
 
     @Test
@@ -278,7 +278,7 @@ class UserServiceImplTest {
       doReturn(Collections.emptyMap()).when(user).getRoles();
 
       final var actualUser = userService.getLoggedInUser();
-      assertEquals( actualUser.getRole(),"Roll ej angiven");
+      assertEquals(actualUser.getRole(), "Roll ej angiven");
     }
 
     @Test
@@ -399,7 +399,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void shallSortCareProviders() {
+    void shallSortCareProviders() {
       final var actualUser = userService.getLoggedInUser();
 
       final var careProviders = actualUser.getCareProviders();
@@ -410,7 +410,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void shallSortCareUnits() {
+    void shallSortCareUnits() {
       final var actualUser = userService.getLoggedInUser();
 
       final var careUnits = actualUser.getCareProviders().get(0).getCareUnits();
@@ -421,7 +421,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void shallSortUnits() {
+    void shallSortUnits() {
       final var actualUser = userService.getLoggedInUser();
 
       final var units = actualUser.getCareProviders().get(0).getCareUnits().get(0).getUnits();

@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.common.Constants;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CertificateSenderServiceImplTest {
+class CertificateSenderServiceImplTest {
 
   private static final String LOGICAL_ADDRESS = "logical address";
 
@@ -63,14 +63,14 @@ public class CertificateSenderServiceImplTest {
   @InjectMocks private CertificateSenderServiceImpl service;
 
   @BeforeEach
-  public void setup() throws Exception {
+  void setup() throws Exception {
     ReflectionTestUtils.setField(service, "logicalAddress", LOGICAL_ADDRESS);
     when(session.createTextMessage(anyString()))
         .thenAnswer(invocation -> createTextMessage((String) invocation.getArguments()[0]));
   }
 
   @Test
-  public void storeCertificateTest() throws Exception {
+  void storeCertificateTest() throws Exception {
     final String intygsId = "intygsId";
     final String jsonBody = "jsonBody";
     final String intygsTyp = "intygsTyp";
@@ -88,20 +88,24 @@ public class CertificateSenderServiceImplTest {
   }
 
   @Test
-  public void storeCertificateJmsException() {
-    assertThrows(JmsException.class, () -> {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  void storeCertificateJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    try {
-      service.storeCertificate("intygsId", "intygsTyp", "jsonBody");
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
-      });
+          try {
+            service.storeCertificate("intygsId", "intygsTyp", "jsonBody");
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
   @Test
-  public void sendCertificateTest() throws Exception {
+  void sendCertificateTest() throws Exception {
     final String intygsId = "intygsId";
     final Personnummer personId = createPnr("19121212-1212");
     final String jsonBody = "jsonBody";
@@ -122,7 +126,7 @@ public class CertificateSenderServiceImplTest {
   }
 
   @Test
-  public void sendCertificateWithDelayTest() throws Exception {
+  void sendCertificateWithDelayTest() throws Exception {
     final String intygsId = "intygsId";
     final Personnummer personId = createPnr("19121212-1212");
     final String jsonBody = "jsonBody";
@@ -138,25 +142,30 @@ public class CertificateSenderServiceImplTest {
     assertEquals(personId.getPersonnummer(), res.getStringProperty(Constants.PERSON_ID));
     assertEquals(recipientId, res.getStringProperty(Constants.RECIPIENT));
     assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
-    assertEquals( res.getStringProperty(Constants.DELAY_MESSAGE),"true");
+    assertEquals(res.getStringProperty(Constants.DELAY_MESSAGE), "true");
     assertEquals(jsonBody, ((TextMessage) res).getText());
   }
 
   @Test
-  public void sendCertificateJmsException() {
-    assertThrows(JmsException.class, () -> {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  void sendCertificateJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    try {
-      service.sendCertificate("intygsId", createPnr("19121212-1212"), "jsonBody", "recipientId");
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
-      });
+          try {
+            service.sendCertificate(
+                "intygsId", createPnr("19121212-1212"), "jsonBody", "recipientId");
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
   @Test
-  public void revokeCertificateTest() throws Exception {
+  void revokeCertificateTest() throws Exception {
     final String intygsId = "intygsId";
     final String xmlBody = "xmlBody";
     final String intygsTyp = "intygsTyp";
@@ -176,20 +185,24 @@ public class CertificateSenderServiceImplTest {
   }
 
   @Test
-  public void revokeCertificateJmsException() {
-    assertThrows(JmsException.class, () -> {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  void revokeCertificateJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    try {
-      service.revokeCertificate("intygsId", "xmlBody", "intygsTyp", "1.0");
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
-      });
+          try {
+            service.revokeCertificate("intygsId", "xmlBody", "intygsTyp", "1.0");
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
   @Test
-  public void sendMessageToRecipientTest() throws Exception {
+  void sendMessageToRecipientTest() throws Exception {
     final String intygsId = "intygsId";
     final String xmlBody = "xmlBody";
 
@@ -206,20 +219,24 @@ public class CertificateSenderServiceImplTest {
   }
 
   @Test
-  public void sendMessageToRecipientJmsException() {
-    assertThrows(JmsException.class, () -> {
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  void sendMessageToRecipientJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    try {
-      service.sendMessageToRecipient("intygsId", "xmlBody");
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
-      });
+          try {
+            service.sendMessageToRecipient("intygsId", "xmlBody");
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
   @Test
-  public void testCheckJmsTemplateNoTemplateAvailable() {
+  void testCheckJmsTemplateNoTemplateAvailable() {
     ReflectionTestUtils.setField(service, "jmsTemplate", null);
     service.checkJmsTemplate();
     // no exception is thrown

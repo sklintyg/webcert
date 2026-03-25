@@ -58,7 +58,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
+class NotificationRedeliveryStatusUpdateCreatorServiceTest {
 
   private final LocalDate LAST_DAY_FOR_ANSWER = LocalDate.now().plusDays(1);
   private final LocalDateTime EVENT_TIMESTAMP = LocalDateTime.now();
@@ -84,7 +84,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
       notificationRedeliveryStatusUpdateCreatorService;
 
   @Test
-  public void shallUseStatusUpdateXmlFromNotificationRedeliveryMessageIfExists() throws Exception {
+  void shallUseStatusUpdateXmlFromNotificationRedeliveryMessageIfExists() throws Exception {
     final var notificationRedelivery = createNotificationRedelivery();
     final var event = createEvent();
     final var expectedStatusUpdateXml = "STATUS_UPDATE_XML";
@@ -100,7 +100,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
   }
 
   @Test
-  public void shallCreateStatusUpdateFromDraftIfRedeliveryMessageIsMissing() throws Exception {
+  void shallCreateStatusUpdateFromDraftIfRedeliveryMessageIsMissing() throws Exception {
     final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
     final var event = createEvent();
     final var expectedDraft = mock(Utkast.class);
@@ -116,8 +116,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
   }
 
   @Test
-  public void shallCreateStatusUpdateFromCertificateIfRedeliveryMessageIsMissing()
-      throws Exception {
+  void shallCreateStatusUpdateFromCertificateIfRedeliveryMessageIsMissing() throws Exception {
     final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();
     final var event = createEvent();
     final var expectedCertificate = mock(IntygContentHolder.class);
@@ -134,7 +133,7 @@ public class NotificationRedeliveryStatusUpdateCreatorServiceTest {
   }
 
   @Test
-  public void
+  void
       shallCreateStatusUpdateWithoutDraftOrCertificateIfRedeliveryMessageIsMissingAndEventIsRadera()
           throws Exception {
     final var notificationRedelivery = createNotificationRedeliveryWithoutMessage();

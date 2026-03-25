@@ -36,7 +36,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-public class CertificateStatusUpdateForCareResponderStub
+class CertificateStatusUpdateForCareResponderStub
     implements CertificateStatusUpdateForCareResponderInterface {
 
   @Autowired private NotificationStubStateBean notificationStubStateBean;
@@ -167,7 +167,7 @@ public class CertificateStatusUpdateForCareResponderStub
     return returnList;
   }
 
-  public void reset() {
+  void reset() {
     counter = new AtomicInteger(0);
     attemptsPerMessage = new ConcurrentHashMap<>();
     store = new CopyOnWriteArrayList<>();

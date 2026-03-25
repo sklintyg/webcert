@@ -24,13 +24,13 @@ import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 
-public class NotificationRedeliveryStrategySingleTest {
+class NotificationRedeliveryStrategySingleTest {
 
   private static final NotificationRedeliveryStrategyEnum strategyName =
       NotificationRedeliveryStrategyEnum.SINGLE;
 
   @Test
-  public void shouldReturnCorrectStrategyIdentifyingEnum() {
+  void shouldReturnCorrectStrategyIdentifyingEnum() {
     final NotificationRedeliveryStrategySingle standardStrategy =
         new NotificationRedeliveryStrategySingle();
     final var strategyNameEnum = standardStrategy.getName();
@@ -39,7 +39,7 @@ public class NotificationRedeliveryStrategySingleTest {
   }
 
   @Test
-  public void shouldReturnCorrectValueMaxDeliveries() {
+  void shouldReturnCorrectValueMaxDeliveries() {
     final NotificationRedeliveryStrategySingle standardStrategy =
         new NotificationRedeliveryStrategySingle();
     final var maxDeliveries = standardStrategy.getMaxDeliveries();
@@ -48,7 +48,7 @@ public class NotificationRedeliveryStrategySingleTest {
   }
 
   @Test
-  public void shouldReturnCorrectTimeValuesForAttemptedDeliveriesLowerThanScheduleSize() {
+  void shouldReturnCorrectTimeValuesForAttemptedDeliveriesLowerThanScheduleSize() {
     final NotificationRedeliveryStrategySingle standardStrategy =
         new NotificationRedeliveryStrategySingle();
     final var timeValue1 = standardStrategy.getNextTimeValue(1);
@@ -57,7 +57,7 @@ public class NotificationRedeliveryStrategySingleTest {
   }
 
   @Test
-  public void shouldReturnCorrectTimeUnitForAttemptedDeliveriesLowerThanScheduleSize() {
+  void shouldReturnCorrectTimeUnitForAttemptedDeliveriesLowerThanScheduleSize() {
     final NotificationRedeliveryStrategySingle standardStrategy =
         new NotificationRedeliveryStrategySingle();
     final var timeUnit1 = standardStrategy.getNextTimeUnit(1);
@@ -66,7 +66,7 @@ public class NotificationRedeliveryStrategySingleTest {
   }
 
   @Test
-  public void shouldReturnLastTimeValueForAttemptedDeliveriesHigherThanScheduleSize() {
+  void shouldReturnLastTimeValueForAttemptedDeliveriesHigherThanScheduleSize() {
     final NotificationRedeliveryStrategySingle standardStrategy =
         new NotificationRedeliveryStrategySingle();
     final var timeValue2 = standardStrategy.getNextTimeValue(2);
@@ -77,7 +77,7 @@ public class NotificationRedeliveryStrategySingleTest {
   }
 
   @Test
-  public void shouldReturnCorrectTimeUnitForAttemptedDeliveriesHigherThanScheduleSize() {
+  void shouldReturnCorrectTimeUnitForAttemptedDeliveriesHigherThanScheduleSize() {
     final NotificationRedeliveryStrategySingle standardStrategy =
         new NotificationRedeliveryStrategySingle();
     final var timeUnit5 = standardStrategy.getNextTimeUnit(5);

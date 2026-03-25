@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 @ExtendWith(MockitoExtension.class)
-public class FragorOchSvarCreatorTest {
+class FragorOchSvarCreatorTest {
 
   private static final String FRAGESTALLARE_FK = FrageStallare.FORSAKRINGSKASSAN.getKod();
   private static final String FRAGESTALLARE_WEBCERT = FrageStallare.WEBCERT.getKod();
@@ -61,7 +61,7 @@ public class FragorOchSvarCreatorTest {
   @Mock private ArendeRepository arendeRepository;
 
   @Test
-  public void testPerformCountHan8() {
+  void testPerformCountHan8() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
@@ -79,7 +79,7 @@ public class FragorOchSvarCreatorTest {
   }
 
   @Test
-  public void testPerformCountHan7() {
+  void testPerformCountHan7() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
@@ -97,7 +97,7 @@ public class FragorOchSvarCreatorTest {
   }
 
   @Test
-  public void testPerformCountHan10() {
+  void testPerformCountHan10() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
@@ -114,7 +114,7 @@ public class FragorOchSvarCreatorTest {
   }
 
   @Test
-  public void testPerformCountHan6() {
+  void testPerformCountHan6() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
@@ -131,7 +131,7 @@ public class FragorOchSvarCreatorTest {
   }
 
   @Test
-  public void testPerformCountHan9Answered() {
+  void testPerformCountHan9Answered() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
@@ -148,7 +148,7 @@ public class FragorOchSvarCreatorTest {
   }
 
   @Test
-  public void testPerformCountHan9NotAnswered() {
+  void testPerformCountHan9NotAnswered() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
@@ -165,7 +165,7 @@ public class FragorOchSvarCreatorTest {
   }
 
   @Test
-  public void testAll() {
+  void testAll() {
 
     // 1. Skickar fråga från WC till FK
     // Förväntad statusuppdatering: HAN8 0,0,0,0
@@ -238,100 +238,100 @@ public class FragorOchSvarCreatorTest {
   }
 
   @Test
-  public void testCountArendeOhanteradFraga() {
+  void testCountArendeOhanteradFraga() {
     when(arendeRepository.findByIntygsId(INTYG_ID))
         .thenReturn(Arrays.asList(buildArendeFkFragaOpen()));
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
     assertNotNull(arenden);
-    assertEquals( 0, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 0, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 0, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 1, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 0, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 1, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(0, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(0, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(0, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(1, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(0, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(1, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(arendeRepository).findByIntygsId(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeOhanteradWithPaminnelseFraga() {
+  void testCountArendeOhanteradWithPaminnelseFraga() {
     when(arendeRepository.findByIntygsId(INTYG_ID))
         .thenReturn(Arrays.asList(buildArendeFkFragaOpen(), buildArendeFkFragaPaminnelseOpen()));
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
     assertNotNull(arenden);
-    assertEquals( 0, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 0, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 0, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 1, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 0, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 1, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(0, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(0, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(0, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(1, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(0, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(1, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(arendeRepository).findByIntygsId(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeHanteradFraga() {
+  void testCountArendeHanteradFraga() {
     when(arendeRepository.findByIntygsId(INTYG_ID))
         .thenReturn(Arrays.asList(buildArendeFkFragaClosed()));
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
     assertNotNull(arenden);
-    assertEquals( 0, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 0, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 0, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 1, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 1, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 0, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(0, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(0, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(0, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(1, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(1, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(0, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(arendeRepository).findByIntygsId(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeOhanteratSvar() {
+  void testCountArendeOhanteratSvar() {
     when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(buildArendeAnswerFromFKOpen());
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
     assertNotNull(arenden);
-    assertEquals( 1, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 0, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 1, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 0, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 0, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 0, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(1, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(0, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(1, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(0, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(0, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(0, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(arendeRepository).findByIntygsId(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeHanteratSvar() {
+  void testCountArendeHanteratSvar() {
     when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(buildArendeAnswerFromFKClosed());
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
     assertNotNull(arenden);
-    assertEquals( 1, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 1, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 0, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 0, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 0, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 0, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(1, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(1, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(0, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(0, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(0, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(0, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(arendeRepository).findByIntygsId(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeAll() {
+  void testCountArendeAll() {
     List<Arende> allArenden = new ArrayList<>();
     allArenden.addAll(Arrays.asList(buildArendeFkFragaOpen(), buildArendeFkFragaClosed()));
     allArenden.addAll(buildArendeAnswerFromFKClosed());
@@ -340,63 +340,63 @@ public class FragorOchSvarCreatorTest {
 
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
     assertNotNull(arenden);
-    assertEquals( 2, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 1, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 1, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 2, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 1, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 1, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(2, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(1, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(1, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(2, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(1, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(1, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(arendeRepository).findByIntygsId(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeFk7263OhanteradFraga() {
+  void testCountArendeFk7263OhanteradFraga() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
                 new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
     assertNotNull(arenden);
-    assertEquals( 0, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 0, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 0, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 1, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 0, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 1, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(0, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(0, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(0, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(1, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(0, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(1, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeFk7263HanteradFraga() {
+  void testCountArendeFk7263HanteradFraga() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
                 new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED)));
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
     assertNotNull(arenden);
-    assertEquals( 0, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 0, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 0, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 1, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 1, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 0, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(0, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(0, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(0, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(1, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(1, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(0, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeFk7263OhanteratSvar() {
+  void testCountArendeFk7263OhanteratSvar() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
@@ -404,42 +404,42 @@ public class FragorOchSvarCreatorTest {
                     1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED)));
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
     assertNotNull(arenden);
-    assertEquals( 1, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 0, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 1, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 0, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 0, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 0, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(1, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(0, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(1, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(0, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(0, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(0, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeFk7263HanteratSvar() {
+  void testCountArendeFk7263HanteratSvar() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Collections.singletonList(
                 new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED)));
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
     assertNotNull(arenden);
-    assertEquals( 1, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 1, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 0, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 0, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 0, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 0, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(1, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(1, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(0, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(0, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(0, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(0, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);
   }
 
   @Test
-  public void testCountArendeFk7263All() {
+  void testCountArendeFk7263All() {
     when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
         .thenReturn(
             Arrays.asList(
@@ -448,14 +448,14 @@ public class FragorOchSvarCreatorTest {
 
     Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
     assertNotNull(arenden);
-    assertEquals( 1, arenden.getLeft().getTotalt(),"Antal skickade frågor");
-    assertEquals( 1, arenden.getLeft().getHanterade(),"Antal skickade hanterade frågor");
-    assertEquals( 0, arenden.getLeft().getBesvarade(),"Antal besvarade skickade frågor");
-    assertEquals( 0, arenden.getLeft().getEjBesvarade(),"Antal ej besvarade skickade frågor");
-    assertEquals( 1, arenden.getRight().getTotalt(),"Antal mottagna frågor");
-    assertEquals( 1, arenden.getRight().getHanterade(),"Antal mottagna hanterade frågor");
-    assertEquals( 0, arenden.getRight().getBesvarade(),"Antal besvarade mottagna frågor");
-    assertEquals( 0, arenden.getRight().getEjBesvarade(),"Antal ej besvarade mottagna frågor");
+    assertEquals(1, arenden.getLeft().getTotalt(), "Antal skickade frågor");
+    assertEquals(1, arenden.getLeft().getHanterade(), "Antal skickade hanterade frågor");
+    assertEquals(0, arenden.getLeft().getBesvarade(), "Antal besvarade skickade frågor");
+    assertEquals(0, arenden.getLeft().getEjBesvarade(), "Antal ej besvarade skickade frågor");
+    assertEquals(1, arenden.getRight().getTotalt(), "Antal mottagna frågor");
+    assertEquals(1, arenden.getRight().getHanterade(), "Antal mottagna hanterade frågor");
+    assertEquals(0, arenden.getRight().getBesvarade(), "Antal besvarade mottagna frågor");
+    assertEquals(0, arenden.getRight().getEjBesvarade(), "Antal ej besvarade mottagna frågor");
     verify(fragaSvarRepository).findFragaSvarStatusesForIntyg(INTYG_ID);
     verifyNoMoreInteractions(fragaSvarRepository);
     verifyNoMoreInteractions(arendeRepository);

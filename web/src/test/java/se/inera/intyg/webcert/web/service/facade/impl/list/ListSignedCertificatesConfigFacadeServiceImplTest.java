@@ -58,7 +58,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
   private final String TITLE = "Signerade intyg";
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     ListTestHelper.setupUser(
         webCertUserService,
         AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
@@ -67,207 +67,207 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
   }
 
   @Test
-  public void shouldSetSecondaryTitle() {
+  void shouldSetSecondaryTitle() {
     final var config = listSignedCertificatesConfigFacadeService.get();
     assertEquals(TITLE, config.getTitle());
   }
 
   @Test
-  public void shouldSetTitle() {
+  void shouldSetTitle() {
     final var config = listSignedCertificatesConfigFacadeService.get();
-    assertEquals( config.getSecondaryTitle(),"Intyg visas för Enhetsnamn");
+    assertEquals(config.getSecondaryTitle(), "Intyg visas för Enhetsnamn");
   }
 
   @Test
-  public void shouldSetOpenCertificateTooltip() {
+  void shouldSetOpenCertificateTooltip() {
     final var config = listSignedCertificatesConfigFacadeService.get();
     assertTrue(config.getButtonTooltips().containsKey("OPEN_BUTTON"));
   }
 
   @Test
-  public void shouldSetFilters() {
+  void shouldSetFilters() {
     final var config = listSignedCertificatesConfigFacadeService.get();
     assertEquals(5, config.getFilters().size());
   }
 
   @Test
-  public void shouldSetTableHeadings() {
+  void shouldSetTableHeadings() {
     final var config = listSignedCertificatesConfigFacadeService.get();
     assertEquals(5, config.getTableHeadings().length);
   }
 
   @Test
-  public void shouldSetSearchCertificateTooltip() {
+  void shouldSetSearchCertificateTooltip() {
     final var config = listSignedCertificatesConfigFacadeService.get();
     assertTrue(config.getButtonTooltips().containsKey("SEARCH_BUTTON"));
   }
 
   @Nested
-  public class Signed {
+  class Signed {
 
     ListFilterDateRangeConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setupSaved() {
+    void setupSaved() {
       config = listSignedCertificatesConfigFacadeService.get();
       filter = (ListFilterDateRangeConfig) getFilterById(config, "SIGNED");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
-      assertEquals( filter.getTitle(),"Signeringsdatum");
+    void shouldSetTitle() {
+      assertEquals(filter.getTitle(), "Signeringsdatum");
     }
 
     @Test
-    public void shouldSetTitleOfTo() {
+    void shouldSetTitleOfTo() {
       assertTrue(filter.getTo().getTitle().length() > 0);
     }
 
     @Test
-    public void shouldSetTitleOfFrom() {
+    void shouldSetTitleOfFrom() {
       assertTrue(filter.getFrom().getTitle().length() > 0);
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.DATE_RANGE, filter.getType());
     }
   }
 
   @Nested
-  public class PatientId {
+  class PatientId {
 
     ListFilterPersonIdConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listSignedCertificatesConfigFacadeService.get();
       filter = (ListFilterPersonIdConfig) getFilterById(config, "PATIENT_ID");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
-      assertEquals( filter.getTitle(),"Patient");
+    void shouldSetTitle() {
+      assertEquals(filter.getTitle(), "Patient");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.PERSON_ID, filter.getType());
     }
 
     @Test
-    public void shouldSetPlaceholder() {
+    void shouldSetPlaceholder() {
       assertTrue(filter.getPlaceholder().length() > 0);
     }
   }
 
   @Nested
-  public class OrderBy {
+  class OrderBy {
 
     ListFilterOrderConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listSignedCertificatesConfigFacadeService.get();
       filter = (ListFilterOrderConfig) getFilterById(config, "ORDER_BY");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetEmptyTitle() {
-      assertEquals( filter.getTitle(),"");
+    void shouldSetEmptyTitle() {
+      assertEquals(filter.getTitle(), "");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.ORDER, filter.getType());
     }
 
     @Test
-    public void shouldSetDefaultOrder() {
+    void shouldSetDefaultOrder() {
       assertEquals(ListColumnType.SIGNED, filter.getDefaultValue());
     }
   }
 
   @Nested
-  public class PageSize {
+  class PageSize {
 
     ListFilterPageSizeConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listSignedCertificatesConfigFacadeService.get();
       filter = (ListFilterPageSizeConfig) getFilterById(config, "PAGESIZE");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetTitle() {
+    void shouldSetTitle() {
       assertTrue(filter.getTitle().length() > 0);
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.PAGESIZE, filter.getType());
     }
 
     @Test
-    public void shouldSetList() {
+    void shouldSetList() {
       assertEquals(4, filter.getPageSizes().length);
     }
   }
 
   @Nested
-  public class Ascending {
+  class Ascending {
 
     ListFilterBooleanConfig filter;
     ListConfig config;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       config = listSignedCertificatesConfigFacadeService.get();
       filter = (ListFilterBooleanConfig) getFilterById(config, "ASCENDING");
     }
 
     @Test
-    public void shouldCreateFilter() {
+    void shouldCreateFilter() {
       assertNotNull(filter);
     }
 
     @Test
-    public void shouldSetEmptyTitle() {
-      assertEquals( filter.getTitle(),"");
+    void shouldSetEmptyTitle() {
+      assertEquals(filter.getTitle(), "");
     }
 
     @Test
-    public void shouldSetType() {
+    void shouldSetType() {
       assertEquals(ListFilterType.BOOLEAN, filter.getType());
     }
 
     @Test
-    public void shouldSetDefaultValue() {
+    void shouldSetDefaultValue() {
       assertFalse(filter.getDefaultValue());
     }
   }

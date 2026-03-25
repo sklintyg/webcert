@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 /** Created by eriklupander on 2017-05-15. */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CertificateRelationServiceImplTest {
+class CertificateRelationServiceImplTest {
 
   private static final String INTYG_ID = "123";
   private static final String OTHER_INTYG_ID = "456";
@@ -61,20 +61,20 @@ public class CertificateRelationServiceImplTest {
   @InjectMocks private CertificateRelationServiceImpl testee;
 
   @BeforeEach
-  public void init() {
+  void init() {
     when(utkastRepositoryCustom.findParentRelation(anyString())).thenReturn(new ArrayList<>());
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(new ArrayList<>());
   }
 
   @Test
-  public void testGetWithNoRelations() {
+  void testGetWithNoRelations() {
     Relations relations = testee.getRelations(INTYG_ID);
     assertNull(relations.getParent());
     assertFrontendRelations(relations.getLatestChildRelations(), null, null, null, null);
   }
 
   @Test
-  public void testGetWithParentRelation() {
+  void testGetWithParentRelation() {
     when(utkastRepositoryCustom.findParentRelation(anyString())).thenReturn(buildParentRelations());
     Relations relations = testee.getRelations(INTYG_ID);
     assertEquals(OTHER_INTYG_ID, relations.getParent().getIntygsId());
@@ -82,7 +82,7 @@ public class CertificateRelationServiceImplTest {
   }
 
   @Test
-  public void testGetWithChildRelations() {
+  void testGetWithChildRelations() {
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
     Relations relations = testee.getRelations(INTYG_ID);
     assertNull(relations.getParent(), OTHER_INTYG_ID);
@@ -91,7 +91,7 @@ public class CertificateRelationServiceImplTest {
   }
 
   @Test
-  public void testGetRelationOfPresentType() {
+  void testGetRelationOfPresentType() {
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
     Optional<WebcertCertificateRelation> relationOfType =
         testee.getNewestRelationOfType(
@@ -101,7 +101,7 @@ public class CertificateRelationServiceImplTest {
   }
 
   @Test
-  public void testGetRelationOfNonPresentType() {
+  void testGetRelationOfNonPresentType() {
     when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
     Optional<WebcertCertificateRelation> relationOfType =
         testee.getNewestRelationOfType(

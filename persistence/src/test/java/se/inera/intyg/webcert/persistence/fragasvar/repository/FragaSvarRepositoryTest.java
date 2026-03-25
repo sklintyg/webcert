@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.persistence.model.Status;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class FragaSvarRepositoryTest {
+class FragaSvarRepositoryTest {
 
   @Autowired private FragaSvarRepository fragasvarRepository;
 
@@ -89,7 +89,7 @@ public class FragaSvarRepositoryTest {
   private static String HSA_4_NAMN = "D HSA NAMN 4";
 
   @Test
-  public void testFindOne() {
+  void testFindOne() {
     FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
     fragasvarRepository.save(saved);
     FragaSvar read = fragasvarRepository.findById(saved.getInternReferens()).orElse(null);
@@ -105,7 +105,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFindByEnhetsId() {
+  void testFindByEnhetsId() {
 
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
@@ -119,7 +119,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFindByEnhetsIdDontMatchClosed() {
+  void testFindByEnhetsIdDontMatchClosed() {
 
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
@@ -133,7 +133,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testcountUnhandledForEnhetsIds() {
+  void testcountUnhandledForEnhetsIds() {
 
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
@@ -149,7 +149,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testCountUnhandledByEnhet() {
+  void testCountUnhandledByEnhet() {
 
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
@@ -168,7 +168,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testCountUnhandledByEnhetAndIntygsTyper() {
+  void testCountUnhandledByEnhetAndIntygsTyper() {
 
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
     fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
@@ -195,7 +195,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFindByIntygsReferens() {
+  void testFindByIntygsReferens() {
     FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
     saved.setIntygsReferens(
         new IntygsReferens(
@@ -306,7 +306,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFindByExternReferens() {
+  void testFindByExternReferens() {
     FragaSvar saved = buildFragaSvarFraga("Enhet-1-id", Status.PENDING_EXTERNAL_ACTION);
 
     fragasvarRepository.save(saved);
@@ -316,7 +316,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFragaSenasteHandelse() {
+  void testFragaSenasteHandelse() {
     FragaSvar saved = buildFragaSvarFraga("Enhet-1-id", Status.PENDING_EXTERNAL_ACTION);
 
     fragasvarRepository.save(saved);
@@ -337,7 +337,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFindAllHSAIDByEnhet() {
+  void testFindAllHSAIDByEnhet() {
     fragasvarRepository.save(
         buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_1_ID, HSA_1_NAMN));
     fragasvarRepository.save(
@@ -376,7 +376,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFilterFragaSvarMatchesOnIntygsTyp() {
+  void testFilterFragaSvarMatchesOnIntygsTyp() {
     fragasvarRepository.save(
         buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_1_ID, HSA_1_NAMN));
 
@@ -388,7 +388,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFilterFragaSvarFiltersOutByIntygsTyp() {
+  void testFilterFragaSvarFiltersOutByIntygsTyp() {
     fragasvarRepository.save(
         buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_1_ID, HSA_1_NAMN));
 
@@ -401,7 +401,7 @@ public class FragaSvarRepositoryTest {
   }
 
   @Test
-  public void testFilterFragaSvarFiltersOutNoIntygsTyp() {
+  void testFilterFragaSvarFiltersOutNoIntygsTyp() {
     fragasvarRepository.save(
         buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_1_ID, HSA_1_NAMN));
 

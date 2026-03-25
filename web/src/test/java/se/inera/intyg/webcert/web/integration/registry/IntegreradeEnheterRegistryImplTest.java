@@ -46,14 +46,14 @@ import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradE
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 
 @ExtendWith(MockitoExtension.class)
-public class IntegreradeEnheterRegistryImplTest {
+class IntegreradeEnheterRegistryImplTest {
 
   @Mock private IntegreradEnhetRepository integreradEnhetRepository;
 
   @InjectMocks private IntegreradeEnheterRegistryImpl registry;
 
   @Test
-  public void testPutIntegreradEnhetSetsSchemaVersion() {
+  void testPutIntegreradEnhetSetsSchemaVersion() {
     final String enhetsId = "enhetsId";
     IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
 
@@ -70,7 +70,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testPutIntegreradEnhetAlreadyExists() {
+  void testPutIntegreradEnhetAlreadyExists() {
     final String enhetsId = "enhetsId";
     IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
     IntegreradEnhet integreradEnhet = new IntegreradEnhet();
@@ -91,7 +91,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testIsEnhetIntegreradTrue() {
+  void testIsEnhetIntegreradTrue() {
     final String enhetsId = "enhetsId";
 
     IntegreradEnhet enhet = new IntegreradEnhet();
@@ -103,7 +103,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testIsEnhetIntegreradFalse() {
+  void testIsEnhetIntegreradFalse() {
     final String enhetsId = "enhetsId";
 
     when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.empty());
@@ -113,7 +113,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testGetIntegreradEnhet() {
+  void testGetIntegreradEnhet() {
     final String enhetsId = "enhetsId";
 
     IntegreradEnhet enhet = new IntegreradEnhet();
@@ -125,7 +125,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testGetAllIntegreradEnhet() {
+  void testGetAllIntegreradEnhet() {
     IntegreradEnhet enhet1 = new IntegreradEnhet();
     enhet1.setEnhetsId("enhetsId1");
     IntegreradEnhet enhet2 = new IntegreradEnhet();
@@ -140,7 +140,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testAddIfSameVardgivareButDifferentUnitsCopiesSchemaVersion() {
+  void testAddIfSameVardgivareButDifferentUnitsCopiesSchemaVersion() {
     final String enhetsId = "enhetsId";
     final String vardgivarId = "vardgivarId";
     IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, vardgivarId);
@@ -164,7 +164,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testAddIfSameVardgivareButDifferentUnitsAlreadyExists() {
+  void testAddIfSameVardgivareButDifferentUnitsAlreadyExists() {
     final String enhetsId = "enhetsId";
     final String vardgivarId = "vardgivarId";
     IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, vardgivarId);
@@ -184,7 +184,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testDeleteIntegreradEnhet() {
+  void testDeleteIntegreradEnhet() {
     final String enhetsId = "enhetsId";
     IntegreradEnhet integreradEnhet = new IntegreradEnhet();
 
@@ -195,7 +195,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testDeleteIntegreradEnhetNotFound() {
+  void testDeleteIntegreradEnhetNotFound() {
     final String enhetsId = "enhetsId";
 
     when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
@@ -205,7 +205,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testGetSchemaVersionOldV1Found() {
+  void testGetSchemaVersionOldV1Found() {
     final String enhetsId = "enhetsid";
 
     IntegreradEnhet enhet = new IntegreradEnhet();
@@ -219,7 +219,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testGetSchemaVersionOldV3Found() {
+  void testGetSchemaVersionOldV3Found() {
     final String enhetsId = "enhetsid";
 
     IntegreradEnhet enhet = new IntegreradEnhet();
@@ -234,7 +234,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testGetSchemaVersionNotFound() {
+  void testGetSchemaVersionNotFound() {
     final String enhetsId = "enhetsid";
 
     IntegreradEnhet enhet = new IntegreradEnhet();
@@ -247,7 +247,7 @@ public class IntegreradeEnheterRegistryImplTest {
   }
 
   @Test
-  public void testGetSchemaVersionNewFound() {
+  void testGetSchemaVersionNewFound() {
     final String enhetsId = "enhetsid";
 
     IntegreradEnhet enhet = new IntegreradEnhet();

@@ -55,7 +55,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class IntygRelationHelperImplTest {
+class IntygRelationHelperImplTest {
 
   private static final String INTYG_ID = "intyg-123";
   private static final String OTHER_INTYG_ID = "intyg-456";
@@ -74,12 +74,12 @@ public class IntygRelationHelperImplTest {
   @InjectMocks private IntygRelationHelperImpl testee;
 
   @BeforeEach
-  public void init() {
+  void init() {
     when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(new Relations());
   }
 
   @Test
-  public void testGetRelationsForIntygNothingInIT() {
+  void testGetRelationsForIntygNothingInIT() {
     when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(
             isNull(), any(ListRelationsForCertificateType.class)))
         .thenReturn(new ListRelationsForCertificateResponseType());
@@ -89,7 +89,7 @@ public class IntygRelationHelperImplTest {
   }
 
   @Test
-  public void testGetRelationsForIntygNothingInITWithMergeFromWebcert() {
+  void testGetRelationsForIntygNothingInITWithMergeFromWebcert() {
     when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(
             isNull(), any(ListRelationsForCertificateType.class)))
         .thenReturn(new ListRelationsForCertificateResponseType());
@@ -145,7 +145,7 @@ public class IntygRelationHelperImplTest {
   }
 
   @Test
-  public void testGetRelationsForIntygOneInIT() {
+  void testGetRelationsForIntygOneInIT() {
     when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(
             isNull(), any(ListRelationsForCertificateType.class)))
         .thenReturn(buildResponse());
@@ -157,7 +157,7 @@ public class IntygRelationHelperImplTest {
   }
 
   @Test
-  public void testGetRelationsForIntygOneParentInIT() {
+  void testGetRelationsForIntygOneParentInIT() {
     when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(
             isNull(), any(ListRelationsForCertificateType.class)))
         .thenReturn(buildResponseWithParent());
@@ -169,7 +169,7 @@ public class IntygRelationHelperImplTest {
   }
 
   @Test
-  public void testGetRelationsForIntygOneInITAndTwoFromWebcert() {
+  void testGetRelationsForIntygOneInITAndTwoFromWebcert() {
     when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(
             isNull(), any(ListRelationsForCertificateType.class)))
         .thenReturn(buildResponse());
@@ -186,7 +186,7 @@ public class IntygRelationHelperImplTest {
   }
 
   @Test
-  public void testGetRelationsForIntygOneInITAndThreeFromWebcertIncludingParent() {
+  void testGetRelationsForIntygOneInITAndThreeFromWebcertIncludingParent() {
     when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(
             isNull(), any(ListRelationsForCertificateType.class)))
         .thenReturn(buildResponse());
@@ -204,7 +204,7 @@ public class IntygRelationHelperImplTest {
   }
 
   @Test
-  public void testDecorate() {
+  void testDecorate() {
     when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(
             isNull(), any(ListRelationsForCertificateType.class)))
         .thenReturn(buildResponse());
@@ -223,14 +223,14 @@ public class IntygRelationHelperImplTest {
   }
 
   @Test
-  public void testDecorateWithEmptyList() {
+  void testDecorateWithEmptyList() {
     List<ListIntygEntry> listIntygEntries = new ArrayList<>();
     testee.decorateIntygListWithRelations(listIntygEntries);
     verifyNoInteractions(listRelationsForCertificateResponderInterface);
   }
 
   @Test
-  public void testErsattandeRevoked() {
+  void testErsattandeRevoked() {
     ListRelationsForCertificateResponseType response = buildResponse();
     response.getIntygRelation().get(0).getRelation().get(0).setFranIntygMakulerat(true);
     when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(

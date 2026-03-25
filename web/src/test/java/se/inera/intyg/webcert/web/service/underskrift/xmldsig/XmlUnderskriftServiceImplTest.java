@@ -75,7 +75,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class XmlUnderskriftServiceImplTest {
+class XmlUnderskriftServiceImplTest {
 
   private static final String INTYG_ID = "intyg-1";
   private static final String INTYG_TYP = "luse";
@@ -118,7 +118,7 @@ public class XmlUnderskriftServiceImplTest {
   @InjectMocks private XmlUnderskriftServiceImpl testee;
 
   @BeforeEach
-  public void init() throws ModuleNotFoundException, ModuleException {
+  void init() throws ModuleNotFoundException, ModuleException {
     ModuleApi moduleApi = mock(ModuleApi.class);
     when(moduleApi.updateAfterSigning(anyString(), anyString())).thenReturn("json");
 
@@ -126,7 +126,7 @@ public class XmlUnderskriftServiceImplTest {
   }
 
   @Test
-  public void testSigneringsBiljettMedDigest() {
+  void testSigneringsBiljettMedDigest() {
     when(prepareSignatureService.prepareSignature(anyString(), anyString(), anyString()))
         .thenReturn(buildIntygXMLSignature());
 
@@ -145,7 +145,7 @@ public class XmlUnderskriftServiceImplTest {
   }
 
   @Test
-  public void testFinalizeSignatureWithValidSignature() {
+  void testFinalizeSignatureWithValidSignature() {
     when(xmldSigService.buildKeyInfoForCertificate(anyString()))
         .thenReturn(new ObjectFactory().createKeyInfoType());
     when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
@@ -203,7 +203,7 @@ public class XmlUnderskriftServiceImplTest {
   }
 
   @Test
-  public void testFinalizeSignatureWithValidSignatureForCs() {
+  void testFinalizeSignatureWithValidSignatureForCs() {
     final var certificate = new Certificate();
     final var ticket = createSignaturBiljett(SignaturStatus.BEARBETAR);
     final var expectedResponse =
@@ -227,46 +227,50 @@ public class XmlUnderskriftServiceImplTest {
   }
 
   @Test
-  public void testFinalizeSignatureFailsWithDifferentVersions() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(xmldSigService.buildKeyInfoForCertificate(anyString()))
-        .thenReturn(new ObjectFactory().createKeyInfoType());
-    when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-    when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-    when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
-        .thenReturn(
-            new TransformAndDigestResponse(
-                null,
-                Base64.getEncoder()
-                    .encode(
-                        UnderskriftTestUtil.buildIntygXMLSignature()
-                            .getSignatureType()
-                            .getSignedInfo()
-                            .getReference()
-                            .get(0)
-                            .getDigestValue())));
+  void testFinalizeSignatureFailsWithDifferentVersions() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(xmldSigService.buildKeyInfoForCertificate(anyString()))
+              .thenReturn(new ObjectFactory().createKeyInfoType());
+          when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
+          when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString()))
+              .thenReturn("<xml/>");
+          when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
+              .thenReturn(
+                  new TransformAndDigestResponse(
+                      null,
+                      Base64.getEncoder()
+                          .encode(
+                              UnderskriftTestUtil.buildIntygXMLSignature()
+                                  .getSignatureType()
+                                  .getSignedInfo()
+                                  .getReference()
+                                  .get(0)
+                                  .getDigestValue())));
 
-    try {
-      testee.finalizeSignature(
-          createSignaturBiljett(SignaturStatus.BEARBETAR),
-          "signatur".getBytes(Charset.forName("UTF-8")),
-          "certifikat",
-          createUtkast(
-              INTYG_ID,
-              1111L,
-              INTYG_TYP,
-              UtkastStatus.DRAFT_COMPLETE,
-              "model",
-              createVardperson(),
-              ENHET_ID,
-              PERSON_ID),
-          buildUser());
-    } finally {
-      verifyNoInteractions(monitoringLogService);
-      verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
-      verify(intygService, times(0)).storeIntyg(any(Utkast.class));
-    }
-      });
+          try {
+            testee.finalizeSignature(
+                createSignaturBiljett(SignaturStatus.BEARBETAR),
+                "signatur".getBytes(Charset.forName("UTF-8")),
+                "certifikat",
+                createUtkast(
+                    INTYG_ID,
+                    1111L,
+                    INTYG_TYP,
+                    UtkastStatus.DRAFT_COMPLETE,
+                    "model",
+                    createVardperson(),
+                    ENHET_ID,
+                    PERSON_ID),
+                buildUser());
+          } finally {
+            verifyNoInteractions(monitoringLogService);
+            verify(redisTicketTracker, times(1))
+                .updateStatus(anyString(), eq(SignaturStatus.OKAND));
+            verify(intygService, times(0)).storeIntyg(any(Utkast.class));
+          }
+        });
   }
 
   private WebCertUser buildUser() {
@@ -274,30 +278,33 @@ public class XmlUnderskriftServiceImplTest {
   }
 
   @Test
-  public void testFinalizeSignatureFailsWithDifferentIntygsId() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(xmldSigService.buildKeyInfoForCertificate(anyString()))
-        .thenReturn(new ObjectFactory().createKeyInfoType());
-    try {
-      testee.finalizeSignature(
-          createSignaturBiljett(SignaturStatus.BEARBETAR),
-          "signatur".getBytes(Charset.forName("UTF-8")),
-          "certifikat",
-          createUtkast(
-              INTYG_ID + "-difference",
-              1L,
-              INTYG_TYP,
-              UtkastStatus.DRAFT_COMPLETE,
-              "model",
-              createVardperson(),
-              ENHET_ID,
-              PERSON_ID),
-          buildUser());
-    } finally {
-      verifyNoInteractions(monitoringLogService);
-      verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
-      verify(intygService, times(0)).storeIntyg(any(Utkast.class));
-    }
-      });
+  void testFinalizeSignatureFailsWithDifferentIntygsId() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(xmldSigService.buildKeyInfoForCertificate(anyString()))
+              .thenReturn(new ObjectFactory().createKeyInfoType());
+          try {
+            testee.finalizeSignature(
+                createSignaturBiljett(SignaturStatus.BEARBETAR),
+                "signatur".getBytes(Charset.forName("UTF-8")),
+                "certifikat",
+                createUtkast(
+                    INTYG_ID + "-difference",
+                    1L,
+                    INTYG_TYP,
+                    UtkastStatus.DRAFT_COMPLETE,
+                    "model",
+                    createVardperson(),
+                    ENHET_ID,
+                    PERSON_ID),
+                buildUser());
+          } finally {
+            verifyNoInteractions(monitoringLogService);
+            verify(redisTicketTracker, times(1))
+                .updateStatus(anyString(), eq(SignaturStatus.OKAND));
+            verify(intygService, times(0)).storeIntyg(any(Utkast.class));
+          }
+        });
   }
 }

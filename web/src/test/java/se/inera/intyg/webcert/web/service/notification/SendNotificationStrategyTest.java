@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class SendNotificationStrategyTest {
+class SendNotificationStrategyTest {
 
   private static final String INTYG_ID_1 = "intyg-1";
   private static final String INTYG_ID_2 = "intyg-2";
@@ -67,7 +67,7 @@ public class SendNotificationStrategyTest {
   private SendNotificationStrategy sendStrategy = new DefaultSendNotificationStrategyImpl();
 
   @BeforeEach
-  public void setupIntegreradeEnheter() {
+  void setupIntegreradeEnheter() {
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_FK))
         .thenReturn(Optional.of(SchemaVersion.VERSION_1));
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_2, INTYG_FK))
@@ -77,7 +77,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastOk() {
+  void testUtkastOk() {
 
     Optional<SchemaVersion> res =
         sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_1));
@@ -88,7 +88,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastUnitNotIntegrated() {
+  void testUtkastUnitNotIntegrated() {
     Optional<SchemaVersion> res =
         sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_1, INTYG_FK, ENHET_2));
     assertFalse(res.isPresent());
@@ -97,7 +97,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastWrongType() {
+  void testUtkastWrongType() {
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_1, INTYG_TS))
         .thenReturn(Optional.empty());
     Optional<SchemaVersion> res =
@@ -107,7 +107,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastWrongSchemaVersionLuse() {
+  void testUtkastWrongSchemaVersionLuse() {
     when(mockIntegreradeEnheterRegistry.getSchemaVersion(ENHET_4, INTYG_LUSE))
         .thenReturn(Optional.empty());
     Optional<SchemaVersion> res =
@@ -118,7 +118,7 @@ public class SendNotificationStrategyTest {
   }
 
   @Test
-  public void testUtkastVersion2() {
+  void testUtkastVersion2() {
     Optional<SchemaVersion> res =
         sendStrategy.decideNotificationForIntyg(createUtkast(INTYG_ID_4, INTYG_LUSE, ENHET_4));
     assertTrue(res.isPresent());

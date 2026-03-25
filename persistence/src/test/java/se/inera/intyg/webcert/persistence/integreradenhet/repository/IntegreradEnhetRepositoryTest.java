@@ -36,12 +36,12 @@ import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class IntegreradEnhetRepositoryTest {
+class IntegreradEnhetRepositoryTest {
 
   @Autowired private IntegreradEnhetRepository repository;
 
   @Test
-  public void testSaveIntegreradEnhet() {
+  void testSaveIntegreradEnhet() {
 
     IntegreradEnhet enhet = new IntegreradEnhet();
     enhet.setEnhetsId("SE1234567890-1A01");

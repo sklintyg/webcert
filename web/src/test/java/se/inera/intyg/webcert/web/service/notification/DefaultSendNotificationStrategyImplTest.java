@@ -38,14 +38,14 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 
 @ExtendWith(MockitoExtension.class)
-public class DefaultSendNotificationStrategyImplTest {
+class DefaultSendNotificationStrategyImplTest {
 
   @Mock private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
   @InjectMocks private DefaultSendNotificationStrategyImpl defaultSendNotificationStrategy;
 
   @Test
-  public void testDecideNotificationForIntygBasedOnDraft() {
+  void testDecideNotificationForIntygBasedOnDraft() {
     final var unitId = "unitId";
     final var certificateType = "certificateType";
     final var draft = mock(Utkast.class);
@@ -68,7 +68,7 @@ public class DefaultSendNotificationStrategyImplTest {
   }
 
   @Test
-  public void testDecideNotificationForIntygBasedOnDraftEmpty() {
+  void testDecideNotificationForIntygBasedOnDraftEmpty() {
     final var unitId = "unitId";
     final var certificateType = "certificateType";
     final var draft = mock(Utkast.class);
@@ -89,7 +89,7 @@ public class DefaultSendNotificationStrategyImplTest {
   }
 
   @Test
-  public void testDecideNotificationForIntygBasedOnCertificate() {
+  void testDecideNotificationForIntygBasedOnCertificate() {
     final var unitId = "unitId";
     final var certificateType = "certificateType";
     final var certificate = mock(Utlatande.class);
@@ -118,7 +118,7 @@ public class DefaultSendNotificationStrategyImplTest {
   }
 
   @Test
-  public void testDecideNotificationForIntygBasedOnCertificateEmpty() {
+  void testDecideNotificationForIntygBasedOnCertificateEmpty() {
     final var unitId = "unitId";
     final var certificateType = "certificateType";
     final var certificate = mock(Utlatande.class);

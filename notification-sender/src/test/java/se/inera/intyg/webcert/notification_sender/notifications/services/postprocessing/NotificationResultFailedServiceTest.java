@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationResultFailedServiceTest {
+class NotificationResultFailedServiceTest {
 
   @Mock HandelseRepository handelseRepository;
 
@@ -74,7 +74,7 @@ public class NotificationResultFailedServiceTest {
   private static final int ATTEMPTED_DELIVERIES = 2;
 
   @Test
-  public void shouldMonitorLogFailureOnProcessingNewNotification() {
+  void shouldMonitorLogFailureOnProcessingNewNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     final var captureEventId = ArgumentCaptor.forClass(Long.class);
@@ -117,7 +117,7 @@ public class NotificationResultFailedServiceTest {
   }
 
   @Test
-  public void shouldMonitorLogFailureOnProcessingRedeliveredNotification() {
+  void shouldMonitorLogFailureOnProcessingRedeliveredNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
 
@@ -162,8 +162,7 @@ public class NotificationResultFailedServiceTest {
   }
 
   @Test
-  public void
-      shouldMonitorLogFailureOnProcessingRedeliveredNotificationWithNullAttemptedRedeliveries() {
+  void shouldMonitorLogFailureOnProcessingRedeliveredNotificationWithNullAttemptedRedeliveries() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
     notificationRedelivery.setAttemptedDeliveries(null);
@@ -195,7 +194,7 @@ public class NotificationResultFailedServiceTest {
   }
 
   @Test
-  public void shouldCreateNewEventOnProcessingNewNotification() {
+  void shouldCreateNewEventOnProcessingNewNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     final var captureEvent = ArgumentCaptor.forClass(Handelse.class);
@@ -215,7 +214,7 @@ public class NotificationResultFailedServiceTest {
   }
 
   @Test
-  public void shouldSetDeliveryStatusFailureOnRedeliveredNotification() {
+  void shouldSetDeliveryStatusFailureOnRedeliveredNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
 
@@ -238,7 +237,7 @@ public class NotificationResultFailedServiceTest {
   }
 
   @Test
-  public void shouldDeleteRedeliveryOnProcessingRedeliveredNotification() {
+  void shouldDeleteRedeliveryOnProcessingRedeliveredNotification() {
     final var notificationResultMessage = createNotificationResultMessage();
     final var notificationRedelivery = createNotificationRedelivery();
 

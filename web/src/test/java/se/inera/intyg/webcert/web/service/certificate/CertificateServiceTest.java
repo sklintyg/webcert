@@ -55,7 +55,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateServiceTest {
+class CertificateServiceTest {
 
   @Mock private WebCertUserService webCertUserService;
   @Mock private LogService logService;
@@ -69,7 +69,7 @@ public class CertificateServiceTest {
   private final String CERTIFICATE_TYPE = "lisjp";
 
   @Test
-  public void errorGettingCertificatesFromIT() {
+  void errorGettingCertificatesFromIT() {
     Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
     var certificateListResponse = certificateService.listCertificatesForDoctor(null);
     verify(logService, times(0)).logReadLevelTwo(any(), any());
@@ -77,7 +77,7 @@ public class CertificateServiceTest {
   }
 
   @Test
-  public void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
+  void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
     Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
     var certificateListResponse = certificateService.listCertificatesForDoctor(null);
     verify(logService, times(0)).logReadLevelTwo(any(), any());
@@ -85,22 +85,22 @@ public class CertificateServiceTest {
   }
 
   @Test
-  public void decoratePatientWithAllFlags() {
+  void decoratePatientWithAllFlags() {
     testDecorateWithPatientFlags(true, false);
   }
 
   @Test
-  public void decoratePatientWithNoFlags() {
+  void decoratePatientWithNoFlags() {
     testDecorateWithPatientFlags(false, false);
   }
 
   @Test
-  public void decoratePatientWithOnlyUndefinedSekretessStatus() {
+  void decoratePatientWithOnlyUndefinedSekretessStatus() {
     testDecorateWithPatientFlags(false, true);
   }
 
   @Test
-  public void decoratePatientWithUndefinedSekretessStatus() {
+  void decoratePatientWithUndefinedSekretessStatus() {
     testDecorateWithPatientFlags(true, true);
   }
 

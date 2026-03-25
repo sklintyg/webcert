@@ -53,7 +53,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
-public class LogRequestFactoryTest {
+class LogRequestFactoryTest {
 
   private static final String CERTIFICATE_ID = "intygsId";
   private static final String CERTIFICATE_TYPE = "certificateType";

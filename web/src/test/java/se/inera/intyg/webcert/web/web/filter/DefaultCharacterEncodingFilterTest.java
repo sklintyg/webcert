@@ -38,7 +38,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * When no encoding is set the filter should set request character encoding to UTF-8.
  */
 @ExtendWith(MockitoExtension.class)
-public class DefaultCharacterEncodingFilterTest {
+class DefaultCharacterEncodingFilterTest {
 
   @Mock private HttpServletRequest httpServletRequest;
 
@@ -49,14 +49,14 @@ public class DefaultCharacterEncodingFilterTest {
   @InjectMocks private DefaultCharacterEncodingFilter testee = new DefaultCharacterEncodingFilter();
 
   @Test
-  public void testNoEncodingSet() throws ServletException, IOException {
+  void testNoEncodingSet() throws ServletException, IOException {
     testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
     verify(httpServletRequest, times(1)).setCharacterEncoding("UTF-8");
   }
 
   @Test
-  public void testEncodingSet() throws IOException, ServletException {
+  void testEncodingSet() throws IOException, ServletException {
     when(httpServletRequest.getCharacterEncoding()).thenReturn("UTF-8");
 
     testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);

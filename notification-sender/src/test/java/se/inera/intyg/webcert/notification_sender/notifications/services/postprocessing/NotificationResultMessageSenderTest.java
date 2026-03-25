@@ -54,10 +54,11 @@ import se.inera.intyg.webcert.notification_sender.notifications.routes.Notificat
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationResultMessageSenderTest {
+class NotificationResultMessageSenderTest {
 
   @Mock
-  @Qualifier("jmsTemplateNotificationPostProcessing") private JmsTemplate jmsTemplate;
+  @Qualifier("jmsTemplateNotificationPostProcessing")
+  private JmsTemplate jmsTemplate;
 
   @Mock private Session session;
 
@@ -75,7 +76,7 @@ public class NotificationResultMessageSenderTest {
   private static final NotificationResultTypeEnum RESULT_TYPE_ENUM = OK;
 
   @Test
-  public void shouldSetProperHeadersOnJmsMessage() throws JMSException {
+  void shouldSetProperHeadersOnJmsMessage() throws JMSException {
     final var notificationResultMessage = createNotificationResultMessage();
 
     ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
@@ -101,8 +102,7 @@ public class NotificationResultMessageSenderTest {
   }
 
   @Test
-  public void shouldSetProperTextMessageOnJmsMessage()
-      throws JMSException, JsonProcessingException {
+  void shouldSetProperTextMessageOnJmsMessage() throws JMSException, JsonProcessingException {
     final var notificationResultMessage = createNotificationResultMessage();
 
     ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
@@ -128,7 +128,7 @@ public class NotificationResultMessageSenderTest {
   }
 
   @Test
-  public void shouldReturnTrueOnSuccessfulJmsDelivery() {
+  void shouldReturnTrueOnSuccessfulJmsDelivery() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     final var isSuccess =
@@ -139,7 +139,7 @@ public class NotificationResultMessageSenderTest {
   }
 
   @Test
-  public void shouldReturnFalseOnException() {
+  void shouldReturnFalseOnException() {
     final var notificationResultMessage = createNotificationResultMessage();
 
     doThrow(RuntimeException.class).when(jmsTemplate).send(any(MessageCreator.class));

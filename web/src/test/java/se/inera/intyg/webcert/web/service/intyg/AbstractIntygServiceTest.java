@@ -125,7 +125,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
   protected CertificateResponse certificateResponse;
 
   @BeforeEach
-  public void setupMocks() throws Exception {
+  void setupMocks() throws Exception {
     json =
         Files.readString(
             Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));

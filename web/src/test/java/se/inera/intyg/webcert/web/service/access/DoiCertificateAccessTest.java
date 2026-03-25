@@ -25,7 +25,7 @@ import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.DoiAccessServiceTestData;
 
-public class DoiCertificateAccessTest extends CertificateAccessTest {
+class DoiCertificateAccessTest extends CertificateAccessTest {
 
   public DoiCertificateAccessTest() {
     super(DoiModuleEntryPoint.MODULE_ID, new DoiAccessServiceTestData());

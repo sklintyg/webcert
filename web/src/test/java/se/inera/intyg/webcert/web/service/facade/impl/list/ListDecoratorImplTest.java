@@ -66,7 +66,7 @@ class ListDecoratorImplTest {
             List.of(ListTestHelper.createListIntygEntry("STATUS", true, true)));
 
     @Test
-    public void shouldDecorateWithCertificateTypeName() {
+    void shouldDecorateWithCertificateTypeName() {
       listDecorator.decorateWithCertificateTypeName(list);
       assertEquals(1, list.size());
     }
@@ -75,20 +75,20 @@ class ListDecoratorImplTest {
   @Nested
   class StaffName {
 
-    public void setupStaffWithOnlyLastName() {
+    void setupStaffWithOnlyLastName() {
       when(employeeNameService.getEmployeeHsaName(any())).thenReturn("EXAMPLE_NAME");
     }
 
-    public void setupStaffWithCompleteName() {
+    void setupStaffWithCompleteName() {
       when(employeeNameService.getEmployeeHsaName(any())).thenReturn("FIRST MIDDLE LAST");
     }
 
-    public void setupStaffWithNoLastName() {
+    void setupStaffWithNoLastName() {
       when(employeeNameService.getEmployeeHsaName(any())).thenReturn(null);
     }
 
     @Test
-    public void shouldDecorateWithStaffLastName() {
+    void shouldDecorateWithStaffLastName() {
       setupStaffWithOnlyLastName();
       final List<ListIntygEntry> list =
           new ArrayList<ListIntygEntry>(
@@ -96,11 +96,11 @@ class ListDecoratorImplTest {
 
       listDecorator.decorateWithStaffName(list);
       assertEquals(1, list.size());
-      assertEquals( list.get(0).getUpdatedSignedBy(),"EXAMPLE_NAME");
+      assertEquals(list.get(0).getUpdatedSignedBy(), "EXAMPLE_NAME");
     }
 
     @Test
-    public void shouldDecorateWithStaffFullName() {
+    void shouldDecorateWithStaffFullName() {
       setupStaffWithCompleteName();
       final List<ListIntygEntry> list =
           new ArrayList<ListIntygEntry>(
@@ -108,11 +108,11 @@ class ListDecoratorImplTest {
 
       listDecorator.decorateWithStaffName(list);
       assertEquals(1, list.size());
-      assertEquals( list.get(0).getUpdatedSignedBy(),"FIRST MIDDLE LAST");
+      assertEquals(list.get(0).getUpdatedSignedBy(), "FIRST MIDDLE LAST");
     }
 
     @Test
-    public void shouldNotDecorateIfStaffHasNoLastName() {
+    void shouldNotDecorateIfStaffHasNoLastName() {
       setupStaffWithNoLastName();
       final List<ListIntygEntry> list =
           new ArrayList<ListIntygEntry>(
@@ -131,7 +131,7 @@ class ListDecoratorImplTest {
         new ArrayList<ListIntygEntry>(
             List.of(ListTestHelper.createListIntygEntry("STATUS", true, true)));
 
-    public void setupPatientStatus(SekretessStatus status, boolean flag) {
+    void setupPatientStatus(SekretessStatus status, boolean flag) {
       final var statusMap = mock(Map.class);
       PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
       response.setTestIndicator(flag);
@@ -141,7 +141,7 @@ class ListDecoratorImplTest {
       Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
     }
 
-    public void setupHandleProtectedPatientPrivilege() {
+    void setupHandleProtectedPatientPrivilege() {
       ListTestHelper.setupUser(
           webCertUserService,
           AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
@@ -150,7 +150,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldIncludeNotProtectedPerson() {
+    void shouldIncludeNotProtectedPerson() {
       setupPatientStatus(SekretessStatus.FALSE, false);
 
       final var result = listDecorator.decorateAndFilterProtectedPerson(list);
@@ -159,7 +159,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldSetFalseForDeceasedPatient() {
+    void shouldSetFalseForDeceasedPatient() {
       setupPatientStatus(SekretessStatus.FALSE, false);
 
       final var result = listDecorator.decorateAndFilterProtectedPerson(list);
@@ -168,7 +168,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldSetFalseForTestIndicatedPatient() {
+    void shouldSetFalseForTestIndicatedPatient() {
       setupPatientStatus(SekretessStatus.FALSE, false);
 
       final var result = listDecorator.decorateAndFilterProtectedPerson(list);
@@ -177,7 +177,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldSetFalseForProtectedPatient() {
+    void shouldSetFalseForProtectedPatient() {
       setupPatientStatus(SekretessStatus.FALSE, false);
 
       final var result = listDecorator.decorateAndFilterProtectedPerson(list);
@@ -186,7 +186,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldIncludeProtectedPerson() {
+    void shouldIncludeProtectedPerson() {
       setupHandleProtectedPatientPrivilege();
       setupPatientStatus(SekretessStatus.TRUE, true);
 
@@ -196,7 +196,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldSetTrueForDeceasedPatient() {
+    void shouldSetTrueForDeceasedPatient() {
       setupHandleProtectedPatientPrivilege();
       setupPatientStatus(SekretessStatus.TRUE, true);
 
@@ -206,7 +206,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldSetTrueForTestIndicatedPatient() {
+    void shouldSetTrueForTestIndicatedPatient() {
       setupHandleProtectedPatientPrivilege();
       setupPatientStatus(SekretessStatus.TRUE, true);
 
@@ -216,7 +216,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldSetTrueForProtectedPatient() {
+    void shouldSetTrueForProtectedPatient() {
       setupHandleProtectedPatientPrivilege();
       setupPatientStatus(SekretessStatus.TRUE, true);
 
@@ -226,7 +226,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldNotIncludeProtectedPersonIfUserHasNoAccess() {
+    void shouldNotIncludeProtectedPersonIfUserHasNoAccess() {
       setupPatientStatus(SekretessStatus.TRUE, true);
       ListTestHelper.setupUser(
           webCertUserService,
@@ -239,7 +239,7 @@ class ListDecoratorImplTest {
     }
 
     @Test
-    public void shouldNotIncludePatientWithUndefinedProtectedStatus() {
+    void shouldNotIncludePatientWithUndefinedProtectedStatus() {
       setupPatientStatus(SekretessStatus.UNDEFINED, true);
       setupHandleProtectedPatientPrivilege();
 

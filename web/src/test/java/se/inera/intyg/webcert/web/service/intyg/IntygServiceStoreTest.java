@@ -42,11 +42,11 @@ import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderExc
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 
 @ExtendWith(MockitoExtension.class)
-public class IntygServiceStoreTest extends AbstractIntygServiceTest {
+class IntygServiceStoreTest extends AbstractIntygServiceTest {
 
   @BeforeEach
   @Override
-  public void setupMocks() throws Exception {
+  void setupMocks() throws Exception {
     json =
         Files.readString(
             Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
@@ -56,7 +56,7 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testStoreIntyg() throws Exception {
+  void testStoreIntyg() throws Exception {
 
     IntygServiceResult res = intygService.storeIntyg(createUtkast());
     assertEquals(IntygServiceResult.OK, res);
@@ -66,13 +66,15 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testStoreIntygThrowsCertificateSenderException() {
-    assertThrows(WebCertServiceException.class, () -> {
-    doThrow(new CertificateSenderException(""))
-        .when(certificateSenderService)
-        .storeCertificate(eq(INTYG_ID), eq(INTYG_TYP_FK), anyString());
-    intygService.storeIntyg(createUtkast());
-      });
+  void testStoreIntygThrowsCertificateSenderException() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          doThrow(new CertificateSenderException(""))
+              .when(certificateSenderService)
+              .storeCertificate(eq(INTYG_ID), eq(INTYG_TYP_FK), anyString());
+          intygService.storeIntyg(createUtkast());
+        });
   }
 
   private Utkast createUtkast() {

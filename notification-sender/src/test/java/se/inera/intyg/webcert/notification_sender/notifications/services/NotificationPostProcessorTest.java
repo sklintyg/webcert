@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.postpro
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationPostProcessorTest {
+class NotificationPostProcessorTest {
 
   @Mock private NotificationPostProcessingService notificationPostProcessingService;
   @Spy private MdcHelper mdcHelper;
@@ -56,12 +56,12 @@ public class NotificationPostProcessorTest {
   @InjectMocks private NotificationPostProcessor notificationPostProcessor;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     when(message.getHeader(anyString())).thenReturn("headerValue");
   }
 
   @Test
-  public void shallProcessNotificationResultMessage() throws Exception {
+  void shallProcessNotificationResultMessage() throws Exception {
     final var notificationResultMessage = createNotificationResultMessage();
     final var body = objectMapper.writeValueAsString(notificationResultMessage);
     final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
@@ -76,7 +76,7 @@ public class NotificationPostProcessorTest {
   }
 
   @Test
-  public void shallNotProcessNotificationResultMessageIfCorrupt() {
+  void shallNotProcessNotificationResultMessageIfCorrupt() {
     final var body = "Text for parsing";
 
     doReturn(body).when(message).getBody(String.class);
@@ -87,20 +87,22 @@ public class NotificationPostProcessorTest {
   }
 
   @Test
-  public void shallNotCatchExceptionsExceptJsonProcessingExceptions() {
-    assertThrows(Exception.class, () -> {
-    final var notificationResultMessage = createNotificationResultMessage();
-    final var body = objectMapper.writeValueAsString(notificationResultMessage);
+  void shallNotCatchExceptionsExceptJsonProcessingExceptions() {
+    assertThrows(
+        Exception.class,
+        () -> {
+          final var notificationResultMessage = createNotificationResultMessage();
+          final var body = objectMapper.writeValueAsString(notificationResultMessage);
 
-    doReturn(body).when(message).getBody(String.class);
-    doThrow(new RuntimeException("Fail!"))
-        .when(notificationPostProcessingService)
-        .processNotificationResult(any(NotificationResultMessage.class));
+          doReturn(body).when(message).getBody(String.class);
+          doThrow(new RuntimeException("Fail!"))
+              .when(notificationPostProcessingService)
+              .processNotificationResult(any(NotificationResultMessage.class));
 
-    notificationPostProcessor.process(message);
+          notificationPostProcessor.process(message);
 
-    fail("Should never reach this assert!");
-      });
+          fail("Should never reach this assert!");
+        });
   }
 
   private NotificationResultMessage createNotificationResultMessage() {

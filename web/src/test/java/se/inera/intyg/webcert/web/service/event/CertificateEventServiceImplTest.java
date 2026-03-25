@@ -63,7 +63,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateEventServiceImplTest {
+class CertificateEventServiceImplTest {
 
   private static final String UTKAST_CERTIFICATE_ID = "1234";
   private static final String INTYG_CERTIFICATE_ID = "5678";
@@ -83,7 +83,7 @@ public class CertificateEventServiceImplTest {
   @InjectMocks private CertificateEventServiceImpl eventService;
 
   @Test
-  public void testGetEvents() {
+  void testGetEvents() {
     List<CertificateEvent> list = new ArrayList<>();
     list.add(getCertificateEvent(UTKAST_CERTIFICATE_ID));
 
@@ -96,7 +96,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGetEventsWithAdditionalMessages() {
+  void testGetEventsWithAdditionalMessages() {
     LocalDateTime earlierEventTimestamp = LocalDateTime.parse("2018-01-01T00:00:00");
     LocalDateTime latestEventTimestamp = LocalDateTime.parse("2019-01-01T00:00:00");
     LocalDateTime newMessageTimestamp = LocalDateTime.parse("2020-01-01T00:00:00");
@@ -159,7 +159,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateEventsForUtkast() {
+  void testGenerateEventsForUtkast() {
 
     Utkast utkast = getCertificate();
 
@@ -178,7 +178,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateEventsForUtkastWithArende() {
+  void testGenerateEventsForUtkastWithArende() {
 
     Utkast utkast = getCertificate();
     utkast.setSignatur(new Signatur());
@@ -201,7 +201,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateEventsForIntyg() {
+  void testGenerateEventsForIntyg() {
 
     IntygContentHolder intyg = getIntygContentHolder();
 
@@ -221,7 +221,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateSentEventForIntygSentFromOutsideWebcert() {
+  void testGenerateSentEventForIntygSentFromOutsideWebcert() {
 
     final var intyg = getIntygContentHolder();
 
@@ -246,7 +246,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testDontGenerateSentEventForIntygSentFromWebcert() {
+  void testDontGenerateSentEventForIntygSentFromWebcert() {
 
     final var intyg = getIntygContentHolder();
 
@@ -276,7 +276,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateEventsForIntygWithArende() {
+  void testGenerateEventsForIntygWithArende() {
 
     IntygContentHolder intyg = getIntygContentHolder();
     Arende arende = getArende(INTYG_CERTIFICATE_ID);
@@ -299,7 +299,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testGenerateNoEventsForIntygWithArende() {
+  void testGenerateNoEventsForIntygWithArende() {
     final var timestampWithMilliseconds = LocalDateTime.parse("2021-01-01T00:00:00.750");
     final var timestampWithoutMilliseconds = LocalDateTime.parse("2021-01-01T00:00:01");
 
@@ -329,7 +329,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testNoEventsGenerated() {
+  void testNoEventsGenerated() {
 
     IntygContentHolder intyg = getIntygContentHolderGeneratingNoEvents();
 
@@ -346,7 +346,7 @@ public class CertificateEventServiceImplTest {
   }
 
   @Test
-  public void testSaveCertificateEvent() {
+  void testSaveCertificateEvent() {
     CertificateEvent certificateEvent = getCertificateEvent(UTKAST_CERTIFICATE_ID);
     eventService.createCertificateEvent(
         certificateEvent.getCertificateId(), HSA_ID, EventCode.SKAPAT, MESSAGE);

@@ -27,10 +27,10 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
 
-public class SendCertificateToRecipientTypeConverterTest {
+class SendCertificateToRecipientTypeConverterTest {
 
   @Test
-  public void testConvert() throws Exception {
+  void testConvert() throws Exception {
     final String intygsId = "intygsid";
     final String enhetsId = "enhetsid";
     final String enhetsnamn = "enhetsnamn";
@@ -115,7 +115,7 @@ public class SendCertificateToRecipientTypeConverterTest {
     assertEquals(forskrivarKod, result.getSkickatAv().getHosPersonal().getForskrivarkod());
     assertNotNull(result.getSkickatTidpunkt());
     assertNotNull(result.getMottagare().getCodeSystem());
-    assertEquals( result.getMottagare().getCode(),"TRANSP");
+    assertEquals(result.getMottagare().getCode(), "TRANSP");
   }
 
   private HoSPersonal buildHosPersonal(

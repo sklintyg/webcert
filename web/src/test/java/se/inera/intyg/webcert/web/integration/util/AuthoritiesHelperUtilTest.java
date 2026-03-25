@@ -45,7 +45,7 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthoritiesHelperUtilTest {
+class AuthoritiesHelperUtilTest {
 
   private static final String DB = "db";
   private static final String DOI = "doi";
@@ -56,14 +56,14 @@ public class AuthoritiesHelperUtilTest {
   private DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
 
   @Test
-  public void testCreateDraftAllowed() {
+  void testCreateDraftAllowed() {
     Assertions.assertNull(
         AuthoritiesHelperUtil.performUniqueAndModuleValidation(
             new IntygUser(""), DB, createEmptyPreviousDraftAndCertificates(), dbModuleApiV1));
   }
 
   @Test
-  public void testDBDraftExistsOnSameCareProviderAndSameUnit() {
+  void testDBDraftExistsOnSameCareProviderAndSameUnit() {
     var user = new IntygUser("");
     user.setFeatures(
         Stream.of(
@@ -92,7 +92,7 @@ public class AuthoritiesHelperUtilTest {
   }
 
   @Test
-  public void testDBDraftExistsOnSameCareProviderAndOtherUnit() {
+  void testDBDraftExistsOnSameCareProviderAndOtherUnit() {
     IntygUser user = new IntygUser("");
     user.setFeatures(
         Stream.of(
@@ -121,7 +121,7 @@ public class AuthoritiesHelperUtilTest {
   }
 
   @Test
-  public void testDBDraftExistsOnOtherCareProvider() {
+  void testDBDraftExistsOnOtherCareProvider() {
     IntygUser user = new IntygUser("");
     user.setFeatures(
         Stream.of(
@@ -150,7 +150,7 @@ public class AuthoritiesHelperUtilTest {
   }
 
   @Test
-  public void testDBCertificateExistsOnSameCareProviderAndSameUnit() {
+  void testDBCertificateExistsOnSameCareProviderAndSameUnit() {
     IntygUser user = new IntygUser("");
     user.setFeatures(
         Stream.of(
@@ -179,7 +179,7 @@ public class AuthoritiesHelperUtilTest {
   }
 
   @Test
-  public void testDBCertificateExistsOnSameCareProviderAndOtherUnit() {
+  void testDBCertificateExistsOnSameCareProviderAndOtherUnit() {
     IntygUser user = new IntygUser("");
     user.setFeatures(
         Stream.of(
@@ -208,7 +208,7 @@ public class AuthoritiesHelperUtilTest {
   }
 
   @Test
-  public void testDBCertificateExistsOnOtherCareProvider() {
+  void testDBCertificateExistsOnOtherCareProvider() {
     IntygUser user = new IntygUser("");
     user.setFeatures(
         Stream.of(
@@ -237,7 +237,7 @@ public class AuthoritiesHelperUtilTest {
   }
 
   @Test
-  public void testDOICertificateExistsOnOtherCareProvider() {
+  void testDOICertificateExistsOnOtherCareProvider() {
     IntygUser user = new IntygUser("");
     user.setFeatures(
         Stream.of(
@@ -266,7 +266,7 @@ public class AuthoritiesHelperUtilTest {
   }
 
   @Test
-  public void testDOIDraftButNoDBCertificateExists() {
+  void testDOIDraftButNoDBCertificateExists() {
     IntygUser user = new IntygUser("");
     user.setFeatures(
         Stream.of(

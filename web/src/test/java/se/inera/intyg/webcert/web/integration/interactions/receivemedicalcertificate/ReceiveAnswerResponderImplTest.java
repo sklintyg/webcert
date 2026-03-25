@@ -57,7 +57,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @ExtendWith(MockitoExtension.class)
-public class ReceiveAnswerResponderImplTest {
+class ReceiveAnswerResponderImplTest {
 
   private static final Long QUESTION_ID = 1234L;
 
@@ -75,7 +75,7 @@ public class ReceiveAnswerResponderImplTest {
   @InjectMocks private ReceiveAnswerResponderImpl receiveAnswerResponder;
 
   @Test
-  public void testReceiveAnswerOK() {
+  void testReceiveAnswerOK() {
 
     FragaSvar fragaSvar =
         buildFraga(
@@ -104,7 +104,7 @@ public class ReceiveAnswerResponderImplTest {
   }
 
   @Test
-  public void testReceiveAnswerValidationError() {
+  void testReceiveAnswerValidationError() {
     ReceiveMedicalCertificateAnswerType request =
         createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
     request.getAnswer().setSvar(null); // invalid
@@ -117,7 +117,7 @@ public class ReceiveAnswerResponderImplTest {
     assertNotNull(response);
     assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
     assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
-    assertEquals( response.getResult().getErrorText(),"Missing svar element.");
+    assertEquals(response.getResult().getErrorText(), "Missing svar element.");
   }
 
   private ReceiveMedicalCertificateAnswerType createRequest(String answerFile) {

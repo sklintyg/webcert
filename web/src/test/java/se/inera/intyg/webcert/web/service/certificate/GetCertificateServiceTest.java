@@ -43,7 +43,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class GetCertificateServiceTest {
+class GetCertificateServiceTest {
 
   @Mock private IntygModuleRegistry intygModuleRegistry;
 
@@ -54,7 +54,7 @@ public class GetCertificateServiceTest {
   @InjectMocks private GetCertificateServiceImpl getCertificateService;
 
   @Test
-  public void shallReturnIntygFromWebcertIfExists() throws Exception {
+  void shallReturnIntygFromWebcertIfExists() throws Exception {
     final var certificateId = "CERTIFICATE_ID";
     final var certificateType = "CERTIFICATE_TYPE";
 
@@ -70,7 +70,7 @@ public class GetCertificateServiceTest {
   }
 
   @Test
-  public void shallReturnIntygFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
+  void shallReturnIntygFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
     final var certificateId = "CERTIFICATE_ID";
     final var certificateType = "CERTIFICATE_TYPE";
 
@@ -87,7 +87,7 @@ public class GetCertificateServiceTest {
   }
 
   @Test
-  public void shallReturnUtlatandeFromWebcertIfExists() throws Exception {
+  void shallReturnUtlatandeFromWebcertIfExists() throws Exception {
     final var certificateId = "CERTIFICATE_ID";
     final var certificateType = "CERTIFICATE_TYPE";
 
@@ -102,7 +102,7 @@ public class GetCertificateServiceTest {
   }
 
   @Test
-  public void shallReturnUtlatandeFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
+  void shallReturnUtlatandeFromIntygstjanstIfItDoesntExistsInWebcert() throws Exception {
     final var certificateId = "CERTIFICATE_ID";
     final var certificateType = "CERTIFICATE_TYPE";
 

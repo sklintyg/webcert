@@ -222,7 +222,7 @@ class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
     assertNotNull(response);
     assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
     assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
-    assertEquals( response.getResult().getResultText(),"Internal error. Could not get module api.");
+    assertEquals(response.getResult().getResultText(), "Internal error. Could not get module api.");
   }
 
   @Test

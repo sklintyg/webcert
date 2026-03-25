@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderSer
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateReceiverServiceImplTest {
+class CertificateReceiverServiceImplTest {
 
   private static final String RECEIVER_ID = "FKASSA";
   private static final String RECEIVER_NAME = "Försäkringskassan";
@@ -63,12 +63,12 @@ public class CertificateReceiverServiceImplTest {
   @InjectMocks private CertificateReceiverServiceImpl testee;
 
   @BeforeEach
-  public void init() {
+  void init() {
     ReflectionTestUtils.setField(testee, "logicalAddress", "123");
   }
 
   @Test
-  public void testListAllowedAndApprovedReceivers() {
+  void testListAllowedAndApprovedReceivers() {
     when(listPossibleReceiversClient.listPossibleReceivers(
             anyString(), any(ListPossibleReceiversType.class)))
         .thenReturn(buildPossibleReceivers());
@@ -96,38 +96,46 @@ public class CertificateReceiverServiceImplTest {
   }
 
   @Test
-  public void testListAllowedWithApprovedNullIntygsTyp() {
-    assertThrows(WebCertServiceException.class, () -> {
-    testee.listPossibleReceiversWithApprovedInfo(null, "intyg-123");
-      });
+  void testListAllowedWithApprovedNullIntygsTyp() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          testee.listPossibleReceiversWithApprovedInfo(null, "intyg-123");
+        });
   }
 
   @Test
-  public void testListAllowedWithApprovedReceiversBlankIntygsTyp() {
-    assertThrows(WebCertServiceException.class, () -> {
-    testee.listPossibleReceiversWithApprovedInfo("", "intyg-123");
-      });
+  void testListAllowedWithApprovedReceiversBlankIntygsTyp() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          testee.listPossibleReceiversWithApprovedInfo("", "intyg-123");
+        });
   }
 
   @Test
-  public void testRegisterApproved() {
+  void testRegisterApproved() {
     testee.registerApprovedReceivers("intyg-123", "lijsp", Arrays.asList("FKASSA", "TRANSP"));
     verify(certificateSenderService, times(1))
         .sendRegisterApprovedReceivers(anyString(), anyString(), anyString());
   }
 
   @Test
-  public void testRegisterApprovedNullIntygsId() {
-    assertThrows(WebCertServiceException.class, () -> {
-    testee.registerApprovedReceivers(null, "lijsp", Arrays.asList("FKASSA"));
-      });
+  void testRegisterApprovedNullIntygsId() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          testee.registerApprovedReceivers(null, "lijsp", Arrays.asList("FKASSA"));
+        });
   }
 
   @Test
-  public void testListAllowedReceiversBlankIntygsId() {
-    assertThrows(WebCertServiceException.class, () -> {
-    testee.registerApprovedReceivers("", "lijsp", Arrays.asList("FKASSA"));
-      });
+  void testListAllowedReceiversBlankIntygsId() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          testee.registerApprovedReceivers("", "lijsp", Arrays.asList("FKASSA"));
+        });
   }
 
   private ListPossibleReceiversResponseType buildPossibleReceivers() {

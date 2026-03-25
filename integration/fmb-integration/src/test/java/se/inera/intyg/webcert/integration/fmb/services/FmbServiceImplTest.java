@@ -56,7 +56,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 
-public class FmbServiceImplTest {
+class FmbServiceImplTest {
 
   @Mock private FmbRepository fmbRepository;
   @Mock private DiagnosInformationRepository diagnosInformationRepository;
@@ -68,12 +68,12 @@ public class FmbServiceImplTest {
   @InjectMocks private FmbServiceImpl fmbServiceImpl;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() {
     MockitoAnnotations.openMocks(this);
   }
 
   @Test
-  public void testGoldenMaster() throws Exception {
+  void testGoldenMaster() throws Exception {
     // Given
     ObjectMapper mapper = new ObjectMapper();
     final URL typfallJson = getClass().getResource("/TypfallStubResponse.json");
@@ -100,7 +100,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testThatDotsInIcd10CodesAreRemoved() throws Exception {
+  void testThatDotsInIcd10CodesAreRemoved() throws Exception {
     // Given
     //
     // Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation("", "J22.2", "J22.4"));
@@ -121,7 +121,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testUpdateDiagnosInfoUpdatesCorrectlyOnEmptyDb() throws Exception {
+  void testUpdateDiagnosInfoUpdatesCorrectlyOnEmptyDb() throws Exception {
     // Given
     final String beskrivning = "test";
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
@@ -144,7 +144,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testUpdateDiagnosInfoUpdatesCorrectlyOnNonEmptyDb() throws Exception {
+  void testUpdateDiagnosInfoUpdatesCorrectlyOnNonEmptyDb() throws Exception {
     // Given
     final String beskrivning = "test";
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
@@ -167,7 +167,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testUpdateDiagnosInfoWillNotBeDoneIfTypfallCouldNotBeFetched() throws Exception {
+  void testUpdateDiagnosInfoWillNotBeDoneIfTypfallCouldNotBeFetched() throws Exception {
     // Given
     final String beskrivning = "test";
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
@@ -183,7 +183,7 @@ public class FmbServiceImplTest {
   }
 
   @Test
-  public void testUpdateDiagnosInfoWillNotBeDoneIfFmdxInfoCouldNotBeFetched() throws Exception {
+  void testUpdateDiagnosInfoWillNotBeDoneIfFmdxInfoCouldNotBeFetched() throws Exception {
     // Given
     final String beskrivning = "test";
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(null);

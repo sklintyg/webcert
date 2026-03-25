@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,7 +42,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
 /** Created by eriklupander on 2017-08-18. */
 @ExtendWith(MockitoExtension.class)
-public class NotificationPatientEnricherTest {
+class NotificationPatientEnricherTest {
 
   @Mock private PUService puService;
   @Mock private HashUtility hashUtility;
@@ -50,42 +50,44 @@ public class NotificationPatientEnricherTest {
   @InjectMocks private NotificationPatientEnricher testee;
 
   @Test
-  public void testFk7263IsNotEnriched() {
+  void testFk7263IsNotEnriched() {
     testee.enrichWithPatient(buildIntyg("fk7263"));
     verifyNoInteractions(puService);
   }
 
   @Test
-  public void testExceptionIsThrownWhenPuInvocationFails() {
-    assertThrows(IllegalStateException.class, () -> {
-    when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
-    try {
-      testee.enrichWithPatient(buildIntyg("lisjp"));
-    } catch (Exception e) {
-      verify(puService, times(1)).getPerson(any(Personnummer.class));
-      throw e;
-    }
-      });
+  void testExceptionIsThrownWhenPuInvocationFails() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> {
+          when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
+          try {
+            testee.enrichWithPatient(buildIntyg("lisjp"));
+          } catch (Exception e) {
+            verify(puService, times(1)).getPerson(any(Personnummer.class));
+            throw e;
+          }
+        });
   }
 
   @Test
-  public void testLuaeFsIsEnriched() {
+  void testLuaeFsIsEnriched() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
     Intyg intyg = buildIntyg("luae_fs");
     testee.enrichWithPatient(intyg);
     verify(puService, times(1)).getPerson(any(Personnummer.class));
 
     Patient p = intyg.getPatient();
-    assertEquals( p.getFornamn(),"Tolvan");
-    assertEquals( p.getMellannamn(),"Mellis");
-    assertEquals( p.getEfternamn(),"Tolvansson");
-    assertEquals( p.getPostadress(),"Tolvgatan 12");
-    assertEquals( p.getPostnummer(),"12121");
-    assertEquals( p.getPostort(),"Tolvhult");
+    assertEquals(p.getFornamn(), "Tolvan");
+    assertEquals(p.getMellannamn(), "Mellis");
+    assertEquals(p.getEfternamn(), "Tolvansson");
+    assertEquals(p.getPostadress(), "Tolvgatan 12");
+    assertEquals(p.getPostnummer(), "12121");
+    assertEquals(p.getPostort(), "Tolvhult");
   }
 
   @Test
-  public void testSekretessmarkeradPatientIsNotUpdated() {
+  void testSekretessmarkeradPatientIsNotUpdated() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
     Intyg intyg = buildIntyg("luae_fs");
     testee.enrichWithPatient(intyg);
@@ -93,13 +95,13 @@ public class NotificationPatientEnricherTest {
 
     Patient p = intyg.getPatient();
 
-    assertEquals( p.getPersonId().getExtension(),"191212121212");
-    assertEquals( p.getFornamn(),"");
-    assertEquals( p.getMellannamn(),"");
-    assertEquals( p.getEfternamn(),"Skyddade personuppgifter");
-    assertEquals( p.getPostadress(),"");
-    assertEquals( p.getPostnummer(),"");
-    assertEquals( p.getPostort(),"");
+    assertEquals(p.getPersonId().getExtension(), "191212121212");
+    assertEquals(p.getFornamn(), "");
+    assertEquals(p.getMellannamn(), "");
+    assertEquals(p.getEfternamn(), "Skyddade personuppgifter");
+    assertEquals(p.getPostadress(), "");
+    assertEquals(p.getPostnummer(), "");
+    assertEquals(p.getPostort(), "");
   }
 
   private Intyg buildIntyg(String intygsTyp) {

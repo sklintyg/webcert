@@ -58,7 +58,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @ExtendWith(MockitoExtension.class)
-public class ReceiveQuestionResponderImplTest {
+class ReceiveQuestionResponderImplTest {
 
   private static final Long QUESTION_ID = 1234L;
 
@@ -78,7 +78,7 @@ public class ReceiveQuestionResponderImplTest {
   @InjectMocks private ReceiveQuestionResponderImpl receiveQuestionResponder;
 
   @Test
-  public void testReceiveQuestionOK() {
+  void testReceiveQuestionOK() {
     FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
     when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
 
@@ -97,7 +97,7 @@ public class ReceiveQuestionResponderImplTest {
   }
 
   @Test
-  public void testReceiveQuestionValidationError() {
+  void testReceiveQuestionValidationError() {
     ReceiveMedicalCertificateQuestionType request =
         createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
     request.getQuestion().setAmne(null); // invalid
@@ -110,7 +110,7 @@ public class ReceiveQuestionResponderImplTest {
     assertNotNull(response);
     assertEquals(ResultCodeEnum.ERROR, response.getResult().getResultCode());
     assertEquals(ErrorIdEnum.VALIDATION_ERROR, response.getResult().getErrorId());
-    assertEquals( response.getResult().getErrorText(),"Amne är felaktigt");
+    assertEquals(response.getResult().getErrorText(), "Amne är felaktigt");
   }
 
   private ReceiveMedicalCertificateQuestionType createRequest(String questionFile) {

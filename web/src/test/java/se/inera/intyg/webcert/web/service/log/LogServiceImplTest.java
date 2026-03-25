@@ -67,7 +67,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /** Created by pehr on 13/11/13. */
 @ExtendWith(MockitoExtension.class)
-public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
+class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   private static final int DELAY = 10;
 
@@ -82,7 +82,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
   private ObjectMapper objectMapper = new CustomObjectMapper();
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     LogMessagePopulator logMessagePopulator = new LogMessagePopulatorImpl();
     ReflectionTestUtils.setField(logMessagePopulator, "systemId", "webcert");
     ReflectionTestUtils.setField(logMessagePopulator, "systemName", "WebCert");
@@ -90,7 +90,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void serviceSendsDocumentAndIdForCreate() throws Exception {
+  void serviceSendsDocumentAndIdForCreate() throws Exception {
     when(userService.getUser()).thenReturn(createUser());
 
     ArgumentCaptor<MessageCreator> messageCreatorCaptor =
@@ -122,53 +122,57 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
     assertNotNull(intygReadMessage.getLogId());
     assertEquals(ActivityType.READ, intygReadMessage.getActivityType());
     assertEquals(ActivityPurpose.CARE_TREATMENT, intygReadMessage.getPurpose());
-    assertEquals( intygReadMessage.getPdlResourceList().get(0).getResourceType(),"Intyg");
-    assertEquals( intygReadMessage.getActivityLevel(),"abc123");
+    assertEquals(intygReadMessage.getPdlResourceList().get(0).getResourceType(), "Intyg");
+    assertEquals(intygReadMessage.getActivityLevel(), "abc123");
 
-    assertEquals( intygReadMessage.getUserId(),"HSAID");
-    assertEquals( intygReadMessage.getUserName(),"");
-    assertEquals( intygReadMessage.getUserAssignment(),"Läkare på vårdcentralen");
-    assertEquals( intygReadMessage.getUserTitle(),"Överläkare");
+    assertEquals(intygReadMessage.getUserId(), "HSAID");
+    assertEquals(intygReadMessage.getUserName(), "");
+    assertEquals(intygReadMessage.getUserAssignment(), "Läkare på vårdcentralen");
+    assertEquals(intygReadMessage.getUserTitle(), "Överläkare");
 
-    assertEquals( intygReadMessage.getUserCareUnit().getEnhetsId(),"VARDENHET_ID");
-    assertEquals( intygReadMessage.getUserCareUnit().getEnhetsNamn(),"Vårdenheten");
-    assertEquals( intygReadMessage.getUserCareUnit().getVardgivareId(),"VARDGIVARE_ID");
-    assertEquals( intygReadMessage.getUserCareUnit().getVardgivareNamn(),"Vårdgivaren");
+    assertEquals(intygReadMessage.getUserCareUnit().getEnhetsId(), "VARDENHET_ID");
+    assertEquals(intygReadMessage.getUserCareUnit().getEnhetsNamn(), "Vårdenheten");
+    assertEquals(intygReadMessage.getUserCareUnit().getVardgivareId(), "VARDGIVARE_ID");
+    assertEquals(intygReadMessage.getUserCareUnit().getVardgivareNamn(), "Vårdgivaren");
 
-    assertEquals( intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId(),
-        "191212121212");
-    assertEquals( intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn(),"");
+    assertEquals(
+        intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId(), "191212121212");
+    assertEquals(intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn(), "");
 
     assertTrue(intygReadMessage.getTimestamp().minusSeconds(DELAY).isBefore(now()));
     assertTrue(intygReadMessage.getTimestamp().plusSeconds(DELAY).isAfter(now()));
 
-    assertEquals( intygReadMessage.getSystemId(),"webcert");
-    assertEquals( intygReadMessage.getSystemName(),"WebCert");
+    assertEquals(intygReadMessage.getSystemId(), "webcert");
+    assertEquals(intygReadMessage.getSystemName(), "WebCert");
   }
 
   @Test
-  public void logServiceJmsException() {
-    assertThrows(JmsException.class, () -> {
-    when(userService.getUser()).thenReturn(createUser());
-    doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+  void logServiceJmsException() {
+    assertThrows(
+        JmsException.class,
+        () -> {
+          when(userService.getUser()).thenReturn(createUser());
+          doThrow(new DestinationResolutionException(""))
+              .when(template)
+              .send(any(MessageCreator.class));
 
-    final var logRequest =
-        LogRequest.builder()
-            .intygId("abc123")
-            .patientId(createPnr("19121212-1212"))
-            .patientName("Hans Olof van der Test")
-            .testIntyg(false)
-            .build();
+          final var logRequest =
+              LogRequest.builder()
+                  .intygId("abc123")
+                  .patientId(createPnr("19121212-1212"))
+                  .patientName("Hans Olof van der Test")
+                  .testIntyg(false)
+                  .build();
 
-    try {
-      logService.logReadIntyg(logRequest);
-    } finally {
-      verify(template, times(1)).send(any(MessageCreator.class));
-    }
-      });
+          try {
+            logService.logReadIntyg(logRequest);
+          } finally {
+            verify(template, times(1)).send(any(MessageCreator.class));
+          }
+        });
   }
 
-  public void testActivityArgsAreIdenticalToAdditionalInfo() {
+  void testActivityArgsAreIdenticalToAdditionalInfo() {
     final var logRequest =
         LogRequest.builder()
             .intygId("abc123")
@@ -182,7 +186,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void logServiceTestIntygShouldNotBeLogged() throws Exception {
+  void logServiceTestIntygShouldNotBeLogged() throws Exception {
     when(userService.getUser()).thenReturn(createUser());
 
     final var logRequest =
@@ -199,7 +203,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
   }
 
   @Test
-  public void shouldLogReadLevelOne() {
+  void shouldLogReadLevelOne() {
     final var user = createUser();
     final var patientId = "191212121212";
     final var populatedMessage = mock(PdlLogMessage.class);

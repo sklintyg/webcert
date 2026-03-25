@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.web.service.facade.ErrorLogFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class LogControllerTest {
+class LogControllerTest {
 
   @Mock private ErrorLogFacadeService errorLogFacadeService;
 

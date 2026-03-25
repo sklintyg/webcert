@@ -33,16 +33,16 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate.QuestionAnswerValidator;
 
 /** Created by marced on 05/08/16. */
-public class QuestionAnswerValidatorTest {
+class QuestionAnswerValidatorTest {
 
   @Test
-  public void testQVPassesValidRequest() {
+  void testQVPassesValidRequest() {
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     assertEquals(0, QuestionAnswerValidator.validate(request).size());
   }
 
   @Test
-  public void testQVCatchesMissingFraga() {
+  void testQVCatchesMissingFraga() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().setFraga(null);
@@ -55,7 +55,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingAmne() {
+  void testQVCatchesMissingAmne() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().setAmne(null);
@@ -68,7 +68,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingLakarutlatandeId() {
+  void testQVCatchesMissingLakarutlatandeId() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getLakarutlatande().setLakarutlatandeId(null);
@@ -81,7 +81,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingHsaPersonIdRoot() {
+  void testQVCatchesMissingHsaPersonIdRoot() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getAdressVard().getHosPersonal().getPersonalId().setRoot(null);
@@ -94,7 +94,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesInvalidHsaPersonIdRoot() {
+  void testQVCatchesInvalidHsaPersonIdRoot() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getAdressVard().getHosPersonal().getPersonalId().setRoot("INVALID");
@@ -107,7 +107,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingHsaPersonIdExtension() {
+  void testQVCatchesMissingHsaPersonIdExtension() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getAdressVard().getHosPersonal().getPersonalId().setExtension(null);
@@ -120,7 +120,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingHsaPersonFullstandigtNamn() {
+  void testQVCatchesMissingHsaPersonFullstandigtNamn() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getAdressVard().getHosPersonal().setFullstandigtNamn(null);
@@ -133,7 +133,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesInvalidPatientPersonIdRoot() {
+  void testQVCatchesInvalidPatientPersonIdRoot() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getLakarutlatande().getPatient().getPersonId().setRoot("INVALID");
@@ -146,7 +146,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingPatientPersonIdExtension() {
+  void testQVCatchesMissingPatientPersonIdExtension() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getLakarutlatande().getPatient().getPersonId().setExtension(null);
@@ -159,7 +159,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingPatientPersonFullstandigtNamn() {
+  void testQVCatchesMissingPatientPersonFullstandigtNamn() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getLakarutlatande().getPatient().setFullstandigtNamn(null);
@@ -172,7 +172,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesInvalidHsaEnhetIdRoot() {
+  void testQVCatchesInvalidHsaEnhetIdRoot() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request
@@ -191,7 +191,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingHsaEnhetIdExtension() {
+  void testQVCatchesMissingHsaEnhetIdExtension() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request
@@ -210,7 +210,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingHsaEnhetsNamn() {
+  void testQVCatchesMissingHsaEnhetsNamn() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request.getQuestion().getAdressVard().getHosPersonal().getEnhet().setEnhetsnamn(null);
@@ -223,7 +223,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesInvalidVardgivarIdRoot() {
+  void testQVCatchesInvalidVardgivarIdRoot() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request
@@ -243,7 +243,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingVardgivarIdExtension() {
+  void testQVCatchesMissingVardgivarIdExtension() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request
@@ -263,7 +263,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testQVCatchesMissingVardgivarNamn() {
+  void testQVCatchesMissingVardgivarNamn() {
     // Arrange
     ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
     request
@@ -283,13 +283,13 @@ public class QuestionAnswerValidatorTest {
 
   // --------- Answer tests
   @Test
-  public void testAVPassesValidRequest() {
+  void testAVPassesValidRequest() {
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     assertEquals(0, QuestionAnswerValidator.validate(request).size());
   }
 
   @Test
-  public void testAVCatchesMissingFraga() {
+  void testAVCatchesMissingFraga() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().setSvar(null);
@@ -302,7 +302,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingAmne() {
+  void testAVCatchesMissingAmne() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().setAmne(null);
@@ -315,7 +315,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingLakarutlatandeId() {
+  void testAVCatchesMissingLakarutlatandeId() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getLakarutlatande().setLakarutlatandeId(null);
@@ -328,7 +328,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingHsaPersonIdRoot() {
+  void testAVCatchesMissingHsaPersonIdRoot() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getAdressVard().getHosPersonal().getPersonalId().setRoot(null);
@@ -341,7 +341,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesInvalidHsaPersonIdRoot() {
+  void testAVCatchesInvalidHsaPersonIdRoot() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getAdressVard().getHosPersonal().getPersonalId().setRoot("INVALID");
@@ -354,7 +354,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingHsaPersonIdExtension() {
+  void testAVCatchesMissingHsaPersonIdExtension() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getAdressVard().getHosPersonal().getPersonalId().setExtension(null);
@@ -367,7 +367,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingHsaPersonFullstandigtNamn() {
+  void testAVCatchesMissingHsaPersonFullstandigtNamn() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getAdressVard().getHosPersonal().setFullstandigtNamn(null);
@@ -380,7 +380,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesInvalidPatientPersonIdRoot() {
+  void testAVCatchesInvalidPatientPersonIdRoot() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getLakarutlatande().getPatient().getPersonId().setRoot("INVALID");
@@ -393,7 +393,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingPatientPersonIdExtension() {
+  void testAVCatchesMissingPatientPersonIdExtension() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getLakarutlatande().getPatient().getPersonId().setExtension(null);
@@ -406,7 +406,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingPatientPersonFullstandigtNamn() {
+  void testAVCatchesMissingPatientPersonFullstandigtNamn() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getLakarutlatande().getPatient().setFullstandigtNamn(null);
@@ -419,7 +419,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesInvalidHsaEnhetIdRoot() {
+  void testAVCatchesInvalidHsaEnhetIdRoot() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request
@@ -438,7 +438,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingHsaEnhetIdExtension() {
+  void testAVCatchesMissingHsaEnhetIdExtension() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request
@@ -457,7 +457,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingHsaEnhetsNamn() {
+  void testAVCatchesMissingHsaEnhetsNamn() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request.getAnswer().getAdressVard().getHosPersonal().getEnhet().setEnhetsnamn(null);
@@ -470,7 +470,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesInvalidVardgivarIdRoot() {
+  void testAVCatchesInvalidVardgivarIdRoot() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request
@@ -490,7 +490,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingVardgivarIdExtension() {
+  void testAVCatchesMissingVardgivarIdExtension() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request
@@ -510,7 +510,7 @@ public class QuestionAnswerValidatorTest {
   }
 
   @Test
-  public void testAVCatchesMissingVardgivarNamn() {
+  void testAVCatchesMissingVardgivarNamn() {
     // Arrange
     ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
     request

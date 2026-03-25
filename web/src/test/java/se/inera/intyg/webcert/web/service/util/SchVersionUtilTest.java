@@ -22,17 +22,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class SchVersionUtilTest {
+class SchVersionUtilTest {
 
   @Test
-  public void testParseMajorMinor() {
+  void testParseMajorMinor() {
     String schVersion = SchVersionUtil.formatToSchVersion("2.6");
-    assertEquals( schVersion,"v2");
+    assertEquals(schVersion, "v2");
   }
 
   @Test
-  public void testParseMajor() {
+  void testParseMajor() {
     String schVersion = SchVersionUtil.formatToSchVersion("2");
-    assertEquals( schVersion,"v2");
+    assertEquals(schVersion, "v2");
   }
 }

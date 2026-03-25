@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
-public class UserIntegrationControllerTest {
+class UserIntegrationControllerTest {
 
   private static final String GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION.name();
   private static final String NON_GRANTED_ORIGIN = UserOriginType.NORMAL.name();
@@ -55,7 +55,7 @@ public class UserIntegrationControllerTest {
   UserIntegrationController userIntegrationController = new UserIntegrationController();
 
   @Test
-  public void testLogoutNowWithDjupintegration() {
+  void testLogoutNowWithDjupintegration() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
 
@@ -73,7 +73,7 @@ public class UserIntegrationControllerTest {
   }
 
   @Test
-  public void testLogoutNowWithoutDjupintegration() {
+  void testLogoutNowWithoutDjupintegration() {
     HttpServletRequest request = mock(HttpServletRequest.class);
 
     WebCertUser webCertUser = new WebCertUser();
@@ -90,33 +90,33 @@ public class UserIntegrationControllerTest {
   }
 
   @Nested
-  public class GrantedRoleTest {
+  class GrantedRoleTest {
 
     @Test
-    public void shouldReturnLakare() {
+    void shouldReturnLakare() {
       assertEquals(
           AuthoritiesConstants.ROLE_LAKARE, userIntegrationController.getGrantedRoles()[0]);
     }
 
     @Test
-    public void shouldReturnAdmin() {
+    void shouldReturnAdmin() {
       assertEquals(AuthoritiesConstants.ROLE_ADMIN, userIntegrationController.getGrantedRoles()[1]);
     }
 
     @Test
-    public void shouldReturnTandlakare() {
+    void shouldReturnTandlakare() {
       assertEquals(
           AuthoritiesConstants.ROLE_TANDLAKARE, userIntegrationController.getGrantedRoles()[2]);
     }
 
     @Test
-    public void shouldReturnBarnmorska() {
+    void shouldReturnBarnmorska() {
       assertEquals(
           AuthoritiesConstants.ROLE_BARNMORSKA, userIntegrationController.getGrantedRoles()[3]);
     }
 
     @Test
-    public void shouldReturnSjukskoterska() {
+    void shouldReturnSjukskoterska() {
       assertEquals(
           AuthoritiesConstants.ROLE_SJUKSKOTERSKA, userIntegrationController.getGrantedRoles()[4]);
     }

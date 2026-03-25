@@ -110,7 +110,7 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetup {
+class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   @Mock private WebCertUserService webCertUserService;
 
@@ -160,7 +160,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
   private ModuleApi moduleApi = mock(ModuleApi.class);
 
   @BeforeEach
-  public void init() throws IOException, ModuleNotFoundException, ModuleException {
+  void init() throws IOException, ModuleNotFoundException, ModuleException {
     vardperson = UnderskriftTestUtil.createVardperson();
     vardenhet = new Vardenhet(ENHET_ID, "testNamn");
     vardgivare = new Vardgivare("123", "vardgivare");
@@ -191,7 +191,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
   }
 
   @Test
-  public void testStartSigning() throws ModuleNotFoundException, ModuleException {
+  void testStartSigning() throws ModuleNotFoundException, ModuleException {
     when(utkastRepository.findById(INTYG_ID))
         .thenReturn(
             Optional.of(
@@ -227,56 +227,62 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
   }
 
   @Test
-  public void testStartSignNoUtkastFound() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-    testee.startSigningProcess(
-        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-      });
+  void testStartSignNoUtkastFound() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
+          testee.startSigningProcess(
+              INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+        });
   }
 
   @Test
-  public void testStartSignUtkastVersionsDifferFound() {
-    assertThrows(OptimisticLockException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID))
-        .thenReturn(
-            Optional.of(
-                createUtkast(
-                    INTYG_ID,
-                    2L,
-                    INTYG_TYP,
-                    UtkastStatus.DRAFT_COMPLETE,
-                    "model",
-                    vardperson,
-                    ENHET_ID,
-                    PERSON_ID)));
-    testee.startSigningProcess(
-        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-      });
+  void testStartSignUtkastVersionsDifferFound() {
+    assertThrows(
+        OptimisticLockException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID))
+              .thenReturn(
+                  Optional.of(
+                      createUtkast(
+                          INTYG_ID,
+                          2L,
+                          INTYG_TYP,
+                          UtkastStatus.DRAFT_COMPLETE,
+                          "model",
+                          vardperson,
+                          ENHET_ID,
+                          PERSON_ID)));
+          testee.startSigningProcess(
+              INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+        });
   }
 
   @Test
-  public void testStartSignUtkastNotReadyForSign() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID))
-        .thenReturn(
-            Optional.of(
-                createUtkast(
-                    INTYG_ID,
-                    1L,
-                    INTYG_TYP,
-                    UtkastStatus.DRAFT_INCOMPLETE,
-                    "model",
-                    vardperson,
-                    ENHET_ID,
-                    PERSON_ID)));
-    testee.startSigningProcess(
-        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-      });
+  void testStartSignUtkastNotReadyForSign() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID))
+              .thenReturn(
+                  Optional.of(
+                      createUtkast(
+                          INTYG_ID,
+                          1L,
+                          INTYG_TYP,
+                          UtkastStatus.DRAFT_INCOMPLETE,
+                          "model",
+                          vardperson,
+                          ENHET_ID,
+                          PERSON_ID)));
+          testee.startSigningProcess(
+              INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+        });
   }
 
   @Test
-  public void testStartSignUtkastWithUndantagUnikOmSenaste() {
+  void testStartSignUtkastWithUndantagUnikOmSenaste() {
     final LocalDateTime ogIntygSkapad = LocalDateTime.of(2018, 5, 5, 5, 5);
     final LocalDateTime ersattandeIntygSkapad = ogIntygSkapad.plusDays(1);
     final String doiTyp = "doi";
@@ -326,52 +332,57 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
   }
 
   @Test
-  public void testStartSignUtkastAlreadySigned() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID))
-        .thenReturn(
-            Optional.of(
-                createUtkast(
-                    INTYG_ID,
-                    1L,
-                    INTYG_TYP,
-                    UtkastStatus.SIGNED,
-                    "model",
-                    vardperson,
-                    ENHET_ID,
-                    PERSON_ID)));
-    testee.startSigningProcess(
-        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-      });
+  void testStartSignUtkastAlreadySigned() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID))
+              .thenReturn(
+                  Optional.of(
+                      createUtkast(
+                          INTYG_ID,
+                          1L,
+                          INTYG_TYP,
+                          UtkastStatus.SIGNED,
+                          "model",
+                          vardperson,
+                          ENHET_ID,
+                          PERSON_ID)));
+          testee.startSigningProcess(
+              INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+        });
   }
 
   @Test
-  public void testStartSignInvalidDraft() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(utkastRepository.findById(INTYG_ID))
-        .thenReturn(
-            Optional.of(
-                createUtkast(
-                    INTYG_ID,
-                    1L,
-                    INTYG_TYP,
-                    UtkastStatus.SIGNED,
-                    "model",
-                    vardperson,
-                    ENHET_ID,
-                    PERSON_ID)));
+  void testStartSignInvalidDraft() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(utkastRepository.findById(INTYG_ID))
+              .thenReturn(
+                  Optional.of(
+                      createUtkast(
+                          INTYG_ID,
+                          1L,
+                          INTYG_TYP,
+                          UtkastStatus.SIGNED,
+                          "model",
+                          vardperson,
+                          ENHET_ID,
+                          PERSON_ID)));
 
-    when(draftModelToXMLValidator.validateDraftModelAsXml(any()))
-        .thenReturn(
-            new ValidateXmlResponse(ValidationStatus.INVALID, Collections.singletonList("Error")));
+          when(draftModelToXMLValidator.validateDraftModelAsXml(any()))
+              .thenReturn(
+                  new ValidateXmlResponse(
+                      ValidationStatus.INVALID, Collections.singletonList("Error")));
 
-    testee.startSigningProcess(
-        INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
-      });
+          testee.startSigningProcess(
+              INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
+        });
   }
 
   @Test
-  public void testGetSigneringsStatus() {
+  void testGetSigneringsStatus() {
     when(redisTicketTracker.findBiljett(TICKET_ID))
         .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
@@ -380,17 +391,19 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
   }
 
   @Test
-  public void testGetSigneringsStatusNoTicketFound() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(null);
+  void testGetSigneringsStatusNoTicketFound() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(null);
 
-    SignaturBiljett signaturBiljett = testee.signeringsStatus(TICKET_ID);
-    assertNotNull(signaturBiljett);
-      });
+          SignaturBiljett signaturBiljett = testee.signeringsStatus(TICKET_ID);
+          assertNotNull(signaturBiljett);
+        });
   }
 
   @Test
-  public void testNetidSignature() {
+  void testNetidSignature() {
     Utkast utkast =
         createUtkast(
             INTYG_ID,
@@ -421,7 +434,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
   }
 
   @Test
-  public void testGrpSignature() {
+  void testGrpSignature() {
     Utkast utkast =
         createUtkast(
             INTYG_ID,
@@ -452,7 +465,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
   }
 
   @Test
-  public void shallPublishAnalyticsMessageWhenSigningIsFinalized() {
+  void shallPublishAnalyticsMessageWhenSigningIsFinalized() {
     final var utkast =
         createUtkast(
             INTYG_ID,

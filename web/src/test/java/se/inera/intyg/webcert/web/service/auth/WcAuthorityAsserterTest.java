@@ -47,7 +47,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
-public class WcAuthorityAsserterTest {
+class WcAuthorityAsserterTest {
 
   @Mock private PatientDetailsResolver patientDetailsResolver;
 
@@ -56,7 +56,7 @@ public class WcAuthorityAsserterTest {
   @InjectMocks private WcAuthorityAsserter authorityAsserter;
 
   @Test
-  public void assertIsAuthorizedOK() {
+  void assertIsAuthorizedOK() {
 
     WebCertUser webCertUser = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
@@ -72,7 +72,7 @@ public class WcAuthorityAsserterTest {
   }
 
   @Test
-  public void assertIsAuthorizedNOK() {
+  void assertIsAuthorizedNOK() {
 
     WebCertUser webCertUser =
         createDefaultUser(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG); // Not correct privilegie

@@ -58,7 +58,7 @@ class InvalidateSessionServiceImplTest {
   private InvalidateRequest invalidateRequest;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     invalidateRequest = getInvalidateRequest();
     when(redisCacheLaunchId.get(invalidateRequest.getLaunchId(), String.class))
         .thenReturn(ENCODED_SESSION_ID);

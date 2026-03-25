@@ -47,19 +47,19 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class DiagnosInformationRepositoryTest {
+class DiagnosInformationRepositoryTest {
 
   private DiagnosInformation diagnosInfoA10B10;
 
   @Autowired private DiagnosInformationRepository repo;
 
   @AfterEach
-  public void clean() {
+  void clean() {
     repo.deleteAll();
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     final String diagnosRubrik = "diagnosRubrik";
     final String forsakringsmedicinskInformation = "forsakringsmedicinskInformation";
     final String symptomPrognosBehandling = "symptomPrognosBehandling";
@@ -103,18 +103,18 @@ public class DiagnosInformationRepositoryTest {
   }
 
   @Test
-  public void testFindFirstByIcd10KodListkod() {
+  void testFindFirstByIcd10KodListkod() {
     DiagnosInformation read = repo.findFirstByIcd10KodList_kod("A10").get();
     assertEquals(diagnosInfoA10B10, read);
   }
 
   @Test
-  public void testFindFirstByIcd10KodListkodNotFound() {
+  void testFindFirstByIcd10KodListkodNotFound() {
     assertFalse(repo.findFirstByIcd10KodList_kod("A11").isPresent());
   }
 
   @Test
-  public void testFindMaximalSjukrivningstidDagarByIcd10KoderA10() {
+  void testFindMaximalSjukrivningstidDagarByIcd10KoderA10() {
 
     Set<String> diagnoser = new HashSet<>();
     diagnoser.add("A10");
@@ -122,19 +122,19 @@ public class DiagnosInformationRepositoryTest {
     final List<MaximalSjukskrivningstidDagar> result =
         repo.findMaximalSjukrivningstidDagarByIcd10Koder(diagnoser);
     assertEquals(2, result.size());
-    assertEquals( result.get(0).getIcd10Kod(),"A10");
+    assertEquals(result.get(0).getIcd10Kod(), "A10");
     assertEquals(14, result.get(0).getMaximalSjukrivningstidDagar());
-    assertEquals( result.get(0).getMaximalSjukrivningstidSourceValue(),"2");
-    assertEquals( result.get(0).getMaximalSjukrivningstidSourceUnit(),"wk");
+    assertEquals(result.get(0).getMaximalSjukrivningstidSourceValue(), "2");
+    assertEquals(result.get(0).getMaximalSjukrivningstidSourceUnit(), "wk");
 
-    assertEquals( result.get(1).getIcd10Kod(),"A10");
+    assertEquals(result.get(1).getIcd10Kod(), "A10");
     assertEquals(10, result.get(1).getMaximalSjukrivningstidDagar());
-    assertEquals( result.get(1).getMaximalSjukrivningstidSourceValue(),"10");
-    assertEquals( result.get(1).getMaximalSjukrivningstidSourceUnit(),"d");
+    assertEquals(result.get(1).getMaximalSjukrivningstidSourceValue(), "10");
+    assertEquals(result.get(1).getMaximalSjukrivningstidSourceUnit(), "d");
   }
 
   @Test
-  public void testFindMaximalSjukrivningstidDagarByIcd10KoderA10B10() {
+  void testFindMaximalSjukrivningstidDagarByIcd10KoderA10B10() {
 
     Set<String> diagnoser = new HashSet<>();
     diagnoser.add("A10");
@@ -144,24 +144,24 @@ public class DiagnosInformationRepositoryTest {
         repo.findMaximalSjukrivningstidDagarByIcd10Koder(diagnoser);
     assertEquals(4, result.size());
 
-    assertEquals( result.get(0).getIcd10Kod(),"B10");
+    assertEquals(result.get(0).getIcd10Kod(), "B10");
     assertEquals(61, result.get(0).getMaximalSjukrivningstidDagar());
-    assertEquals( result.get(0).getMaximalSjukrivningstidSourceValue(),"2");
-    assertEquals( result.get(0).getMaximalSjukrivningstidSourceUnit(),"mo");
+    assertEquals(result.get(0).getMaximalSjukrivningstidSourceValue(), "2");
+    assertEquals(result.get(0).getMaximalSjukrivningstidSourceUnit(), "mo");
 
-    assertEquals( result.get(1).getIcd10Kod(),"A10");
+    assertEquals(result.get(1).getIcd10Kod(), "A10");
     assertEquals(14, result.get(1).getMaximalSjukrivningstidDagar());
-    assertEquals( result.get(1).getMaximalSjukrivningstidSourceValue(),"2");
-    assertEquals( result.get(1).getMaximalSjukrivningstidSourceUnit(),"wk");
+    assertEquals(result.get(1).getMaximalSjukrivningstidSourceValue(), "2");
+    assertEquals(result.get(1).getMaximalSjukrivningstidSourceUnit(), "wk");
 
-    assertEquals( result.get(2).getIcd10Kod(),"A10");
+    assertEquals(result.get(2).getIcd10Kod(), "A10");
     assertEquals(10, result.get(2).getMaximalSjukrivningstidDagar());
-    assertEquals( result.get(2).getMaximalSjukrivningstidSourceValue(),"10");
-    assertEquals( result.get(2).getMaximalSjukrivningstidSourceUnit(),"d");
+    assertEquals(result.get(2).getMaximalSjukrivningstidSourceValue(), "10");
+    assertEquals(result.get(2).getMaximalSjukrivningstidSourceUnit(), "d");
 
-    assertEquals( result.get(3).getIcd10Kod(),"B10");
+    assertEquals(result.get(3).getIcd10Kod(), "B10");
     assertEquals(9, result.get(3).getMaximalSjukrivningstidDagar());
-    assertEquals( result.get(3).getMaximalSjukrivningstidSourceValue(),"9");
-    assertEquals( result.get(3).getMaximalSjukrivningstidSourceUnit(),"d");
+    assertEquals(result.get(3).getMaximalSjukrivningstidSourceValue(), "9");
+    assertEquals(result.get(3).getMaximalSjukrivningstidSourceUnit(), "d");
   }
 }

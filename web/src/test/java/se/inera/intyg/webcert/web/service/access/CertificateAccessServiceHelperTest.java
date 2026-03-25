@@ -48,7 +48,7 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelperImp
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CertificateAccessServiceHelperTest {
+class CertificateAccessServiceHelperTest {
 
   @Mock private CertificateAccessService certificateAccessService;
 
@@ -61,7 +61,7 @@ public class CertificateAccessServiceHelperTest {
   private Utlatande certificate;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     certificate = mock(Utlatande.class);
     doReturn("certificateType").when(certificate).getTyp();
     doReturn("certificateTypeVersion").when(certificate).getTextVersion();
@@ -69,7 +69,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToRenew() {
+  void shallThrowExceptionIfNoAccessToRenew() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -82,7 +82,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToRenew() {
+  void shallNotThrowExeptionIfAllowAccessToRenew() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToRenew(any(AccessEvaluationParameters.class));
@@ -91,7 +91,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToRenew() {
+  void shallAllowIfAllowAccessToRenew() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToRenew(any(AccessEvaluationParameters.class));
@@ -100,7 +100,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToRenew() {
+  void shallNotAllowIfNoAccessToRenew() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToRenew(any(AccessEvaluationParameters.class));
@@ -109,7 +109,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToRenewPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToRenewPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToRenew(any(AccessEvaluationParameters.class));
@@ -119,7 +119,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToRenewPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToRenewPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToRenew(any(AccessEvaluationParameters.class));
@@ -129,7 +129,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToAnswerComplementQuestion() {
+  void shallThrowExceptionIfNoAccessToAnswerComplementQuestion() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -142,7 +142,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToAnswerComplementQuestion() {
+  void shallNotThrowExeptionIfAllowAccessToAnswerComplementQuestion() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
@@ -151,7 +151,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToAnswerComplementQuestion() {
+  void shallAllowIfAllowAccessToAnswerComplementQuestion() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
@@ -161,7 +161,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToAnswerComplementQuestion() {
+  void shallNotAllowIfNoAccessToAnswerComplementQuestion() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
@@ -171,7 +171,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToAnswerComplementQuestionPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToAnswerComplementQuestionPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
@@ -182,7 +182,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToAnswerComplementQuestionPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToAnswerComplementQuestionPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
@@ -193,7 +193,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToReplace() {
+  void shallThrowExceptionIfNoAccessToReplace() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -206,7 +206,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToReplace() {
+  void shallNotThrowExeptionIfAllowAccessToReplace() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToReplace(any(AccessEvaluationParameters.class));
@@ -215,7 +215,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToReplace() {
+  void shallAllowIfAllowAccessToReplace() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToReplace(any(AccessEvaluationParameters.class));
@@ -224,7 +224,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToReplace() {
+  void shallNotAllowIfNoAccessToReplace() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToReplace(any(AccessEvaluationParameters.class));
@@ -233,7 +233,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToReplacePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToReplacePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToReplace(any(AccessEvaluationParameters.class));
@@ -243,7 +243,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToReplacePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToReplacePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToReplace(any(AccessEvaluationParameters.class));
@@ -253,7 +253,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToCreateDraftFromSignedTemplate() {
+  void shallThrowExceptionIfNoAccessToCreateDraftFromSignedTemplate() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -266,7 +266,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToCreateDraftFromSignedTemplate() {
+  void shallNotThrowExeptionIfAllowAccessToCreateDraftFromSignedTemplate() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
@@ -275,7 +275,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToCreateDraftFromSignedTemplate() {
+  void shallAllowIfAllowAccessToCreateDraftFromSignedTemplate() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
@@ -285,7 +285,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToCreateDraftFromSignedTemplate() {
+  void shallNotAllowIfNoAccessToCreateDraftFromSignedTemplate() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
@@ -295,8 +295,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void
-      shallAllowIfAllowAccessToCreateDraftFromSignedTemplatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToCreateDraftFromSignedTemplatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
@@ -307,8 +306,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void
-      shallNotAllowIfNoAccessToCreateDraftFromSignedTemplatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToCreateDraftFromSignedTemplatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
@@ -319,7 +317,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToInvalidate() {
+  void shallThrowExceptionIfNoAccessToInvalidate() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -332,7 +330,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToInvalidate() {
+  void shallNotThrowExeptionIfAllowAccessToInvalidate() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -341,7 +339,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToInvalidate() {
+  void shallAllowIfAllowAccessToInvalidate() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -350,7 +348,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToInvalidate() {
+  void shallNotAllowIfNoAccessToInvalidate() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -359,7 +357,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToInvalidatePassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToInvalidatePassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -369,7 +367,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToInvalidatePassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToInvalidatePassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToInvalidate(any(AccessEvaluationParameters.class));
@@ -379,7 +377,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToSend() {
+  void shallThrowExceptionIfNoAccessToSend() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -392,7 +390,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToSend() {
+  void shallNotThrowExeptionIfAllowAccessToSend() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSend(any(AccessEvaluationParameters.class));
@@ -401,7 +399,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToSend() {
+  void shallAllowIfAllowAccessToSend() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSend(any(AccessEvaluationParameters.class));
@@ -410,7 +408,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToSend() {
+  void shallNotAllowIfNoAccessToSend() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToSend(any(AccessEvaluationParameters.class));
@@ -419,7 +417,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToSendPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToSendPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSend(any(AccessEvaluationParameters.class));
@@ -429,7 +427,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToSendPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToSendPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToSend(any(AccessEvaluationParameters.class));
@@ -439,7 +437,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToApproveReceivers() {
+  void shallThrowExceptionIfNoAccessToApproveReceivers() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -452,7 +450,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToApproveReceivers() {
+  void shallNotThrowExeptionIfAllowAccessToApproveReceivers() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToApproveReceivers(any(AccessEvaluationParameters.class));
@@ -461,7 +459,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToApproveReceivers() {
+  void shallAllowIfAllowAccessToApproveReceivers() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToApproveReceivers(any(AccessEvaluationParameters.class));
@@ -470,7 +468,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToApproveReceivers() {
+  void shallNotAllowIfNoAccessToApproveReceivers() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToApproveReceivers(any(AccessEvaluationParameters.class));
@@ -479,7 +477,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToApproveReceiversPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToApproveReceiversPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToApproveReceivers(any(AccessEvaluationParameters.class));
@@ -490,7 +488,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToApproveReceiversPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToApproveReceiversPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToApproveReceivers(any(AccessEvaluationParameters.class));
@@ -501,7 +499,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToPrint() {
+  void shallThrowExceptionIfNoAccessToPrint() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -514,7 +512,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToPrint() {
+  void shallNotThrowExeptionIfAllowAccessToPrint() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
@@ -523,7 +521,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToPrint() {
+  void shallAllowIfAllowAccessToPrint() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
@@ -532,7 +530,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToPrint() {
+  void shallNotAllowIfNoAccessToPrint() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
@@ -541,7 +539,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToPrintPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToPrintPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
@@ -552,7 +550,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToPrintPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToPrintPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
@@ -563,7 +561,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToRead() {
+  void shallThrowExceptionIfNoAccessToRead() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -576,7 +574,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToRead() {
+  void shallNotThrowExeptionIfAllowAccessToRead() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -585,7 +583,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToRead() {
+  void shallAllowIfAllowAccessToRead() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -594,7 +592,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToRead() {
+  void shallNotAllowIfNoAccessToRead() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -603,7 +601,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToReadPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToReadPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -613,7 +611,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToReadPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToReadPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToRead(any(AccessEvaluationParameters.class));
@@ -623,7 +621,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToForwardQuestions() {
+  void shallThrowExceptionIfNoAccessToForwardQuestions() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -636,7 +634,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToForwardQuestions() {
+  void shallNotThrowExeptionIfAllowAccessToForwardQuestions() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToForwardQuestions(any(AccessEvaluationParameters.class));
@@ -645,7 +643,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToForwardQuestions() {
+  void shallAllowIfAllowAccessToForwardQuestions() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToForwardQuestions(any(AccessEvaluationParameters.class));
@@ -654,7 +652,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToForwardQuestions() {
+  void shallNotAllowIfNoAccessToForwardQuestions() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToForwardQuestions(any(AccessEvaluationParameters.class));
@@ -663,7 +661,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToForwardQuestionsPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToForwardQuestionsPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToForwardQuestions(any(AccessEvaluationParameters.class));
@@ -674,7 +672,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToForwardQuestionsPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToForwardQuestionsPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToForwardQuestions(any(AccessEvaluationParameters.class));
@@ -685,7 +683,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToCreateQuestion() {
+  void shallThrowExceptionIfNoAccessToCreateQuestion() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -698,7 +696,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToCreateQuestion() {
+  void shallNotThrowExeptionIfAllowAccessToCreateQuestion() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToCreateQuestion(any(AccessEvaluationParameters.class));
@@ -707,7 +705,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToCreateQuestion() {
+  void shallAllowIfAllowAccessToCreateQuestion() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToCreateQuestion(any(AccessEvaluationParameters.class));
@@ -716,7 +714,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToCreateQuestion() {
+  void shallNotAllowIfNoAccessToCreateQuestion() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToCreateQuestion(any(AccessEvaluationParameters.class));
@@ -725,7 +723,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToCreateQuestionPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToCreateQuestionPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToCreateQuestion(any(AccessEvaluationParameters.class));
@@ -736,7 +734,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToCreateQuestionPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToCreateQuestionPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToCreateQuestion(any(AccessEvaluationParameters.class));
@@ -747,7 +745,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToAnswerAdminQuestion() {
+  void shallThrowExceptionIfNoAccessToAnswerAdminQuestion() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -760,7 +758,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToAnswerAdminQuestion() {
+  void shallNotThrowExeptionIfAllowAccessToAnswerAdminQuestion() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
@@ -769,7 +767,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToAnswerAdminQuestion() {
+  void shallAllowIfAllowAccessToAnswerAdminQuestion() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
@@ -779,7 +777,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToAnswerAdminQuestion() {
+  void shallNotAllowIfNoAccessToAnswerAdminQuestion() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
@@ -789,7 +787,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToAnswerAdminQuestionPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToAnswerAdminQuestionPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
@@ -800,7 +798,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToAnswerAdminQuestionPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToAnswerAdminQuestionPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
@@ -811,7 +809,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToReadQuestions() {
+  void shallThrowExceptionIfNoAccessToReadQuestions() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -824,7 +822,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToReadQuestions() {
+  void shallNotThrowExeptionIfAllowAccessToReadQuestions() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToReadQuestions(any(AccessEvaluationParameters.class));
@@ -833,7 +831,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToReadQuestions() {
+  void shallAllowIfAllowAccessToReadQuestions() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToReadQuestions(any(AccessEvaluationParameters.class));
@@ -842,7 +840,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToReadQuestions() {
+  void shallNotAllowIfNoAccessToReadQuestions() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToReadQuestions(any(AccessEvaluationParameters.class));
@@ -851,7 +849,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToReadQuestionsPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToReadQuestionsPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToReadQuestions(any(AccessEvaluationParameters.class));
@@ -862,7 +860,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToReadQuestionsPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToReadQuestionsPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToReadQuestions(any(AccessEvaluationParameters.class));
@@ -873,7 +871,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToSetComplementAsHandled() {
+  void shallThrowExceptionIfNoAccessToSetComplementAsHandled() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -886,7 +884,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToSetComplementAsHandled() {
+  void shallNotThrowExeptionIfAllowAccessToSetComplementAsHandled() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
@@ -895,7 +893,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToSetComplementAsHandled() {
+  void shallAllowIfAllowAccessToSetComplementAsHandled() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
@@ -905,7 +903,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToSetComplementAsHandled() {
+  void shallNotAllowIfNoAccessToSetComplementAsHandled() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
@@ -915,7 +913,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToSetComplementAsHandledPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToSetComplementAsHandledPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
@@ -926,7 +924,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToSetComplementAsHandledPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToSetComplementAsHandledPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
@@ -937,7 +935,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallThrowExceptionIfNoAccessToSetQuestionAsHandled() {
+  void shallThrowExceptionIfNoAccessToSetQuestionAsHandled() {
     try {
       doReturn(createNoAccessResult())
           .when(certificateAccessService)
@@ -950,7 +948,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotThrowExeptionIfAllowAccessToSetQuestionAsHandled() {
+  void shallNotThrowExeptionIfAllowAccessToSetQuestionAsHandled() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
@@ -959,7 +957,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToSetQuestionAsHandled() {
+  void shallAllowIfAllowAccessToSetQuestionAsHandled() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
@@ -969,7 +967,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToSetQuestionAsHandled() {
+  void shallNotAllowIfNoAccessToSetQuestionAsHandled() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
@@ -979,7 +977,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallAllowIfAllowAccessToSetQuestionAsHandledPassingAccessEvaluationParameters() {
+  void shallAllowIfAllowAccessToSetQuestionAsHandledPassingAccessEvaluationParameters() {
     doReturn(createAccessResult())
         .when(certificateAccessService)
         .allowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
@@ -990,7 +988,7 @@ public class CertificateAccessServiceHelperTest {
   }
 
   @Test
-  public void shallNotAllowIfNoAccessToSetQuestionAsHandledPassingAccessEvaluationParameters() {
+  void shallNotAllowIfNoAccessToSetQuestionAsHandledPassingAccessEvaluationParameters() {
     doReturn(createNoAccessResult())
         .when(certificateAccessService)
         .allowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));

@@ -74,14 +74,14 @@ import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class IntygServiceSendTest extends AbstractIntygServiceTest {
+class IntygServiceSendTest extends AbstractIntygServiceTest {
 
   private static final String INTYG_TYPE_VERSION_1_0 = "1.0";
 
   private Utkast utkast;
 
   @BeforeEach
-  public void setupIntyg() throws Exception {
+  void setupIntyg() throws Exception {
     json =
         Files.readString(
             Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
@@ -94,7 +94,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testSendIntyg() throws Exception {
+  void testSendIntyg() throws Exception {
     final String completionMeddelandeId = "meddelandeId";
 
     WebCertUser webCertUser = createUser();
@@ -124,7 +124,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void shallPublishAnalyticsMessageWhenCertificateIsSent() throws Exception {
+  void shallPublishAnalyticsMessageWhenCertificateIsSent() throws Exception {
     final String completionMeddelandeId = "meddelandeId";
 
     WebCertUser webCertUser = createUser();
@@ -151,7 +151,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testSendIntygFailsForRevokedCertificate() throws Exception {
+  void testSendIntygFailsForRevokedCertificate() throws Exception {
 
     final Utkast utkast = getUtkast(INTYG_ID);
     utkast.setAterkalladDatum(LocalDateTime.of(2018, 5, 5, 5, 5, 5, 5));
@@ -181,7 +181,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testSendIntygFailsForReplacedCertificate() throws Exception {
+  void testSendIntygFailsForReplacedCertificate() throws Exception {
     WebCertUser webCertUser = createUser();
 
     json =
@@ -220,8 +220,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testSendIntygOkForReplacedCertificateWithRevokedReplacingCertificate()
-      throws Exception {
+  void testSendIntygOkForReplacedCertificateWithRevokedReplacingCertificate() throws Exception {
     WebCertUser webCertUser = createUser();
 
     json =
@@ -262,7 +261,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testSendIntygCompletion() throws Exception {
+  void testSendIntygCompletion() throws Exception {
     final String completionMeddelandeId = "meddelandeId";
 
     WebCertUser webCertUser = createUser();
@@ -295,7 +294,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testSendIntygReturnsInfo() throws Exception {
+  void testSendIntygReturnsInfo() throws Exception {
     final String completionMeddelandeId = "meddelandeId";
 
     SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
@@ -326,7 +325,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() {
+  void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() {
     final String completionMeddelandeId = "meddelandeId";
 
     Utlatande completionUtlatande = utlatande;
@@ -343,7 +342,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() {
+  void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() {
     final String completionMeddelandeId = "meddelandeId";
     intygService.setSekretessmarkeringStartDatum(LocalDateTime.now().plusMonths(1L));
 

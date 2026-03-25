@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseStatusDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class PatientControllerTest {
+class PatientControllerTest {
 
   @Mock private GetPatientFacadeService getPatientFacadeService;
   @InjectMocks private PatientController patientController;

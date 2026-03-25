@@ -26,18 +26,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
-public class IntygServiceConfigurationManagerTest {
+class IntygServiceConfigurationManagerTest {
 
   private IntygServiceConfigurationManagerImpl configurationManager;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     configurationManager = new IntygServiceConfigurationManagerImpl();
     configurationManager.setObjectMapper(new CustomObjectMapper());
   }
 
   @Test
-  public void testUnmarshallForSendIntygWithConsent() {
+  void testUnmarshallForSendIntygWithConsent() {
 
     String configAsJson = "{\"recipient\":\"FKASSA\"}";
 
@@ -45,12 +45,12 @@ public class IntygServiceConfigurationManagerTest {
         configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
     assertNotNull(config);
-    assertEquals( config.getRecipient(),"FKASSA");
+    assertEquals(config.getRecipient(), "FKASSA");
     assertTrue(config.getPatientConsentMessage().contains("mottagare FKASSA"));
   }
 
   @Test
-  public void testUnmarshallForSendIntygWithoutConsentToTs() {
+  void testUnmarshallForSendIntygWithoutConsentToTs() {
 
     String configAsJson = "{\"recipient\":\"TRANSP\"}";
 
@@ -58,7 +58,7 @@ public class IntygServiceConfigurationManagerTest {
         configurationManager.unmarshallConfig(configAsJson, SendIntygConfiguration.class);
 
     assertNotNull(config);
-    assertEquals( config.getRecipient(),"TRANSP");
+    assertEquals(config.getRecipient(), "TRANSP");
     assertTrue(config.getPatientConsentMessage().contains("mottagare TRANSP"));
   }
 }

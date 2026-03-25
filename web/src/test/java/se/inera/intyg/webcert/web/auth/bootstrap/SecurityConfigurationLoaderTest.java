@@ -53,7 +53,7 @@ import se.inera.intyg.infra.security.common.model.TitleCode;
  * <p>Created by eriklupander on 2015-10-19.
  */
 @ExtendWith(MockitoExtension.class)
-public class SecurityConfigurationLoaderTest {
+class SecurityConfigurationLoaderTest {
 
   private static final String authoritiesConfigurationFile =
       "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
@@ -69,7 +69,7 @@ public class SecurityConfigurationLoaderTest {
           authoritiesConfigurationFile, featuresConfigurationFile, defaultMaxAliasesForCollections);
 
   @BeforeEach
-  public void setupAuthoritiesConfiguration() {
+  void setupAuthoritiesConfiguration() {
     // When
     try {
       loader.afterPropertiesSet();
@@ -79,7 +79,7 @@ public class SecurityConfigurationLoaderTest {
   }
 
   @Test
-  public void loadConfigurationAndAssertTypeOfObjects() {
+  void loadConfigurationAndAssertTypeOfObjects() {
     AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
     assertEquals(2, configuration.getRequestOrigins().size());
@@ -101,7 +101,7 @@ public class SecurityConfigurationLoaderTest {
   }
 
   // @Test    // Temporarily disabling this test, it acts weird on OpenShift.
-  public void loadConfigurationAndAssertString() {
+  void loadConfigurationAndAssertString() {
     AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
     String actual = configuration.toString().replaceAll("\\s", "").trim();
@@ -119,10 +119,12 @@ public class SecurityConfigurationLoaderTest {
   }
 
   @Test
-  public void loadConfigurationWithBadLocation() {
-    assertThrows(IllegalArgumentException.class, () -> {
-    new SecurityConfigurationLoader(null, null, null);
-      });
+  void loadConfigurationWithBadLocation() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          new SecurityConfigurationLoader(null, null, null);
+        });
   }
 
   // ~ Private scope

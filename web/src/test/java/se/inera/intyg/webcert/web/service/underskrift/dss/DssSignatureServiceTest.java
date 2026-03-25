@@ -66,7 +66,7 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-public class DssSignatureServiceTest {
+class DssSignatureServiceTest {
 
   public static final String IDP_URL = "https://idpurl.se/samlv2/idp/metadata";
 
@@ -139,7 +139,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void createSignatureRequestDTO() throws ModuleNotFoundException {
+  void createSignatureRequestDTO() throws ModuleNotFoundException {
     when(dssMetadataService.getDssActionUrl()).thenReturn("ActionUrl");
     when(webCertUserService.getUser()).thenReturn(user);
     when(user.getPersonId()).thenReturn("191212121212");
@@ -251,7 +251,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void receiveSignatureResponse()
+  void receiveSignatureResponse()
       throws IOException { // TODO Update test case with more accurate sign response
     var stream = new ClassPathResource("dss/signResponse.xml").getInputStream();
     var string =
@@ -264,7 +264,7 @@ public class DssSignatureServiceTest {
         .netidSignature(
             ticketIdCaptor.capture(), signatureCaptor.capture(), certificateCaptor.capture());
 
-    assertEquals( ticketIdCaptor.getValue(),"0ff25a22-d78a-46c0-ae78-58e34b62ce90");
+    assertEquals(ticketIdCaptor.getValue(), "0ff25a22-d78a-46c0-ae78-58e34b62ce90");
 
     // CHECKSTYLE:OFF LineLength
     var certByteArray =
@@ -280,7 +280,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void findReturnUrl() {
+  void findReturnUrl() {
     String intygsId = UUID.randomUUID().toString();
     Utkast utkastLocal = new Utkast();
     utkastLocal.setIntygsTyp("lisjp");
@@ -302,7 +302,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void findReturnErrorUrl() {
+  void findReturnErrorUrl() {
     String intygsId = UUID.randomUUID().toString();
     Utkast utkastLocal = new Utkast();
     utkastLocal.setIntygsTyp("lisjp");
@@ -325,7 +325,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void updateSignatureTicketWithError() {
+  void updateSignatureTicketWithError() {
 
     String relayState = "TransactionID";
 
@@ -338,7 +338,7 @@ public class DssSignatureServiceTest {
   }
 
   @Test
-  public void isUnitInIeWhitelist() {
+  void isUnitInIeWhitelist() {
     assertTrue(dssSignatureService.shouldUseSigningService(""));
     assertTrue(dssSignatureService.shouldUseSigningService(null));
     assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));

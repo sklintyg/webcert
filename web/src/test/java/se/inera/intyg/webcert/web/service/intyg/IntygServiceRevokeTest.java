@@ -67,7 +67,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
+class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
   private static final String REVOKE_MSG = "This is revoked";
   private static final String REVOKE_REASON = "FELAKTIGT_INTYG";
@@ -86,7 +86,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
   private Relations parentRelations;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     HoSPersonal person = buildHosPerson();
     VardpersonReferens vardperson = buildVardpersonReferens(person);
     WebCertUser user = buildWebCertUser(person);
@@ -102,7 +102,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
   @Override
   @BeforeEach
-  public void setupMocks() throws Exception {
+  void setupMocks() throws Exception {
     json =
         Files.readString(
             Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
@@ -121,13 +121,13 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
   }
 
   @BeforeEach
-  public void setupDefaultAuthorization() {
+  void setupDefaultAuthorization() {
     when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), eq(true)))
         .thenReturn(true);
   }
 
   @Test
-  public void testRevokeIntyg() throws Exception {
+  void testRevokeIntyg() throws Exception {
 
     when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class)))
         .thenReturn(LogRequest.builder().build());
@@ -157,25 +157,27 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
   }
 
   @Test
-  public void testRevokeIntygThatHasAlreadyBeenRevokedFails() {
-    assertThrows(WebCertServiceException.class, () -> {
-    when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
-    when(moduleFacade.getCertificate(anyString(), anyString(), anyString()))
-        .thenThrow(new IntygModuleFacadeException(""));
-    // Do the call
-    try {
-      intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
-    } finally {
-      verifyNoInteractions(certificateSenderService);
-      verify(intygRepository, times(0)).save(any(Utkast.class));
-      verifyNoInteractions(notificationService);
-      verifyNoInteractions(logService);
-    }
-      });
+  void testRevokeIntygThatHasAlreadyBeenRevokedFails() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
+          when(moduleFacade.getCertificate(anyString(), anyString(), anyString()))
+              .thenThrow(new IntygModuleFacadeException(""));
+          // Do the call
+          try {
+            intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
+          } finally {
+            verifyNoInteractions(certificateSenderService);
+            verify(intygRepository, times(0)).save(any(Utkast.class));
+            verifyNoInteractions(notificationService);
+            verifyNoInteractions(logService);
+          }
+        });
   }
 
   @Test
-  public void testRevokeCompletedIntyg() throws Exception {
+  void testRevokeCompletedIntyg() throws Exception {
 
     when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class)))
         .thenReturn(LogRequest.builder().build());

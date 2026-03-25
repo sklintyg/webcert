@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class ListControllerTest {
+class ListControllerTest {
 
   @Mock private ListDraftsFacadeServiceImpl listDraftsFacadeService;
   @Mock private ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;

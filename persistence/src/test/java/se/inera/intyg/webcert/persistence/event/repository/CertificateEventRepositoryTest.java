@@ -39,19 +39,19 @@ import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class CertificateEventRepositoryTest {
+class CertificateEventRepositoryTest {
 
   @PersistenceContext private EntityManager entityManager;
 
   @Autowired private CertificateEventRepository certificateEventRepository;
 
   @AfterEach
-  public void cleanup() {
+  void cleanup() {
     certificateEventRepository.deleteAll();
   }
 
   @Test
-  public void testFindOneByCertificateId() {
+  void testFindOneByCertificateId() {
     CertificateEvent savedCertificateEvent =
         certificateEventRepository.save(
             CertificateEventTestUtil.buildCertificateEvent(
@@ -65,7 +65,7 @@ public class CertificateEventRepositoryTest {
   }
 
   @Test
-  public void testFindAllByCertificateId() {
+  void testFindAllByCertificateId() {
     certificateEventRepository.save(
         CertificateEventTestUtil.buildCertificateEvent(
             CertificateEventTestUtil.CERTIFICATE_ID_1, CertificateEventTestUtil.EVENT_CODE_SKAPAT));
@@ -85,7 +85,7 @@ public class CertificateEventRepositoryTest {
   }
 
   @Test
-  public void testDeleteCertificateEventByCertificateId() {
+  void testDeleteCertificateEventByCertificateId() {
     CertificateEvent event1 =
         certificateEventRepository.save(
             CertificateEventTestUtil.buildCertificateEvent(

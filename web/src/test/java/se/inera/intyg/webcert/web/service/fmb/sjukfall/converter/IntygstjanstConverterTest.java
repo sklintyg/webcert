@@ -38,7 +38,7 @@ import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Patient;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
 
-public class IntygstjanstConverterTest {
+class IntygstjanstConverterTest {
 
   private static final LocalDate START_DATUM = LocalDate.of(2018, 12, 12);
   private static final LocalDate SLUT_DATUM = LocalDate.of(2028, 12, 12);
@@ -61,7 +61,7 @@ public class IntygstjanstConverterTest {
   private static final boolean ENKELT_INTYG = false;
 
   @Test
-  public void toSjukfallFormat() {
+  void toSjukfallFormat() {
 
     final IntygsData from = createIntygsData();
     final List<IntygData> intygDataList =

@@ -33,7 +33,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertifica
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 
 @ExtendWith(MockitoExtension.class)
-public class ListConfigControllerTest {
+class ListConfigControllerTest {
 
   @Mock private ListDraftsConfigFacadeServiceImpl listDraftsConfigFacadeService;
 

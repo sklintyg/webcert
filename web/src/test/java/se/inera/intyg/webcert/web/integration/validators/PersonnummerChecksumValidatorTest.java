@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.schemas.contract.Personnummer;
 
-public class PersonnummerChecksumValidatorTest {
+class PersonnummerChecksumValidatorTest {
 
   @Test
-  public void testValidateValid() {
+  void testValidateValid() {
     // personnummer
     parameterizedValidateTest("191212121212", false);
     parameterizedValidateTest("19121212-1212", false);
@@ -42,7 +42,7 @@ public class PersonnummerChecksumValidatorTest {
   }
 
   @Test
-  public void testValidateInvalid() {
+  void testValidateInvalid() {
     parameterizedValidateTest("190101010101", true);
     parameterizedValidateTest("19800131-000x", true);
     parameterizedValidateTest("18400505+0002", true);

@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateIntegrationControllerTest {
+class CertificateIntegrationControllerTest {
 
   private static final String CERTIFICATE_ID = "certificateId";
   private static final String UNIT_ID = "unitId";

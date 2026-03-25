@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class JsLogApiControllerTest {
+class JsLogApiControllerTest {
 
   private static final String userAgentString = "a user agent";
   @Mock private MonitoringLogService monLog;
@@ -57,13 +57,13 @@ public class JsLogApiControllerTest {
   @InjectMocks private JsLogApiController controller;
 
   @BeforeEach
-  public void setupMocks() {
+  void setupMocks() {
     when(userAgentParser.parse(anyString()))
         .thenReturn(new UserAgentInfo("IE", "1.0", "OS", "1.1"));
   }
 
   @Test
-  public void testMonitoringBadRequest() {
+  void testMonitoringBadRequest() {
     assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(null, null).getStatus());
 
     assertEquals(
@@ -80,7 +80,7 @@ public class JsLogApiControllerTest {
   }
 
   @Test
-  public void testMonitoringBrowserInfo() {
+  void testMonitoringBrowserInfo() {
     final String height = "height";
     final String width = "width";
     final String netIdVersion = "netIdVersion";
@@ -103,7 +103,7 @@ public class JsLogApiControllerTest {
   }
 
   @Test
-  public void testMonitoringDiagnoskodverkChanged() {
+  void testMonitoringDiagnoskodverkChanged() {
     final String intygId = "intygId";
     final String intygType = "intygType";
 

@@ -64,7 +64,7 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationRedeliveryServiceTest {
+class NotificationRedeliveryServiceTest {
 
   @Mock private NotificationRedeliveryRepository notificationRedeliveryRepo;
 
@@ -77,7 +77,7 @@ public class NotificationRedeliveryServiceTest {
   @InjectMocks private NotificationRedeliveryService notificationRedeliveryService;
 
   @Test
-  public void shallReturnNotificationRedeliveriesScheduledToBeResend() {
+  void shallReturnNotificationRedeliveriesScheduledToBeResend() {
     final var expectedNotificationRedelivery = createNotificationRedelivery();
     final var expectedNotificationRedeliveryList =
         Collections.singletonList(expectedNotificationRedelivery);
@@ -100,7 +100,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shallClearRedeliveryTimeOnNotificationRedeliveriesScheduledToBeResend() {
+  void shallClearRedeliveryTimeOnNotificationRedeliveriesScheduledToBeResend() {
     final var now = LocalDateTime.now();
     final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(3000L, now);
     final var expectedNotificationRedeliveryMiddle =
@@ -127,7 +127,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shallReturnNotificationRedeliveriesBasedOnEventInChronologicalAscendingOrder() {
+  void shallReturnNotificationRedeliveriesBasedOnEventInChronologicalAscendingOrder() {
     final var now = LocalDateTime.now();
     final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(3000L, now);
     final var expectedNotificationRedeliveryMiddle =
@@ -158,7 +158,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shallAddCorrelationIdIfMissingInNotificationRedelivery() {
+  void shallAddCorrelationIdIfMissingInNotificationRedelivery() {
     final var expectedNotificationRedeliveryFirst = createNotificationRedelivery(1000L);
     final var expectedNotificationRedeliveryMiddle =
         createNotificationRedelivery(2000L, (String) null);
@@ -178,12 +178,12 @@ public class NotificationRedeliveryServiceTest {
 
     assertNotNull(actualNotificationRedeliveryList);
     for (var notificationRedelivery : actualNotificationRedeliveryList) {
-      assertNotNull( notificationRedelivery.getCorrelationId(),"Missing correlation id");
+      assertNotNull(notificationRedelivery.getCorrelationId(), "Missing correlation id");
     }
   }
 
   @Test
-  public void shallAddMessageOnJmsWhenResend() {
+  void shallAddMessageOnJmsWhenResend() {
     final var expectedNotificationRedelivery = createNotificationRedelivery();
     final var expectedEvent = createEvent();
     final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
@@ -200,7 +200,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shallAddPropertiesOnJmsMessageWhenResend() throws JMSException {
+  void shallAddPropertiesOnJmsMessageWhenResend() throws JMSException {
     final var expectedNotificationRedelivery = createNotificationRedelivery();
     final var expectedEvent = createEvent();
     final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
@@ -225,7 +225,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shallThrowExceptionIfAddingMessageOnJmsFails() {
+  void shallThrowExceptionIfAddingMessageOnJmsFails() {
     final var expectedNotificationRedelivery = createNotificationRedelivery();
     final var expectedEvent = createEvent();
     final var expectedMessage = "MESSAGE_AS_BYTES".getBytes();
@@ -245,7 +245,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shallFetchEventBeforeCallingResendIfNeeded() {
+  void shallFetchEventBeforeCallingResendIfNeeded() {
     final var notificationRedelivery = createNotificationRedelivery();
     final var event = createEvent();
     final var message = "MESSAGE_AS_BYTES".getBytes();
@@ -256,7 +256,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shallReturnEmptyListIfBatchSizeIsZero() {
+  void shallReturnEmptyListIfBatchSizeIsZero() {
     final var expectedBatchSize = 0;
 
     final var actualNotificationRedeliveryList =
@@ -266,7 +266,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shallLimitBatchWhenRetrievingRedeliveriesUpForRedelivery() {
+  void shallLimitBatchWhenRetrievingRedeliveriesUpForRedelivery() {
     final var expectedBatchSize = 10;
     final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>(9);
     for (int i = 0; i < 9; i++) {
@@ -284,7 +284,7 @@ public class NotificationRedeliveryServiceTest {
   }
 
   @Test
-  public void shouldSendResultMessageToPostProcessor() {
+  void shouldSendResultMessageToPostProcessor() {
     final var event = createEvent();
     final var notificationRedelivery = createNotificationRedelivery();
     final var notificationResultMessage = createNotificationResultMessage();

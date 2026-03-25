@@ -34,7 +34,7 @@ import se.inera.intyg.webcert.persistence.referens.model.Referens;
 import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class ReferensServiceTest {
+class ReferensServiceTest {
 
   private String intygsId = "intygsId";
   private String referens = "referens";
@@ -45,35 +45,35 @@ public class ReferensServiceTest {
   @InjectMocks private ReferensService referensService = new ReferensServiceImpl();
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     ref.setReferens(referens);
     ref.setIntygsId(intygsId);
   }
 
   @Test
-  public void saveReferens() {
+  void saveReferens() {
     referensService.saveReferens(intygsId, referens);
     verify(repo).findByIntygId(intygsId);
     verify(repo).save(ref);
   }
 
   @Test
-  public void getReferensForIntygsId() {
+  void getReferensForIntygsId() {
     when(repo.findByIntygId(intygsId)).thenReturn(ref);
     String output = referensService.getReferensForIntygsId(intygsId);
     assertEquals(referens, output);
   }
 
   @Test
-  public void getReferensForIntygsIdReturnsNullWhenDoesntExist() {
+  void getReferensForIntygsIdReturnsNullWhenDoesntExist() {
     when(repo.findByIntygId(intygsId)).thenReturn(null);
     String output = referensService.getReferensForIntygsId(intygsId);
     assertNull(output);
   }
 
   @Test
-  public void referensExists() {
+  void referensExists() {
     when(repo.findByIntygId(intygsId)).thenReturn(ref);
-    assertTrue( referensService.referensExists(intygsId),"Referens not found");
+    assertTrue(referensService.referensExists(intygsId), "Referens not found");
   }
 }

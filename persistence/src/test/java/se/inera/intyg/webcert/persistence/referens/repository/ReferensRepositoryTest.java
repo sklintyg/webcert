@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.persistence.referens.model.Referens;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class ReferensRepositoryTest {
+class ReferensRepositoryTest {
 
   private Referens ref;
   private String intygId = "intygId";
@@ -43,12 +43,12 @@ public class ReferensRepositoryTest {
   @Autowired private ReferensRepository repo;
 
   @AfterEach
-  public void clean() {
+  void clean() {
     repo.deleteAll();
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     ref = new Referens();
     ref.setIntygsId(intygId);
     ref.setReferens("referens");
@@ -56,7 +56,7 @@ public class ReferensRepositoryTest {
   }
 
   @Test
-  public void testFindByIntygId() {
+  void testFindByIntygId() {
     Referens read = repo.findByIntygId(intygId);
     assertEquals(ref, read);
   }

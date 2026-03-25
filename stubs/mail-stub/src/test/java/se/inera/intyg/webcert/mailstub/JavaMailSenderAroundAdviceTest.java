@@ -35,7 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class JavaMailSenderAroundAdviceTest {
+class JavaMailSenderAroundAdviceTest {
 
   @Mock private MailStore mailStore;
 
@@ -48,7 +48,7 @@ public class JavaMailSenderAroundAdviceTest {
   @InjectMocks private JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
 
   @Test
-  public void testAroundAdviceInterceptsAndStoresMessageWhenMailServerNotSet() throws Throwable {
+  void testAroundAdviceInterceptsAndStoresMessageWhenMailServerNotSet() throws Throwable {
     when(mailStore.getMails()).thenReturn(mails);
     when(message.getFrom()).thenReturn(new Address[] {new InternetAddress("from")});
     when(message.getAllRecipients()).thenReturn(new Address[] {new InternetAddress("to")});
@@ -64,7 +64,7 @@ public class JavaMailSenderAroundAdviceTest {
   }
 
   @Test
-  public void testAroundAdviceDoesNothingWhenMailServerSet() throws Throwable {
+  void testAroundAdviceDoesNothingWhenMailServerSet() throws Throwable {
     advice.setMailHost("mailhost");
     advice.interceptMailSending(pjp);
     verify(pjp).proceed();

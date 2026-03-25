@@ -41,7 +41,7 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractit
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest.RegisterPrivatePractitionerRequestBuilder;
 
-public class TestDataIntegration {
+class TestDataIntegration {
 
   public static final List<Code> POSITIONS =
       List.of(new Code("203090", "Läkare legitimerad, annan"), new Code("201010", "Överläkare"));

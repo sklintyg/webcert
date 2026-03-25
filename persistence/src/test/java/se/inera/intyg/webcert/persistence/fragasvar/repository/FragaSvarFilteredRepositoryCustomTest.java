@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.persistence.model.VantarPa;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class FragaSvarFilteredRepositoryCustomTest {
+class FragaSvarFilteredRepositoryCustomTest {
 
   private static final String WEBCERT = "WC";
   private static final String FK = "FK";
@@ -60,7 +60,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
   @Autowired private FragaSvarRepository fragasvarRepository;
 
   @Test
-  public void testFilterFragaFromWC() {
+  void testFilterFragaFromWC() {
 
     Filter filter = buildDefaultFilter();
 
@@ -80,7 +80,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
   /** Should filter all FS that belongs to ENHET_2 and is not CLOSED. */
   @Test
-  public void testCountFilterFraga() {
+  void testCountFilterFraga() {
 
     Filter filter = new Filter();
     filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_2_ID);
@@ -92,7 +92,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
   /** Should filter all FS that belongs to ENHET_1 and is not CLOSED. */
   @Test
-  public void testFilterFragaWithPaging() {
+  void testFilterFragaWithPaging() {
 
     Filter filter = buildDefaultFilter();
     filter.setPageSize(10);
@@ -106,7 +106,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
   }
 
   @Test
-  public void testFilterHsaId() {
+  void testFilterHsaId() {
 
     Filter filter = buildDefaultFilter();
     filter.setHsaId(HSA_ID_2);
@@ -117,7 +117,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
   }
 
   @Test
-  public void testFilterChangedFrom() {
+  void testFilterChangedFrom() {
 
     Filter filter = buildDefaultFilter();
     filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:10:00"));
@@ -128,7 +128,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
   }
 
   @Test
-  public void testFilterChangedTo() {
+  void testFilterChangedTo() {
 
     Filter filter = buildDefaultFilter();
     filter.setChangedTo(LocalDateTime.parse("2013-10-01T15:10:00"));
@@ -140,7 +140,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
   /** Should filter out all FS that is not CLOSED and has <= changedFrom and >= changedTo. */
   @Test
-  public void testFilterChangedBetween() {
+  void testFilterChangedBetween() {
 
     Filter filter = buildDefaultFilter();
     filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:00:00"));
@@ -152,7 +152,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
   }
 
   @Test
-  public void testFilterVidarebefordrad() {
+  void testFilterVidarebefordrad() {
 
     Filter filter = buildDefaultFilter();
     filter.setVidarebefordrad(true);
@@ -166,7 +166,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
    * ARBETSTIDSFORLAGGNING, AVSTAMNINGSMOTE, KONTAKT.
    */
   @Test
-  public void testFilterWaitingForReplyFromCare() {
+  void testFilterWaitingForReplyFromCare() {
 
     Filter filter = buildDefaultFilter();
     filter.setVantarPa(VantarPa.SVAR_FRAN_VARDEN);
@@ -177,7 +177,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
   /** Should return FS with status PENDING_EXTERNAL_ACTION */
   @Test
-  public void testFilterWaitingForReplyFromFK() {
+  void testFilterWaitingForReplyFromFK() {
 
     Filter filter = buildDefaultFilter();
     filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
@@ -191,7 +191,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
    * MAKULERING_AV_LAKARINTYG ) or (status PENDING_INTERNAL_ACTION and subject PAMINNELSE).
    */
   @Test
-  public void testFilterMarkAsHandled() {
+  void testFilterMarkAsHandled() {
 
     Filter filter = buildDefaultFilter();
     filter.setVantarPa(VantarPa.MARKERA_SOM_HANTERAD);
@@ -205,7 +205,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
    * Should return FS with status PENDING_INTERNAL_ACTION and subject KOMPLETTERING_AV_LAKARINTYG.
    */
   @Test
-  public void testFilterVantaPaKomplettering() {
+  void testFilterVantaPaKomplettering() {
 
     Filter filter = buildDefaultFilter();
     filter.setVantarPa(VantarPa.KOMPLETTERING_FRAN_VARDEN);
@@ -217,7 +217,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
   /** Should return all FS that is not CLOSED. */
   @Test
-  public void testFilterAllNotHandled() {
+  void testFilterAllNotHandled() {
 
     Filter filter = buildDefaultFilter();
     filter.setVantarPa(VantarPa.ALLA_OHANTERADE);
@@ -232,7 +232,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
    * changedTo.
    */
   @Test
-  public void testFilterChangedBetweenAndAwaitingReplyFromFK() {
+  void testFilterChangedBetweenAndAwaitingReplyFromFK() {
 
     Filter filter = buildDefaultFilter();
     filter.setChangedFrom(LocalDateTime.parse("2013-10-01T15:03:00"));
@@ -249,7 +249,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
    * or ENHET_2_ID.
    */
   @Test
-  public void testFilterWithTwoEnheterAndAwaitingReplyFromFK() {
+  void testFilterWithTwoEnheterAndAwaitingReplyFromFK() {
 
     Filter filter = new Filter();
     filter.getEnhetsIds().add(FragaSvarTestUtil.ENHET_2_ID);
@@ -263,7 +263,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
   }
 
   @Test
-  public void testFindFragaSvarStatusesForIntyg() {
+  void testFindFragaSvarStatusesForIntyg() {
 
     List<FragaSvarStatus> res = fragasvarRepository.findFragaSvarStatusesForIntyg("abc123");
 
@@ -272,7 +272,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
   }
 
   @BeforeEach
-  public void setupTestData() {
+  void setupTestData() {
 
     fragasvarRepository.save(
         FragaSvarTestUtil.buildFraga(

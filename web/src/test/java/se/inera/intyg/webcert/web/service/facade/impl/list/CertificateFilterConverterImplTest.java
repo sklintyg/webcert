@@ -43,7 +43,7 @@ class CertificateFilterConverterImplTest {
   @InjectMocks private CertificateFilterConverterImpl certificateFilterConverter;
 
   @Test
-  public void shouldConvertSignedFrom() {
+  void shouldConvertSignedFrom() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterDateRangeValue();
     final var now = LocalDateTime.now();
@@ -57,7 +57,7 @@ class CertificateFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertSignedTo() {
+  void shouldConvertSignedTo() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterDateRangeValue();
     final var now = LocalDateTime.now();
@@ -71,7 +71,7 @@ class CertificateFilterConverterImplTest {
   }
 
   @Test
-  public void shouldSetHsaId() {
+  void shouldSetHsaId() {
     final var filter = new ListFilter();
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
@@ -80,62 +80,62 @@ class CertificateFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertPatientId() {
+  void shouldConvertPatientId() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterPersonIdValue("19121212-1212");
     filter.addValue(filterValue, "PATIENT_ID");
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals( convertedFilter.getPatientId(),"19121212-1212");
+    assertEquals(convertedFilter.getPatientId(), "19121212-1212");
   }
 
   @Test
-  public void shouldConvertOrderSigned() {
+  void shouldConvertOrderSigned() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("SIGNED");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals( convertedFilter.getOrderBy(),"signedDate");
+    assertEquals(convertedFilter.getOrderBy(), "signedDate");
   }
 
   @Test
-  public void shouldConvertOrderSSN() {
+  void shouldConvertOrderSSN() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("PATIENT_ID");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals( convertedFilter.getOrderBy(),"civicRegistrationNumber");
+    assertEquals(convertedFilter.getOrderBy(), "civicRegistrationNumber");
   }
 
   @Test
-  public void shouldConvertOrderStatus() {
+  void shouldConvertOrderStatus() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("STATUS");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals( convertedFilter.getOrderBy(),"status");
+    assertEquals(convertedFilter.getOrderBy(), "status");
   }
 
   @Test
-  public void shouldConvertOrderTypeName() {
+  void shouldConvertOrderTypeName() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterTextValue("CERTIFICATE_TYPE_NAME");
     filter.addValue(filterValue, "ORDER_BY");
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);
 
-    assertEquals( convertedFilter.getOrderBy(),"type");
+    assertEquals(convertedFilter.getOrderBy(), "type");
   }
 
   @Test
-  public void shouldConvertAscending() {
+  void shouldConvertAscending() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterBooleanValue(true);
     filter.addValue(filterValue, "ASCENDING");
@@ -146,7 +146,7 @@ class CertificateFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertDescending() {
+  void shouldConvertDescending() {
     final var filter = new ListFilter();
     final var filterValue = new ListFilterBooleanValue(false);
     filter.addValue(filterValue, "ASCENDING");
@@ -157,7 +157,7 @@ class CertificateFilterConverterImplTest {
   }
 
   @Test
-  public void shouldConvertUnits() {
+  void shouldConvertUnits() {
     final var filter = new ListFilter();
 
     final var convertedFilter = certificateFilterConverter.convert(filter, HSA_ID, UNITS);

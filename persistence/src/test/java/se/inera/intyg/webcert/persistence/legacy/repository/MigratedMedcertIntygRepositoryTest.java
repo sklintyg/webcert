@@ -36,12 +36,12 @@ import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class MigratedMedcertIntygRepositoryTest {
+class MigratedMedcertIntygRepositoryTest {
 
   @Autowired private MigreratMedcertIntygRepository medcertIntygRepository;
 
   @Test
-  public void testSaveMigreratIntyg() {
+  void testSaveMigreratIntyg() {
 
     MigreratMedcertIntyg intyg1 = new MigreratMedcertIntyg();
 
@@ -60,8 +60,8 @@ public class MigratedMedcertIntygRepositoryTest {
 
     MigreratMedcertIntyg intyg2 = medcertIntygRepository.findById("intyg1").orElse(null);
     assertNotNull(intyg2);
-    assertEquals( intyg2.getIntygsId(),"intyg1");
-    assertEquals( intyg2.getPatientNamn(),"Test Testsson");
+    assertEquals(intyg2.getIntygsId(), "intyg1");
+    assertEquals(intyg2.getPatientNamn(), "Test Testsson");
     assertEquals(LocalDateTime.parse("2013-03-01T12:34:56"), intyg2.getSkickad());
     assertNotNull(intyg2.getIntygsData());
   }

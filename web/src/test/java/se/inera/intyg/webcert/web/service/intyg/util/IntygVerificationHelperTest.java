@@ -39,60 +39,64 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl.IntygOperation;
 
 @ExtendWith(MockitoExtension.class)
-public class IntygVerificationHelperTest {
+class IntygVerificationHelperTest {
 
   @Test
-  public void testVerifyIsNotSent() {
+  void testVerifyIsNotSent() {
     Utkast utkast = mock(Utkast.class);
     doReturn(null).when(utkast).getSkickadTillMottagare();
     verifyIsNotSent(utkast, IntygOperation.SEND);
   }
 
   @Test
-  public void testVerifyIsSent() {
-    assertThrows(WebCertServiceException.class, () -> {
-    Utkast utkast = mock(Utkast.class);
-    doReturn("FKASSA").when(utkast).getSkickadTillMottagare();
-    verifyIsNotSent(utkast, IntygOperation.SEND);
-      });
+  void testVerifyIsSent() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          Utkast utkast = mock(Utkast.class);
+          doReturn("FKASSA").when(utkast).getSkickadTillMottagare();
+          verifyIsNotSent(utkast, IntygOperation.SEND);
+        });
   }
 
   @Test
-  public void testVerifyIsNotSentEmptyMottagare() throws Exception {
+  void testVerifyIsNotSentEmptyMottagare() throws Exception {
     Utkast utkast = mock(Utkast.class);
     doReturn("").when(utkast).getSkickadTillMottagare();
     verifyIsNotSent(utkast, IntygOperation.SEND);
   }
 
   @Test
-  public void testVerifyIsNotSentBlankspaceMottagare() throws Exception {
+  void testVerifyIsNotSentBlankspaceMottagare() throws Exception {
     Utkast utkast = mock(Utkast.class);
     doReturn(" ").when(utkast).getSkickadTillMottagare();
     verifyIsNotSent(utkast, IntygOperation.SEND);
   }
 
   @Test
-  public void testVerifyIsNotSentEmptyList() {
+  void testVerifyIsNotSentEmptyList() {
     CertificateResponse certificate = mock(CertificateResponse.class);
     verifyIsNotSent(certificate, IntygOperation.SEND);
   }
 
   @Test
-  public void testVerifyIsSentFilledList() {
-    assertThrows(WebCertServiceException.class, () -> {
-    CertificateResponse certificate = mock(CertificateResponse.class);
-    Utlatande myUtlatande = mock(Utlatande.class);
-    CertificateMetaData metaData = mock(CertificateMetaData.class);
+  void testVerifyIsSentFilledList() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          CertificateResponse certificate = mock(CertificateResponse.class);
+          Utlatande myUtlatande = mock(Utlatande.class);
+          CertificateMetaData metaData = mock(CertificateMetaData.class);
 
-    List<Status> myList = new LinkedList<>();
-    myList.add(new Status(CertificateState.SENT, "target", LocalDateTime.now()));
+          List<Status> myList = new LinkedList<>();
+          myList.add(new Status(CertificateState.SENT, "target", LocalDateTime.now()));
 
-    doReturn(metaData).when(certificate).getMetaData();
-    doReturn(myList).when(metaData).getStatus();
-    doReturn("123").when(myUtlatande).getId();
-    doReturn(myUtlatande).when(certificate).getUtlatande();
+          doReturn(metaData).when(certificate).getMetaData();
+          doReturn(myList).when(metaData).getStatus();
+          doReturn("123").when(myUtlatande).getId();
+          doReturn(myUtlatande).when(certificate).getUtlatande();
 
-    verifyIsNotSent(certificate, IntygOperation.SEND);
-      });
+          verifyIsNotSent(certificate, IntygOperation.SEND);
+        });
   }
 }

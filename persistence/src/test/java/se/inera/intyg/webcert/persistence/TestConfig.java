@@ -25,4 +25,4 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @DependsOn("dbUpdate")
 @PropertySource("classpath:test.properties")
-public class TestConfig {}
+class TestConfig {}

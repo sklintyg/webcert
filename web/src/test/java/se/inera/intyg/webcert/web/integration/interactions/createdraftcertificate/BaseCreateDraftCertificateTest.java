@@ -29,7 +29,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.mockito.Mock;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -63,7 +62,7 @@ public abstract class BaseCreateDraftCertificateTest {
   protected static final String UTKAST_JSON = "A bit of text representing json";
   @Mock protected WebcertUserDetailsService webcertUserDetailsService;
 
-  public void setup() throws ModuleNotFoundException {
+  public void setup() {
     when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString()))
         .thenReturn(buildWebCertUser());
   }

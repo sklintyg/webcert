@@ -65,7 +65,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelat
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class MessageImportServiceImplTest {
+class MessageImportServiceImplTest {
 
   @Mock private UtkastRepository draftRepository;
 
@@ -133,7 +133,7 @@ public class MessageImportServiceImplTest {
       LocalDateTime.parse("2016-07-13T17:23:00");
 
   @Test
-  public void testImportNeededIfCertificateMissingInWC() {
+  void testImportNeededIfCertificateMissingInWC() {
     final var certificateId = "certificateId";
 
     doReturn(Optional.empty()).when(draftRepository).findById(certificateId);
@@ -144,7 +144,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportNotNeededIfCertificateExistsInWC() {
+  void testImportNotNeededIfCertificateExistsInWC() {
     final var certificateId = "certificateId";
 
     doReturn(Optional.of(new Utkast())).when(draftRepository).findById(certificateId);
@@ -155,7 +155,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesNoMessagesInIT() {
+  void testImportMessagesNoMessagesInIT() {
     final var certificateId = "certificateId";
 
     doReturn(Collections.emptyList())
@@ -168,7 +168,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesNoMessageAfterExclude() {
+  void testImportMessagesNoMessageAfterExclude() {
     final var certificateId = "certificateId";
     final var messageId = "messageId";
     final var messageContent = "messageContent";
@@ -190,7 +190,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesNoMessagesNotImported() {
+  void testImportMessagesNoMessagesNotImported() {
     final var certificateId = "certificateId";
     final var messageId = "messageId";
     final var messageContent = "messageContent";
@@ -215,7 +215,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesFailedToCallIT() {
+  void testImportMessagesFailedToCallIT() {
     final var certificateId = "certificateId";
 
     doThrow(new RuntimeException())
@@ -228,7 +228,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesSendQuestionToRecipient() {
+  void testImportMessagesSendQuestionToRecipient() {
     final var certificateId = CERTIFICATE_ID;
     final var messageId = QUESTION_TO_RECIPIENT_MESSAGE_ID;
     final var messageContent = QUESTION_TO_RECIPIENT_CONTENT;
@@ -272,7 +272,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesSendAnswerToCare() {
+  void testImportMessagesSendAnswerToCare() {
     final var certificateId = CERTIFICATE_ID;
     final var messageId = ANSWER_TO_CARE_MESSAGE_ID;
     final var messageContent = ANSWER_TO_CARE_CONTENT;
@@ -324,7 +324,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesSendQuestionToCare() {
+  void testImportMessagesSendQuestionToCare() {
     final var certificateId = CERTIFICATE_ID;
     final var messageId = QUESTION_TO_CARE_MESSAGE_ID;
     final var messageContent = QUESTION_TO_CARE_CONTENT;
@@ -368,7 +368,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesSendAnswerToRecipient() {
+  void testImportMessagesSendAnswerToRecipient() {
     final var certificateId = CERTIFICATE_ID;
     final var messageId = ANSWER_TO_RECIPIENT_MESSAGE_ID;
     final var messageContent = ANSWER_TO_RECIPIENT_CONTENT;
@@ -420,7 +420,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesSendComplementToCare() {
+  void testImportMessagesSendComplementToCare() {
     final var certificateId = CERTIFICATE_ID;
     final var messageId = COMPLEMENT_TO_CARE_MESSAGE_ID;
     final var messageContent = COMPLEMENT_TO_CARE_CONTENT;
@@ -472,7 +472,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesSendComplementToCareWithoutCertificate() {
+  void testImportMessagesSendComplementToCareWithoutCertificate() {
     final var certificateId = CERTIFICATE_ID;
     final var messageId = COMPLEMENT_TO_CARE_MESSAGE_ID;
     final var messageContent = COMPLEMENT_TO_CARE_CONTENT;
@@ -524,7 +524,7 @@ public class MessageImportServiceImplTest {
   }
 
   @Test
-  public void testImportMessagesSendReminderToCare() {
+  void testImportMessagesSendReminderToCare() {
     final var certificateId = CERTIFICATE_ID;
     final var messageId = REMINDER_TO_CARE_MESSAGE_ID;
     final var messageContent = REMINDER_TO_CARE_CONTENT;

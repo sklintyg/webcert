@@ -25,7 +25,7 @@ import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.DoiAccessServiceTestData;
 
-public class DoiLockedDraftAccessTest extends LockedDraftAccessTest {
+class DoiLockedDraftAccessTest extends LockedDraftAccessTest {
 
   public DoiLockedDraftAccessTest() {
     super(DoiModuleEntryPoint.MODULE_ID, new DoiAccessServiceTestData());

@@ -44,7 +44,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /** Created by eriklupander on 2015-08-05. */
 @ExtendWith(MockitoExtension.class)
-public class AvtalServiceTest {
+class AvtalServiceTest {
 
   private static final String USER_ID = "userId";
   private static final String PERSON_ID = "personId";
@@ -60,17 +60,17 @@ public class AvtalServiceTest {
   @InjectMocks private AvtalServiceImpl avtalService;
 
   @Test
-  public void testGetLatestAvtal() {
+  void testGetLatestAvtal() {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
     when(avtalRepository.findById(AVTAL_VERSION_1))
         .thenReturn(Optional.of(buildAvtal(AVTAL_VERSION_1)));
     Optional<Avtal> avtal = avtalService.getLatestAvtal();
     assertEquals(AVTAL_VERSION_1, avtal.orElse(null).getAvtalVersion());
-    assertEquals( avtal.get().getAvtalText(),"TEXT");
+    assertEquals(avtal.get().getAvtalText(), "TEXT");
   }
 
   @Test
-  public void testUserHasApprovedLatestAvtal() {
+  void testUserHasApprovedLatestAvtal() {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
     when(godkantAvtalRepository.userHasApprovedAvtal(USER_ID, AVTAL_VERSION_1)).thenReturn(true);
     boolean approved = avtalService.userHasApprovedLatestAvtal(USER_ID);
@@ -78,14 +78,14 @@ public class AvtalServiceTest {
   }
 
   @Test
-  public void testUserHasApprovedOldAvtal() {
+  void testUserHasApprovedOldAvtal() {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_2);
     boolean approved = avtalService.userHasApprovedLatestAvtal(USER_ID);
     assertFalse(approved);
   }
 
   @Test
-  public void testApproveAvtal() {
+  void testApproveAvtal() {
     when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
     avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
     verify(godkantAvtalRepository, times(1)).approveAvtal(anyString(), anyInt());
@@ -94,18 +94,21 @@ public class AvtalServiceTest {
   }
 
   @Test
-  public void testApproveAvtalNoAvtalInDB() {
-    assertThrows(IllegalStateException.class, () -> {
-    when(avtalRepository.getLatestAvtalVersion()).thenReturn(-1);
-    try {
-      avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
-    } catch (Exception e) {
-      verify(godkantAvtalRepository, times(0)).approveAvtal(anyString(), anyInt());
-      verify(monitoringLogService, times(0))
-          .logPrivatePractitionerTermsApproved(anyString(), any(Personnummer.class), anyInt());
-      throw e;
-    }
-      });
+  void testApproveAvtalNoAvtalInDB() {
+    assertThrows(
+        IllegalStateException.class,
+        () -> {
+          when(avtalRepository.getLatestAvtalVersion()).thenReturn(-1);
+          try {
+            avtalService.approveLatestAvtal(USER_ID, PERSON_ID);
+          } catch (Exception e) {
+            verify(godkantAvtalRepository, times(0)).approveAvtal(anyString(), anyInt());
+            verify(monitoringLogService, times(0))
+                .logPrivatePractitionerTermsApproved(
+                    anyString(), any(Personnummer.class), anyInt());
+            throw e;
+          }
+        });
   }
 
   private Avtal buildAvtal(Integer avtalVersion) {

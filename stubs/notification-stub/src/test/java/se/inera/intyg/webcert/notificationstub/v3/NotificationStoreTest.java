@@ -34,7 +34,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-public class NotificationStoreTest {
+class NotificationStoreTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationStoreTest.class);
 
@@ -44,7 +44,7 @@ public class NotificationStoreTest {
           "intyg10");
 
   @Test
-  public void testPurge() {
+  void testPurge() {
 
     NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl();
     notificationStore.initForTesting();

@@ -41,7 +41,7 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 @ContextConfiguration(locations = {"classpath:repository-context.xml"})
 @ActiveProfiles({"dev", "unit-testing"})
 @Transactional
-public class AvtalRepositoryTest {
+class AvtalRepositoryTest {
 
   private static final String AVTAL_TEXT = "En väldigt lång avtalstext";
   private static final String HSA_ID = "userId1234";
@@ -53,12 +53,12 @@ public class AvtalRepositoryTest {
   @PersistenceContext private EntityManager em;
 
   @BeforeEach
-  public void before() {
+  void before() {
     avtalRepository.deleteAll();
   }
 
   @Test
-  public void testFindById() {
+  void testFindById() {
     Avtal saved = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved);
     Avtal read = avtalRepository.findById(saved.getAvtalVersion()).orElse(null);
@@ -67,7 +67,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testGetLatestAvtalVersion() {
+  void testGetLatestAvtalVersion() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
     Avtal saved3 = buildAvtal(3, AVTAL_TEXT);
@@ -80,13 +80,13 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testGetLatestAvtalVersionNoAvtalStored() {
+  void testGetLatestAvtalVersionNoAvtalStored() {
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
     assertEquals(-1, latestAvtalVersion.intValue());
   }
 
   @Test
-  public void testUserHasNotApprovedAvtal() {
+  void testUserHasNotApprovedAvtal() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved1);
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
@@ -95,7 +95,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testUserHasApprovedOldAvtal() {
+  void testUserHasApprovedOldAvtal() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
 
@@ -111,7 +111,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testApproveAvtal() {
+  void testApproveAvtal() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved1);
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
@@ -123,7 +123,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testApproveSameAvtalTwice() {
+  void testApproveSameAvtalTwice() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved1);
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
@@ -138,7 +138,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testRemoveApprovedAvtal() {
+  void testRemoveApprovedAvtal() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     avtalRepository.save(saved1);
     Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
@@ -151,7 +151,7 @@ public class AvtalRepositoryTest {
   }
 
   @Test
-  public void testRemoveAllApprovedAvtalForUser() {
+  void testRemoveAllApprovedAvtalForUser() {
     Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
     Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
     Avtal saved3 = buildAvtal(3, AVTAL_TEXT);

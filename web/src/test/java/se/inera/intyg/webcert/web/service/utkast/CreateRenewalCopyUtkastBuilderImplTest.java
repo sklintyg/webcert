@@ -65,7 +65,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest {
+class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest {
 
   private static final String INTYG_TYPE = "fk7263";
 
@@ -84,13 +84,13 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
   private CreateRenewalCopyUtkastBuilder renewalBuilder = new CreateRenewalCopyUtkastBuilder();
 
   @BeforeEach
-  public void expectCallToModuleRegistry() throws Exception {
+  void expectCallToModuleRegistry() throws Exception {
     this.mockModuleApi = mock(ModuleApi.class);
     when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(mockModuleApi);
   }
 
   @Test
-  public void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
+  void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
 
     when(intygTextsService.getLatestVersionForSameMajorVersion(anyString(), anyString()))
         .thenReturn("1.2");
@@ -126,7 +126,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
     assertNotNull(builderResponse.getUtkast());
     assertNotNull(builderResponse.getUtkast().getModel());
     assertEquals(INTYG_TYPE, builderResponse.getUtkast().getIntygsTyp());
-    assertEquals( builderResponse.getUtkast().getIntygTypeVersion(),"1.2");
+    assertEquals(builderResponse.getUtkast().getIntygTypeVersion(), "1.2");
     assertEquals(PATIENT_SSN, builderResponse.getUtkast().getPatientPersonnummer());
     assertEquals(PATIENT_FNAME, builderResponse.getUtkast().getPatientFornamn());
     assertEquals(PATIENT_MNAME, builderResponse.getUtkast().getPatientMellannamn());
@@ -144,7 +144,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
   }
 
   @Test
-  public void testPopulateRenewalUtkastFromOriginal() throws Exception {
+  void testPopulateRenewalUtkastFromOriginal() throws Exception {
 
     Utkast orgUtkast = createOriginalUtkast();
     when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
@@ -183,8 +183,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
   }
 
   @Test
-  public void testPopulateRenewalUtkastFromOriginalWhenIntegratedAndWithUpdatedSSN()
-      throws Exception {
+  void testPopulateRenewalUtkastFromOriginalWhenIntegratedAndWithUpdatedSSN() throws Exception {
 
     Utkast orgUtkast = createOriginalUtkast();
     when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
@@ -213,7 +212,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
   }
 
   @Test
-  public void testPopulateRenewalUtkastFromSignedIntygWithNoPatientDetails() throws Exception {
+  void testPopulateRenewalUtkastFromSignedIntygWithNoPatientDetails() throws Exception {
 
     IntygContentHolder ich = createIntygContentHolder();
     when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
@@ -234,13 +233,13 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
     assertNotNull(builderResponse.getUtkast().getModel());
     assertEquals(INTYG_TYPE, builderResponse.getUtkast().getIntygsTyp());
     assertEquals(PATIENT_SSN, builderResponse.getUtkast().getPatientPersonnummer());
-    assertEquals( builderResponse.getUtkast().getPatientFornamn(),"Test");
+    assertEquals(builderResponse.getUtkast().getPatientFornamn(), "Test");
     assertNull(builderResponse.getUtkast().getPatientMellannamn());
-    assertEquals( builderResponse.getUtkast().getPatientEfternamn(),"Testorsson");
+    assertEquals(builderResponse.getUtkast().getPatientEfternamn(), "Testorsson");
   }
 
   @Test
-  public void testExtractNamePartsFromFullName() {
+  void testExtractNamePartsFromFullName() {
 
     String[] res = renewalBuilder.extractNamePartsFromFullName(null);
     assertNotNull(res);
@@ -250,23 +249,23 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
     res = renewalBuilder.extractNamePartsFromFullName("  ");
     assertNotNull(res);
-    assertEquals( res[0],"");
-    assertEquals( res[1],"");
+    assertEquals(res[0], "");
+    assertEquals(res[1], "");
 
     res = renewalBuilder.extractNamePartsFromFullName("Adam");
     assertNotNull(res);
-    assertEquals( res[0],"Adam");
-    assertEquals( res[1],"");
+    assertEquals(res[0], "Adam");
+    assertEquals(res[1], "");
 
     res = renewalBuilder.extractNamePartsFromFullName("Adam Caesarsson");
     assertNotNull(res);
-    assertEquals( res[0],"Adam");
-    assertEquals( res[1],"Caesarsson");
+    assertEquals(res[0], "Adam");
+    assertEquals(res[1], "Caesarsson");
 
     res = renewalBuilder.extractNamePartsFromFullName("Adam Bertil Caesarsson");
     assertNotNull(res);
-    assertEquals( res[0],"Adam Bertil");
-    assertEquals( res[1],"Caesarsson");
+    assertEquals(res[0], "Adam Bertil");
+    assertEquals(res[1], "Caesarsson");
   }
 
   private CreateRenewalCopyRequest buildRenewalRequest() {

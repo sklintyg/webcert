@@ -30,22 +30,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-public class OriginConverterTest {
+class OriginConverterTest {
 
   private OriginConverter converter = new OriginConverter();
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     cleanup();
   }
 
   @AfterEach
-  public void cleanup() {
+  void cleanup() {
     SecurityContextHolder.getContext().setAuthentication(null);
   }
 
   @Test
-  public void testConvert() {
+  void testConvert() {
     String origin = "user origin";
     WebCertUser user = new WebCertUser();
     user.setOrigin(origin);
@@ -59,21 +59,21 @@ public class OriginConverterTest {
   }
 
   @Test
-  public void testConvertNoAuth() {
+  void testConvertNoAuth() {
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals( res,"NO ORIGIN");
+    assertEquals(res, "NO ORIGIN");
   }
 
   @Test
-  public void testConvertAuthNotWebCertUser() {
+  void testConvertAuthNotWebCertUser() {
     Authentication authentication = mock(Authentication.class);
     when(authentication.getPrincipal()).thenReturn("user");
     SecurityContextHolder.getContext().setAuthentication(authentication);
     ILoggingEvent event = mock(ILoggingEvent.class);
     String res = converter.convert(event);
 
-    assertEquals( res,"NO ORIGIN");
+    assertEquals(res, "NO ORIGIN");
   }
 }

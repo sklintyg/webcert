@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -63,7 +63,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.ObjectFactory;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
+class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
 
   public static final String PERSONNUMMER = "191212121212";
   public static final String FORNAMN = "Adam";
@@ -91,6 +91,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
 
   private Person person;
 
+  @Override
   @BeforeEach
   public void setup() {
     user = buildWebCertUser();
@@ -116,7 +117,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void testBuildCreateNewDraftRequest() {
+  void testBuildCreateNewDraftRequest() {
 
     CreateNewDraftRequest res =
         builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
@@ -145,7 +146,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
+  void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
     CreateNewDraftRequest res =
         builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
 
@@ -157,7 +158,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void testBuildCreateNewDraftRequestWithForifyllnadFeatureEnabled() {
+  void testBuildCreateNewDraftRequestWithForifyllnadFeatureEnabled() {
 
     final Intyg intyg = createIntyg();
     Forifyllnad forifyllnad = new ObjectFactory().createForifyllnad();
@@ -189,7 +190,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void testBuildCreateNewDraftRequestWithForifyllnadFeatureDisabled() {
+  void testBuildCreateNewDraftRequestWithForifyllnadFeatureDisabled() {
 
     final Intyg intyg = createIntyg();
     Forifyllnad forifyllnad = new ObjectFactory().createForifyllnad();
@@ -220,7 +221,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
   }
 
   @Test
-  public void shouldUsePatientInformationFromPU() {
+  void shouldUsePatientInformationFromPU() {
     person =
         new Person(
             Personnummer.createPersonnummer(PERSONNUMMER).get(),

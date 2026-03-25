@@ -44,7 +44,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
  * @author Magnus Ekstrand on 2019-05-16.
  */
 @ExtendWith(MockitoExtension.class)
-public class GetCertificateAdditionsResponderImplTest {
+class GetCertificateAdditionsResponderImplTest {
 
   private static final List<Long> ARENDE_IDS = Arrays.asList(1234567L, 2345678L, 3456789L);
 
@@ -55,7 +55,7 @@ public class GetCertificateAdditionsResponderImplTest {
   @InjectMocks GetCertificateAdditionsResponderImpl testee;
 
   @Test
-  public void whenGettingKompletteringarSuccessfully() {
+  void whenGettingKompletteringarSuccessfully() {
     when(arendeService.getArendenExternal(INTYG_IDS)).thenReturn(mockKompetteringar());
 
     GetCertificateAdditionsResponseType additions =
@@ -67,7 +67,7 @@ public class GetCertificateAdditionsResponderImplTest {
   }
 
   @Test
-  public void whenThereAreNoKompletteringar() {
+  void whenThereAreNoKompletteringar() {
     when(arendeService.getArendenExternal(INTYG_IDS)).thenReturn(new ArrayList<>());
 
     GetCertificateAdditionsResponseType additions =
@@ -79,10 +79,12 @@ public class GetCertificateAdditionsResponderImplTest {
   }
 
   @Test
-  public void whenInvalidRequest() {
-    assertThrows(IllegalArgumentException.class, () -> {
-    testee.getCertificateAdditions("", buildEmptyRequest());
-      });
+  void whenInvalidRequest() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          testee.getCertificateAdditions("", buildEmptyRequest());
+        });
   }
 
   private GetCertificateAdditionsType buildEmptyRequest() {

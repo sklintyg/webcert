@@ -26,10 +26,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class LakareTest {
+class LakareTest {
 
   @Test
-  public void testMerge() {
+  void testMerge() {
     Lakare lakare1 = new Lakare("1", "1");
     Lakare lakare2 = new Lakare("2", "2");
     Lakare lakare3 = new Lakare("3", "3");

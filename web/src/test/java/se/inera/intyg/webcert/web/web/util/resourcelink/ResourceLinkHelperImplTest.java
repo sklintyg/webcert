@@ -55,7 +55,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @ExtendWith(MockitoExtension.class)
-public class ResourceLinkHelperImplTest {
+class ResourceLinkHelperImplTest {
 
   @Mock private DraftAccessServiceHelper draftAccessServiceHelper;
 
@@ -66,7 +66,7 @@ public class ResourceLinkHelperImplTest {
   @InjectMocks private ResourceLinkHelperImpl resourceLinkHelper;
 
   @Test
-  public void validActionsForIntygModuleWithAccessAllowed() {
+  void validActionsForIntygModuleWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
@@ -81,7 +81,7 @@ public class ResourceLinkHelperImplTest {
     final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
 
     assertNotNull(actualLinks);
-    assertEquals( 1, actualLinks.size(),"Should be one link");
+    assertEquals(1, actualLinks.size(), "Should be one link");
     assertEquals(
         expectedActionLink.getType(),
         actualLinks.getFirst().getType(),
@@ -89,7 +89,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void noValidActionsForIntygModuleWithAccessAllowed() {
+  void noValidActionsForIntygModuleWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
@@ -101,7 +101,7 @@ public class ResourceLinkHelperImplTest {
     final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
 
     assertNotNull(actualLinks);
-    assertEquals( 0, actualLinks.size(),"Should be no links");
+    assertEquals(0, actualLinks.size(), "Should be no links");
   }
 
   private IntygModuleDTO createIntygModuleDTO(String intygsTyp) {
@@ -109,7 +109,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void validActionsForLockedDraftHolderWithAccessAllowed() {
+  void validActionsForLockedDraftHolderWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final String intygsTypVersion = "intygstypVersion";
     final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
@@ -142,7 +142,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void noValidActionsForLockedDraftHolderWithAccessAllowed() {
+  void noValidActionsForLockedDraftHolderWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final String intygsTypVersion = "intygstypVersion";
     final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
@@ -180,7 +180,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void validActionsForDraftHolderWithAccessAllowed() {
+  void validActionsForDraftHolderWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final String intygsTypVersion = "intygsTypVersion";
     final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
@@ -249,7 +249,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void noValidActionsForDraftHolderWithAccessAllowed() {
+  void noValidActionsForDraftHolderWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final String intygsTypVersion = "intygsTypVersion";
     final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
@@ -305,7 +305,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void validActionsForIntygContentHolderWithAccessAllowed() {
+  void validActionsForIntygContentHolderWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
     final Vardenhet vardenhet = mock(Vardenhet.class);
@@ -403,7 +403,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void noValidActionsForIntygContentHolderWithAccessAllowed() {
+  void noValidActionsForIntygContentHolderWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
     final Vardenhet vardenhet = mock(Vardenhet.class);
@@ -486,7 +486,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void validActionsForListIntygEntryWithAccessAllowed() {
+  void validActionsForListIntygEntryWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
@@ -516,7 +516,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void noValidActionsForListIntygEntryWithAccessAllowed() {
+  void noValidActionsForListIntygEntryWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
@@ -544,7 +544,7 @@ public class ResourceLinkHelperImplTest {
   }
 
   @Test
-  public void validActionsForArendeListItemWithAccessAllowed() {
+  void validActionsForArendeListItemWithAccessAllowed() {
     final String intygsTyp = "intygstyp";
     final Vardenhet vardenhet = mock(Vardenhet.class);
 

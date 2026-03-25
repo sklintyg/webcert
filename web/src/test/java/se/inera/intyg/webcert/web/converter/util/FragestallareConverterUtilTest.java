@@ -26,13 +26,13 @@ import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
-public class FragestallareConverterUtilTest {
+class FragestallareConverterUtilTest {
 
   private static final String PARTCODE_FKASSA = "FKASSA";
   private static final String PARTCODE_HSVARD = "HSVARD";
 
   @Test
-  public void testPartCodeToFrageStallareKod() {
+  void testPartCodeToFrageStallareKod() {
     assertEquals(
         FrageStallare.FORSAKRINGSKASSAN.getKod(),
         FragestallareConverterUtil.partToFrageStallarKod(PARTCODE_FKASSA));
@@ -42,15 +42,17 @@ public class FragestallareConverterUtilTest {
   }
 
   @Test
-  public void testPartNameToFrageStallareNamn() {
+  void testPartNameToFrageStallareNamn() {
     assertTrue(FrageStallare.FORSAKRINGSKASSAN.isNameEqual("Försäkringskassan"));
     assertTrue(FrageStallare.WEBCERT.isNameEqual("Webcert"));
   }
 
   @Test
-  public void testInvalidPartKod() {
-    assertThrows(WebCertServiceException.class, () -> {
-    FragestallareConverterUtil.partToFrageStallarKod("INVALID");
-      });
+  void testInvalidPartKod() {
+    assertThrows(
+        WebCertServiceException.class,
+        () -> {
+          FragestallareConverterUtil.partToFrageStallarKod("INVALID");
+        });
   }
 }

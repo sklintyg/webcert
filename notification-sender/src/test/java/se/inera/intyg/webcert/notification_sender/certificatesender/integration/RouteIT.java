@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.testconfig.C
 @CamelSpringTest
 @ContextConfiguration(classes = CertificateCamelIntegrationTestConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class RouteIT {
+class RouteIT {
 
   private static final int SECONDS_TO_WAIT = 20;
 
@@ -48,19 +48,20 @@ public class RouteIT {
   @Autowired private JmsTemplate jmsTemplate;
 
   @Autowired
-  @Qualifier("certificateQueue") private Queue sendQueue;
+  @Qualifier("certificateQueue")
+  private Queue sendQueue;
 
   @Autowired private Queue dlq;
 
   @Autowired private MockSendCertificateServiceClientImpl sendCertificateServiceClient;
 
   @BeforeEach
-  public void resetStub() {
+  void resetStub() {
     sendCertificateServiceClient.reset();
   }
 
   @Test
-  public void ensureStubReceivesAllMessages() {
+  void ensureStubReceivesAllMessages() {
     sendMessage(INTYGS_ID_1);
     sendMessage(INTYGS_ID_1);
     sendMessage(INTYGS_ID_1);
@@ -76,7 +77,7 @@ public class RouteIT {
   }
 
   @Test
-  public void ensureStubReceivesAllMessagesAfterResend() {
+  void ensureStubReceivesAllMessagesAfterResend() {
     sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "2");
     sendMessage(INTYGS_ID_1);
 
@@ -90,7 +91,7 @@ public class RouteIT {
   }
 
   @Test
-  public void ensureMessageEndsUpInDLQ() {
+  void ensureMessageEndsUpInDLQ() {
     sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "5");
 
     await()

@@ -74,7 +74,7 @@ class CustomAuthenticationFailureHandlerTest {
       new PrivatePractitionerAuthorizationException("Private practitioner exception");
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     handler.init();
   }
 
@@ -87,7 +87,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals( urlCaptor.getValue(),"/error?reason=login.failed");
+    assertEquals(urlCaptor.getValue(), "/error?reason=login.failed");
   }
 
   @Test
@@ -99,7 +99,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals( urlCaptor.getValue(),"/error?reason=login.hsaerror");
+    assertEquals(urlCaptor.getValue(), "/error?reason=login.hsaerror");
   }
 
   @Test
@@ -112,7 +112,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals( urlCaptor.getValue(),"/error?reason=login.medarbetaruppdrag");
+    assertEquals(urlCaptor.getValue(), "/error?reason=login.medarbetaruppdrag");
   }
 
   @Test
@@ -125,7 +125,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals( urlCaptor.getValue(),"/error?reason=auth-exception-subscription");
+    assertEquals(urlCaptor.getValue(), "/error?reason=auth-exception-subscription");
   }
 
   @Test
@@ -134,7 +134,7 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals( urlCaptor.getValue(),"/ppRegistrationUrl");
+    assertEquals(urlCaptor.getValue(), "/ppRegistrationUrl");
   }
 
   @Test
@@ -145,6 +145,6 @@ class CustomAuthenticationFailureHandlerTest {
 
     verify(redirectStrategy, times(ONE))
         .sendRedirect(eq(request), eq(response), urlCaptor.capture());
-    assertEquals( urlCaptor.getValue(),"/error?reason=login.failed");
+    assertEquals(urlCaptor.getValue(), "/error?reason=login.failed");
   }
 }

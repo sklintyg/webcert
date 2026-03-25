@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.xml.ws.WebServiceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateStoreProcessorTest {
+class CertificateStoreProcessorTest {
 
   private static final String LOGICAL_ADDRESS1 = "address-1";
   private static final String BODY = "body";
@@ -68,14 +68,14 @@ public class CertificateStoreProcessorTest {
   private CertificateStoreProcessor certificateStoreProcessor = new CertificateStoreProcessor();
 
   @BeforeEach
-  public void setup() throws ModuleNotFoundException {
+  void setup() throws ModuleNotFoundException {
     when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString()))
         .thenReturn("1.0");
     when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
   }
 
   @Test
-  public void testStoreCertificate() throws Exception {
+  void testStoreCertificate() throws Exception {
     // When
     certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
@@ -84,85 +84,107 @@ public class CertificateStoreProcessorTest {
   }
 
   @Test
-  public void testStoreCertificateThrowsTemporaryOnTechnicalError() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    doThrow(technicalErrorException).when(moduleApi).registerCertificate(anyString(), anyString());
+  void testStoreCertificateThrowsTemporaryOnTechnicalError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          doThrow(technicalErrorException)
+              .when(moduleApi)
+              .registerCertificate(anyString(), anyString());
 
-    // When
-    certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-      });
+          // When
+          certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testStoreCertificateThrowsTemporaryOnApplicationError() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    doThrow(applicationErrorException)
-        .when(moduleApi)
-        .registerCertificate(anyString(), anyString());
+  void testStoreCertificateThrowsTemporaryOnApplicationError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          doThrow(applicationErrorException)
+              .when(moduleApi)
+              .registerCertificate(anyString(), anyString());
 
-    // When
-    certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-      });
+          // When
+          certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testStoreCertificateThrowsTemporaryOnValidationError() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    doThrow(validationErrorException).when(moduleApi).registerCertificate(anyString(), anyString());
+  void testStoreCertificateThrowsTemporaryOnValidationError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          doThrow(validationErrorException)
+              .when(moduleApi)
+              .registerCertificate(anyString(), anyString());
 
-    // When
-    certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-      });
+          // When
+          certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testStoreCertificateThrowsTemporaryOnTransformationError() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    doThrow(transformationErrorException)
-        .when(moduleApi)
-        .registerCertificate(anyString(), anyString());
+  void testStoreCertificateThrowsTemporaryOnTransformationError() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          doThrow(transformationErrorException)
+              .when(moduleApi)
+              .registerCertificate(anyString(), anyString());
 
-    // When
-    certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-      });
+          // When
+          certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testStoreCertificateThrowsTemporaryOnModuleException() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    doThrow(new ModuleException()).when(moduleApi).registerCertificate(anyString(), anyString());
+  void testStoreCertificateThrowsTemporaryOnModuleException() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          doThrow(new ModuleException())
+              .when(moduleApi)
+              .registerCertificate(anyString(), anyString());
 
-    // When
-    certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-      });
+          // When
+          certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testStoreCertificateThrowsTemporaryOnWebServiceException() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    doThrow(new WebServiceException())
-        .when(moduleApi)
-        .registerCertificate(anyString(), anyString());
+  void testStoreCertificateThrowsTemporaryOnWebServiceException() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          doThrow(new WebServiceException())
+              .when(moduleApi)
+              .registerCertificate(anyString(), anyString());
 
-    // When
-    certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-      });
+          // When
+          certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
+        });
   }
 
   @Test
-  public void testStoreCertificateThrowsTemporaryOnException() {
-    assertThrows(TemporaryException.class, () -> {
-    // Given
-    doThrow(new RuntimeException()).when(moduleApi).registerCertificate(anyString(), anyString());
+  void testStoreCertificateThrowsTemporaryOnException() {
+    assertThrows(
+        TemporaryException.class,
+        () -> {
+          // Given
+          doThrow(new RuntimeException())
+              .when(moduleApi)
+              .registerCertificate(anyString(), anyString());
 
-    // When
-    certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
-      });
+          // When
+          certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
+        });
   }
 }

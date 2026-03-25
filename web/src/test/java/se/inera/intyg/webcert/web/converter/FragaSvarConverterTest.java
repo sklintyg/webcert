@@ -35,17 +35,17 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 /**
  * @author andreaskaltenbach
  */
-public class FragaSvarConverterTest {
+class FragaSvarConverterTest {
 
   @Test
-  public void testConvertQuestion() throws Exception {
+  void testConvertQuestion() throws Exception {
     FragaSvar fragaSvar =
         new FragaSvarConverter().convert(question("FragaSvarConverterTest/question.xml"));
     compareObjectWithReferenceFile(fragaSvar, "FragaSvarConverterTest/question.json");
   }
 
   @Test
-  public void testConvertQuestionLongMeddelandeRubrik() throws Exception {
+  void testConvertQuestionLongMeddelandeRubrik() throws Exception {
     FragaSvar fragaSvar =
         new FragaSvarConverter()
             .convert(question("FragaSvarConverterTest/question_long_meddelande_rubrik.xml"));

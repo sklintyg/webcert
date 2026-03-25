@@ -25,7 +25,7 @@ import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.DbAccessServiceTestData;
 
-public class DbDraftAccessTest extends DraftAccessTest {
+class DbDraftAccessTest extends DraftAccessTest {
 
   public DbDraftAccessTest() {
     super(DbModuleEntryPoint.MODULE_ID, new DbAccessServiceTestData());

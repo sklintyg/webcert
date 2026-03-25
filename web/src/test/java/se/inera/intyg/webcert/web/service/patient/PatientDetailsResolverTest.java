@@ -54,7 +54,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 /** Created by eriklupander on 2017-08-14. */
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-public class PatientDetailsResolverTest {
+class PatientDetailsResolverTest {
 
   private static final String TS_BAS_VERSION = "6.0";
 
@@ -93,7 +93,7 @@ public class PatientDetailsResolverTest {
   @Mock private WebCertUser freeWebCertUser;
 
   @BeforeEach
-  public void init() throws Exception {
+  void init() throws Exception {
     when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
     when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParameters());
     when(integratedWebCertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
@@ -152,7 +152,7 @@ public class PatientDetailsResolverTest {
   }
 
   @Test
-  public void testIsPatientAddressChangedNewPatientNull() {
+  void testIsPatientAddressChangedNewPatientNull() {
     Patient oldPatient = new Patient();
     Patient newPatient = null;
 
@@ -162,7 +162,7 @@ public class PatientDetailsResolverTest {
   }
 
   @Test
-  public void testIsPatientAddressChangedNotChanged() {
+  void testIsPatientAddressChangedNotChanged() {
     Patient oldPatient = new Patient();
     oldPatient.setPostadress("GBG");
     oldPatient.setPostnummer("123");
@@ -177,7 +177,7 @@ public class PatientDetailsResolverTest {
   }
 
   @Test
-  public void testIsPatientNamedChangedNewPatientNull() {
+  void testIsPatientNamedChangedNewPatientNull() {
     Patient oldPatient = new Patient();
     Patient newPatient = null;
 
@@ -187,7 +187,7 @@ public class PatientDetailsResolverTest {
   }
 
   @Test
-  public void testIsPatientNamedChangedNotChanged() {
+  void testIsPatientNamedChangedNotChanged() {
     Patient oldPatient = new Patient();
     oldPatient.setFornamn("Test");
     oldPatient.setEfternamn("Son");
@@ -205,7 +205,7 @@ public class PatientDetailsResolverTest {
 
   /** Standardfallet för FK-intyg är namn + sekr + avliden från PU, alltid nullad address. */
   @Test
-  public void testFKIntygIntegrationWithPuOk() {
+  void testFKIntygIntegrationWithPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -223,7 +223,7 @@ public class PatientDetailsResolverTest {
 
   /** För FK + integration + UTAN PU vill vi ha null */
   @Test
-  public void testFKIntygIntegrationWithPuUnavailable() {
+  void testFKIntygIntegrationWithPuUnavailable() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -233,7 +233,7 @@ public class PatientDetailsResolverTest {
 
   /** FK - fristående, fungerande PU. */
   @Test
-  public void testFKIntygFristaendeWithPuOk() {
+  void testFKIntygFristaendeWithPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -251,7 +251,7 @@ public class PatientDetailsResolverTest {
 
   /** FK - fristående, EJ PU. */
   @Test
-  public void testFKIntygFristaendeWithPuUnavailable() {
+  void testFKIntygFristaendeWithPuUnavailable() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -263,7 +263,7 @@ public class PatientDetailsResolverTest {
 
   /** TS - integration - PU: Namn + meta från PU, adress från INTEGR */
   @Test
-  public void testTSIntygIntegrationWithPuOk() {
+  void testTSIntygIntegrationWithPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -281,7 +281,7 @@ public class PatientDetailsResolverTest {
 
   /** TS - integration - PU: Namn + meta från PU, adress från PU */
   @Test
-  public void testTSIntygIntegrationWithPuOkButAddressMissingFromIntegration() {
+  void testTSIntygIntegrationWithPuOkButAddressMissingFromIntegration() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
     when(integratedWebCertUser.getParameters())
@@ -301,7 +301,7 @@ public class PatientDetailsResolverTest {
 
   /** TS + fristående + PU == Allt från PU */
   @Test
-  public void testTSIntygFristaendeWithPuOk() {
+  void testTSIntygFristaendeWithPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -319,7 +319,7 @@ public class PatientDetailsResolverTest {
 
   /** TS diabetes 2 + fristående + PU == Allt från PU */
   @Test
-  public void testTSDiabetes2IntygFristaendeWithPuOk() {
+  void testTSDiabetes2IntygFristaendeWithPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -337,7 +337,7 @@ public class PatientDetailsResolverTest {
 
   /** TS diabetes 3 + fristående + PU == Allt från PU */
   @Test
-  public void testTSDiabetes3IntygFristaendeWithPuOk() {
+  void testTSDiabetes3IntygFristaendeWithPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -355,7 +355,7 @@ public class PatientDetailsResolverTest {
 
   /** TS + fristående + EJ PU == null */
   @Test
-  public void testTSIntygFristaendeWithPuUnavailable() {
+  void testTSIntygFristaendeWithPuUnavailable() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -368,7 +368,7 @@ public class PatientDetailsResolverTest {
 
   /** Dödsbevis - integration - PU: Namn + meta från PU == allt hämtas från PU */
   @Test
-  public void testSOSDBIntygIntegrationWithPuOkShouldIgnoreIntegrationParameters() {
+  void testSOSDBIntygIntegrationWithPuOkShouldIgnoreIntegrationParameters() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -386,7 +386,7 @@ public class PatientDetailsResolverTest {
 
   /** Dödsbevis + integration + EJ PU, inget kan hämtas */
   @Test
-  public void testSOSDBIntygIntegrationWithPuUnavailable() {
+  void testSOSDBIntygIntegrationWithPuUnavailable() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -396,7 +396,7 @@ public class PatientDetailsResolverTest {
 
   /** Dödsbevis + fristående + PU == Allt från PU */
   @Test
-  public void testSOSDBIntygFristaendeWithPuOk() {
+  void testSOSDBIntygFristaendeWithPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -414,7 +414,7 @@ public class PatientDetailsResolverTest {
 
   /** Dödsbevis + fristående + EJ PU == null */
   @Test
-  public void testSOSDBIntygFristaendeWithPuUnavailable() {
+  void testSOSDBIntygFristaendeWithPuUnavailable() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -426,7 +426,7 @@ public class PatientDetailsResolverTest {
 
   /** DOI - Integration. DB finns, PU finns == allt från PU */
   @Test
-  public void testSosDoiIntygIntegrationWithExistingDBIntygAndPuOk() {
+  void testSosDoiIntygIntegrationWithExistingDBIntygAndPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -444,7 +444,7 @@ public class PatientDetailsResolverTest {
 
   /** DOI - Integration. DB saknas, PU finns == allt från PU */
   @Test
-  public void testSosDoiIntygIntegrationWithNoDBIntygAndPuOk() {
+  void testSosDoiIntygIntegrationWithNoDBIntygAndPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -462,7 +462,7 @@ public class PatientDetailsResolverTest {
 
   /** DOI - Integration. DB saknas, PU saknas == Ingen info */
   @Test
-  public void testSosDoiIntygIntegrationWithNoDBIntygAndPuUnavailable() {
+  void testSosDoiIntygIntegrationWithNoDBIntygAndPuUnavailable() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
     when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
@@ -472,7 +472,7 @@ public class PatientDetailsResolverTest {
 
   /** DOI - Fristående. DB saknas, PU finns. Namn och adress från PU. */
   @Test
-  public void testSosDoiIntygFristaendeWithNoDBIntygAndPuOk() {
+  void testSosDoiIntygFristaendeWithNoDBIntygAndPuOk() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -490,7 +490,7 @@ public class PatientDetailsResolverTest {
 
   /** DOI - Fristående. DB saknas, PU saknas. Rubbet från Integration */
   @Test
-  public void testSosDoiIntygFristaendeWithNoDBIntygAndPuUnavailable() {
+  void testSosDoiIntygFristaendeWithNoDBIntygAndPuUnavailable() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
     when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
@@ -499,7 +499,7 @@ public class PatientDetailsResolverTest {
   }
 
   @Test
-  public void testWhenNoUserSession() {
+  void testWhenNoUserSession() {
     when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
     when(webCertUserService.getUser()).thenReturn(null);
 
