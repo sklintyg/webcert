@@ -41,7 +41,7 @@ public abstract class CertificateAccessTest extends AccessTest {
 
   @BeforeEach
   void initMocks() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     accessEvaluationParameters =
         AccessEvaluationParameters.create(
             intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false);

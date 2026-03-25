@@ -20,10 +20,8 @@ package se.inera.intyg.webcert.web.service.access;
 
 import static org.mockito.Mockito.doReturn;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
@@ -36,11 +34,6 @@ public abstract class LockedDraftAccessTest extends AccessTest {
 
   LockedDraftAccessTest(String intygsTyp, AccessServiceTestData accessServiceTestData) {
     super(intygsTyp, accessServiceTestData);
-  }
-
-  @BeforeEach
-  void initMocks() {
-    MockitoAnnotations.initMocks(this);
   }
 
   @Test

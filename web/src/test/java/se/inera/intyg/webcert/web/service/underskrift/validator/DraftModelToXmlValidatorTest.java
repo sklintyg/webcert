@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
@@ -50,10 +49,6 @@ class DraftModelToXmlValidatorTest {
   @Mock private UtkastModelToXMLConverter draftModelToXMLConverter;
 
   @InjectMocks private DraftModelToXmlValidator draftModelToXmlValidator;
-
-  public DraftModelToXmlValidatorTest() {
-    MockitoAnnotations.initMocks(this);
-  }
 
   @Test
   void validateDraftModelAsXmlValid() throws ModuleNotFoundException, IOException, ModuleException {

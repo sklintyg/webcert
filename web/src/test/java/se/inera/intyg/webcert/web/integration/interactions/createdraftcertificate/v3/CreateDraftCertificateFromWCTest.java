@@ -96,7 +96,7 @@ class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
 
   @BeforeEach
   @Override
-  public void setup() throws ModuleNotFoundException {
+  public void setup() {
     lenient().when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
     lenient()
         .when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any(), any()))

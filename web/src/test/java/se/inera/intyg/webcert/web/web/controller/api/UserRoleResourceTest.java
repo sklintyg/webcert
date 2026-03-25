@@ -49,8 +49,8 @@ class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
   @Captor private ArgumentCaptor<String> roleArrCaptor;
 
   @BeforeEach
-  void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
   }
 
   @Test

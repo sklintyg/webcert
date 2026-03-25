@@ -71,7 +71,7 @@ class UserApiControllerTest {
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     when(webCertUserService.getUser()).thenReturn(webCertUser);
   }
 

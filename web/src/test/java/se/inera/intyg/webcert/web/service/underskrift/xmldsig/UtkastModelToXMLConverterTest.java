@@ -61,7 +61,7 @@ class UtkastModelToXMLConverterTest {
   private String jsonModel;
 
   public UtkastModelToXMLConverterTest() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
   }
 
   @Test

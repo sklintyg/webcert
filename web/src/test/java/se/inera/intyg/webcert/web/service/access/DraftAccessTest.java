@@ -40,7 +40,7 @@ public abstract class DraftAccessTest extends AccessTest {
 
   @BeforeEach
   void initMocks() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
   }
 
   @Test

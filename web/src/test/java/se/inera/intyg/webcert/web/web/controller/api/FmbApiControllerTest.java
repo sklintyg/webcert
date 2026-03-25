@@ -54,8 +54,8 @@ class FmbApiControllerTest {
   @Mock private DiagnosService diagnosService;
 
   @BeforeEach
-  void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
     Mockito.when(diagnosService.getDiagnosisByCode(anyString(), any(Diagnoskodverk.class)))
         .thenReturn(DiagnosResponse.ok(makeDiagnoser(), false));
   }

@@ -36,7 +36,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.webcert.web.csintegration.aggregate.CreateDraftCertificateAggregator;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateTest;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
@@ -65,7 +64,7 @@ class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificate
   @InjectMocks private CreateDraftCertificateResponderImpl responder;
 
   @BeforeEach
-  public void setup() throws ModuleNotFoundException {
+  public void setup() {
     super.setup();
   }
 
