@@ -424,13 +424,13 @@ class LogRequestFactoryTest {
     final var user = mock(WebCertUser.class);
 
     final var expectedCareUnit =
-        new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet();
+        new se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet();
     expectedCareUnit.setId(UNIT_ID);
     expectedCareUnit.setNamn(UNIT_NAME);
     doReturn(expectedCareUnit).when(user).getValdVardenhet();
 
     final var expectedCareProvider =
-        new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare();
+        new se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare();
     expectedCareProvider.setId(CARE_PROVIDER_ID);
     expectedCareProvider.setNamn(CARE_PROVIDER_NAME);
     doReturn(expectedCareProvider).when(user).getValdVardgivare();

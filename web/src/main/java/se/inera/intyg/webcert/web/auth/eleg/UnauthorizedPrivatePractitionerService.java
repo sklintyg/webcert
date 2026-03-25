@@ -20,11 +20,11 @@ package se.inera.intyg.webcert.web.auth.eleg;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
-import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.webcert.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;

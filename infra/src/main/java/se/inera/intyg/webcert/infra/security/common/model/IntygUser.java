@@ -28,10 +28,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation.PaTitle;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 
 public class IntygUser implements UserDetails {
 

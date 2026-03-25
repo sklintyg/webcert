@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.csintegration.unit;
 
-import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 
 public class CertificateServiceUnitUtil {

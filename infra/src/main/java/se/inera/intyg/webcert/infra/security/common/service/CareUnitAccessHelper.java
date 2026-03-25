@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.infra.security.common.service;
 
 import java.util.HashSet;
 import java.util.Set;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 
 /**
@@ -40,9 +40,9 @@ public final class CareUnitAccessHelper {
 
   /**
    * Since the WebCertUser#getValdVardenhet may either return a {@link
-   * se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet} or a {@link
-   * se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning}, this method can be used to
-   * determine if:
+   * se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet} or a {@link
+   * se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning}, this method can be
+   * used to determine if:
    *
    * <ul>
    *   <li>If the selectedVardenhet is a Vardenhet: The supplied enhetsId is for the Vardenhet or

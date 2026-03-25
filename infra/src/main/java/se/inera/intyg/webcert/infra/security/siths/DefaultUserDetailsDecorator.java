@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.infra.integration.hsatk.model.HsaSystemRole;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.UserCredentials;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.integration.hsatk.util.HsaAttributeExtractor;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.HsaSystemRole;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation.PaTitle;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.UserCredentials;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.webcert.infra.integration.hsatk.util.HsaAttributeExtractor;
 import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 

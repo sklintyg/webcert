@@ -47,9 +47,9 @@ import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickle
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ResultCodeEnum;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.infra.security.common.model.Privilege;
@@ -401,8 +401,8 @@ class FmbSjukfallServiceImplTest {
     vardenhet.getMottagningar().add(mottagning);
     user.setValdVardenhet(vardenhet);
 
-    se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare vardgivare =
-        new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare();
+    se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare vardgivare =
+        new se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare();
     vardgivare.setId("vg1");
     vardgivare.getVardenheter().add(vardenhet);
     user.setVardgivare(Arrays.asList(vardgivare));

@@ -47,7 +47,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.infra.monitoring.MonitoringConfiguration;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.infra.security.common.model.Role;

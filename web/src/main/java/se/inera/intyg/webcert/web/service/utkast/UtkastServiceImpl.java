@@ -487,7 +487,7 @@ public class UtkastServiceImpl implements UtkastService {
       if (unitOfUser.isPresent()) {
         final var userOnCareUnit =
             unitOfUser.get()
-                instanceof se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+                instanceof se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
         return userOnCareUnit ? isSameCareUnit : isSameUnit;
       }
     }

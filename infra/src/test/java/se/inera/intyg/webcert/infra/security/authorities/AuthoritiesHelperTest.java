@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaPersonService;
+import se.inera.intyg.webcert.infra.integration.hsatk.services.legacy.HsaPersonService;
 import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.infra.security.common.model.Privilege;

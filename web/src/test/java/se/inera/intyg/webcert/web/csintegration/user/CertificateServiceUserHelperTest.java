@@ -41,7 +41,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.services.BefattningService;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.infra.security.common.model.Role;

@@ -75,6 +75,7 @@ dependencies {
     compileOnly "jakarta.servlet:jakarta.servlet-api"
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
     implementation "jakarta.xml.bind:jakarta.xml.bind-api"
+    implementation "jakarta.xml.ws:jakarta.xml.ws-api"
 
     // ── Intyg schemas ─────────────────────────────────────────────────────────
     implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
@@ -82,9 +83,7 @@ dependencies {
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
-    // ── TEMPORARY: external infra deps removed once their modules are inlined ─
-    // hsa-integration-api: removed in Step 6 (HSA types inlined as local DTOs)
-    implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
+    // ── TEMPORARY: external infra dep removed once its module is inlined ──────
     // common-redis-cache-core: removed in Step 8 (replaced with direct Redis config)
     implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
 

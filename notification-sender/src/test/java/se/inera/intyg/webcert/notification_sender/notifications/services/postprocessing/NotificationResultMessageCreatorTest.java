@@ -64,13 +64,13 @@ import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
@@ -645,15 +645,18 @@ class NotificationResultMessageCreatorTest {
     return certificateTypeV3;
   }
 
-  private se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare createCareProviderInfra() {
+  private se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare
+      createCareProviderInfra() {
     final var careProviderInfra =
-        new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare();
+        new se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare();
     careProviderInfra.setId(CARE_PROVIDER_ID);
     return careProviderInfra;
   }
 
-  private se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet createCareUnitInfra() {
-    final var careUnitInfra = new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet();
+  private se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet
+      createCareUnitInfra() {
+    final var careUnitInfra =
+        new se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet();
     careUnitInfra.setId(LOGICAL_ADDRESS);
     return careUnitInfra;
   }

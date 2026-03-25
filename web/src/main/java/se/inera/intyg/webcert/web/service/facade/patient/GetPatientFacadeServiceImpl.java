@@ -23,9 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
-import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
-import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.webcert.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
