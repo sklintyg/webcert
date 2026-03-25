@@ -84,6 +84,7 @@ dependencies {
     implementation project(':webcert-logging')
     implementation project(':integration-certificate-analytics-service')
     implementation project(':integration-private-practitioner-service')
+    implementation project(':infra')
 
     implementation "com.fasterxml.jackson.core:jackson-core"
     implementation "com.fasterxml.jackson.core:jackson-annotations"

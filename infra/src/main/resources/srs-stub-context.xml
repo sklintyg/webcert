@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+                           http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
+
+    profile="dev,wc-all-stubs,wc-srs-stub">
+
+    <jaxws:endpoint address="/stubs/getsrs" implementor="se.inera.intyg.infra.integration.srs.stub.GetSrsInformationStub"/>
+    <jaxws:endpoint address="/stubs/predictionquestions" implementor="se.inera.intyg.infra.integration.srs.stub.GetPredictionQuestionsStub"/>
+    <jaxws:endpoint address="/stubs/get-consent" implementor="se.inera.intyg.infra.integration.srs.stub.GetConsentStub"/>
+    <jaxws:endpoint address="/stubs/set-consent" implementor="se.inera.intyg.infra.integration.srs.stub.SetConsentStub"/>
+    <jaxws:endpoint address="/stubs/diagnosiscodes" implementor="se.inera.intyg.infra.integration.srs.stub.GetDiagnosisCodesStub"/>
+    <jaxws:endpoint address="/stubs/getsrsfordiagnosis" implementor="se.inera.intyg.infra.integration.srs.stub.GetSRSInformationForDiagnosisStub"/>
+
+    <bean id="consentRepository" class="se.inera.intyg.infra.integration.srs.stub.repository.ConsentRepository" />
+
+    <bean id="statisticsImageStub" class="se.inera.intyg.infra.integration.srs.stub.StatisticsImageStub"/>
+
+    <jaxrs:server address="/stubs/srs-statistics-stub">
+        <jaxrs:serviceBeans>
+            <ref bean="statisticsImageStub"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jacksonJsonProvider"/>
+        </jaxrs:providers>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json"/>
+            <entry key="jpg" value="image/jpeg"/>
+        </jaxrs:extensionMappings>
+    </jaxrs:server>
+
+</beans>

@@ -1,0 +1,24 @@
+<configuration>
+
+    <property name="APP_NAME" value="test-app"/>
+
+    <include resource="logback-ocp-base.xml"/>
+
+    <logger name="se.inera.intyg.infra.monitoring.logging.LogbackTest" level="INFO">
+        <appender-ref ref="PROCESS" />
+        <appender-ref ref="MONITORING" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <root level="ERROR">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

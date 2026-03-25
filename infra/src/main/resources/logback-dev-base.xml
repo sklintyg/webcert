@@ -1,0 +1,99 @@
+<!--
+  ~ Copyright (C) 2020 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<included>
+  <property name="TIMESTAMP" value="%d{yyyy-MM-dd HH:mm:ss.SSS}"/>
+  <property name="LEVEL" value="%highlight(%-5level)" />
+  <property name="SESSION" value="%X{req.sessionInfo:--}"/>
+  <property name="TRACE" value="%X{req.traceId:--}"/>
+  <property name="LOGGER" value="%logger{10}" />
+  <property name="LINE" value="%msg%n"/>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+  <withJansi>true</withJansi>
+  <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+    <markers>Monitoring,Validation</markers>
+    <onMatch>DENY</onMatch>
+    <onMismatch>ACCEPT</onMismatch>
+  </filter>
+  <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+    <pattern>${TIMESTAMP} ${LEVEL} [console,${SESSION},${TRACE}] --- ${LOGGER} : ${LINE}</pattern>
+  </encoder>
+  </appender>
+
+  <appender name="MONITORING" class="ch.qos.logback.core.ConsoleAppender">
+  <withJansi>true</withJansi>
+  <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+    <marker>Monitoring</marker>
+    <onMatch>ACCEPT</onMatch>
+    <onMismatch>DENY</onMismatch>
+  </filter>
+  <encoder class="se.inera.intyg.infra.monitoring.logging.UserPatternLayout">
+    <pattern>${TIMESTAMP} ${LEVEL} [monitoring,${SESSION},${TRACE},%user] --- %boldGreen(${LOGGER}) : ${LINE}</pattern>
+  </encoder>
+  </appender>
+
+  <appender name="VALIDATION" class="ch.qos.logback.core.ConsoleAppender">
+  <withJansi>true</withJansi>
+  <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+    <marker>Validation</marker>
+    <onMatch>ACCEPT</onMatch>
+    <onMismatch>DENY</onMismatch>
+  </filter>
+  <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+    <pattern>${TIMESTAMP} ${LEVEL} [validation,${SESSION},${TRACE}] --- %boldCyan(${LOGGER}) : ${LINE}</pattern>
+  </encoder>
+  </appender>
+
+  <appender name="PROCESS" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
+    <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+      <markers>Monitoring,Validation</markers>
+      <onMatch>DENY</onMatch>
+      <onMismatch>ACCEPT</onMismatch>
+    </filter>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>${TIMESTAMP} ${LEVEL} [process,${SESSION},${TRACE}] --- %boldBlue(${LOGGER}) : ${LINE}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="ACCESS" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
+    <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+      <markers>Monitoring,Validation</markers>
+      <onMatch>DENY</onMatch>
+      <onMismatch>ACCEPT</onMismatch>
+    </filter>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>${TIMESTAMP} ${LEVEL} [access,${SESSION},${TRACE}] --- %boldMagenta(${LOGGER}) : ${LINE}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FRONTEND" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
+    <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+      <markers>Monitoring,Validation</markers>
+      <onMatch>DENY</onMatch>
+      <onMismatch>ACCEPT</onMismatch>
+    </filter>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>${TIMESTAMP} ${LEVEL} [frontend,${SESSION},${TRACE}] --- %boldYellow(${LOGGER}) : ${LINE}</pattern>
+    </encoder>
+  </appender>
+
+</included>
