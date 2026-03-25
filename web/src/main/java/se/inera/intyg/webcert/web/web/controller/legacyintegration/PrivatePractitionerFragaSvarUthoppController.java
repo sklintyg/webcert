@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import static se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 
 import io.swagger.annotations.Api;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 
 /** Created by eriklupander on 2015-10-08. */
 // CHECKSTYLE:OFF LineLength

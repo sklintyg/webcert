@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
-import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
 
 @Api(value = "testability configuration")
 @Path("/config")

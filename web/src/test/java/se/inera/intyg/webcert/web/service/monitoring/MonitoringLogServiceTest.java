@@ -37,7 +37,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 
 /**
  * Unit test to assure that the monitoring log produces relevant messages.

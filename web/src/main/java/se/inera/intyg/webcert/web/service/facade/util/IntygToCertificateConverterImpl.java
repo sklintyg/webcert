@@ -37,8 +37,8 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 @Component

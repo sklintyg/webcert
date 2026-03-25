@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.infra.security.common.model.UserOriginType.DJUPINTEGRATION;
+import static se.inera.intyg.webcert.infra.security.common.model.UserOriginType.DJUPINTEGRATION;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;

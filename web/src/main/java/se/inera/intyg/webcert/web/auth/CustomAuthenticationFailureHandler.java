@@ -31,8 +31,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.security.exception.HsaServiceException;
-import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
+import se.inera.intyg.webcert.infra.security.exception.HsaServiceException;
+import se.inera.intyg.webcert.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 

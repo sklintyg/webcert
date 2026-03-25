@@ -32,7 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceIntegrationUnitHelperTest {

@@ -22,12 +22,12 @@ import com.google.common.base.Strings;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.logmessages.ActivityPurpose;
-import se.inera.intyg.infra.logmessages.Enhet;
-import se.inera.intyg.infra.logmessages.Patient;
-import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.infra.logmessages.PdlResource;
-import se.inera.intyg.infra.logmessages.ResourceType;
+import se.inera.intyg.webcert.infra.logmessages.ActivityPurpose;
+import se.inera.intyg.webcert.infra.logmessages.Enhet;
+import se.inera.intyg.webcert.infra.logmessages.Patient;
+import se.inera.intyg.webcert.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.webcert.infra.logmessages.PdlResource;
+import se.inera.intyg.webcert.infra.logmessages.ResourceType;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 

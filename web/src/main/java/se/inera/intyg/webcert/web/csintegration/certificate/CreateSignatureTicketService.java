@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;

@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.user;
 
 import java.util.Map;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component

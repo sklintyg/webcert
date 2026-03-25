@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
-import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 

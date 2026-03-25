@@ -36,7 +36,7 @@
 
     <!-- Listener for external logback configuration file -->
     <listener>
-        <listener-class>se.inera.intyg.infra.monitoring.logging.LogbackConfiguratorContextListener</listener-class>
+        <listener-class>se.inera.intyg.webcert.infra.monitoring.logging.LogbackConfiguratorContextListener</listener-class>
     </listener>
 
     <!-- Start spring context -->
@@ -219,7 +219,7 @@
     <!-- Update RequestContext for spring session -->
     <filter>
         <filter-name>requestContextHolderUpdateFilter</filter-name>
-        <filter-class>se.inera.intyg.infra.security.filter.RequestContextHolderUpdateFilter</filter-class>
+        <filter-class>se.inera.intyg.webcert.infra.security.filter.RequestContextHolderUpdateFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>requestContextHolderUpdateFilter</filter-name>
@@ -246,7 +246,7 @@
 
     <filter>
         <filter-name>sessionTimeoutFilter</filter-name>
-        <filter-class>se.inera.intyg.infra.security.filter.SessionTimeoutFilter</filter-class>
+        <filter-class>se.inera.intyg.webcert.infra.security.filter.SessionTimeoutFilter</filter-class>
         <init-param>
             <param-name>skipRenewSessionUrls</param-name>
             <param-value>/moduleapi/stat,/api/session-auth-check/ping</param-value>
@@ -270,7 +270,7 @@
     <!-- Principal updated filter detects changes to the User Principal and touches the session so Redis stores the changes. -->
     <filter>
         <filter-name>principalUpdatedFilter</filter-name>
-        <filter-class>se.inera.intyg.infra.security.filter.PrincipalUpdatedFilter</filter-class>
+        <filter-class>se.inera.intyg.webcert.infra.security.filter.PrincipalUpdatedFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>principalUpdatedFilter</filter-name>
@@ -296,7 +296,7 @@
     <!-- Filter to add http headers for security -->
     <filter>
         <filter-name>securityHeadersFilter</filter-name>
-        <filter-class>se.inera.intyg.infra.security.filter.SecurityHeadersFilter</filter-class>
+        <filter-class>se.inera.intyg.webcert.infra.security.filter.SecurityHeadersFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>securityHeadersFilter</filter-name>

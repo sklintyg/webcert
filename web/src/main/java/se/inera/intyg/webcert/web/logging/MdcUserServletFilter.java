@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
 import se.inera.intyg.webcert.logging.MdcCloseableMap;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;

@@ -31,11 +31,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.infra.driftbannerdto.Application;
-import se.inera.intyg.infra.driftbannerdto.Banner;
-import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
-import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
-import se.inera.intyg.infra.integration.ia.services.IABannerService;
+import se.inera.intyg.webcert.infra.driftbannerdto.Application;
+import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
+import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
+import se.inera.intyg.webcert.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.webcert.infra.ia.services.IABannerService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 
 @ExtendWith(MockitoExtension.class)

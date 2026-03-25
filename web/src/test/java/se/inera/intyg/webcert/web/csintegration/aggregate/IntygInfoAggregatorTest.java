@@ -29,7 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
+import se.inera.intyg.webcert.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @ExtendWith(MockitoExtension.class)

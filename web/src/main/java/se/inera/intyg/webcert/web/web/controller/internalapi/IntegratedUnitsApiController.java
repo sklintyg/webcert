@@ -28,7 +28,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.infra.integreradeenheter.IntegratedUnitDTO;
+import se.inera.intyg.webcert.infra.integreradeenheter.IntegratedUnitDTO;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.integreradeenheter.IntegreradeEnheterService;

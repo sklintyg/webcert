@@ -70,7 +70,7 @@ public interface WebCertUserService {
 
   /**
    * Note - this is just a proxy for accessing {@link
-   * se.inera.intyg.infra.security.common.service.CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet}.
+   * se.inera.intyg.webcert.infra.security.common.service.CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet}.
    *
    * @param enhetId HSA-id of a vardenhet or mottagning.
    * @return True if the current IntygUser has access to the specified enhetsId including

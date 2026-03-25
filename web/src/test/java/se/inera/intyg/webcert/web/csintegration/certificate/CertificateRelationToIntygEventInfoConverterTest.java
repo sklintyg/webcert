@@ -31,9 +31,9 @@ import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
-import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
-import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
-import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
+import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent;
+import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent.Source;
+import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEventType;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateRelationToIntygEventInfoConverterTest {

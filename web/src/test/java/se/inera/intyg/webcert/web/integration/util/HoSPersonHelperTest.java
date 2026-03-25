@@ -30,7 +30,7 @@ import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 class HoSPersonHelperTest {

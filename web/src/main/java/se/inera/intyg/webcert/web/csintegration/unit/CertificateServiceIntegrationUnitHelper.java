@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.unit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
-import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 
 @Component
 @RequiredArgsConstructor

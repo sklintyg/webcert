@@ -31,12 +31,12 @@ import java.util.stream.Stream;
 import org.mockito.Mock;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
