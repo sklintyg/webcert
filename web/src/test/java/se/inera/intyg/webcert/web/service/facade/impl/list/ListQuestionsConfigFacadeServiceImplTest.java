@@ -156,7 +156,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
     @Test
     void shouldSetTitle() {
       final var config = listQuestionsConfigFacadeService.get(UNIT_ID);
-      assertEquals( config.getSecondaryTitle(),"Ärenden visas för " + UNIT_NAME);
+      assertEquals(config.getSecondaryTitle(), "Ärenden visas för " + UNIT_NAME);
     }
 
     @Test
@@ -208,7 +208,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetTitle() {
-        assertEquals( filter.getTitle(),"Skickat datum");
+        assertEquals(filter.getTitle(), "Skickat datum");
       }
 
       @Test
@@ -253,7 +253,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetTitle() {
-        assertEquals( filter.getTitle(),"Vidarebefordrat");
+        assertEquals(filter.getTitle(), "Vidarebefordrat");
       }
 
       @Test
@@ -291,7 +291,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetTitle() {
-        assertEquals( filter.getTitle(),"Åtgärd");
+        assertEquals(filter.getTitle(), "Åtgärd");
       }
 
       @Test
@@ -329,7 +329,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetTitle() {
-        assertEquals( filter.getTitle(),"Avsändare");
+        assertEquals(filter.getTitle(), "Avsändare");
       }
 
       @Test
@@ -367,7 +367,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetTitle() {
-        assertEquals( filter.getTitle(),"Enhet");
+        assertEquals(filter.getTitle(), "Enhet");
       }
 
       @Test
@@ -392,12 +392,12 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetUnitSelectNameWithSpacingForSubunit() {
-        assertEquals( filter.getValues().get(2).getName(),"&emsp; " + A_UNIT_NAME + " (2)");
+        assertEquals(filter.getValues().get(2).getName(), "&emsp; " + A_UNIT_NAME + " (2)");
       }
 
       @Test
       void shouldSetShowAllOption() {
-        assertEquals( filter.getValues().get(0).getName(),"Visa alla (6)");
+        assertEquals(filter.getValues().get(0).getName(), "Visa alla (6)");
       }
 
       @Test
@@ -430,7 +430,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetTitle() {
-        assertEquals( filter.getTitle(),"Patient");
+        assertEquals(filter.getTitle(), "Patient");
       }
 
       @Test
@@ -463,7 +463,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetEmptyTitle() {
-        assertEquals( filter.getTitle(),"");
+        assertEquals(filter.getTitle(), "");
       }
 
       @Test
@@ -529,7 +529,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
       @Test
       void shouldSetEmptyTitle() {
-        assertEquals( filter.getTitle(),"");
+        assertEquals(filter.getTitle(), "");
       }
 
       @Test
@@ -550,7 +550,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
       void shouldReturnCorrectSecondaryTitle() {
         final var config = listQuestionsConfigFacadeService.get("");
 
-        assertEquals( config.getSecondaryTitle(),"Ärenden visas för alla enheter");
+        assertEquals(config.getSecondaryTitle(), "Ärenden visas för alla enheter");
       }
     }
 
@@ -654,7 +654,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
     void shouldSetTitle() {
       setupUser(AuthoritiesConstants.ROLE_LAKARE);
       setupSignedBy();
-      assertEquals( filter.getTitle(),"Signerat av");
+      assertEquals(filter.getTitle(), "Signerat av");
     }
 
     @Test
@@ -675,7 +675,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
     void shouldSetShowAll() {
       setupUser(AuthoritiesConstants.ROLE_LAKARE);
       setupSignedBy();
-      assertEquals( filter.getValues().get(0).getName(),"Visa alla");
+      assertEquals(filter.getValues().get(0).getName(), "Visa alla");
     }
 
     @Test
@@ -720,7 +720,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
     @Test
     void shouldSetSecondaryTitleToShowAll() {
-      assertEquals( config.getSecondaryTitle(),"Ärenden visas för alla enheter");
+      assertEquals(config.getSecondaryTitle(), "Ärenden visas för alla enheter");
     }
   }
 

@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.auth.bootstrap;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeAll;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
 

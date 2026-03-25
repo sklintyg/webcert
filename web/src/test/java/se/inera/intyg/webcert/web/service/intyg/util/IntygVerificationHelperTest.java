@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.util;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotSent;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;

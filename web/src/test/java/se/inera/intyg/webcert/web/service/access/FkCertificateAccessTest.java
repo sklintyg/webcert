@@ -20,9 +20,7 @@ package se.inera.intyg.webcert.web.service.access;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.extension.ExtendWith;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
-import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.LisjpAccessServiceTestData;
 
 class FkCertificateAccessTest extends CertificateAccessTest {

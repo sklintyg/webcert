@@ -54,18 +54,18 @@ class IntygConverterUtilTest {
 
     assertTrue(res.getVardReferensId().contains("SEND-123-"));
 
-    assertEquals( res.getLakarutlatande().getLakarutlatandeId(),"123");
+    assertEquals(res.getLakarutlatande().getLakarutlatandeId(), "123");
     assertNull(res.getLakarutlatande().getPatient().getFullstandigtNamn());
-    assertEquals( res.getLakarutlatande().getPatient().getPersonId().getExtension(),
-        "19121212-1212");
+    assertEquals(
+        res.getLakarutlatande().getPatient().getPersonId().getExtension(), "19121212-1212");
     assertNotNull(res.getLakarutlatande().getSigneringsTidpunkt());
     assertNull(res.getAdressVard().getHosPersonal().getForskrivarkod());
-    assertEquals( res.getAdressVard().getHosPersonal().getFullstandigtNamn(),"En Läkare");
-    assertEquals( res.getAdressVard().getHosPersonal().getPersonalId().getExtension(),
-        "Personal HSA-ID");
-    assertEquals( res.getAdressVard().getHosPersonal().getEnhet().getEnhetsnamn(),"Kir mott");
-    assertEquals( res.getAdressVard().getHosPersonal().getEnhet().getEnhetsId().getExtension(),
-        "VardenhetY");
+    assertEquals(res.getAdressVard().getHosPersonal().getFullstandigtNamn(), "En Läkare");
+    assertEquals(
+        res.getAdressVard().getHosPersonal().getPersonalId().getExtension(), "Personal HSA-ID");
+    assertEquals(res.getAdressVard().getHosPersonal().getEnhet().getEnhetsnamn(), "Kir mott");
+    assertEquals(
+        res.getAdressVard().getHosPersonal().getEnhet().getEnhetsId().getExtension(), "VardenhetY");
     assertEquals(
         res.getAdressVard().getHosPersonal().getEnhet().getArbetsplatskod().getExtension(),
         "123456789011");
@@ -90,7 +90,7 @@ class IntygConverterUtilTest {
 
     final var name = IntygConverterUtil.concatPatientName(fName, mName, lName);
 
-    assertEquals( name,"Adam Bertil Cesar Davidsson Eriksson");
+    assertEquals(name, "Adam Bertil Cesar Davidsson Eriksson");
   }
 
   @Test
@@ -100,7 +100,7 @@ class IntygConverterUtilTest {
 
     final var name = IntygConverterUtil.concatPatientName(fName, null, lName);
 
-    assertEquals( name,"Adam Bertil Eriksson");
+    assertEquals(name, "Adam Bertil Eriksson");
   }
 
   @Test
@@ -110,7 +110,7 @@ class IntygConverterUtilTest {
 
     final var name = IntygConverterUtil.concatPatientName(fName, " ", lName);
 
-    assertEquals( name,"Adam Bertil Eriksson");
+    assertEquals(name, "Adam Bertil Eriksson");
   }
 
   @Test
@@ -121,7 +121,7 @@ class IntygConverterUtilTest {
     final var res = IntygConverterUtil.buildVardReferensId("ABC123", ts);
 
     assertNotNull(res);
-    assertEquals( res,"SEND-ABC123-20140101T123456.123");
+    assertEquals(res, "SEND-ABC123-20140101T123456.123");
   }
 
   @Test

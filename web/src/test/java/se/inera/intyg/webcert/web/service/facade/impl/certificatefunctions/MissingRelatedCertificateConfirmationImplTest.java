@@ -88,7 +88,7 @@ class MissingRelatedCertificateConfirmationImplTest {
   void shallReturnResourceLinkIfItsDoiAndNoDbExistsWithCorrectName() {
     final var actualResourcelink =
         missingRelatedCertificateConfirmation.get(DoiModuleEntryPoint.MODULE_ID, PERSONNUMMER);
-    assertEquals( actualResourcelink.get().getName(),"Dödsbevis saknas");
+    assertEquals(actualResourcelink.get().getName(), "Dödsbevis saknas");
   }
 
   @Test

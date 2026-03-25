@@ -279,7 +279,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
         createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(
             CERTIFICATE_ID);
       } catch (IllegalStateException e) {
-        assertEquals( e.getMessage(),"CS error");
+        assertEquals(e.getMessage(), "CS error");
       }
 
       verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);

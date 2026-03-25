@@ -20,12 +20,7 @@ package se.inera.intyg.webcert.web.service.access;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
-import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
-import se.inera.intyg.common.tstrk1009.support.Tstrk1009EntryPoint;
 import se.inera.intyg.common.tstrk1062.support.TsTrk1062EntryPoint;
-import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.TsAccessServiceTestData;
 
 class TsLockedDraftAccessTest extends LockedDraftAccessTest {

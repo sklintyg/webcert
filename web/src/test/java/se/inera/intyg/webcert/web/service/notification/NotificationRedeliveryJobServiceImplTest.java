@@ -175,7 +175,7 @@ class NotificationRedeliveryJobServiceImplTest {
             .getValue()
             .getFormattedMessage()
             .contains(String.valueOf(numberOfFailures)));
-    assertEquals( captureLogMessage.getValue().getLevel().levelStr,"DEBUG");
+    assertEquals(captureLogMessage.getValue().getLevel().levelStr, "DEBUG");
   }
 
   @Test

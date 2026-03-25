@@ -393,7 +393,7 @@ class SubscriptionServiceTest {
 
     verify(subscriptionIntegrationService)
         .isMissingSubscriptionUnregisteredElegUser(restServiceParamCaptor.capture());
-    assertEquals( restServiceParamCaptor.getValue(),"121212-1212");
+    assertEquals(restServiceParamCaptor.getValue(), "121212-1212");
   }
 
   @Test

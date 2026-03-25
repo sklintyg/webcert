@@ -548,7 +548,7 @@ class UtkastToCertificateConverterTest {
 
         final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
-        assertEquals( actualCertificate.getMetadata().getSentTo(),"Name");
+        assertEquals(actualCertificate.getMetadata().getSentTo(), "Name");
       }
     }
 

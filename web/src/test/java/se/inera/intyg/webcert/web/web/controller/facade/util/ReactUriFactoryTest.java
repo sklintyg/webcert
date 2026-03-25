@@ -60,8 +60,8 @@ class ReactUriFactoryTest {
   void shallReturnUriForCertificate() {
     final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
     final var actualUri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
-    assertEquals( actualUri.toString(),
-        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq");
+    assertEquals(
+        actualUri.toString(), "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq");
   }
 
   @Test
@@ -88,7 +88,7 @@ class ReactUriFactoryTest {
   void shallReturnUriForError() {
     final var reason = "auth-exception";
     final var actualUri = reactUriFactory.uriForErrorResponse(uriInfo, reason);
-    assertEquals( actualUri.toString(),"https://wc.localtest.me/error?reason=auth-exception");
+    assertEquals(actualUri.toString(), "https://wc.localtest.me/error?reason=auth-exception");
   }
 
   @Test

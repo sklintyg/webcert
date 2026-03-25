@@ -48,8 +48,7 @@ class RouteIT {
   @Autowired private JmsTemplate jmsTemplate;
 
   @Autowired
-  @Qualifier("certificateQueue")
-  private Queue sendQueue;
+  @Qualifier("certificateQueue") private Queue sendQueue;
 
   @Autowired private Queue dlq;
 

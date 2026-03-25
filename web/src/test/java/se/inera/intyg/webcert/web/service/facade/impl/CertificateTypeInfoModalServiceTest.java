@@ -132,7 +132,7 @@ class CertificateTypeInfoModalServiceTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals( result.get().getTitle(),"Signerat dödsbevis på annan vårdenhet"),
+        () -> assertEquals(result.get().getTitle(), "Signerat dödsbevis på annan vårdenhet"),
         () -> assertTrue(result.get().getDescription().contains(CARE_PROVIDER_NAME)),
         () -> assertTrue(result.get().getDescription().contains(CARE_UNIT_NAME)),
         () -> assertTrue(result.get().getDescription().contains(CARE_UNIT_HSA_ID)));
@@ -156,7 +156,7 @@ class CertificateTypeInfoModalServiceTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals( result.get().getTitle(),"Utkast på dödsbevis på annan vårdenhet"));
+        () -> assertEquals(result.get().getTitle(), "Utkast på dödsbevis på annan vårdenhet"));
   }
 
   @Test
@@ -220,7 +220,7 @@ class CertificateTypeInfoModalServiceTest {
 
     assertAll(
         () -> assertTrue(result.isPresent()),
-        () -> assertEquals( result.get().getTitle(),"Signerat dödsorsaksintyg på annan vårdenhet"));
+        () -> assertEquals(result.get().getTitle(), "Signerat dödsorsaksintyg på annan vårdenhet"));
   }
 
   private Map<String, Map<String, PreviousIntyg>> createPreviousCertificatesMap(

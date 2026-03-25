@@ -221,21 +221,21 @@ class CertificateToIntygInfoConverterTest {
     void shouldSetIntygId() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getIntygId(),"123");
+      assertEquals(result.getIntygId(), "123");
     }
 
     @Test
     void shouldSetIntygType() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getIntygType(),"TypeA");
+      assertEquals(result.getIntygType(), "TypeA");
     }
 
     @Test
     void shouldSetIntygVersion() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getIntygVersion(),"1.0");
+      assertEquals(result.getIntygVersion(), "1.0");
     }
 
     @Test
@@ -256,42 +256,42 @@ class CertificateToIntygInfoConverterTest {
     void shouldSetSignedByName() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getSignedByName(),"Dr. John Doe");
+      assertEquals(result.getSignedByName(), "Dr. John Doe");
     }
 
     @Test
     void shouldSetSignedByHsaId() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getSignedByHsaId(),"1234567890");
+      assertEquals(result.getSignedByHsaId(), "1234567890");
     }
 
     @Test
     void shouldSetIssuedUnitName() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getCareUnitName(),"Issued Unit A");
+      assertEquals(result.getCareUnitName(), "Issued Unit A");
     }
 
     @Test
     void shouldSetIssuedUnitHsaId() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getCareUnitHsaId(),"IU123");
+      assertEquals(result.getCareUnitHsaId(), "IU123");
     }
 
     @Test
     void shouldSetCareGiverName() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getCareGiverName(),"Care Provider A");
+      assertEquals(result.getCareGiverName(), "Care Provider A");
     }
 
     @Test
     void shouldSetCareGiverHsaId() {
       final var result =
           certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-      assertEquals( result.getCareGiverHsaId(),"CP123");
+      assertEquals(result.getCareGiverHsaId(), "CP123");
     }
 
     @Test

@@ -148,7 +148,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals( url,"WebCertHostUrl/webcert/web/user/certificate/intygsId/questions");
+    assertEquals(url, "WebCertHostUrl/webcert/web/user/certificate/intygsId/questions");
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -165,7 +165,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals( url,"WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions");
+    assertEquals(url, "WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions");
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -202,7 +202,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals( url,"WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions");
+    assertEquals(url, "WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions");
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -219,7 +219,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals( url,"WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions");
+    assertEquals(url, "WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions");
     verify(utkastRepository).findById(intygsId);
   }
 

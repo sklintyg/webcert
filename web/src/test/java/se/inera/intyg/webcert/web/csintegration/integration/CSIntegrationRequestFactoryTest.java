@@ -1522,7 +1522,7 @@ class CSIntegrationRequestFactoryTest {
     void shouldReturnGetCitizenCertificatePdfRequestWithAdditonalInfo() {
       final var citizenCertificateRequest =
           csIntegrationRequestFactory.getCitizenCertificatePdfRequest(PATIENT_ID, CUSTOMIZATION_ID);
-      assertEquals( citizenCertificateRequest.getAdditionalInfo(),"Utskriven från 1177 intyg");
+      assertEquals(citizenCertificateRequest.getAdditionalInfo(), "Utskriven från 1177 intyg");
     }
 
     @Test

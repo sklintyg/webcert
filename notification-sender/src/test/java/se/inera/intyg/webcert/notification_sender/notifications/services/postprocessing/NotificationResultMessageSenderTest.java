@@ -57,8 +57,7 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 class NotificationResultMessageSenderTest {
 
   @Mock
-  @Qualifier("jmsTemplateNotificationPostProcessing")
-  private JmsTemplate jmsTemplate;
+  @Qualifier("jmsTemplateNotificationPostProcessing") private JmsTemplate jmsTemplate;
 
   @Mock private Session session;
 
