@@ -49,8 +49,9 @@
 	<context:component-scan base-package="se.inera.intyg.webcert.infra.sjukfall.services"/>
 	<context:component-scan base-package="se.inera.intyg.webcert.infra.integration.intygproxyservice"/>
 	<context:component-scan base-package="se.inera.intyg.webcert.infra.pu.integration.intygproxyservice"/>
-	<context:component-scan base-package="se.inera.intyg.webcert.infra.ia"/>
-	<context:component-scan base-package="se.inera.intyg.webcert.infra.srs"/>
+	<context:component-scan base-package="se.inera.intyg.webcert.infra.ia.config"/>
+	<context:component-scan base-package="se.inera.intyg.webcert.infra.ia.cache"/>
+	<context:component-scan base-package="se.inera.intyg.webcert.infra.srs.config"/>
 
 	<beans>
 		<bean id="userAgentParser" class="se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser"/>
