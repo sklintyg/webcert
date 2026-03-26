@@ -92,7 +92,6 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     implementation "se.inera.intyg.infra:certificate:${infraVersion}"
-    implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
     implementation "se.inera.intyg.infra:driftbanner-dto:${infraVersion}"
     implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"

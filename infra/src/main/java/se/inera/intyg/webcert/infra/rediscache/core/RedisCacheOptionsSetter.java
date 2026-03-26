@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,28 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.launchid;
+package se.inera.intyg.webcert.infra.rediscache.core;
 
+import java.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import se.inera.intyg.webcert.infra.rediscache.core.RedisCacheOptionsSetter;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
 
-@Configuration
-public class RedisLaunchIdCacheConfiguration {
+public class RedisCacheOptionsSetter {
 
-  @Value("${app.name:webcert}")
-  private String appName;
+  @Autowired private CacheFactory redisCacheFactory;
 
-  @Value("${redisCacheLaunchId.cache.expiry}")
-  private String launchCacheExpirySeconds;
-
-  @Autowired private RedisCacheOptionsSetter redisCacheOptionsSetter;
-
-  @Bean
-  public Cache redisCacheLaunchId() {
-    return redisCacheOptionsSetter.createCache("launchId:" + appName, launchCacheExpirySeconds);
+  public Cache createCache(String cacheName, String expiryTimeInSeconds) {
+    try {
+      return redisCacheFactory.createCache(
+          cacheName,
+          RedisCacheConfiguration.defaultCacheConfig()
+              .entryTtl(Duration.ofSeconds(Long.parseLong(expiryTimeInSeconds))));
+    } catch (NumberFormatException e) {
+      return redisCacheFactory.createCache(cacheName);
+    }
   }
 }

@@ -83,9 +83,8 @@ dependencies {
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
-    // ── TEMPORARY: external infra dep removed once its module is inlined ──────
-    // common-redis-cache-core: removed in Step 8 (replaced with direct Redis config)
-    implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
+    // ── Jedis (Redis client for BasicCacheConfiguration) ─────────────────────
+    implementation "redis.clients:jedis"
 
     // ── Lombok ────────────────────────────────────────────────────────────────
     compileOnly "org.projectlombok:lombok"

@@ -24,7 +24,7 @@ import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.infra.rediscache.core.RedisCacheOptionsSetter;
+import se.inera.intyg.webcert.infra.rediscache.core.RedisCacheOptionsSetter;
 
 @Configuration
 public class IaCacheConfiguration {
