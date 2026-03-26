@@ -91,28 +91,6 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
-    implementation "se.inera.intyg.infra:certificate:${infraVersion}"
-    implementation "se.inera.intyg.infra:driftbanner-dto:${infraVersion}"
-    implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
-    implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
-    implementation "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
-    implementation "se.inera.intyg.infra:ia-integration:${infraVersion}"
-    implementation "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
-    implementation "se.inera.intyg.infra:intyginfo:${infraVersion}"
-    implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
-    implementation "se.inera.intyg.infra:message:${infraVersion}"
-    implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
-    implementation "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
-    implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
-    implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
-    implementation "se.inera.intyg.infra:security-common:${infraVersion}"
-    implementation "se.inera.intyg.infra:security-filter:${infraVersion}"
-    implementation "se.inera.intyg.infra:security-siths:${infraVersion}"
-    implementation "se.inera.intyg.infra:sjukfall-engine:${infraVersion}"
-    implementation "se.inera.intyg.infra:srs-integration:${infraVersion}"
-    implementation "se.inera.intyg.infra:testcertificate:${infraVersion}"
-    implementation "se.inera.intyg.infra:xmldsig:${infraVersion}"
-
     implementation "se.inera.intyg.common:af00213:${commonVersion}"
     implementation "se.inera.intyg.common:af00251:${commonVersion}"
     implementation "se.inera.intyg.common:ag114:${commonVersion}"
@@ -174,7 +152,6 @@ dependencies {
 
     annotationProcessor 'org.projectlombok:lombok'
 
-    runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
     runtimeOnly "org.springframework:spring-webmvc"
 
     testAnnotationProcessor 'org.projectlombok:lombok'

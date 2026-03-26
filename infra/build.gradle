@@ -5,12 +5,6 @@
 //
 // Explicit versions (not in BOM):
 //   org.apache.santuario:xmlsec, com.github.ua-parser:uap-java
-//
-// NOTE: External se.inera.intyg.infra:* deps are intentionally NOT declared here.
-// They remain in web/build.gradle and notification-sender/build.gradle as the compile
-// safety net until Step 3 updates this module's own imports to use the new
-// se.inera.intyg.webcert.infra.* packages. Once Step 3 is done, this module
-// compiles cleanly against only the deps below.
 // ──────────────────────────────────────────────────────────────────────────────
 
 dependencies {
