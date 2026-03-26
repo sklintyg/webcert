@@ -16,38 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.infra.ia.cache;
+package se.inera.intyg.webcert.infra.ia.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.webcert.infra.rediscache.core.RedisCacheOptionsSetter;
+import se.inera.intyg.webcert.infra.ia.services.IABannerService;
+import se.inera.intyg.webcert.infra.ia.services.IABannerServiceImpl;
+import se.inera.intyg.webcert.infra.ia.stub.IABannerServiceStub;
 
 @Configuration
-@Profile({"qa", "prod", "caching-enabled"})
-public class IaCacheConfiguration {
-
-  public static final String CACHE_KEY = "BANNER";
-
-  @Value("${app.name:noname}")
-  private String appName;
-
-  @Value("${intygsadmin.cache.expiry}")
-  private String iaCacheExpirySeconds;
-
-  @Autowired private RedisCacheOptionsSetter redisCacheOptionsSetter;
+public class IAServicesConfiguration {
 
   @Bean
-  public Cache iaCache() {
-    return redisCacheOptionsSetter.createCache("iaCache:" + appName, iaCacheExpirySeconds);
+  @Profile("ia-stub")
+  public IABannerService iaBannerServiceStub() {
+    return new IABannerServiceStub();
   }
 
-  @Bean("iaRestTemplate")
-  public RestTemplate restTemplate() {
-    return new RestTemplate();
+  @Bean
+  @Profile("!ia-stub")
+  public IABannerService iaBannerService() {
+    return new IABannerServiceImpl();
   }
 }

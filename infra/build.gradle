@@ -64,6 +64,8 @@ dependencies {
 
     // ── Apache CXF (SRS stubs use JAX-RS / CXF annotations) ─────────────────
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
+    implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
     // ── Jakarta APIs ─────────────────────────────────────────────────────────
     compileOnly "jakarta.servlet:jakarta.servlet-api"
