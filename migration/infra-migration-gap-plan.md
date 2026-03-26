@@ -18,7 +18,7 @@ inlining still exist as XML files in `infra/src/main/resources/`.
 
 | # | Gap | Severity | Effort |
 |---|-----|----------|--------|
-| 1 | `basic-cache-config.xml` still imported via `@ImportResource` — should be Java config | Medium | Small |
+| 1 | ✅ `basic-cache-config.xml` — migrated to Java `@Configuration` | Medium | Small |
 | 2 | `xmldsig-config.xml` still imported in `webcert-config.xml` — should be `@Configuration` | Medium | Small |
 | 3 | `ia-services-config.xml` still imported — service beans should be `@Configuration` | Medium | Small |
 | 4 | `srs-services-config.xml` still imported — JAXWS clients + service bean in XML | Low | Medium |
