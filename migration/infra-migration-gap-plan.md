@@ -26,9 +26,9 @@ inlining still exist as XML files in `infra/src/main/resources/`.
 | 4 | ✅ `srs-services-config.xml` still imported — JAXWS clients + service bean in XML           | Low      | Medium  |
 | 5 | ✅ `srs-stub-context.xml` still imported in CXF servlet — stub endpoints in XML             | Low      | Medium  |
 | 6 | ✅ `ia-stub-context.xml` still imported in CXF servlet — stub REST endpoint in XML          | Low      | Small   |
-| 7 | `logback-ocp-base.xml` only used by infra test — consider removing or relocating           | Low      | Trivial |
-| 8 | `MonitoringConfiguration` not loaded in production — dead `@Configuration` class           | Low      | Small   |
-| 9 | Remaining infra test classes — verify they run and are valuable                            | Low      | Small   |
+| 7 | ✅ `logback-ocp-base.xml` moved to `infra/src/test/resources/` (test-only)                  | Low      | Trivial |
+| 8 | ✅ `MonitoringConfiguration` moved to `infra/src/test/java/` (dead in production)           | Low      | Small   |
+| 9 | ✅ Infra test audit complete — all 68 tests pass, no orphaned test classes found             | Low      | Small   |
 
 ---
 
