@@ -64,6 +64,9 @@ public class ConfigController {
   @Value("${idp.connect.urls:}")
   private String idpConnectUrls;
 
+  @Value("${webcert.frontend.api.timeout:30000}")
+  private Integer webcertFrontendApiTimeout;
+
   @Autowired private DynamicLinkService dynamicLinkService;
 
   @Autowired private IABannerService iaBannerService;
@@ -104,6 +107,7 @@ public class ConfigController {
                         : Arrays.stream(idpConnectUrls.split(","))
                             .filter(url -> !url.isBlank())
                             .toList())
+                .webcertFrontendApiTimeout(webcertFrontendApiTimeout)
                 .build())
         .build();
   }
