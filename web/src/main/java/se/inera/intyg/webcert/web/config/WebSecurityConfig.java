@@ -79,7 +79,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
+import se.inera.intyg.webcert.infra.security.common.cookie.IneraCookieSerializer;
 import se.inera.intyg.webcert.web.auth.CsrfCookieFilter;
 import se.inera.intyg.webcert.web.auth.CustomAccessDeniedHandler;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint;

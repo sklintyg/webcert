@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.integration;
 
 import java.util.List;
 import java.util.Set;
-import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
-import se.inera.intyg.infra.intyginfo.dto.ItIntygInfo;
-import se.inera.intyg.infra.message.dto.MessageFromIT;
+import se.inera.intyg.webcert.infra.certificate.dto.CertificateListResponse;
+import se.inera.intyg.webcert.infra.intyginfo.dto.ItIntygInfo;
+import se.inera.intyg.webcert.infra.message.dto.MessageFromIT;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 /** Service to use when calling Intygstjanstens internal Rest APIs. */

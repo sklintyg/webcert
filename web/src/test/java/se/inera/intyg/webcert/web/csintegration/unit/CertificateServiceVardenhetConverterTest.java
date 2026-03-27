@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
 
 class CertificateServiceVardenhetConverterTest {
 

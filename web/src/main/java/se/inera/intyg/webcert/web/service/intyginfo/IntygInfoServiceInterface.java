@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.intyginfo;
 
 import java.util.Optional;
-import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
+import se.inera.intyg.webcert.infra.intyginfo.dto.WcIntygInfo;
 
 public interface IntygInfoServiceInterface {
 

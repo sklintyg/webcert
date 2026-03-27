@@ -33,13 +33,13 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import se.inera.intyg.infra.security.authorities.AuthoritiesConfiguration;
-import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.Title;
-import se.inera.intyg.infra.security.common.model.TitleCode;
+import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesConfiguration;
+import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.Title;
+import se.inera.intyg.webcert.infra.security.common.model.TitleCode;
 
 /**
  * The AuthoritiesDataLoader is not very well suited for unit-testing, given that it has a single

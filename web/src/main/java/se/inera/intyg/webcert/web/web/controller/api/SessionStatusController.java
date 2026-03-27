@@ -29,7 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import se.inera.intyg.infra.security.filter.SessionTimeoutFilter;
+import se.inera.intyg.webcert.infra.security.filter.SessionTimeoutFilter;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.api.dto.GetSessionStatusResponse;

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 class RoleConverterTest {

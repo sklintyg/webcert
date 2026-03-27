@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
-import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
-import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
+import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent;
+import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent.Source;
+import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEventType;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 

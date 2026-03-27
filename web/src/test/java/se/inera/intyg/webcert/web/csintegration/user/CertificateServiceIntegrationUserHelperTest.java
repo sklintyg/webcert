@@ -40,10 +40,10 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.services.BefattningService;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceIntegrationUserHelperTest {

@@ -28,8 +28,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.integration.postnummer.model.Omrade;
-import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
+import se.inera.intyg.webcert.infra.postnummer.model.Omrade;
+import se.inera.intyg.webcert.infra.postnummer.service.PostnummerService;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigApiControllerTest {

@@ -7,7 +7,6 @@ dependencies {
     implementation "org.springframework.data:spring-data-redis"
     implementation "se.inera.intyg.common:integration-util:${commonVersion}"
     implementation "se.inera.intyg.common:common-support:${commonVersion}"
-    implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
     testImplementation "org.springframework:spring-test"

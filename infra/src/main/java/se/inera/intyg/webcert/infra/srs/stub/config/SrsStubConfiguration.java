@@ -1,0 +1,145 @@
+/*
+ * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package se.inera.intyg.webcert.infra.srs.stub.config;
+
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.cxf.Bus;
+import org.apache.cxf.endpoint.Server;
+import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxws.EndpointImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import se.inera.intyg.webcert.infra.srs.stub.GetConsentStub;
+import se.inera.intyg.webcert.infra.srs.stub.GetDiagnosisCodesStub;
+import se.inera.intyg.webcert.infra.srs.stub.GetPredictionQuestionsStub;
+import se.inera.intyg.webcert.infra.srs.stub.GetSRSInformationForDiagnosisStub;
+import se.inera.intyg.webcert.infra.srs.stub.GetSrsInformationStub;
+import se.inera.intyg.webcert.infra.srs.stub.SetConsentStub;
+import se.inera.intyg.webcert.infra.srs.stub.StatisticsImageStub;
+import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
+
+@Configuration
+@Profile({"dev", "wc-all-stubs", "wc-srs-stub"})
+public class SrsStubConfiguration {
+
+  @Autowired private Bus bus;
+
+  @Autowired private JacksonJsonProvider jacksonJsonProvider;
+
+  @Bean
+  public ConsentRepository consentRepository() {
+    return new ConsentRepository();
+  }
+
+  @Bean
+  public GetSrsInformationStub getSrsInformationStub() {
+    return new GetSrsInformationStub();
+  }
+
+  @Bean
+  public GetPredictionQuestionsStub getPredictionQuestionsStub() {
+    return new GetPredictionQuestionsStub();
+  }
+
+  @Bean
+  public GetConsentStub getConsentStub() {
+    return new GetConsentStub();
+  }
+
+  @Bean
+  public SetConsentStub setConsentStub() {
+    return new SetConsentStub();
+  }
+
+  @Bean
+  public GetDiagnosisCodesStub getDiagnosisCodesStub() {
+    return new GetDiagnosisCodesStub();
+  }
+
+  @Bean
+  public GetSRSInformationForDiagnosisStub getSRSInformationForDiagnosisStub() {
+    return new GetSRSInformationForDiagnosisStub();
+  }
+
+  @Bean
+  public EndpointImpl getSrsEndpoint(GetSrsInformationStub stub) {
+    EndpointImpl endpoint = new EndpointImpl(bus, stub);
+    endpoint.publish("/stubs/getsrs");
+    return endpoint;
+  }
+
+  @Bean
+  public EndpointImpl predictionQuestionsEndpoint(GetPredictionQuestionsStub stub) {
+    EndpointImpl endpoint = new EndpointImpl(bus, stub);
+    endpoint.publish("/stubs/predictionquestions");
+    return endpoint;
+  }
+
+  @Bean
+  public EndpointImpl getConsentEndpoint(GetConsentStub stub) {
+    EndpointImpl endpoint = new EndpointImpl(bus, stub);
+    endpoint.publish("/stubs/get-consent");
+    return endpoint;
+  }
+
+  @Bean
+  public EndpointImpl setConsentEndpoint(SetConsentStub stub) {
+    EndpointImpl endpoint = new EndpointImpl(bus, stub);
+    endpoint.publish("/stubs/set-consent");
+    return endpoint;
+  }
+
+  @Bean
+  public EndpointImpl getDiagnosisCodesEndpoint(GetDiagnosisCodesStub stub) {
+    EndpointImpl endpoint = new EndpointImpl(bus, stub);
+    endpoint.publish("/stubs/diagnosiscodes");
+    return endpoint;
+  }
+
+  @Bean
+  public EndpointImpl getSrsForDiagnosisEndpoint(GetSRSInformationForDiagnosisStub stub) {
+    EndpointImpl endpoint = new EndpointImpl(bus, stub);
+    endpoint.publish("/stubs/getsrsfordiagnosis");
+    return endpoint;
+  }
+
+  @Bean
+  public StatisticsImageStub statisticsImageStub() {
+    return new StatisticsImageStub();
+  }
+
+  @Bean
+  public Server srsStatisticsStubServer(StatisticsImageStub statisticsImageStub) {
+    JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
+    factory.setBus(bus);
+    factory.setAddress("/stubs/srs-statistics-stub");
+    factory.setServiceBeans(Arrays.asList(statisticsImageStub));
+    factory.setProviders(Arrays.asList(jacksonJsonProvider));
+    Map<Object, Object> extensionMappings = new HashMap<>();
+    extensionMappings.put("json", "application/json");
+    extensionMappings.put("jpg", "image/jpeg");
+    factory.setExtensionMappings(extensionMappings);
+    return factory.create();
+  }
+}

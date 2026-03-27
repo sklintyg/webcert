@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;
 
 @ExtendWith(MockitoExtension.class)
 class ElegAuthenticationMethodResolverTest {

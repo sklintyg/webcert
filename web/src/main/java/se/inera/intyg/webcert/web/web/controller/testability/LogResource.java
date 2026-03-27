@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.webcert.infra.logmessages.PdlLogMessage;
 
 @Api(value = "testability logMessages")
 @Path("/logMessages")

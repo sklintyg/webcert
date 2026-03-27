@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.facade.dto;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.infra.driftbannerdto.Banner;
+import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
 
 @Value
 @Builder

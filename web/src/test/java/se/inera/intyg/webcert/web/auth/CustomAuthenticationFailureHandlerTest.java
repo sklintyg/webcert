@@ -41,8 +41,8 @@ import org.springframework.security.saml2.core.Saml2Error;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationException;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
-import se.inera.intyg.infra.security.exception.HsaServiceException;
-import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
+import se.inera.intyg.webcert.infra.security.exception.HsaServiceException;
+import se.inera.intyg.webcert.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 

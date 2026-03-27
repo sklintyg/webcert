@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
+import se.inera.intyg.webcert.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @Service("intygInfoAggregator")

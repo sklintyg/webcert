@@ -27,7 +27,7 @@ import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
-import se.inera.intyg.infra.xmldsig.model.IntygSignature;
+import se.inera.intyg.webcert.infra.xmldsig.model.IntygSignature;
 
 @Setter
 @Getter

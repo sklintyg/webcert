@@ -1,0 +1,278 @@
+---
+# De intygstyper som systemet har
+knownIntygstyper:
+  - &ki010 fk7263
+  - &ki020 ts-bas
+  - &ki030 ts-diabetes
+  - &ki040 luse
+  - &ki050 lisjp
+  - &ki060 luae_na
+  - &ki070 luae_fs
+  - &ki080 db
+  - &ki090 doi
+
+knownFeatures:
+  - &kf010 HANTERA_FRAGOR
+  - &kf020 HANTERA_INTYGSUTKAST
+  - &kf030 FORNYA_INTYG
+  - &kf040 MAKULERA_INTYG
+  - &kf050 MAKULERA_INTYG_KRAVER_ANLEDNING
+  - &kf060 SKAPA_NYFRAGA
+  - &kf070 SKICKA_INTYG
+  - &kf080 SIGNERA_SKICKA_DIREKT
+  - &kf090 UTSKRIFT
+  - &kf100 ARBETSGIVARUTSKRIFT
+  - &kf110 JS_LOGGNING
+  - &kf120 SRS
+  - &kf130 WARN_ON_PREVIOUS
+  - &kf140 HANTERA_INTYGSUTKAST_AVLIDEN
+  - &kf280 VARNING_FRISTAENDE
+  - &kf290 BLOCKERA_FRISTAENDE
+
+# De aktiverade features
+features:
+  - &f010
+    name: *kf010
+    desc: Hantera frågor
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f020
+    name: *kf020
+    desc: Hantera intygsutkast
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f030
+    name: *kf030
+    desc: Fornya intyg
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f040
+    name: *kf040
+    desc: Makulera intyg
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f050
+    name: *kf050
+    desc: Makulera intyg kräver anledning
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f060
+    name: *kf060
+    desc: Skapa ny fråga
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f070
+    name: *kf070
+    desc: Skicka intyg
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f080
+    name: *kf080
+    desc: Signera skicka direkt
+    global: true
+    intygstyper:
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f090
+    name: *kf090
+    desc: Utskrift
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f100
+    name: *kf100
+    desc: Arbetsgivarutskrift
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki050 # LISJP
+  - &f110
+    name: *kf110
+    desc: JS loggning
+    global: true
+  - &f120
+    name: *kf120
+    desc: SRS
+    global: false
+  - &f130
+    name: *kf130
+    desc: Varna om tidigare intyg
+    global: true
+    intygstyper:
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f140
+    name: *kf140
+    desc: Hantera utkast för avlidna patienter
+    global: true
+    intygstyper:
+      - *ki080 # DB
+      - *ki090 # DOI
+  - &f280
+    name: *kf280
+    desc: Visar ett varningsmeddelande om att inloggning skett i fristående men användaren ska logga in via sitt journalsystem.
+    global: false
+  - &f290
+    name: *kf290
+    desc: Blockerar möjligheten att skapa nya utkast i fristående Webcert.
+    global: false
+
+pilots:
+  - name: TEST_PILOT_ADDITIVE_PILOT
+    desc: Pilot avsedd för testsyfte
+    hsaIds:
+      - additive
+      - both2
+    activated:
+      - &pf010
+        name: *kf120
+        desc: SRS-stöd i Webcert
+        global: true
+        intygstyper:
+          - *ki010 # FK7263
+          - *ki050 # LISJP
+  - name: TEST_PILOT_SUBTRACTING_PILOT_1
+    desc: Pilot avsedd för testsyfte
+    hsaIds:
+      - subtractive
+    deactivated:
+      - &pf020
+        name: *kf120
+        desc: SRS-stöd i Webcert
+        global: false
+      - &pf030
+        name: *kf080
+        desc: Signera och skicka direkt
+        global: true
+        intygstyper:
+          - *ki080 # DB
+  - name: TEST_PILOT_BOTH
+    desc: Pilot avsedd för testsyfte
+    hsaIds:
+      - both
+    activated:
+      - &pf040
+        name: *kf120
+        desc: SRS-stöd i Webcert
+        global: true
+        intygstyper:
+          - *ki010 # FK7263
+          - *ki050 # LISJP
+    deactivated:
+      - &pf050
+        name: *kf120
+        desc: SRS-stöd i Webcert
+        global: false
+      - &pf060
+        name: *kf080
+        desc: Signera och skicka direkt
+        global: true
+        intygstyper:
+          - *ki080 # DB
+  - name: TEST_PILOT_BOTH2_PILOT_1
+    desc: Pilot avsedd för testsyfte
+    hsaIds:
+      - both2
+    activated:
+      - &pf070
+        name: *kf120
+        desc: SRS-stöd i Webcert
+        global: true
+        intygstyper:
+          - *ki080 # DB
+          - *ki090 # DOI
+  - name: TEST_PILOT_BOTH_PILOT_2
+    desc: Pilot avsedd för testsyfte
+    hsaIds:
+      - both2
+    deactivated:
+      - &pf080
+        name: *kf120
+        desc: SRS-stöd i Webcert
+        global: true
+        intygstyper:
+          - *ki010 # FK7263
+  - name: BLOCKERA_FRISTAENDE
+    desc: Blockerar djupintegrerade vårdgivares användare från att använda vissa funktioner i fristående.
+    hsaIds:
+      - TSTNMT2321000156-1077
+    activated:
+      - &pf110
+        name: *kf280
+        desc: Visar ett varningsmeddelande om att inloggning skett i fristående men användaren ska logga in via sitt journalsystem.
+        global: true
+      - &pf120
+        name: *kf290
+        desc: Blockerar möjligheten att skapa nya utkast i fristående Webcert.
+        global: true

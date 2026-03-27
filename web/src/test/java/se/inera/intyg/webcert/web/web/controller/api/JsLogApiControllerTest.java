@@ -42,8 +42,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import se.inera.intyg.infra.monitoring.logging.UserAgentInfo;
-import se.inera.intyg.infra.monitoring.logging.UserAgentParser;
+import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentInfo;
+import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 
