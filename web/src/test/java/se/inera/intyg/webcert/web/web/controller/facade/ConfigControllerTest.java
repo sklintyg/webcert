@@ -122,5 +122,14 @@ class ConfigControllerTest {
       final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
       assertEquals(expected, response.getIdpConnectUrls());
     }
+
+    @Test
+    void shouldReturnWebcertFrontendApiTimeoutWhenConfigExists() {
+      final var expected = 45000;
+
+      ReflectionTestUtils.setField(configController, "webcertFrontendApiTimeout", expected);
+      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      assertEquals(expected, response.getWebcertFrontendApiTimeout());
+    }
   }
 }
