@@ -3,7 +3,7 @@
 ## Problem Statement
 
 Webcert currently uses Apache CXF JAX-RS to serve REST endpoints across **7 CXF servlet contexts**
-with **~47 controllers**. Each CXF servlet has its own XML configuration file, component scans, and
+with **~52 controllers**. Each CXF servlet has its own XML configuration file, component scans, and
 child Spring context. This creates tight coupling to Apache CXF for REST that blocks Spring Boot
 migration, a complex multi-context architecture, and XML-heavy configuration.
 
@@ -19,7 +19,7 @@ endpoints at `/services/*` remain on CXF.
 
 | Servlet | URL Pattern | XML Config | Controllers | Exception Handler |
 |---------|------------|------------|-------------|-------------------|
-| `api` | `/api/*` | `api-cxf-servlet.xml` | 21 | WebcertRestExceptionHandler |
+| `api` | `/api/*` | `api-cxf-servlet.xml` | 22 | WebcertRestExceptionHandler |
 | `moduleapi` | `/moduleapi/*` | `moduleapi-cxf-servlet.xml` | 3 | WebcertRestExceptionHandler |
 | `internalapi` | `/internalapi/*` | `internalapi-cxf-servlet.xml` | 8 | WebcertRestExceptionHandler |
 | `integrationapi` | `/visa/*`, `/v2/visa/*` | `integration-cxf-servlet.xml` | 2 | WebcertRedirectIntegrationExceptionHandler |
@@ -46,12 +46,16 @@ endpoints at `/services/*` remain on CXF.
 
 ### JAX-RS Providers (registered in CXF servlet contexts)
 
-| Provider | Type | Replacement |
-|----------|------|-------------|
-| `jacksonJsonProvider` | JSON serialization (CustomObjectMapper) | Spring MVC HttpMessageConverter |
-| `webcertRestExceptionHandler` | ExceptionMapper for REST | @RestControllerAdvice |
-| `webcertRedirectIntegrationExceptionHandler` | ExceptionMapper for redirects | @ControllerAdvice |
-| `localDateTimeHandler` | ParamConverterProvider | Spring Converter<String, LocalDateTime> |
+| Provider | Type | Registered in | Replacement |
+|----------|------|--------------|-------------|
+| `jacksonJsonProvider` | JSON serialization (CustomObjectMapper) | All 7 CXF servlets | Spring MVC HttpMessageConverter |
+| `webcertRestExceptionHandler` | ExceptionMapper for REST | api, internalapi, authtestability | @RestControllerAdvice |
+| `webcertRedirectIntegrationExceptionHandler` | ExceptionMapper for redirects | integration, uthopp-integration | @ControllerAdvice |
+| `localDateTimeHandler` | ParamConverterProvider | api (all 3 servers), internalapi, authtestability — **NOT** in moduleapi, integration, uthopp-integration, testability | Spring Converter<String, LocalDateTime> |
+
+> **Note:** All 4 provider beans are defined in `webcert-config.xml` (the root application
+> context) and shared across all CXF child contexts. When the CXF servlets are removed the
+> bean definitions must be removed from `webcert-config.xml` in sub-step 11.15.
 
 ### Test Infrastructure
 
@@ -130,7 +134,7 @@ the controller is no longer in a CXF servlet mapped to that prefix.
 | 11.5 | Refactor ReactUriFactory — remove UriInfo dependency | Medium | ⬜ TODO |
 | **Phase B: Controller Group Conversion** | | | |
 | 11.6 | Convert `/internalapi/*` controllers (8 controllers) | Medium | ⬜ TODO |
-| 11.7 | Convert `/api/*` controllers (21 controllers) | ⚠️ High | ⬜ TODO |
+| 11.7 | Convert `/api/*` controllers (22 controllers) | ⚠️ High | ⬜ TODO |
 | 11.8 | Convert `/moduleapi/*` controllers (3 controllers) | Medium | ⬜ TODO |
 | 11.9 | Convert `/visa/*` & `/v2/visa/*` controllers (2 controllers) | Medium | ⬜ TODO |
 | 11.10 | Convert `/webcert/web/user/*` controllers (4 controllers) | Medium | ⬜ TODO |
@@ -214,7 +218,8 @@ JAX-RS `ExceptionMapper`.
        "se.inera.intyg.webcert.web.web.controller.moduleapi",
        "se.inera.intyg.webcert.web.web.controller.internalapi",
        "se.inera.intyg.webcert.web.web.controller.authtestability",
-       "se.inera.intyg.webcert.web.web.controller.testability"
+       "se.inera.intyg.webcert.web.web.controller.testability",
+       "se.inera.intyg.webcert.web.web.controller.testability.facade"
    })
    public class WebcertRestExceptionHandlerAdvice {
 
@@ -234,6 +239,13 @@ JAX-RS `ExceptionMapper`.
 
 **⚠️ Important:** Must NOT apply to integration/legacyintegration controllers — those use
 redirect-based error handling (sub-step 11.3).
+
+**⚠️ Behavioral change for testability:** The testability CXF context (`webcert-testability-api-context.xml`)
+currently registers **no exception handler at all** — only `jacksonJsonProvider`. Adding testability
+to this advice is an **intentional improvement**: testability endpoints will now return proper JSON
+error responses instead of CXF's default unhandled exception format. This is safe and desirable.
+Note also that `CertificateTestabilityController` and `FakeLoginTestabilityController` reside in
+the `testability.facade` sub-package and are covered by the `testability.facade` entry above.
 
 **Verification:** `./gradlew compileJava`
 
@@ -387,6 +399,16 @@ For each controller group, perform these steps in order:
 
 5. **Verify:** `./gradlew compileJava` + `./gradlew test --parallel`
 
+**Note on root-context duplicate beans:** `webcert-config.xml` contains
+`<context:component-scan base-package="se.inera.intyg.webcert.web"/>` — this is the ROOT
+application context and it scans the entire `se.inera.intyg.webcert.web` package, including all
+controller sub-packages. This means that once a controller is annotated with `@RestController`,
+the bean exists in **both** the root context AND the DispatcherServlet child context
+(`web-servlet.xml` scans `se.inera.intyg.webcert.web.web.controller`). This is a pre-existing
+condition (the current `PageController` already has this dual-context presence), and Spring MVC
+handler resolution correctly prefers the child context. Accept this during migration; the root
+context's broad scan is cleaned up in Step 12.
+
 ---
 
 ### Sub-step 11.6 — Convert `/internalapi/*` controllers (8 controllers)
@@ -431,11 +453,11 @@ For each controller group, perform these steps in order:
 
 ---
 
-### Sub-step 11.7 — Convert `/api/*` controllers (21 controllers) ⚠️ High Risk
+### Sub-step 11.7 — Convert `/api/*` controllers (22 controllers) ⚠️ High Risk
 
 **Largest group — the main user-facing REST API. Contains 3 CXF jaxrs:server instances.**
 
-#### Server 1: address=`/` — 19 controllers
+#### Server 1: address=`/` — 20 controllers
 
 | Class | Package | @Path | Full URL |
 |-------|---------|-------|----------|
@@ -466,6 +488,13 @@ are merged by method-level path + HTTP method. In Spring MVC, two `@RestControll
 `@RequestMapping("/api/fmb")` work as long as their method-level mappings don't collide.
 **Verify method-level paths are distinct before converting.**
 
+**CXF `default.wae.mapper.least.specific` property:** All 3 `jaxrs:server` instances in
+`api-cxf-servlet.xml` set `default.wae.mapper.least.specific=true`. This was a CXF-specific
+workaround (WEBCERT-1978) to prevent CXF's built-in `WebApplicationExceptionMapper` from being
+too specific and intercepting exceptions before `webcertRestExceptionHandler` could handle them.
+Spring MVC's `@ExceptionHandler` resolution is type-specificity-based by design — no equivalent
+workaround is needed. This property simply disappears when the CXF servlet is removed.
+
 #### Server 2: address=`/fake` (profile `!prod`) — 1 controller
 
 | Class | @Path | Full URL |
@@ -488,7 +517,7 @@ Add `@Profile("!prod")` to this controller — it must only be active in non-pro
 - `@QueryParam` — in `FmbApiController` (5 instances)
 
 **Files to modify:**
-- 21 controller Java files
+- 22 controller Java files
 - Test files: `ConfigApiControllerTest`, `FmbApiControllerTest`,
   `InvalidateSessionApiControllerTest`, `JsLogApiControllerTest`,
   `PrivatePractitionerApiControllerTest`, `SignatureApiControllerTest`,
@@ -516,6 +545,12 @@ Add `@Profile("!prod")` to this controller — it must only be active in non-pro
 
 **Special annotations:**
 - `IntygModuleApiController`: `@Context HttpServletRequest` (1 instance)
+
+**Note on `localDateTimeHandler`:** `moduleapi-cxf-servlet.xml` does **not** register
+`localDateTimeHandler` as a provider — unlike `api` and `internalapi`. This means moduleapi
+controllers never had CXF-based `LocalDateTime`/`LocalDate` parameter conversion. The Spring MVC
+`Converter` registered in sub-step 11.4 is still correct to add; it provides consistent
+parameter conversion across all controllers and is a safe improvement for this group.
 
 **Base class:** All extend `AbstractApiController`.
 
@@ -545,6 +580,27 @@ Add `@Profile("!prod")` to this controller — it must only be active in non-pro
 - `IntygIntegrationController`: Heavy use of `@QueryParam` (16), `@FormParam` (15),
   `@DefaultValue` (17), `@Context UriInfo`, `@Context HttpServletRequest`
 - `UserIntegrationController`: `@Context HttpServletRequest`
+
+**Note on `localDateTimeHandler`:** `integration-cxf-servlet.xml` does **not** register
+`localDateTimeHandler` — only `jacksonJsonProvider` and `webcertRedirectIntegrationExceptionHandler`.
+
+**Note on explicit bean registrations:** `integration-cxf-servlet.xml` has **no component scan**.
+Controllers are registered as named beans with explicit IDs (`intygIntegrationController`,
+`userIntegrationController`). After conversion, they are discovered automatically by the
+DispatcherServlet's parent-package scan. **Pre-conversion check:** grep for
+`@Qualifier("intygIntegrationController")`, `@Qualifier("userIntegrationController")`, and
+`@Resource(name="...")` with either ID — if found, update those references.
+
+**Note on `<context:property-placeholder>`:** `integration-cxf-servlet.xml` declares:
+```xml
+<context:property-placeholder location="classpath:application.properties" order="2"/>
+```
+This placeholder is scoped to the CXF child context. Verify that the root application context
+(loaded from `webcert-config.xml`) already resolves all `${...}` properties used in
+`IntygIntegrationController` and `UserIntegrationController` — it should, since the root
+context also loads `application.properties`. No separate action is needed, but confirm after
+this servlet XML is deleted that no `NoSuchBeanDefinitionException` or unresolved placeholder
+errors appear at startup.
 
 **Base class:** Both extend `BaseIntegrationController` which provides authority validation.
 
@@ -584,6 +640,26 @@ In Spring MVC, create separate handler methods for GET and POST, or use
   `@FormParam` (possibly)
 - `LaunchIntegrationController`: `@Context UriInfo` (2 instances)
 
+**Note on `localDateTimeHandler`:** `uthopp-integration-cxf-servlet.xml` does **not** register
+`localDateTimeHandler` — only `jacksonJsonProvider` and `webcertRedirectIntegrationExceptionHandler`.
+
+**Note on explicit bean registrations:** `uthopp-integration-cxf-servlet.xml` has **no component
+scan**. All 4 controllers are registered as named beans with explicit IDs:
+`fragaSvarUthoppController`, `privatePractitionerFragaSvarUthoppController`,
+`certificateIntegrationController`, `launchIntegrationController`. **Pre-conversion check:** grep
+for `@Qualifier` or `@Resource(name="...")` with any of these IDs and update if found.
+
+Note that `LaunchIntegrationController` is in `se.inera.intyg.webcert.web.web.controller.integration`
+while the other three are in `...controller.legacyintegration`. Both packages are covered by the
+DispatcherServlet's parent-package scan and by the `@ControllerAdvice` in sub-step 11.3.
+
+**Note on `<context:property-placeholder>`:** `uthopp-integration-cxf-servlet.xml` declares:
+```xml
+<context:property-placeholder location="classpath:application.properties" order="2"/>
+```
+As with `integration-cxf-servlet.xml` (sub-step 11.9), verify that the root application context
+resolves all `${...}` properties used by these controllers after the servlet XML is deleted.
+
 **Inheritance:** `PrivatePractitionerFragaSvarUthoppController` and
 `CertificateIntegrationController` both extend `FragaSvarUthoppController`.
 
@@ -603,25 +679,34 @@ In Spring MVC, create separate handler methods for GET and POST, or use
 
 ### Sub-step 11.11 — Convert `/testability/*` controllers (12 controllers)
 
-**Gated by Spring profile.** Currently registered via `webcert-testability-api-context.xml`.
+**Gated by Spring profile.** Currently registered via `webcert-testability-api-context.xml`
+(which is imported by `testability-cxf-servlet.xml` — the servlet file itself contains only
+the import; all beans are in the context file).
 
-| Class | @Path | Full URL |
-|-------|-------|----------|
-| ArendeResource | `/arendetest` | `/testability/arendetest` |
-| FragaSvarResource | `/fragasvartest` | `/testability/fragasvartest` |
-| LogResource | `/logtest` | `/testability/logtest` |
-| IntygResource | `/intygtest` | `/testability/intygtest` |
-| UserAgreementResource | `/useragreementtest` | `/testability/useragreementtest` |
-| FmbResource | `/fmbtest` | `/testability/fmbtest` |
-| IntegreradEnhetResource | `/integreradenhettest` | `/testability/integreradenhettest` |
-| CertificateTestabilityController | `/certificate` | `/testability/certificate` |
-| FakeLoginTestabilityController | `/fake-login` | `/testability/fake-login` |
-| ConfigurationResource | `/configuration` | `/testability/configuration` |
-| EventResource | `/event` | `/testability/event` |
-| ReferensResource | `/referenstest` | `/testability/referenstest` |
+| Class | Package | @Path | Full URL |
+|-------|---------|-------|----------|
+| ArendeResource | `testability` | `/arendetest` | `/testability/arendetest` |
+| FragaSvarResource | `testability` | `/fragasvartest` | `/testability/fragasvartest` |
+| LogResource | `testability` | `/logtest` | `/testability/logtest` |
+| IntygResource | `testability` | `/intygtest` | `/testability/intygtest` |
+| UserAgreementResource | `testability` | `/useragreementtest` | `/testability/useragreementtest` |
+| FmbResource | `testability` | `/fmbtest` | `/testability/fmbtest` |
+| IntegreradEnhetResource | `testability` | `/integreradenhettest` | `/testability/integreradenhettest` |
+| CertificateTestabilityController | `testability.facade` | `/certificate` | `/testability/certificate` |
+| FakeLoginTestabilityController | `testability.facade` | `/fake-login` | `/testability/fake-login` |
+| ConfigurationResource | `testability` | `/configuration` | `/testability/configuration` |
+| EventResource | `testability` | `/event` | `/testability/event` |
+| ReferensResource | `testability` | `/referenstest` | `/testability/referenstest` |
 
-**Profile:** Original XML uses `profile="dev,testability-api"`. Add `@Profile({"dev", "testability-api"})`
-to each controller class.
+**Profile:** The CXF context file has `profile="dev,testability-api"`. Add
+`@Profile({"dev", "testability-api"})` to **all 12 controller classes**, including
+`CertificateTestabilityController` and `FakeLoginTestabilityController` which are in the
+`testability.facade` sub-package.
+
+**Note on exception handling:** `webcert-testability-api-context.xml` registers only
+`jacksonJsonProvider` — **no exception handler**. After migration, these controllers gain
+proper JSON error responses via the `@RestControllerAdvice` in sub-step 11.2 (which covers
+both `testability` and `testability.facade` packages). This is an intentional improvement.
 
 **Files to modify:** 12 controller Java files (no test files exist for testability controllers)
 
@@ -687,6 +772,16 @@ non-SOAP requests.
 `/internalapi/*`, etc.) remain valid because the URL paths haven't changed — only the serving
 servlet has changed from CXF to DispatcherServlet.
 
+**⚠️ Forward reference — `services-cxf-servlet.xml` stub component scans (Step 14 prep):**
+The SOAP servlet (`services-cxf-servlet.xml`) is kept unchanged in Step 11 but contains two
+component scans that run in the CXF child context:
+- `se.inera.intyg.webcert.infra.srs.stub.config`
+- `se.inera.intyg.webcert.infra.ia.stub.config`
+
+When Step 14 migrates the CXF SOAP servlet to a Spring Boot `ServletRegistrationBean`, these
+stub package scans will no longer have a Spring child context. They must be moved to the main
+application context or a profile-gated `@Configuration` class. Flag this for Step 14 planning.
+
 **Verification:** `./gradlew test --parallel` + manual startup check
 
 ---
@@ -697,6 +792,11 @@ servlet has changed from CXF to DispatcherServlet.
 
 **Why:** The current Swagger implementation uses JAX-RS `@Path` annotations and `ReflectiveJaxrsScanner`
 which won't work after JAX-RS removal. Swagger/OpenAPI replacement (SpringDoc) is planned for Step 14.
+
+**Current URL:** `swagger-api-context.xml` is imported by `services-cxf-servlet.xml` (the SOAP
+CXF servlet mapped to `/services/*`). The JAX-RS server inside has `address="/swagger"`, making the
+full URL **`/services/swagger`** (active on profile `!prod` only). After this step, that endpoint
+is gone until SpringDoc is added in Step 14.
 
 **Changes:**
 1. Delete `web/src/main/java/se/inera/intyg/webcert/web/web/controller/swagger/ApiScanner.java`
@@ -813,7 +913,7 @@ Some libraries may pull in `jakarta.ws.rs-api` transitively.
 | URL path mismatch after conversion | Endpoints unreachable (404) | Carefully combine servlet prefix + server address + @Path into @RequestMapping |
 | JSON format differences | API contract broken | Register CustomObjectMapper first (11.1); compare JSON output |
 | Missing @QueryParam → required=true | 400 errors for optional params | Always set `required = false` on converted @RequestParam |
-| Duplicate beans (parent + child context) | Startup warnings, extra memory | Accept during migration; clean up in Step 12 |
+| Duplicate beans (parent + child context) | Startup warnings, extra memory | Pre-existing: `webcert-config.xml` scans all of `se.inera.intyg.webcert.web` in the root context; `web-servlet.xml` scans the controller sub-package in the child context. Controllers exist in both — same as the current `PageController`. Spring handler resolution prefers the child context; clean up the root scan in Step 12 |
 | Filter chain breaks | Security bypass or 403 errors | URL patterns unchanged; verify filter mappings match |
 | Profile-gated controllers missing | Testability endpoints unavailable | Match @Profile annotations to original XML profiles exactly |
 | FmbApiController / FMBController path collision | Ambiguous mapping exception | Verify method-level paths are distinct |
@@ -830,7 +930,7 @@ Some libraries may pull in `jakarta.ws.rs-api` transitively.
 - `web/src/main/java/.../handlers/WebcertRedirectExceptionHandlerAdvice.java`
 
 ### Files to modify (~55-60)
-- ~47 controller Java files (annotation conversion)
+- ~52 controller Java files (annotation conversion)
 - ~12 test files (Response type changes)
 - `ReactUriFactory.java` + `ReactUriFactoryTest.java`
 - `web.xml` (servlet mappings — multiple edits)
