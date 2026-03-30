@@ -40,7 +40,6 @@
   <import resource="classpath:/mail-stub-testability-api-context.xml"/>
   <import resource="classpath:/notification-stub-context.xml"/>
   <import resource="classpath:/servicenow-stub-context.xml"/>
-  <import resource="classpath:/swagger-api-context.xml"/>
 
   <!-- ws endpoints -->
   <jaxws:endpoint address="/create-draft-certificate/v3.0" implementor="se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponderImpl">

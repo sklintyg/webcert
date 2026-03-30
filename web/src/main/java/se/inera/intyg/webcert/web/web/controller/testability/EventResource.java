@@ -50,7 +50,7 @@ public class EventResource {
     return events.stream().filter(event -> certificateIds.contains(event.getIntygsId())).count();
   }
 
-  @DeleteMapping("/")
+  @DeleteMapping
   public ResponseEntity<Void> deleteEventsByCertificateIds(
       @RequestBody List<String> certificateIds) {
     final var events = handelseRepository.findAll();

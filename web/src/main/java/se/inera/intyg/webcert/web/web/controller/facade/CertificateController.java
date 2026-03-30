@@ -90,54 +90,68 @@ public class CertificateController {
   public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
   @Autowired
-  @Qualifier("getCertificateAggregator") private GetCertificateFacadeService getCertificateFacadeService;
+  @Qualifier("getCertificateAggregator")
+  private GetCertificateFacadeService getCertificateFacadeService;
 
   @Autowired
-  @Qualifier("saveCertificateAggregator") private SaveCertificateFacadeService saveCertificateFacadeService;
+  @Qualifier("saveCertificateAggregator")
+  private SaveCertificateFacadeService saveCertificateFacadeService;
 
   @Autowired
-  @Qualifier("validateCertificateAggregator") private ValidateCertificateFacadeService validationCertificateFacadeService;
+  @Qualifier("validateCertificateAggregator")
+  private ValidateCertificateFacadeService validationCertificateFacadeService;
 
   @Autowired private SignCertificateFacadeService signCertificateFacadeService;
 
   @Autowired
-  @Qualifier("deleteCertificateAggregator") private DeleteCertificateFacadeService deleteCertificateFacadeService;
+  @Qualifier("deleteCertificateAggregator")
+  private DeleteCertificateFacadeService deleteCertificateFacadeService;
 
   @Autowired
-  @Qualifier("revokeCertificateAggregator") private RevokeCertificateFacadeService revokeCertificateFacadeService;
+  @Qualifier("revokeCertificateAggregator")
+  private RevokeCertificateFacadeService revokeCertificateFacadeService;
 
   @Autowired
-  @Qualifier("replaceCertificateAggregator") private ReplaceCertificateFacadeService replaceCertificateFacadeService;
+  @Qualifier("replaceCertificateAggregator")
+  private ReplaceCertificateFacadeService replaceCertificateFacadeService;
 
   @Autowired private CopyCertificateFacadeService copyCertificateFacadeService;
 
   @Autowired
-  @Qualifier("renewCertificateAggregator") private RenewCertificateFacadeService renewCertificateFacadeService;
+  @Qualifier("renewCertificateAggregator")
+  private RenewCertificateFacadeService renewCertificateFacadeService;
 
   @Autowired
-  @Qualifier("forwardCertificateAggregator") private ForwardCertificateFacadeService forwardCertificateFacadeService;
+  @Qualifier("forwardCertificateAggregator")
+  private ForwardCertificateFacadeService forwardCertificateFacadeService;
 
   @Autowired private ReadyForSignFacadeService readyForSignAggregator;
 
   @Autowired
-  @Qualifier("getCertificateEventsAggregator") private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
+  @Qualifier("getCertificateEventsAggregator")
+  private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
 
   @Autowired private GetCertificateResourceLinks getCertificateResourceLinks;
 
   @Autowired
-  @Qualifier("sendCertificateAggregator") private SendCertificateFacadeService sendCertificateFacadeService;
+  @Qualifier("sendCertificateAggregator")
+  private SendCertificateFacadeService sendCertificateFacadeService;
 
   @Autowired
-  @Qualifier("complementCertificateAggregator") private ComplementCertificateFacadeService complementCertificateFacadeService;
+  @Qualifier("complementCertificateAggregator")
+  private ComplementCertificateFacadeService complementCertificateFacadeService;
 
   @Autowired
-  @Qualifier("createCertificateFromTemplateAggregator") private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
+  @Qualifier("createCertificateFromTemplateAggregator")
+  private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
 
   @Autowired
-  @Qualifier("updateCertificateFromCandidateAggregator") private UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFacadeService;
+  @Qualifier("updateCertificateFromCandidateAggregator")
+  private UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFacadeService;
 
   @Autowired
-  @Qualifier("createCertificateAggregator") private CreateCertificateFacadeService createCertificateFacadeService;
+  @Qualifier("createCertificateAggregator")
+  private CreateCertificateFacadeService createCertificateFacadeService;
 
   @Autowired private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
 
@@ -445,7 +459,7 @@ public class CertificateController {
     }
   }
 
-  @PostMapping("/")
+  @PostMapping
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-create-certificate",

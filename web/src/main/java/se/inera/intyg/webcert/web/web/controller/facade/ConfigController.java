@@ -73,7 +73,7 @@ public class ConfigController {
     SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
   }
 
-  @GetMapping("/")
+  @GetMapping
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-configuration",

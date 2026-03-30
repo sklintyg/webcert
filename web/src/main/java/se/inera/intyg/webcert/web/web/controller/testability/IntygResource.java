@@ -219,7 +219,7 @@ public class IntygResource {
         .count();
   }
 
-  @DeleteMapping("/")
+  @DeleteMapping
   public ResponseEntity<Void> deleteAllDrafts() {
     // Need deleteAll here, deleteAllInBatch doesn't apply cascade delete
     utkastRepository.deleteAll();

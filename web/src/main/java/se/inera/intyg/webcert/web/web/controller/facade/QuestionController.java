@@ -116,7 +116,7 @@ public class QuestionController {
     return ResponseEntity.ok().build();
   }
 
-  @PostMapping("/")
+  @PostMapping
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-create-question",

@@ -113,7 +113,7 @@ public class ArendeResource {
     return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping("/")
+  @DeleteMapping
   public ResponseEntity<ArendeAffectedResponse> deleteAllQuestions() {
     return transactionTemplate.execute(
         new TransactionCallback<ResponseEntity<ArendeAffectedResponse>>() {

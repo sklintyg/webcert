@@ -70,7 +70,7 @@ public class StatModuleApiController extends AbstractApiController {
 
   @Autowired private AuthoritiesHelper authoritiesHelper;
 
-  @GetMapping("/")
+  @GetMapping
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "stat-module-get-statistics",

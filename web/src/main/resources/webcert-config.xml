@@ -142,16 +142,6 @@
 			</property>
 		</bean>
 
-		<!-- Handlers for integration/redirect controllers -->
-		<bean id="webcertRedirectIntegrationExceptionHandler"
-				class="se.inera.intyg.webcert.web.web.handlers.WebcertRedirectIntegrationExceptionHandler"/>
-
-		<!-- Handlers for REST services -->
-		<bean id="webcertRestExceptionHandler"
-				class="se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler"/>
-
-		<bean id="localDateTimeHandler" class="se.inera.intyg.webcert.web.web.handlers.LocalDateTimeHandler"/>
-
 		<!-- Thread pool for BankID GRP collect tasks. -->
 		<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
 			<property name="corePoolSize" value="5"/>

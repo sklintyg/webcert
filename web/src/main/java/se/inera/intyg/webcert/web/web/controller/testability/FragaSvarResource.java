@@ -190,7 +190,7 @@ public class FragaSvarResource {
     return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping("/")
+  @DeleteMapping
   public ResponseEntity<Void> deleteAllFragaSvar() {
     return transactionTemplate.execute(
         new TransactionCallback<ResponseEntity<Void>>() {

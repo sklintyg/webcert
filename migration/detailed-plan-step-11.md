@@ -149,11 +149,11 @@ the controller is no longer in a CXF servlet mapped to that prefix.
 | 11.11 | Convert `/testability/*` controllers (12 controllers) | Low | ✅ DONE |
 | 11.12 | Convert `/authtestability/*` controllers (1 controller) | Low | ✅ DONE |
 | **Phase C: Consolidation & Cleanup** | | | |
-| 11.13 | Consolidate DispatcherServlet — change mapping to `/` | ⚠️ Critical | ⬜ TODO |
-| 11.14 | Remove Swagger/ApiScanner JAX-RS endpoint | Low | ⬜ TODO |
-| 11.15 | Remove old ExceptionMappers and JAX-RS providers | Medium | ⬜ TODO |
-| 11.16 | Remove JAX-RS and CXF REST dependencies | ⚠️ Critical | ⬜ TODO |
-| 11.17 | Final verification — build, test, startup | ⚠️ Critical | ⬜ TODO |
+| 11.13 | Consolidate DispatcherServlet — change mapping to `/` | ⚠️ Critical | ✅ DONE |
+| 11.14 | Remove Swagger/ApiScanner JAX-RS endpoint | Low | ✅ DONE |
+| 11.15 | Remove old ExceptionMappers and JAX-RS providers | Medium | ✅ DONE |
+| 11.16 | Remove JAX-RS and CXF REST dependencies | ⚠️ Critical | ✅ DONE |
+| 11.17 | Final verification — build, test, startup | ⚠️ Critical | ✅ DONE |
 
 ---
 
@@ -950,7 +950,49 @@ Some libraries may pull in `jakarta.ws.rs-api` transitively.
 
 ---
 
-## Files Summary
+## Deferred Items
+
+The following items were identified during Phase C execution but intentionally left for later steps:
+
+### `swagger-jaxrs` dependency → Step 14
+
+`io.swagger:swagger-jaxrs` was **not** removed in sub-step 11.16 because many controllers and DTOs
+throughout `web/src/main/java` still import `io.swagger.annotations.*` (`@Api`, `@ApiOperation`,
+`@ApiModel`, `@ApiParam`, etc.). Removing the dependency caused ~100 compilation errors.
+
+**Action required in Step 14** (alongside SpringDoc introduction):
+1. Remove `implementation("io.swagger:swagger-jaxrs") { exclude(module: "jsr311-api") }` from
+   `web/build.gradle`.
+2. Replace all `io.swagger.annotations.*` imports with SpringDoc/OpenAPI 3 equivalents, or remove
+   the annotations if rebuilding API documentation from scratch.
+3. Verify: `grep -r "io.swagger.annotations" --include="*.java" web/src/main/java/` → zero matches.
+
+### `jacksonJsonProvider` bean in `webcert-config.xml` → Step 12
+
+The `<bean id="jacksonJsonProvider" class="...JacksonJsonProvider">` definition was **not** removed
+from `webcert-config.xml` in sub-step 11.15 because three stub CXF JAX-RS server contexts still
+reference it by bean name:
+
+| Stub XML | Location |
+|----------|----------|
+| `notification-stub-context.xml` | `stubs/notification-stub/src/main/resources/` |
+| `mail-stub-testability-api-context.xml` | `stubs/mail-stub/src/main/resources/` |
+| `fmb-stub-context.xml` | `integration/fmb-integration/src/main/resources/` |
+
+Each declares a `<jaxrs:server>` with `<ref bean="jacksonJsonProvider"/>` as a provider. These are
+imported into `services-cxf-servlet.xml` (the CXF SOAP servlet context), which has access to root
+context beans.
+
+**Action required in Step 12** (when converting stub XML configs to `@Configuration`):
+1. Migrate each stub's `<jaxrs:server>` endpoint to a Spring MVC `@RestController`, or remove the
+   JAX-RS endpoint if it is no longer needed.
+2. Once no stub XML references `jacksonJsonProvider`, remove the bean definition from
+   `webcert-config.xml` (its Java `@Configuration` replacement) and drop the transitive
+   `com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider` dependency.
+
+---
+
+
 
 ### Files to create (~3-4)
 - `web/src/main/java/.../config/WebMvcConfiguration.java`

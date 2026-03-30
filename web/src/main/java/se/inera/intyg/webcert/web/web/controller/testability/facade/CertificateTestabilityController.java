@@ -61,7 +61,7 @@ public class CertificateTestabilityController {
     this.supportedPatientsUtil = supportedPatientsUtil;
   }
 
-  @PostMapping("/")
+  @PostMapping
   public ResponseEntity<CreateCertificateResponseDTO> createCertificate(
       @RequestBody @NotNull CreateCertificateRequestDTO createCertificateRequest) {
     final var certificateId =

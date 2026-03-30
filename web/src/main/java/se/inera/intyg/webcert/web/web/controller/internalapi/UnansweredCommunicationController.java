@@ -37,7 +37,7 @@ public class UnansweredCommunicationController {
 
   private final GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
 
-  @PostMapping("/")
+  @PostMapping
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "unanswered-communications-get-unanswered",

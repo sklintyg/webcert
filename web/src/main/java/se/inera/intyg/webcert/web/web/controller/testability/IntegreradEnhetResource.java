@@ -71,14 +71,14 @@ public class IntegreradEnhetResource {
     return hsaId == null || hsaId.trim().length() == 0;
   }
 
-  @GetMapping("/")
+  @GetMapping
   @ApiResponses(
       value = {@ApiResponse(code = OK, message = "Listed current set of integrerade Vårdenheter")})
   public ResponseEntity<Object> getIntegreradeVardenheter() {
     return ResponseEntity.ok(integreradeEnheterRegistry.getIntegreradeVardenheter());
   }
 
-  @PostMapping("/")
+  @PostMapping
   @ApiResponses(value = {@ApiResponse(code = OK, message = "Registered integrerad vardenhet")})
   public ResponseEntity<IntegreradEnhetEntryWithSchemaVersion> registerIntegreradVardenhet(
       @RequestBody IntegreradEnhetEntryWithSchemaVersion enhet) {

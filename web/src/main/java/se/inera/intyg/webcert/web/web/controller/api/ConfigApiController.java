@@ -89,7 +89,7 @@ public class ConfigApiController extends AbstractApiController {
 
   @Autowired private IABannerService iaBannerService;
 
-  @GetMapping("/")
+  @GetMapping
   @ApiOperation(
       value = "Get module configuration for Webcert",
       httpMethod = "GET",

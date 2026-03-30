@@ -33,7 +33,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLogi
 @RequiredArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("/testability/fake")
+@RequestMapping("/testability")
 @Profile({"dev", "testability-api"})
 public class FakeLoginTestabilityController {
 

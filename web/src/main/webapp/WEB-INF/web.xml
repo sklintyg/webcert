@@ -79,15 +79,7 @@
 
     <servlet-mapping>
         <servlet-name>web</servlet-name>
-        <url-pattern>/web/*</url-pattern>
-        <url-pattern>/internalapi/*</url-pattern>
-        <url-pattern>/api/*</url-pattern>
-        <url-pattern>/moduleapi/*</url-pattern>
-        <url-pattern>/visa/*</url-pattern>
-        <url-pattern>/v2/visa/*</url-pattern>
-        <url-pattern>/webcert/web/user/*</url-pattern>
-        <url-pattern>/testability/*</url-pattern>
-        <url-pattern>/authtestability/*</url-pattern>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>services</servlet-name>

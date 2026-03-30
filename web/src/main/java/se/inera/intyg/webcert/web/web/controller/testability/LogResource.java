@@ -51,9 +51,10 @@ public class LogResource {
   private final ObjectMapper objectMapper = new CustomObjectMapper();
 
   @Autowired
-  @Qualifier("jmsPDLLogTemplateNoTx") private JmsTemplate jmsTemplate;
+  @Qualifier("jmsPDLLogTemplateNoTx")
+  private JmsTemplate jmsTemplate;
 
-  @DeleteMapping("/")
+  @DeleteMapping
   public ResponseEntity<Void> deleteLogMessages() {
     int count = countMessages();
     long originalTimeout = jmsTemplate.getReceiveTimeout();
@@ -87,7 +88,7 @@ public class LogResource {
     return count != null ? count : 0;
   }
 
-  @GetMapping("/")
+  @GetMapping
   public PdlLogMessage getLogMessage() {
     long originalTimeout = jmsTemplate.getReceiveTimeout();
     try {

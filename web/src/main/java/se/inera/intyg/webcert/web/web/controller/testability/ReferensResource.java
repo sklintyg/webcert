@@ -43,7 +43,7 @@ public class ReferensResource {
 
   @Autowired private ReferensRepository referensRepository;
 
-  @PostMapping("/")
+  @PostMapping
   public ResponseEntity<Void> insertReferens(@RequestBody Referens referens) {
     Referens savedReferens = referensRepository.save(referens);
     LOG.info("Created Referens with id {} using testability API", savedReferens.getId());
@@ -58,7 +58,7 @@ public class ReferensResource {
         .count();
   }
 
-  @DeleteMapping("/")
+  @DeleteMapping
   public ResponseEntity<Void> deletReferenserByCertificateIds(
       @RequestBody List<String> certificateIds) {
     final var referensList = (List<Referens>) referensRepository.findAll();
