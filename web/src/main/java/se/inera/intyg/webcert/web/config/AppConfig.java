@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
@@ -30,12 +31,20 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 import se.inera.intyg.webcert.infra.security.common.cookie.IneraCookieSerializer;
+import se.inera.intyg.webcert.integration.analytics.config.CertificateAnalyticsServiceIntegrationConfig;
+import se.inera.intyg.webcert.integration.fmb.config.FmbServicesConfig;
+import se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig;
+import se.inera.intyg.webcert.integration.servicenow.config.ServiceNowIntegrationConfig;
+import se.inera.intyg.webcert.integration.servicenow.stub.config.ServiceNowStubConfig;
 
 @Configuration
 @DependsOn("dbUpdate")
 @RequiredArgsConstructor
 @EnableTransactionManagement
-@Import({LoggingConfig.class, JmsConfig.class, CacheConfig.class, JobConfig.class})
+@ComponentScan("se.inera.intyg.webcert.common")
+@Import({LoggingConfig.class, JmsConfig.class, CacheConfig.class, JobConfig.class,
+    FmbServicesConfig.class, ServiceNowIntegrationConfig.class, ServiceNowStubConfig.class,
+    CertificateAnalyticsServiceIntegrationConfig.class, PrivatePractitionerRestClientConfig.class})
 public class AppConfig implements TransactionManagementConfigurer {
 
   private final JpaTransactionManager transactionManager;

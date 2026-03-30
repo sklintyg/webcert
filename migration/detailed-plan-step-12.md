@@ -183,10 +183,10 @@ After Step 12:
 | Sub-step | Title | Risk | Status |
 |---|---|---|---|
 | **Phase A: Remove Redundant XML Files** | | | |
-| 12.1 | Remove `repository-context.xml` | Low | ⬜ |
-| 12.2 | Remove `webcert-common-config.xml` | Low | ⬜ |
-| 12.3 | Remove integration module XML configs (4 files) | Low | ⬜ |
-| 12.4 | Remove `webcert-testability-api-context.xml` | Low | ⬜ |
+| 12.1 | Remove `repository-context.xml` | Low | ✅ DONE |
+| 12.2 | Remove `webcert-common-config.xml` | Low | ✅ DONE |
+| 12.3 | Remove integration module XML configs (4 files) | Low | ✅ DONE |
+| 12.4 | Remove `webcert-testability-api-context.xml` | Low | ✅ DONE |
 | **Phase B: Create Missing Java Configuration Classes** | | | |
 | 12.5 | Create `MailConfig.java` replacing `mail-config.xml` | Low | ⬜ |
 | 12.6 | Merge `web-servlet.xml` into `WebMvcConfiguration.java` | Medium | ⬜ |
