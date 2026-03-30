@@ -1,4 +1,4 @@
-# Step 12 — Convert XML Bean Configuration to Java
+﻿# Step 12 — Convert XML Bean Configuration to Java
 
 ## Problem Statement
 
@@ -199,12 +199,10 @@ After Step 12:
 | **Phase D: Convert CXF Configuration** | | | |
 | 12.12 | Create `CxfWsClientConfig.java` replacing `ws-config.xml` | ⚠️ High | ⬜ |
 | 12.13 | Create `CxfEndpointConfig.java` replacing `services-cxf-servlet.xml` | ⚠️ High | ⬜ |
-| **Phase E: Migrate notification-sender Test Configs** | | | |
-| 12.14 | Convert `unit-test-notification-sender-config.xml` to Java | Low | ⬜ |
-| 12.15 | Convert `unit-test-certificate-sender-config.xml` to Java | Low | ⬜ |
-| 12.16 | Convert integration-test certificate config + embedded broker to Java | Medium | ⬜ |
-| **Phase F: Remove Root XML** | | | |
-| 12.17 | Collapse `webcert-config.xml` into `AppConfig.java` | ⚠️ Critical | ⬜ |
+| **Phase E: Remove Root XML** | | | |
+| 12.14 | Collapse `webcert-config.xml` into `AppConfig.java` | ⚠️ Critical | ⬜ |
+| **Phase F: Profile Cleanup** | | | |
+| 12.15 | Simplify all multi-value `@Profile` annotations containing `"dev"` to `@Profile("dev")` | Low | ⬜ |
 
 ---
 
@@ -326,27 +324,31 @@ all start and resolve beans correctly.
 
 ### Sub-step 12.4 — Remove `webcert-testability-api-context.xml`
 
-**What:** Remove the XML file that previously registered 12 testability controllers as JAX-RS beans.
+> ✅ **Already done:** `webcert-testability-api-context.xml` no longer exists in
+> `web/src/main/resources/` (confirmed by filesystem search). The import of this file has also
+> already been removed from `services-cxf-servlet.xml` (confirmed by reading the actual file).
+
+**What:** Verify that both conditions are true before proceeding.
 
 **Why:** Step 11 converted all 12 testability controllers to `@RestController` beans with
 `@Profile({"dev", "testability-api"})`. They are now auto-discovered by the DispatcherServlet's
-component scan. The XML registration is obsolete — and would cause duplicate bean errors if left.
+component scan. The XML registration is obsolete.
 
-**Pre-check:** Confirm all 12 controllers have `@RestController` and `@Profile`:
+**Pre-check:**
 ```bash
-grep -l "class ArendeResource\|class FragaSvarResource\|class LogResource\|class IntygResource\|class UserAgreementResource\|class FmbResource\|class IntegreradEnhetResource\|class CertificateTestabilityController\|class FakeLoginTestabilityController\|class ConfigurationResource\|class EventResource\|class ReferensResource" \
-  web/src/main/java/ -r
-# Then for each file:
-grep -n "@RestController\|@Profile" <file>
+# Confirm file is gone
+find web/src -name "webcert-testability-api-context.xml"
+# Must return nothing
+
+# Confirm no import in services-cxf-servlet.xml
+grep "testability-api-context" web/src/main/webapp/WEB-INF/services-cxf-servlet.xml
+# Must return nothing
 ```
 
-**Changes:**
-1. `services-cxf-servlet.xml` imports `webcert-testability-api-context.xml`. Remove that import line
-   from `services-cxf-servlet.xml`.
-2. Delete `web/src/main/resources/webcert-testability-api-context.xml`.
-   (Also check `web/src/main/webapp/WEB-INF/` for a copy; delete both if present.)
+**Changes:** None required — already complete. If either pre-check fails, delete the file and/or
+remove the import line as appropriate.
 
-**Verification:** `./gradlew test` + start with profile `testability-api`; hit a testability endpoint.
+**Verification:** `./gradlew test`
 
 ---
 
@@ -523,10 +525,10 @@ registers two things:
 1. The XML has **three separate `<beans profile="...">` blocks with distinct profiles** — a single
    `@Configuration` class cannot model this. Use **two separate classes** plus a `@RestController`:
 
-   **Class 1 — data beans (both notification-sender and testability-api profiles):**
+   **Class 1 — data beans:**
    ```java
    @Configuration
-   @Profile({"dev", "wc-all-stubs", "wc-notificationsender-stub", "testability-api"})
+   @Profile("dev")
    public class NotificationStubDataConfig {
 
        @Bean
@@ -541,10 +543,10 @@ registers two things:
    }
    ```
 
-   **Class 2 — JAXWS SOAP endpoint (notification-sender profiles only, NOT testability-api):**
+   **Class 2 — JAXWS SOAP endpoint:**
    ```java
    @Configuration
-   @Profile({"dev", "wc-all-stubs", "wc-notificationsender-stub"})
+   @Profile("dev")
    public class NotificationStubConfig {
 
        // CXF JAXWS server endpoint — replicates the jaxws:schemaLocations from XML
@@ -567,8 +569,8 @@ registers two things:
    }
    ```
 
-   **REST controller** (`NotificationStubRestApi`, class `se.inera.intyg.webcert.notificationstub.NotificationStubRestApi`):
-   Add `@RestController` and `@Profile({"dev", "testability-api"})` to the class.
+   **REST controller** (`NotificationStubRestApi`):
+   Add `@RestController` and `@Profile("dev")` to the class.
    Map all methods from the JAX-RS annotations to Spring MVC equivalents.
 
 2. Remove the import of `notification-stub-context.xml` from `services-cxf-servlet.xml`.
@@ -599,7 +601,7 @@ Start with profile `testability-api` alone — confirm REST API works but SOAP e
    (replaces `mail-stub-context.xml`):
    ```java
    @Configuration
-   @Profile({"dev", "wc-all-stubs", "wc-mail-stub"})
+   @Profile("dev")
    public class MailStubConfig {
 
        @Value("${mail.host}") private String mailHost;
@@ -615,13 +617,13 @@ Start with profile `testability-api` alone — confirm REST API works but SOAP e
    The `<context:component-scan base-package="se.inera.intyg.webcert.mailstub"/>` in the XML
    means other beans in that package are auto-discovered by existing component scans. Verify
    whether any `@Component` classes in `se.inera.intyg.webcert.mailstub` exist that need to
-   remain discoverable when `wc-mail-stub` is active.
+   remain discoverable when `dev` is active.
 
 2. Create `stubs/mail-stub/src/main/java/.../config/MailStubTestabilityConfig.java`
    (replaces `mail-stub-testability-api-context.xml`):
    ```java
    @Configuration
-   @Profile({"dev", "testability-api"})
+   @Profile("dev")
    public class MailStubTestabilityConfig {
 
        @Bean
@@ -635,7 +637,7 @@ Start with profile `testability-api` alone — confirm REST API works but SOAP e
        }
    }
    ```
-   Also add `@RestController` and `@Profile({"dev", "testability-api"})` to `MailStubRestApi`
+   Also add `@RestController` and `@Profile("dev")` to `MailStubRestApi`
    itself, and map all JAX-RS methods to Spring MVC equivalents.
 
 3. Remove `<import resource="classpath:mail-stub-context.xml"/>` from `webcert-config.xml`.
@@ -643,7 +645,7 @@ Start with profile `testability-api` alone — confirm REST API works but SOAP e
 5. Delete `mail-stub-context.xml` and `mail-stub-testability-api-context.xml`.
 
 **Verification:** Start with `dev` profile. Hit the mail stub API at `/api/mail-api/...`.
-Start with `wc-mail-stub` alone — confirm `mailAdvice` bean is active (mail is intercepted).
+Confirm `mailAdvice` bean is active (mail is intercepted).
 
 ---
 
@@ -883,105 +885,14 @@ Run application and verify each SOAP WSDL is accessible:
 
 ---
 
-## Phase E: Migrate notification-sender Test Configs
+## Phase E: Remove Root XML
 
-> **Note:** These sub-steps affect test code only. They have zero runtime impact and can be
-> done in parallel with any Phase D work. The Camel XML files (`camel-context.xml`,
-> `beans-context.xml`) are NOT removed here — that is Step 13. The goal is only to remove
-> the outer test wrapper XMLs that add beans on top of the Camel XMLs.
-
-### Sub-step 12.14 — Convert `unit-test-notification-sender-config.xml` to Java
-
-**What:** `NotificationCamelTestConfig.java` currently loads:
-```java
-@ImportResource(locations = "classpath:notifications/unit-test-notification-sender-config.xml")
-```
-That XML file defines non-Camel test beans and imports `camel-context.xml`.
-
-**Changes:**
-1. Open `NotificationCamelTestConfig.java`.
-2. Remove the `@ImportResource` for `unit-test-notification-sender-config.xml`.
-3. Add a direct `@ImportResource` for the Camel context only:
-   ```java
-   @ImportResource("classpath:notifications/camel-context.xml")
-   ```
-4. Add `@TestPropertySource("classpath:notifications/unit-test.properties")`.
-5. Add `@Bean` methods for the non-Camel beans previously defined in the XML:
-   - `processNotificationRequestRouteBuilder` (if it's not already a Spring-managed `@Component`)
-   - `notificationAggregator`
-   - `objectMapper` (CustomObjectMapper)
-   - `notificationMessageDataFormat` (JacksonDataFormat)
-6. Delete `notification-sender/src/test/resources/notifications/unit-test-notification-sender-config.xml`.
-
-**Verification:** `./gradlew :notification-sender:test --tests "*NotificationRouteTest*"`
-
----
-
-### Sub-step 12.15 — Convert `unit-test-certificate-sender-config.xml` to Java
-
-**What:** `CertificateCamelTestConfig.java` currently loads the unit test XML via `@ImportResource`.
-
-**Changes:**
-1. Open `CertificateCamelTestConfig.java`.
-2. Remove the `@ImportResource` for `unit-test-certificate-sender-config.xml`.
-3. Add direct `@ImportResource` references for the Camel XML files only:
-   ```java
-   @ImportResource({
-       "classpath:certificates/beans-context.xml",
-       "classpath:certificates/camel-context.xml"
-   })
-   ```
-4. Add `@ComponentScan("se.inera.intyg.webcert.notification_sender.certificatesender")`.
-5. Add `@TestPropertySource("classpath:certificates/unit-test.properties")`.
-6. Delete `notification-sender/src/test/resources/certificates/unit-test-certificate-sender-config.xml`.
-
-**Verification:** `./gradlew :notification-sender:test --tests "*RouteTest*"`
-
----
-
-### Sub-step 12.16 — Convert integration-test certificate config + embedded broker to Java
-
-**What:** `CertificateCamelIntegrationTestConfig.java` loads:
-```java
-@ImportResource(locations = "classpath:certificates/integration-test-certificate-sender-config.xml")
-```
-That XML imports `integration-test-broker-context.xml` (embedded ActiveMQ) plus the Camel XMLs.
-
-**Changes:**
-1. Open `CertificateCamelIntegrationTestConfig.java`.
-2. Remove the `@ImportResource` for `integration-test-certificate-sender-config.xml`.
-3. Add direct `@ImportResource` references for the Camel XML files only (same as 12.15).
-4. Create an embedded ActiveMQ broker `@Bean` replacing `integration-test-broker-context.xml`.
-   Read the broker XML to identify queue names, connection factory settings, and transaction
-   manager configuration. Then:
-   ```java
-   @Bean(initMethod = "start", destroyMethod = "stop")
-   public BrokerService embeddedBroker() throws Exception {
-       BrokerService broker = new BrokerService();
-       broker.setBrokerName("test-broker");
-       broker.setPersistent(false);
-       broker.addConnector("vm://localhost");
-       // Add queues from integration-test-broker-context.xml
-       return broker;
-   }
-   ```
-5. Define connection factories and transaction manager for the integration test context, matching
-   the configuration in `integration-test-broker-context.xml`.
-6. Delete `integration-test-certificate-sender-config.xml`.
-7. Delete `integration-test-broker-context.xml`.
-
-**Verification:** `./gradlew :notification-sender:test --tests "*RouteIT*"`
-
----
-
-## Phase F: Remove Root XML
-
-### Sub-step 12.17 — Collapse `webcert-config.xml` into `AppConfig.java` ⚠️ Critical
+### Sub-step 12.14 — Collapse `webcert-config.xml` into `AppConfig.java` ⚠️ Critical
 
 **What:** Move all remaining content of `webcert-config.xml` to Java, then update `web.xml` to
 point directly to `AppConfig.java` instead of `webcert-config.xml`. Delete the XML file.
 
-#### 12.17a — Audit remaining content
+#### 12.14a — Audit remaining content
 
 At this point, `webcert-config.xml` should contain only:
 - `<context:annotation-config/>`
@@ -992,7 +903,7 @@ At this point, `webcert-config.xml` should contain only:
 - `<import resource="classpath:notification-sender-config.xml"/>` (deferred to Step 13)
 - ~30 inline bean definitions (see table in Current State section)
 
-#### 12.17b — Move inline beans to Java configs
+#### 12.14b — Move inline beans to Java configs
 
 Work through the beans in the Current State table. For each:
 
@@ -1229,7 +1140,7 @@ public UtkastBootstrapBean utkastBootstrapBean() {
 }
 ```
 
-#### 12.17c — Migrate component scans to `AppConfig.java`
+#### 12.14c — Migrate component scans to `AppConfig.java`
 
 `webcert-config.xml` component-scans 8 infra/integration packages in addition to
 `se.inera.intyg.webcert.web`. Replicate these in `AppConfig.java`:
@@ -1250,7 +1161,7 @@ public UtkastBootstrapBean utkastBootstrapBean() {
 })
 ```
 
-#### 12.17d — Add `@ImportResource` for wildcard and deferred imports
+#### 12.14d — Add `@ImportResource` for wildcard and deferred imports
 
 ```java
 @ImportResource({
@@ -1261,7 +1172,7 @@ public UtkastBootstrapBean utkastBootstrapBean() {
 })
 ```
 
-#### 12.17e — Update `web.xml` root context configuration
+#### 12.14e — Update `web.xml` root context configuration
 
 Change the root context loading from XML to Java:
 ```xml
@@ -1282,14 +1193,14 @@ Change the root context loading from XML to Java:
 </context-param>
 ```
 
-#### 12.17f — Delete `webcert-config.xml`
+#### 12.14f — Delete `webcert-config.xml`
 
 After verifying the application starts (see verification below):
 ```bash
 rm web/src/main/resources/webcert-config.xml
 ```
 
-**Full verification for 12.17:**
+**Full verification for 12.14:**
 - `./gradlew test` — all tests pass
 - `./gradlew appRun` (Gretty) — application starts without `BeanCreationException` or
   `NoSuchBeanDefinitionException`
@@ -1300,6 +1211,68 @@ rm web/src/main/resources/webcert-config.xml
 - Verify: `grep -rn "webcert-config.xml" web/src/` returns no results
 
 ---
+
+## Phase F: Profile Cleanup
+
+### Sub-step 12.15 -- Simplify multi-value @Profile annotations to @Profile("dev")
+
+**What:** Any @Profile annotation that lists multiple values including "dev" is replaced
+with the single-value @Profile("dev"). This consolidates stub and testability activation
+under one well-known profile name.
+
+**Why:** The various stub-specific profile names (wc-all-stubs, wc-notificationsender-stub,
+wc-mail-stub, wc-fmb-stub, 	estability-api, etc.) add complexity with no benefit for a
+local development setup. Using only dev makes the profile strategy uniform and easier to
+maintain.
+
+**Affected files (confirmed by codebase scan):**
+
+| File | Current @Profile | New @Profile |
+|---|---|---|
+| SrsStubConfiguration.java | {"dev", "wc-all-stubs", "wc-srs-stub"} | "dev" |
+| IAStubConfiguration.java | {"dev", "ia-stub"} | "dev" |
+| JmsConfig.java (stub bean) | {"dev", "testability-api"} | "dev" |
+| ArendeResource.java | {"dev", "testability-api"} | "dev" |
+| FragaSvarResource.java | {"dev", "testability-api"} | "dev" |
+| LogResource.java | {"dev", "testability-api"} | "dev" |
+| IntygResource.java | {"dev", "testability-api"} | "dev" |
+| UserAgreementResource.java | {"dev", "testability-api"} | "dev" |
+| FmbResource.java | {"dev", "testability-api"} | "dev" |
+| IntegreradEnhetResource.java | {"dev", "testability-api"} | "dev" |
+| CertificateTestabilityController.java | {"dev", "testability-api"} | "dev" |
+| FakeLoginTestabilityController.java | {"dev", "testability-api"} | "dev" |
+| ConfigurationResource.java | {"dev", "testability-api"} | "dev" |
+| EventResource.java | {"dev", "testability-api"} | "dev" |
+| ReferensResource.java | {"dev", "testability-api"} | "dev" |
+| NotificationStubDataConfig.java (new) | {"dev", ...} | "dev" |
+| NotificationStubConfig.java (new) | {"dev", ...} | "dev" |
+| MailStubConfig.java (new) | {"dev", ...} | "dev" |
+| MailStubTestabilityConfig.java (new) | {"dev", ...} | "dev" |
+| FmbStubConfig.java (new) | {"dev", ...} | "dev" |
+
+**Do NOT change these profiles** (no "dev", or have non-stub semantics):
+- CacheConfig.java: {"caching-enabled", "prod"} and !(caching-enabled | prod) -- stay
+- IaCacheConfiguration.java: {"qa", "prod", "caching-enabled"} -- stay
+- JpaConfig.java: "!h2" -- stay
+- ServiceNowStubConfig.java: complex boolean expression -- evaluate separately
+- @Profile("!prod"), @Profile("prod") beans -- stay
+- @Profile("ia-stub") / @Profile("!ia-stub") in IAServicesConfiguration.java -- stay
+- @Profile("certificate-analytics-service-active") -- stay
+
+**Changes:**
+For each file in the table above, replace the multi-value array with "dev":
+`java
+// Before
+@Profile({"dev", "testability-api"})
+// After
+@Profile("dev")
+`
+
+**Verification:** ./gradlew test -- all tests pass. Start with profile dev; confirm all
+stubs and testability endpoints respond.
+
+---
+
 
 ## Final Verification — After Complete Step 12
 
@@ -1345,7 +1318,7 @@ context is a Step 14 concern (Spring Boot auto-configuration).
 **Bean name clashes** — Some XML bean IDs match names auto-assigned to Java `@Bean` methods.
 Watch for `BeanDefinitionOverrideException` at startup. Common culprit: `taskExecutor` (used
 by Spring's `@Async` infrastructure AND by the GRP thread pool). Renaming to `grpTaskExecutor`
-in 12.17b resolves this — but confirm all injection sites are updated.
+in 12.14b resolves this — but confirm all injection sites are updated.
 
 **`@EnableAsync` and the task executor** — The `threadPoolTaskExecutor` bean (from `MailConfig.java`)
 is explicitly referenced by name in `@Async("threadPoolTaskExecutor")` in `MailNotificationServiceImpl`.
@@ -1384,12 +1357,12 @@ inline above. This section documents them for traceability.
 | G5 | 🟠 High | `mail-stub-context.xml` `mailAdvice` bean (`JavaMailSenderAroundAdvice`) was completely omitted from 12.8. Without it the mail stub cannot intercept outgoing mail. | §12.8 |
 | G6 | 🟠 High | `mail-stub-context.xml` has profile `dev,wc-all-stubs,wc-mail-stub`, not `dev,testability-api`. Plan incorrectly merged two contexts with different profiles into one class. | §12.8 |
 | G7 | 🟠 High | `AppConfig.java` has **no existing `@ComponentScan`** — plan said "add to existing". Every scan must be created from scratch. | §12.2, Pre-Conditions |
-| G8 | 🟠 High | `objectMapper` `@Bean` is **not** in `WebMvcConfiguration.java` — plan said "confirm @Bean present". It must be created explicitly, and `WebMvcConfiguration` must be updated to inject it. | §12.17b, Inline Beans Table |
+| G8 | 🟠 High | `objectMapper` `@Bean` is **not** in `WebMvcConfiguration.java` — plan said "confirm @Bean present". It must be created explicitly, and `WebMvcConfiguration` must be updated to inject it. | §12.14b, Inline Beans Table |
 | G9 | 🟠 High | `FmbConsumerImpl` uses `constructor-arg name="baseUrl"` (not a property), and has no `@Service`. The correct class package is `consumer` not `services`. | §12.3 |
 | G10 | 🟡 Medium | All 12 URL property keys in the `CxfWsClientConfig.java` client table were wrong (e.g., `sendquestion.recipient.service.url` vs actual `sendquestiontofk.endpoint.url`). | §12.12 |
-| G11 | 🟡 Medium | `parserPool` bare `new BasicParserPool()` omitted all XXE/security settings. `OpenSamlConfig` already owns this pool internally — plan needed to check before adding duplicate `@Bean`. | §12.17b |
-| G12 | 🟡 Medium | `CommonAuthoritiesResolver` has `@Autowired SecurityConfigurationLoader`, and `AuthoritiesHelper` has `@Autowired` constructor. Plain `new X()` would miss injections. | §12.17b |
-| G13 | 🟡 Medium | `GrpRestConfig.java` currently only has `grpRestClient` — plan implied the `grpTaskExecutor` bean already existed there. | §12.17b, Inline Beans Table |
+| G11 | 🟡 Medium | `parserPool` bare `new BasicParserPool()` omitted all XXE/security settings. `OpenSamlConfig` already owns this pool internally — plan needed to check before adding duplicate `@Bean`. | §12.14b |
+| G12 | 🟡 Medium | `CommonAuthoritiesResolver` has `@Autowired SecurityConfigurationLoader`, and `AuthoritiesHelper` has `@Autowired` constructor. Plain `new X()` would miss injections. | §12.14b |
+| G13 | 🟡 Medium | `GrpRestConfig.java` currently only has `grpRestClient` — plan implied the `grpTaskExecutor` bean already existed there. | §12.14b, Inline Beans Table |
 | G14 | 🟡 Medium | `DefaultCharacterEncodingFilter` already has `@Component` — no action needed, but plan said "Add @Component". | Inline Beans Table |
 | G15 | 🟡 Medium | `SoapFaultToSoapResponseTransformerInterceptor` and `InternalApiFilter` don't exist locally — they must come from infra (Step 8 pre-condition). | Pre-Conditions, Risk Notes |
 | G16 | 🟢 Low | `web.xml` `web` servlet has no `contextConfigLocation` — auto-discovers `web-servlet.xml` by convention. Step 12.6 correctly adds it but the reason was not explained. | §12.6 |
