@@ -22,14 +22,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 @Configuration
+@EnableWebMvc
+@ComponentScan("se.inera.intyg.webcert.web.web.controller")
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
   @Override

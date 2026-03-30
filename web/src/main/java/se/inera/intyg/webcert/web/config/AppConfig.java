@@ -43,6 +43,7 @@ import se.inera.intyg.webcert.integration.servicenow.stub.config.ServiceNowStubC
 @EnableTransactionManagement
 @ComponentScan("se.inera.intyg.webcert.common")
 @Import({LoggingConfig.class, JmsConfig.class, CacheConfig.class, JobConfig.class,
+    MailConfig.class,
     FmbServicesConfig.class, ServiceNowIntegrationConfig.class, ServiceNowStubConfig.class,
     CertificateAnalyticsServiceIntegrationConfig.class, PrivatePractitionerRestClientConfig.class})
 public class AppConfig implements TransactionManagementConfigurer {

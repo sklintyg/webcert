@@ -188,8 +188,8 @@ After Step 12:
 | 12.3 | Remove integration module XML configs (4 files) | Low | ✅ DONE |
 | 12.4 | Remove `webcert-testability-api-context.xml` | Low | ✅ DONE |
 | **Phase B: Create Missing Java Configuration Classes** | | | |
-| 12.5 | Create `MailConfig.java` replacing `mail-config.xml` | Low | ⬜ |
-| 12.6 | Merge `web-servlet.xml` into `WebMvcConfiguration.java` | Medium | ⬜ |
+| 12.5 | Create `MailConfig.java` replacing `mail-config.xml` | Low | ✅ DONE |
+| 12.6 | Merge `web-servlet.xml` into `WebMvcConfiguration.java` | Medium | ✅ DONE |
 | **Phase C: Convert Stub XML Contexts** | | | |
 | 12.7 | Convert `notification-stub-context.xml` → `NotificationStubConfig.java` | Medium | ⬜ |
 | 12.8 | Convert mail-stub XML contexts → `MailStubConfig.java` | Medium | ⬜ |
