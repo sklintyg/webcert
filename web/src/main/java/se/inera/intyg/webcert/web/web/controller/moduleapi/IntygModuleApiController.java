@@ -48,14 +48,13 @@ public class IntygModuleApiController extends AbstractApiController {
 
   private static final String CONTENT_DISPOSITION = "Content-Disposition";
 
-  @Autowired
-  private PrintCertificateAggregator printCertificateAggregator;
+  @Autowired private PrintCertificateAggregator printCertificateAggregator;
 
   /**
    * Return the signed certificate identified by the given id as PDF.
    *
    * @param intygsTyp the type of certificate
-   * @param intygsId  - the globally unique id of a certificate.
+   * @param intygsId - the globally unique id of a certificate.
    * @return The certificate in PDF format
    */
   @GetMapping("/{intygsTyp}/{intygsId}/pdf")
@@ -74,7 +73,7 @@ public class IntygModuleApiController extends AbstractApiController {
    * patient.
    *
    * @param intygsTyp the type of certificate
-   * @param intygsId  - the globally unique id of a certificate.
+   * @param intygsId - the globally unique id of a certificate.
    * @return The certificate in PDF format
    */
   @GetMapping("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")

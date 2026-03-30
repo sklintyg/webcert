@@ -51,8 +51,7 @@ public class LogResource {
   private final ObjectMapper objectMapper = new CustomObjectMapper();
 
   @Autowired
-  @Qualifier("jmsPDLLogTemplateNoTx")
-  private JmsTemplate jmsTemplate;
+  @Qualifier("jmsPDLLogTemplateNoTx") private JmsTemplate jmsTemplate;
 
   @DeleteMapping
   public ResponseEntity<Void> deleteLogMessages() {
