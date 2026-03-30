@@ -27,7 +27,6 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
 	<context:annotation-config/>
-	<import resource="ws-config.xml"/>
 	<import resource="classpath:common-config.xml"/>
 	<import resource="classpath*:module-config.xml"/>
 	<import resource="classpath*:wc-module-cxf-servlet.xml"/>

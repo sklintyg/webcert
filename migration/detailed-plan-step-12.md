@@ -197,8 +197,8 @@ After Step 12:
 | 12.10 | Handle `servicenow-stub-context.xml` | Low | ✅ |
 | 12.11 | Remove `jacksonJsonProvider` bean and JAX-RS JSON provider dependency | Low | ✅ |
 | **Phase D: Convert CXF Configuration** | | | |
-| 12.12 | Create `CxfWsClientConfig.java` replacing `ws-config.xml` | ⚠️ High | ⬜ |
-| 12.13 | Create `CxfEndpointConfig.java` replacing `services-cxf-servlet.xml` | ⚠️ High | ⬜ |
+| 12.12 | Create `CxfWsClientConfig.java` replacing `ws-config.xml` | ⚠️ High | ✅ |
+| 12.13 | Create `CxfEndpointConfig.java` replacing `services-cxf-servlet.xml` | ⚠️ High | ✅ |
 | **Phase E: Remove Root XML** | | | |
 | 12.14 | Collapse `webcert-config.xml` into `AppConfig.java` | ⚠️ Critical | ⬜ |
 | **Phase F: Profile Cleanup** | | | |

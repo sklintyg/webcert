@@ -55,6 +55,7 @@ import se.inera.intyg.webcert.notificationstub.config.NotificationStubDataConfig
   JobConfig.class,
   MailConfig.class,
   MailStubConfig.class,
+  CxfWsClientConfig.class,
   FmbServicesConfig.class,
   ServiceNowIntegrationConfig.class,
   ServiceNowStubConfig.class,

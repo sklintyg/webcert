@@ -136,7 +136,7 @@ dependencies {
     implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring"
     implementation "org.apache.activemq:activemq-spring"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
-    implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
+    implementation "org.apache.cxf:cxf-rt-transports-http"
     implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common"
     implementation "org.hibernate.orm:hibernate-core"
