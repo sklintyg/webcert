@@ -19,6 +19,29 @@ loads a single `AnnotationConfigWebApplicationContext` rooted at `AppConfig.java
 
 ---
 
+## Pre-Conditions (Steps 1–11 Must Be Complete)
+
+The following must be true before starting Step 12. Verify each before beginning.
+
+| Pre-condition | Verified by |
+|---|---|
+| All tests run on JUnit 5 (Step 1) | `grep -r "import org.junit\." --include="*.java" \| grep -v jupiter` returns nothing |
+| `InternalApiFilter` exists as a local class (Step 8 — security inlining) | `find . -name "InternalApiFilter.java"` under `web/src/main/java` |
+| `SoapFaultToSoapResponseTransformerInterceptor` exists as a local class (Step 8 — infra inlining) | `find . -name "SoapFaultToSoapResponseTransformerInterceptor.java"` |
+| All JAX-RS controllers converted to `@RestController` (Step 11) | `grep -r "@Path" --include="*.java" web/src/main/java` returns nothing |
+| `basic-cache-config.xml` import removed from `webcert-config.xml` (Step 10) | `grep "basic-cache-config" web/src/main/resources/webcert-config.xml` returns nothing |
+| `xmldsig-config.xml` import removed from `webcert-config.xml` (Step 5) | `grep "xmldsig-config" web/src/main/resources/webcert-config.xml` returns nothing |
+| All infra HSA/PU XML imports removed from `webcert-config.xml` (Step 9) | `grep "hsa-integration\|pu-integration" web/src/main/resources/webcert-config.xml` returns nothing |
+| All infra SRS/IA XML imports removed from `webcert-config.xml` (Step 7/6) | `grep "srs-services-config\|ia-services-config" web/src/main/resources/webcert-config.xml` returns nothing |
+
+> ⚠️ **Note on `AppConfig.java` current state:** At the time of writing, `AppConfig.java` has **no `@ComponentScan`
+> annotation** — all component scanning is driven by `webcert-config.xml`. Every sub-step that says "add to
+> the existing `@ComponentScan`" means **create a new one** if it does not yet exist. Similarly, `AppConfig.java`
+> currently has `@Import({LoggingConfig.class, JmsConfig.class, CacheConfig.class, JobConfig.class})` — additional
+> `@Import` entries must be appended, not replace this list.
+
+---
+
 ## Current State
 
 ### XML Files That Need Action
@@ -97,11 +120,11 @@ loads a single `AnnotationConfigWebApplicationContext` rooted at `AppConfig.java
 | `createUtkastFromTemplateBuilder` | `CreateUtkastFromTemplateBuilder` | Add `@Component` to class |
 | `createUtkastCopyBuilder` | `CreateUtkastCopyBuilder` | Add `@Component` to class |
 | `patientDetailsResolver` | `PatientDetailsResolverImpl` | Add `@Service` to class |
-| `defaultCharacterEncodingFilter` | `DefaultCharacterEncodingFilter` | Add `@Component` to class |
-| `internalApiFilter` | `InternalApiFilter` | Add `@Component` to class |
-| `objectMapper` | `CustomObjectMapper` | Already in `WebMvcConfiguration.java`; confirm `@Bean` present |
+| `defaultCharacterEncodingFilter` | `DefaultCharacterEncodingFilter` | Already has `@Component(value = "defaultCharacterEncodingFilter")` — no change needed |
+| `internalApiFilter` | `InternalApiFilter` | Must be inlined from `se.inera.intyg.infra.security.filter` in Step 8; add `@Component` there |
+| `objectMapper` | `CustomObjectMapper` | **Create `@Bean` in `AppConfig.java`** — `WebMvcConfiguration.java` instantiates `new CustomObjectMapper()` inline but does NOT expose a named `@Bean`. Also update `WebMvcConfiguration.extendMessageConverters()` to inject the bean instead of newing it inline. |
 | `jacksonJsonProvider` | `JacksonJsonProvider` | **Delete** after stubs migrated (12.11) |
-| `taskExecutor` (GRP) | `ThreadPoolTaskExecutor` | `GrpRestConfig.java` as `@Bean("grpTaskExecutor")` |
+| `taskExecutor` (GRP) | `ThreadPoolTaskExecutor` | Add to `GrpRestConfig.java` as `@Bean("grpTaskExecutor")` — **note:** `GrpRestConfig.java` currently only defines `grpRestClient`; this new bean must be added. Verify all GRP classes injecting `taskExecutor` by name are updated to use `grpTaskExecutor`. |
 | `FragaSvarBootstrapBean` | `FragaSvarBootstrapBean` | `@Bean @Profile("dev,wc-init-data")` in `AppConfig.java` |
 | `IntegreradeEnheterBootstrapBean` | `IntegreradeEnheterBootstrapBean` | `@Bean @Profile("dev,wc-init-data")` in `AppConfig.java` |
 | `UtkastBootstrapBean` | `UtkastBootstrapBean` | `@Bean @Profile({"dev","wc-init-data","test","demo"})` in `AppConfig.java` |
@@ -226,8 +249,9 @@ is a different root package that must be explicitly listed.
 
 **Changes:**
 1. Open `web/src/main/java/se/inera/intyg/webcert/web/config/AppConfig.java`.
-2. Add `"se.inera.intyg.webcert.common"` to the existing `@ComponentScan` (or add a new
-   `@ComponentScan("se.inera.intyg.webcert.common")` annotation — Java allows multiple).
+2. Add a `@ComponentScan("se.inera.intyg.webcert.common")` annotation to `AppConfig.java`.
+   **Note:** `AppConfig.java` currently has **no `@ComponentScan` annotations** — this is the
+   first one being added. Do not look for an existing one to amend.
 3. Delete `<import resource="classpath:webcert-common-config.xml"/>` from `webcert-config.xml`.
 4. Delete `common/src/main/resources/webcert-common-config.xml`.
 
@@ -275,13 +299,25 @@ either:
 
 **FMB edge case:** `fmb-services-config.xml` defines a `fmbConsumer` bean explicitly:
 ```xml
-<bean id="fmbConsumer" class="se.inera.intyg.webcert.integration.fmb.services.FmbConsumerImpl">
-  <property name="fmbEndpointUrl" value="${fmb.endpoint.url}"/>
+<bean id="fmbConsumer" class="se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumerImpl">
+  <constructor-arg name="baseUrl" value="${fmb.endpoint.url}"/>
 </bean>
 ```
-If `FmbConsumerImpl` has no `@Service` annotation, add it and inject `@Value("${fmb.endpoint.url}")`
-directly in the class, or create a `FmbServicesConfig.java` with the `@Bean` definition. Do not
-delete the XML until this is resolved.
+Note: the XML uses `constructor-arg name="baseUrl"` (not a property setter). `FmbConsumerImpl`
+currently has **no `@Service` annotation** and takes `baseUrl` via constructor. To resolve:
+- Option A: Add `@Service` to `FmbConsumerImpl` and annotate the constructor parameter with
+  `@Value("${fmb.endpoint.url}")`.
+- Option B: Create `FmbServicesConfig.java`:
+  ```java
+  @Configuration
+  public class FmbServicesConfig {
+      @Bean
+      public FmbConsumerImpl fmbConsumer(@Value("${fmb.endpoint.url}") String baseUrl) {
+          return new FmbConsumerImpl(baseUrl);
+      }
+  }
+  ```
+Do not delete `fmb-services-config.xml` until one of these is implemented and verified.
 
 **Verification:** `./gradlew test` — FMB, ServiceNow, analytics, private-practitioner integrations
 all start and resolve beans correctly.
@@ -321,32 +357,40 @@ grep -n "@RestController\|@Profile" <file>
 **What:** Replace `mail-config.xml` with a Java `@Configuration` class that defines the same beans.
 
 **Why:** `mail-config.xml` currently defines:
-- `<task:annotation-driven/>` — enables `@Async` and `@Scheduled` on beans
-- `<task:scheduler id="mailTaskScheduler" pool-size="1"/>`
-- `<task:executor id="mailTaskExecutor" pool-size="10" queue-capacity="100"/>`
+- `<task:annotation-driven scheduler="scheduler" executor="threadPoolTaskExecutor"/>` — wires
+  the scheduler and async executor; already replaced by `@EnableAsync`/`@EnableScheduling` in `JobConfig.java`
+- `<task:scheduler id="scheduler" pool-size="1"/>`
+- `<task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS"/>`
 - `<bean id="mailSender" class="JavaMailSenderImpl">` — SMTP configuration
 
-**⚠️ Bean name collision:** `webcert-config.xml` also has a `taskExecutor` bean (for BankID GRP).
-Name the mail executor clearly to avoid conflict: use `mailTaskExecutor` as the `@Bean` name and
-`@Qualifier("mailTaskExecutor")` where it is injected. The GRP executor is moved in sub-step 12.17.
+**⚠️ Bean name is fixed by the XML — do not rename:** The executor ID `threadPoolTaskExecutor`
+is the name used by `@Async("threadPoolTaskExecutor")` in `MailNotificationServiceImpl`. The
+`@Bean` name in `MailConfig.java` **must** match exactly.
 
 **Current `mail-config.xml` properties (verify exact property names in `application.properties`):**
 ```xml
 <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
   <property name="host" value="${mail.host}"/>
-  <property name="protocol" value="smtps"/>
+  <property name="protocol" value="${mail.protocol}"/>
   <property name="username" value="${mail.username}"/>
   <property name="password" value="${mail.password}"/>
-  <property name="defaultEncoding" value="UTF-8"/>
+  <property name="defaultEncoding" value="${mail.defaultEncoding}"/>
   <property name="javaMailProperties">
     <props>
       <prop key="mail.smtps.auth">${mail.smtps.auth}</prop>
       <prop key="mail.smtps.starttls.enable">${mail.smtps.starttls.enable}</prop>
-      <prop key="mail.debug">${mail.debug:false}</prop>
+      <prop key="mail.smtps.debug">${mail.smtps.debug}</prop>
     </props>
   </property>
 </bean>
 ```
+
+> ⚠️ **Critical:** The task executor in `mail-config.xml` is named **`threadPoolTaskExecutor`**
+> (not `mailTaskExecutor`). `MailNotificationServiceImpl` uses `@Async("threadPoolTaskExecutor")`
+> — renaming the bean would silently break async mail sending. The `<task:annotation-driven
+> scheduler="scheduler" executor="threadPoolTaskExecutor"/>` also sets these beans as the default
+> scheduler/async-executor; `@EnableAsync` and `@EnableScheduling` are already in `JobConfig.java`
+> so the `<task:annotation-driven>` line needs no Java equivalent.
 
 **Changes:**
 1. Create `web/src/main/java/se/inera/intyg/webcert/web/config/MailConfig.java`:
@@ -355,24 +399,28 @@ Name the mail executor clearly to avoid conflict: use `mailTaskExecutor` as the 
    public class MailConfig {
 
        @Value("${mail.host}") private String mailHost;
+       @Value("${mail.protocol}") private String mailProtocol;
        @Value("${mail.username}") private String mailUsername;
        @Value("${mail.password}") private String mailPassword;
+       @Value("${mail.defaultEncoding}") private String mailDefaultEncoding;
        @Value("${mail.smtps.auth}") private String smtpsAuth;
        @Value("${mail.smtps.starttls.enable}") private String startTls;
-       @Value("${mail.debug:false}") private String mailDebug;
+       @Value("${mail.smtps.debug}") private String smtpsDebug;
 
-       @Bean(name = "mailTaskScheduler")
+       @Bean(name = "scheduler")
        public ThreadPoolTaskScheduler mailTaskScheduler() {
            ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
            scheduler.setPoolSize(1);
            return scheduler;
        }
 
-       @Bean(name = "mailTaskExecutor")
-       public ThreadPoolTaskExecutor mailTaskExecutor() {
+       // Bean name MUST match @Async("threadPoolTaskExecutor") in MailNotificationServiceImpl
+       @Bean(name = "threadPoolTaskExecutor")
+       public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
            ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
            executor.setCorePoolSize(10);
            executor.setQueueCapacity(100);
+           executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
            executor.initialize();
            return executor;
        }
@@ -381,27 +429,27 @@ Name the mail executor clearly to avoid conflict: use `mailTaskExecutor` as the 
        public JavaMailSenderImpl mailSender() {
            JavaMailSenderImpl sender = new JavaMailSenderImpl();
            sender.setHost(mailHost);
-           sender.setProtocol("smtps");
+           sender.setProtocol(mailProtocol);
            sender.setUsername(mailUsername);
            sender.setPassword(mailPassword);
-           sender.setDefaultEncoding("UTF-8");
+           sender.setDefaultEncoding(mailDefaultEncoding);
            Properties props = new Properties();
            props.setProperty("mail.smtps.auth", smtpsAuth);
            props.setProperty("mail.smtps.starttls.enable", startTls);
-           props.setProperty("mail.debug", mailDebug);
+           props.setProperty("mail.smtps.debug", smtpsDebug);
            sender.setJavaMailProperties(props);
            return sender;
        }
    }
    ```
 2. Add `@Import(MailConfig.class)` to `AppConfig.java`.
-3. Confirm `@EnableAsync` and `@EnableScheduling` are already present (they're in `JobConfig.java`).
-   `<task:annotation-driven/>` is therefore already covered.
+3. `@EnableAsync` and `@EnableScheduling` are already in `JobConfig.java` — the
+   `<task:annotation-driven>` line is already covered.
 4. Remove `<import resource="mail-config.xml"/>` from `webcert-config.xml`.
 5. Delete `web/src/main/resources/mail-config.xml`.
 
 **Verification:** `./gradlew test` — mail-sending tests pass; no `NoSuchBeanDefinitionException`
-for `mailSender`.
+for `mailSender` or `threadPoolTaskExecutor`.
 
 ---
 
@@ -416,6 +464,11 @@ for `mailSender`.
 
 After Step 11, `WebMvcConfiguration.java` already exists as a `WebMvcConfigurer`. Merge
 `web-servlet.xml`'s responsibilities into it and update `web.xml` to use a Java config.
+
+**⚠️ `web.xml` DispatcherServlet has no `contextConfigLocation`:** The current `web` servlet
+definition has no `contextConfigLocation` init-param — Spring auto-discovers `WEB-INF/web-servlet.xml`
+by convention (servlet name "web" → `WEB-INF/web-servlet.xml`). This step must explicitly add
+`contextClass` and `contextConfigLocation` init-params to switch to Java config.
 
 **⚠️ Child context consideration:** Currently `web-servlet.xml` is a *child* context of the root.
 After this change, `WebMvcConfiguration.java` becomes the DispatcherServlet's dedicated config.
@@ -467,11 +520,14 @@ registers two things:
 2. A **JAXRS REST server** at `/api/notification-api` — this must become a Spring MVC `@RestController`
 
 **Changes:**
-1. Create `stubs/notification-stub/src/main/java/.../config/NotificationStubConfig.java`:
+1. The XML has **three separate `<beans profile="...">` blocks with distinct profiles** — a single
+   `@Configuration` class cannot model this. Use **two separate classes** plus a `@RestController`:
+
+   **Class 1 — data beans (both notification-sender and testability-api profiles):**
    ```java
    @Configuration
    @Profile({"dev", "wc-all-stubs", "wc-notificationsender-stub", "testability-api"})
-   public class NotificationStubConfig {
+   public class NotificationStubDataConfig {
 
        @Bean
        public NotificationStoreV3Impl notificationStoreV3() {
@@ -482,57 +538,112 @@ registers two things:
        public NotificationStubStateBean notificationStubStateBean() {
            return new NotificationStubStateBean();
        }
+   }
+   ```
 
-       // CXF JAXWS server endpoint
+   **Class 2 — JAXWS SOAP endpoint (notification-sender profiles only, NOT testability-api):**
+   ```java
+   @Configuration
+   @Profile({"dev", "wc-all-stubs", "wc-notificationsender-stub"})
+   public class NotificationStubConfig {
+
+       // CXF JAXWS server endpoint — replicates the jaxws:schemaLocations from XML
        @Bean
        public Endpoint notificationStubSoapEndpoint(
-               CertificateStatusUpdateForCareResponderInterface impl) {
-           EndpointImpl endpoint = new EndpointImpl(impl);
+               CertificateStatusUpdateForCareResponderStub impl, Bus bus) {
+           EndpointImpl endpoint = new EndpointImpl(bus, impl);
+           endpoint.setSchemaLocations(List.of(
+               "classpath:/core_components/clinicalprocess_healthcond_certificate_3.3.xsd",
+               "classpath:/core_components/clinicalprocess_healthcond_certificate_3.2_ext.xsd",
+               "classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd",
+               "classpath:/core_components/xmldsig-core-schema_0.1.xsd",
+               "classpath:/core_components/xmldsig-filter2.xsd",
+               "classpath:/interactions/CertificateStatusUpdateForCareInteraction/CertificateStatusUpdateForCareResponder_3.1.xsd"
+           ));
            endpoint.publish(
                "/clinicalprocess/healthcond/certificate/CertificateStatusUpdateForCare/3/rivtabp21");
            return endpoint;
        }
    }
    ```
-2. Identify the JAX-RS REST controller class currently registered in the XML (look in the XML for
-   the class reference in `<jaxrs:serviceBeans>`).
-3. Convert that class to a Spring MVC `@RestController` with
-   `@Profile({"dev", "wc-all-stubs", "wc-notificationsender-stub", "testability-api"})`.
-   Replicate all REST endpoint methods using `@GetMapping`, `@PostMapping`, etc.
-4. Remove the import of `notification-stub-context.xml` from `services-cxf-servlet.xml`.
-5. Delete `stubs/notification-stub/src/main/resources/notification-stub-context.xml`.
+
+   **REST controller** (`NotificationStubRestApi`, class `se.inera.intyg.webcert.notificationstub.NotificationStubRestApi`):
+   Add `@RestController` and `@Profile({"dev", "testability-api"})` to the class.
+   Map all methods from the JAX-RS annotations to Spring MVC equivalents.
+
+2. Remove the import of `notification-stub-context.xml` from `services-cxf-servlet.xml`.
+3. Delete `stubs/notification-stub/src/main/resources/notification-stub-context.xml`.
 
 **Verification:** Start with profile `dev`. Hit the notification stub REST API at
 `/api/notification-api/...`. Verify the SOAP stub endpoint still responds at its WSDL URL.
+Start with profile `testability-api` alone — confirm REST API works but SOAP endpoint is NOT created.
 
 ---
 
-### Sub-step 12.8 — Convert mail-stub XML contexts → `MailStubConfig.java`
+### Sub-step 12.8 — Convert mail-stub XML contexts → Java config
 
-**What:** Two mail-stub XML files:
-- `mail-stub-context.xml` — defines mail stub beans, likely with `JavaMailSender` replacement
-- `mail-stub-testability-api-context.xml` (profile: `dev,testability-api`) — registers a JAXRS
-  REST server at `/api/mail-api` for testing mail sending
+**What:** Two mail-stub XML files with **different profiles**:
+- `mail-stub-context.xml` (profile: `dev,wc-all-stubs,wc-mail-stub`) — component-scans
+  `se.inera.intyg.webcert.mailstub` and defines one explicit bean: `mailAdvice`
+  (`JavaMailSenderAroundAdvice`) with `mailHost` property. This is an AOP around-advice that
+  intercepts `JavaMailSender` calls in the dev/stub profile.
+- `mail-stub-testability-api-context.xml` (profile: `dev,testability-api`) — registers
+  `MailStore` (anonymous bean), `MailStubRestApi`, and was the JAXRS server at `/api/mail-api`.
+
+> ⚠️ **These have different profiles and must NOT be merged into one `@Configuration` class
+> with a single `@Profile`.** `mail-stub-context.xml` activates on `wc-mail-stub` (no testability);
+> `mail-stub-testability-api-context.xml` activates on `testability-api` (no wc-mail-stub).
 
 **Changes:**
-1. Read both XML files to catalogue all beans.
-2. Create `stubs/mail-stub/src/main/java/.../config/MailStubConfig.java` combining both:
+1. Create `stubs/mail-stub/src/main/java/.../config/MailStubConfig.java`
+   (replaces `mail-stub-context.xml`):
+   ```java
+   @Configuration
+   @Profile({"dev", "wc-all-stubs", "wc-mail-stub"})
+   public class MailStubConfig {
+
+       @Value("${mail.host}") private String mailHost;
+
+       @Bean
+       public JavaMailSenderAroundAdvice mailAdvice() {
+           JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
+           advice.setMailHost(mailHost);
+           return advice;
+       }
+   }
+   ```
+   The `<context:component-scan base-package="se.inera.intyg.webcert.mailstub"/>` in the XML
+   means other beans in that package are auto-discovered by existing component scans. Verify
+   whether any `@Component` classes in `se.inera.intyg.webcert.mailstub` exist that need to
+   remain discoverable when `wc-mail-stub` is active.
+
+2. Create `stubs/mail-stub/src/main/java/.../config/MailStubTestabilityConfig.java`
+   (replaces `mail-stub-testability-api-context.xml`):
    ```java
    @Configuration
    @Profile({"dev", "testability-api"})
-   public class MailStubConfig {
-       // All beans from mail-stub-context.xml and mail-stub-testability-api-context.xml
-       @Bean MailStore mailStore() { ... }
+   public class MailStubTestabilityConfig {
+
+       @Bean
+       public MailStore mailStore() {
+           return new MailStore();
+       }
+
+       @Bean
+       public MailStubRestApi mailStubRestApi() {
+           return new MailStubRestApi();
+       }
    }
    ```
-3. Convert the JAX-RS REST controller class (from `mail-stub-testability-api-context.xml`'s
-   `<jaxrs:serviceBeans>`) to a Spring MVC `@RestController` with
-   `@Profile({"dev", "testability-api"})`.
-4. Remove `<import resource="classpath:mail-stub-context.xml"/>` from `webcert-config.xml`.
-5. Remove the import of both mail-stub XMLs from `services-cxf-servlet.xml`.
-6. Delete both `mail-stub-context.xml` and `mail-stub-testability-api-context.xml`.
+   Also add `@RestController` and `@Profile({"dev", "testability-api"})` to `MailStubRestApi`
+   itself, and map all JAX-RS methods to Spring MVC equivalents.
+
+3. Remove `<import resource="classpath:mail-stub-context.xml"/>` from `webcert-config.xml`.
+4. Remove the import of both mail-stub XMLs from `services-cxf-servlet.xml`.
+5. Delete `mail-stub-context.xml` and `mail-stub-testability-api-context.xml`.
 
 **Verification:** Start with `dev` profile. Hit the mail stub API at `/api/mail-api/...`.
+Start with `wc-mail-stub` alone — confirm `mailAdvice` bean is active (mail is intercepted).
 
 ---
 
@@ -632,7 +743,7 @@ runtime behaviour without XML.
 // Example for sendQuestionToFKClient
 @Bean
 public SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient(
-    @Value("${sendquestion.recipient.service.url}") String address) {
+    @Value("${sendquestiontofk.endpoint.url}") String address) {
     JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
     factory.setServiceClass(SendMedicalCertificateQuestionResponderInterface.class);
     factory.setAddress(address);
@@ -641,23 +752,29 @@ public SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient(
 }
 ```
 
-**Clients to convert** (read `ws-config.xml` to get exact class names and URL property keys):
+**Clients to convert** (verified against the actual `ws-config.xml`):
 
 | Bean ID | Service Interface | URL Property |
 |---|---|---|
-| `sendQuestionToFKClient` | `SendMedicalCertificateQuestionResponderInterface` | `sendquestion.recipient.service.url` |
-| `sendAnswerToFKClient` | `SendMedicalCertificateAnswerResponderInterface` | `sendanswer.recipient.service.url` |
-| `listCertificatesForCareResponderV3` | `ListCertificatesForCareResponderInterface` (v3) | `intygstjanst.listsickleave.url` |
-| `sendCertificateClient` | `SendCertificateToRecipientResponderInterface` | `intygstjanst.send.url` |
-| `revokeCertificateClient` | (old NTJP interface) | `revokecertificate.url` |
-| `revokeCertificateClientRivta` | (new NTJP v2 interface) | `revokecertificaterivta.url` |
-| `sendMessageToRecipientClient` | `SendMessageToRecipientResponderInterface` | `sendmessagetorecipient.url` |
-| `registerCertificateClient` | `RegisterCertificateResponderInterface` (v3) | `intygstjanst.register.url` |
-| `getCertificateClient` | `GetCertificateResponderInterface` (v2) | `intygstjanst.getcertificate.url` |
-| `ListActiveSickLeavesForCareUnitClient` | `ListActiveSickLeavesForCareUnitResponderInterface` | `listactivesickleavesforcareunit.url` |
-| `getCertificateTypeInfoClient` | `GetCertificateTypeInfoResponderInterface` | `getcertificatetypeinfo.url` |
-| `listRelationsForCertificateClient` | `ListRelationsForCertificateResponderInterface` | `listrelationsforcertificate.url` |
-| Approved receivers clients (3) | Various | Various |
+| `sendQuestionToFKClient` | `SendMedicalCertificateQuestionResponderInterface` | `sendquestiontofk.endpoint.url` |
+| `sendAnswerToFKClient` | `SendMedicalCertificateAnswerResponderInterface` | `sendanswertofk.endpoint.url` |
+| `listCertificatesForCareResponderV3` | `ListCertificatesForCareResponderInterface` (v3) | `intygstjanst.listcertificatesforcare.v3.endpoint.url` |
+| `sendCertificateClient` | `SendCertificateToRecipientResponderInterface` | `intygstjanst.sendcertificate.endpoint.url` |
+| `revokeCertificateClient` | `RevokeMedicalCertificateResponderInterface` | `intygstjanst.revokecertificate.endpoint.url` |
+| `revokeCertificateClientRivta` | `RevokeCertificateResponderInterface` (v2) | `intygstjanst.revokecertificaterivta.endpoint.url` |
+| `sendMessageToRecipientClient` | `SendMessageToRecipientResponderInterface` | `intygstjanst.sendmessagetorecipient.endpoint.url` |
+| `registerCertificateClient` | `RegisterCertificateResponderInterface` (v3) | `intygstjanst.registercertificate.v3.endpoint.url` |
+| `getCertificateClient` | `GetCertificateResponderInterface` (v2) | `intygstjanst.getcertificate.endpoint.url` |
+| `ListActiveSickLeavesForCareUnitClient` | `ListActiveSickLeavesForCareUnitResponderInterface` | `intygstjanst.listactivesickleavesforcareunit.v1.endpoint.url` |
+| `getCertificateTypeInfoClient` | `GetCertificateTypeInfoResponderInterface` | `intygstjanst.getcertificatetypeinfo.endpoint.url` |
+| `listRelationsForCertificateClient` | `ListRelationsForCertificateResponderInterface` | `intygstjanst.listrelationsforcertificate.endpoint.url` |
+| `listApprovedReceiversClient` | `ListApprovedReceiversResponderInterface` | `intygstjanst.listapprovedreceivers.endpoint.url` |
+| `listPossibleReceiversClient` | `ListPossibleReceiversResponderInterface` | `intygstjanst.listpossiblereceivers.endpoint.url` |
+| `registerApprovedReceiversClient` | `RegisterApprovedReceiversResponderInterface` | `intygstjanst.registerapprovedreceivers.endpoint.url` |
+
+> ⚠️ Some clients in `ws-config.xml` have additional child elements (schema validation, handlers).
+> Read the full `ws-config.xml` for each client before implementing — clients using `<jaxws:handlers>`
+> need them added to the `JaxWsProxyFactoryBean` handlers list.
 
 **TLS configuration (profile `!prod` → `!dev` in dev, `!prod` in others):** `ws-config.xml` has
 `<http:conduit>` settings for TLS. Replicate programmatically:
@@ -902,13 +1019,36 @@ The `file:${dev.config.file:-}` override location from the XML can be added usin
 `@PropertySource(value = "file:${dev.config.file:-}", ignoreResourceNotFound = true)` on `AppConfig.java`.
 
 **`parserPool` → `OpenSamlConfig.java`:**
-```java
-@Bean(initMethod = "initialize")
-public BasicParserPool parserPool() {
-    return new BasicParserPool();
-}
-```
-The XML had `init-method="initialize"` — replicate with `initMethod = "initialize"` in `@Bean`.
+
+> ⚠️ **Current state:** `OpenSamlConfig.java` is already a `@Component` that creates and initializes
+> its own `BasicParserPool` internally (in a private `getParserPool()` method called from
+> `afterPropertiesSet()`). The XML `parserPool` bean may be injected into SAML-related beans
+> by name. First verify what consumes the `parserPool` bean:
+> ```bash
+> grep -rn "parserPool\|ParserPool" web/src/main/java/ --include="*.java" | grep -v "OpenSamlConfig"
+> ```
+> If nothing else references `parserPool` by name, the XML bean is already replaced by
+> `OpenSamlConfig`'s internal pool — skip creating a `@Bean` for it.
+> If something does inject `parserPool` by name, refactor `OpenSamlConfig.java` to expose it as a
+> `@Bean` and reference it internally:
+> ```java
+> @Bean(initMethod = "initialize")
+> public BasicParserPool parserPool() {
+>     BasicParserPool pool = new BasicParserPool();
+>     pool.setMaxPoolSize(100);
+>     pool.setCoalescing(true);
+>     pool.setIgnoreComments(true);
+>     pool.setIgnoreElementContentWhitespace(true);
+>     pool.setNamespaceAware(true);
+>     pool.setExpandEntityReferences(false);
+>     pool.setXincludeAware(false);
+>     pool.setBuilderFeatures(getOpenSamlBuilderFeatures());
+>     pool.setBuilderAttributes(new HashMap<>());
+>     return pool;
+> }
+> ```
+> Apply all security settings from `OpenSamlConfig.getParserPool()` — do not use a bare
+> `new BasicParserPool()` as that omits the XXE protections.
 
 **`userAgentParser` → `LoggingConfig.java`:**
 ```java
@@ -939,16 +1079,28 @@ public class AuthoritiesConfig {
 
     @Bean
     public CommonAuthoritiesResolver commonAuthoritiesResolver() {
+        // CommonAuthoritiesResolver has @Autowired SecurityConfigurationLoader — Spring
+        // will inject via field injection after construction since it is annotated @Service.
+        // If it has been inlined without @Service, use constructor injection here instead:
+        //   return new CommonAuthoritiesResolver(securityConfigurationLoader());
         return new CommonAuthoritiesResolver();
     }
 
     @Bean
     public AuthoritiesHelper authoritiesHelper() {
-        return new AuthoritiesHelper();
+        // AuthoritiesHelper requires CommonAuthoritiesResolver via @Autowired constructor.
+        // Call the @Bean method directly — Spring's CGLIB proxy ensures the singleton:
+        return new AuthoritiesHelper(commonAuthoritiesResolver());
     }
 }
 ```
 Add `@Import(AuthoritiesConfig.class)` to `AppConfig.java`.
+
+> ⚠️ `CommonAuthoritiesResolver` has an `@Autowired SecurityConfigurationLoader` field, and
+> `AuthoritiesHelper` has an `@Autowired CommonAuthoritiesResolver` constructor argument.
+> If these classes are inlined without `@Service`/`@Component`, the constructor call pattern
+> above handles injection explicitly. If they retain `@Service`/`@Component`, let Spring
+> discover and wire them instead of defining explicit `@Bean` methods here.
 
 **`befattningService`, `summaryConverter` → `AppConfig.java`:**
 ```java
@@ -960,6 +1112,31 @@ public BefattningService befattningService() {
 @Bean
 public SummaryConverter summaryConverter() {
     return new SummaryConverter();
+}
+```
+
+**`objectMapper` → `AppConfig.java`:**
+
+> ⚠️ `WebMvcConfiguration.java` does **NOT** define `objectMapper` as a `@Bean` — it calls
+> `new CustomObjectMapper()` inline inside `extendMessageConverters()`. The named `objectMapper`
+> bean from `webcert-config.xml` must be explicitly recreated in Java.
+
+```java
+@Bean
+public ObjectMapper objectMapper() {
+    return new CustomObjectMapper();
+}
+```
+
+Also update `WebMvcConfiguration.extendMessageConverters()` to inject this bean rather than
+instantiating inline:
+```java
+@Autowired private ObjectMapper objectMapper;
+
+@Override
+public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+    converters.removeIf(c -> c instanceof MappingJackson2HttpMessageConverter);
+    converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
 }
 ```
 
@@ -997,19 +1174,25 @@ public class ModuleConfig {
 Add `@Import(ModuleConfig.class)` to `AppConfig.java`.
 
 **Service/component beans (avtalService, builders, patientDetailsResolver, filters):**
-Check each class for existing `@Service` or `@Component` annotation:
+
+> ⚠️ `DefaultCharacterEncodingFilter` **already has** `@Component(value = "defaultCharacterEncodingFilter")` — no action needed.
+> `InternalApiFilter` does NOT exist locally yet; it must be inlined from the infra `security-filter` module in Step 8. Confirm it exists before this sub-step.
+
+Check each remaining class for existing `@Service` or `@Component` annotation:
 ```bash
 grep -n "@Service\|@Component" \
   web/src/main/java/se/inera/intyg/webcert/web/service/privatlakaravtal/AvtalServiceImpl.java \
   web/src/main/java/se/inera/intyg/webcert/web/service/utkast/CopyCompletionUtkastBuilder.java \
-  web/src/main/java/se/inera/intyg/webcert/web/service/patient/PatientDetailsResolverImpl.java \
-  web/src/main/java/se/inera/intyg/webcert/web/web/filter/DefaultCharacterEncodingFilter.java \
-  "web/src/main/java/.../InternalApiFilter.java"
+  web/src/main/java/se/inera/intyg/webcert/web/service/patient/PatientDetailsResolverImpl.java
 ```
 If any class lacks the annotation, add it. Do not create `@Bean` methods for these — annotating
 the class directly is cleaner and consistent with the rest of the codebase.
 
 **`taskExecutor` for GRP → `GrpRestConfig.java`:**
+
+> ⚠️ `GrpRestConfig.java` currently defines only a `grpRestClient` bean — the `grpTaskExecutor`
+> bean does not exist yet and must be added to this class.
+
 ```java
 @Bean(name = "grpTaskExecutor")
 public ThreadPoolTaskExecutor grpTaskExecutor() {
@@ -1021,9 +1204,9 @@ public ThreadPoolTaskExecutor grpTaskExecutor() {
     return executor;
 }
 ```
-Update the existing `GrpRestConfig.java` (which already exists). Find all injections of this
-bean in GRP-related classes and confirm they use `@Qualifier("grpTaskExecutor")` (or the bean name
-matches how it was injected via XML's `ref="taskExecutor"`).
+Find all injections of the old `taskExecutor` bean in GRP-related classes and confirm they are
+updated to use `@Qualifier("grpTaskExecutor")` (the XML bean was named `taskExecutor`; that name
+is taken by `threadPoolTaskExecutor` transitively — using it would create a clash).
 
 **Profile-specific bootstrap beans → `AppConfig.java`:**
 ```java
@@ -1164,13 +1347,50 @@ Watch for `BeanDefinitionOverrideException` at startup. Common culprit: `taskExe
 by Spring's `@Async` infrastructure AND by the GRP thread pool). Renaming to `grpTaskExecutor`
 in 12.17b resolves this — but confirm all injection sites are updated.
 
-**`@EnableAsync` and the task executor** — Spring's `@EnableAsync` looks for a bean named
-`taskExecutor` of type `Executor`. If this bean is renamed, Spring falls back to a default
-`SimpleAsyncTaskExecutor`. If any `@Async` methods relied on the 5-thread GRP pool, this changes
-their threading behaviour. Verify by checking which classes use `@Async` and whether they were
-intended to use the GRP executor or a general executor.
+**`@EnableAsync` and the task executor** — The `threadPoolTaskExecutor` bean (from `MailConfig.java`)
+is explicitly referenced by name in `@Async("threadPoolTaskExecutor")` in `MailNotificationServiceImpl`.
+Spring's `@EnableAsync` default executor lookup is for a bean named `taskExecutor` — since there
+is none (the GRP executor is now `grpTaskExecutor`), Spring falls back to `SimpleAsyncTaskExecutor`
+for any `@Async` calls without an explicit executor name. Verify no other `@Async` methods exist
+that expect the 5-thread GRP pool as their default executor.
 
-**FMB `fmbConsumer` bean** — `fmb-services-config.xml` has an explicit `fmbConsumer` bean
-definition with a `fmbEndpointUrl` property. If `FmbConsumerImpl` doesn't have `@Service` plus
-`@Value("${fmb.endpoint.url}")`, this bean will be missing after the XML is deleted. Handle
-in sub-step 12.3 before deleting the XML.
+**`FmbConsumerImpl` uses constructor-arg, not property setter** — `fmb-services-config.xml`
+creates `FmbConsumerImpl` with `<constructor-arg name="baseUrl">`. The class has no `@Service`.
+Both this and the wrong class path (`services` vs `consumer` package) are corrected in sub-step
+12.3. Handle before deleting the XML.
+
+**`SoapFaultToSoapResponseTransformerInterceptor` source** — This class is referenced in
+`services-cxf-servlet.xml` but does not exist in the local codebase. It must come from an
+infra module inlined in Step 8. If it is not yet a local class when executing sub-step 12.13,
+the `CxfEndpointConfig.java` will not compile. Verify it exists before starting Phase D.
+
+**`InternalApiFilter` source** — Similarly, `InternalApiFilter` is listed in the inline bean
+table but does not exist locally. It must be inlined from `se.inera.intyg.infra.security.filter`
+in Step 8 before this step.
+
+---
+
+## Gap Analysis Summary (Applied to This Plan)
+
+The following gaps were identified by comparing the plan against the actual codebase and corrected
+inline above. This section documents them for traceability.
+
+| # | Severity | Gap | Fixed In |
+|---|---|---|---|
+| G1 | 🔴 Critical | `MailConfig.java` used wrong bean names: executor was `mailTaskExecutor` (should be `threadPoolTaskExecutor`), scheduler was `mailTaskScheduler` (should be `scheduler`). `MailNotificationServiceImpl.@Async("threadPoolTaskExecutor")` would have broken. | §12.5 |
+| G2 | 🔴 Critical | `MailConfig.java` hardcoded `protocol="smtps"` and `encoding="UTF-8"` — both are configurable properties (`${mail.protocol}`, `${mail.defaultEncoding}`). Debug key was also wrong (`mail.debug` vs `mail.smtps.debug`). | §12.5 |
+| G3 | 🔴 Critical | `MailConfig.java` missing `rejection-policy="CALLER_RUNS"` — default would throw `RejectedExecutionException` instead of blocking the caller. | §12.5 |
+| G4 | 🔴 Critical | `NotificationStubConfig.java` used a single `@Profile` for all beans, but the XML uses 3 distinct profile groups. SOAP endpoint would activate in `testability-api` profile, REST API would not activate in `wc-notificationsender-stub` profile. | §12.7 |
+| G5 | 🟠 High | `mail-stub-context.xml` `mailAdvice` bean (`JavaMailSenderAroundAdvice`) was completely omitted from 12.8. Without it the mail stub cannot intercept outgoing mail. | §12.8 |
+| G6 | 🟠 High | `mail-stub-context.xml` has profile `dev,wc-all-stubs,wc-mail-stub`, not `dev,testability-api`. Plan incorrectly merged two contexts with different profiles into one class. | §12.8 |
+| G7 | 🟠 High | `AppConfig.java` has **no existing `@ComponentScan`** — plan said "add to existing". Every scan must be created from scratch. | §12.2, Pre-Conditions |
+| G8 | 🟠 High | `objectMapper` `@Bean` is **not** in `WebMvcConfiguration.java` — plan said "confirm @Bean present". It must be created explicitly, and `WebMvcConfiguration` must be updated to inject it. | §12.17b, Inline Beans Table |
+| G9 | 🟠 High | `FmbConsumerImpl` uses `constructor-arg name="baseUrl"` (not a property), and has no `@Service`. The correct class package is `consumer` not `services`. | §12.3 |
+| G10 | 🟡 Medium | All 12 URL property keys in the `CxfWsClientConfig.java` client table were wrong (e.g., `sendquestion.recipient.service.url` vs actual `sendquestiontofk.endpoint.url`). | §12.12 |
+| G11 | 🟡 Medium | `parserPool` bare `new BasicParserPool()` omitted all XXE/security settings. `OpenSamlConfig` already owns this pool internally — plan needed to check before adding duplicate `@Bean`. | §12.17b |
+| G12 | 🟡 Medium | `CommonAuthoritiesResolver` has `@Autowired SecurityConfigurationLoader`, and `AuthoritiesHelper` has `@Autowired` constructor. Plain `new X()` would miss injections. | §12.17b |
+| G13 | 🟡 Medium | `GrpRestConfig.java` currently only has `grpRestClient` — plan implied the `grpTaskExecutor` bean already existed there. | §12.17b, Inline Beans Table |
+| G14 | 🟡 Medium | `DefaultCharacterEncodingFilter` already has `@Component` — no action needed, but plan said "Add @Component". | Inline Beans Table |
+| G15 | 🟡 Medium | `SoapFaultToSoapResponseTransformerInterceptor` and `InternalApiFilter` don't exist locally — they must come from infra (Step 8 pre-condition). | Pre-Conditions, Risk Notes |
+| G16 | 🟢 Low | `web.xml` `web` servlet has no `contextConfigLocation` — auto-discovers `web-servlet.xml` by convention. Step 12.6 correctly adds it but the reason was not explained. | §12.6 |
+| G17 | 🟢 Low | `notification-stub-context.xml` SOAP endpoint has 6 `jaxws:schemaLocations` omitted from the plan's `NotificationStubConfig.java` code. | §12.7 |
