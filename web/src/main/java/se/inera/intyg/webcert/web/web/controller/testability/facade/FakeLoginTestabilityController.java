@@ -40,7 +40,7 @@ public class FakeLoginTestabilityController {
   private final FakeLoginService fakeLoginService;
   private final ObjectMapper objectMapper;
 
-  @PostMapping
+  @PostMapping("/fake")
   public void login(HttpServletRequest request, @RequestBody FakeLoginDTO fakeLoginDTO) {
     fakeLoginService.login(fakeLoginDTO, request);
   }
