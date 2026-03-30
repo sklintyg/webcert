@@ -18,9 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import io.swagger.annotations.Api;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 
 /**
@@ -30,11 +29,9 @@ import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
  * links. This inheritance is somewhat confusing but it make sense if we look at it from a
  * functional perspective.
  */
-// CHECKSTYLE:OFF LineLength
-@Path("/basic-certificate")
-@Api(value = "/webcert/web/user/basic-certificate", produces = MediaType.APPLICATION_JSON)
+@Controller
+@RequestMapping("/webcert/web/user/basic-certificate")
 public class CertificateIntegrationController extends FragaSvarUthoppController {
-  // CHECKSTYLE:ON LineLength
 
   @Override
   protected UserOriginType getGrantedRequestOrigin() {

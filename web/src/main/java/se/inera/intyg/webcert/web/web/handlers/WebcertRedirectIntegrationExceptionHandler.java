@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.handlers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class WebcertRedirectIntegrationExceptionHandler
   public static final String ERROR_REASON_PU_PROBLEM = "pu-problem";
   public static final String ERROR_REASON_UNKNOWN = "unknown";
 
-  @Context UriInfo uriInfo;
+  @Context HttpServletRequest request;
 
   @Autowired private ReactUriFactory reactUriFactory;
 
@@ -97,6 +97,6 @@ public class WebcertRedirectIntegrationExceptionHandler
   }
 
   private Response getRedirectResponse(String errorCode) {
-    return Response.seeOther(reactUriFactory.uriForErrorResponse(uriInfo, errorCode)).build();
+    return Response.seeOther(reactUriFactory.uriForErrorResponse(request, errorCode)).build();
   }
 }

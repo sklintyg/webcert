@@ -28,7 +28,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import jakarta.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +47,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.ResponseEntity;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -154,12 +154,12 @@ class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
         .thenReturn(arendeStatsMap);
     when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
 
-    Response response = statController.getStatistics();
+    ResponseEntity<StatsResponse> response = statController.getStatistics();
 
     assertNotNull(response);
-    assertEquals(OK, response.getStatus());
+    assertEquals(OK, response.getStatusCode().value());
 
-    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    StatsResponse statsResponse = response.getBody();
     assertNotNull(statsResponse);
 
     assertEquals(4, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
@@ -180,12 +180,12 @@ class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
         .thenReturn(arendeStatsMap);
     when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
 
-    Response response = statController.getStatistics();
+    ResponseEntity<StatsResponse> response = statController.getStatistics();
 
     assertNotNull(response);
-    assertEquals(OK, response.getStatus());
+    assertEquals(OK, response.getStatusCode().value());
 
-    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    StatsResponse statsResponse = response.getBody();
     assertNotNull(statsResponse);
 
     assertEquals(2, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
@@ -206,7 +206,7 @@ class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
         .thenReturn(arendeStatsMap);
     when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
 
-    Response response = statController.getStatistics();
+    ResponseEntity<StatsResponse> response = statController.getStatistics();
 
     verify(webCertUserService).getUser();
 
@@ -217,9 +217,9 @@ class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
     assertEquals(7, listArgs.size());
 
     assertNotNull(response);
-    assertEquals(OK, response.getStatus());
+    assertEquals(OK, response.getStatusCode().value());
 
-    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    StatsResponse statsResponse = response.getBody();
     assertNotNull(statsResponse);
 
     assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
@@ -237,7 +237,7 @@ class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
         .thenReturn(arendeStatsMap);
     when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyList())).thenReturn(intygStatsMap);
 
-    Response response = statController.getStatistics();
+    ResponseEntity<StatsResponse> response = statController.getStatistics();
 
     verify(webCertUserService).getUser();
 
@@ -248,9 +248,9 @@ class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
     assertEquals(7, listArgs.size());
 
     assertNotNull(response);
-    assertEquals(OK, response.getStatus());
+    assertEquals(OK, response.getStatusCode().value());
 
-    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    StatsResponse statsResponse = response.getBody();
     assertNotNull(statsResponse);
 
     assertEquals(16, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
@@ -267,18 +267,18 @@ class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
   void testWebcertUserIsNull() {
     when(webCertUserService.getUser()).thenReturn(null);
 
-    Response response = statController.getStatistics();
+    ResponseEntity<StatsResponse> response = statController.getStatistics();
     assertNotNull(response);
 
     verify(webCertUserService).getUser();
-    assertEquals(OK, response.getStatus());
+    assertEquals(OK, response.getStatusCode().value());
   }
 
   @Test
   void testWebcertUserIsDjupintegrerad() {
     mockUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-    Response response = statController.getStatistics();
+    ResponseEntity<StatsResponse> response = statController.getStatistics();
 
     assertNotNull(response);
     verify(webCertUserService).getUser();
@@ -287,9 +287,9 @@ class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
     verifyNoInteractions(arendeService);
     verifyNoInteractions(intygDraftService);
 
-    assertEquals(OK, response.getStatus());
+    assertEquals(OK, response.getStatusCode().value());
 
-    StatsResponse statsResponse = (StatsResponse) response.getEntity();
+    StatsResponse statsResponse = response.getBody();
     assertNotNull(statsResponse);
 
     assertEquals(0, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());

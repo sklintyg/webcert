@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.util;
 
-import jakarta.ws.rs.core.UriBuilder;
-import jakarta.ws.rs.core.UriInfo;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 @Component
@@ -51,49 +51,55 @@ public class ReactUriFactory {
   @Value("${certificate.view.url.react.unit.selection.integration.template}")
   private String urlReactUnitSelectionTemplate;
 
-  public URI uriForCertificate(UriInfo uriInfo, String certificateId) {
+  public URI uriForCertificate(HttpServletRequest request, String certificateId) {
     final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
-    return uriBuilder(uriInfo)
+    return uriComponentsBuilder(request)
         .host(webcertDomainName)
-        .path(urlReactTemplate)
-        .buildFromMap(urlParams);
+        .replacePath(urlReactTemplate)
+        .buildAndExpand(urlParams)
+        .toUri();
   }
 
   public URI uriForCertificateWithSignError(
-      UriInfo uriInfo, String certificateId, SignaturStatus signStatus) {
+      HttpServletRequest request, String certificateId, SignaturStatus signStatus) {
     final var urlParams =
         Map.of(PARAM_CERT_ID, certificateId, PARAM_ERROR, signStatus.toString().toLowerCase());
-    return uriBuilder(uriInfo)
+    return uriComponentsBuilder(request)
         .host(webcertDomainName)
-        .path(urlReactSignErrorTemplate)
-        .buildFromMap(urlParams);
+        .replacePath(urlReactSignErrorTemplate)
+        .buildAndExpand(urlParams)
+        .toUri();
   }
 
-  public URI uriForCertificateQuestions(UriInfo uriInfo, String certificateId) {
+  public URI uriForCertificateQuestions(HttpServletRequest request, String certificateId) {
     final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
-    return uriBuilder(uriInfo)
+    return uriComponentsBuilder(request)
         .host(webcertDomainName)
-        .path(urlReactQuestionsTemplate)
-        .buildFromMap(urlParams);
+        .replacePath(urlReactQuestionsTemplate)
+        .buildAndExpand(urlParams)
+        .toUri();
   }
 
-  public URI uriForErrorResponse(UriInfo uriInfo, String errorReason) {
-    return uriBuilder(uriInfo)
+  public URI uriForErrorResponse(HttpServletRequest request, String errorReason) {
+    return uriComponentsBuilder(request)
         .host(webcertDomainName)
-        .path(urlReactErrorTemplate)
+        .replacePath(urlReactErrorTemplate)
         .queryParam("reason", errorReason)
-        .build();
+        .build()
+        .toUri();
   }
 
-  public URI uriForUnitSelection(UriInfo uriInfo, String certificateId) {
+  public URI uriForUnitSelection(HttpServletRequest request, String certificateId) {
     final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
-    return uriBuilder(uriInfo)
+    return uriComponentsBuilder(request)
         .host(webcertDomainName)
-        .path(urlReactUnitSelectionTemplate)
-        .buildFromMap(urlParams);
+        .replacePath(urlReactUnitSelectionTemplate)
+        .buildAndExpand(urlParams)
+        .toUri();
   }
 
-  private static UriBuilder uriBuilder(UriInfo uriInfo) {
-    return uriInfo.getBaseUriBuilder().replacePath("/");
+  private static ServletUriComponentsBuilder uriComponentsBuilder(HttpServletRequest request) {
+    return (ServletUriComponentsBuilder)
+        ServletUriComponentsBuilder.fromRequest(request).replacePath("/");
   }
 }

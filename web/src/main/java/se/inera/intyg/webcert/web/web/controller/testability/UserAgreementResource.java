@@ -19,16 +19,16 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import io.swagger.annotations.Api;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
@@ -36,7 +36,9 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvt
 
 @Transactional
 @Api(value = "services anvandare", description = "REST API för testbarhet - Användare")
-@Path("/anvandare")
+@RestController
+@RequestMapping("/testability/useragreementtest")
+@Profile({"dev", "testability-api"})
 public class UserAgreementResource {
 
   @Autowired private AvtalRepository avtalRepository;
@@ -45,39 +47,32 @@ public class UserAgreementResource {
 
   @Autowired private AnvandarPreferenceRepository anvandarPreferenceRepository;
 
-  @PUT
-  @Path("/godkannavtal/{hsaId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response godkannAvtal(@PathParam("hsaId") String hsaId) {
+  @PutMapping("/godkannavtal/{hsaId}")
+  public ResponseEntity<Void> godkannAvtal(@PathVariable("hsaId") String hsaId) {
     int avtalVersion = avtalRepository.getLatestAvtalVersion();
     godkantAvtalRepository.approveAvtal(hsaId, avtalVersion);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @PUT
-  @Path("/avgodkannavtal/{hsaId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response avgodkannAvtal(@PathParam("hsaId") String hsaId) {
+  @PutMapping("/avgodkannavtal/{hsaId}")
+  public ResponseEntity<Void> avgodkannAvtal(@PathVariable("hsaId") String hsaId) {
     godkantAvtalRepository.removeAllUserApprovments(hsaId);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @GET
-  @Path("/approvedTerms/{hsaId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public boolean getTermsApproval(@PathParam("hsaId") String hsaId) {
+  @GetMapping("/approvedTerms/{hsaId}")
+  public boolean getTermsApproval(@PathVariable("hsaId") String hsaId) {
     return godkantAvtalRepository.userHasApprovedAvtal(
         hsaId, avtalRepository.getLatestAvtalVersion());
   }
 
-  @DELETE
-  @Path("/preferences/{hsaId}/{key}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deletePreference(@PathParam("hsaId") String hsaId, @PathParam("key") String key) {
+  @DeleteMapping("/preferences/{hsaId}/{key}")
+  public ResponseEntity<Void> deletePreference(
+      @PathVariable("hsaId") String hsaId, @PathVariable("key") String key) {
     AnvandarPreference ap = anvandarPreferenceRepository.findByHsaIdAndKey(hsaId, key);
     if (ap != null) {
       anvandarPreferenceRepository.delete(ap);
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 }

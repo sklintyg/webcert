@@ -26,17 +26,16 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -48,11 +47,12 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 
-@Path("/fmb")
+@RestController
+@RequestMapping("/api/fmb")
 @Api(
     value = "fmb",
     description = "REST API för Försäkringsmedicinskt beslutsstöd",
-    produces = MediaType.APPLICATION_JSON)
+    produces = "application/json")
 public class FmbApiController extends AbstractApiController {
 
   private static final int OK = 200;
@@ -61,14 +61,12 @@ public class FmbApiController extends AbstractApiController {
   @Autowired private FmbDiagnosInformationService fmbDiagnosInformationService;
 
   // CHECKSTYLE:OFF LineLength
-  @GET
-  @Path("/{icd10}")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/{icd10}")
   @ApiOperation(
       value = "Get FMB data for ICD10 codes",
       httpMethod = "GET",
       notes = "Fetch the admin user details",
-      produces = MediaType.APPLICATION_JSON)
+      produces = "application/json")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -81,26 +79,24 @@ public class FmbApiController extends AbstractApiController {
   @PerformanceLogging(
       eventAction = "fmb-get-fmb-data-for-icd10",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getFmbForIcd10(
-      @ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10) {
+  public ResponseEntity<Object> getFmbForIcd10(
+      @ApiParam(value = "ICD10 code", required = true) @PathVariable("icd10") String icd10) {
     if (icd10 == null || icd10.isEmpty()) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
+      return ResponseEntity.badRequest().body("Missing icd10 code");
     }
 
     return fmbDiagnosInformationService
         .findFmbDiagnosInformationByIcd10Kod(icd10)
-        .map(Response::ok)
-        .map(Response.ResponseBuilder::build)
-        .orElseGet(() -> Response.noContent().build());
+        .<ResponseEntity<Object>>map(ResponseEntity::ok)
+        .orElseGet(
+            () -> ResponseEntity.status(org.springframework.http.HttpStatus.NO_CONTENT).body(null));
   }
 
-  @GET
-  @Path("/valideraSjukskrivningstid")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/valideraSjukskrivningstid")
   @ApiOperation(
       value = "validate sjukskrivningstid for patient and ICD10 codes",
       httpMethod = "GET",
-      produces = MediaType.APPLICATION_JSON)
+      produces = "application/json")
   @ApiResponses(
       value = {
         @ApiResponse(
@@ -116,15 +112,17 @@ public class FmbApiController extends AbstractApiController {
   @PerformanceLogging(
       eventAction = "fmb-validate-sickleave-period",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response valideraSjukskrivningstid(
-      @ApiParam(value = "ICD10 code", required = true) @QueryParam("icd10Kod1")
+  public ResponseEntity<Object> valideraSjukskrivningstid(
+      @ApiParam(value = "ICD10 code", required = true)
+          @RequestParam(value = "icd10Kod1", required = false)
           final String icd10Kod1,
-      @QueryParam("icd10Kod2") final String icd10Kod2,
-      @QueryParam("icd10Kod3") final String icd10Kod3,
-      @ApiParam(value = "Personnummer för patient", required = true) @QueryParam("personnummer")
+      @RequestParam(value = "icd10Kod2", required = false) final String icd10Kod2,
+      @RequestParam(value = "icd10Kod3", required = false) final String icd10Kod3,
+      @ApiParam(value = "Personnummer för patient", required = true)
+          @RequestParam(value = "personnummer", required = false)
           final String personnummer,
       @ApiParam(value = "Sjukskrivningsperioder för föreslagen sjukskrivning", required = true)
-          @QueryParam("periods")
+          @RequestParam(value = "periods", required = false)
           final List<Period> periods) {
 
     List<String> validationErrors = Lists.newArrayList();
@@ -148,18 +146,15 @@ public class FmbApiController extends AbstractApiController {
     }
 
     if (!validationErrors.isEmpty()) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity(String.join(",", validationErrors))
-          .build();
+      return ResponseEntity.badRequest().body(String.join(",", validationErrors));
     }
 
-    return Response.ok(
-            fmbDiagnosInformationService.validateSjukskrivningtidForPatient(
-                MaximalSjukskrivningstidRequest.of(
-                    Icd10KoderRequest.of(icd10Kod1, icd10Kod2, icd10Kod3),
-                    optionalPersonnummer.get(),
-                    periods)))
-        .build();
+    return ResponseEntity.ok(
+        fmbDiagnosInformationService.validateSjukskrivningtidForPatient(
+            MaximalSjukskrivningstidRequest.of(
+                Icd10KoderRequest.of(icd10Kod1, icd10Kod2, icd10Kod3),
+                optionalPersonnummer.get(),
+                periods)));
   }
   // CHECKSTYLE:ON LineLength
 }

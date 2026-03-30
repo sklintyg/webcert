@@ -60,38 +60,6 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <!-- Webcert GUI REST services -->
-    <servlet>
-        <servlet-name>api</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/api-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- Webcert Module REST services -->
-    <servlet>
-        <servlet-name>moduleapi</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/moduleapi-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>internalapi</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/internalapi-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
     <!-- Webcert integration services -->
     <servlet>
         <servlet-name>services</servlet-name>
@@ -99,50 +67,6 @@
         <init-param>
             <param-name>config-location</param-name>
             <param-value>/WEB-INF/services-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- Webcert testability services -->
-    <servlet>
-        <servlet-name>testability</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/testability-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- Webcert auth testability services -->
-    <servlet>
-        <servlet-name>authtestability</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/authtestability-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- External system integration services, legacy webcert 0.5/medcert -->
-    <servlet>
-        <servlet-name>uthoppintegrationapi</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/uthopp-integration-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- External system integration services webcert 2.0+ -->
-    <servlet>
-        <servlet-name>integrationapi</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/integration-cxf-servlet.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -156,42 +80,18 @@
     <servlet-mapping>
         <servlet-name>web</servlet-name>
         <url-pattern>/web/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>api</servlet-name>
-        <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>moduleapi</servlet-name>
-        <url-pattern>/moduleapi/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>internalapi</servlet-name>
         <url-pattern>/internalapi/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
+        <url-pattern>/moduleapi/*</url-pattern>
+        <url-pattern>/visa/*</url-pattern>
+        <url-pattern>/v2/visa/*</url-pattern>
+        <url-pattern>/webcert/web/user/*</url-pattern>
+        <url-pattern>/testability/*</url-pattern>
+        <url-pattern>/authtestability/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>services</servlet-name>
         <url-pattern>/services/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>testability</servlet-name>
-        <url-pattern>/testability/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>authtestability</servlet-name>
-        <url-pattern>/authtestability/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>uthoppintegrationapi</servlet-name>
-        <url-pattern>/webcert/web/user/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>integrationapi</servlet-name>
-        <url-pattern>/visa/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>integrationapi</servlet-name>
-        <url-pattern>/v2/visa/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>metrics</servlet-name>

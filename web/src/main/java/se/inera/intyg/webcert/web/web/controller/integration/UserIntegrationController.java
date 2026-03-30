@@ -18,25 +18,20 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 
-@Path("/anvandare")
-@Api(
-    value = "intyg (Djupintegration)",
-    description = "REST API för Djupintegration",
-    produces = MediaType.APPLICATION_JSON)
+@Controller
+@RequestMapping("/v2/visa")
 public class UserIntegrationController extends BaseIntegrationController {
 
   private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
@@ -50,17 +45,16 @@ public class UserIntegrationController extends BaseIntegrationController {
         AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
       };
 
-  @GET
-  @Path("/logout/now")
+  @GetMapping("/logout/now")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-integration-logout-user-now",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public Response logoutUserNow(@Context HttpServletRequest request) {
+  public ResponseEntity<Void> logoutUserNow(HttpServletRequest request) {
     super.validateAuthorities();
     HttpSession session = request.getSession();
     getWebCertUserService().removeSessionNow(session);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
   @Override

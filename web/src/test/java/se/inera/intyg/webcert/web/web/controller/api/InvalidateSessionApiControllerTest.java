@@ -25,13 +25,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
@@ -48,9 +48,9 @@ class InvalidateSessionApiControllerTest {
   @Test
   void assertThatControllerRunsWhenGivenCorrectValues() {
     invalidateRequest = getInvalidateRequest();
-    Response response = controller.invalidateSession(invalidateRequest);
+    ResponseEntity<?> response = controller.invalidateSession(invalidateRequest);
     verify(invalidateSessionService).invalidateSessionIfActive(any());
-    assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCode().value());
   }
 
   @Test
@@ -58,22 +58,22 @@ class InvalidateSessionApiControllerTest {
     invalidateRequest = getInvalidateRequest();
     invalidateRequest.setLaunchId(null);
 
-    Response response = controller.invalidateSession(invalidateRequest);
+    ResponseEntity<?> response = controller.invalidateSession(invalidateRequest);
     verify(invalidateSessionService, never()).invalidateSessionIfActive(any());
 
-    assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCode().value());
   }
 
   @Test
   void shouldStillReturnNoContentAfterThrowingException() {
     invalidateRequest = getInvalidateRequest();
-    Response response = controller.invalidateSession(invalidateRequest);
+    ResponseEntity<?> response = controller.invalidateSession(invalidateRequest);
 
     doThrow(new NullPointerException())
         .when(invalidateSessionService)
         .invalidateSessionIfActive(invalidateRequest);
 
-    assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCode().value());
   }
 
   @Nested
@@ -82,18 +82,18 @@ class InvalidateSessionApiControllerTest {
     @Test
     void validateRequestIfCorrectFormat() {
       invalidateRequest = getInvalidateRequest();
-      Response response = controller.invalidateSession(invalidateRequest);
+      ResponseEntity<?> response = controller.invalidateSession(invalidateRequest);
 
-      assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+      assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCode().value());
     }
 
     @Test
     void invalidateRequestWithWrongValuesShouldReturnBadRequest() {
       invalidateRequest = getInvalidateRequest();
       invalidateRequest.setUserHsaId(null);
-      Response response = controller.invalidateSession(invalidateRequest);
+      ResponseEntity<?> response = controller.invalidateSession(invalidateRequest);
 
-      assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+      assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCode().value());
     }
 
     @Test
@@ -102,9 +102,9 @@ class InvalidateSessionApiControllerTest {
       invalidateRequest.setLaunchId(null);
       invalidateRequest.setUserHsaId(USER_HSA_ID);
 
-      Response response = controller.invalidateSession(invalidateRequest);
+      ResponseEntity<?> response = controller.invalidateSession(invalidateRequest);
 
-      assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+      assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCode().value());
     }
 
     @Test
@@ -113,9 +113,9 @@ class InvalidateSessionApiControllerTest {
       invalidateRequest.setLaunchId(LAUNCH_ID);
       invalidateRequest.setUserHsaId(null);
 
-      Response response = controller.invalidateSession(invalidateRequest);
+      ResponseEntity<?> response = controller.invalidateSession(invalidateRequest);
 
-      assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+      assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatusCode().value());
     }
   }
 

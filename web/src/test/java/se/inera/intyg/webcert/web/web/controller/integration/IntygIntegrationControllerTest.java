@@ -31,10 +31,6 @@ import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
-import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Base64;
@@ -52,7 +48,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
@@ -79,7 +75,6 @@ class IntygIntegrationControllerTest {
   private static final String ENHETSID = "11111";
   private static final String LAUNCHID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
   private static final String SESSION_ID = "12345";
-  private UriInfo uriInfo;
 
   @Mock private WebCertUserService webCertUserService;
 
@@ -89,7 +84,7 @@ class IntygIntegrationControllerTest {
 
   @Mock private ReactUriFactory reactUriFactory;
 
-  @Mock private @Context HttpServletRequest httpServletRequest;
+  @Mock private HttpServletRequest httpServletRequest;
 
   @Mock private Cache redisCacheLaunchId;
   @InjectMocks private IntygIntegrationController intygIntegrationController;
@@ -103,7 +98,7 @@ class IntygIntegrationControllerTest {
 
     assertThrows(
         IllegalStateException.class,
-        () -> intygIntegrationController.getRedirectToIntyg(null, null, INTYGSID, null),
+        () -> intygIntegrationController.getRedirectToIntyg(null, INTYGSID, null),
         "Expected getRedirectToIntyg() to throw, but it didn't");
   }
 
@@ -228,7 +223,6 @@ class IntygIntegrationControllerTest {
 
     @BeforeEach
     void setup() {
-      uriInfo = mock(UriInfo.class);
       when(integrationService.prepareRedirectToIntyg(any(), any()))
           .thenReturn(createPrepareRedirectToIntyg());
       when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
@@ -236,7 +230,7 @@ class IntygIntegrationControllerTest {
       when(webCertUserService.getUser()).thenReturn(user);
       doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq"))
           .when(reactUriFactory)
-          .uriForCertificate(uriInfo, INTYGSID);
+          .uriForCertificate(any(), any());
 
       final var session = mock(HttpSession.class);
       when(httpServletRequest.getSession()).thenReturn(session);
@@ -249,7 +243,6 @@ class IntygIntegrationControllerTest {
       @Test
       void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
         intygIntegrationController.postRedirectToIntyg(
-            uriInfo,
             httpServletRequest,
             INTYGSID_POST,
             "",
@@ -274,7 +267,6 @@ class IntygIntegrationControllerTest {
       @Test
       void assertThatRedisAddsLaunchIdToCache() {
         intygIntegrationController.postRedirectToIntyg(
-            uriInfo,
             httpServletRequest,
             INTYGSID_POST,
             "",
@@ -306,7 +298,6 @@ class IntygIntegrationControllerTest {
             IllegalArgumentException.class,
             () -> {
               intygIntegrationController.postRedirectToIntyg(
-                  uriInfo,
                   httpServletRequest,
                   INTYGSID_POST,
                   "",
@@ -329,7 +320,6 @@ class IntygIntegrationControllerTest {
         assertDoesNotThrow(
             () ->
                 intygIntegrationController.postRedirectToIntyg(
-                    uriInfo,
                     httpServletRequest,
                     INTYGSID_POST,
                     "",
@@ -354,7 +344,6 @@ class IntygIntegrationControllerTest {
         assertDoesNotThrow(
             () ->
                 intygIntegrationController.postRedirectToIntyg(
-                    uriInfo,
                     httpServletRequest,
                     INTYGSID_POST,
                     "",
@@ -377,7 +366,6 @@ class IntygIntegrationControllerTest {
       @Test
       void launchIdShouldBeAddedEvenIfNotProvided() {
         intygIntegrationController.postRedirectToIntyg(
-            uriInfo,
             httpServletRequest,
             INTYGSID_POST,
             "",
@@ -406,9 +394,6 @@ class IntygIntegrationControllerTest {
 
     @BeforeEach
     void setup() {
-      uriInfo = mock(UriInfo.class);
-      final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
-
       when(integrationService.prepareRedirectToIntyg(any(), any()))
           .thenReturn(createPrepareRedirectToIntyg());
       when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
@@ -416,7 +401,7 @@ class IntygIntegrationControllerTest {
       when(webCertUserService.getUser()).thenReturn(user);
       doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq"))
           .when(reactUriFactory)
-          .uriForCertificate(uriInfo, INTYGSID);
+          .uriForCertificate(any(), any());
 
       final var session = mock(HttpSession.class);
       when(httpServletRequest.getSession()).thenReturn(session);
@@ -428,8 +413,7 @@ class IntygIntegrationControllerTest {
 
       @Test
       void assertThatRedisAddsLaunchIdToCache() {
-        intygIntegrationController.getRedirectToIntyg(
-            httpServletRequest, uriInfo, INTYGSID, ENHETSID);
+        intygIntegrationController.getRedirectToIntyg(httpServletRequest, INTYGSID, ENHETSID);
 
         verify(redisCacheLaunchId)
             .put(LAUNCHID, Base64.getEncoder().encodeToString(SESSION_ID.getBytes()));
@@ -442,7 +426,6 @@ class IntygIntegrationControllerTest {
 
     @BeforeEach
     void setup() {
-      uriInfo = mock(UriInfo.class);
       when(integrationService.prepareRedirectToIntyg(any(), any()))
           .thenReturn(createPrepareRedirectToIntyg());
       when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
@@ -459,13 +442,12 @@ class IntygIntegrationControllerTest {
       when(webCertUserService.getUser()).thenReturn(user);
       doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq"))
           .when(reactUriFactory)
-          .uriForCertificate(uriInfo, INTYGSID);
+          .uriForCertificate(any(), any());
 
       final var redirectToIntyg =
-          intygIntegrationController.getRedirectToIntyg(
-              httpServletRequest, uriInfo, INTYGSID, ENHETSID);
+          intygIntegrationController.getRedirectToIntyg(httpServletRequest, INTYGSID, ENHETSID);
 
-      assertEquals(Response.Status.SEE_OTHER.getStatusCode(), redirectToIntyg.getStatus());
+      assertEquals(HttpStatus.SEE_OTHER.value(), redirectToIntyg.getStatusCode().value());
     }
 
     @Test
@@ -475,14 +457,13 @@ class IntygIntegrationControllerTest {
       when(webCertUserService.getUser()).thenReturn(user);
       doReturn(URI.create("https://wc.localtest.me/certificate/A1234-B5678-C90123-D4567"))
           .when(reactUriFactory)
-          .uriForCertificate(uriInfo, INTYGSID);
+          .uriForCertificate(any(), any());
 
       final var redirectToIntyg =
-          intygIntegrationController.getRedirectToIntyg(
-              httpServletRequest, uriInfo, INTYGSID, ENHETSID);
+          intygIntegrationController.getRedirectToIntyg(httpServletRequest, INTYGSID, ENHETSID);
 
       assertEquals(
-          redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString(),
+          redirectToIntyg.getHeaders().getLocation().toString(),
           "https://wc.localtest.me/certificate/" + INTYGSID);
     }
   }

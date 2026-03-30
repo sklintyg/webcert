@@ -18,17 +18,17 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -36,8 +36,11 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypeInfoModalFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoModalDTO;
 
-@Path("/certificate/type")
+@RestController
+@RequestMapping("/api/certificate/type")
 public class CertificateTypeController {
 
   private static final Logger LOG = LoggerFactory.getLogger(CertificateTypeController.class);
@@ -54,37 +57,34 @@ public class CertificateTypeController {
     this.getCertificateTypeInfoModalFacadeService = getCertificateTypeInfoModalFacadeService;
   }
 
-  @GET
-  @Path("/{patientId}")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/{patientId}")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-type-get-certificate-types",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getCertificateTypes(@PathParam("patientId") @NotNull String patientId) {
+  public ResponseEntity<List<CertificateTypeInfoDTO>> getCertificateTypes(
+      @PathVariable("patientId") @NotNull String patientId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Retrieving certificate types for patient");
     }
     try {
       final var certificateTypes =
           getCertificateTypesFacadeService.get(createPersonnummer(patientId));
-      return Response.ok(certificateTypes).build();
+      return ResponseEntity.ok(certificateTypes);
     } catch (InvalidPersonNummerException e) {
       LOG.error(e.getMessage());
-      return Response.status(Status.BAD_REQUEST).build();
+      return ResponseEntity.badRequest().body(null);
     }
   }
 
-  @GET
-  @Path("/modal/{certificateType}/{patientId}")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/modal/{certificateType}/{patientId}")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-type-get-info-modal",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getCertificateTypeInfoModal(
-      @PathParam("certificateType") @NotNull String certificateType,
-      @PathParam("patientId") @NotNull String patientId) {
+  public ResponseEntity<CertificateTypeInfoModalDTO> getCertificateTypeInfoModal(
+      @PathVariable("certificateType") @NotNull String certificateType,
+      @PathVariable("patientId") @NotNull String patientId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug(
           "Retrieving certificate type info modal for certificate type: {} and patient",
@@ -95,12 +95,12 @@ public class CertificateTypeController {
           getCertificateTypeInfoModalFacadeService.get(
               certificateType, createPersonnummer(patientId));
       if (modal == null) {
-        return Response.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
       }
-      return Response.ok(modal).build();
+      return ResponseEntity.ok(modal);
     } catch (InvalidPersonNummerException e) {
       LOG.error(e.getMessage());
-      return Response.status(Status.BAD_REQUEST).build();
+      return ResponseEntity.badRequest().body(null);
     }
   }
 

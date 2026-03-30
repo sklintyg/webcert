@@ -19,29 +19,27 @@
 package se.inera.intyg.webcert.web.web.controller.facade.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import jakarta.ws.rs.core.UriBuilder;
-import jakarta.ws.rs.core.UriInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 class ReactUriFactoryTest {
 
   private ReactUriFactory reactUriFactory;
-  private UriInfo uriInfo;
+  private MockHttpServletRequest mockRequest;
 
   @BeforeEach
   void setUp() {
     reactUriFactory = new ReactUriFactory();
 
-    uriInfo = mock(UriInfo.class);
-    final var uriBuilder =
-        UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
-    when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+    mockRequest = new MockHttpServletRequest();
+    mockRequest.setScheme("https");
+    mockRequest.setServerName("wc.localtest.me");
+    mockRequest.setServerPort(443);
+    mockRequest.setRequestURI("/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
 
     ReflectionTestUtils.setField(reactUriFactory, "webcertDomainName", "wc.localtest.me");
     ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
@@ -59,7 +57,7 @@ class ReactUriFactoryTest {
   @Test
   void shallReturnUriForCertificate() {
     final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
-    final var actualUri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
+    final var actualUri = reactUriFactory.uriForCertificate(mockRequest, certificateId);
     assertEquals(
         actualUri.toString(), "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq");
   }
@@ -69,7 +67,7 @@ class ReactUriFactoryTest {
     final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
     final var actualUri =
         reactUriFactory.uriForCertificateWithSignError(
-            uriInfo, certificateId, SignaturStatus.ERROR);
+            mockRequest, certificateId, SignaturStatus.ERROR);
     assertEquals(
         actualUri.toString(),
         "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error");
@@ -78,7 +76,7 @@ class ReactUriFactoryTest {
   @Test
   void shallReturnUriForCertificateQuestions() {
     final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
-    final var actualUri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
+    final var actualUri = reactUriFactory.uriForCertificateQuestions(mockRequest, certificateId);
     assertEquals(
         actualUri.toString(),
         "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions");
@@ -87,14 +85,14 @@ class ReactUriFactoryTest {
   @Test
   void shallReturnUriForError() {
     final var reason = "auth-exception";
-    final var actualUri = reactUriFactory.uriForErrorResponse(uriInfo, reason);
+    final var actualUri = reactUriFactory.uriForErrorResponse(mockRequest, reason);
     assertEquals(actualUri.toString(), "https://wc.localtest.me/error?reason=auth-exception");
   }
 
   @Test
   void shallReturnUriForUnitSelection() {
     final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
-    final var actualUri = reactUriFactory.uriForUnitSelection(uriInfo, certificateId);
+    final var actualUri = reactUriFactory.uriForUnitSelection(mockRequest, certificateId);
     assertEquals(
         actualUri.toString(),
         "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/launch-unit-selection");

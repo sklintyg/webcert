@@ -21,16 +21,6 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 import io.swagger.annotations.Api;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,6 +28,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -47,6 +39,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesResolverUtil;
@@ -67,7 +67,9 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionPar
  */
 @Transactional
 @Api(value = "services fragasvar", description = "REST API för testbarhet - Fråga/Svar")
-@Path("/fragasvar")
+@RestController
+@RequestMapping("/testability/fragasvartest")
+@Profile({"dev", "testability-api"})
 public class FragaSvarResource {
 
   private static final Logger LOG = LoggerFactory.getLogger(FragaSvarResource.class);
@@ -87,105 +89,90 @@ public class FragaSvarResource {
 
   @Autowired private CommonAuthoritiesResolver authoritiesResolver;
 
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response insertFragaSvar(FragaSvar fragaSvar) {
+  @PostMapping
+  public ResponseEntity<FragaSvar> insertFragaSvar(@RequestBody FragaSvar fragaSvar) {
     FragaSvar saved = fragasvarRepository.save(fragaSvar);
     LOG.info("Created FragaSvar with id {} using testability API", saved.getInternReferens());
-    return Response.ok(saved).build();
+    return ResponseEntity.ok(saved);
   }
 
-  @PUT
-  @Path("/svara/{vardgivare}/{enhet}/{id}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-  public Response answer(
-      @PathParam("vardgivare") final String vardgivarId,
-      @PathParam("enhet") final String enhetsId,
-      @PathParam("id") final Long frageSvarId,
-      String svarsText) {
+  @PutMapping("/svara/{vardgivare}/{enhet}/{id}")
+  public ResponseEntity<FragaSvar> answer(
+      @PathVariable("vardgivare") final String vardgivarId,
+      @PathVariable("enhet") final String enhetsId,
+      @PathVariable("id") final Long frageSvarId,
+      @RequestBody String svarsText) {
     SecurityContext originalContext = SecurityContextHolder.getContext();
     SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
     try {
       FragaSvar fragaSvarResponse = fragaSvarService.saveSvar(frageSvarId, svarsText);
-      return Response.ok(fragaSvarResponse).build();
+      return ResponseEntity.ok(fragaSvarResponse);
     } finally {
       SecurityContextHolder.setContext(originalContext);
     }
   }
 
-  @POST
-  @Path("/skickafraga/{vardgivare}/{enhet}/{intygId}/{typ}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-  public Response askQuestion(
-      @PathParam("vardgivare") final String vardgivarId,
-      @PathParam("enhet") final String enhetsId,
-      @PathParam("intygId") final String intygId,
-      @PathParam("typ") final String typ,
-      CreateQuestionParameter parameter) {
+  @PostMapping("/skickafraga/{vardgivare}/{enhet}/{intygId}/{typ}")
+  public ResponseEntity<FragaSvar> askQuestion(
+      @PathVariable("vardgivare") final String vardgivarId,
+      @PathVariable("enhet") final String enhetsId,
+      @PathVariable("intygId") final String intygId,
+      @PathVariable("typ") final String typ,
+      @RequestBody CreateQuestionParameter parameter) {
     SecurityContext originalContext = SecurityContextHolder.getContext();
     SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
     try {
       FragaSvar fragaSvarResponse =
           fragaSvarService.saveNewQuestion(
               intygId, typ, parameter.getAmne(), parameter.getFrageText());
-      return Response.ok(fragaSvarResponse).build();
+      return ResponseEntity.ok(fragaSvarResponse);
     } finally {
       SecurityContextHolder.setContext(originalContext);
     }
   }
 
-  @GET
-  @Path("/extern/{externReferens}/translate")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getFragaSvarByExternReferens(@PathParam("externReferens") String externReferens) {
-    return Response.ok(fragasvarRepository.findByExternReferens(externReferens)).build();
+  @GetMapping("/extern/{externReferens}/translate")
+  public ResponseEntity<FragaSvar> getFragaSvarByExternReferens(
+      @PathVariable("externReferens") String externReferens) {
+    return ResponseEntity.ok(fragasvarRepository.findByExternReferens(externReferens));
   }
 
-  @DELETE
-  @Path("/extern/{externReferens}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteFragaSvarByExternReferens(
-      @PathParam("externReferens") String externReferens) {
+  @DeleteMapping("/extern/{externReferens}")
+  public ResponseEntity<Void> deleteFragaSvarByExternReferens(
+      @PathVariable("externReferens") String externReferens) {
     List<FragaSvar> fragor = fragasvarRepository.findByExternReferensLike(externReferens);
     for (FragaSvar fraga : fragor) {
       fragasvarRepository.delete(fraga);
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/frageText/{frageText}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteFragaSvarByFrageText(@PathParam("frageText") String frageText) {
+  @DeleteMapping("/frageText/{frageText}")
+  public ResponseEntity<Void> deleteFragaSvarByFrageText(
+      @PathVariable("frageText") String frageText) {
     List<FragaSvar> fragorOchSvar = fragasvarRepository.findByFrageTextLike(frageText);
     if (fragorOchSvar != null) {
       for (FragaSvar fragaSvar : fragorOchSvar) {
         fragasvarRepository.delete(fragaSvar);
       }
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/svarsText/{svarsText}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteFragaSvarBySvarsText(@PathParam("svarsText") String svarsText) {
+  @DeleteMapping("/svarsText/{svarsText}")
+  public ResponseEntity<Void> deleteFragaSvarBySvarsText(
+      @PathVariable("svarsText") String svarsText) {
     List<FragaSvar> fragorOchSvar = fragasvarRepository.findBySvarsTextLike(svarsText);
     if (fragorOchSvar != null) {
       for (FragaSvar fragaSvar : fragorOchSvar) {
         fragasvarRepository.delete(fragaSvar);
       }
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/enhet/{enhetsId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteFragaSvarByEnhet(@PathParam("enhetsId") String enhetsId) {
+  @DeleteMapping("/enhet/{enhetsId}")
+  public ResponseEntity<Void> deleteFragaSvarByEnhet(@PathVariable("enhetsId") String enhetsId) {
     List<String> enhetsIds = new ArrayList<>();
     enhetsIds.add(enhetsId);
     List<FragaSvar> fragorOchSvar = fragasvarRepository.findByEnhetsId(enhetsIds);
@@ -194,50 +181,43 @@ public class FragaSvarResource {
         fragasvarRepository.delete(fragaSvar);
       }
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteFragaSvarById(@PathParam("id") Long id) {
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteFragaSvarById(@PathVariable("id") Long id) {
     fragasvarRepository.deleteById(id);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteAllFragaSvar() {
+  @DeleteMapping("/")
+  public ResponseEntity<Void> deleteAllFragaSvar() {
     return transactionTemplate.execute(
-        new TransactionCallback<Response>() {
+        new TransactionCallback<ResponseEntity<Void>>() {
           @Override
-          public Response doInTransaction(TransactionStatus status) {
+          public ResponseEntity<Void> doInTransaction(TransactionStatus status) {
             @SuppressWarnings("unchecked")
             List<FragaSvar> fragorOchSvar =
                 entityManager.createQuery("SELECT f FROM FragaSvar f").getResultList();
             for (FragaSvar fragaSvar : fragorOchSvar) {
               entityManager.remove(fragaSvar);
             }
-            return Response.ok().build();
+            return ResponseEntity.ok().build();
           }
         });
   }
 
-  @GET
-  @Path("/fragaSvarCount")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Long getFragaSvarCountCertificateIds(List<String> certificateIds) {
+  @GetMapping("/fragaSvarCount")
+  public Long getFragaSvarCountCertificateIds(@RequestBody List<String> certificateIds) {
     final var fragaSvarList = fragasvarRepository.findAll();
     return fragaSvarList.stream()
         .filter(fragaSvar -> certificateIds.contains(fragaSvar.getIntygsReferens().getIntygsId()))
         .count();
   }
 
-  @DELETE
-  @Path("/byCertificateIds")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteFragaSvarByCertificateIds(List<String> certificateIds) {
+  @DeleteMapping("/byCertificateIds")
+  public ResponseEntity<Void> deleteFragaSvarByCertificateIds(
+      @RequestBody List<String> certificateIds) {
     final var fragaSvarList = fragasvarRepository.findAll();
     final var fragaSvarForDeletion =
         fragaSvarList.stream()
@@ -246,7 +226,7 @@ public class FragaSvarResource {
             .collect(Collectors.toList());
     fragasvarRepository.deleteAll(fragaSvarForDeletion);
 
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
   // Create a fake SecurityContext for a user which is authorized for the given care giver and unit

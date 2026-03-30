@@ -19,29 +19,27 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 
-@Path("/terms")
-@Api(value = "/terms/approved", produces = MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping("/internalapi/terms")
+@Api(value = "/internalapi/terms/approved", produces = "application/json")
 public class TermsApiController {
 
   @Autowired private AvtalService avtalService;
 
-  @GET
-  @Path("/approved/{hsaId}")
-  @Produces(MediaType.APPLICATION_JSON)
+  @GetMapping("/approved/{hsaId}")
   @PerformanceLogging(
       eventAction = "terms-get-webcert-approved-terms",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public boolean getWebcertTermsApproved(@PathParam("hsaId") String hsaId) {
+  public boolean getWebcertTermsApproved(@PathVariable("hsaId") String hsaId) {
     return avtalService.userHasApprovedLatestAvtal(hsaId);
   }
 }

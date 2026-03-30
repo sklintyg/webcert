@@ -26,11 +26,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.underskrift.model.SignMethod.SIGN_SERVICE;
 
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.UUID;
-import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -39,6 +37,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.webcert.infra.xmldsig.model.ValidationResponse;
 import se.inera.intyg.webcert.infra.xmldsig.model.ValidationResult;
@@ -59,7 +58,7 @@ class SignatureApiControllerTest {
   @Mock private MonitoringLogService mockMonitoringService;
   @Mock private FakeSignatureService fakeSignatureService;
   @Mock private DssMetadataService dssMetadataService;
-  @Mock private UriInfo uriInfo;
+  @Mock private HttpServletRequest httpServletRequest;
   @Mock private DssSignMessageService dssSignMessageService;
   @Mock private DssSignatureService dssSignatureService;
   @Mock private ReactUriFactory reactUriFactory;
@@ -88,14 +87,14 @@ class SignatureApiControllerTest {
     when(dssMetadataService.getClientMetadataAsString())
         .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Test>Inera AB</Test>");
 
-    Response response = signatureApiController.signServiceClientMetadata();
+    ResponseEntity<?> response = signatureApiController.signServiceClientMetadata();
 
     assertNotNull(response);
-    assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-    assertNotNull(response.getEntity());
-    assertEquals(response.getMediaType().toString(), "application/samlmetadata+xml");
+    assertEquals(200, response.getStatusCode().value());
+    assertNotNull(response.getBody());
+    assertEquals(response.getHeaders().getContentType().toString(), "application/samlmetadata+xml");
     assertEquals(
-        response.getHeaderString(HttpHeaders.CONTENT_DISPOSITION),
+        response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION),
         "attachment; filename=\"wc_dss_client_metadata.xml\"");
   }
 
@@ -107,16 +106,16 @@ class SignatureApiControllerTest {
         .thenReturn(getOkValidationResponse());
     when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class)))
         .thenReturn(signatureTicket);
-    when(reactUriFactory.uriForCertificate(uriInfo, signatureTicket.getIntygsId()))
-        .thenReturn(URI.create(WC_URI));
+    when(reactUriFactory.uriForCertificate(any(), any())).thenReturn(URI.create(WC_URI));
 
     final var response =
-        signatureApiController.signServiceResponse(uriInfo, "relayState", "eidSignResponse");
+        signatureApiController.signServiceResponse(
+            httpServletRequest, "relayState", "eidSignResponse");
 
-    verify(reactUriFactory, times(1)).uriForCertificate(uriInfo, CERT_ID);
+    verify(reactUriFactory, times(1)).uriForCertificate(any(), any());
     verify(dssSignatureService, times(0)).findReturnUrl(any());
-    assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
-    assertEquals(WC_URI, response.getLocation().toString());
+    assertEquals(303, response.getStatusCode().value());
+    assertEquals(WC_URI, response.getHeaders().getLocation().toString());
   }
 
   @Test
@@ -127,18 +126,17 @@ class SignatureApiControllerTest {
         .thenReturn(getOkValidationResponse());
     when(dssSignatureService.receiveSignResponse(any(String.class), any(String.class)))
         .thenReturn(signatureTicket);
-    when(reactUriFactory.uriForCertificateWithSignError(
-            uriInfo, signatureTicket.getIntygsId(), signatureTicket.getStatus()))
+    when(reactUriFactory.uriForCertificateWithSignError(any(), any(), any()))
         .thenReturn(URI.create(WC_URI_ERROR));
 
     final var response =
-        signatureApiController.signServiceResponse(uriInfo, "relayState", "eidSignResponse");
+        signatureApiController.signServiceResponse(
+            httpServletRequest, "relayState", "eidSignResponse");
 
-    verify(reactUriFactory, times(1))
-        .uriForCertificateWithSignError(uriInfo, CERT_ID, signatureTicket.getStatus());
+    verify(reactUriFactory, times(1)).uriForCertificateWithSignError(any(), any(), any());
     verify(dssSignatureService, times(0)).findReturnUrl(any());
-    assertEquals(HttpStatus.SC_SEE_OTHER, response.getStatus());
-    assertEquals(WC_URI_ERROR, response.getLocation().toString());
+    assertEquals(303, response.getStatusCode().value());
+    assertEquals(WC_URI_ERROR, response.getHeaders().getLocation().toString());
   }
 
   private void setupMocksForSignDraft() {

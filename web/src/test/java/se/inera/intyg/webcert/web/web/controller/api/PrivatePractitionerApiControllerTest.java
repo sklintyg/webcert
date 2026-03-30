@@ -27,12 +27,12 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRAN
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.PRIVATE_PRACTITIONER_CONFIG_DTO;
 
-import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +46,7 @@ class PrivatePractitionerApiControllerTest {
     final var actual = controller.registerPractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
 
     verify(service).registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
-    assertEquals(Status.OK, actual.getStatusInfo().toEnum());
+    assertEquals(HttpStatus.OK, actual.getStatusCode());
   }
 
   @Test

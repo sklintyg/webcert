@@ -20,17 +20,6 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.Api;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDate;
@@ -50,9 +39,21 @@ import javax.xml.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -89,7 +90,9 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
 
 @Transactional
 @Api(value = "services intyg/utkast", description = "REST API för testbarhet - Intyg och Utkast")
-@Path("/intyg")
+@RestController
+@RequestMapping("/testability/intygtest")
+@Profile({"dev", "testability-api"})
 public class IntygResource {
 
   public static final Logger LOG = LoggerFactory.getLogger(IntygResource.class);
@@ -121,11 +124,9 @@ public class IntygResource {
    *
    * @param intygsTyp SIT-intyg: luae_fs, luae_na, luse, lisjp
    */
-  @GET
-  @Path("/questions/{intygsTyp}/{version}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getAllFragorFromConstants(
-      @PathParam("intygsTyp") String intygsTyp, @PathParam("version") String version) {
+  @GetMapping("/questions/{intygsTyp}/{version}")
+  public ResponseEntity<Object> getAllFragorFromConstants(
+      @PathVariable("intygsTyp") String intygsTyp, @PathVariable("version") String version) {
     try {
       String schVersion = SchVersionUtil.formatToSchVersion(version);
       DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -152,105 +153,90 @@ public class IntygResource {
           }
         }
       }
-      return Response.ok(qList).build();
+      return ResponseEntity.ok(qList);
     } catch (ParserConfigurationException
         | SAXException
         | IOException
         | XPathExpressionException e) {
-      return Response.serverError().entity(e.getMessage()).build();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
   }
 
   /**
    * Returns a List of {@link SigningUnit} of vardenheter having at least one signed and sent intyg.
    */
-  @GET
-  @Path("/signingunits")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getSigningUnits() {
-    return Response.ok(
-            utkastRepository.findAllUnitsWithSentCertificate().stream()
-                .map(arr -> new SigningUnit((String) arr[0], (String) arr[1]))
-                .collect(Collectors.toList()))
-        .build();
+  @GetMapping("/signingunits")
+  public ResponseEntity<List<SigningUnit>> getSigningUnits() {
+    return ResponseEntity.ok(
+        utkastRepository.findAllUnitsWithSentCertificate().stream()
+            .map(arr -> new SigningUnit((String) arr[0], (String) arr[1]))
+            .collect(Collectors.toList()));
   }
 
   /** Returns all signed and sent Intyg (based on the Utkast table) for the specified enhetsId. */
-  @GET
-  @Path("/{enhetsId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getAllSignedAndSentIntygOnUnit(@PathParam("enhetsId") String enhetsId) {
+  @GetMapping("/{enhetsId}")
+  public ResponseEntity<List<Utkast>> getAllSignedAndSentIntygOnUnit(
+      @PathVariable("enhetsId") String enhetsId) {
     List<Utkast> all =
         utkastRepository.findByEnhetsIdsAndStatuses(
             Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.SIGNED));
-    return Response.ok(
-            all.stream()
-                .filter(
-                    utkast ->
-                        utkast.getSkickadTillMottagareDatum() != null
-                            && utkast.getSignatur() != null)
-                .sorted(
-                    (u1, u2) ->
-                        u2.getSignatur()
-                            .getSigneringsDatum()
-                            .compareTo(u1.getSignatur().getSigneringsDatum()))
-                .collect(Collectors.toList()))
-        .build();
+    return ResponseEntity.ok(
+        all.stream()
+            .filter(
+                utkast ->
+                    utkast.getSkickadTillMottagareDatum() != null && utkast.getSignatur() != null)
+            .sorted(
+                (u1, u2) ->
+                    u2.getSignatur()
+                        .getSigneringsDatum()
+                        .compareTo(u1.getSignatur().getSigneringsDatum()))
+            .collect(Collectors.toList()));
   }
 
   /** Returns all complete drafts for the specified enhetsId. */
-  @GET
-  @Path("/{enhetsId}/drafts")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getAllCompleteDraftsOnUnit(@PathParam("enhetsId") String enhetsId) {
+  @GetMapping("/{enhetsId}/drafts")
+  public ResponseEntity<List<Utkast>> getAllCompleteDraftsOnUnit(
+      @PathVariable("enhetsId") String enhetsId) {
     List<Utkast> all =
         utkastRepository.findByEnhetsIdsAndStatuses(
             Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
-    return Response.ok(all.stream().collect(Collectors.toList())).build();
+    return ResponseEntity.ok(all.stream().collect(Collectors.toList()));
   }
 
   // returrns any resource from app env.
-  @GET
-  @Path("/resource")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
-  public Response refData(@QueryParam("location") String location) throws IOException {
+  @GetMapping("/resource")
+  public ResponseEntity<Object> refData(
+      @RequestParam(value = "location", required = false) String location) throws IOException {
     LOG.info("GET intyg/resource?location={}", location);
-    return Response.ok(resourceLoader.getResource(location).getInputStream()).build();
+    return ResponseEntity.ok(resourceLoader.getResource(location).getInputStream());
   }
 
-  @GET
-  @Path("/{careProviderId}/count")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Long countCertificatesForCareProvider(@PathParam("careProviderId") String careProviderId) {
+  @GetMapping("/{careProviderId}/count")
+  public Long countCertificatesForCareProvider(
+      @PathVariable("careProviderId") String careProviderId) {
     return utkastRepository.findAll().stream()
         .filter(cert -> cert.getVardgivarId().equals(careProviderId))
         .count();
   }
 
-  @DELETE
-  @Path("/")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteAllDrafts() {
+  @DeleteMapping("/")
+  public ResponseEntity<Void> deleteAllDrafts() {
     // Need deleteAll here, deleteAllInBatch doesn't apply cascade delete
     utkastRepository.deleteAll();
     fragaSvarRepository.deleteAll();
     arendeRepository.deleteAll();
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteDraft(@PathParam("id") String id) {
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteDraft(@PathVariable("id") String id) {
     Utkast utkast = utkastRepository.findById(id).orElse(null);
     deleteDraftAndRelatedQAs(utkast);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/enhet/{enhetsId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteDraftsByEnhet(@PathParam("enhetsId") String enhetsId) {
+  @DeleteMapping("/enhet/{enhetsId}")
+  public ResponseEntity<Void> deleteDraftsByEnhet(@PathVariable("enhetsId") String enhetsId) {
     List<String> enhetsIds = new ArrayList<>();
     enhetsIds.add(enhetsId);
     List<UtkastStatus> statuses = new ArrayList<>();
@@ -262,13 +248,11 @@ public class IntygResource {
         deleteDraftAndRelatedQAs(u);
       }
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/patient/{patientId}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteDraftsByPatient(@PathParam("patientId") String patientId) {
+  @DeleteMapping("/patient/{patientId}")
+  public ResponseEntity<Void> deleteDraftsByPatient(@PathVariable("patientId") String patientId) {
     Set<String> intygTyper =
         moduleRegistry.listAllModules().stream()
             .map(IntygModule::getId)
@@ -280,38 +264,31 @@ public class IntygResource {
         deleteDraftAndRelatedQAs(u);
       }
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/handelser/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteHandelserOnIntyg(@PathParam("id") String intygsId) {
+  @DeleteMapping("/handelser/{id}")
+  public ResponseEntity<Void> deleteHandelserOnIntyg(@PathVariable("id") String intygsId) {
     List<Handelse> toDelete = handelseRepository.findByIntygsId(intygsId);
 
     if (!toDelete.isEmpty()) {
       LOG.info("Removing HANDELSEr from {}", intygsId);
       handelseRepository.deleteAll(toDelete);
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/handelser/patient/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteHandelserForPatient(@PathParam("id") String patientId) {
+  @DeleteMapping("/handelser/patient/{id}")
+  public ResponseEntity<Void> deleteHandelserForPatient(@PathVariable("id") String patientId) {
     List<Handelse> toDelete = handelseRepository.findByPersonnummer(patientId);
     if (!toDelete.isEmpty()) {
       handelseRepository.deleteAll(toDelete);
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/utkast")
-  public Response insertUtkast(IntygContentWrapper intygContents)
+  @PostMapping("/utkast")
+  public ResponseEntity<Void> insertUtkast(@RequestBody IntygContentWrapper intygContents)
       throws ModuleNotFoundException, IOException {
     String intygsTyp = intygContents.getContents().get("typ").textValue();
 
@@ -365,13 +342,11 @@ public class IntygResource {
     utkast.setSkapadAv(vardpersonReferens);
     utkast.setSenastSparadAv(vardpersonReferens);
     utkastRepository.save(utkast);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response createDraft(CreateNewDraftRequest request) {
+  @PostMapping
+  public ResponseEntity<Void> createDraft(@RequestBody CreateNewDraftRequest request) {
     Utkast utkast = new Utkast();
 
     Patient patient = request.getPatient();
@@ -406,80 +381,67 @@ public class IntygResource {
 
     utkastRepository.save(utkast);
 
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @PUT
-  @Path("/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response updateDraft(@PathParam("id") String id, String model) {
+  @PutMapping("/{id}")
+  public ResponseEntity<Void> updateDraft(
+      @PathVariable("id") String id, @RequestBody String model) {
     Utkast utkast = utkastRepository.findById(id).orElse(null);
     if (utkast != null) {
       utkast.setModel(model);
       utkastRepository.save(utkast);
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @PUT
-  @Path("/{id}/status")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response updateDraftStatus(@PathParam("id") String id, String status) {
+  @PutMapping("/{id}/status")
+  public ResponseEntity<Void> updateDraftStatus(
+      @PathVariable("id") String id, @RequestBody String status) {
     updateStatus(id, UtkastStatus.valueOf(status));
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @PUT
-  @Path("/{id}/komplett")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response updateDraft(@PathParam("id") String id) {
+  @PutMapping("/{id}/komplett")
+  public ResponseEntity<Void> updateDraft(@PathVariable("id") String id) {
     updateStatus(id, UtkastStatus.DRAFT_COMPLETE);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @PUT
-  @Path("/{id}/signerat")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response signDraft(@PathParam("id") String id, String signeratAv) {
+  @PutMapping("/{id}/signerat")
+  public ResponseEntity<Void> signDraft(
+      @PathVariable("id") String id, @RequestBody String signeratAv) {
     updateUtkastForSign(id, signeratAv);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @PUT
-  @Path("/{id}/kompletterarintyg")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response setKompletteringRelation(
-      @PathParam("id") String utkastId, String relatedToIntygId) {
+  @PutMapping("/{id}/kompletterarintyg")
+  public ResponseEntity<Void> setKompletteringRelation(
+      @PathVariable("id") String utkastId, @RequestBody String relatedToIntygId) {
     setRelationToKompletterandeIntyg(utkastId, relatedToIntygId);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @PUT
-  @Path("/{id}/skickat")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response sendDraft(@PathParam("id") String id) {
+  @PutMapping("/{id}/skickat")
+  public ResponseEntity<Void> sendDraft(@PathVariable("id") String id) {
     updateUtkastForSend(id);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @GET
-  @Path("/ticket/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getSigningTicket(@PathParam("id") String id) {
+  @GetMapping("/ticket/{id}")
+  public ResponseEntity<SignaturBiljett> getSigningTicket(@PathVariable("id") String id) {
     SignaturBiljett ticket = redisTicketTracker.findBiljett(id);
-    return Response.ok(ticket).build();
+    return ResponseEntity.ok(ticket);
   }
 
-  @GET
-  @Path("/lockdraft/{days}/{today}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response runLockDraftJob(
-      @PathParam("days") int days, @PathParam("today") String todayAsString) {
+  @GetMapping("/lockdraft/{days}/{today}")
+  public ResponseEntity<Integer> runLockDraftJob(
+      @PathVariable("days") int days, @PathVariable("today") String todayAsString) {
 
     LocalDate today = LocalDate.parse(todayAsString);
     int numberOfLockedDrafts = utkastService.lockOldDrafts(days, today);
 
-    return Response.ok(numberOfLockedDrafts).build();
+    return ResponseEntity.ok(numberOfLockedDrafts);
   }
 
   private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {

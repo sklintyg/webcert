@@ -18,16 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -35,7 +34,8 @@ import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeSe
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodResponseDTO;
 
-@Path("/fmb")
+@RestController
+@RequestMapping("/api/fmb")
 public class FMBController {
 
   private static final Logger LOG = LoggerFactory.getLogger(FMBController.class);
@@ -44,20 +44,18 @@ public class FMBController {
 
   @Autowired private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
 
-  @POST
-  @Path("/validateSickLeavePeriod")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PostMapping("/validateSickLeavePeriod")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fmb-validate-sickleave-period",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response validateSickLeavePeriod(
+  public ResponseEntity<ValidateSickLeavePeriodResponseDTO> validateSickLeavePeriod(
       @RequestBody @NotNull ValidateSickLeavePeriodRequestDTO validateSickLeavePeriod) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Validating sick leave period");
     }
     final var response =
         validateSickLeavePeriodFacadeService.validateSickLeavePeriod(validateSickLeavePeriod);
-    return Response.ok(ValidateSickLeavePeriodResponseDTO.create(response)).build();
+    return ResponseEntity.ok(ValidateSickLeavePeriodResponseDTO.create(response));
   }
 }

@@ -135,19 +135,19 @@ the controller is no longer in a CXF servlet mapped to that prefix.
 | Sub-step | Title | Risk | Status |
 |----------|-------|------|--------|
 | **Phase A: Spring MVC Infrastructure** | | | |
-| 11.1 | Register CustomObjectMapper for Spring MVC | Low | ⬜ TODO |
-| 11.2 | Create @RestControllerAdvice — REST exception handler | Medium | ⬜ TODO |
-| 11.3 | Refactor ReactUriFactory — remove UriInfo dependency | Medium | ⬜ TODO |
-| 11.4 | Create Spring MVC parameter converters | Low | ⬜ TODO |
-| 11.5 | Create @ControllerAdvice — redirect exception handler *(depends on 11.3)* | Medium | ⬜ TODO |
+| 11.1 | Register CustomObjectMapper for Spring MVC | Low | ✅ DONE |
+| 11.2 | Create @RestControllerAdvice — REST exception handler | Medium | ✅ DONE |
+| 11.3 | Refactor ReactUriFactory — remove UriInfo dependency | Medium | ✅ DONE |
+| 11.4 | Create Spring MVC parameter converters | Low | ✅ DONE |
+| 11.5 | Create @ControllerAdvice — redirect exception handler *(depends on 11.3)* | Medium | ✅ DONE |
 | **Phase B: Controller Group Conversion** | | | |
-| 11.6 | Convert `/internalapi/*` controllers (8 controllers) | Medium | ⬜ TODO |
-| 11.7 | Convert `/api/*` controllers (22 controllers) | ⚠️ High | ⬜ TODO |
-| 11.8 | Convert `/moduleapi/*` controllers (3 controllers) | Medium | ⬜ TODO |
-| 11.9 | Convert `/visa/*` & `/v2/visa/*` controllers (2 controllers) | Medium | ⬜ TODO |
-| 11.10 | Convert `/webcert/web/user/*` controllers (4 controllers) | Medium | ⬜ TODO |
-| 11.11 | Convert `/testability/*` controllers (12 controllers) | Low | ⬜ TODO |
-| 11.12 | Convert `/authtestability/*` controllers (1 controller) | Low | ⬜ TODO |
+| 11.6 | Convert `/internalapi/*` controllers (8 controllers) | Medium | ✅ DONE |
+| 11.7 | Convert `/api/*` controllers (22 controllers) | ⚠️ High | ✅ DONE |
+| 11.8 | Convert `/moduleapi/*` controllers (3 controllers) | Medium | ✅ DONE |
+| 11.9 | Convert `/visa/*` & `/v2/visa/*` controllers (2 controllers) | Medium | ✅ DONE |
+| 11.10 | Convert `/webcert/web/user/*` controllers (4 controllers) | Medium | ✅ DONE |
+| 11.11 | Convert `/testability/*` controllers (12 controllers) | Low | ✅ DONE |
+| 11.12 | Convert `/authtestability/*` controllers (1 controller) | Low | ✅ DONE |
 | **Phase C: Consolidation & Cleanup** | | | |
 | 11.13 | Consolidate DispatcherServlet — change mapping to `/` | ⚠️ Critical | ⬜ TODO |
 | 11.14 | Remove Swagger/ApiScanner JAX-RS endpoint | Low | ⬜ TODO |

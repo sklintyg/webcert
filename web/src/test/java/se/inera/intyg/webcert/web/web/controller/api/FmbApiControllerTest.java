@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
-import jakarta.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.http.ResponseEntity;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
@@ -73,14 +73,14 @@ class FmbApiControllerTest {
 
   @Test
   void testGetFmbForIcd10HandlesNull() throws Exception {
-    Response response = controller.getFmbForIcd10(null);
-    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    ResponseEntity<?> response = controller.getFmbForIcd10(null);
+    assertEquals(400, response.getStatusCode().value());
   }
 
   @Test
   void testGetFmbForIcd10HandlesEmptyInput() throws Exception {
-    Response response = controller.getFmbForIcd10("");
-    assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    ResponseEntity<?> response = controller.getFmbForIcd10("");
+    assertEquals(400, response.getStatusCode().value());
   }
 
   @Test
@@ -90,9 +90,9 @@ class FmbApiControllerTest {
     doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
     // When
-    Response response = controller.getFmbForIcd10("A10");
+    ResponseEntity<?> response = controller.getFmbForIcd10("A10");
 
     // Then
-    assertEquals(204, response.getStatus());
+    assertEquals(204, response.getStatusCode().value());
   }
 }

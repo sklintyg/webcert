@@ -21,18 +21,6 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +28,16 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
@@ -60,11 +58,12 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorag
  *
  * @author npet
  */
-@Path("/anvandare")
+@RestController
+@RequestMapping("/api/anvandare")
 @Api(
     value = "anvandare",
     description = "REST API för användarhantering",
-    produces = MediaType.APPLICATION_JSON)
+    produces = "application/json")
 public class UserApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
@@ -76,29 +75,26 @@ public class UserApiController extends AbstractApiController {
   @Autowired private DssSignatureService dssSignatureService;
 
   /** Retrieves the security context of the logged in user as JSON. */
-  @GET
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping
   @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getUser() {
+  public ResponseEntity<String> getUser() {
     WebCertUser user = getWebCertUserService().getUser();
 
     var valdVardenhet = user.getValdVardenhet();
     if (valdVardenhet != null) {
       user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
     }
-    return Response.ok(user.getAsJson()).build();
+    return ResponseEntity.ok(user.getAsJson());
   }
 
-  @PUT
-  @Path("/features")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PutMapping("/features")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-set-user-features",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest) {
+  public ResponseEntity<Map<String, Feature>> userFeatures(
+      @RequestBody WebUserFeaturesRequest webUserFeaturesRequest) {
     WebCertUser user = getWebCertUserService().getUser();
     Map<String, Feature> mutFeatures = new HashMap<>(user.getFeatures());
     updateFeatures(
@@ -106,19 +102,17 @@ public class UserApiController extends AbstractApiController {
         AuthoritiesConstants.FEATURE_JS_LOGGNING,
         mutFeatures);
     user.setFeatures(mutFeatures);
-    return Response.ok(mutFeatures).build();
+    return ResponseEntity.ok(mutFeatures);
   }
 
   /** Changes the selected care unit in the security context for the logged in user. */
-  @POST
-  @Path("/andraenhet")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PostMapping("/andraenhet")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-change-selected-unit",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public Response changeSelectedUnitOnUser(ChangeSelectedUnitRequest request) {
+  public ResponseEntity<String> changeSelectedUnitOnUser(
+      @RequestBody ChangeSelectedUnitRequest request) {
 
     WebCertUser user = getWebCertUserService().getUser();
 
@@ -132,7 +126,7 @@ public class UserApiController extends AbstractApiController {
     if (!changeSuccess) {
       LOG.error(
           "Unit '{}' is not present in the MIUs for user '{}'", request.getId(), user.getHsaId());
-      return Response.status(Status.BAD_REQUEST).entity("Unit change failed").build();
+      return ResponseEntity.badRequest().body("Unit change failed");
     }
 
     var valdVardenhet = user.getValdVardenhet();
@@ -146,117 +140,105 @@ public class UserApiController extends AbstractApiController {
 
     LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
 
-    return Response.ok(user.getAsJson()).build();
+    return ResponseEntity.ok(user.getAsJson());
   }
 
   /** Retrieves the security context of the logged in user as JSON. */
-  @PUT
-  @Path("/godkannavtal")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PutMapping("/godkannavtal")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-approve-agreement",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public Response godkannAvtal() {
+  public ResponseEntity<Void> godkannAvtal() {
     WebCertUser user = getWebCertUserService().getUser();
     if (user != null) {
       avtalService.approveLatestAvtal(user.getHsaId(), user.getPersonId());
       user.setUserTermsApprovedOrSubscriptionInUse(true);
     }
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
   /** Deletes privatlakaravtal approval for the specified user. */
-  @DELETE
-  @Path("/privatlakaravtal")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @DeleteMapping("/privatlakaravtal")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-remove-agreement-approval",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-  public Response taBortAvtalsGodkannande() {
+  public ResponseEntity<Void> taBortAvtalsGodkannande() {
     WebCertUser user = getWebCertUserService().getUser();
     if (user != null) {
       avtalService.removeApproval(user.getHsaId());
-      return Response.ok().build();
+      return ResponseEntity.ok().build();
     }
-    return Response.notModified().build();
+    return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
   }
 
-  @GET
-  @Path("/latestavtal")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/latestavtal")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-get-agreement",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getAvtal() {
+  public ResponseEntity<Avtal> getAvtal() {
     Optional<Avtal> avtal = avtalService.getLatestAvtal();
-    return Response.ok(avtal.orElse(null)).build();
+    return ResponseEntity.ok(avtal.orElse(null));
   }
 
-  @GET
-  @Path("/ping")
+  @GetMapping("/ping")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-client-ping",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response clientPing() {
+  public ResponseEntity<Void> clientPing() {
     // Any active user session will be extended just by accessing an endpoint.
     LOG.debug("wc-client pinged server");
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @PUT
-  @Path("/preferences")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PutMapping("/preferences")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-store-metadata-entry",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public Response storeUserMetdataEntry(WebUserPreferenceStorageRequest request) {
+  public ResponseEntity<Void> storeUserMetdataEntry(
+      @RequestBody WebUserPreferenceStorageRequest request) {
     LOG.debug("User stored user preference entry for key: " + request.getKey());
     getWebCertUserService().storeUserPreference(request.getKey(), request.getValue());
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @DELETE
-  @Path("/preferences/{key}")
+  @DeleteMapping("/preferences/{key}")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-delete-user-preference-entry",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public Response deleteUserPreferenceEntry(@PathParam("key") String prefKey) {
+  public ResponseEntity<Void> deleteUserPreferenceEntry(@PathVariable("key") String prefKey) {
     LOG.debug("User deleted user preference entry for key: " + prefKey);
     getWebCertUserService().deleteUserPreference(prefKey);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @GET
-  @Path("/logout")
+  @GetMapping("/logout")
   @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "user-logout", eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public Response logoutUserAfterTimeout(@Context HttpServletRequest request) {
+  public ResponseEntity<Void> logoutUserAfterTimeout(HttpServletRequest request) {
     HttpSession session = request.getSession();
 
     getWebCertUserService().scheduleSessionRemoval(session);
 
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @GET
-  @Path("/logout/cancel")
+  @GetMapping("/logout/cancel")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-cancel-logout",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public Response cancelLogout(@Context HttpServletRequest request) {
+  public ResponseEntity<Void> cancelLogout(HttpServletRequest request) {
     HttpSession session = request.getSession();
 
     getWebCertUserService().cancelScheduledLogout(session);
 
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
   private void updateFeatures(boolean active, String name, Map<String, Feature> features) {

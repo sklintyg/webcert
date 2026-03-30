@@ -54,7 +54,7 @@ class ConfigControllerTest {
     void getConfigurationReturnsVersion() {
       final String version = "1.0";
       ReflectionTestUtils.setField(configController, "version", version);
-      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      final var response = (ConfigurationDTO) configController.getConfiguration().getBody();
       assertEquals(version, response.getVersion());
     }
 
@@ -76,7 +76,7 @@ class ConfigControllerTest {
 
       doReturn(banners).when(iaBannerService).getCurrentBanners();
 
-      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      final var response = (ConfigurationDTO) configController.getConfiguration().getBody();
       assertEquals(1, response.getBanners().size());
     }
 
@@ -88,7 +88,7 @@ class ConfigControllerTest {
 
       doReturn(banners).when(iaBannerService).getCurrentBanners();
 
-      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      final var response = (ConfigurationDTO) configController.getConfiguration().getBody();
       assertEquals(0, response.getBanners().size());
     }
 
@@ -96,20 +96,20 @@ class ConfigControllerTest {
     void getConfigurationReturnsPrivatePractitionerHost() {
       final String ppHost = "min_sida";
       ReflectionTestUtils.setField(configController, "ppHost", ppHost);
-      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      final var response = (ConfigurationDTO) configController.getConfiguration().getBody();
       assertEquals(ppHost, response.getPpHost());
     }
 
     @Test
     void shouldReturnIdpConnectUrlsAsEmptyListWhenConfigIsNull() {
-      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      final var response = (ConfigurationDTO) configController.getConfiguration().getBody();
       assertEquals(List.of(), response.getIdpConnectUrls());
     }
 
     @Test
     void shouldReturnIdpConnectUrlsAsEmptyListWhenConfigIsEmpty() {
       ReflectionTestUtils.setField(configController, "idpConnectUrls", "");
-      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      final var response = (ConfigurationDTO) configController.getConfiguration().getBody();
       assertEquals(List.of(), response.getIdpConnectUrls());
     }
 
@@ -119,7 +119,7 @@ class ConfigControllerTest {
 
       ReflectionTestUtils.setField(
           configController, "idpConnectUrls", "https://idp1.example.com,https://idp2.example.com");
-      final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+      final var response = (ConfigurationDTO) configController.getConfiguration().getBody();
       assertEquals(expected, response.getIdpConnectUrls());
     }
   }

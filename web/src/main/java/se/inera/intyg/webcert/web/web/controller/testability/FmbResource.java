@@ -20,17 +20,20 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 
 @Api(value = "testability fmb", description = "REST API för testbarhet - FMB")
-@Path("/fmb")
+@RestController
+@RequestMapping("/testability/fmbtest")
+@Profile({"dev", "testability-api"})
 public class FmbResource {
 
   @Autowired private Optional<FmbService> fmbService;
@@ -41,16 +44,15 @@ public class FmbResource {
    * waiting for the automatic population that happens once each day. It is also the only way I
    * could figure out to invoke it from the browser session in the Fitnesse tests.
    */
-  @GET
-  @Path("/updatefmbdata")
-  @Produces(MediaType.APPLICATION_JSON)
+  @GetMapping("/updatefmbdata")
   @JsonPropertyDescription("Update FMB data")
-  public Response updateFmbData() {
+  public ResponseEntity<String> updateFmbData() {
     if (fmbService.isPresent()) {
       fmbService.get().updateData();
-      return Response.ok().build();
+      return ResponseEntity.<String>ok().build();
     } else {
-      return Response.serverError().entity("FMB Service not running").build();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("FMB Service not running");
     }
   }
 }

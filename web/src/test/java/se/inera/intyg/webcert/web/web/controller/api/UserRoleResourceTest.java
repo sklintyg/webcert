@@ -65,8 +65,7 @@ class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
     Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
     // When
-    final Collection<String> rolesResponse =
-        (Collection<String>) userResource.getUserRoles().getEntity();
+    final Collection<String> rolesResponse = userResource.getUserRoles().getBody();
 
     // Then
     assertArrayEquals(new String[] {role.getName()}, rolesResponse.toArray());

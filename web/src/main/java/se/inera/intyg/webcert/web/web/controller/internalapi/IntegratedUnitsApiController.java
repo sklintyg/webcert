@@ -19,52 +19,47 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.integreradeenheter.IntegratedUnitDTO;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.integreradeenheter.IntegreradeEnheterService;
 
-@Path("/integratedUnits")
-@Api(value = "/internalapi/integratedUnits", produces = MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping("/internalapi/integratedUnits")
+@Api(value = "/internalapi/integratedUnits", produces = "application/json")
 public class IntegratedUnitsApiController {
-
-  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
   @Autowired private IntegreradeEnheterService integreradeEnheterService;
 
-  @GET
-  @Path("/{hsaId}")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/{hsaId}")
   @PerformanceLogging(
       eventAction = "integrated-units-get-integrated-unit",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getIntegratedUnit(@PathParam("hsaId") String hsaId) {
+  public ResponseEntity<IntegratedUnitDTO> getIntegratedUnit(@PathVariable("hsaId") String hsaId) {
 
     Optional<IntegratedUnitDTO> unit = integreradeEnheterService.getIntegratedUnit(hsaId);
 
     if (!unit.isPresent()) {
-      return Response.status(Status.NOT_FOUND).build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
-    return Response.ok(unit.get()).build();
+    return ResponseEntity.ok(unit.get());
   }
 
-  @GET
-  @Path("/all")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/all")
   @PerformanceLogging(
       eventAction = "integrated-units-get-all-integrated-unit",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getAllIntegratedUnits() {
-    return Response.ok(integreradeEnheterService.getAllIntegratedUnits()).build();
+  public ResponseEntity<List<IntegratedUnitDTO>> getAllIntegratedUnits() {
+    return ResponseEntity.ok(integreradeEnheterService.getAllIntegratedUnits());
   }
 }

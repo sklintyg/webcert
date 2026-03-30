@@ -18,13 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -35,17 +32,13 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommu
 
 @RequiredArgsConstructor
 @RestController
-@Path("/unanswered-communication")
+@RequestMapping("/internalapi/unanswered-communication")
 public class UnansweredCommunicationController {
 
-  private static final String UTF_8_CHARSET = ";charset=utf-8";
   private final GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
 
-  @POST
-  @Path("/")
+  @PostMapping("/")
   @PrometheusTimeMethod
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PerformanceLogging(
       eventAction = "unanswered-communications-get-unanswered",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

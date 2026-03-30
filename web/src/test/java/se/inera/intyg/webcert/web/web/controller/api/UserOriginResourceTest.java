@@ -58,7 +58,7 @@ class UserOriginResourceTest extends AuthoritiesConfigurationTestSetup {
     Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
     // When
-    final String originResponse = (String) userResource.getOrigin().getEntity();
+    final String originResponse = userResource.getOrigin().getBody();
 
     // Then
     assertEquals(origin, originResponse);
