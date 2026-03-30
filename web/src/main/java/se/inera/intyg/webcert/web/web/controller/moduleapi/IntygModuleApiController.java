@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,13 +48,14 @@ public class IntygModuleApiController extends AbstractApiController {
 
   private static final String CONTENT_DISPOSITION = "Content-Disposition";
 
-  @Autowired private PrintCertificateAggregator printCertificateAggregator;
+  @Autowired
+  private PrintCertificateAggregator printCertificateAggregator;
 
   /**
    * Return the signed certificate identified by the given id as PDF.
    *
    * @param intygsTyp the type of certificate
-   * @param intygsId - the globally unique id of a certificate.
+   * @param intygsId  - the globally unique id of a certificate.
    * @return The certificate in PDF format
    */
   @GetMapping("/{intygsTyp}/{intygsId}/pdf")
@@ -72,7 +74,7 @@ public class IntygModuleApiController extends AbstractApiController {
    * patient.
    *
    * @param intygsTyp the type of certificate
-   * @param intygsId - the globally unique id of a certificate.
+   * @param intygsId  - the globally unique id of a certificate.
    * @return The certificate in PDF format
    */
   @GetMapping("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")
@@ -103,6 +105,7 @@ public class IntygModuleApiController extends AbstractApiController {
             : "inline";
 
     return ResponseEntity.ok()
+        .contentType(MediaType.APPLICATION_PDF)
         .header(CONTENT_DISPOSITION, contentDisposition)
         .body(response.getPdfData());
   }
