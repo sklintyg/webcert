@@ -20,12 +20,6 @@ package se.inera.intyg.webcert.integration.fmb.stub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -33,7 +27,11 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
@@ -41,8 +39,9 @@ import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
 
-@Service("fmbStub")
-@Path("/")
+@RestController
+@Profile({"dev", "wc-all-stubs", "wc-fmb-stub"})
+@RequestMapping("/stubs/fmbstubs")
 public class FmbStub {
 
   private static final Logger LOG = LoggerFactory.getLogger(FmbStub.class);
@@ -51,26 +50,20 @@ public class FmbStub {
   // several models used in parsing fmb data.
   private static final ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module());
 
-  @GET
-  @Path("typfall")
-  @Produces({MediaType.APPLICATION_JSON})
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response getTypfall() throws IOException {
+  @GetMapping("/typfall")
+  public ResponseEntity<String> getTypfall() throws IOException {
     final URL typfallJson = getClass().getResource("/TypfallStubResponse.json");
     final Typfall typfall = mapper.readValue(typfallJson, Typfall.class);
     addHardcodedInfo(typfall);
-    return Response.ok(mapper.writeValueAsString(typfall)).build();
+    return ResponseEntity.ok(mapper.writeValueAsString(typfall));
   }
 
-  @GET
-  @Path("forsakringsmedicinskdiagnosinformation")
-  @Produces({MediaType.APPLICATION_JSON})
-  @Consumes({MediaType.APPLICATION_JSON})
-  public Response getForsakringsmedicinskDiagnosinformation() throws IOException {
+  @GetMapping("/forsakringsmedicinskdiagnosinformation")
+  public ResponseEntity<String> getForsakringsmedicinskDiagnosinformation() throws IOException {
     final URL typfallJson = getClass().getResource("/FmdxInfoStubResponse.json");
     final FmdxInformation fmdxInformation = mapper.readValue(typfallJson, FmdxInformation.class);
     addHardcodedInfo(fmdxInformation);
-    return Response.ok(mapper.writeValueAsString(fmdxInformation)).build();
+    return ResponseEntity.ok(mapper.writeValueAsString(fmdxInformation));
   }
 
   private <T> T copy(T model, Class<T> tClass) throws IOException {

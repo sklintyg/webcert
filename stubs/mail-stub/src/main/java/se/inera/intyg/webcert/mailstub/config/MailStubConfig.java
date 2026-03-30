@@ -16,35 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.mailstub;
+package se.inera.intyg.webcert.mailstub.config;
 
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import se.inera.intyg.webcert.mailstub.JavaMailSenderAroundAdvice;
 
-/**
- * @author andreaskaltenbach
- */
-@RestController
+@Configuration
 @Profile("dev")
-@RequestMapping("/api/mail-api/mails")
-public class MailStubRestApi {
+public class MailStubConfig {
 
-  @Autowired private MailStore mailStore;
+  @Value("${mail.host}")
+  private String mailHost;
 
-  @GetMapping
-  public List<OutgoingMail> mails() {
-    return mailStore.getMails();
-  }
-
-  @DeleteMapping
-  public ResponseEntity<Void> deleteMailbox() {
-    mailStore.getMails().clear();
-    return ResponseEntity.ok().build();
+  @Bean
+  public JavaMailSenderAroundAdvice mailAdvice() {
+    JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
+    advice.setMailHost(mailHost);
+    return advice;
   }
 }

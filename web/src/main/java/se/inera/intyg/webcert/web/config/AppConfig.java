@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
@@ -36,16 +37,31 @@ import se.inera.intyg.webcert.integration.fmb.config.FmbServicesConfig;
 import se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig;
 import se.inera.intyg.webcert.integration.servicenow.config.ServiceNowIntegrationConfig;
 import se.inera.intyg.webcert.integration.servicenow.stub.config.ServiceNowStubConfig;
+import se.inera.intyg.webcert.mailstub.config.MailStubConfig;
+import se.inera.intyg.webcert.notificationstub.config.NotificationStubDataConfig;
 
 @Configuration
 @DependsOn("dbUpdate")
 @RequiredArgsConstructor
 @EnableTransactionManagement
-@ComponentScan("se.inera.intyg.webcert.common")
-@Import({LoggingConfig.class, JmsConfig.class, CacheConfig.class, JobConfig.class,
+@ComponentScans({
+    @ComponentScan("se.inera.intyg.webcert.common"),
+    @ComponentScan("se.inera.intyg.webcert.mailstub")
+})
+@Import({
+    LoggingConfig.class,
+    JmsConfig.class,
+    CacheConfig.class,
+    JobConfig.class,
     MailConfig.class,
-    FmbServicesConfig.class, ServiceNowIntegrationConfig.class, ServiceNowStubConfig.class,
-    CertificateAnalyticsServiceIntegrationConfig.class, PrivatePractitionerRestClientConfig.class})
+    MailStubConfig.class,
+    FmbServicesConfig.class,
+    ServiceNowIntegrationConfig.class,
+    ServiceNowStubConfig.class,
+    CertificateAnalyticsServiceIntegrationConfig.class,
+    PrivatePractitionerRestClientConfig.class,
+    NotificationStubDataConfig.class
+})
 public class AppConfig implements TransactionManagementConfigurer {
 
   private final JpaTransactionManager transactionManager;

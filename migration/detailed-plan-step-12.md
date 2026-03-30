@@ -191,11 +191,11 @@ After Step 12:
 | 12.5 | Create `MailConfig.java` replacing `mail-config.xml` | Low | ✅ DONE |
 | 12.6 | Merge `web-servlet.xml` into `WebMvcConfiguration.java` | Medium | ✅ DONE |
 | **Phase C: Convert Stub XML Contexts** | | | |
-| 12.7 | Convert `notification-stub-context.xml` → `NotificationStubConfig.java` | Medium | ⬜ |
-| 12.8 | Convert mail-stub XML contexts → `MailStubConfig.java` | Medium | ⬜ |
-| 12.9 | Convert `fmb-stub-context.xml` → `FmbStubConfig.java` | Medium | ⬜ |
-| 12.10 | Handle `servicenow-stub-context.xml` | Low | ⬜ |
-| 12.11 | Remove `jacksonJsonProvider` bean and JAX-RS JSON provider dependency | Low | ⬜ |
+| 12.7 | Convert `notification-stub-context.xml` → `NotificationStubConfig.java` | Medium | ✅ DONE |
+| 12.8 | Convert mail-stub XML contexts → `MailStubConfig.java` | Medium | ✅ |
+| 12.9 | Convert `fmb-stub-context.xml` → `FmbStubConfig.java` | Medium | ✅ |
+| 12.10 | Handle `servicenow-stub-context.xml` | Low | ✅ |
+| 12.11 | Remove `jacksonJsonProvider` bean and JAX-RS JSON provider dependency | Low | ✅ |
 | **Phase D: Convert CXF Configuration** | | | |
 | 12.12 | Create `CxfWsClientConfig.java` replacing `ws-config.xml` | ⚠️ High | ⬜ |
 | 12.13 | Create `CxfEndpointConfig.java` replacing `services-cxf-servlet.xml` | ⚠️ High | ⬜ |

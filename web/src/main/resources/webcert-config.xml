@@ -28,7 +28,6 @@
 
 	<context:annotation-config/>
 	<import resource="ws-config.xml"/>
-	<import resource="classpath:mail-stub-context.xml"/>
 	<import resource="classpath:common-config.xml"/>
 	<import resource="classpath*:module-config.xml"/>
 	<import resource="classpath*:wc-module-cxf-servlet.xml"/>
@@ -127,13 +126,6 @@
 		<!-- JSON mappers and providers -->
 		<bean id="objectMapper"
 				class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
-
-		<bean id="jacksonJsonProvider"
-				class="com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider">
-			<property name="mapper">
-				<bean class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
-			</property>
-		</bean>
 
 		<!-- Thread pool for BankID GRP collect tasks. -->
 		<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">

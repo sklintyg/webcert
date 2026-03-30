@@ -45,8 +45,6 @@ public class SrsStubConfiguration {
 
   @Autowired private Bus bus;
 
-  @Autowired private JacksonJsonProvider jacksonJsonProvider;
-
   @Bean
   public ConsentRepository consentRepository() {
     return new ConsentRepository();
@@ -135,7 +133,7 @@ public class SrsStubConfiguration {
     factory.setBus(bus);
     factory.setAddress("/stubs/srs-statistics-stub");
     factory.setServiceBeans(Arrays.asList(statisticsImageStub));
-    factory.setProviders(Arrays.asList(jacksonJsonProvider));
+    factory.setProviders(Arrays.asList(new JacksonJsonProvider()));
     Map<Object, Object> extensionMappings = new HashMap<>();
     extensionMappings.put("json", "application/json");
     extensionMappings.put("jpg", "image/jpeg");

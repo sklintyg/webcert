@@ -37,8 +37,6 @@ public class IAStubConfiguration {
 
   @Autowired private Bus bus;
 
-  @Autowired private JacksonJsonProvider jacksonJsonProvider;
-
   @Bean
   public IAStubRestApi iaStubRestApi() {
     return new IAStubRestApi();
@@ -50,7 +48,7 @@ public class IAStubConfiguration {
     factory.setBus(bus);
     factory.setAddress("/api/ia-api");
     factory.setServiceBeans(Arrays.asList(iaStubRestApi));
-    factory.setProviders(Arrays.asList(jacksonJsonProvider));
+    factory.setProviders(Arrays.asList(new JacksonJsonProvider()));
     Map<Object, Object> extensionMappings = new HashMap<>();
     extensionMappings.put("json", "application/json");
     factory.setExtensionMappings(extensionMappings);
