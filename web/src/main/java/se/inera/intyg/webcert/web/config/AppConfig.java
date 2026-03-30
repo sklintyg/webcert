@@ -45,22 +45,22 @@ import se.inera.intyg.webcert.notificationstub.config.NotificationStubDataConfig
 @RequiredArgsConstructor
 @EnableTransactionManagement
 @ComponentScans({
-    @ComponentScan("se.inera.intyg.webcert.common"),
-    @ComponentScan("se.inera.intyg.webcert.mailstub")
+  @ComponentScan("se.inera.intyg.webcert.common"),
+  @ComponentScan("se.inera.intyg.webcert.mailstub")
 })
 @Import({
-    LoggingConfig.class,
-    JmsConfig.class,
-    CacheConfig.class,
-    JobConfig.class,
-    MailConfig.class,
-    MailStubConfig.class,
-    FmbServicesConfig.class,
-    ServiceNowIntegrationConfig.class,
-    ServiceNowStubConfig.class,
-    CertificateAnalyticsServiceIntegrationConfig.class,
-    PrivatePractitionerRestClientConfig.class,
-    NotificationStubDataConfig.class
+  LoggingConfig.class,
+  JmsConfig.class,
+  CacheConfig.class,
+  JobConfig.class,
+  MailConfig.class,
+  MailStubConfig.class,
+  FmbServicesConfig.class,
+  ServiceNowIntegrationConfig.class,
+  ServiceNowStubConfig.class,
+  CertificateAnalyticsServiceIntegrationConfig.class,
+  PrivatePractitionerRestClientConfig.class,
+  NotificationStubDataConfig.class
 })
 public class AppConfig implements TransactionManagementConfigurer {
 
