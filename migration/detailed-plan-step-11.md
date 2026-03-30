@@ -60,7 +60,15 @@ endpoints at `/services/*` remain on CXF.
 ### Test Infrastructure
 
 - **34 test files** — all Mockito unit tests with direct method invocation (no MockMvc, no CXF test containers)
-- **12 test files** reference `jakarta.ws.rs.core.Response` — require update
+- **8 controller test files** reference `jakarta.ws.rs.core.Response` — require update:
+  - `StatModuleApiControllerTest`
+  - `UserIntegrationControllerTest`
+  - `IntygIntegrationControllerTest`
+  - `SignatureApiControllerTest`
+  - `PrivatePractitionerApiControllerTest`
+  - `JsLogApiControllerTest`
+  - `InvalidateSessionApiControllerTest`
+  - `FmbApiControllerTest`
 - **0 test files** use HTTP-level testing
 - Testing pattern: `@ExtendWith(MockitoExtension.class)` + `@InjectMocks` + `@Mock`
 
@@ -129,9 +137,9 @@ the controller is no longer in a CXF servlet mapped to that prefix.
 | **Phase A: Spring MVC Infrastructure** | | | |
 | 11.1 | Register CustomObjectMapper for Spring MVC | Low | ⬜ TODO |
 | 11.2 | Create @RestControllerAdvice — REST exception handler | Medium | ⬜ TODO |
-| 11.3 | Create @ControllerAdvice — redirect exception handler | Medium | ⬜ TODO |
+| 11.3 | Refactor ReactUriFactory — remove UriInfo dependency | Medium | ⬜ TODO |
 | 11.4 | Create Spring MVC parameter converters | Low | ⬜ TODO |
-| 11.5 | Refactor ReactUriFactory — remove UriInfo dependency | Medium | ⬜ TODO |
+| 11.5 | Create @ControllerAdvice — redirect exception handler *(depends on 11.3)* | Medium | ⬜ TODO |
 | **Phase B: Controller Group Conversion** | | | |
 | 11.6 | Convert `/internalapi/*` controllers (8 controllers) | Medium | ⬜ TODO |
 | 11.7 | Convert `/api/*` controllers (22 controllers) | ⚠️ High | ⬜ TODO |
@@ -251,47 +259,52 @@ the `testability.facade` sub-package and are covered by the `testability.facade`
 
 ---
 
-### Sub-step 11.3 — Create @ControllerAdvice — redirect exception handler
+### Sub-step 11.3 — Refactor ReactUriFactory — remove UriInfo dependency
 
-**What:** Create a `@ControllerAdvice` class replacing `WebcertRedirectIntegrationExceptionHandler`.
+**What:** Change `ReactUriFactory` to accept `HttpServletRequest` instead of JAX-RS `UriInfo`.
 
-**Why:** Integration controllers (`/visa/*`, `/webcert/web/user/*`) respond with HTTP 303 redirects
-to error pages instead of JSON responses.
+**Why:** `ReactUriFactory` is used by integration controllers and the redirect exception handler.
+It currently uses `UriInfo.getBaseUriBuilder()` which is a JAX-RS API.
 
-**Current behavior to preserve:**
-- `MissingSubscriptionException` → redirect with `errorReason=auth-exception-subscription`
-- `AuthoritiesException` → redirect with `errorReason=auth-exception` (or `-sekretessmarkering`,
-  `-user-already-active` based on message content)
-- `WebCertServiceException(PU_PROBLEM)` → redirect with `errorReason=pu-problem`
-- Other `WebCertServiceException` → redirect with mapped `errorReason`
-- Other `RuntimeException` → redirect with `errorReason=unknown`
+**⚠️ This must be done before sub-step 11.5** (the redirect exception handler calls the new
+`HttpServletRequest`-based API).
 
-**Dependency:** Sub-step 11.5 (ReactUriFactory refactoring) should be done first, since this
-handler calls `ReactUriFactory.uriForErrorResponse()`.
+**Pre-work — identify all callers:**
+```bash
+grep -r "reactUriFactory\." --include="*.java" web/src/main/java/
+```
+Expected callers: `WebcertRedirectIntegrationExceptionHandler` and potentially
+`IntygIntegrationController`, `LaunchIntegrationController`, `FragaSvarUthoppController`.
+Confirm before changing signatures.
 
-**Changes:**
-1. Create `web/src/main/java/se/inera/intyg/webcert/web/web/handlers/WebcertRedirectExceptionHandlerAdvice.java`:
-   ```java
-   @ControllerAdvice(basePackages = {
-       "se.inera.intyg.webcert.web.web.controller.integration",
-       "se.inera.intyg.webcert.web.web.controller.legacyintegration"
-   })
-   public class WebcertRedirectExceptionHandlerAdvice {
+**Current API:**
+```java
+public URI uriForCertificate(UriInfo uriInfo, String certificateId)
+public URI uriForCertificateWithSignError(UriInfo uriInfo, String certId, SignaturStatus status)
+public URI uriForErrorResponse(UriInfo uriInfo, String errorReason)
+public URI uriForCertificateQuestions(UriInfo uriInfo, String certificateId)
+public URI uriForUnitSelection(UriInfo uriInfo, String certificateId)
+```
 
-       @Autowired
-       private ReactUriFactory reactUriFactory;
+**New API:**
+```java
+public URI uriForCertificate(HttpServletRequest request, String certificateId)
+public URI uriForCertificateWithSignError(HttpServletRequest request, String certId, SignaturStatus status)
+public URI uriForErrorResponse(HttpServletRequest request, String errorReason)
+public URI uriForCertificateQuestions(HttpServletRequest request, String certificateId)
+public URI uriForUnitSelection(HttpServletRequest request, String certificateId)
+```
 
-       @ExceptionHandler(RuntimeException.class)
-       public ResponseEntity<Void> handleException(
-               RuntimeException ex, HttpServletRequest request) {
-           // Determine errorReason from exception type/message
-           // Build redirect URI via reactUriFactory.uriForErrorResponse(request, reason)
-           // Return ResponseEntity.status(303).location(uri).build()
-       }
-   }
-   ```
+**URI building replacement:**
+- Old: `uriInfo.getBaseUriBuilder().replacePath("/")`
+- New: `ServletUriComponentsBuilder.fromRequest(request).replacePath("/")` (from Spring Web)
 
-**Verification:** `./gradlew compileJava`
+**Files to modify:**
+- `ReactUriFactory.java` — change method signatures and URI building
+- `ReactUriFactoryTest.java` — replace `UriInfo` mocks with `MockHttpServletRequest`
+- All callers confirmed by the pre-work grep above
+
+**Verification:** `./gradlew compileJava` + `./gradlew :web:test --tests "*ReactUriFactory*"`
 
 ---
 
@@ -327,42 +340,53 @@ public void addFormatters(FormatterRegistry registry) {
 
 ---
 
-### Sub-step 11.5 — Refactor ReactUriFactory — remove UriInfo dependency
+### Sub-step 11.5 — Create @ControllerAdvice — redirect exception handler
 
-**What:** Change `ReactUriFactory` to accept `HttpServletRequest` instead of JAX-RS `UriInfo`.
+**What:** Create a `@ControllerAdvice` class replacing `WebcertRedirectIntegrationExceptionHandler`.
 
-**Why:** `ReactUriFactory` is used by integration controllers and the redirect exception handler.
-It currently uses `UriInfo.getBaseUriBuilder()` which is a JAX-RS API.
+**Why:** Integration controllers (`/visa/*`, `/webcert/web/user/*`) respond with HTTP 303 redirects
+to error pages instead of JSON responses.
 
-**Current API:**
-```java
-public URI uriForCertificate(UriInfo uriInfo, String certificateId)
-public URI uriForCertificateWithSignError(UriInfo uriInfo, String certId, SignaturStatus status)
-public URI uriForErrorResponse(UriInfo uriInfo, String errorReason)
-public URI uriForCertificateQuestions(UriInfo uriInfo, String certificateId)
-public URI uriForUnitSelection(UriInfo uriInfo, String certificateId)
-```
+**Dependency:** Sub-step 11.3 (ReactUriFactory refactoring) must be completed first — this
+handler calls `ReactUriFactory.uriForErrorResponse(request, ...)` which uses the new
+`HttpServletRequest`-based signature introduced in 11.3.
 
-**New API:**
-```java
-public URI uriForCertificate(HttpServletRequest request, String certificateId)
-public URI uriForCertificateWithSignError(HttpServletRequest request, String certId, SignaturStatus status)
-public URI uriForErrorResponse(HttpServletRequest request, String errorReason)
-public URI uriForCertificateQuestions(HttpServletRequest request, String certificateId)
-public URI uriForUnitSelection(HttpServletRequest request, String certificateId)
-```
+**Current behavior to preserve:**
+- `MissingSubscriptionException` → redirect with `errorReason=auth-exception-subscription`
+- `AuthoritiesException` → redirect with `errorReason=auth-exception` (or `-sekretessmarkering`,
+  `-user-already-active` based on message content)
+- `WebCertServiceException(PU_PROBLEM)` → redirect with `errorReason=pu-problem`
+- Other `WebCertServiceException` → redirect with mapped `errorReason`
+- Other `RuntimeException` → redirect with `errorReason=unknown`
 
-**URI building replacement:**
-- Old: `uriInfo.getBaseUriBuilder().replacePath("/")`
-- New: `ServletUriComponentsBuilder.fromRequest(request).replacePath("/")` (from Spring Web)
+**⚠️ Field injection change:** The existing `WebcertRedirectIntegrationExceptionHandler` has a
+field-level `@Context UriInfo uriInfo` injection (JAX-RS context injection). The new class must
+**remove this field entirely** — there is no equivalent field injection in Spring MVC.
+Instead, inject `HttpServletRequest` as a **method parameter** in each `@ExceptionHandler` method.
 
-**Files to modify:**
-- `ReactUriFactory.java` — change method signatures and URI building
-- `ReactUriFactoryTest.java` — replace `UriInfo` mocks with `MockHttpServletRequest`
-- All callers: `IntygIntegrationController`, `LaunchIntegrationController`,
-  `FragaSvarUthoppController`, and any integration controllers that pass `UriInfo`
+**Changes:**
+1. Create `web/src/main/java/se/inera/intyg/webcert/web/web/handlers/WebcertRedirectExceptionHandlerAdvice.java`:
+   ```java
+   @ControllerAdvice(basePackages = {
+       "se.inera.intyg.webcert.web.web.controller.integration",
+       "se.inera.intyg.webcert.web.web.controller.legacyintegration"
+   })
+   public class WebcertRedirectExceptionHandlerAdvice {
 
-**Verification:** `./gradlew compileJava` + `./gradlew :web:test --tests "*ReactUriFactory*"`
+       @Autowired
+       private ReactUriFactory reactUriFactory;
+
+       @ExceptionHandler(RuntimeException.class)
+       public ResponseEntity<Void> handleException(
+               RuntimeException ex, HttpServletRequest request) {
+           // Determine errorReason from exception type/message
+           // Build redirect URI via reactUriFactory.uriForErrorResponse(request, reason)
+           // Return ResponseEntity.status(303).location(uri).build()
+       }
+   }
+   ```
+
+**Verification:** `./gradlew compileJava`
 
 ---
 
@@ -446,8 +470,12 @@ context's broad scan is cleaned up in Step 12.
 - Add `<url-pattern>/internalapi/*</url-pattern>` to `web` DispatcherServlet mapping
 - Remove `internalapi` CXF servlet definition and mapping
 
-**Note:** `internalapi-cxf-servlet.xml` has a `<context:property-placeholder>` for
-`application.properties`. Verify the parent context already provides this — if not, add it.
+**Note:** `internalapi-cxf-servlet.xml` has two `<context:property-placeholder>` entries:
+`classpath:application.properties` and `${dev.config.file}` (a dev-environment override).
+Verify that the root application context (loaded from `webcert-config.xml`) already resolves
+both. The `${dev.config.file}` variable is typically only set in dev-profile contexts — confirm
+it is provided at the root level or is not referenced by any bean that gets moved to the root
+context. If not, add it to the dev profile configuration.
 
 **Verification:** `./gradlew compileJava` + `./gradlew test --parallel`
 
@@ -693,7 +721,7 @@ the import; all beans are in the context file).
 | FmbResource | `testability` | `/fmbtest` | `/testability/fmbtest` |
 | IntegreradEnhetResource | `testability` | `/integreradenhettest` | `/testability/integreradenhettest` |
 | CertificateTestabilityController | `testability.facade` | `/certificate` | `/testability/certificate` |
-| FakeLoginTestabilityController | `testability.facade` | `/fake-login` | `/testability/fake-login` |
+| FakeLoginTestabilityController | `testability.facade` | `/fake` | `/testability/fake` |
 | ConfigurationResource | `testability` | `/configuration` | `/testability/configuration` |
 | EventResource | `testability` | `/event` | `/testability/event` |
 | ReferensResource | `testability` | `/referenstest` | `/testability/referenstest` |
