@@ -97,20 +97,13 @@ public class SrsInfraServiceImpl implements SrsInfraService {
   private static final String CONSUMER_HSA_ID = "SE5565594230-B31";
   private static final String DIAGNOS_CODE_SYSTEM = "1.2.752.116.1.1.1.1.3";
 
-  @Autowired
-  private GetSRSInformationResponderInterface getSRSInformation;
-  @Autowired
-  private GetPredictionQuestionsResponderInterface getPrediction;
-  @Autowired
-  private GetConsentResponderInterface getConsent;
-  @Autowired
-  private SetConsentResponderInterface setConsent;
-  @Autowired
-  private GetDiagnosisCodesResponderInterface getDiagnosisCodes;
-  @Autowired
-  private GetSRSInformationForDiagnosisResponderInterface getSRSInformationForDiagnosis;
-  @Autowired
-  private SetOwnOpinionResponderInterface setOwnOpinion;
+  @Autowired private GetSRSInformationResponderInterface getSRSInformation;
+  @Autowired private GetPredictionQuestionsResponderInterface getPrediction;
+  @Autowired private GetConsentResponderInterface getConsent;
+  @Autowired private SetConsentResponderInterface setConsent;
+  @Autowired private GetDiagnosisCodesResponderInterface getDiagnosisCodes;
+  @Autowired private GetSRSInformationForDiagnosisResponderInterface getSRSInformationForDiagnosis;
+  @Autowired private SetOwnOpinionResponderInterface setOwnOpinion;
 
   @Override
   public SrsResponse getSrs(
@@ -436,7 +429,7 @@ public class SrsInfraServiceImpl implements SrsInfraService {
   private boolean hasAtgardsrekommendationWithDiagnosisCode(
       GetSRSInformationForDiagnosisResponseType response) {
     return response.getAtgardsrekommendation().getAtgardsrekommendationstatus()
-        != Atgardsrekommendationstatus.INFORMATION_SAKNAS
+            != Atgardsrekommendationstatus.INFORMATION_SAKNAS
         && response.getAtgardsrekommendation().getDiagnos() != null;
   }
 

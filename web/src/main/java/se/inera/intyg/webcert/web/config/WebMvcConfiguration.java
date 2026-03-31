@@ -45,15 +45,21 @@ import se.inera.intyg.common.util.integration.json.CustomLocalDateTimeDeserializ
 @ComponentScan(
     value = "se.inera.intyg.webcert.integration.fmb.stub",
     excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = Configuration.class))
+@ComponentScan(
+    value = {
+      "se.inera.intyg.webcert.integration.servicenow.stub.api",
+      "se.inera.intyg.webcert.integration.servicenow.stub.settings.api"
+    },
+    excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = Configuration.class))
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
   @Autowired private ObjectMapper objectMapper;
 
   /**
    * Ensures {@link CustomLocalDateTimeDeserializer} is used for all {@code LocalDateTime} JSON
-   * deserialization, overriding any module-registered deserializer (e.g. from JavaTimeModule).
-   * The mixin takes precedence over module registrations, so date-only strings such as
-   * {@code "2025-12-31"} are correctly parsed to start-of-day without per-field annotations.
+   * deserialization, overriding any module-registered deserializer (e.g. from JavaTimeModule). The
+   * mixin takes precedence over module registrations, so date-only strings such as {@code
+   * "2025-12-31"} are correctly parsed to start-of-day without per-field annotations.
    */
   @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
   private abstract static class LocalDateTimeMixin {}

@@ -37,8 +37,7 @@ import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
 @Profile({"dev"})
 public class SrsStubConfiguration {
 
-  @Autowired
-  private Bus bus;
+  @Autowired private Bus bus;
 
   @Bean
   public ConsentRepository consentRepository() {

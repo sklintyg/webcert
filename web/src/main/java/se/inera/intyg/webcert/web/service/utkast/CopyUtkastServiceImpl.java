@@ -85,88 +85,62 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
   public static final String ORIGINAL_CERTIFICATE_IS_REVOKED = "Original certificate is revoked";
   public static final String CREATE_RENEWAL = "create renewal";
   private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
-  @Autowired
-  private IntygService intygService;
+  @Autowired private IntygService intygService;
+
+  @Autowired private CertificateRelationService certificateRelationService;
+
+  @Autowired private UtkastRepository utkastRepository;
+
+  @Autowired private PUService puService;
 
   @Autowired
-  private CertificateRelationService certificateRelationService;
+  @Qualifier("copyCompletionUtkastBuilder") private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
 
   @Autowired
-  private UtkastRepository utkastRepository;
+  @Qualifier("createRenewalCopyUtkastBuilder") private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
 
   @Autowired
-  private PUService puService;
+  @Qualifier("createReplacementUtkastBuilder") private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
 
   @Autowired
-  @Qualifier("copyCompletionUtkastBuilder")
-  private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
+  @Qualifier("createUtkastFromTemplateBuilder") private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastFromTemplateBuilder;
 
   @Autowired
-  @Qualifier("createRenewalCopyUtkastBuilder")
-  private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
+  @Qualifier("createUtkastCopyBuilder") private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastCopyBuilder;
 
-  @Autowired
-  @Qualifier("createReplacementUtkastBuilder")
-  private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
+  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-  @Autowired
-  @Qualifier("createUtkastFromTemplateBuilder")
-  private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastFromTemplateBuilder;
+  @Autowired private NotificationService notificationService;
 
-  @Autowired
-  @Qualifier("createUtkastCopyBuilder")
-  private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastCopyBuilder;
+  @Autowired private CertificateEventService certificateEventService;
 
-  @Autowired
-  private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  @Autowired private LogService logService;
 
-  @Autowired
-  private NotificationService notificationService;
+  @Autowired private LogRequestFactory logRequestFactory;
 
-  @Autowired
-  private CertificateEventService certificateEventService;
+  @Autowired private MonitoringLogService monitoringService;
 
-  @Autowired
-  private LogService logService;
+  @Autowired private WebCertUserService userService;
 
-  @Autowired
-  private LogRequestFactory logRequestFactory;
+  @Autowired private UtkastService utkastService;
 
-  @Autowired
-  private MonitoringLogService monitoringService;
+  @Autowired private ReferensService referensService;
 
-  @Autowired
-  private WebCertUserService userService;
+  @Autowired private UtkastServiceHelper utkastServiceHelper;
 
-  @Autowired
-  private UtkastService utkastService;
+  @Autowired private CertificateAccessServiceHelper certificateAccessServiceHelper;
 
-  @Autowired
-  private ReferensService referensService;
+  @Autowired private DraftAccessServiceHelper draftAccessServiceHelper;
 
-  @Autowired
-  private UtkastServiceHelper utkastServiceHelper;
+  @Autowired private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
-  @Autowired
-  private CertificateAccessServiceHelper certificateAccessServiceHelper;
+  @Autowired private PatientDetailsResolver patientDetailsResolver;
 
-  @Autowired
-  private DraftAccessServiceHelper draftAccessServiceHelper;
+  @Autowired private HashUtility hashUtility;
 
-  @Autowired
-  private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
+  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-  @Autowired
-  private PatientDetailsResolver patientDetailsResolver;
-
-  @Autowired
-  private HashUtility hashUtility;
-
-  @Autowired
-  private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-
-  @Autowired
-  private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
   @Override
   public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {
@@ -340,7 +314,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
    * First, check if the original certificate was issued as a test intyg. If not, check if the
    * patient currently have the testIndicator-flag.
    *
-   * @param copyRequest        Request to add the TestIntyg-flag for.
+   * @param copyRequest Request to add the TestIntyg-flag for.
    * @param isSourceATestIntyg If the source intyg is a test intyg.
    */
   private void addTestIntygFlagIfNecessaryToCopyRequest(

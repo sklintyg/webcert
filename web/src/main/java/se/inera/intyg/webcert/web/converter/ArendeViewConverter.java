@@ -55,11 +55,9 @@ public class ArendeViewConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
 
-  @Autowired
-  private IntygModuleRegistry moduleRegistry;
+  @Autowired private IntygModuleRegistry moduleRegistry;
 
-  @Autowired
-  private IntygService intygService;
+  @Autowired private IntygService intygService;
 
   private static String getThreadRootMessageId(Arende arende) {
     String referenceId =
@@ -140,12 +138,12 @@ public class ArendeViewConverter {
    *
    * <p>Note that all Arende must belong to the same intyg.
    *
-   * @param intygsId      the id of the intyg to which all the messages belong to
+   * @param intygsId the id of the intyg to which all the messages belong to
    * @param intygMessages a list of messages (Arende) relating to the same intyg
    * @param kompltToIntyg a list of kompletterande intyg for the given intyg, if any (empty list is
-   *                      allowed, null is not)
+   *     allowed, null is not)
    * @return A list of ArendeConversationView meant for frontend consumption or undefined if
-   * messages are not for the same intyg
+   *     messages are not for the same intyg
    */
   public List<ArendeConversationView> buildArendeConversations(
       String intygsId,

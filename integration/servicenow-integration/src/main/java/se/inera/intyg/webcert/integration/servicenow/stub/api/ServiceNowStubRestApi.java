@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.integration.servicenow.stub.api;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStub
 
 @RestController
 @RequiredArgsConstructor
+@Profile("(dev | wc-all-stubs | servicenow-integration-stub-v2) & !servicenow-integration-stub")
 @RequestMapping("/stubs/servicenowstub/api/nabia/v2/inera_services/services")
 public class ServiceNowStubRestApi {
 

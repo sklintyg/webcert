@@ -21,17 +21,22 @@ package se.inera.intyg.webcert.integration.servicenow.stub.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Slf4j
 @Profile("(dev | wc-all-stubs | servicenow-integration-stub-v2) & !servicenow-integration-stub")
+@Import(ServiceNowStubBeanConfig.class)
 @ComponentScan(
     basePackages = {
-      "se.inera.intyg.webcert.integration.servicenow.stub",
-      "se.inera.intyg.webcert.integration.servicenow.stub.settings"
+      "se.inera.intyg.webcert.integration.servicenow.stub.service",
+      "se.inera.intyg.webcert.integration.servicenow.stub.settings.service",
+      "se.inera.intyg.webcert.integration.servicenow.stub.settings.state"
     })
 public class ServiceNowStubConfig {
-  // ServiceNowStubRestApi and ServiceNowStubSettingsApi are @RestControllers
-  // and are auto-discovered by the component scan above.
+  /*
+   * REST controllers live in the DispatcherServlet context (WebMvcConfiguration) so that
+   * RequestMappingHandlerMapping registers them. Stub services/state stay in the root context.
+   */
 }
