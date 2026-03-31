@@ -18,46 +18,53 @@
  */
 package se.inera.intyg.webcert.infra.ia.stub;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
 import se.inera.intyg.webcert.infra.ia.cache.IaCacheConfiguration;
 
+@RestController
+@Profile("dev")
+@RequestMapping("/api/ia-api")
 public class IAStubRestApi {
 
   @Autowired private Cache iaCache;
 
-  @GET
-  @Path("/")
-  public Response getBanners() {
-    List<Banner> banners = queryCache();
-
-    return Response.ok(banners).build();
+  @GetMapping("")
+  public List<Banner> getBanners() {
+    return queryCache();
   }
 
-  @PUT
-  @Path("/banner")
-  @Consumes(MediaType.APPLICATION_JSON)
-  public Response addBanner(Banner banner) {
+  @PutMapping("/banner")
+  public ResponseEntity<Void> addBanner(@RequestBody Banner banner) {
     banner.setId(UUID.randomUUID());
-
     List<Banner> banners = queryCache();
     banners.add(banner);
-
     store(banners.toArray(new Banner[0]));
+    return ResponseEntity.ok().build();
+  }
 
-    return Response.ok().build();
+  /** Use to evict all clear all banners. */
+  @DeleteMapping("/cache")
+  public ResponseEntity<String> clearCache() {
+    try {
+      iaCache.clear();
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(e.getMessage());
+    }
   }
 
   private void store(Banner[] banners) {
@@ -66,23 +73,9 @@ public class IAStubRestApi {
 
   private List<Banner> queryCache() {
     Banner[] banners = iaCache.get(IaCacheConfiguration.CACHE_KEY, Banner[].class);
-
     if (banners == null) {
       return new ArrayList<>();
     }
-
     return new ArrayList<>(Arrays.asList(banners));
-  }
-
-  /** Use to evict all clear all banners. */
-  @DELETE
-  @Path("/cache")
-  public Response clearCache() {
-    try {
-      iaCache.clear();
-      return Response.ok().build();
-    } catch (Exception e) {
-      return Response.serverError().entity(e.getMessage()).build();
-    }
   }
 }

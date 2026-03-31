@@ -26,14 +26,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtabp20.v1.ReceiveMedicalCertificateAnswerResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponderInterface;
 import se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor;
 import se.inera.intyg.webcert.notificationstub.config.NotificationStubConfig;
-import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponderImpl;
-import se.inera.intyg.webcert.web.integration.interactions.getcertificateadditions.GetCertificateAdditionsResponderImpl;
-import se.inera.intyg.webcert.web.integration.interactions.listcertificatesforcarewithqa.ListCertificatesForCareWithQAResponderImpl;
-import se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate.ReceiveAnswerResponderImpl;
-import se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate.ReceiveQuestionResponderImpl;
-import se.inera.intyg.webcert.web.integration.interactions.sendmessagetocare.SendMessageToCareResponderImpl;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponderInterface;
 
 @Configuration
 @ComponentScan("se.inera.intyg.webcert.infra.srs.stub.config")
@@ -43,7 +43,7 @@ public class CxfEndpointConfig {
 
   @Bean
   public Endpoint createDraftCertificateEndpoint(
-      CreateDraftCertificateResponderImpl implementor, Bus bus) {
+      CreateDraftCertificateResponderInterface implementor, Bus bus) {
     EndpointImpl endpoint = new EndpointImpl(bus, implementor);
     endpoint.setSchemaLocations(
         List.of(
@@ -65,7 +65,8 @@ public class CxfEndpointConfig {
   }
 
   @Bean
-  public Endpoint receiveQuestionEndpoint(ReceiveQuestionResponderImpl implementor, Bus bus) {
+  public Endpoint receiveQuestionEndpoint(
+      ReceiveMedicalCertificateQuestionResponderInterface implementor, Bus bus) {
     EndpointImpl endpoint = new EndpointImpl(bus, implementor);
     endpoint
         .getOutFaultInterceptors()
@@ -75,7 +76,8 @@ public class CxfEndpointConfig {
   }
 
   @Bean
-  public Endpoint receiveAnswerEndpoint(ReceiveAnswerResponderImpl implementor, Bus bus) {
+  public Endpoint receiveAnswerEndpoint(
+      ReceiveMedicalCertificateAnswerResponderInterface implementor, Bus bus) {
     EndpointImpl endpoint = new EndpointImpl(bus, implementor);
     endpoint
         .getOutFaultInterceptors()
@@ -85,7 +87,8 @@ public class CxfEndpointConfig {
   }
 
   @Bean
-  public Endpoint sendMessageToCareEndpoint(SendMessageToCareResponderImpl implementor, Bus bus) {
+  public Endpoint sendMessageToCareEndpoint(
+      SendMessageToCareResponderInterface implementor, Bus bus) {
     EndpointImpl endpoint = new EndpointImpl(bus, implementor);
     endpoint.setSchemaLocations(
         List.of(
@@ -107,7 +110,7 @@ public class CxfEndpointConfig {
 
   @Bean
   public Endpoint listCertificatesForCareWithQaEndpoint(
-      ListCertificatesForCareWithQAResponderImpl implementor, Bus bus) {
+      ListCertificatesForCareWithQAResponderInterface implementor, Bus bus) {
     EndpointImpl endpoint = new EndpointImpl(bus, implementor);
     endpoint.setSchemaLocations(
         List.of(
@@ -124,7 +127,7 @@ public class CxfEndpointConfig {
 
   @Bean
   public Endpoint getCertificateAdditionsEndpoint(
-      GetCertificateAdditionsResponderImpl implementor, Bus bus) {
+      GetCertificateAdditionsResponderInterface implementor, Bus bus) {
     EndpointImpl endpoint = new EndpointImpl(bus, implementor);
     endpoint.setSchemaLocations(
         List.of(

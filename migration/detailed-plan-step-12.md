@@ -194,8 +194,9 @@ After Step 12:
 | 12.7 | Convert `notification-stub-context.xml` → `NotificationStubConfig.java` | Medium | ✅ DONE |
 | 12.8 | Convert mail-stub XML contexts → `MailStubConfig.java` | Medium | ✅ |
 | 12.9 | Convert `fmb-stub-context.xml` → `FmbStubConfig.java` | Medium | ✅ |
-| 12.10 | Handle `servicenow-stub-context.xml` | Low | ✅ |
-| 12.11 | Remove `jacksonJsonProvider` bean and JAX-RS JSON provider dependency | Low | ✅ |
+| 12.10 | Handle `servicenow-stub-context.xml` | Low | ✅ DONE |
+| 12.11 | Remove `jacksonJsonProvider` bean and JAX-RS JSON provider dependency | Low | ⚠️ PARTIAL — see 12.11b |
+| 12.11b | Convert IA, SRS, ServiceNow stub REST servers to `@RestController` (missed in 12.11 pre-check) | Medium | ✅ DONE |
 | **Phase D: Convert CXF Configuration** | | | |
 | 12.12 | Create `CxfWsClientConfig.java` replacing `ws-config.xml` | ⚠️ High | ✅ |
 | 12.13 | Create `CxfEndpointConfig.java` replacing `services-cxf-servlet.xml` | ⚠️ High | ✅ |

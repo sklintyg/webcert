@@ -27,9 +27,6 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
 	<context:annotation-config/>
-	<import resource="classpath:common-config.xml"/>
-	<import resource="classpath*:module-config.xml"/>
-	<import resource="classpath*:wc-module-cxf-servlet.xml"/>
 	<import resource="classpath:notification-sender-config.xml"/>
 
 	<context:component-scan base-package="se.inera.intyg.webcert.web"/>

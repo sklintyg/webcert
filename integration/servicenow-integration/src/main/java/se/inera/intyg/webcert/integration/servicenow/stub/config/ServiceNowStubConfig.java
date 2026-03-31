@@ -18,23 +18,13 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.stub.config;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.cxf.bus.spring.SpringBus;
-import org.apache.cxf.endpoint.Server;
-import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubRestApi;
-import se.inera.intyg.webcert.integration.servicenow.stub.settings.api.ServiceNowStubSettingsApi;
 
 @Configuration
 @Slf4j
-@RequiredArgsConstructor
 @Profile("(dev | wc-all-stubs | servicenow-integration-stub-v2) & !servicenow-integration-stub")
 @ComponentScan(
     basePackages = {
@@ -42,19 +32,6 @@ import se.inera.intyg.webcert.integration.servicenow.stub.settings.api.ServiceNo
       "se.inera.intyg.webcert.integration.servicenow.stub.settings"
     })
 public class ServiceNowStubConfig {
-
-  private final ServiceNowStubRestApi servicenowStubRestApi;
-  private final ServiceNowStubSettingsApi servicenowStubSettingsApi;
-
-  @Bean
-  public Server server(JacksonJsonProvider jacksonJsonProvider, SpringBus springBus) {
-    final var providers = List.of(jacksonJsonProvider);
-    final var endpoint = new JAXRSServerFactoryBean();
-    endpoint.setProviders(providers);
-    endpoint.setBus(springBus);
-    endpoint.setAddress("/stubs/servicenowstub");
-    endpoint.setServiceBeans(List.of(servicenowStubRestApi, servicenowStubSettingsApi));
-    log.info("Activating servicenow-integration-v2-stub for subscription queries");
-    return endpoint.create();
-  }
+  // ServiceNowStubRestApi and ServiceNowStubSettingsApi are @RestControllers
+  // and are auto-discovered by the component scan above.
 }

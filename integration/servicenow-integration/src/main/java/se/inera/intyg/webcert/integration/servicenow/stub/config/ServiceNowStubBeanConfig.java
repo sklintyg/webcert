@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.stub.config;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-import org.apache.cxf.Bus;
-import org.apache.cxf.bus.spring.SpringBus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -35,15 +32,5 @@ public class ServiceNowStubBeanConfig {
     propertySourcesPlaceholderConfigurer.setLocation(
         new ClassPathResource("application.properties"));
     return propertySourcesPlaceholderConfigurer;
-  }
-
-  @Bean
-  public JacksonJsonProvider getJsonProvider() {
-    return new JacksonJsonProvider();
-  }
-
-  @Bean(name = Bus.DEFAULT_BUS_ID)
-  public SpringBus springBus() {
-    return new SpringBus();
   }
 }

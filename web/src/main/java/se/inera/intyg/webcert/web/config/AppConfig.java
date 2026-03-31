@@ -31,6 +31,9 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
+import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.webcert.infra.security.common.cookie.IneraCookieSerializer;
 import se.inera.intyg.webcert.integration.analytics.config.CertificateAnalyticsServiceIntegrationConfig;
 import se.inera.intyg.webcert.integration.fmb.config.FmbServicesConfig;
@@ -39,29 +42,37 @@ import se.inera.intyg.webcert.integration.servicenow.config.ServiceNowIntegratio
 import se.inera.intyg.webcert.integration.servicenow.stub.config.ServiceNowStubConfig;
 import se.inera.intyg.webcert.mailstub.config.MailStubConfig;
 import se.inera.intyg.webcert.notificationstub.config.NotificationStubDataConfig;
+import se.inera.intyg.webcert.persistence.config.JpaConfigBase;
 
 @Configuration
 @DependsOn("dbUpdate")
 @RequiredArgsConstructor
 @EnableTransactionManagement
 @ComponentScans({
-  @ComponentScan("se.inera.intyg.webcert.common"),
-  @ComponentScan("se.inera.intyg.webcert.mailstub")
+    @ComponentScan("se.inera.intyg.webcert.common"),
+    @ComponentScan("se.inera.intyg.webcert.mailstub"),
+    @ComponentScan("se.inera.intyg.webcert.persistence"),
+    @ComponentScan("se.inera.intyg.webcert.integration.servicenow.config"),
+    @ComponentScan("se.inera.intyg.webcert.integration.privatepractitioner.config"),
+    @ComponentScan("se.inera.intyg.webcert.integration.analytics.config"),
+    @ComponentScan("se.inera.intyg.webcert.integration.fmb.services"),
+    @ComponentScan("se.inera.intyg.webcert.web.web.controller"),
 })
 @Import({
-  LoggingConfig.class,
-  JmsConfig.class,
-  CacheConfig.class,
-  JobConfig.class,
-  MailConfig.class,
-  MailStubConfig.class,
-  CxfWsClientConfig.class,
-  FmbServicesConfig.class,
-  ServiceNowIntegrationConfig.class,
-  ServiceNowStubConfig.class,
-  CertificateAnalyticsServiceIntegrationConfig.class,
-  PrivatePractitionerRestClientConfig.class,
-  NotificationStubDataConfig.class
+    LoggingConfig.class,
+    JmsConfig.class,
+    JpaConfigBase.class,
+    CacheConfig.class,
+    JobConfig.class,
+    MailConfig.class,
+    MailStubConfig.class,
+    CxfWsClientConfig.class,
+    FmbServicesConfig.class,
+    ServiceNowIntegrationConfig.class,
+    ServiceNowStubConfig.class,
+    CertificateAnalyticsServiceIntegrationConfig.class,
+    PrivatePractitionerRestClientConfig.class,
+    NotificationStubDataConfig.class
 })
 public class AppConfig implements TransactionManagementConfigurer {
 
@@ -87,5 +98,12 @@ public class AppConfig implements TransactionManagementConfigurer {
       ineraCookieSerializer.setDomainName(webcertCookieDomainName);
     }
     return ineraCookieSerializer;
+  }
+
+  @Bean
+  public IntygModuleRegistry moduleRegistry() {
+    final var registry = new IntygModuleRegistryImpl();
+    registry.setOrigin(ApplicationOrigin.WEBCERT);
+    return registry;
   }
 }

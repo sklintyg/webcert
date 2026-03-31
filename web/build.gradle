@@ -90,6 +90,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
     implementation "se.inera.intyg.common:af00213:${commonVersion}"
     implementation "se.inera.intyg.common:af00251:${commonVersion}"

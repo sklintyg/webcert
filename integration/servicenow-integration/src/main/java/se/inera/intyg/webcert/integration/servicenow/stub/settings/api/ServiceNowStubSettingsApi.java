@@ -18,54 +18,41 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.stub.settings.api;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.integration.servicenow.stub.settings.service.ServiceNowStubSettingsApiService;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
-@Path("/settings")
+@RequestMapping("/stubs/servicenowstub/settings")
 public class ServiceNowStubSettingsApi {
 
   private final ServiceNowStubSettingsApiService stubSettingsService;
 
-  @GET
-  @Path("/set/{returnValue}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response setReturnValue(@PathParam("returnValue") String returnValue) {
+  @GetMapping("/set/{returnValue}")
+  public ResponseEntity<String> setReturnValue(@PathVariable("returnValue") String returnValue) {
     if ("true".equals(returnValue) || "false".equals(returnValue)) {
       stubSettingsService.setSubscriptionReturnValue("true".equals(returnValue));
-      return Response.ok(
-              "Set stub return value to '"
-                  + returnValue
-                  + "' and cleared all active subscriptions.")
-          .build();
+      return ResponseEntity.ok(
+          "Set stub return value to '" + returnValue + "' and cleared all active subscriptions.");
     }
-    return Response.status(Response.Status.BAD_REQUEST)
-        .entity("Accepted parameter values are 'true' or 'false'.")
-        .build();
+    return ResponseEntity.badRequest().body("Accepted parameter values are 'true' or 'false'.");
   }
 
-  @GET
-  @Path("/get")
-  @Produces(MediaType.APPLICATION_JSON)
+  @GetMapping("/get")
   public Boolean getReturnValue() {
     return stubSettingsService.getSubscriptionReturnValue();
   }
 
-  @GET
-  @Path("/setactive/{orgNumber}/{serviceCode}")
-  @Produces(MediaType.APPLICATION_JSON)
+  @GetMapping("/setactive/{orgNumber}/{serviceCode}")
   public String setActiveSubscription(
-      @PathParam("orgNumber") String orgNumber, @PathParam("serviceCode") String serviceCode) {
+      @PathVariable String orgNumber, @PathVariable String serviceCode) {
     stubSettingsService.setActiveSubscription(orgNumber, serviceCode);
     return "Set subscription active for organization '"
         + orgNumber
@@ -74,41 +61,31 @@ public class ServiceNowStubSettingsApi {
         + "'.";
   }
 
-  @GET
-  @Path("/removeactive/{orgNumber}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public String removeActiveSubscriptions(@PathParam("orgNumber") String orgNumber) {
+  @GetMapping("/removeactive/{orgNumber}")
+  public String removeActiveSubscriptions(@PathVariable String orgNumber) {
     stubSettingsService.removeActiveSubscriptions(orgNumber);
     return "Removed active subscriptions for organization '" + orgNumber + "'.";
   }
 
-  @GET
-  @Path("/clearactive")
-  @Produces(MediaType.APPLICATION_JSON)
+  @GetMapping("/clearactive")
   public String clearActiveSubscriptions() {
     stubSettingsService.clearActiveSubscriptions();
     return "Cleared active subscription for all organizations.";
   }
 
-  @GET
-  @Path("/getactive")
-  @Produces(MediaType.APPLICATION_JSON)
+  @GetMapping("/getactive")
   public Map<String, List<String>> getActiveSubscriptions() {
     return stubSettingsService.getActiveSubscriptions();
   }
 
-  @GET
-  @Path("/seterror/{errorCode}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public String setServiceError(@PathParam("errorCode") int errorCode) {
+  @GetMapping("/seterror/{errorCode}")
+  public String setServiceError(@PathVariable int errorCode) {
     stubSettingsService.setHttpError(errorCode);
     return "Set stub to return Http error with code " + errorCode + " (if it exists, else 500).";
   }
 
-  @GET
-  @Path("/clearerror")
-  @Produces(MediaType.APPLICATION_JSON)
-  public String setServiceError() {
+  @GetMapping("/clearerror")
+  public String clearServiceError() {
     stubSettingsService.clearHttpError();
     return "Cleared ServiceNow stub Http error code.";
   }

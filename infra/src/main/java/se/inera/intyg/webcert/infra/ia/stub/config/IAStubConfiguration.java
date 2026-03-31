@@ -18,40 +18,11 @@
  */
 package se.inera.intyg.webcert.infra.ia.stub.config;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.cxf.Bus;
-import org.apache.cxf.endpoint.Server;
-import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import se.inera.intyg.webcert.infra.ia.stub.IAStubRestApi;
 
 @Configuration
 @Profile({"dev", "ia-stub"})
 public class IAStubConfiguration {
-
-  @Autowired private Bus bus;
-
-  @Bean
-  public IAStubRestApi iaStubRestApi() {
-    return new IAStubRestApi();
-  }
-
-  @Bean
-  public Server iaStubServer(IAStubRestApi iaStubRestApi) {
-    JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
-    factory.setBus(bus);
-    factory.setAddress("/api/ia-api");
-    factory.setServiceBeans(Arrays.asList(iaStubRestApi));
-    factory.setProviders(Arrays.asList(new JacksonJsonProvider()));
-    Map<Object, Object> extensionMappings = new HashMap<>();
-    extensionMappings.put("json", "application/json");
-    factory.setExtensionMappings(extensionMappings);
-    return factory.create();
-  }
+  // IAStubRestApi is a @RestController and is auto-discovered by component scan.
 }
