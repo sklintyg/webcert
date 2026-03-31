@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.cxf.Bus;
+import org.apache.cxf.bus.spring.SpringBus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -60,52 +62,52 @@ import se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean;
 @RequiredArgsConstructor
 @EnableTransactionManagement
 @PropertySources({
-    @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true),
-    @PropertySource(value = "classpath:version.properties", ignoreResourceNotFound = true),
-    @PropertySource(
-        value = "classpath:webcert-notification-route-params.properties",
-        ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${dev.config.file:-}", ignoreResourceNotFound = true),
+  @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true),
+  @PropertySource(value = "classpath:version.properties", ignoreResourceNotFound = true),
+  @PropertySource(
+      value = "classpath:webcert-notification-route-params.properties",
+      ignoreResourceNotFound = true),
+  @PropertySource(value = "file:${dev.config.file:-}", ignoreResourceNotFound = true),
 })
 @ComponentScans({
-    @ComponentScan("se.inera.intyg.webcert.web"),
-    @ComponentScan("se.inera.intyg.webcert.common"),
-    @ComponentScan("se.inera.intyg.webcert.mailstub"),
-    @ComponentScan("se.inera.intyg.webcert.persistence"),
-    @ComponentScan("se.inera.intyg.webcert.integration.servicenow.config"),
-    @ComponentScan("se.inera.intyg.webcert.integration.privatepractitioner.config"),
-    @ComponentScan("se.inera.intyg.webcert.integration.analytics.config"),
-    @ComponentScan("se.inera.intyg.webcert.integration.fmb.services"),
-    @ComponentScan("se.inera.intyg.webcert.infra.xmldsig.config"),
-    @ComponentScan("se.inera.intyg.webcert.infra.dynamiclink"),
-    @ComponentScan("se.inera.intyg.webcert.infra.postnummer"),
-    @ComponentScan("se.inera.intyg.webcert.infra.sjukfall.services"),
-    @ComponentScan("se.inera.intyg.webcert.infra.integration.intygproxyservice"),
-    @ComponentScan("se.inera.intyg.webcert.infra.pu.integration.intygproxyservice"),
-    @ComponentScan("se.inera.intyg.webcert.infra.ia.config"),
-    @ComponentScan("se.inera.intyg.webcert.infra.ia.cache"),
-    @ComponentScan("se.inera.intyg.webcert.infra.srs"),
-    @ComponentScan("se.inera.intyg.webcert.infra.security.filter"),
-    @ComponentScan("se.inera.intyg.common"),
+  @ComponentScan("se.inera.intyg.webcert.web"),
+  @ComponentScan("se.inera.intyg.webcert.common"),
+  @ComponentScan("se.inera.intyg.webcert.mailstub"),
+  @ComponentScan("se.inera.intyg.webcert.persistence"),
+  @ComponentScan("se.inera.intyg.webcert.integration.servicenow.config"),
+  @ComponentScan("se.inera.intyg.webcert.integration.privatepractitioner.config"),
+  @ComponentScan("se.inera.intyg.webcert.integration.analytics.config"),
+  @ComponentScan("se.inera.intyg.webcert.integration.fmb.services"),
+  @ComponentScan("se.inera.intyg.webcert.infra.xmldsig.config"),
+  @ComponentScan("se.inera.intyg.webcert.infra.dynamiclink"),
+  @ComponentScan("se.inera.intyg.webcert.infra.postnummer"),
+  @ComponentScan("se.inera.intyg.webcert.infra.sjukfall.services"),
+  @ComponentScan("se.inera.intyg.webcert.infra.integration.intygproxyservice"),
+  @ComponentScan("se.inera.intyg.webcert.infra.pu.integration.intygproxyservice"),
+  @ComponentScan("se.inera.intyg.webcert.infra.ia.config"),
+  @ComponentScan("se.inera.intyg.webcert.infra.ia.cache"),
+  @ComponentScan("se.inera.intyg.webcert.infra.srs"),
+  @ComponentScan("se.inera.intyg.webcert.infra.security.filter"),
+  @ComponentScan("se.inera.intyg.common"),
 })
 @Import({
-    LoggingConfig.class,
-    JmsConfig.class,
-    JpaConfigBase.class,
-    CacheConfig.class,
-    JobConfig.class,
-    MailConfig.class,
-    MailStubConfig.class,
-    CxfWsClientConfig.class,
-    FmbServicesConfig.class,
-    ServiceNowIntegrationConfig.class,
-    ServiceNowStubConfig.class,
-    CertificateAnalyticsServiceIntegrationConfig.class,
-    PrivatePractitionerRestClientConfig.class,
-    AuthoritiesConfig.class,
+  LoggingConfig.class,
+  JmsConfig.class,
+  JpaConfigBase.class,
+  CacheConfig.class,
+  JobConfig.class,
+  MailConfig.class,
+  MailStubConfig.class,
+  CxfWsClientConfig.class,
+  FmbServicesConfig.class,
+  ServiceNowIntegrationConfig.class,
+  ServiceNowStubConfig.class,
+  CertificateAnalyticsServiceIntegrationConfig.class,
+  PrivatePractitionerRestClientConfig.class,
+  AuthoritiesConfig.class,
 })
 @ImportResource({
-    "classpath:notification-sender-config.xml",
+  "classpath:notification-sender-config.xml",
 })
 public class AppConfig implements TransactionManagementConfigurer {
 
@@ -139,6 +141,11 @@ public class AppConfig implements TransactionManagementConfigurer {
       ineraCookieSerializer.setDomainName(webcertCookieDomainName);
     }
     return ineraCookieSerializer;
+  }
+
+  @Bean(name = Bus.DEFAULT_BUS_ID)
+  public SpringBus springBus() {
+    return new SpringBus();
   }
 
   @Bean
