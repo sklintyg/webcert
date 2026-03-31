@@ -59,7 +59,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
   private abstract static class LocalDateTimeMixin {}
 
   @Override
-  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+  public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
     objectMapper.addMixIn(LocalDateTime.class, LocalDateTimeMixin.class);
     MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
     converter.setObjectMapper(objectMapper);
