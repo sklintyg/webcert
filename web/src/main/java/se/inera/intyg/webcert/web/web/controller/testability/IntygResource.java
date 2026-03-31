@@ -91,7 +91,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
 @Transactional
 @Api(value = "services intyg/utkast", description = "REST API för testbarhet - Intyg och Utkast")
 @RestController
-@RequestMapping("/testability/intygtest")
+@RequestMapping("/testability/intyg")
 @Profile({"dev", "testability-api"})
 public class IntygResource {
 

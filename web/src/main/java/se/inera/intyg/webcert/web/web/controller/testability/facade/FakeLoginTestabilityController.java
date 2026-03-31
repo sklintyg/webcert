@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,12 +42,15 @@ public class FakeLoginTestabilityController {
   private final ObjectMapper objectMapper;
 
   @PostMapping("/fake")
-  public void login(HttpServletRequest request, @RequestBody FakeLoginDTO fakeLoginDTO) {
+  public ResponseEntity<Void> login(
+      HttpServletRequest request, @RequestBody FakeLoginDTO fakeLoginDTO) {
     fakeLoginService.login(fakeLoginDTO, request);
+    return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/logout")
-  public void logout(HttpServletRequest request) {
+  public ResponseEntity<Void> logout(HttpServletRequest request) {
     fakeLoginService.logout(request.getSession(false));
+    return ResponseEntity.noContent().build();
   }
 }

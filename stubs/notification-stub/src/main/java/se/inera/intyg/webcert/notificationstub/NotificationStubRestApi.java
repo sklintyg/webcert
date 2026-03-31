@@ -75,8 +75,9 @@ public class NotificationStubRestApi {
   }
 
   @PostMapping("/clear")
-  public void clear() {
+  public ResponseEntity<Void> clear() {
     notificationStoreV3.clear();
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping(value = "/notifieringar/v3/emulateError", produces = MediaType.APPLICATION_JSON_VALUE)

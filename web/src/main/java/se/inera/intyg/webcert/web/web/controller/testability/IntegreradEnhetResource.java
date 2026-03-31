@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhet
     value = "testability integreradevardenheter",
     description = "REST API för testbarhet - Integrerade vårdenheter")
 @RestController
-@RequestMapping("/testability/integreradenhettest")
+@RequestMapping("/testability/integreradevardenheter")
 @Profile({"dev", "testability-api"})
 public class IntegreradEnhetResource {
 

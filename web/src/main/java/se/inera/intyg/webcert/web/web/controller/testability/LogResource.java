@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.infra.logmessages.PdlLogMessage;
 
 @Api(value = "testability logMessages")
 @RestController
-@RequestMapping("/testability/logtest")
+@RequestMapping("/testability/logMessages")
 @Profile({"dev", "testability-api"})
 public class LogResource {
 

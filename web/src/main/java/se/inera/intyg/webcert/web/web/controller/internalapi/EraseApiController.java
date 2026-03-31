@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +43,9 @@ public class EraseApiController extends AbstractApiController {
   @PerformanceLogging(
       eventAction = "erase-erase-data-for-care-provider",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-  public void eraseDataForCareProvider(@PathVariable("id") String careProviderId) {
+  public ResponseEntity<Void> eraseDataForCareProvider(
+      @PathVariable("id") String careProviderId) {
     eraseService.eraseCertificates(careProviderId, eraseCertificatesPageSize);
+    return ResponseEntity.noContent().build();
   }
 }

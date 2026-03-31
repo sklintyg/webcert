@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.persistence.referens.model.Referens;
 import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
 
 @RestController
-@RequestMapping("/testability/referenstest")
+@RequestMapping("/testability/referens")
 @Profile({"dev", "testability-api"})
 public class ReferensResource {
 

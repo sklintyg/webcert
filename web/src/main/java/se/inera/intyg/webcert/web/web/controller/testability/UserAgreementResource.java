@@ -37,7 +37,7 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvt
 @Transactional
 @Api(value = "services anvandare", description = "REST API för testbarhet - Användare")
 @RestController
-@RequestMapping("/testability/useragreementtest")
+@RequestMapping("/testability/anvandare")
 @Profile({"dev", "testability-api"})
 public class UserAgreementResource {
 

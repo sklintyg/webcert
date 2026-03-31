@@ -36,7 +36,7 @@ import se.inera.intyg.webcert.infra.security.common.model.Feature;
 
 @Api(value = "testability configuration")
 @RestController
-@RequestMapping("/testability/configuration")
+@RequestMapping("/testability/config")
 @Profile({"dev", "testability-api"})
 public class ConfigurationResource {
 

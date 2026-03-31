@@ -68,7 +68,7 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionPar
 @Transactional
 @Api(value = "services fragasvar", description = "REST API för testbarhet - Fråga/Svar")
 @RestController
-@RequestMapping("/testability/fragasvartest")
+@RequestMapping("/testability/fragasvar")
 @Profile({"dev", "testability-api"})
 public class FragaSvarResource {
 

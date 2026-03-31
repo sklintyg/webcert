@@ -32,7 +32,7 @@ import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 
 @Api(value = "testability fmb", description = "REST API för testbarhet - FMB")
 @RestController
-@RequestMapping("/testability/fmbtest")
+@RequestMapping("/testability/fmb")
 @Profile({"dev", "testability-api"})
 public class FmbResource {
 
