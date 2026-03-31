@@ -129,7 +129,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
   }
 
   private String getSecondaryTitle(String unitId) {
-    if (unitId.length() == 0 || webCertUserService.getUser().isPrivatLakare()) {
+    if (unitId == null || unitId.isBlank() || webCertUserService.getUser().isPrivatLakare()) {
       return "Ärenden visas för alla enheter";
     }
     final var unit = hsaOrganizationsService.getVardenhet(unitId);
@@ -137,16 +137,16 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
   }
 
   public TableHeading[] getTableHeadings() {
-    return new TableHeading[] {
-      TableHeadingFactory.text(ListColumnType.QUESTION_ACTION),
-      TableHeadingFactory.text(ListColumnType.SENDER),
-      TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
-      TableHeadingFactory.text(ListColumnType.SIGNED_BY),
-      TableHeadingFactory.date(ListColumnType.SENT_RECEIVED, false),
-      TableHeadingFactory.forwarded(
-          ListColumnType.FORWARDED, "Visar om ärendet är vidarebefordrat."),
-      TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
-      TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
+    return new TableHeading[]{
+        TableHeadingFactory.text(ListColumnType.QUESTION_ACTION),
+        TableHeadingFactory.text(ListColumnType.SENDER),
+        TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
+        TableHeadingFactory.text(ListColumnType.SIGNED_BY),
+        TableHeadingFactory.date(ListColumnType.SENT_RECEIVED, false),
+        TableHeadingFactory.forwarded(
+            ListColumnType.FORWARDED, "Visar om ärendet är vidarebefordrat."),
+        TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
+        TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
     };
   }
 

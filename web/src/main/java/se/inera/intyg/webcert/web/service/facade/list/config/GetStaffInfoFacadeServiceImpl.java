@@ -103,7 +103,8 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
 
   private List<StaffListInfo> getStaffInfo(String unitId) {
     final var user = webCertUserService.getUser();
-    final var staff = arendeService.listSignedByForUnits(unitId.length() > 0 ? unitId : null);
+    final var staff = arendeService.listSignedByForUnits(
+        (unitId != null && !unitId.isBlank()) ? unitId : null);
     addUserToList(staff, user);
     return convertStaffList(staff);
   }

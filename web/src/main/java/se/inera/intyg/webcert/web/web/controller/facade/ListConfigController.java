@@ -102,7 +102,8 @@ public class ListConfigController {
   @PerformanceLogging(
       eventAction = "list-config-get-list-of-questions",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<ListConfig> getListOfQuestions(@RequestBody String unitId) {
+  public ResponseEntity<ListConfig> getListOfQuestions(
+      @RequestBody(required = false) String unitId) {
     LOG.debug("Getting config for list of unhandled questions");
     final var config = listQuestionsConfigFacadeService.get(unitId);
     return ResponseEntity.ok(config);
