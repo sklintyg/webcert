@@ -201,7 +201,7 @@ After Step 12:
 | 12.12 | Create `CxfWsClientConfig.java` replacing `ws-config.xml` | ⚠️ High | ✅ |
 | 12.13 | Create `CxfEndpointConfig.java` replacing `services-cxf-servlet.xml` | ⚠️ High | ✅ |
 | **Phase E: Remove Root XML** | | | |
-| 12.14 | Collapse `webcert-config.xml` into `AppConfig.java` | ⚠️ Critical | ⬜ |
+| 12.14 | Collapse `webcert-config.xml` into `AppConfig.java` | ⚠️ Critical | ✅ DONE |
 | **Phase F: Profile Cleanup** | | | |
 | 12.15 | Simplify all multi-value `@Profile` annotations containing `"dev"` to `@Profile("dev")` | Low | ⬜ |
 

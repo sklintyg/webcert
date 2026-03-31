@@ -16,28 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift.grp.config;
+package se.inera.intyg.webcert.web.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.client.RestClient;
+import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 
 @Configuration
-public class GrpRestConfig {
+@ComponentScan("se.inera.intyg.webcert.infra.security.authorities")
+public class AuthoritiesConfig {
 
-  @Bean(name = "grpRestClient")
-  public RestClient grpRestClient() {
-    return RestClient.builder().build();
-  }
-
-  @Bean(name = "grpTaskExecutor")
-  public ThreadPoolTaskExecutor grpTaskExecutor() {
-    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(5);
-    executor.setMaxPoolSize(10);
-    executor.setQueueCapacity(25);
-    executor.initialize();
-    return executor;
+  @Bean
+  public AuthoritiesHelper authoritiesHelper(CommonAuthoritiesResolver commonAuthoritiesResolver) {
+    return new AuthoritiesHelper(commonAuthoritiesResolver);
   }
 }

@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class GrpSignatureServiceImpl extends BaseSignatureService implements GrpSignatureService {
 
-  private final ThreadPoolTaskExecutor taskExecutor;
+  @Qualifier("grpTaskExecutor") private final ThreadPoolTaskExecutor taskExecutor;
+
   private final GrpCollectPollerFactory grpCollectPollerFactory;
   private final SignCertificateService signCertificateService;
   private final GrpRestService grpRestService;

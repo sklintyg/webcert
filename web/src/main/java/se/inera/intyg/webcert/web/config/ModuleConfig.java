@@ -16,28 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift.grp.config;
+package se.inera.intyg.webcert.web.config;
 
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.client.RestClient;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.services.texts.IntygTextsServiceImpl;
+import se.inera.intyg.common.services.texts.repo.IntygTextsRepository;
+import se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl;
 
 @Configuration
-public class GrpRestConfig {
+public class ModuleConfig {
 
-  @Bean(name = "grpRestClient")
-  public RestClient grpRestClient() {
-    return RestClient.builder().build();
+  @Bean
+  public IntygTextsService intygTextsService() {
+    return new IntygTextsServiceImpl();
   }
 
-  @Bean(name = "grpTaskExecutor")
-  public ThreadPoolTaskExecutor grpTaskExecutor() {
-    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(5);
-    executor.setMaxPoolSize(10);
-    executor.setQueueCapacity(25);
-    executor.initialize();
-    return executor;
+  @Bean
+  public IntygTextsRepository intygTextsRepository() {
+    return new IntygTextsRepositoryImpl();
+  }
+
+  @Bean
+  public MessageSource messageSource() {
+    ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+    source.setDefaultEncoding("UTF-8");
+    source.setBasenames("ui", "version");
+    return source;
   }
 }

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,14 +27,22 @@ import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
+import se.inera.intyg.common.support.modules.converter.SummaryConverter;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
+import se.inera.intyg.common.support.services.BefattningService;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.infra.security.common.cookie.IneraCookieSerializer;
 import se.inera.intyg.webcert.integration.analytics.config.CertificateAnalyticsServiceIntegrationConfig;
 import se.inera.intyg.webcert.integration.fmb.config.FmbServicesConfig;
@@ -43,36 +52,54 @@ import se.inera.intyg.webcert.integration.servicenow.stub.config.ServiceNowStubC
 import se.inera.intyg.webcert.mailstub.config.MailStubConfig;
 import se.inera.intyg.webcert.notificationstub.config.NotificationStubDataConfig;
 import se.inera.intyg.webcert.persistence.config.JpaConfigBase;
+import se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean;
+import se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean;
+import se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean;
 
 @Configuration
 @DependsOn("dbUpdate")
 @RequiredArgsConstructor
 @EnableTransactionManagement
+@PropertySource(value = "file:${dev.config.file:-}", ignoreResourceNotFound = true)
 @ComponentScans({
-    @ComponentScan("se.inera.intyg.webcert.common"),
-    @ComponentScan("se.inera.intyg.webcert.mailstub"),
-    @ComponentScan("se.inera.intyg.webcert.persistence"),
-    @ComponentScan("se.inera.intyg.webcert.integration.servicenow.config"),
-    @ComponentScan("se.inera.intyg.webcert.integration.privatepractitioner.config"),
-    @ComponentScan("se.inera.intyg.webcert.integration.analytics.config"),
-    @ComponentScan("se.inera.intyg.webcert.integration.fmb.services"),
-    @ComponentScan("se.inera.intyg.webcert.web.web.controller"),
+  @ComponentScan("se.inera.intyg.webcert.web"),
+  @ComponentScan("se.inera.intyg.webcert.common"),
+  @ComponentScan("se.inera.intyg.webcert.mailstub"),
+  @ComponentScan("se.inera.intyg.webcert.persistence"),
+  @ComponentScan("se.inera.intyg.webcert.integration.servicenow.config"),
+  @ComponentScan("se.inera.intyg.webcert.integration.privatepractitioner.config"),
+  @ComponentScan("se.inera.intyg.webcert.integration.analytics.config"),
+  @ComponentScan("se.inera.intyg.webcert.integration.fmb.services"),
+  @ComponentScan("se.inera.intyg.webcert.infra.xmldsig.config"),
+  @ComponentScan("se.inera.intyg.webcert.infra.dynamiclink"),
+  @ComponentScan("se.inera.intyg.webcert.infra.postnummer"),
+  @ComponentScan("se.inera.intyg.webcert.infra.sjukfall.services"),
+  @ComponentScan("se.inera.intyg.webcert.infra.integration.intygproxyservice"),
+  @ComponentScan("se.inera.intyg.webcert.infra.pu.integration.intygproxyservice"),
+  @ComponentScan("se.inera.intyg.webcert.infra.ia.config"),
+  @ComponentScan("se.inera.intyg.webcert.infra.ia.cache"),
+  @ComponentScan("se.inera.intyg.webcert.infra.srs.config"),
 })
 @Import({
-    LoggingConfig.class,
-    JmsConfig.class,
-    JpaConfigBase.class,
-    CacheConfig.class,
-    JobConfig.class,
-    MailConfig.class,
-    MailStubConfig.class,
-    CxfWsClientConfig.class,
-    FmbServicesConfig.class,
-    ServiceNowIntegrationConfig.class,
-    ServiceNowStubConfig.class,
-    CertificateAnalyticsServiceIntegrationConfig.class,
-    PrivatePractitionerRestClientConfig.class,
-    NotificationStubDataConfig.class
+  LoggingConfig.class,
+  JmsConfig.class,
+  JpaConfigBase.class,
+  CacheConfig.class,
+  JobConfig.class,
+  MailConfig.class,
+  MailStubConfig.class,
+  CxfWsClientConfig.class,
+  FmbServicesConfig.class,
+  ServiceNowIntegrationConfig.class,
+  ServiceNowStubConfig.class,
+  CertificateAnalyticsServiceIntegrationConfig.class,
+  PrivatePractitionerRestClientConfig.class,
+  NotificationStubDataConfig.class,
+  AuthoritiesConfig.class,
+  ModuleConfig.class,
+})
+@ImportResource({
+  "classpath:notification-sender-config.xml",
 })
 public class AppConfig implements TransactionManagementConfigurer {
 
@@ -84,6 +111,18 @@ public class AppConfig implements TransactionManagementConfigurer {
   @Override
   public PlatformTransactionManager annotationDrivenTransactionManager() {
     return transactionManager;
+  }
+
+  @Bean
+  public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
+    PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+    configurer.setIgnoreUnresolvablePlaceholders(true);
+    configurer.setIgnoreResourceNotFound(true);
+    configurer.setLocations(
+        new ClassPathResource("application.properties"),
+        new ClassPathResource("version.properties"),
+        new ClassPathResource("webcert-notification-route-params.properties"));
+    return configurer;
   }
 
   @Bean
@@ -105,5 +144,38 @@ public class AppConfig implements TransactionManagementConfigurer {
     final var registry = new IntygModuleRegistryImpl();
     registry.setOrigin(ApplicationOrigin.WEBCERT);
     return registry;
+  }
+
+  @Bean
+  public BefattningService befattningService() {
+    return new BefattningService();
+  }
+
+  @Bean
+  public SummaryConverter summaryConverter() {
+    return new SummaryConverter();
+  }
+
+  @Bean
+  public ObjectMapper objectMapper() {
+    return new CustomObjectMapper();
+  }
+
+  @Bean
+  @Profile({"dev", "wc-init-data"})
+  public FragaSvarBootstrapBean fragaSvarBootstrapBean() {
+    return new FragaSvarBootstrapBean();
+  }
+
+  @Bean
+  @Profile({"dev", "wc-init-data"})
+  public IntegreradeEnheterBootstrapBean integreradeEnheterBootstrapBean() {
+    return new IntegreradeEnheterBootstrapBean();
+  }
+
+  @Bean
+  @Profile({"dev", "wc-init-data", "test", "demo"})
+  public UtkastBootstrapBean utkastBootstrapBean() {
+    return new UtkastBootstrapBean();
   }
 }

@@ -20,12 +20,10 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <jms:annotation-driven/>
+    <!-- jms:annotation-driven is handled by @EnableJms in JmsConfig.java -->
 
     <bean id="jms" class="org.apache.camel.component.activemq.ActiveMQComponent">
         <property name="configuration" ref="jmsConfig"/>
@@ -45,7 +43,6 @@
         <property name="transactionManager" ref="jmsTransactionManager" />
     </bean>
 
-    <bean id="commonFeaturesResolver" class="se.inera.intyg.webcert.infra.security.authorities.CommonFeaturesResolver"/>
-    <bean id="featuresHelper" class="se.inera.intyg.webcert.infra.security.authorities.FeaturesHelper"/>
+    <!-- commonFeaturesResolver and featuresHelper are component-scanned via AuthoritiesConfig -->
 
 </beans>

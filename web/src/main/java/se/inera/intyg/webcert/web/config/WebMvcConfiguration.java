@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.webcert.web.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +33,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 @Configuration
 @EnableWebMvc
@@ -44,10 +45,12 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
     excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = Configuration.class))
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
+  @Autowired private ObjectMapper objectMapper;
+
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
     MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-    converter.setObjectMapper(new CustomObjectMapper());
+    converter.setObjectMapper(objectMapper);
     converters.addFirst(converter);
   }
 
