@@ -26,13 +26,13 @@
     <!-- jms:annotation-driven is handled by @EnableJms in JmsConfig.java -->
 
     <bean id="jms" class="org.apache.camel.component.activemq.ActiveMQComponent">
-        <property name="configuration" ref="jmsConfig"/>
+        <property name="configuration" ref="camelJmsConfiguration"/>
         <property name="transacted" value="true"/>
         <property name="cacheLevelName" value="CACHE_CONSUMER"/>
     </bean>
 
     <!-- See JmsConfig.java (in web) for jmsConnectionFactory -->
-    <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <bean id="camelJmsConfiguration" class="org.apache.camel.component.jms.JmsConfiguration">
         <property name="errorHandlerLoggingLevel" value="OFF"/>
         <property name="errorHandlerLogStackTrace" value="false"/>
         <property name="connectionFactory" ref="jmsConnectionFactory"/>
