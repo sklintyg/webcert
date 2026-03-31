@@ -61,7 +61,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
  * @author bensam
  */
 @Controller
-@RequestMapping("/visa")
+@RequestMapping({"/visa/intyg", "/v2/visa/intyg"})
 // CHECKSTYLE:OFF ParameterNumber
 public class IntygIntegrationController extends BaseIntegrationController {
 

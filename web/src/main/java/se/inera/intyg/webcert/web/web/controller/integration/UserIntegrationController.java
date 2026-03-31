@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 
 @Controller
-@RequestMapping("/v2/visa")
+@RequestMapping({"/visa/anvandare", "/v2/visa/anvandare"})
 public class UserIntegrationController extends BaseIntegrationController {
 
   private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
