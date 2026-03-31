@@ -30,13 +30,15 @@ import se.inera.intyg.webcert.infra.srs.stub.GetPredictionQuestionsStub;
 import se.inera.intyg.webcert.infra.srs.stub.GetSRSInformationForDiagnosisStub;
 import se.inera.intyg.webcert.infra.srs.stub.GetSrsInformationStub;
 import se.inera.intyg.webcert.infra.srs.stub.SetConsentStub;
+import se.inera.intyg.webcert.infra.srs.stub.SetOwnOpinionStub;
 import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
 
 @Configuration
-@Profile({"dev", "wc-all-stubs", "wc-srs-stub"})
+@Profile({"dev"})
 public class SrsStubConfiguration {
 
-  @Autowired private Bus bus;
+  @Autowired
+  private Bus bus;
 
   @Bean
   public ConsentRepository consentRepository() {
@@ -71,6 +73,11 @@ public class SrsStubConfiguration {
   @Bean
   public GetSRSInformationForDiagnosisStub getSRSInformationForDiagnosisStub() {
     return new GetSRSInformationForDiagnosisStub();
+  }
+
+  @Bean
+  public SetOwnOpinionStub setOwnOpinionStub() {
+    return new SetOwnOpinionStub();
   }
 
   @Bean

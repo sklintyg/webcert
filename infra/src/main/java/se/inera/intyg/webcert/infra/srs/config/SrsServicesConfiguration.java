@@ -22,6 +22,7 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getdiagnosiscodes.v1.GetDiagnosisCodesResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface;
@@ -29,10 +30,9 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.GetSRS
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformationfordiagnosis.v1.GetSRSInformationForDiagnosisResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpinionResponderInterface;
-import se.inera.intyg.webcert.infra.srs.services.SrsInfraService;
-import se.inera.intyg.webcert.infra.srs.services.SrsInfraServiceImpl;
 
 @Configuration
+@Profile({"!dev"})
 public class SrsServicesConfiguration {
 
   @Bean
@@ -75,11 +75,6 @@ public class SrsServicesConfiguration {
   public SetOwnOpinionResponderInterface setOwnOpinionBean(
       @Value("${srs.setownopinion.endpoint.url}") String address) {
     return createClient(SetOwnOpinionResponderInterface.class, address);
-  }
-
-  @Bean
-  public SrsInfraService srsService() {
-    return new SrsInfraServiceImpl();
   }
 
   @SuppressWarnings("unchecked")

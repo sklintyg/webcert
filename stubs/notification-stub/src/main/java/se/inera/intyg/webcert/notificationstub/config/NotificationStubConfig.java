@@ -26,10 +26,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import se.inera.intyg.webcert.notificationstub.v3.CertificateStatusUpdateForCareResponderStub;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3Impl;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 
 @Configuration
 @Profile("dev")
 public class NotificationStubConfig {
+
+  @Bean
+  public CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderStub() {
+    return new CertificateStatusUpdateForCareResponderStub();
+  }
+
+  @Bean
+  public NotificationStoreV3Impl notificationStoreV3() {
+    return new NotificationStoreV3Impl();
+  }
+
+  @Bean
+  public NotificationStubStateBean notificationStubStateBean() {
+    return new NotificationStubStateBean();
+  }
 
   @Bean
   public Endpoint notificationStubSoapEndpoint(

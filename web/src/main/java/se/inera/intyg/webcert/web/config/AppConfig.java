@@ -50,7 +50,6 @@ import se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePrac
 import se.inera.intyg.webcert.integration.servicenow.config.ServiceNowIntegrationConfig;
 import se.inera.intyg.webcert.integration.servicenow.stub.config.ServiceNowStubConfig;
 import se.inera.intyg.webcert.mailstub.config.MailStubConfig;
-import se.inera.intyg.webcert.notificationstub.config.NotificationStubDataConfig;
 import se.inera.intyg.webcert.persistence.config.JpaConfigBase;
 import se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean;
 import se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean;
@@ -85,7 +84,8 @@ import se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean;
     @ComponentScan("se.inera.intyg.webcert.infra.pu.integration.intygproxyservice"),
     @ComponentScan("se.inera.intyg.webcert.infra.ia.config"),
     @ComponentScan("se.inera.intyg.webcert.infra.ia.cache"),
-    @ComponentScan("se.inera.intyg.webcert.infra.srs.config"),
+    @ComponentScan("se.inera.intyg.webcert.infra.srs"),
+    @ComponentScan("se.inera.intyg.webcert.infra.security.filter"),
     @ComponentScan("se.inera.intyg.common"),
 })
 @Import({
@@ -102,7 +102,6 @@ import se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean;
     ServiceNowStubConfig.class,
     CertificateAnalyticsServiceIntegrationConfig.class,
     PrivatePractitionerRestClientConfig.class,
-    NotificationStubDataConfig.class,
     AuthoritiesConfig.class,
 })
 @ImportResource({
