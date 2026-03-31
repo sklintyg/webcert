@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -60,7 +60,14 @@ import se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean;
 @DependsOn("dbUpdate")
 @RequiredArgsConstructor
 @EnableTransactionManagement
-@PropertySource(value = "file:${dev.config.file:-}", ignoreResourceNotFound = true)
+@PropertySources({
+  @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true),
+  @PropertySource(value = "classpath:version.properties", ignoreResourceNotFound = true),
+  @PropertySource(
+      value = "classpath:webcert-notification-route-params.properties",
+      ignoreResourceNotFound = true),
+  @PropertySource(value = "file:${dev.config.file:-}", ignoreResourceNotFound = true),
+})
 @ComponentScans({
   @ComponentScan("se.inera.intyg.webcert.web"),
   @ComponentScan("se.inera.intyg.webcert.common"),
@@ -118,10 +125,6 @@ public class AppConfig implements TransactionManagementConfigurer {
     PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
     configurer.setIgnoreUnresolvablePlaceholders(true);
     configurer.setIgnoreResourceNotFound(true);
-    configurer.setLocations(
-        new ClassPathResource("application.properties"),
-        new ClassPathResource("version.properties"),
-        new ClassPathResource("webcert-notification-route-params.properties"));
     return configurer;
   }
 
