@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +34,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import se.inera.intyg.common.util.integration.json.CustomLocalDateTimeDeserializer;
 
 @Configuration
 @EnableWebMvc
@@ -47,8 +49,18 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
   @Autowired private ObjectMapper objectMapper;
 
+  /**
+   * Ensures {@link CustomLocalDateTimeDeserializer} is used for all {@code LocalDateTime} JSON
+   * deserialization, overriding any module-registered deserializer (e.g. from JavaTimeModule).
+   * The mixin takes precedence over module registrations, so date-only strings such as
+   * {@code "2025-12-31"} are correctly parsed to start-of-day without per-field annotations.
+   */
+  @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+  private abstract static class LocalDateTimeMixin {}
+
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+    objectMapper.addMixIn(LocalDateTime.class, LocalDateTimeMixin.class);
     MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
     converter.setObjectMapper(objectMapper);
     converters.addFirst(converter);
