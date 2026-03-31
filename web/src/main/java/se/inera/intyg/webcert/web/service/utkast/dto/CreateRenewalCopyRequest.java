@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 
+
 public class CreateRenewalCopyRequest extends AbstractCreateCopyRequest {
 
   public CreateRenewalCopyRequest(

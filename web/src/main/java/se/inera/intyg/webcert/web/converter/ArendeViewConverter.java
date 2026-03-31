@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -55,9 +55,11 @@ public class ArendeViewConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
 
-  @Autowired private IntygModuleRegistryImpl moduleRegistry;
+  @Autowired
+  private IntygModuleRegistry moduleRegistry;
 
-  @Autowired private IntygService intygService;
+  @Autowired
+  private IntygService intygService;
 
   private static String getThreadRootMessageId(Arende arende) {
     String referenceId =
@@ -138,12 +140,12 @@ public class ArendeViewConverter {
    *
    * <p>Note that all Arende must belong to the same intyg.
    *
-   * @param intygsId the id of the intyg to which all the messages belong to
+   * @param intygsId      the id of the intyg to which all the messages belong to
    * @param intygMessages a list of messages (Arende) relating to the same intyg
    * @param kompltToIntyg a list of kompletterande intyg for the given intyg, if any (empty list is
-   *     allowed, null is not)
+   *                      allowed, null is not)
    * @return A list of ArendeConversationView meant for frontend consumption or undefined if
-   *     messages are not for the same intyg
+   * messages are not for the same intyg
    */
   public List<ArendeConversationView> buildArendeConversations(
       String intygsId,
