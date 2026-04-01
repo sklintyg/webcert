@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3Impl;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 
 @Configuration
-@Profile("dev")
+@Profile({"wc-notificationsender-stub", "dev"})
 public class NotificationStubConfig {
 
   @Bean
