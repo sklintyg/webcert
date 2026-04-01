@@ -28,7 +28,6 @@ import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -50,6 +49,7 @@ import se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePrac
 import se.inera.intyg.webcert.integration.servicenow.config.ServiceNowIntegrationConfig;
 import se.inera.intyg.webcert.integration.servicenow.stub.config.ServiceNowStubConfig;
 import se.inera.intyg.webcert.mailstub.config.MailStubConfig;
+import se.inera.intyg.webcert.notification_sender.config.NotificationSenderConfig;
 import se.inera.intyg.webcert.persistence.config.JpaConfigBase;
 import se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean;
 import se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean;
@@ -103,9 +103,7 @@ import se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean;
   CertificateAnalyticsServiceIntegrationConfig.class,
   PrivatePractitionerRestClientConfig.class,
   AuthoritiesConfig.class,
-})
-@ImportResource({
-  "classpath:notification-sender-config.xml",
+  NotificationSenderConfig.class,
 })
 public class AppConfig implements TransactionManagementConfigurer {
 

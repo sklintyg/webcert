@@ -49,8 +49,11 @@ dependencies {
 
     runtimeOnly "org.apache.camel:camel-cxf-spring-soap"
     runtimeOnly "org.apache.camel:camel-cxf-spring-transport"
-    runtimeOnly "org.apache.camel:camel-jackson"
-    runtimeOnly "org.apache.camel:camel-spring"
+    implementation "org.apache.camel:camel-jackson"
+    implementation "org.apache.camel:camel-spring"
+    implementation "org.apache.cxf:cxf-core"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
+    implementation "org.apache.cxf:cxf-rt-features-logging"
 
     annotationProcessor 'org.projectlombok:lombok'
 

@@ -33,6 +33,9 @@ public class CertificateRouteBuilder extends RouteBuilder {
   @Value("${camel.message.delay.millis}")
   private String messageDelayMillis;
 
+  @Value("${receiveCertificateTransferEndpointUri}")
+  private String receiveCertificateTransferUri;
+
   /*
    * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
    * by any component in this route is NOT handled by the route, but triggers a transaction rollback in the
@@ -57,7 +60,7 @@ public class CertificateRouteBuilder extends RouteBuilder {
     }
     errorHandler(defaultErrorHandler().logExhausted(false));
 
-    from("receiveCertificateTransferEndpoint")
+    from(receiveCertificateTransferUri)
         .routeId("transferCertificate")
         .onException(PermanentException.class)
         .handled(true)
