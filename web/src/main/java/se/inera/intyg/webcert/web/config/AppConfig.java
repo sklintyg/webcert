@@ -164,19 +164,19 @@ public class AppConfig implements TransactionManagementConfigurer {
   }
 
   @Bean
-  @Profile({"dev", "wc-init-data"})
+  @Profile("dev")
   public FragaSvarBootstrapBean fragaSvarBootstrapBean() {
     return new FragaSvarBootstrapBean();
   }
 
   @Bean
-  @Profile({"dev", "wc-init-data"})
+  @Profile("dev")
   public IntegreradeEnheterBootstrapBean integreradeEnheterBootstrapBean() {
     return new IntegreradeEnheterBootstrapBean();
   }
 
   @Bean
-  @Profile({"dev", "wc-init-data", "test", "demo"})
+  @Profile("dev")
   public UtkastBootstrapBean utkastBootstrapBean() {
     return new UtkastBootstrapBean();
   }

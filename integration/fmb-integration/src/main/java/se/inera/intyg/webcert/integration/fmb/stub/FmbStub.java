@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
 
 @RestController
-@Profile({"dev", "wc-all-stubs", "wc-fmb-stub"})
+@Profile({"dev", "wc-fmb-stub"})
 @RequestMapping("/stubs/fmbstubs")
 public class FmbStub {
 

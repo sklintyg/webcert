@@ -43,8 +43,7 @@ public class EraseApiController extends AbstractApiController {
   @PerformanceLogging(
       eventAction = "erase-erase-data-for-care-provider",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-  public ResponseEntity<Void> eraseDataForCareProvider(
-      @PathVariable("id") String careProviderId) {
+  public ResponseEntity<Void> eraseDataForCareProvider(@PathVariable("id") String careProviderId) {
     eraseService.eraseCertificates(careProviderId, eraseCertificatesPageSize);
     return ResponseEntity.noContent().build();
   }

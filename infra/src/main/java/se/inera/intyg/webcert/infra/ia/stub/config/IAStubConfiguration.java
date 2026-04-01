@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile({"dev", "ia-stub"})
+@Profile("dev")
 public class IAStubConfiguration {
   // IAStubRestApi is a @RestController and is auto-discovered by component scan.
 }

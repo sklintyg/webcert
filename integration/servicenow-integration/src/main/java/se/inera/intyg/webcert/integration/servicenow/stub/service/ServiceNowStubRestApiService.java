@@ -83,12 +83,12 @@ public class ServiceNowStubRestApiService {
   }
 
   private ResponseEntity<Object> responseWithErrorStatusCode(int statusCode) {
-    try {
-      return ResponseEntity.status(statusCode)
-          .body("Http error " + statusCode + " response from ServiceNow stub.");
-    } catch (IllegalArgumentException e) {
+    final var httpStatus = HttpStatus.resolve(statusCode);
+    if (httpStatus == null) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body("Http error 500 response from ServiceNow stub.");
     }
+    return ResponseEntity.status(httpStatus)
+        .body("Http error " + statusCode + " response from ServiceNow stub.");
   }
 }

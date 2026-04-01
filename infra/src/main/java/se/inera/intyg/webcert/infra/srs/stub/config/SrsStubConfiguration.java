@@ -34,7 +34,7 @@ import se.inera.intyg.webcert.infra.srs.stub.SetOwnOpinionStub;
 import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
 
 @Configuration
-@Profile({"dev"})
+@Profile("dev")
 public class SrsStubConfiguration {
 
   @Autowired private Bus bus;
