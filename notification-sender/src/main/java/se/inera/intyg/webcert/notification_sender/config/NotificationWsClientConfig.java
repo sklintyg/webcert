@@ -29,26 +29,26 @@ import org.springframework.context.annotation.Profile;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 
 /**
- * Replaces notifications/ws-context.xml. Configures the CXF bus with logging and defines
- * the outbound JAX-WS client for sending certificate status updates.
+ * Replaces notifications/ws-context.xml. Configures the CXF bus with logging and defines the
+ * outbound JAX-WS client for sending certificate status updates.
  */
 @Configuration
 public class NotificationWsClientConfig {
 
-    @Autowired
-    void configureBus(Bus bus) {
-        bus.getFeatures().add(new LoggingFeature());
-    }
+  @Autowired
+  void configureBus(Bus bus) {
+    bus.getFeatures().add(new LoggingFeature());
+  }
 
-    // Profile !dev matches the <beans profile="!dev"> in the original ws-context.xml
-    @Bean
-    @Profile("!dev")
-    public CertificateStatusUpdateForCareResponderInterface certificateStatusUpdateForCareClientV3(
-            @Value("${certificatestatusupdateforcare.ws.endpoint.v3.url}") String address) {
-        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-        factory.setServiceClass(CertificateStatusUpdateForCareResponderInterface.class);
-        factory.setAddress(address);
-        factory.getProperties().put("schema-validation-enabled", true);
-        return (CertificateStatusUpdateForCareResponderInterface) factory.create();
-    }
+  // Profile !dev matches the <beans profile="!dev"> in the original ws-context.xml
+  @Bean
+  @Profile("!dev")
+  public CertificateStatusUpdateForCareResponderInterface certificateStatusUpdateForCareClientV3(
+      @Value("${certificatestatusupdateforcare.ws.endpoint.v3.url}") String address) {
+    JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+    factory.setServiceClass(CertificateStatusUpdateForCareResponderInterface.class);
+    factory.setAddress(address);
+    factory.getProperties().put("schema-validation-enabled", true);
+    return (CertificateStatusUpdateForCareResponderInterface) factory.create();
+  }
 }

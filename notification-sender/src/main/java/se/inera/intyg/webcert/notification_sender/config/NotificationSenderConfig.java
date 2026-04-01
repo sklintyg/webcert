@@ -29,22 +29,22 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.Notific
 /**
  * Root configuration for the notification-sender module. Replaces notification-sender-config.xml.
  *
- * notificationPatientEnricher is declared here (not in NotificationCamelConfig) so that
- * unit/integration tests can load NotificationCamelConfig directly without pulling in
- * PU-service (Ignite) transitive dependencies.
+ * <p>notificationPatientEnricher is declared here (not in NotificationCamelConfig) so that
+ * unit/integration tests can load NotificationCamelConfig directly without pulling in PU-service
+ * (Ignite) transitive dependencies.
  */
 @Configuration
 @ComponentScan("se.inera.intyg.webcert.notification_sender.notifications")
 @Import({
-    NotificationJmsConfig.class,
-    NotificationWsClientConfig.class,
-    NotificationCamelConfig.class,
-    CertificateCamelConfig.class,
+  NotificationJmsConfig.class,
+  NotificationWsClientConfig.class,
+  NotificationCamelConfig.class,
+  CertificateCamelConfig.class,
 })
 public class NotificationSenderConfig {
 
-    @Bean
-    public NotificationPatientEnricher notificationPatientEnricher() {
-        return new NotificationPatientEnricher();
-    }
+  @Bean
+  public NotificationPatientEnricher notificationPatientEnricher() {
+    return new NotificationPatientEnricher();
+  }
 }

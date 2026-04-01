@@ -32,53 +32,52 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.services.Reg
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.SendMessageToRecipientProcessor;
 
 /**
- * Replaces certificates/beans-context.xml and certificates/camel-context.xml.
- * Defines all certificate processor beans and creates the webcertCertificateSender CamelContext.
+ * Replaces certificates/beans-context.xml and certificates/camel-context.xml. Defines all
+ * certificate processor beans and creates the webcertCertificateSender CamelContext.
  */
 @Configuration
 public class CertificateCamelConfig {
 
-    @Bean
-    public CertificateStoreProcessor certificateStoreProcessor() {
-        return new CertificateStoreProcessor();
-    }
+  @Bean
+  public CertificateStoreProcessor certificateStoreProcessor() {
+    return new CertificateStoreProcessor();
+  }
 
-    @Bean
-    public CertificateSendProcessor certificateSendProcessor() {
-        return new CertificateSendProcessor();
-    }
+  @Bean
+  public CertificateSendProcessor certificateSendProcessor() {
+    return new CertificateSendProcessor();
+  }
 
-    @Bean
-    public CertificateRevokeProcessor certificateRevokeProcessor() {
-        return new CertificateRevokeProcessor();
-    }
+  @Bean
+  public CertificateRevokeProcessor certificateRevokeProcessor() {
+    return new CertificateRevokeProcessor();
+  }
 
-    @Bean
-    public SendMessageToRecipientProcessor sendMessageToRecipientProcessor() {
-        return new SendMessageToRecipientProcessor();
-    }
+  @Bean
+  public SendMessageToRecipientProcessor sendMessageToRecipientProcessor() {
+    return new SendMessageToRecipientProcessor();
+  }
 
-    @Bean
-    public RegisterApprovedReceiversProcessor registerApprovedReceiversProcessor() {
-        return new RegisterApprovedReceiversProcessor();
-    }
+  @Bean
+  public RegisterApprovedReceiversProcessor registerApprovedReceiversProcessor() {
+    return new RegisterApprovedReceiversProcessor();
+  }
 
-    @Bean
-    public CertificateRouteBuilder certificateRouteBuilder() {
-        return new CertificateRouteBuilder();
-    }
+  @Bean
+  public CertificateRouteBuilder certificateRouteBuilder() {
+    return new CertificateRouteBuilder();
+  }
 
-    @Bean
-    public SpringCamelContext webcertCertificateSender(
-            ApplicationContext applicationContext,
-            CertificateRouteBuilder certificateRouteBuilder) {
-        SpringCamelContext context = new SpringCamelContext(applicationContext);
-        context.setNameStrategy(new ExplicitCamelContextNameStrategy("webcertCertificateSender"));
-        try {
-            context.addRoutes(certificateRouteBuilder);
-        } catch (Exception e) {
-            throw new BeanCreationException("webcertCertificateSender", "Failed to add routes", e);
-        }
-        return context;
+  @Bean
+  public SpringCamelContext webcertCertificateSender(
+      ApplicationContext applicationContext, CertificateRouteBuilder certificateRouteBuilder) {
+    SpringCamelContext context = new SpringCamelContext(applicationContext);
+    context.setNameStrategy(new ExplicitCamelContextNameStrategy("webcertCertificateSender"));
+    try {
+      context.addRoutes(certificateRouteBuilder);
+    } catch (Exception e) {
+      throw new BeanCreationException("webcertCertificateSender", "Failed to add routes", e);
     }
+    return context;
+  }
 }

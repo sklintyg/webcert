@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.notification_sender.config;
 
 import jakarta.jms.ConnectionFactory;
-import org.apache.camel.component.activemq.ActiveMQComponent;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.component.activemq.ActiveMQComponent;
 import org.apache.camel.component.jms.JmsConfiguration;
 import org.apache.camel.spring.spi.SpringTransactionPolicy;
 import org.springframework.context.annotation.Bean;
@@ -29,40 +29,39 @@ import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.support.destination.DestinationResolver;
 
 /**
- * Replaces jms-context.xml. Defines the Camel JMS bridge: the ActiveMQ Camel component,
- * its JmsConfiguration, and the transactional policy used by Camel routes.
+ * Replaces jms-context.xml. Defines the Camel JMS bridge: the ActiveMQ Camel component, its
+ * JmsConfiguration, and the transactional policy used by Camel routes.
  *
- * Depends on jmsConnectionFactory, jmsTransactionManager, and jmsDestinationResolver
- * from JmsConfig.java (web module), shared via the same Spring context.
+ * <p>Depends on jmsConnectionFactory, jmsTransactionManager, and jmsDestinationResolver from
+ * JmsConfig.java (web module), shared via the same Spring context.
  */
 @Configuration
 public class NotificationJmsConfig {
 
-    @Bean
-    public JmsConfiguration camelJmsConfiguration(
-            ConnectionFactory jmsConnectionFactory,
-            DestinationResolver jmsDestinationResolver) {
-        JmsConfiguration config = new JmsConfiguration();
-        config.setErrorHandlerLoggingLevel(LoggingLevel.OFF);
-        config.setErrorHandlerLogStackTrace(false);
-        config.setConnectionFactory(jmsConnectionFactory);
-        config.setDestinationResolver(jmsDestinationResolver);
-        return config;
-    }
+  @Bean
+  public JmsConfiguration camelJmsConfiguration(
+      ConnectionFactory jmsConnectionFactory, DestinationResolver jmsDestinationResolver) {
+    JmsConfiguration config = new JmsConfiguration();
+    config.setErrorHandlerLoggingLevel(LoggingLevel.OFF);
+    config.setErrorHandlerLogStackTrace(false);
+    config.setConnectionFactory(jmsConnectionFactory);
+    config.setDestinationResolver(jmsDestinationResolver);
+    return config;
+  }
 
-    // Bean name "jms" is the Camel component name — routes use "jms:queue:..." URIs.
-    @Bean
-    public ActiveMQComponent jms(JmsConfiguration camelJmsConfiguration) {
-        ActiveMQComponent component = new ActiveMQComponent();
-        component.setConfiguration(camelJmsConfiguration);
-        component.setTransacted(true);
-        component.setCacheLevelName("CACHE_CONSUMER");
-        return component;
-    }
+  // Bean name "jms" is the Camel component name — routes use "jms:queue:..." URIs.
+  @Bean
+  public ActiveMQComponent jms(JmsConfiguration camelJmsConfiguration) {
+    ActiveMQComponent component = new ActiveMQComponent();
+    component.setConfiguration(camelJmsConfiguration);
+    component.setTransacted(true);
+    component.setCacheLevelName("CACHE_CONSUMER");
+    return component;
+  }
 
-    // Bean name "txTemplate" is fixed — routes call .transacted("txTemplate")
-    @Bean
-    public SpringTransactionPolicy txTemplate(JmsTransactionManager jmsTransactionManager) {
-        return new SpringTransactionPolicy(jmsTransactionManager);
-    }
+  // Bean name "txTemplate" is fixed — routes call .transacted("txTemplate")
+  @Bean
+  public SpringTransactionPolicy txTemplate(JmsTransactionManager jmsTransactionManager) {
+    return new SpringTransactionPolicy(jmsTransactionManager);
+  }
 }

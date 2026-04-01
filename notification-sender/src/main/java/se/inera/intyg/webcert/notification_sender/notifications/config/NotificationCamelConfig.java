@@ -35,53 +35,53 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.Notific
 /**
  * Replaces notifications/beans-context.xml and notifications/camel-context.xml.
  *
- * Intentionally does NOT include notificationPatientEnricher — that bean is declared in
- * NotificationSenderConfig so unit/integration tests can load this config without pulling
- * in PU-service (Ignite) dependencies.
+ * <p>Intentionally does NOT include notificationPatientEnricher — that bean is declared in
+ * NotificationSenderConfig so unit/integration tests can load this config without pulling in
+ * PU-service (Ignite) dependencies.
  */
 @Configuration
 public class NotificationCamelConfig {
 
-    @Bean
-    public NotificationTransformer notificationTransformer() {
-        return new NotificationTransformer();
-    }
+  @Bean
+  public NotificationTransformer notificationTransformer() {
+    return new NotificationTransformer();
+  }
 
-    @Bean
-    public NotificationAggregator notificationAggregator() {
-        return new NotificationAggregator();
-    }
+  @Bean
+  public NotificationAggregator notificationAggregator() {
+    return new NotificationAggregator();
+  }
 
-    // Bean name matches the XML id "processNotificationRequestRouteBuilder"
-    // referenced by the CamelContext and used in Camel bean lookups.
-    @Bean
-    public NotificationRouteBuilder processNotificationRequestRouteBuilder() {
-        return new NotificationRouteBuilder();
-    }
+  // Bean name matches the XML id "processNotificationRequestRouteBuilder"
+  // referenced by the CamelContext and used in Camel bean lookups.
+  @Bean
+  public NotificationRouteBuilder processNotificationRequestRouteBuilder() {
+    return new NotificationRouteBuilder();
+  }
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new CustomObjectMapper();
-    }
+  @Bean
+  public ObjectMapper objectMapper() {
+    return new CustomObjectMapper();
+  }
 
-    // Bean name "notificationMessageDataFormat" is referenced in routes via
-    // .unmarshal("notificationMessageDataFormat")
-    @Bean
-    public JacksonDataFormat notificationMessageDataFormat(ObjectMapper objectMapper) {
-        return new JacksonDataFormat(objectMapper, NotificationMessage.class);
-    }
+  // Bean name "notificationMessageDataFormat" is referenced in routes via
+  // .unmarshal("notificationMessageDataFormat")
+  @Bean
+  public JacksonDataFormat notificationMessageDataFormat(ObjectMapper objectMapper) {
+    return new JacksonDataFormat(objectMapper, NotificationMessage.class);
+  }
 
-    @Bean
-    public SpringCamelContext webcertNotification(
-            ApplicationContext applicationContext,
-            NotificationRouteBuilder processNotificationRequestRouteBuilder) {
-        SpringCamelContext context = new SpringCamelContext(applicationContext);
-        context.setNameStrategy(new ExplicitCamelContextNameStrategy("webcertNotification"));
-        try {
-            context.addRoutes(processNotificationRequestRouteBuilder);
-        } catch (Exception e) {
-            throw new BeanCreationException("webcertNotification", "Failed to add routes", e);
-        }
-        return context;
+  @Bean
+  public SpringCamelContext webcertNotification(
+      ApplicationContext applicationContext,
+      NotificationRouteBuilder processNotificationRequestRouteBuilder) {
+    SpringCamelContext context = new SpringCamelContext(applicationContext);
+    context.setNameStrategy(new ExplicitCamelContextNameStrategy("webcertNotification"));
+    try {
+      context.addRoutes(processNotificationRequestRouteBuilder);
+    } catch (Exception e) {
+      throw new BeanCreationException("webcertNotification", "Failed to add routes", e);
     }
+    return context;
+  }
 }

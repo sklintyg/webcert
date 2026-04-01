@@ -27,10 +27,11 @@ import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumerImpl;
 
 @Configuration
-@ComponentScans(value = {
-    @ComponentScan("se.inera.intyg.webcert.integration.fmb.services"),
-    @ComponentScan("se.inera.intyg.webcert.integration.fmb.stub"),
-})
+@ComponentScans(
+    value = {
+      @ComponentScan("se.inera.intyg.webcert.integration.fmb.services"),
+      @ComponentScan("se.inera.intyg.webcert.integration.fmb.stub"),
+    })
 public class FmbServicesConfig {
 
   @Bean
