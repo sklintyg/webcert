@@ -21,12 +21,16 @@ package se.inera.intyg.webcert.integration.fmb.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumerImpl;
 
 @Configuration
-@ComponentScan("se.inera.intyg.webcert.integration.fmb.services")
+@ComponentScans(value = {
+    @ComponentScan("se.inera.intyg.webcert.integration.fmb.services"),
+    @ComponentScan("se.inera.intyg.webcert.integration.fmb.stub"),
+})
 public class FmbServicesConfig {
 
   @Bean
