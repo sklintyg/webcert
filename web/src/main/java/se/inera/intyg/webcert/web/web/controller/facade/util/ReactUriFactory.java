@@ -100,6 +100,6 @@ public class ReactUriFactory {
 
   private static ServletUriComponentsBuilder uriComponentsBuilder(HttpServletRequest request) {
     return (ServletUriComponentsBuilder)
-        ServletUriComponentsBuilder.fromRequest(request).replacePath("/");
+        ServletUriComponentsBuilder.fromRequest(request).replacePath("/").replaceQuery(null);
   }
 }

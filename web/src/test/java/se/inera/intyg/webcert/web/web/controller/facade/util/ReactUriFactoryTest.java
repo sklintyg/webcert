@@ -28,73 +28,122 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 class ReactUriFactoryTest {
 
-  private ReactUriFactory reactUriFactory;
-  private MockHttpServletRequest mockRequest;
+    private ReactUriFactory reactUriFactory;
+    private MockHttpServletRequest mockRequest;
 
-  @BeforeEach
-  void setUp() {
-    reactUriFactory = new ReactUriFactory();
+    @BeforeEach
+    void setUp() {
+        reactUriFactory = new ReactUriFactory();
 
-    mockRequest = new MockHttpServletRequest();
-    mockRequest.setScheme("https");
-    mockRequest.setServerName("wc.localtest.me");
-    mockRequest.setServerPort(443);
-    mockRequest.setRequestURI("/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
+        mockRequest = new MockHttpServletRequest();
+        mockRequest.setScheme("https");
+        mockRequest.setServerName("wc.localtest.me");
+        mockRequest.setServerPort(443);
+        mockRequest.setRequestURI("/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
 
-    ReflectionTestUtils.setField(reactUriFactory, "webcertDomainName", "wc.localtest.me");
-    ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
-    ReflectionTestUtils.setField(
-        reactUriFactory, "urlReactSignErrorTemplate", "/certificate/{certId}/sign/{error}");
-    ReflectionTestUtils.setField(
-        reactUriFactory, "urlReactQuestionsTemplate", "/certificate/{certId}/questions");
-    ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/error");
-    ReflectionTestUtils.setField(
-        reactUriFactory,
-        "urlReactUnitSelectionTemplate",
-        "/certificate/{certId}/launch-unit-selection");
-  }
+        ReflectionTestUtils.setField(reactUriFactory, "webcertDomainName", "wc.localtest.me");
+        ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
+        ReflectionTestUtils.setField(
+            reactUriFactory, "urlReactSignErrorTemplate", "/certificate/{certId}/sign/{error}");
+        ReflectionTestUtils.setField(
+            reactUriFactory, "urlReactQuestionsTemplate", "/certificate/{certId}/questions");
+        ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/error");
+        ReflectionTestUtils.setField(
+            reactUriFactory,
+            "urlReactUnitSelectionTemplate",
+            "/certificate/{certId}/launch-unit-selection");
+    }
 
-  @Test
-  void shallReturnUriForCertificate() {
-    final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
-    final var actualUri = reactUriFactory.uriForCertificate(mockRequest, certificateId);
-    assertEquals(
-        actualUri.toString(), "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq");
-  }
+    @Test
+    void shallReturnUriForCertificate() {
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForCertificate(mockRequest, certificateId);
+        assertEquals(
+            "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq", actualUri.toString());
+    }
 
-  @Test
-  void shallReturnUriWithSignErrorForCertificate() {
-    final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
-    final var actualUri =
-        reactUriFactory.uriForCertificateWithSignError(
-            mockRequest, certificateId, SignaturStatus.ERROR);
-    assertEquals(
-        actualUri.toString(),
-        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error");
-  }
+    @Test
+    void shallReturnUriWithSignErrorForCertificate() {
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri =
+            reactUriFactory.uriForCertificateWithSignError(
+                mockRequest, certificateId, SignaturStatus.ERROR);
+        assertEquals(
+            "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error",
+            actualUri.toString());
+    }
 
-  @Test
-  void shallReturnUriForCertificateQuestions() {
-    final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
-    final var actualUri = reactUriFactory.uriForCertificateQuestions(mockRequest, certificateId);
-    assertEquals(
-        actualUri.toString(),
-        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions");
-  }
+    @Test
+    void shallReturnUriForCertificateQuestions() {
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForCertificateQuestions(mockRequest, certificateId);
+        assertEquals(
+            "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions",
+            actualUri.toString());
+    }
 
-  @Test
-  void shallReturnUriForError() {
-    final var reason = "auth-exception";
-    final var actualUri = reactUriFactory.uriForErrorResponse(mockRequest, reason);
-    assertEquals(actualUri.toString(), "https://wc.localtest.me/error?reason=auth-exception");
-  }
+    @Test
+    void shallReturnUriForError() {
+        final var reason = "auth-exception";
+        final var actualUri = reactUriFactory.uriForErrorResponse(mockRequest, reason);
+        assertEquals("https://wc.localtest.me/error?reason=auth-exception", actualUri.toString());
+    }
 
-  @Test
-  void shallReturnUriForUnitSelection() {
-    final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
-    final var actualUri = reactUriFactory.uriForUnitSelection(mockRequest, certificateId);
-    assertEquals(
-        actualUri.toString(),
-        "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/launch-unit-selection");
-  }
+    @Test
+    void shallReturnUriForUnitSelection() {
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForUnitSelection(mockRequest, certificateId);
+        assertEquals(
+            "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/launch-unit-selection",
+            actualUri.toString());
+    }
+
+    @Test
+    void shallNotIncludeRequestQueryParamsInUriForCertificate() {
+        mockRequest.setQueryString("enhet=IFV1239877878-1042");
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForCertificate(mockRequest, certificateId);
+        assertEquals(
+            "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq", actualUri.toString());
+    }
+
+    @Test
+    void shallNotIncludeRequestQueryParamsInUriForCertificateQuestions() {
+        mockRequest.setQueryString("enhet=IFV1239877878-1042");
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForCertificateQuestions(mockRequest, certificateId);
+        assertEquals(
+            "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions",
+            actualUri.toString());
+    }
+
+    @Test
+    void shallNotIncludeRequestQueryParamsInUriForCertificateWithSignError() {
+        mockRequest.setQueryString("enhet=IFV1239877878-1042");
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri =
+            reactUriFactory.uriForCertificateWithSignError(
+                mockRequest, certificateId, SignaturStatus.ERROR);
+        assertEquals(
+            "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error",
+            actualUri.toString());
+    }
+
+    @Test
+    void shallNotIncludeRequestQueryParamsInUriForUnitSelection() {
+        mockRequest.setQueryString("enhet=IFV1239877878-1042");
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForUnitSelection(mockRequest, certificateId);
+        assertEquals(
+            "https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/launch-unit-selection",
+            actualUri.toString());
+    }
+
+    @Test
+    void shallNotIncludeRequestQueryParamsInUriForError() {
+        mockRequest.setQueryString("enhet=IFV1239877878-1042");
+        final var reason = "auth-exception";
+        final var actualUri = reactUriFactory.uriForErrorResponse(mockRequest, reason);
+        assertEquals("https://wc.localtest.me/error?reason=auth-exception", actualUri.toString());
+    }
 }
