@@ -22,7 +22,10 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +34,8 @@ import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeService;
+import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodResponseDTO;
 
@@ -43,6 +48,23 @@ public class FMBController {
   private static final String UTF_8_CHARSET = ";charset=utf-8";
 
   @Autowired private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
+  @Autowired private FmbDiagnosInformationService fmbDiagnosInformationService;
+
+  @GetMapping(value = "/{icd10}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PrometheusTimeMethod
+  @PerformanceLogging(
+      eventAction = "fmb-get-fmb-data-for-icd10",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public ResponseEntity<FmbResponse> getFmbForIcd10(@PathVariable("icd10") String icd10) {
+    if (icd10 == null || icd10.isEmpty()) {
+      return ResponseEntity.badRequest().build();
+    }
+
+    return fmbDiagnosInformationService
+        .findFmbDiagnosInformationByIcd10Kod(icd10)
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.noContent().build());
+  }
 
   @PostMapping("/validateSickLeavePeriod")
   @PrometheusTimeMethod
