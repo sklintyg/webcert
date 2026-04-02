@@ -70,8 +70,7 @@ public class SignatureApiController extends AbstractApiController {
   @Autowired private ReactUriFactory reactUriFactory;
 
   @Autowired
-  @Qualifier("signAggregator")
-  private UnderskriftService underskriftService;
+  @Qualifier("signAggregator") private UnderskriftService underskriftService;
 
   @Autowired private MonitoringLogService monitoringLogService;
 

@@ -81,6 +81,7 @@ public class PageController {
           UriComponentsBuilder.fromPath("/error")
               .queryParam("reason", "enhet.auth.exception")
               .queryParam("enhetHsaId", enhetHsaId)
+              .encode()
               .build()
               .toUri();
       httpHeaders.setLocation(uri);
