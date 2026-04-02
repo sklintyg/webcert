@@ -21,36 +21,20 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
-import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
-import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
-import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorageRequest;
 
 /**
@@ -67,132 +51,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorag
 public class UserApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
-
-  @Autowired private AvtalService avtalService;
-
-  @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
-
-  @Autowired private DssSignatureService dssSignatureService;
-
-  /** Retrieves the security context of the logged in user as JSON. */
-  @GetMapping
-  @PrometheusTimeMethod
-  @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<String> getUser() {
-    WebCertUser user = getWebCertUserService().getUser();
-
-    var valdVardenhet = user.getValdVardenhet();
-    if (valdVardenhet != null) {
-      user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
-    }
-    return ResponseEntity.ok(user.getAsJson());
-  }
-
-  @PutMapping("/features")
-  @PrometheusTimeMethod
-  @PerformanceLogging(
-      eventAction = "user-set-user-features",
-      eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public ResponseEntity<Map<String, Feature>> userFeatures(
-      @RequestBody WebUserFeaturesRequest webUserFeaturesRequest) {
-    WebCertUser user = getWebCertUserService().getUser();
-    Map<String, Feature> mutFeatures = new HashMap<>(user.getFeatures());
-    updateFeatures(
-        webUserFeaturesRequest.isJsLoggning(),
-        AuthoritiesConstants.FEATURE_JS_LOGGNING,
-        mutFeatures);
-    user.setFeatures(mutFeatures);
-    return ResponseEntity.ok(mutFeatures);
-  }
-
-  /** Changes the selected care unit in the security context for the logged in user. */
-  @PostMapping("/andraenhet")
-  @PrometheusTimeMethod
-  @PerformanceLogging(
-      eventAction = "user-change-selected-unit",
-      eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public ResponseEntity<String> changeSelectedUnitOnUser(
-      @RequestBody ChangeSelectedUnitRequest request) {
-
-    WebCertUser user = getWebCertUserService().getUser();
-
-    LOG.debug(
-        "Attempting to change selected unit for user '{}', currently selected unit is '{}'",
-        user.getHsaId(),
-        user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "(none)");
-
-    boolean changeSuccess = user.changeValdVardenhet(request.getId());
-
-    if (!changeSuccess) {
-      LOG.error(
-          "Unit '{}' is not present in the MIUs for user '{}'", request.getId(), user.getHsaId());
-      return ResponseEntity.badRequest().body("Unit change failed");
-    }
-
-    var valdVardenhet = user.getValdVardenhet();
-    if (valdVardenhet != null) {
-      user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
-    }
-
-    user.setFeatures(
-        commonAuthoritiesResolver.getFeatures(
-            Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
-
-    LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
-
-    return ResponseEntity.ok(user.getAsJson());
-  }
-
-  /** Retrieves the security context of the logged in user as JSON. */
-  @PutMapping("/godkannavtal")
-  @PrometheusTimeMethod
-  @PerformanceLogging(
-      eventAction = "user-approve-agreement",
-      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<Void> godkannAvtal() {
-    WebCertUser user = getWebCertUserService().getUser();
-    if (user != null) {
-      avtalService.approveLatestAvtal(user.getHsaId(), user.getPersonId());
-      user.setUserTermsApprovedOrSubscriptionInUse(true);
-    }
-    return ResponseEntity.ok().build();
-  }
-
-  /** Deletes privatlakaravtal approval for the specified user. */
-  @DeleteMapping("/privatlakaravtal")
-  @PrometheusTimeMethod
-  @PerformanceLogging(
-      eventAction = "user-remove-agreement-approval",
-      eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-  public ResponseEntity<Void> taBortAvtalsGodkannande() {
-    WebCertUser user = getWebCertUserService().getUser();
-    if (user != null) {
-      avtalService.removeApproval(user.getHsaId());
-      return ResponseEntity.ok().build();
-    }
-    return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
-  }
-
-  @GetMapping("/latestavtal")
-  @PrometheusTimeMethod
-  @PerformanceLogging(
-      eventAction = "user-get-agreement",
-      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<Avtal> getAvtal() {
-    Optional<Avtal> avtal = avtalService.getLatestAvtal();
-    return ResponseEntity.ok(avtal.orElse(null));
-  }
-
-  @GetMapping("/ping")
-  @PrometheusTimeMethod
-  @PerformanceLogging(
-      eventAction = "user-client-ping",
-      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<Void> clientPing() {
-    // Any active user session will be extended just by accessing an endpoint.
-    LOG.debug("wc-client pinged server");
-    return ResponseEntity.ok().build();
-  }
 
   @PutMapping("/preferences")
   @PrometheusTimeMethod
@@ -239,16 +97,5 @@ public class UserApiController extends AbstractApiController {
     getWebCertUserService().cancelScheduledLogout(session);
 
     return ResponseEntity.ok().build();
-  }
-
-  private void updateFeatures(boolean active, String name, Map<String, Feature> features) {
-    if (active) {
-      Feature feature = new Feature();
-      feature.setName(name);
-      feature.setGlobal(true);
-      features.put(name, feature);
-    } else {
-      features.remove(name);
-    }
   }
 }
