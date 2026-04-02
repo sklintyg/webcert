@@ -21,17 +21,16 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.PostConstruct;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.webcert.infra.dynamiclink.service.DynamicLinkService;
@@ -44,11 +43,12 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Area;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
 
-@Path("/config")
+@RestController
+@RequestMapping("/api/config")
 @Api(
     value = "config",
     description = "REST API för konfigurationsparametrar",
-    produces = MediaType.APPLICATION_JSON)
+    produces = "application/json")
 public class ConfigApiController extends AbstractApiController {
 
   @Value("${project.version}")
@@ -89,18 +89,16 @@ public class ConfigApiController extends AbstractApiController {
 
   @Autowired private IABannerService iaBannerService;
 
-  @GET
-  @Path("/")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping
   @ApiOperation(
       value = "Get module configuration for Webcert",
       httpMethod = "GET",
-      produces = MediaType.APPLICATION_JSON)
+      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-config",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getConfig() {
+  public ResponseEntity<ConfigResponse> getConfig() {
     Boolean useMinifiedJavaScript =
         Boolean.parseBoolean(environment.getProperty("useMinifiedJavaScript", "true"));
     ConfigResponse configResponse =
@@ -118,16 +116,14 @@ public class ConfigApiController extends AbstractApiController {
             webcertUserSurveyDateFrom,
             webcertUserSurveyVersion);
 
-    return Response.ok(configResponse).build();
+    return ResponseEntity.ok(configResponse);
   }
 
-  @GET
-  @Path("/links")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/links")
   @ApiOperation(
       value = "Get dynamic links for Webcert",
       httpMethod = "GET",
-      produces = MediaType.APPLICATION_JSON)
+      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-dynamic-links",
@@ -136,13 +132,11 @@ public class ConfigApiController extends AbstractApiController {
     return dynamicLinkService.getAllAsMap();
   }
 
-  @GET
-  @Path("/kommuner")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/kommuner")
   @ApiOperation(
       value = "Get list of kommuner from postnummerservice",
       httpMethod = "GET",
-      produces = MediaType.APPLICATION_JSON)
+      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-kommun-list",
@@ -151,18 +145,16 @@ public class ConfigApiController extends AbstractApiController {
     return postnummerService.getKommunList();
   }
 
-  @GET
-  @Path("area/{zipcode}")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("area/{zipcode}")
   @ApiOperation(
       value = "Get area for a given area from postnummerservice",
       httpMethod = "GET",
-      produces = MediaType.APPLICATION_JSON)
+      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-area-by-zid-code",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public List<Area> getAreaByZipCode(@PathParam("zipcode") String zipCode) {
+  public List<Area> getAreaByZipCode(@PathVariable("zipcode") String zipCode) {
     final var result = postnummerService.getOmradeByPostnummer(zipCode);
     if (result == null || result.isEmpty()) {
       return List.of();

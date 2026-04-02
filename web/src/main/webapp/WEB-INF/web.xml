@@ -25,8 +25,12 @@
     <display-name>Inera WebCert Web Application</display-name>
 
     <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+    </context-param>
+    <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:webcert-config.xml</param-value>
+        <param-value>se.inera.intyg.webcert.web.config.AppConfig</param-value>
     </context-param>
 
     <context-param>
@@ -57,37 +61,13 @@
     <servlet>
         <servlet-name>web</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- Webcert GUI REST services -->
-    <servlet>
-        <servlet-name>api</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/api-cxf-servlet.xml</param-value>
+            <param-name>contextClass</param-name>
+            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
         </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- Webcert Module REST services -->
-    <servlet>
-        <servlet-name>moduleapi</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/moduleapi-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>internalapi</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/internalapi-cxf-servlet.xml</param-value>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>se.inera.intyg.webcert.web.config.WebMvcConfiguration</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -97,52 +77,12 @@
         <servlet-name>services</servlet-name>
         <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/services-cxf-servlet.xml</param-value>
+            <param-name>contextClass</param-name>
+            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
         </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- Webcert testability services -->
-    <servlet>
-        <servlet-name>testability</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/testability-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- Webcert auth testability services -->
-    <servlet>
-        <servlet-name>authtestability</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/authtestability-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- External system integration services, legacy webcert 0.5/medcert -->
-    <servlet>
-        <servlet-name>uthoppintegrationapi</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/uthopp-integration-cxf-servlet.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <!-- External system integration services webcert 2.0+ -->
-    <servlet>
-        <servlet-name>integrationapi</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <init-param>
-            <param-name>config-location</param-name>
-            <param-value>/WEB-INF/integration-cxf-servlet.xml</param-value>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>se.inera.intyg.webcert.web.config.CxfEndpointConfig</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -155,43 +95,11 @@
 
     <servlet-mapping>
         <servlet-name>web</servlet-name>
-        <url-pattern>/web/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>api</servlet-name>
-        <url-pattern>/api/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>moduleapi</servlet-name>
-        <url-pattern>/moduleapi/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>internalapi</servlet-name>
-        <url-pattern>/internalapi/*</url-pattern>
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>services</servlet-name>
         <url-pattern>/services/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>testability</servlet-name>
-        <url-pattern>/testability/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>authtestability</servlet-name>
-        <url-pattern>/authtestability/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>uthoppintegrationapi</servlet-name>
-        <url-pattern>/webcert/web/user/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>integrationapi</servlet-name>
-        <url-pattern>/visa/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>integrationapi</servlet-name>
-        <url-pattern>/v2/visa/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>metrics</servlet-name>

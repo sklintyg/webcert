@@ -19,28 +19,30 @@
 package se.inera.intyg.webcert.infra.srs.stub;
 
 import com.google.common.io.ByteStreams;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
 import java.io.IOException;
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+@Profile("dev")
+@RequestMapping("/stubs/srs-statistics-stub")
 public class StatisticsImageStub {
 
   private static final Logger LOG = LoggerFactory.getLogger(StatisticsImageStub.class);
 
-  @GET
-  @Path("/{filename}")
-  @Produces(MediaType.IMAGE_JPEG_VALUE)
+  @GetMapping(value = "/{filename}", produces = MediaType.IMAGE_JPEG_VALUE)
   @ResponseBody
-  public byte[] getImage(@PathParam("filename") String filename) {
+  public byte[] getImage(@PathVariable("filename") String filename) {
     byte[] bytes = null;
     try {
       Resource res = new ClassPathResource("statistik/" + filename + ".jpg");

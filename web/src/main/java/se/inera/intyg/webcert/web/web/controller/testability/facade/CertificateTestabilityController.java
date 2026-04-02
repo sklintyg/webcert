@@ -18,18 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificatePatientsResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateTypesResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
@@ -41,8 +39,10 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.util.CreateQ
 import se.inera.intyg.webcert.web.web.controller.testability.facade.util.SupportedCertificateTypesUtil;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.util.SupportedPatientsUtil;
 
-@Path("/certificate")
-public class CertificateTestabilityController extends AbstractApiController {
+@RestController
+@RequestMapping("/testability/certificate")
+@Profile({"dev", "testability-api"})
+public class CertificateTestabilityController {
 
   private final CreateCertificateTestabilityUtil createCertificateTestabilityUtil;
   private final CreateQuestionTestabilityUtil createQuestionTestabilityUtil;
@@ -61,56 +61,41 @@ public class CertificateTestabilityController extends AbstractApiController {
     this.supportedPatientsUtil = supportedPatientsUtil;
   }
 
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/")
-  public Response createCertificate(
+  @PostMapping
+  public ResponseEntity<CreateCertificateResponseDTO> createCertificate(
       @RequestBody @NotNull CreateCertificateRequestDTO createCertificateRequest) {
     final var certificateId =
         createCertificateTestabilityUtil.createNewCertificate(createCertificateRequest);
-    return Response.ok(new CreateCertificateResponseDTO(certificateId)).build();
+    return ResponseEntity.ok(new CreateCertificateResponseDTO(certificateId));
   }
 
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/{certificateId}/question")
-  public Response createQuestion(
-      @PathParam("certificateId") @NotNull String certificateId,
+  @PostMapping("/{certificateId}/question")
+  public ResponseEntity<CreateQuestionResponseDTO> createQuestion(
+      @PathVariable("certificateId") @NotNull String certificateId,
       @RequestBody @NotNull CreateQuestionRequestDTO createQuestionRequest) {
     final var questionId =
         createQuestionTestabilityUtil.createNewQuestion(certificateId, createQuestionRequest);
-    return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
+    return ResponseEntity.ok(new CreateQuestionResponseDTO(questionId));
   }
 
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/{certificateId}/questionDraft")
-  public Response createQuestionDraft(
-      @PathParam("certificateId") @NotNull String certificateId,
+  @PostMapping("/{certificateId}/questionDraft")
+  public ResponseEntity<CreateQuestionResponseDTO> createQuestionDraft(
+      @PathVariable("certificateId") @NotNull String certificateId,
       @RequestBody @NotNull CreateQuestionRequestDTO createQuestionRequest) {
     final var questionId =
         createQuestionTestabilityUtil.createNewQuestionDraft(certificateId, createQuestionRequest);
-    return Response.ok(new CreateQuestionResponseDTO(questionId)).build();
+    return ResponseEntity.ok(new CreateQuestionResponseDTO(questionId));
   }
 
-  @GET
-  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/types")
-  public Response getSupportedCerificateTypes() {
+  @GetMapping("/types")
+  public ResponseEntity<CertificateTypesResponseDTO> getSupportedCerificateTypes() {
     final var certificateTypes = supportedCertificateTypesUtil.get();
-    return Response.ok(new CertificateTypesResponseDTO(certificateTypes)).build();
+    return ResponseEntity.ok(new CertificateTypesResponseDTO(certificateTypes));
   }
 
-  @GET
-  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/patients")
-  public Response getSuppportedPatients() {
+  @GetMapping("/patients")
+  public ResponseEntity<CertificatePatientsResponseDTO> getSuppportedPatients() {
     final var patients = supportedPatientsUtil.get();
-    return Response.ok(new CertificatePatientsResponseDTO(patients)).build();
+    return ResponseEntity.ok(new CertificatePatientsResponseDTO(patients));
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.auth.bootstrap;
 
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.BeforeAll;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
@@ -39,7 +40,7 @@ public abstract class AuthoritiesConfigurationTestSetup {
   public static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER =
       new CommonAuthoritiesResolver();
 
-  @BeforeAll
+  @BeforeClass
   public static void setupAuthoritiesConfiguration() throws Exception {
     // Load configuration
     CONFIGURATION_LOADER.afterPropertiesSet();

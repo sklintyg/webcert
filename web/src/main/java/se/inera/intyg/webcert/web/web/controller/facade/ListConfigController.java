@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -34,9 +34,11 @@ import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFac
 import se.inera.intyg.webcert.web.service.facade.list.config.ListPreviousCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListQuestionsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UpdateListConfigRequestDTO;
 
-@Path("/list/config")
+@RestController
+@RequestMapping("/api/list/config")
 public class ListConfigController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ListConfigController.class);
@@ -62,69 +64,61 @@ public class ListConfigController {
     this.listQuestionsConfigFacadeService = listQuestionsConfigFacadeService;
   }
 
-  @Path("/draft")
-  @GET
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/draft")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-config-get-list-or-drafts-config",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getListOfDraftsConfig() {
+  public ResponseEntity<ListConfig> getListOfDraftsConfig() {
     LOG.debug("Getting config for list of drafts");
     final var config = draftListConfigFacadeService.get();
-    return Response.ok(config).build();
+    return ResponseEntity.ok(config);
   }
 
-  @Path("/certificate")
-  @GET
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/certificate")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-config-get-list-of-signed-certificates-config",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getListOfSignedCertificatesConfig() {
+  public ResponseEntity<ListConfig> getListOfSignedCertificatesConfig() {
     LOG.debug("Getting config for list of signed certificates");
     final var config = listSignedCertificatesConfigFacadeService.get();
-    return Response.ok(config).build();
+    return ResponseEntity.ok(config);
   }
 
-  @Path("/previous")
-  @GET
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/previous")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-config-get-list-of-previous-certificates-config",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getListOfPreviousCertificatesConfig() {
+  public ResponseEntity<ListConfig> getListOfPreviousCertificatesConfig() {
     LOG.debug("Getting config for list of previous certificates");
     final var config = listPreviousCertificatesConfigFacadeService.get();
-    return Response.ok(config).build();
+    return ResponseEntity.ok(config);
   }
 
-  @Path("/question")
-  @POST
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PostMapping("/question")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-config-get-list-of-questions",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getListOfQuestions(String unitId) {
+  public ResponseEntity<ListConfig> getListOfQuestions(
+      @RequestBody(required = false) String unitId) {
     LOG.debug("Getting config for list of unhandled questions");
     final var config = listQuestionsConfigFacadeService.get(unitId);
-    return Response.ok(config).build();
+    return ResponseEntity.ok(config);
   }
 
-  @Path("/question/update")
-  @POST
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PostMapping("/question/update")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-config-update-list-of-questions-config",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response updateListOfQuestionsConfig(UpdateListConfigRequestDTO request) {
+  public ResponseEntity<ListConfig> updateListOfQuestionsConfig(
+      @RequestBody UpdateListConfigRequestDTO request) {
     LOG.debug("Getting updated config for list of unhandled questions");
     final var updatedConfig =
         listQuestionsConfigFacadeService.update(request.getConfig(), request.getUnitId());
-    return Response.ok(updatedConfig).build();
+    return ResponseEntity.ok(updatedConfig);
   }
 }

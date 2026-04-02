@@ -223,6 +223,8 @@ public class WebSecurityConfig {
                     .permitAll()
                     .requestMatchers(antMatcher("/services/**"))
                     .permitAll()
+                    .requestMatchers(antMatcher("/stubs/**"))
+                    .permitAll()
                     .requestMatchers(antMatcher("/api/config/**"))
                     .permitAll()
                     .requestMatchers(antMatcher("/api/configuration/**"))
@@ -277,6 +279,7 @@ public class WebSecurityConfig {
                         antMatcher("/testability/**"),
                         antMatcher("/authtestability/**"),
                         antMatcher("/services/**"),
+                        antMatcher("/stubs/**"),
                         antMatcher("/api/v1/session/invalidate")))
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 

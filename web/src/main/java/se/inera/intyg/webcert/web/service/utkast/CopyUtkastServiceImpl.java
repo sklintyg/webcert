@@ -97,7 +97,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
   @Qualifier("copyCompletionUtkastBuilder") private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
 
   @Autowired
-  @Qualifier("createRenewalUtkastBuilder") private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
+  @Qualifier("createRenewalCopyUtkastBuilder") private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
 
   @Autowired
   @Qualifier("createReplacementUtkastBuilder") private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;

@@ -129,7 +129,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
   }
 
   private String getSecondaryTitle(String unitId) {
-    if (unitId.length() == 0 || webCertUserService.getUser().isPrivatLakare()) {
+    if (unitId == null || unitId.isBlank() || webCertUserService.getUser().isPrivatLakare()) {
       return "Ärenden visas för alla enheter";
     }
     final var unit = hsaOrganizationsService.getVardenhet(unitId);

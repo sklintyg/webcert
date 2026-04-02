@@ -4,6 +4,8 @@ dependencies {
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
     implementation "org.apache.commons:commons-lang3"
     implementation "org.apache.cxf:cxf-core"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
+    implementation "org.springframework:spring-webmvc"
     implementation "org.springframework.data:spring-data-redis"
     implementation "se.inera.intyg.common:integration-util:${commonVersion}"
     implementation "se.inera.intyg.common:common-support:${commonVersion}"

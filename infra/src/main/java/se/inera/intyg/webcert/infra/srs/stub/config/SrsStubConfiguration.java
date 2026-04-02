@@ -18,13 +18,7 @@
  */
 package se.inera.intyg.webcert.infra.srs.stub.config;
 
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.cxf.Bus;
-import org.apache.cxf.endpoint.Server;
-import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,16 +30,14 @@ import se.inera.intyg.webcert.infra.srs.stub.GetPredictionQuestionsStub;
 import se.inera.intyg.webcert.infra.srs.stub.GetSRSInformationForDiagnosisStub;
 import se.inera.intyg.webcert.infra.srs.stub.GetSrsInformationStub;
 import se.inera.intyg.webcert.infra.srs.stub.SetConsentStub;
-import se.inera.intyg.webcert.infra.srs.stub.StatisticsImageStub;
+import se.inera.intyg.webcert.infra.srs.stub.SetOwnOpinionStub;
 import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
 
 @Configuration
-@Profile({"dev", "wc-all-stubs", "wc-srs-stub"})
+@Profile("dev")
 public class SrsStubConfiguration {
 
   @Autowired private Bus bus;
-
-  @Autowired private JacksonJsonProvider jacksonJsonProvider;
 
   @Bean
   public ConsentRepository consentRepository() {
@@ -80,6 +72,11 @@ public class SrsStubConfiguration {
   @Bean
   public GetSRSInformationForDiagnosisStub getSRSInformationForDiagnosisStub() {
     return new GetSRSInformationForDiagnosisStub();
+  }
+
+  @Bean
+  public SetOwnOpinionStub setOwnOpinionStub() {
+    return new SetOwnOpinionStub();
   }
 
   @Bean
@@ -123,23 +120,5 @@ public class SrsStubConfiguration {
     endpoint.publish("/stubs/getsrsfordiagnosis");
     return endpoint;
   }
-
-  @Bean
-  public StatisticsImageStub statisticsImageStub() {
-    return new StatisticsImageStub();
-  }
-
-  @Bean
-  public Server srsStatisticsStubServer(StatisticsImageStub statisticsImageStub) {
-    JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
-    factory.setBus(bus);
-    factory.setAddress("/stubs/srs-statistics-stub");
-    factory.setServiceBeans(Arrays.asList(statisticsImageStub));
-    factory.setProviders(Arrays.asList(jacksonJsonProvider));
-    Map<Object, Object> extensionMappings = new HashMap<>();
-    extensionMappings.put("json", "application/json");
-    extensionMappings.put("jpg", "image/jpeg");
-    factory.setExtensionMappings(extensionMappings);
-    return factory.create();
-  }
+  // StatisticsImageStub is a @RestController and is auto-discovered by component scan.
 }

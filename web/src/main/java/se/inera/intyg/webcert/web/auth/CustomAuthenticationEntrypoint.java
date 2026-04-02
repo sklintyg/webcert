@@ -24,7 +24,6 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.HttpMethod;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -41,19 +40,19 @@ import org.springframework.stereotype.Component;
 public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint {
 
   private static final Map<String, List<String>> ELEG_PATTERNS =
-      Map.of("/webcert/web/user/pp-certificate/**", List.of(HttpMethod.GET));
+      Map.of("/webcert/web/user/pp-certificate/**", List.of("GET"));
 
   private static final Map<String, List<String>> SITHS_PATTERNS =
       Map.of(
-          "/visa/intyg/*", List.of(HttpMethod.GET, HttpMethod.POST),
-          "/v2/visa/intyg/*", List.of(HttpMethod.POST));
+          "/visa/intyg/*", List.of("GET", "POST"),
+          "/v2/visa/intyg/*", List.of("POST"));
 
   private static final Map<String, List<String>> SITHS_NORMAL_PATTERNS =
       Map.of(
-          "/web/maillink/**", List.of(HttpMethod.GET),
-          "/webcert/web/user/launch/**", List.of(HttpMethod.GET),
-          "/webcert/web/user/certificate/**", List.of(HttpMethod.GET),
-          "/webcert/web/user/basic-certificate/**", List.of(HttpMethod.GET));
+          "/web/maillink/**", List.of("GET"),
+          "/webcert/web/user/launch/**", List.of("GET"),
+          "/webcert/web/user/certificate/**", List.of("GET"),
+          "/webcert/web/user/basic-certificate/**", List.of("GET"));
 
   private static final String SAML2_AUTHENTICATION_PATH = "/saml2/authenticate/";
   private static final String ACCESS_DENIED_REDIRECT_PATH = "/error?reason=auth-exception-resource";

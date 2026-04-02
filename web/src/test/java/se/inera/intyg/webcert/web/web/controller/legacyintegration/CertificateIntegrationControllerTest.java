@@ -26,7 +26,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,7 +62,6 @@ class CertificateIntegrationControllerTest {
 
   @InjectMocks private CertificateIntegrationController certificateIntegrationController;
 
-  private UriInfo uriInfo;
   private WebCertUser webcertUser;
 
   @BeforeEach
@@ -93,14 +91,14 @@ class CertificateIntegrationControllerTest {
 
     @Test
     void shouldUseReactIfFeatureIsActivatedFk7263() {
-      certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
+      certificateIntegrationController.redirectToIntyg(null, CERTIFICATE_ID, UNIT_ID);
       verify(reactUriFactory).uriForCertificate(any(), any());
     }
 
     @Test
     void shouldUseReactIfFeatureIsActivated() {
       certificateIntegrationController.redirectToIntyg(
-          uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+          null, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
 
       verify(reactUriFactory).uriForCertificate(any(), any());
     }
@@ -108,7 +106,7 @@ class CertificateIntegrationControllerTest {
     @Test
     void shouldUpdateFeaturesForLoggedInUser() {
       certificateIntegrationController.redirectToIntyg(
-          uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+          null, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
 
       verify(webcertUser).setFeatures(anyMap());
     }

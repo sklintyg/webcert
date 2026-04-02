@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import se.inera.intyg.webcert.infra.monitoring.annotation.EnablePrometheusTiming;
 import se.inera.intyg.webcert.infra.monitoring.logging.LogMDCHelper;
+import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser;
 
 @Configuration
 @EnablePrometheusTiming
@@ -45,5 +46,10 @@ public class LoggingConfig {
   @Bean
   public LogMDCHelper logMDCHelper() {
     return new LogMDCHelper();
+  }
+
+  @Bean
+  public UserAgentParser userAgentParser() {
+    return new UserAgentParser();
   }
 }

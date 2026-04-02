@@ -27,7 +27,7 @@ gretty {
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-analytics-service-active",
+               "-Dspring.profiles.active=dev,testability-api,caching-enabled,ia-stub,certificate-analytics-service-active",
                "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
@@ -90,7 +90,9 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
+    implementation "se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:${intygTransportstyrelsenSchemasVersion}"
     implementation "se.inera.intyg.common:af00213:${commonVersion}"
     implementation "se.inera.intyg.common:af00251:${commonVersion}"
     implementation "se.inera.intyg.common:ag114:${commonVersion}"
@@ -135,7 +137,8 @@ dependencies {
     implementation "net.javacrumbs.shedlock:shedlock-spring"
     implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring"
     implementation "org.apache.activemq:activemq-spring"
-    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
+    implementation "org.apache.cxf:cxf-rt-transports-http"
     implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common"
     implementation "org.hibernate.orm:hibernate-core"

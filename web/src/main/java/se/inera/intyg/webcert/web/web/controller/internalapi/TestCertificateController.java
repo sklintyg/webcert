@@ -19,13 +19,12 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.testcertificate.dto.TestCertificateEraseRequest;
 import se.inera.intyg.webcert.infra.testcertificate.dto.TestCertificateEraseResult;
@@ -34,34 +33,32 @@ import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.testcertificate.TestCertificateService;
 
 /** Internal REST endpoint for managing test certificates. */
-@Path("/testCertificate")
-@Api(value = "/internalapi/testCertificate", produces = MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping("/internalapi/testCertificate")
+@Api(value = "/internalapi/testCertificate", produces = "application/json")
 public class TestCertificateController {
 
   @Autowired private TestCertificateService testCertificateService;
 
-  private static final String UTF_8_CHARSET = ";charset=utf-8";
-
   @PrometheusTimeMethod
-  @POST
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @Path("/erase")
+  @PostMapping("/erase")
   @PerformanceLogging(
       eventAction = "test-certificate-erase",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-  public Response eraseTestCertificates(@RequestBody TestCertificateEraseRequest eraseRequest) {
+  public ResponseEntity<TestCertificateEraseResult> eraseTestCertificates(
+      @RequestBody TestCertificateEraseRequest eraseRequest) {
 
     if (eraseRequest.getTo() == null) {
-      return Response.status(400, "Missing date to").build();
+      throw new IllegalArgumentException("Missing date to");
     }
 
     if (eraseRequest.getFrom() != null && eraseRequest.getFrom().isAfter(eraseRequest.getTo())) {
-      return Response.status(400, "From date is after to date").build();
+      throw new IllegalArgumentException("From date is after to date");
     }
 
     final TestCertificateEraseResult eraseResult =
         testCertificateService.eraseTestCertificates(eraseRequest.getFrom(), eraseRequest.getTo());
 
-    return Response.ok(eraseResult).build();
+    return ResponseEntity.ok(eraseResult);
   }
 }
