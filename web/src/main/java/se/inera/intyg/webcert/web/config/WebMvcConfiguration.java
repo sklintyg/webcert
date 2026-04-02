@@ -19,16 +19,13 @@
 package se.inera.intyg.webcert.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -53,25 +50,21 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
   @Autowired private ObjectMapper objectMapper;
 
   /**
-   * Replaces the default Jackson converter with one using our {@code CustomObjectMapper} bean
-   * (which already handles LocalDateTime serialization as ISO strings). The converter is replaced
-   * in-place so that StringHttpMessageConverter keeps its earlier position and handles raw String
-   * responses from stubs correctly.
+   * Swaps the ObjectMapper on the existing default Jackson converter to use our {@code
+   * CustomObjectMapper} bean (which handles LocalDateTime as ISO strings).
+   *
+   * <p>Uses {@code extendMessageConverters} (not {@code configureMessageConverters}) to preserve
+   * all default converters — ByteArrayHttpMessageConverter (PDF), StringHttpMessageConverter (raw
+   * strings), etc. The ObjectMapper is set in-place so the converter keeps its original position
+   * after StringHttpMessageConverter, avoiding double-encoding of String responses.
    */
   @Override
-  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-    MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-    converter.setObjectMapper(objectMapper);
-    converters.add(converter);
-
-    final var stringConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
-    stringConverter.setSupportedMediaTypes(
-        List.of(
-            MediaType.TEXT_PLAIN,
-            MediaType.TEXT_HTML,
-            MediaType.APPLICATION_XML,
-            MediaType.TEXT_XML,
-            MediaType.ALL));
-    converters.add(stringConverter);
+  public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+    for (HttpMessageConverter<?> converter : converters) {
+      if (converter instanceof MappingJackson2HttpMessageConverter jacksonConverter) {
+        jacksonConverter.setObjectMapper(objectMapper);
+        break;
+      }
+    }
   }
 }
