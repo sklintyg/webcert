@@ -19,22 +19,19 @@
 package se.inera.intyg.webcert.web.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.format.FormatterRegistry;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import se.inera.intyg.common.util.integration.json.CustomLocalDateTimeDeserializer;
 
 @Configuration
 @EnableWebMvc
@@ -56,36 +53,25 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
   @Autowired private ObjectMapper objectMapper;
 
   /**
-   * Ensures {@link CustomLocalDateTimeDeserializer} is used for all {@code LocalDateTime} JSON
-   * deserialization, overriding any module-registered deserializer (e.g. from JavaTimeModule). The
-   * mixin takes precedence over module registrations, so date-only strings such as {@code
-   * "2025-12-31"} are correctly parsed to start-of-day without per-field annotations.
+   * Replaces the default Jackson converter with one using our {@code CustomObjectMapper} bean
+   * (which already handles LocalDateTime serialization as ISO strings). The converter is replaced
+   * in-place so that StringHttpMessageConverter keeps its earlier position and handles raw String
+   * responses from stubs correctly.
    */
-  @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
-  private abstract static class LocalDateTimeMixin {}
-
   @Override
-  public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-    objectMapper.addMixIn(LocalDateTime.class, LocalDateTimeMixin.class);
+  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
     MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
     converter.setObjectMapper(objectMapper);
-    converters.addFirst(converter);
-  }
+    converters.add(converter);
 
-  @Override
-  public void addFormatters(FormatterRegistry registry) {
-    registry.addConverter(
-        String.class,
-        LocalDateTime.class,
-        source -> {
-          if (source.contains("T")) {
-            return LocalDateTime.parse(source, DateTimeFormatter.ISO_DATE_TIME);
-          }
-          return LocalDate.parse(source, DateTimeFormatter.ISO_DATE).atStartOfDay();
-        });
-    registry.addConverter(
-        String.class,
-        LocalDate.class,
-        source -> LocalDate.parse(source, DateTimeFormatter.ISO_DATE));
+    final var stringConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
+    stringConverter.setSupportedMediaTypes(
+        List.of(
+            MediaType.TEXT_PLAIN,
+            MediaType.TEXT_HTML,
+            MediaType.APPLICATION_XML,
+            MediaType.TEXT_XML,
+            MediaType.ALL));
+    converters.add(stringConverter);
   }
 }
