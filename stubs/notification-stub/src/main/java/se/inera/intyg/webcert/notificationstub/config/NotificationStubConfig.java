@@ -22,6 +22,7 @@ import jakarta.xml.ws.Endpoint;
 import java.util.List;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -34,11 +35,6 @@ import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 public class NotificationStubConfig {
 
   @Bean
-  public CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderStub() {
-    return new CertificateStatusUpdateForCareResponderStub();
-  }
-
-  @Bean
   public NotificationStoreV3Impl notificationStoreV3() {
     return new NotificationStoreV3Impl();
   }
@@ -49,8 +45,10 @@ public class NotificationStubConfig {
   }
 
   @Bean
-  public Endpoint notificationStubSoapEndpoint(
-      CertificateStatusUpdateForCareResponderStub impl, Bus bus) {
+  public Endpoint notificationStubSoapEndpoint(Bus bus, ApplicationContext applicationContext) {
+    CertificateStatusUpdateForCareResponderStub impl =
+        new CertificateStatusUpdateForCareResponderStub();
+    applicationContext.getAutowireCapableBeanFactory().autowireBean(impl);
     EndpointImpl endpoint = new EndpointImpl(bus, impl);
     endpoint.setSchemaLocations(
         List.of(
