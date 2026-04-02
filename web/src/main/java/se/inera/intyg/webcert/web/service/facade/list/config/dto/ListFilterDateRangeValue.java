@@ -18,11 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.time.LocalDateTime;
 
 public class ListFilterDateRangeValue implements ListFilterValue {
 
+  @JsonDeserialize(using = LocalDateTimeFromStringDeserializer.class)
   private LocalDateTime to;
+
+  @JsonDeserialize(using = LocalDateTimeFromStringDeserializer.class)
   private LocalDateTime from;
 
   public ListFilterDateRangeValue() {}
