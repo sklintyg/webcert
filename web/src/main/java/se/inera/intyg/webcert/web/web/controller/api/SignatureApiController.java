@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import com.google.common.base.Strings;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
@@ -27,8 +26,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -39,7 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,7 +55,6 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
@@ -71,13 +66,12 @@ public class SignatureApiController extends AbstractApiController {
   public static final String SIGNATUR_API_CONTEXT_PATH = "/api/signature";
   public static final String SIGN_SERVICE_RESPONSE_PATH = "/signservice/v1/response";
   public static final String SIGN_SERVICE_METADATA_PATH = "/signservice/v1/metadata";
-  private static final Logger LOG = LoggerFactory.getLogger(SignatureApiController.class);
-  private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
   @Autowired private ReactUriFactory reactUriFactory;
 
   @Autowired
-  @Qualifier("signAggregator") private UnderskriftService underskriftService;
+  @Qualifier("signAggregator")
+  private UnderskriftService underskriftService;
 
   @Autowired private MonitoringLogService monitoringLogService;
 
@@ -244,46 +238,6 @@ public class SignatureApiController extends AbstractApiController {
   public SignaturStateDTO signeringsStatus(
       @PathVariable("intygsTyp") String intygsTyp, @PathVariable("ticketId") String ticketId) {
     final var sb = underskriftService.signeringsStatus(ticketId);
-    return convertToSignatureStateDTO(sb);
-  }
-
-  @PostMapping("/{intygsTyp}/{biljettId}/signeranetidplugin")
-  @PerformanceLogging(
-      eventAction = "signature-client-sign-draft",
-      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public SignaturStateDTO klientSigneraUtkast(
-      @PathVariable("intygsTyp") String intygsTyp,
-      @PathVariable("biljettId") String biljettId,
-      HttpServletRequest request,
-      @RequestBody KlientSignaturRequest signaturRequest) {
-
-    LOG.debug("Signerar intyg med biljettId {}", biljettId);
-
-    if (signaturRequest.getSignatur() == null) {
-      LOG.error("Inkommande signaturRequest saknar signatur");
-      throw new WebCertServiceException(
-          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Signatur saknas");
-    }
-    if (Strings.isNullOrEmpty(signaturRequest.getCertifikat())) {
-      LOG.error("Inkommande signaturRequest saknar x509 certifikat.");
-      throw new WebCertServiceException(
-          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Certifikat saknas");
-    }
-
-    SignaturBiljett sb = null;
-    try {
-      sb =
-          underskriftService.netidSignature(
-              biljettId, signaturRequest.getSignatur(), signaturRequest.getCertifikat());
-    } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-      sb = underskriftService.signeringsStatus(biljettId);
-      monitoringLogService.logUtkastConcurrentlyEdited(sb.getIntygsId(), intygsTyp);
-      throw new WebCertServiceException(
-          WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-    }
-
-    request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
-
     return convertToSignatureStateDTO(sb);
   }
 }
