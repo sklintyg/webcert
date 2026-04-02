@@ -49,11 +49,11 @@ public class TestCertificateController {
       @RequestBody TestCertificateEraseRequest eraseRequest) {
 
     if (eraseRequest.getTo() == null) {
-      return ResponseEntity.badRequest().body(null);
+      throw new IllegalArgumentException("Missing date to");
     }
 
     if (eraseRequest.getFrom() != null && eraseRequest.getFrom().isAfter(eraseRequest.getTo())) {
-      return ResponseEntity.badRequest().body(null);
+      throw new IllegalArgumentException("From date is after to date");
     }
 
     final TestCertificateEraseResult eraseResult =
