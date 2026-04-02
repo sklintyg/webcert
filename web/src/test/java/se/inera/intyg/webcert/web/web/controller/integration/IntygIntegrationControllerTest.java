@@ -49,6 +49,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.http.HttpStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
@@ -296,26 +297,25 @@ class IntygIntegrationControllerTest {
       void assertThatLaunchIdIsNotGuid() {
         assertThrows(
             IllegalArgumentException.class,
-            () -> {
-              intygIntegrationController.postRedirectToIntyg(
-                  httpServletRequest,
-                  INTYGSID_POST,
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  true,
-                  "",
-                  false,
-                  false,
-                  true,
-                  "LAUNCH_ID_1");
-            },
+            () ->
+                intygIntegrationController.postRedirectToIntyg(
+                    httpServletRequest,
+                    INTYGSID_POST,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    true,
+                    "",
+                    false,
+                    false,
+                    true,
+                    "LAUNCH_ID_1"),
             "Provided launchId is not guid: LAUNCH_ID_1");
         assertDoesNotThrow(
             () ->
@@ -463,8 +463,161 @@ class IntygIntegrationControllerTest {
           intygIntegrationController.getRedirectToIntyg(httpServletRequest, INTYGSID, ENHETSID);
 
       assertEquals(
-          redirectToIntyg.getHeaders().getLocation().toString(),
-          "https://wc.localtest.me/certificate/" + INTYGSID);
+          "https://wc.localtest.me/certificate/" + INTYGSID,
+          redirectToIntyg.getHeaders().getLocation().toString());
+    }
+  }
+
+  @Nested
+  class QueryStringValidation {
+
+    @Test
+    void shouldRejectPostWithFormParamInQueryString() {
+      when(httpServletRequest.getQueryString()).thenReturn("sjf=true");
+
+      assertThrows(
+          WebCertServiceException.class,
+          () ->
+              intygIntegrationController.postRedirectToIntyg(
+                  httpServletRequest,
+                  INTYGSID_POST,
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  true,
+                  "",
+                  false,
+                  false,
+                  true,
+                  LAUNCHID));
+    }
+
+    @Test
+    void shouldRejectPostWithMultipleFormParamsInQueryString() {
+      when(httpServletRequest.getQueryString()).thenReturn("enhet=123&sjf=true");
+
+      assertThrows(
+          WebCertServiceException.class,
+          () ->
+              intygIntegrationController.postRedirectToIntyg(
+                  httpServletRequest,
+                  INTYGSID_POST,
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  true,
+                  "",
+                  false,
+                  false,
+                  true,
+                  LAUNCHID));
+    }
+
+    @Test
+    void shouldAllowPostWithNoQueryString() {
+      setupSuccessfulRedirect();
+      when(httpServletRequest.getQueryString()).thenReturn(null);
+
+      assertDoesNotThrow(
+          () ->
+              intygIntegrationController.postRedirectToIntyg(
+                  httpServletRequest,
+                  INTYGSID_POST,
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  true,
+                  "",
+                  false,
+                  false,
+                  true,
+                  LAUNCHID));
+    }
+
+    @Test
+    void shouldAllowPostWithEmptyQueryString() {
+      setupSuccessfulRedirect();
+      when(httpServletRequest.getQueryString()).thenReturn("");
+
+      assertDoesNotThrow(
+          () ->
+              intygIntegrationController.postRedirectToIntyg(
+                  httpServletRequest,
+                  INTYGSID_POST,
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  true,
+                  "",
+                  false,
+                  false,
+                  true,
+                  LAUNCHID));
+    }
+
+    @Test
+    void shouldAllowPostWithUnrelatedQueryParam() {
+      setupSuccessfulRedirect();
+      when(httpServletRequest.getQueryString()).thenReturn("someOtherParam=value");
+
+      assertDoesNotThrow(
+          () ->
+              intygIntegrationController.postRedirectToIntyg(
+                  httpServletRequest,
+                  INTYGSID_POST,
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  true,
+                  "",
+                  false,
+                  false,
+                  true,
+                  LAUNCHID));
+    }
+
+    private void setupSuccessfulRedirect() {
+      when(integrationService.prepareRedirectToIntyg(any(), any()))
+          .thenReturn(createPrepareRedirectToIntyg());
+      when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+      when(webCertUserService.getUser()).thenReturn(createDefaultUser());
+      doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq"))
+          .when(reactUriFactory)
+          .uriForCertificate(any(), any());
+
+      final var session = mock(HttpSession.class);
+      when(httpServletRequest.getSession()).thenReturn(session);
+      when(httpServletRequest.getSession().getId()).thenReturn(SESSION_ID);
     }
   }
 

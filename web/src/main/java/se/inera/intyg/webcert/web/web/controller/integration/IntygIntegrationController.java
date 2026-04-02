@@ -21,11 +21,14 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 import com.google.common.base.Strings;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +88,24 @@ public class IntygIntegrationController extends BaseIntegrationController {
   private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
   private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
+
+  private static final Set<String> FORM_ONLY_PARAMS =
+      Set.of(
+          PARAM_ENHET_ID,
+          PARAM_PATIENT_ALTERNATE_SSN,
+          PARAM_RESPONSIBLE_HOSP_NAME,
+          PARAM_PATIENT_FORNAMN,
+          PARAM_PATIENT_EFTERNAMN,
+          PARAM_PATIENT_MELLANNAMN,
+          PARAM_PATIENT_POSTADRESS,
+          PARAM_PATIENT_POSTNUMMER,
+          PARAM_PATIENT_POSTORT,
+          PARAM_COHERENT_JOURNALING,
+          PARAM_REFERENCE,
+          PARAM_INACTIVE_UNIT,
+          PARAM_PATIENT_DECEASED,
+          PARAM_FORNYA_OK,
+          PARAM_LAUNCH_ID);
 
   private static final String[] GRANTED_ROLES =
       new String[] {
@@ -205,6 +226,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
       @RequestParam(value = PARAM_FORNYA_OK, required = false, defaultValue = "true")
           boolean fornyaOk,
       @RequestParam(value = PARAM_LAUNCH_ID, required = false, defaultValue = "") String launchId) {
+
+    rejectFormParamsInQueryString(request);
 
     final var params = Map.of(PARAM_CERT_ID, intygId);
     validateRequest(params);
@@ -440,6 +463,33 @@ public class IntygIntegrationController extends BaseIntegrationController {
   private void validateRequest(Map<String, String> pathParameters) {
     super.validateParameters(pathParameters);
     super.validateAuthorities();
+  }
+
+  private static void rejectFormParamsInQueryString(HttpServletRequest request) {
+    final var queryString = request.getQueryString();
+    if (queryString == null || queryString.isEmpty()) {
+      return;
+    }
+
+    final var queryParamNames =
+        Arrays.stream(queryString.split("&"))
+            .map(
+                pair -> {
+                  final var eq = pair.indexOf('=');
+                  return URLDecoder.decode(
+                      eq >= 0 ? pair.substring(0, eq) : pair, StandardCharsets.UTF_8);
+                })
+            .collect(Collectors.toSet());
+
+    queryParamNames.retainAll(FORM_ONLY_PARAMS);
+
+    if (!queryParamNames.isEmpty()) {
+      LOG.warn("Rejected POST with integration parameters in query string: {}", queryParamNames);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+          "Integration parameters must be provided in the request body, not in the query string: "
+              + queryParamNames);
+    }
   }
 
   private boolean launchIdShouldBeAdded(String launchId) {
