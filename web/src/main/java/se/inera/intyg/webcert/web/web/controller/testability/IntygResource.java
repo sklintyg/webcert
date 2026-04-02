@@ -52,7 +52,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -201,14 +200,6 @@ public class IntygResource {
         utkastRepository.findByEnhetsIdsAndStatuses(
             Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
     return ResponseEntity.ok(all.stream().collect(Collectors.toList()));
-  }
-
-  // returrns any resource from app env.
-  @GetMapping("/resource")
-  public ResponseEntity<Object> refData(
-      @RequestParam(value = "location", required = false) String location) throws IOException {
-    LOG.info("GET intyg/resource?location={}", location);
-    return ResponseEntity.ok(resourceLoader.getResource(location).getInputStream());
   }
 
   @GetMapping("/{careProviderId}/count")
