@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBus;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -42,6 +44,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.services.BefattningService;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.infra.security.common.cookie.IneraCookieSerializer;
 import se.inera.intyg.webcert.integration.analytics.config.CertificateAnalyticsServiceIntegrationConfig;
 import se.inera.intyg.webcert.integration.fmb.config.FmbServicesConfig;
@@ -142,6 +145,15 @@ public class AppConfig implements TransactionManagementConfigurer {
   @Bean(name = Bus.DEFAULT_BUS_ID)
   public SpringBus springBus() {
     return new SpringBus();
+  }
+
+  // Matches the old <bean id="objectMapper" class="CustomObjectMapper"/> from webcert-config.xml.
+  // CustomObjectMapper already registers JavaTimeModule and handles LocalDateTime as ISO strings.
+  // @Primary ensures this takes precedence over the objectMapper in NotificationCamelConfig.
+  @Bean
+  @Primary
+  public ObjectMapper objectMapper() {
+    return new CustomObjectMapper();
   }
 
   @Bean
