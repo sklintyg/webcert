@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.config;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -51,6 +52,10 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.S
 
 @Configuration
 public class CxfWsClientConfig {
+
+  private static final Pattern NTJP_CONDUIT_PATTERN =
+      Pattern.compile(
+          "\\{urn:riv:(clinicalprocess:healthcond|insuranceprocess:healthreporting|itintegration:monitoring):.*\\.http-conduit");
 
   // ── NTJP clients ─────────────────────────────────────────────────────────
 
@@ -211,9 +216,7 @@ public class CxfWsClientConfig {
   }
 
   private boolean isNtjpConduit(String name) {
-    return name.contains("{urn:riv:clinicalprocess:healthcond:")
-        || name.contains("{urn:riv:insuranceprocess:healthreporting:")
-        || name.contains("{urn:riv:itintegration:monitoring:");
+    return name != null && NTJP_CONDUIT_PATTERN.matcher(name).find();
   }
 
   @SuppressWarnings("unchecked")
