@@ -216,7 +216,7 @@ public class CxfWsClientConfig {
   }
 
   private boolean isNtjpConduit(String name) {
-    return name != null && NTJP_CONDUIT_PATTERN.matcher(name).matches();
+    return name != null && NTJP_CONDUIT_PATTERN.matcher(name).find();
   }
 
   @SuppressWarnings("unchecked")
