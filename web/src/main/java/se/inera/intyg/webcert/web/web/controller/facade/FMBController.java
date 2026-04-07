@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,14 +41,12 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePer
 
 @RestController
 @RequestMapping("/api/fmb")
+@RequiredArgsConstructor
 public class FMBController {
 
   private static final Logger LOG = LoggerFactory.getLogger(FMBController.class);
-
-  private static final String UTF_8_CHARSET = ";charset=utf-8";
-
-  @Autowired private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
-  @Autowired private FmbDiagnosInformationService fmbDiagnosInformationService;
+  private final ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
+  private final FmbDiagnosInformationService fmbDiagnosInformationService;
 
   @GetMapping(value = "/{icd10}", produces = MediaType.APPLICATION_JSON_VALUE)
   @PrometheusTimeMethod
