@@ -18,15 +18,10 @@
  */
 package se.inera.intyg.webcert.notification_sender.config;
 
-import java.util.HashMap;
 import org.apache.cxf.Bus;
 import org.apache.cxf.ext.logging.LoggingFeature;
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 
 /**
  * Replaces notifications/ws-context.xml. Configures the CXF bus with logging and defines the
@@ -38,16 +33,5 @@ public class NotificationWsClientConfig {
   @Autowired
   void configureBus(Bus bus) {
     bus.getFeatures().add(new LoggingFeature());
-  }
-
-  @Bean
-  public CertificateStatusUpdateForCareResponderInterface certificateStatusUpdateForCareClientV3(
-      @Value("${certificatestatusupdateforcare.ws.endpoint.v3.url}") String address) {
-    JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-    factory.setServiceClass(CertificateStatusUpdateForCareResponderInterface.class);
-    factory.setAddress(address);
-    factory.setProperties(new HashMap<>());
-    factory.getProperties().put("schema-validation-enabled", true);
-    return (CertificateStatusUpdateForCareResponderInterface) factory.create();
   }
 }

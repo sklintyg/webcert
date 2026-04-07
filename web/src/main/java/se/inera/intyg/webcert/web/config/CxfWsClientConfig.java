@@ -20,9 +20,14 @@ package se.inera.intyg.webcert.web.config;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;
+import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.configuration.security.FiltersType;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
@@ -42,6 +47,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceive
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.getCertificate.v2.GetCertificateResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateResponderInterface;
@@ -49,8 +55,15 @@ import se.riv.clinicalprocess.healthcond.certificate.revokeCertificate.v2.Revoke
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 
+@Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class CxfWsClientConfig {
+
+  private final SpringBus bus;
+  private static final Pattern NTJP_CONDUIT_PATTERN =
+      Pattern.compile(
+          "\\{urn:riv:(clinicalprocess:healthcond|insuranceprocess:healthreporting|itintegration:monitoring):.*\\.http-conduit");
 
   // ── NTJP clients ─────────────────────────────────────────────────────────
 
@@ -112,6 +125,18 @@ public class CxfWsClientConfig {
   public ListActiveSickLeavesForCareUnitResponderInterface listActiveSickLeavesForCareUnitClient(
       @Value("${intygstjanst.listactivesickleavesforcareunit.v1.endpoint.url}") String address) {
     return createClient(ListActiveSickLeavesForCareUnitResponderInterface.class, address);
+  }
+
+  @Bean
+  public CertificateStatusUpdateForCareResponderInterface certificateStatusUpdateForCareClientV3(
+      @Value("${certificatestatusupdateforcare.ws.endpoint.v3.url}") String address) {
+    JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+    factory.setServiceClass(CertificateStatusUpdateForCareResponderInterface.class);
+    factory.setAddress(address);
+    factory.setProperties(new HashMap<>());
+    factory.getProperties().put("schema-validation-enabled", true);
+    factory.setBus(bus);
+    return (CertificateStatusUpdateForCareResponderInterface) factory.create();
   }
 
   // ── Non-NTJP clients ──────────────────────────────────────────────────────
@@ -211,9 +236,7 @@ public class CxfWsClientConfig {
   }
 
   private boolean isNtjpConduit(String name) {
-    return name.contains("{urn:riv:clinicalprocess:healthcond:")
-        || name.contains("{urn:riv:insuranceprocess:healthreporting:")
-        || name.contains("{urn:riv:itintegration:monitoring:");
+    return name != null && NTJP_CONDUIT_PATTERN.matcher(name).find();
   }
 
   @SuppressWarnings("unchecked")
@@ -221,6 +244,7 @@ public class CxfWsClientConfig {
     JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
     factory.setServiceClass(serviceClass);
     factory.setAddress(address);
+    factory.setBus(bus);
     return (T) factory.create();
   }
 }
