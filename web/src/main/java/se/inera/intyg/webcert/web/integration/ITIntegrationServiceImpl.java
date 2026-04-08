@@ -39,8 +39,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 public class ITIntegrationServiceImpl implements ITIntegrationService {
 
   @Autowired
-  @Qualifier("itRestTemplate")
-  private RestTemplate restTemplate;
+  @Qualifier("itRestTemplate") private RestTemplate restTemplate;
 
   @Value("${intygstjanst.base.url}")
   private String intygstjanstenUrl;

@@ -38,10 +38,8 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
   @Autowired
   public GetQuestionsFacadeServiceImpl(
       @Lazy IntygService intygService,
-      @Qualifier("ArendeToQuestionFacadeService")
-          GetQuestionsFacadeService arendeToQuestionFacadeService,
-      @Qualifier("FragaSvarToQuestionFacadeService")
-          GetQuestionsFacadeService fragaSvarToQuestionFacadeService) {
+      @Qualifier("ArendeToQuestionFacadeService") GetQuestionsFacadeService arendeToQuestionFacadeService,
+      @Qualifier("FragaSvarToQuestionFacadeService") GetQuestionsFacadeService fragaSvarToQuestionFacadeService) {
     this.intygService = intygService;
     this.arendeToQuestionFacadeService = arendeToQuestionFacadeService;
     this.fragaSvarToQuestionFacadeService = fragaSvarToQuestionFacadeService;

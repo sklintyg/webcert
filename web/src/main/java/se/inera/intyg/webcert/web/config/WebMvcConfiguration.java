@@ -27,8 +27,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * MVC configuration. All component scanning is handled by {@code @SpringBootApplication} on
- * {@link se.inera.intyg.webcert.WebcertApplication}.
+ * MVC configuration. All component scanning is handled by {@code @SpringBootApplication} on {@link
+ * se.inera.intyg.webcert.WebcertApplication}.
  */
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {

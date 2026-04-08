@@ -43,6 +43,7 @@ import se.inera.intyg.webcert.web.web.filter.UnitSelectedAssuranceFilter;
  *
  * <p>springSecurityFilterChain (order 6) and springSessionRepositoryFilter (order 1) are
  * auto-managed by Spring Boot and Spring Session via application.properties:
+ *
  * <ul>
  *   <li>spring.security.filter.order=6
  *   <li>spring.session.servlet.filter-order=1
@@ -63,7 +64,8 @@ public class WebFilterConfig {
 
   // Order 2 — updates RequestContextHolder after spring-session sets up the session
   @Bean
-  public FilterRegistrationBean<RequestContextHolderUpdateFilter> requestContextHolderUpdateFilterRegistration() {
+  public FilterRegistrationBean<RequestContextHolderUpdateFilter>
+      requestContextHolderUpdateFilterRegistration() {
     var registration = new FilterRegistrationBean<>(new RequestContextHolderUpdateFilter());
     registration.addUrlPatterns("/*");
     registration.setOrder(2);
@@ -81,7 +83,8 @@ public class WebFilterConfig {
 
   // Order 4 — character encoding fix for legacy PDF view URLs
   @Bean
-  public FilterRegistrationBean<DefaultCharacterEncodingFilter> defaultCharacterEncodingFilterRegistration() {
+  public FilterRegistrationBean<DefaultCharacterEncodingFilter>
+      defaultCharacterEncodingFilterRegistration() {
     var registration = new FilterRegistrationBean<>(defaultCharacterEncodingFilter);
     registration.addUrlPatterns("/v2/visa/intyg/*");
     registration.setOrder(4);
@@ -110,7 +113,8 @@ public class WebFilterConfig {
 
   // Order 8 — verifies a unit is selected before allowing access to api/moduleapi
   @Bean
-  public FilterRegistrationBean<UnitSelectedAssuranceFilter> unitSelectedAssuranceFilterRegistration() {
+  public FilterRegistrationBean<UnitSelectedAssuranceFilter>
+      unitSelectedAssuranceFilterRegistration() {
     var registration = new FilterRegistrationBean<>(unitSelectedAssuranceFilter);
     registration.addUrlPatterns("/api/*", "/moduleapi/*");
     registration.setOrder(8);

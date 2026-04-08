@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.certificate;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.context.annotation.Lazy;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 
 @Service
