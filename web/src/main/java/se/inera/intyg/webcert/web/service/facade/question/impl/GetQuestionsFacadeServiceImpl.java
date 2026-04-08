@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.question.impl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -36,9 +37,11 @@ public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService 
 
   @Autowired
   public GetQuestionsFacadeServiceImpl(
-      IntygService intygService,
-      @Qualifier("ArendeToQuestionFacadeService") GetQuestionsFacadeService arendeToQuestionFacadeService,
-      @Qualifier("FragaSvarToQuestionFacadeService") GetQuestionsFacadeService fragaSvarToQuestionFacadeService) {
+      @Lazy IntygService intygService,
+      @Qualifier("ArendeToQuestionFacadeService")
+          GetQuestionsFacadeService arendeToQuestionFacadeService,
+      @Qualifier("FragaSvarToQuestionFacadeService")
+          GetQuestionsFacadeService fragaSvarToQuestionFacadeService) {
     this.intygService = intygService;
     this.arendeToQuestionFacadeService = arendeToQuestionFacadeService;
     this.fragaSvarToQuestionFacadeService = fragaSvarToQuestionFacadeService;

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -50,7 +51,7 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
 
   @Autowired private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
-  @Autowired private IntygService intygService;
+  @Autowired private @Lazy IntygService intygService;
 
   @Autowired private NotificationMessageFactory notificationMessageFactory;
 

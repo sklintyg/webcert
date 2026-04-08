@@ -59,7 +59,7 @@ public class NotificationStubConfig {
             "classpath:/core_components/xmldsig-filter2.xsd",
             "classpath:/interactions/CertificateStatusUpdateForCareInteraction/CertificateStatusUpdateForCareResponder_3.1.xsd"));
     endpoint.publish(
-        "/clinicalprocess/healthcond/certificate/CertificateStatusUpdateForCare/3/rivtabp21");
+        "/stubs/clinicalprocess/healthcond/certificate/CertificateStatusUpdateForCare/3/rivtabp21");
     return endpoint;
   }
 }

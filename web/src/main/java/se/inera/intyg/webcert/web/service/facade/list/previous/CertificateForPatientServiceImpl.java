@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -59,7 +60,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
   public CertificateForPatientServiceImpl(
       Cache certificatesForPatientCache,
       ObjectMapper objectMapper,
-      IntygService intygService,
+      @Lazy IntygService intygService,
       UtkastService utkastService,
       WebCertUserService webCertUserService) {
     this.certificatesForPatientCache = certificatesForPatientCache;

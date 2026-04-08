@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
@@ -33,7 +34,7 @@ public class CertificateRelationsParentHelperImpl implements CertificateRelation
 
   @Autowired
   public CertificateRelationsParentHelperImpl(
-      UtkastRepositoryCustom utkastRepoCustom, IntygService intygService) {
+      UtkastRepositoryCustom utkastRepoCustom, @Lazy IntygService intygService) {
     this.utkastRepoCustom = utkastRepoCustom;
     this.intygService = intygService;
   }

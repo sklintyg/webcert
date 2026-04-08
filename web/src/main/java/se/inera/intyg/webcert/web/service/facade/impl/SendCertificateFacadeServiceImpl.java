@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -36,7 +37,7 @@ public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeSe
 
   @Autowired
   public SendCertificateFacadeServiceImpl(
-      IntygService intygService, CertificateReceiverService certificateReceiverService) {
+      @Lazy IntygService intygService, CertificateReceiverService certificateReceiverService) {
     this.intygService = intygService;
     this.certificateReceiverService = certificateReceiverService;
   }

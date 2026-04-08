@@ -31,6 +31,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -57,7 +58,7 @@ public class ArendeViewConverter {
 
   @Autowired private IntygModuleRegistry moduleRegistry;
 
-  @Autowired private IntygService intygService;
+  @Autowired @Lazy IntygService intygService;
 
   private static String getThreadRootMessageId(Arende arende) {
     String referenceId =

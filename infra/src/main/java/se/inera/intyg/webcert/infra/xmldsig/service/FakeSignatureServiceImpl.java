@@ -31,12 +31,8 @@ import java.security.Signature;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
 
-@Service
-@Profile("!prod")
 public class FakeSignatureServiceImpl implements FakeSignatureService {
 
   private KeyStore ks;

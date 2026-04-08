@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.certificate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -45,7 +46,7 @@ public class GetCertificateServiceImpl implements GetCertificateService {
   public GetCertificateServiceImpl(
       IntygModuleRegistry intygModuleRegistry,
       UtkastService utkastService,
-      IntygService intygService) {
+      @Lazy IntygService intygService) {
     this.intygModuleRegistry = intygModuleRegistry;
     this.utkastService = utkastService;
     this.intygService = intygService;

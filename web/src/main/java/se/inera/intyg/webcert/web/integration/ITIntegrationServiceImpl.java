@@ -25,7 +25,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -39,13 +38,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @Service
 public class ITIntegrationServiceImpl implements ITIntegrationService {
 
-  @Bean("itRestTemplate")
-  public RestTemplate restTemplate() {
-    return new RestTemplate();
-  }
-
   @Autowired
-  @Qualifier("itRestTemplate") private RestTemplate restTemplate;
+  @Qualifier("itRestTemplate")
+  private RestTemplate restTemplate;
 
   @Value("${intygstjanst.base.url}")
   private String intygstjanstenUrl;

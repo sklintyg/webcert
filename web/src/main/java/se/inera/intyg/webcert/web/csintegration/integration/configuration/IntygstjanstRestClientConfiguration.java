@@ -16,19 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.infra.xmldsig.service;
+package se.inera.intyg.webcert.web.csintegration.integration.configuration;
 
-import java.security.cert.X509Certificate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-public class FakeSignatureServiceBlocked implements FakeSignatureService {
+@Configuration
+public class IntygstjanstRestClientConfiguration {
 
-  @Override
-  public String createSignature(String digest) {
-    throw new UnsupportedOperationException("Fake signing blocked.");
-  }
-
-  @Override
-  public X509Certificate getX509Certificate() {
-    throw new UnsupportedOperationException("Fake signing blocked.");
+  @Bean("itRestTemplate")
+  public RestTemplate restTemplate() {
+    return new RestTemplate();
   }
 }
