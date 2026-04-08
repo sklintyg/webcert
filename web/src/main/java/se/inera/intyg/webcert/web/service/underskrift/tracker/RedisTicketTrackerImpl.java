@@ -67,8 +67,13 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
     @Override
     public SignaturBiljett updateStatus(String ticketId, SignaturStatus status) {
         SignaturBiljett sb = valueOps.get(buildKey(ticketId));
+        if (sb == null) {
+            throw new IllegalStateException(
+                String.format(
+                    "Signature ticket id '%s' not found when updating autostarttoken.", ticketId));
+        }
         sb.setStatus(status);
-        valueOps.set(buildKey(ticketId), sb);
+        valueOps.set(buildKey(ticketId), sb, TICKET_EXPIRY_MINUTES, TimeUnit.MINUTES);
         return sb;
     }
 
@@ -81,7 +86,7 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
         }
 
         sb.setAutoStartToken(autoStartToken);
-        valueOps.set(buildKey(ticketId), sb);
+        valueOps.set(buildKey(ticketId), sb, TICKET_EXPIRY_MINUTES, TimeUnit.MINUTES);
     }
 
     @Override
@@ -94,7 +99,7 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
 
         sb.setQrStartToken(qrStartToken);
         sb.setQrStartSecret(qrStartSecret);
-        valueOps.set(buildKey(ticketId), sb);
+        valueOps.set(buildKey(ticketId), sb, TICKET_EXPIRY_MINUTES, TimeUnit.MINUTES);
     }
 
     private String buildKey(String ticketId) {
