@@ -62,6 +62,9 @@ public class ConfigController {
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
+    @Value("${webcert.frontend.api.timeout:30000}")
+    private Integer webcertFrontendApiTimeout;
+
     @Autowired
     private IABannerService iaBannerService;
 
@@ -84,8 +87,17 @@ public class ConfigController {
             .filter((banner -> banner.getApplication() == Application.WEBCERT))
             .toList();
 
-        return Response.ok(new ConfigurationDTO(version, banners, ppHost, sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl,
-            forwardDraftOrQuestionUrl)).build();
+        return Response.ok(
+                ConfigurationDTO.builder()
+                    .version(version)
+                    .banners(banners)
+                    .ppHost(ppHost)
+                    .sakerhetstjanstIdpUrl(sakerhetstjanstIdpUrl)
+                    .cgiFunktionstjansterIdpUrl(cgiFunktionstjansterIdpUrl)
+                    .forwardDraftOrQuestionUrl(forwardDraftOrQuestionUrl)
+                    .webcertFrontendApiTimeout(webcertFrontendApiTimeout)
+                    .build())
+            .build();
     }
 
     @GET

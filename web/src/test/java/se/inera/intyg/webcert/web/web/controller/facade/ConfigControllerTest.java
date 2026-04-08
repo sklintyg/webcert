@@ -24,7 +24,6 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -109,5 +108,14 @@ public class ConfigControllerTest {
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
             assertEquals(response.getPpHost(), ppHost);
         }
+    }
+
+    @Test
+    void shouldReturnWebcertFrontendApiTimeoutWhenConfigExists() {
+        final var expected = 45000;
+
+        ReflectionTestUtils.setField(configController, "webcertFrontendApiTimeout", expected);
+        final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+        assertEquals(expected, response.getWebcertFrontendApiTimeout());
     }
 }
