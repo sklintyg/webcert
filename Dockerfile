@@ -26,4 +26,4 @@ LABEL se.inera.from_image=${from_image}         \
 ENV APP_NAME=${artifact}
 ENV SCRIPT_DEBUG=true
 
-COPY /app/build/libs/app.jar /deployments
+COPY /web/build/libs/app.jar /deployments
