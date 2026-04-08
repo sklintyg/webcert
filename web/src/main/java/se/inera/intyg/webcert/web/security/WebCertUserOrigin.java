@@ -26,8 +26,8 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.webcert.infra.security.common.model.UserOrigin;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.common.model.UserOrigin;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 @Component
 @Slf4j

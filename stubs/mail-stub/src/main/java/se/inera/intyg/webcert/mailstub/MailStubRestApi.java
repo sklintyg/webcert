@@ -18,33 +18,31 @@
  */
 package se.inera.intyg.webcert.mailstub;
 
-import java.util.List;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author andreaskaltenbach
  */
-@RestController
-@Profile("dev")
-@RequestMapping("/api/mail-api/mails")
+@Path("/mails")
 public class MailStubRestApi {
 
   @Autowired private MailStore mailStore;
 
-  @GetMapping
-  public List<OutgoingMail> mails() {
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public java.util.List<OutgoingMail> mails() {
     return mailStore.getMails();
   }
 
-  @DeleteMapping
-  public ResponseEntity<Void> deleteMailbox() {
+  @DELETE
+  public Response deleteMailbox() {
     mailStore.getMails().clear();
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 }

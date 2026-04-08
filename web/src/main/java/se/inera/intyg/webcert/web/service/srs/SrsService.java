@@ -20,11 +20,11 @@ package se.inera.intyg.webcert.web.service.srs;
 
 import java.util.List;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
+import se.inera.intyg.infra.integration.srs.model.SrsForDiagnosisResponse;
+import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
+import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
+import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
-import se.inera.intyg.webcert.infra.srs.model.SrsForDiagnosisResponse;
-import se.inera.intyg.webcert.infra.srs.model.SrsQuestion;
-import se.inera.intyg.webcert.infra.srs.model.SrsQuestionResponse;
-import se.inera.intyg.webcert.infra.srs.model.SrsResponse;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 

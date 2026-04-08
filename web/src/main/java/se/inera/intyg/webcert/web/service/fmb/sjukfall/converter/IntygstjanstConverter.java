@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import se.inera.intyg.webcert.infra.sjukfall.dto.DiagnosKod;
-import se.inera.intyg.webcert.infra.sjukfall.dto.Formaga;
-import se.inera.intyg.webcert.infra.sjukfall.dto.IntygData;
+import se.inera.intyg.infra.sjukfall.dto.DiagnosKod;
+import se.inera.intyg.infra.sjukfall.dto.Formaga;
+import se.inera.intyg.infra.sjukfall.dto.IntygData;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
 
 public final class IntygstjanstConverter {

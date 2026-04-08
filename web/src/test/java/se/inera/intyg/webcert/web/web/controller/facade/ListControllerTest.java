@@ -62,7 +62,7 @@ class ListControllerTest {
     void shallIncludeListInResponse() {
       final var request = new ListRequestDTO();
       request.setFilter(new ListFilter());
-      final var response = (ListResponseDTO) listController.getListOfDrafts(request).getBody();
+      final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
       assertEquals(list, response.getList());
     }
 
@@ -70,7 +70,7 @@ class ListControllerTest {
     void shallIncludeTotalCountInResponse() {
       final var request = new ListRequestDTO();
       request.setFilter(new ListFilter());
-      final var response = (ListResponseDTO) listController.getListOfDrafts(request).getBody();
+      final var response = (ListResponseDTO) listController.getListOfDrafts(request).getEntity();
       assertEquals(1, response.getTotalCount());
     }
   }
@@ -93,7 +93,7 @@ class ListControllerTest {
       final var request = new ListRequestDTO();
       request.setFilter(new ListFilter());
       final var response =
-          (ListResponseDTO) listController.getListOfSignedCertificates(request).getBody();
+          (ListResponseDTO) listController.getListOfSignedCertificates(request).getEntity();
       assertEquals(list, response.getList());
     }
 
@@ -102,7 +102,7 @@ class ListControllerTest {
       final var request = new ListRequestDTO();
       request.setFilter(new ListFilter());
       final var response =
-          (ListResponseDTO) listController.getListOfSignedCertificates(request).getBody();
+          (ListResponseDTO) listController.getListOfSignedCertificates(request).getEntity();
       assertEquals(1, response.getTotalCount());
     }
   }

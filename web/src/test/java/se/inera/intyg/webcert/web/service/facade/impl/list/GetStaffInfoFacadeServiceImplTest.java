@@ -36,7 +36,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesInfoAggregator;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;

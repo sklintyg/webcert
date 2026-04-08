@@ -21,24 +21,24 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 import io.swagger.annotations.Api;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepository;
@@ -49,9 +49,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.SimpleArende;
 
 @Transactional
 @Api(value = "services arende", description = "REST API för testbarhet - Ärenden")
-@RestController
-@RequestMapping("/testability/arendetest")
-@Profile({"dev", "testability-api"})
+@Path("/arendetest")
 public class ArendeResource {
 
   @PersistenceContext private EntityManager entityManager;
@@ -67,14 +65,17 @@ public class ArendeResource {
 
   @Autowired private ArendeDraftRepository arendeDraftRepository;
 
-  @GetMapping("/intyg/{intygsId}")
-  public ResponseEntity<List<String>> getStalldaFragor(@PathVariable("intygsId") String intygsId) {
+  @GET
+  @Path("/intyg/{intygsId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getStalldaFragor(@PathParam("intygsId") String intygsId) {
     List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
-    return ResponseEntity.ok(
-        byIntygsId.stream()
-            .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
-            .map(a -> a.getMeddelandeId())
-            .collect(Collectors.toList()));
+    return Response.ok(
+            byIntygsId.stream()
+                .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
+                .map(a -> a.getMeddelandeId())
+                .collect(Collectors.toList()))
+        .build();
   }
 
   /**
@@ -83,42 +84,52 @@ public class ArendeResource {
    * <p>Används av ärendeverktyget för att ge förslag på möjliga ärenden att skicka in en påminnelse
    * för.
    */
-  @GetMapping("/intyg/{intygsId}/internal")
-  public ResponseEntity<List<SimpleArende>> getVantarPaSvarFranOss(
-      @PathVariable("intygsId") String intygsId) {
+  @GET
+  @Path("/intyg/{intygsId}/internal")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getVantarPaSvarFranOss(@PathParam("intygsId") String intygsId) {
     List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
-    return ResponseEntity.ok(
-        byIntygsId.stream()
-            .filter(a -> a.getStatus() == Status.PENDING_INTERNAL_ACTION)
-            .map(a -> new SimpleArende(a.getMeddelandeId(), a.getRubrik()))
-            .collect(Collectors.toList()));
+    return Response.ok(
+            byIntygsId.stream()
+                .filter(a -> a.getStatus() == Status.PENDING_INTERNAL_ACTION)
+                .map(a -> new SimpleArende(a.getMeddelandeId(), a.getRubrik()))
+                .collect(Collectors.toList()))
+        .build();
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<Arende> getArende(@PathVariable("id") Long id) {
-    return ResponseEntity.ok(arendeRepository.findById(id).orElse(null));
+  @GET
+  @Path("/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Arende getArende(@PathParam("id") Long id) {
+    return arendeRepository.findById(id).orElse(null);
   }
 
-  @PostMapping
-  public ResponseEntity<Arende> insertQuestion(@RequestBody Arende arende) {
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response insertQuestion(Arende arende) {
     arende.setTimestamp(LocalDateTime.now());
     arendeRepository.save(arende);
-    return ResponseEntity.ok(arende);
+    return Response.ok(arende).build();
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteQuestion(@PathVariable("id") String meddelandeId) {
+  @DELETE
+  @Path("/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteQuestion(@PathParam("id") String meddelandeId) {
     Arende arende = arendeRepository.findOneByMeddelandeId(meddelandeId);
     arendeRepository.delete(arende);
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @DeleteMapping
-  public ResponseEntity<ArendeAffectedResponse> deleteAllQuestions() {
+  @DELETE
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteAllQuestions() {
     return transactionTemplate.execute(
-        new TransactionCallback<ResponseEntity<ArendeAffectedResponse>>() {
+        new TransactionCallback<Response>() {
           @Override
-          public ResponseEntity<ArendeAffectedResponse> doInTransaction(TransactionStatus status) {
+          public Response doInTransaction(TransactionStatus status) {
             @SuppressWarnings("unchecked")
             List<Arende> arenden =
                 entityManager.createQuery("SELECT f FROM Arende f").getResultList();
@@ -128,18 +139,19 @@ public class ArendeResource {
 
             ArendeAffectedResponse affected = new ArendeAffectedResponse(arenden.size());
 
-            return ResponseEntity.ok(affected);
+            return Response.ok(affected).build();
           }
         });
   }
 
-  @DeleteMapping("/enhet/{enhetsId}")
-  public ResponseEntity<ArendeAffectedResponse> deleteAllQuestionsOnUnit(
-      @PathVariable("enhetsId") String enhetsId) {
+  @DELETE
+  @Path("/enhet/{enhetsId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteAllQuestionsOnUnit(@PathParam("enhetsId") String enhetsId) {
     return transactionTemplate.execute(
-        new TransactionCallback<ResponseEntity<ArendeAffectedResponse>>() {
+        new TransactionCallback<Response>() {
           @Override
-          public ResponseEntity<ArendeAffectedResponse> doInTransaction(TransactionStatus status) {
+          public Response doInTransaction(TransactionStatus status) {
             @SuppressWarnings("unchecked")
             List<Arende> arenden =
                 entityManager
@@ -151,20 +163,23 @@ public class ArendeResource {
             }
 
             ArendeAffectedResponse affected = new ArendeAffectedResponse(arenden.size());
-            return ResponseEntity.ok(affected);
+            return Response.ok(affected).build();
           }
         });
   }
 
-  @GetMapping("/arendeCount")
-  public Long getArendeCountForCertificateIds(@RequestBody List<String> certificateIds) {
+  @GET
+  @Path("/arendeCount")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Long getArendeCountForCertificateIds(List<String> certificateIds) {
     final var arenden = (List<Arende>) arendeRepository.findAll();
     return arenden.stream().filter(arende -> certificateIds.contains(arende.getIntygsId())).count();
   }
 
-  @DeleteMapping("/arende")
-  public ResponseEntity<Void> deleteArendenForCertificateIds(
-      @RequestBody List<String> certificateIds) {
+  @DELETE
+  @Path("/arende")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteArendenForCertificateIds(List<String> certificateIds) {
     final var arenden = (List<Arende>) arendeRepository.findAll();
     final var arendenForDeletion =
         arenden.stream()
@@ -172,20 +187,23 @@ public class ArendeResource {
             .collect(Collectors.toList());
     arendeRepository.deleteAll(arendenForDeletion);
 
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @GetMapping("/arendeDraftCount")
-  public Long getArendeDraftCountForCertificateIds(@RequestBody List<String> certificateIds) {
+  @GET
+  @Path("/arendeDraftCount")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Long getArendeDraftCountForCertificateIds(List<String> certificateIds) {
     final var arendeDrafts = (List<ArendeDraft>) arendeDraftRepository.findAll();
     return arendeDrafts.stream()
         .filter(arendeDraft -> certificateIds.contains(arendeDraft.getIntygId()))
         .count();
   }
 
-  @DeleteMapping("/arendeDraft")
-  public ResponseEntity<Void> deleteArendeDraftsForCertificateIds(
-      @RequestBody List<String> certificateIds) {
+  @DELETE
+  @Path("/arendeDraft")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteArendeDraftsForCertificateIds(List<String> certificateIds) {
     final var arendeDrafts = (List<ArendeDraft>) arendeDraftRepository.findAll();
     final var arendeList =
         arendeDrafts.stream()
@@ -193,6 +211,6 @@ public class ArendeResource {
             .collect(Collectors.toList());
     arendeDraftRepository.deleteAll(arendeList);
 
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 }

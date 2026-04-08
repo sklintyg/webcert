@@ -22,34 +22,18 @@ import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.ELE
 import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_NORMAL_REQUEST_MATCHER;
 import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_REQUEST_MATCHER;
 
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
-import se.inera.intyg.webcert.infra.rediscache.core.BasicCacheConfiguration;
 
 @Configuration
-@EnableCaching
+@ImportResource({"classpath:basic-cache-config.xml"})
 public class CacheConfig {
-
-  @Configuration
-  @Profile({"caching-enabled", "prod"})
-  @Import(BasicCacheConfiguration.class)
-  static class RedisCachingConfig {}
-
-  @Bean
-  @Profile("!(caching-enabled | prod)")
-  public CacheManager noOpCacheManager() {
-    return new NoOpCacheManager();
-  }
 
   @Bean
   StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {

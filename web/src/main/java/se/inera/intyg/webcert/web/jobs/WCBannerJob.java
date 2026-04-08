@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.web.jobs;
 
 import org.springframework.stereotype.Component;
-import se.inera.intyg.webcert.infra.driftbannerdto.Application;
-import se.inera.intyg.webcert.infra.ia.jobs.BannerJob;
+import se.inera.intyg.infra.driftbannerdto.Application;
+import se.inera.intyg.infra.integration.ia.jobs.BannerJob;
 
 @Component
 public class WCBannerJob extends BannerJob {

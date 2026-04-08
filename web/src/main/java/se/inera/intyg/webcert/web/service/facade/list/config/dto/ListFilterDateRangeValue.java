@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 public class ListFilterDateRangeValue implements ListFilterValue {
 
   private LocalDateTime to;
-
   private LocalDateTime from;
 
   public ListFilterDateRangeValue() {}

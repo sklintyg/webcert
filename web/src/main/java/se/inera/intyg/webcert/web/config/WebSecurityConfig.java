@@ -79,7 +79,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-import se.inera.intyg.webcert.infra.security.common.cookie.IneraCookieSerializer;
+import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
 import se.inera.intyg.webcert.web.auth.CsrfCookieFilter;
 import se.inera.intyg.webcert.web.auth.CustomAccessDeniedHandler;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint;
@@ -223,8 +223,6 @@ public class WebSecurityConfig {
                     .permitAll()
                     .requestMatchers(antMatcher("/services/**"))
                     .permitAll()
-                    .requestMatchers(antMatcher("/stubs/**"))
-                    .permitAll()
                     .requestMatchers(antMatcher("/api/config/**"))
                     .permitAll()
                     .requestMatchers(antMatcher("/api/configuration/**"))
@@ -279,7 +277,6 @@ public class WebSecurityConfig {
                         antMatcher("/testability/**"),
                         antMatcher("/authtestability/**"),
                         antMatcher("/services/**"),
-                        antMatcher("/stubs/**"),
                         antMatcher("/api/v1/session/invalidate")))
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 

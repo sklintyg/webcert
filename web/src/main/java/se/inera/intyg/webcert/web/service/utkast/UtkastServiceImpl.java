@@ -67,16 +67,16 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.webcert.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.logging.HashUtility;
@@ -487,7 +487,7 @@ public class UtkastServiceImpl implements UtkastService {
       if (unitOfUser.isPresent()) {
         final var userOnCareUnit =
             unitOfUser.get()
-                instanceof se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
+                instanceof se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
         return userOnCareUnit ? isSameCareUnit : isSameUnit;
       }
     }

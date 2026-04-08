@@ -78,7 +78,8 @@ class PatientControllerTest {
     void shallIncludePatientInResponse() {
       final var patient = createPatient();
       setup(patient);
-      final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getBody();
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
       assertEquals(response.getPatient(), patient);
     }
 
@@ -86,14 +87,16 @@ class PatientControllerTest {
     void shallSetStatusToFoundIfPatientExists() {
       final var patient = createPatient();
       setup(patient);
-      final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getBody();
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
       assertEquals(response.getStatus(), PatientResponseStatusDTO.FOUND);
     }
 
     @Test
     void shallSetStatusToNotFoundIfPatientIsNull() {
       setup();
-      final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getBody();
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
       assertEquals(response.getStatus(), PatientResponseStatusDTO.NOT_FOUND);
     }
 
@@ -101,7 +104,8 @@ class PatientControllerTest {
     void shallSetStatusToErrorIfExceptionIsThrown()
         throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
       setup(new PatientSearchErrorException());
-      final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getBody();
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
       assertEquals(response.getStatus(), PatientResponseStatusDTO.ERROR);
     }
 
@@ -109,7 +113,8 @@ class PatientControllerTest {
     void shallSetStatusToInvalidPatientIdIfExceptionIsThrown()
         throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
       setup(new InvalidPatientIdException());
-      final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getBody();
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
       assertEquals(response.getStatus(), PatientResponseStatusDTO.INVALID_PATIENT_ID);
     }
 
@@ -117,7 +122,8 @@ class PatientControllerTest {
     void shallSetStatusNoNameIfExceptionIsThrown()
         throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
       setup(new PatientNoNameException());
-      final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getBody();
+      final var response =
+          (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
       assertEquals(response.getStatus(), PatientResponseStatusDTO.NO_NAME);
     }
   }

@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public record CareUnitContext(

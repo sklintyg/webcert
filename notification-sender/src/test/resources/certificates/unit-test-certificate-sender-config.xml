@@ -19,12 +19,12 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-    http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  ">
+
+  <import resource="beans-context.xml"/>
+  <import resource="camel-context.xml"/>
 
   <context:property-placeholder
       location="classpath:certificates/unit-test.properties" order="1" ignore-resource-not-found="false" />
@@ -32,16 +32,5 @@
   <context:annotation-config/>
 
   <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.certificatesender"/>
-
-  <bean id="certificateStoreProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateStoreProcessor"/>
-  <bean id="certificateSendProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateSendProcessor"/>
-  <bean id="certificateRevokeProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateRevokeProcessor"/>
-  <bean id="sendMessageToRecipientProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.SendMessageToRecipientProcessor"/>
-  <bean id="registerApprovedReceiversProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.RegisterApprovedReceiversProcessor"/>
-  <bean id="certificateRouteBuilder" class="se.inera.intyg.webcert.notification_sender.certificatesender.routes.CertificateRouteBuilder"/>
-
-  <camel:camelContext id="webcertCertificateSender">
-    <camel:routeBuilder ref="certificateRouteBuilder"/>
-  </camel:camelContext>
 
 </beans>

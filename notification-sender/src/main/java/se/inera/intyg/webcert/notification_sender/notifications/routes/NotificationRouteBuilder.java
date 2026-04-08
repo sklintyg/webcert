@@ -54,9 +54,6 @@ public class NotificationRouteBuilder extends RouteBuilder {
   @Value("${notificationPostProcessingEndpointUri}")
   private String notificationPostProcessingQueue;
 
-  @Value("${sendNotificationWSEndpointUri}")
-  private String notificationWSQueue;
-
   @Value("${notificationSender.batchTimeout}")
   private Long batchAggregationTimeout = DEFAULT_TIMEOUT;
 
@@ -115,7 +112,7 @@ public class NotificationRouteBuilder extends RouteBuilder {
     // All routes below relate to pre WC 5.0 notification sending, e.g. all that enters
     // 'receiveNotificationRequestEndpoint'
     // should have normal resend semantics etc. Reads from the notificationQueue.
-    from(notificationQueue)
+    from("receiveNotificationRequestEndpoint")
         .routeId("transformNotification")
         .onException(Exception.class)
         .handled(true)
@@ -125,9 +122,9 @@ public class NotificationRouteBuilder extends RouteBuilder {
         .unmarshal("notificationMessageDataFormat")
         .to("bean:notificationTransformer")
         .marshal(jaxbMessageDataFormatV3)
-        .to(notificationWSQueue);
+        .to("sendNotificationWSEndpoint");
 
-    from(notificationWSQueue)
+    from("sendNotificationWSEndpoint")
         .routeId("sendNotificationToWS")
         .onException(Exception.class)
         .handled(true)

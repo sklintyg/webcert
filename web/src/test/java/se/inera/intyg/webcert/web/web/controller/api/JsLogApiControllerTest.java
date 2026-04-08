@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,6 +31,7 @@ import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringReques
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.BROWSER_INFO;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.DIAGNOSKODVERK_CHANGED;
 
+import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,9 +42,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.http.ResponseEntity;
-import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentInfo;
-import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser;
+import se.inera.intyg.infra.monitoring.logging.UserAgentInfo;
+import se.inera.intyg.infra.monitoring.logging.UserAgentParser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 
@@ -62,17 +64,19 @@ class JsLogApiControllerTest {
 
   @Test
   void testMonitoringBadRequest() {
-    assertEquals(400, controller.monitoring(null, null).getStatusCode().value());
+    assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(null, null).getStatus());
 
-    assertEquals(400, controller.monitoring(new MonitoringRequest(), null).getStatusCode().value());
+    assertEquals(
+        BAD_REQUEST.getStatusCode(),
+        controller.monitoring(new MonitoringRequest(), null).getStatus());
 
     MonitoringRequest request = new MonitoringRequest();
 
     request.setEvent(DIAGNOSKODVERK_CHANGED);
-    assertEquals(400, controller.monitoring(request, null).getStatusCode().value());
+    assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(request, null).getStatus());
 
     request.setEvent(BROWSER_INFO);
-    assertEquals(400, controller.monitoring(request, null).getStatusCode().value());
+    assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(request, null).getStatus());
   }
 
   @Test
@@ -89,10 +93,10 @@ class JsLogApiControllerTest {
     extraInfo.put(MonitoringRequest.NET_ID_VERSION, netIdVersion);
     request.setInfo(extraInfo);
 
-    ResponseEntity<?> response = controller.monitoring(request, userAgentString);
+    Response response = controller.monitoring(request, userAgentString);
 
     assertNotNull(response);
-    assertEquals(200, response.getStatusCode().value());
+    assertEquals(OK.getStatusCode(), response.getStatus());
 
     verify(monLog).logBrowserInfo("IE", "1.0", "OS", "1.1", width, height, netIdVersion);
     verifyNoMoreInteractions(monLog);
@@ -110,10 +114,10 @@ class JsLogApiControllerTest {
     extraInfo.put(INTYG_TYPE, intygType);
     request.setInfo(extraInfo);
 
-    ResponseEntity<?> response = controller.monitoring(request, userAgentString);
+    Response response = controller.monitoring(request, userAgentString);
 
     assertNotNull(response);
-    assertEquals(200, response.getStatusCode().value());
+    assertEquals(OK.getStatusCode(), response.getStatus());
 
     verify(monLog).logDiagnoskodverkChanged(intygId, intygType);
     verifyNoMoreInteractions(monLog);

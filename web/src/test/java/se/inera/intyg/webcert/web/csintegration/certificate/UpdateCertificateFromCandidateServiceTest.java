@@ -37,7 +37,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;

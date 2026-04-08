@@ -20,23 +20,22 @@ package se.inera.intyg.webcert.web.web.controller.authtestability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.infra.security.common.model.Feature;
-import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -45,24 +44,24 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  * Rest interface only used for testing and in dev environments. It seems like it must be in the
  * same Spring context as the rest of the webservices to get access to the security context.
  */
-@Api(value = "user service", produces = "application/json")
-@RestController
-@RequestMapping("/authtestability/user")
-@Profile("!prod")
+@Api(value = "user service", produces = MediaType.APPLICATION_JSON)
+@Path("/")
 public class UserResource {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
   @Autowired private WebCertUserService webCertUserService;
 
-  @GetMapping("/role")
+  @GET
+  @Path("/role")
+  @Produces(MediaType.APPLICATION_JSON)
   @JsonPropertyDescription("Get the roles for user in session")
   @PrometheusTimeMethod
-  public ResponseEntity<Set<String>> getUserRoles() {
+  public Response getUserRoles() {
     final WebCertUser user = webCertUserService.getUser();
     final Map<String, Role> roles = user.getRoles();
     final Set<String> roleStrings = roles.keySet();
-    return ResponseEntity.ok(roleStrings);
+    return Response.ok(roleStrings).build();
   }
 
   /**
@@ -70,20 +69,24 @@ public class UserResource {
    * it is a very convenient way to change the user role from the browser and it is also the only
    * way I could figure out to invoke it from the browser session in the Fitnesse tests.
    */
-  @GetMapping("/role/{role}")
+  @GET
+  @Path("/role/{role}")
+  @Produces(MediaType.APPLICATION_JSON)
   @JsonPropertyDescription("Set the roles for user in session")
   @PrometheusTimeMethod
-  public ResponseEntity<Void> setUserRole(@PathVariable("role") String role) {
+  public Response setUserRole(@PathParam("role") String role) {
     webCertUserService.updateUserRole(role);
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @GetMapping("/origin")
+  @GET
+  @Path("/origin")
+  @Produces(MediaType.APPLICATION_JSON)
   @PrometheusTimeMethod
-  public ResponseEntity<String> getOrigin() {
+  public Response getOrigin() {
     final WebCertUser user = webCertUserService.getUser();
     final String currentOrigin = user.getOrigin();
-    return ResponseEntity.ok(currentOrigin);
+    return Response.ok(currentOrigin).build();
   }
 
   /**
@@ -92,43 +95,51 @@ public class UserResource {
    * also the only way I could figure out to invoke it from the browser session in the Fitnesse
    * tests.
    */
-  @GetMapping("/origin/{origin}")
+  @GET
+  @Path("/origin/{origin}")
+  @Produces(MediaType.APPLICATION_JSON)
   @PrometheusTimeMethod
-  public ResponseEntity<Void> setOrigin(@PathVariable("origin") String origin) {
+  public Response setOrigin(@PathParam("origin") String origin) {
     webCertUserService.updateOrigin(origin);
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @GetMapping("/preferences/delete")
+  @GET
+  @Path("/preferences/delete")
   @PrometheusTimeMethod
-  public ResponseEntity<Void> deleteUserPreferences() {
+  public Response deleteUserPreferences() {
     webCertUserService.deleteUserPreferences();
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @GetMapping("/preferences")
+  @GET
+  @Path("/preferences")
+  @Produces(MediaType.APPLICATION_JSON)
   @PrometheusTimeMethod
-  public ResponseEntity<Object> getUserPreferences() {
+  public Response getUserPreferences() {
     final var prefs = webCertUserService.getUser().getAnvandarPreference();
-    return ResponseEntity.ok(prefs);
+    return Response.ok(prefs).build();
   }
 
-  @GetMapping("/parameters")
+  @GET
+  @Path("/parameters")
+  @Produces(MediaType.APPLICATION_JSON)
   @PrometheusTimeMethod
-  public ResponseEntity<IntegrationParameters> getParameters() {
-    return ResponseEntity.ok(webCertUserService.getUser().getParameters());
+  public Response getParameters() {
+    return Response.ok(webCertUserService.getUser().getParameters()).build();
   }
 
-  @PostMapping("/parameters/sjf")
+  @POST
+  @Path("/parameters/sjf")
   @PrometheusTimeMethod
-  public ResponseEntity<Void> setSjf() {
+  public Response setSjf() {
     webCertUserService
         .getUser()
         .setParameters(
             new IntegrationParameters(
                 null, null, null, null, null, null, null, null, null, true, false, false, true,
                 null));
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
   /**
@@ -137,50 +148,58 @@ public class UserResource {
    * @param refValue Whatever string you want to specifiy as reference.
    * @return 200 OK unless there's a problem.
    */
-  @GetMapping("/parameters/ref/{refValue}")
+  @GET
+  @Path("/parameters/ref/{refValue}")
   @PrometheusTimeMethod
-  public ResponseEntity<Void> setRef(@PathVariable("refValue") String refValue) {
+  public Response setRef(@PathParam("refValue") String refValue) {
     webCertUserService
         .getUser()
         .setParameters(
             new IntegrationParameters(
                 refValue, null, null, null, null, null, null, null, null, true, false, false, true,
                 null));
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @PutMapping("/parameters/launchId/{launchId}")
+  @PUT
+  @Path("/parameters/launchId/{launchId}")
   @PrometheusTimeMethod
-  public ResponseEntity<Void> setLaunchId(@PathVariable("launchId") String launchId) {
+  public Response setLaunchId(@PathParam("launchId") String launchId) {
     webCertUserService
         .getUser()
         .setParameters(
             new IntegrationParameters(
                 null, null, null, null, null, null, null, null, null, true, false, false, true,
                 launchId));
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @GetMapping("/features")
+  @GET
+  @Path("/features")
+  @Produces(MediaType.APPLICATION_JSON)
   @PrometheusTimeMethod
-  public ResponseEntity<Map<String, Feature>> getFeaturesForUser() {
+  public Response getFeaturesForUser() {
     Map<String, Feature> features = webCertUserService.getUser().getFeatures();
-    return ResponseEntity.ok(features);
+    return Response.ok(features).build();
   }
 
-  @PutMapping("/personid")
+  @PUT
+  @Path("/personid")
+  @Produces(MediaType.APPLICATION_JSON)
   @PrometheusTimeMethod
-  public ResponseEntity<Void> getFeaturesForUser(@RequestBody String personId) {
+  public Response getFeaturesForUser(String personId) {
     String oldPersonId = webCertUserService.getUser().getPersonId();
     webCertUserService.getUser().setPersonId(personId);
     LOG.info("Changed user 'personId' to '{}', was '{}'.", personId, oldPersonId);
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @GetMapping("/subscriptionInfo")
+  @GET
+  @Path("/subscriptionInfo")
+  @Produces(MediaType.APPLICATION_JSON)
   @PrometheusTimeMethod
-  public ResponseEntity<Object> getSubscriptionInfo() {
+  public Response getSubscriptionInfo() {
     final var info = webCertUserService.getUser().getSubscriptionInfo();
-    return ResponseEntity.ok(info);
+    return Response.ok(info).build();
   }
 }

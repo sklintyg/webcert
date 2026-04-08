@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadEnum;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
-import se.inera.intyg.webcert.infra.postnummer.service.PostnummerService;
+import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
 
 @Component
 public class DefaultTypeAheadProvider implements TypeAheadProvider {

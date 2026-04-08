@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.infra.srs.model.SrsCertificate;
+import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
 @ExtendWith(MockitoExtension.class)

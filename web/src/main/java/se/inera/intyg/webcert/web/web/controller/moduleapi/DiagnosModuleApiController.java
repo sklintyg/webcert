@@ -19,15 +19,16 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
@@ -40,9 +41,8 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
  *
  * @author npet
  */
-@RestController
-@RequestMapping("/moduleapi/diagnos")
-@Api(value = "diagnos", produces = "application/json")
+@Path("/diagnos")
+@Api(value = "diagnos", produces = MediaType.APPLICATION_JSON)
 public class DiagnosModuleApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);
@@ -54,19 +54,21 @@ public class DiagnosModuleApiController extends AbstractApiController {
    *
    * @param parameter A parameter object.
    */
-  @PostMapping("/kod")
+  @POST
+  @Path("/kod")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "diagnos-module-get-diagnosis-by-code",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<DiagnosResponse> getDiagnosisByCode(
-      @RequestBody DiagnosParameter parameter) {
+  public Response getDiagnosisByCode(DiagnosParameter parameter) {
 
     LOG.debug("Getting diagnosises using code: {}", parameter.getCodeFragment());
 
     DiagnosResponse diagnosResponse =
         diagnosService.getDiagnosisByCode(parameter.getCodeFragment(), parameter.getCodeSystem());
-    return ResponseEntity.ok(diagnosResponse);
+    return Response.ok(diagnosResponse).build();
   }
 
   /**
@@ -76,33 +78,37 @@ public class DiagnosModuleApiController extends AbstractApiController {
    *
    * @param parameter A parameter object.
    */
-  @PostMapping("/kod/sok")
+  @POST
+  @Path("/kod/sok")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "diagnos-module-search-diagnosis-by-code",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<DiagnosResponse> searchDiagnosisByCode(
-      @RequestBody DiagnosParameter parameter) {
+  public Response searchDiagnosisByCode(DiagnosParameter parameter) {
 
     LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
 
     DiagnosResponse diagnosResponse =
         diagnosService.searchDiagnosisByCode(
             parameter.getCodeFragment(), parameter.getCodeSystem(), parameter.getNbrOfResults());
-    return ResponseEntity.ok(diagnosResponse);
+    return Response.ok(diagnosResponse).build();
   }
 
   /**
    * Search for diagnosises using a description fragment. The number of results returned by the
    * service can be limited by setting the 'NbrOfResults' parameter to a positive number.
    */
-  @PostMapping("/beskrivning/sok")
+  @POST
+  @Path("/beskrivning/sok")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "diagnos-module-search-diagnosis-by-description",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<DiagnosResponse> searchDiagnosisByDescription(
-      @RequestBody DiagnosParameter parameter) {
+  public Response searchDiagnosisByDescription(DiagnosParameter parameter) {
 
     LOG.debug(
         "Searching for diagnosises using description fragment: {}",
@@ -113,6 +119,6 @@ public class DiagnosModuleApiController extends AbstractApiController {
             parameter.getDescriptionSearchString(),
             parameter.getCodeSystem(),
             parameter.getNbrOfResults());
-    return ResponseEntity.ok(diagnosResponse);
+    return Response.ok(diagnosResponse).build();
   }
 }

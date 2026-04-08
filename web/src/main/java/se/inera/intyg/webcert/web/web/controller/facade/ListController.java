@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
@@ -36,8 +36,7 @@ import se.inera.intyg.webcert.web.service.facade.list.ListSignedCertificatesFaca
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ListResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
 
-@RestController
-@RequestMapping("/api/list")
+@Path("/list")
 public class ListController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ListController.class);
@@ -61,47 +60,59 @@ public class ListController {
     this.listQuestionsFacadeService = listQuestionsFacadeService;
   }
 
-  @PostMapping("/draft")
+  @POST
+  @Path("/draft")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-get-list-of-drafts",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<ListResponseDTO> getListOfDrafts(@RequestBody ListRequestDTO request) {
+  public Response getListOfDrafts(ListRequestDTO request) {
     LOG.debug("Getting list of drafts");
     final var listInfo = listDraftsFacadeService.get(request.getFilter());
-    return ResponseEntity.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()));
+    return Response.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()))
+        .build();
   }
 
-  @PostMapping("/certificate")
+  @POST
+  @Path("/certificate")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-get-list-of-signed-certificates",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<ListResponseDTO> getListOfSignedCertificates(
-      @RequestBody ListRequestDTO request) {
+  public Response getListOfSignedCertificates(ListRequestDTO request) {
     final var listInfo = listSignedCertificatesFacadeService.get(request.getFilter());
-    return ResponseEntity.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()));
+    return Response.ok()
+        .entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()))
+        .build();
   }
 
-  @PostMapping("/previous")
+  @POST
+  @Path("/previous")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-get-list-of-previous-certificates",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<ListResponseDTO> getListOfPreviousCertificates(
-      @RequestBody ListRequestDTO request) {
+  public Response getListOfPreviousCertificates(ListRequestDTO request) {
     final var listInfo = listPreviousCertificatesFacadeService.get(request.getFilter());
-    return ResponseEntity.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()));
+    return Response.ok()
+        .entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()))
+        .build();
   }
 
-  @PostMapping("/question")
+  @POST
+  @Path("/question")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-get-list-of-certificates-with-questions",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<ListResponseDTO> getListOfCertificatesWithQuestions(
-      @RequestBody ListRequestDTO request) {
+  public Response getListOfCertificatesWithQuestions(ListRequestDTO request) {
     final var listInfo = listQuestionsFacadeService.get(request.getFilter());
-    return ResponseEntity.ok(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()));
+    return Response.ok()
+        .entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount()))
+        .build();
   }
 }

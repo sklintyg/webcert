@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation;
-import se.inera.intyg.webcert.infra.integration.hsatk.services.legacy.HsaEmployeeService;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaEmployeeService;
 
 @Service
 @RequiredArgsConstructor

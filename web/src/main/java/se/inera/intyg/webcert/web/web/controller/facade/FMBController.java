@@ -18,64 +18,46 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import javax.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeService;
-import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodResponseDTO;
 
-@RestController
-@RequestMapping("/api/fmb")
-@RequiredArgsConstructor
+@Path("/fmb")
 public class FMBController {
 
   private static final Logger LOG = LoggerFactory.getLogger(FMBController.class);
-  private final ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
-  private final FmbDiagnosInformationService fmbDiagnosInformationService;
 
-  @GetMapping(value = "/{icd10}", produces = MediaType.APPLICATION_JSON_VALUE)
-  @PrometheusTimeMethod
-  @PerformanceLogging(
-      eventAction = "fmb-get-fmb-data-for-icd10",
-      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<FmbResponse> getFmbForIcd10(@PathVariable("icd10") String icd10) {
-    if (icd10 == null || icd10.isEmpty()) {
-      return ResponseEntity.badRequest().build();
-    }
+  private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    return fmbDiagnosInformationService
-        .findFmbDiagnosInformationByIcd10Kod(icd10)
-        .map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.noContent().build());
-  }
+  @Autowired private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
 
-  @PostMapping("/validateSickLeavePeriod")
+  @POST
+  @Path("/validateSickLeavePeriod")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fmb-validate-sickleave-period",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<ValidateSickLeavePeriodResponseDTO> validateSickLeavePeriod(
+  public Response validateSickLeavePeriod(
       @RequestBody @NotNull ValidateSickLeavePeriodRequestDTO validateSickLeavePeriod) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Validating sick leave period");
     }
     final var response =
         validateSickLeavePeriodFacadeService.validateSickLeavePeriod(validateSickLeavePeriod);
-    return ResponseEntity.ok(ValidateSickLeavePeriodResponseDTO.create(response));
+    return Response.ok(ValidateSickLeavePeriodResponseDTO.create(response)).build();
   }
 }

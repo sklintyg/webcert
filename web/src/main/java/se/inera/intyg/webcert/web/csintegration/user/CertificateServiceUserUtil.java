@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.csintegration.user;
 
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 public class CertificateServiceUserUtil {
 

@@ -60,8 +60,8 @@ class IcfControllerTest {
       when(icfFacadeService.getIcfInformation(any())).thenReturn(new IcfResponseDTO());
       IcfRequestDTO request = new IcfRequestDTO();
       final var response = icfController.getIcf(request);
-      assertEquals(200, response.getStatusCode().value());
-      assertTrue(response.getBody() instanceof IcfResponseDTO);
+      assertEquals(response.getStatus(), 200);
+      assertTrue(response.getEntity() instanceof IcfResponseDTO);
     }
   }
 }

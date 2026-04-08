@@ -19,7 +19,6 @@ tasks.register('copyResources', Copy) {
 compileJava.dependsOn copyResources
 
 dependencies {
-    implementation project(':infra')
     implementation project(':webcert-common')
     implementation project(':webcert-logging')
     implementation project(':webcert-persistence')
@@ -44,16 +43,18 @@ dependencies {
     implementation "se.inera.intyg.common:common-support:${commonVersion}"
     implementation "se.inera.intyg.common:fk7263:${commonVersion}"
     implementation "se.inera.intyg.common:integration-util:${commonVersion}"
+    implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
+    implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
+    implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
     runtimeOnly "org.apache.camel:camel-cxf-spring-soap"
     runtimeOnly "org.apache.camel:camel-cxf-spring-transport"
-    implementation "org.apache.camel:camel-jackson"
-    implementation "org.apache.camel:camel-spring"
-    implementation "org.apache.cxf:cxf-core"
-    implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
-    implementation "org.apache.cxf:cxf-rt-features-logging"
+    runtimeOnly "org.apache.camel:camel-jackson"
+    runtimeOnly "org.apache.camel:camel-spring"
+    runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
 
     annotationProcessor 'org.projectlombok:lombok'
 

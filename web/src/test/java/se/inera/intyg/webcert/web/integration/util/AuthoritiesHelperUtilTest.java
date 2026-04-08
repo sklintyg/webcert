@@ -39,9 +39,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
 import se.inera.intyg.common.doi.v1.rest.DoiModuleApiV1;
 import se.inera.intyg.common.support.common.enumerations.KvIntygstyp;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.Feature;
-import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 @ExtendWith(MockitoExtension.class)

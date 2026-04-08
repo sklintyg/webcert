@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.web.util.access;
 
 import org.springframework.stereotype.Component;
+import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 

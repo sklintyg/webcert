@@ -27,18 +27,18 @@ import static org.mockito.Mockito.when;
 import com.google.common.collect.ImmutableMap;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesException;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.Role;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -66,9 +66,9 @@ class UserIntegrationControllerTest {
     when(request.getSession()).thenReturn(session);
     when(webCertUserService.getUser()).thenReturn(webCertUser);
 
-    ResponseEntity<?> res = userIntegrationController.logoutUserNow(request);
+    Response res = userIntegrationController.logoutUserNow(request);
 
-    assertEquals(HttpStatus.OK.value(), res.getStatusCode().value());
+    assertEquals(Status.OK.getStatusCode(), res.getStatus());
     verify(webCertUserService).removeSessionNow(session);
   }
 

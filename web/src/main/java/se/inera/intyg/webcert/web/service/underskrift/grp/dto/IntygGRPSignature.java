@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp.dto;
 
-import se.inera.intyg.webcert.infra.xmldsig.model.IntygSignature;
+import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 
 public class IntygGRPSignature implements IntygSignature {
 

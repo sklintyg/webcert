@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import java.util.List;
-import se.inera.intyg.webcert.infra.certificate.dto.CertificateListEntry;
+import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;

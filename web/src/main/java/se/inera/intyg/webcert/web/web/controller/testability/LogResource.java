@@ -23,25 +23,23 @@ import io.swagger.annotations.Api;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.webcert.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 
 @Api(value = "testability logMessages")
-@RestController
-@RequestMapping("/testability/logMessages")
-@Profile({"dev", "testability-api"})
+@Path("/logMessages")
 public class LogResource {
 
   private static final int DEFAULT_TIMEOUT = 1000;
@@ -53,8 +51,10 @@ public class LogResource {
   @Autowired
   @Qualifier("jmsPDLLogTemplateNoTx") private JmsTemplate jmsTemplate;
 
-  @DeleteMapping
-  public ResponseEntity<Void> deleteLogMessages() {
+  @DELETE
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteLogMessages() {
     int count = countMessages();
     long originalTimeout = jmsTemplate.getReceiveTimeout();
     try {
@@ -68,10 +68,12 @@ public class LogResource {
     } finally {
       jmsTemplate.setReceiveTimeout(originalTimeout);
     }
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @GetMapping("/count")
+  @GET
+  @Path("/count")
+  @Produces(MediaType.APPLICATION_JSON)
   public int countMessages() {
     final var count =
         jmsTemplate.browse(
@@ -87,7 +89,9 @@ public class LogResource {
     return count != null ? count : 0;
   }
 
-  @GetMapping
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
   public PdlLogMessage getLogMessage() {
     long originalTimeout = jmsTemplate.getReceiveTimeout();
     try {

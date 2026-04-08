@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;

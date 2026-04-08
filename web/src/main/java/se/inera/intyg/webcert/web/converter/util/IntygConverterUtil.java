@@ -37,8 +37,8 @@ import se.inera.intyg.common.support.model.common.internal.PaTitle;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.AbstractVardenhet;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 

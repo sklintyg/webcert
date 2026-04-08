@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 

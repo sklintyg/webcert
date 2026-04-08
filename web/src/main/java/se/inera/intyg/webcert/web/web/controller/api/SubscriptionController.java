@@ -19,24 +19,26 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
-@RestController
-@RequestMapping("/api/subscription")
-@Api(value = "subscription", produces = "application/json")
+@Path("/subscription")
+@Api(value = "subscription", produces = MediaType.APPLICATION_JSON)
 public class SubscriptionController extends AbstractApiController {
 
   @Autowired private SubscriptionService subscriptionService;
 
-  @GetMapping("/acknowledgeSubscriptionModal")
+  @GET
+  @Path("/acknowledgeSubscriptionModal")
+  @Produces(MediaType.APPLICATION_JSON)
   @PerformanceLogging(
       eventAction = "subscription-acknowledge-subscription-modal",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)

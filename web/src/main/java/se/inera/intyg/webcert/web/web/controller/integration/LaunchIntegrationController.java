@@ -18,31 +18,30 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
-@Controller
-@RequestMapping("/webcert/web/user/launch")
+@Path("/launch")
 public class LaunchIntegrationController extends BaseIntegrationController {
 
   private static final String[] GRANTED_ROLES =
@@ -58,33 +57,35 @@ public class LaunchIntegrationController extends BaseIntegrationController {
   @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
   private static final Logger LOG = LoggerFactory.getLogger(LaunchIntegrationController.class);
 
-  @GetMapping("/certificate/{certificateId}")
+  @GET
+  @Path("/certificate/{certificateId}")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "launch-integration-get-redirect-to-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<Void> redirectToCertificate(
-      HttpServletRequest request,
-      @PathVariable("certificateId") String certificateId,
-      @RequestParam(value = "origin", required = false) String origin) {
+  public Response redirectToCertificate(
+      @Context UriInfo uriInfo,
+      @PathParam("certificateId") String certificateId,
+      @QueryParam("origin") String origin) {
     webCertUserService.getUser().setLaunchFromOrigin(origin);
     LOG.debug("Redirecting to view intyg {}", certificateId);
-    return buildRedirectResponse(request, certificateId, false);
+    return buildRedirectResponse(uriInfo, certificateId, false);
   }
 
-  @GetMapping("/certificate/{certificateId}/questions")
+  @GET
+  @Path("/certificate/{certificateId}/questions")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "launch-integration-direct-to-certificate-questions",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<Void> directToCertificateQuestions(
-      HttpServletRequest request, @PathVariable("certificateId") String certificateId) {
+  public Response directToCertificateQuestions(
+      @Context UriInfo uriInfo, @PathParam("certificateId") String certificateId) {
     LOG.debug("Directing to to view questions on intyg {}", certificateId);
-    return buildRedirectResponse(request, certificateId, true);
+    return buildRedirectResponse(uriInfo, certificateId, true);
   }
 
-  private ResponseEntity<Void> buildRedirectResponse(
-      HttpServletRequest request, String certificateId, boolean redirectToQuestion) {
+  private Response buildRedirectResponse(
+      UriInfo uriInfo, String certificateId, boolean redirectToQuestion) {
     super.validateParameter("certificateId", certificateId);
     super.validateAuthorities();
 
@@ -92,20 +93,18 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     validateAndChangeUnit(unitId);
 
     return redirectToQuestion
-        ? getReactRedirectResponseForQuestions(request, certificateId)
-        : getReactRedirectResponseForCertificate(request, certificateId);
+        ? getReactRedirectResponseForQuestions(uriInfo, certificateId)
+        : getReactRedirectResponseForCertificate(uriInfo, certificateId);
   }
 
-  private ResponseEntity<Void> getReactRedirectResponseForCertificate(
-      HttpServletRequest request, String certificateId) {
-    final var uri = reactUriFactory.uriForCertificate(request, certificateId);
-    return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).location(uri).build();
+  private Response getReactRedirectResponseForCertificate(UriInfo uriInfo, String certificateId) {
+    final var uri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
+    return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
   }
 
-  private ResponseEntity<Void> getReactRedirectResponseForQuestions(
-      HttpServletRequest request, String certificateId) {
-    final var uri = reactUriFactory.uriForCertificateQuestions(request, certificateId);
-    return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).location(uri).build();
+  private Response getReactRedirectResponseForQuestions(UriInfo uriInfo, String certificateId) {
+    final var uri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
+    return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
   }
 
   @Override

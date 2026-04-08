@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.stub.service;
 
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
@@ -37,10 +37,11 @@ public class ServiceNowStubRestApiService {
 
   private final ServiceNowStubState stubState;
 
-  public ResponseEntity<Object> createSubscriptionResponse(
-      String basicAuth, OrganizationRequest request) {
+  public Response createSubscriptionResponse(String basicAuth, OrganizationRequest request) {
     if (basicAuth == null) {
-      return ResponseEntity.badRequest().body("Authorization header required by ServiceNow stub.");
+      return Response.status(Status.BAD_REQUEST)
+          .entity("Authorization header required by ServiceNow stub.")
+          .build();
     } else if (stubState.getHttpErrorCode() != 0) {
       return responseWithErrorStatusCode(stubState.getHttpErrorCode());
     } else {
@@ -48,7 +49,7 @@ public class ServiceNowStubRestApiService {
     }
   }
 
-  private ResponseEntity<Object> getSubscriptions(List<String> organizationNumbers) {
+  private Response getSubscriptions(List<String> organizationNumbers) {
     final var activeSubscriptions = stubState.getActiveSubscriptions();
     final var organizations = new ArrayList<Organization>();
 
@@ -63,7 +64,8 @@ public class ServiceNowStubRestApiService {
     }
 
     final var organizationResponse = OrganizationResponse.builder().result(organizations).build();
-    return ResponseEntity.ok(organizationResponse);
+
+    return Response.ok(organizationResponse).build();
   }
 
   private List<String> getSubscribedServiceCodes(
@@ -82,13 +84,15 @@ public class ServiceNowStubRestApiService {
     return Collections.emptyList();
   }
 
-  private ResponseEntity<Object> responseWithErrorStatusCode(int statusCode) {
-    final var httpStatus = HttpStatus.resolve(statusCode);
-    if (httpStatus == null) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body("Http error 500 response from ServiceNow stub.");
+  private Response responseWithErrorStatusCode(int statusCode) {
+    try {
+      return Response.status(Status.fromStatusCode(statusCode))
+          .entity("Http error " + statusCode + " response from ServiceNow stub.")
+          .build();
+    } catch (IllegalArgumentException e) {
+      return Response.status(Status.INTERNAL_SERVER_ERROR)
+          .entity("Http error 500 response from ServiceNow stub.")
+          .build();
     }
-    return ResponseEntity.status(httpStatus)
-        .body("Http error " + statusCode + " response from ServiceNow stub.");
   }
 }

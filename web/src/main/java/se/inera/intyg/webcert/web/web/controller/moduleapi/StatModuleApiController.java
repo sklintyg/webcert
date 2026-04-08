@@ -20,6 +20,11 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import com.google.common.base.Joiner;
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,17 +32,13 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -53,9 +54,8 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardgivareStats;
 /**
  * @author marced
  */
-@RestController
-@RequestMapping("/moduleapi/stat")
-@Api(value = "stat", produces = "application/json")
+@Path("/stat")
+@Api(value = "stat", produces = MediaType.APPLICATION_JSON)
 public class StatModuleApiController extends AbstractApiController {
 
   private static final String SEPARATOR = " - ";
@@ -70,23 +70,25 @@ public class StatModuleApiController extends AbstractApiController {
 
   @Autowired private AuthoritiesHelper authoritiesHelper;
 
-  @GetMapping
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "stat-module-get-statistics",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<StatsResponse> getStatistics() {
+  public Response getStatistics() {
 
     StatsResponse statsResponse = new StatsResponse();
 
     WebCertUser user = getWebCertUserService().getUser();
     if (user == null) {
       LOG.warn("getStatistics was called, but webcertUser was null!");
-      return ResponseEntity.ok(statsResponse);
+      return Response.ok(statsResponse).build();
     } else if (UserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
       LOG.debug(
           "getStatistics was called, but webcertUser origin is DJUPINTEGRATION - returning empty answer");
-      return ResponseEntity.ok(statsResponse);
+      return Response.ok(statsResponse).build();
     }
 
     List<String> allUnitIds = user.getIdsOfAllVardenheter();
@@ -95,7 +97,7 @@ public class StatModuleApiController extends AbstractApiController {
           "getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}",
           user.getHsaId(),
           user.getAsJson());
-      return ResponseEntity.ok(statsResponse);
+      return Response.ok(statsResponse).build();
     }
 
     Set<String> intygsTyper =
@@ -134,7 +136,7 @@ public class StatModuleApiController extends AbstractApiController {
 
     populateStatsResponseWithVardgivarStats(
         statsResponse, user.getVardgivare(), intygStatsMap, mergedMap);
-    return ResponseEntity.ok(statsResponse);
+    return Response.ok(statsResponse).build();
   }
 
   private long calcSumFromSelectedUnits(List<String> unitIdsList, Map<String, Long> statsMap) {

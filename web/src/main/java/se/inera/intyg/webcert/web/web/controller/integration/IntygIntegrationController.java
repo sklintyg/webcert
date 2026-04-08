@@ -19,36 +19,38 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import com.google.common.base.Strings;
+import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import java.net.URLDecoder;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
@@ -63,8 +65,8 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
  *
  * @author bensam
  */
-@Controller
-@RequestMapping({"/visa/intyg", "/v2/visa/intyg"})
+@Path("/intyg")
+@Api(value = "intyg (Djupintegration)", produces = MediaType.APPLICATION_JSON)
 // CHECKSTYLE:OFF ParameterNumber
 public class IntygIntegrationController extends BaseIntegrationController {
 
@@ -88,24 +90,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
   private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
   private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
-
-  private static final Set<String> FORM_ONLY_PARAMS =
-      Set.of(
-          PARAM_ENHET_ID,
-          PARAM_PATIENT_ALTERNATE_SSN,
-          PARAM_RESPONSIBLE_HOSP_NAME,
-          PARAM_PATIENT_FORNAMN,
-          PARAM_PATIENT_EFTERNAMN,
-          PARAM_PATIENT_MELLANNAMN,
-          PARAM_PATIENT_POSTADRESS,
-          PARAM_PATIENT_POSTNUMMER,
-          PARAM_PATIENT_POSTORT,
-          PARAM_COHERENT_JOURNALING,
-          PARAM_REFERENCE,
-          PARAM_INACTIVE_UNIT,
-          PARAM_PATIENT_DECEASED,
-          PARAM_FORNYA_OK,
-          PARAM_LAUNCH_ID);
 
   private static final String[] GRANTED_ROLES =
       new String[] {
@@ -142,35 +126,31 @@ public class IntygIntegrationController extends BaseIntegrationController {
    * @deprecated This method is will be removed when the last deep-integrated region has moved to
    *     the POST-version of this endpoint.
    */
-  @GetMapping("/{certId}")
+  @GET
+  @Path("{certId}")
   @PrometheusTimeMethod
   @Deprecated(since = "2019")
   @PerformanceLogging(
       eventAction = "intyg-integration-get-redirect-to-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<Void> getRedirectToIntyg(
-      HttpServletRequest request,
-      @PathVariable(PARAM_CERT_ID) String intygId,
-      @RequestParam(value = PARAM_ENHET_ID, required = false, defaultValue = "") String enhetId,
-      @RequestParam(value = PARAM_PATIENT_ALTERNATE_SSN, required = false, defaultValue = "")
-          String alternatePatientSSn,
-      @RequestParam(value = PARAM_RESPONSIBLE_HOSP_NAME, required = false, defaultValue = "")
-          String responsibleHospName,
-      @RequestParam(value = PARAM_PATIENT_FORNAMN, required = false) String fornamn,
-      @RequestParam(value = PARAM_PATIENT_EFTERNAMN, required = false) String efternamn,
-      @RequestParam(value = PARAM_PATIENT_MELLANNAMN, required = false) String mellannamn,
-      @RequestParam(value = PARAM_PATIENT_POSTADRESS, required = false) String postadress,
-      @RequestParam(value = PARAM_PATIENT_POSTNUMMER, required = false) String postnummer,
-      @RequestParam(value = PARAM_PATIENT_POSTORT, required = false) String postort,
-      @RequestParam(value = PARAM_COHERENT_JOURNALING, required = false, defaultValue = "false")
-          boolean coherentJournaling,
-      @RequestParam(value = PARAM_REFERENCE, required = false) String reference,
-      @RequestParam(value = PARAM_INACTIVE_UNIT, required = false, defaultValue = "false")
-          boolean inactiveUnit,
-      @RequestParam(value = PARAM_PATIENT_DECEASED, required = false, defaultValue = "false")
-          boolean deceased,
-      @RequestParam(value = PARAM_FORNYA_OK, required = false, defaultValue = "true")
-          boolean fornyaOk) {
+  public Response getRedirectToIntyg(
+      @Context UriInfo uriInfo,
+      @Context HttpServletRequest request,
+      @PathParam(PARAM_CERT_ID) String intygId,
+      @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
+      @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+      @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+      @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
+      @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+      @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+      @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
+      @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+      @QueryParam(PARAM_PATIENT_POSTORT) String postort,
+      @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+      @QueryParam(PARAM_REFERENCE) String reference,
+      @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+      @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+      @DefaultValue("true") @QueryParam(PARAM_FORNYA_OK) boolean fornyaOk) {
 
     final var params = Map.of(PARAM_CERT_ID, intygId);
     validateRequest(params);
@@ -194,40 +174,35 @@ public class IntygIntegrationController extends BaseIntegrationController {
     final var user = getWebCertUser(request.getSession());
     user.setParameters(integrationParameters);
 
-    return handleRedirectToIntyg(request, intygId, enhetId, user);
+    return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
   }
 
-  @PostMapping("/{certId}")
+  @POST
+  @Path("/{certId}")
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "intyg-integration-post-redirect-to-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<Void> postRedirectToIntyg(
-      HttpServletRequest request,
-      @PathVariable(PARAM_CERT_ID) String intygId,
-      @RequestParam(value = PARAM_ENHET_ID, required = false, defaultValue = "") String enhetId,
-      @RequestParam(value = PARAM_PATIENT_ALTERNATE_SSN, required = false, defaultValue = "")
-          String alternatePatientSSn,
-      @RequestParam(value = PARAM_RESPONSIBLE_HOSP_NAME, required = false, defaultValue = "")
-          String responsibleHospName,
-      @RequestParam(value = PARAM_PATIENT_FORNAMN, required = false) String fornamn,
-      @RequestParam(value = PARAM_PATIENT_EFTERNAMN, required = false) String efternamn,
-      @RequestParam(value = PARAM_PATIENT_MELLANNAMN, required = false) String mellannamn,
-      @RequestParam(value = PARAM_PATIENT_POSTADRESS, required = false) String postadress,
-      @RequestParam(value = PARAM_PATIENT_POSTNUMMER, required = false) String postnummer,
-      @RequestParam(value = PARAM_PATIENT_POSTORT, required = false) String postort,
-      @RequestParam(value = PARAM_COHERENT_JOURNALING, required = false, defaultValue = "false")
-          boolean coherentJournaling,
-      @RequestParam(value = PARAM_REFERENCE, required = false) String reference,
-      @RequestParam(value = PARAM_INACTIVE_UNIT, required = false, defaultValue = "false")
-          boolean inactiveUnit,
-      @RequestParam(value = PARAM_PATIENT_DECEASED, required = false, defaultValue = "false")
-          boolean deceased,
-      @RequestParam(value = PARAM_FORNYA_OK, required = false, defaultValue = "true")
-          boolean fornyaOk,
-      @RequestParam(value = PARAM_LAUNCH_ID, required = false, defaultValue = "") String launchId) {
-
-    rejectFormParamsInQueryString(request);
+  public Response postRedirectToIntyg(
+      @Context UriInfo uriInfo,
+      @Context HttpServletRequest request,
+      @PathParam(PARAM_CERT_ID) String intygId,
+      @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
+      @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+      @DefaultValue("") @FormParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+      @FormParam(PARAM_PATIENT_FORNAMN) String fornamn,
+      @FormParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+      @FormParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+      @FormParam(PARAM_PATIENT_POSTADRESS) String postadress,
+      @FormParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+      @FormParam(PARAM_PATIENT_POSTORT) String postort,
+      @DefaultValue("false") @FormParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+      @FormParam(PARAM_REFERENCE) String reference,
+      @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+      @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
+      @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk,
+      @DefaultValue("") @FormParam(PARAM_LAUNCH_ID) String launchId) {
 
     final var params = Map.of(PARAM_CERT_ID, intygId);
     validateRequest(params);
@@ -255,7 +230,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     cacheExistingLaunchIdForSession(
         user.getParameters().getLaunchId(), request.getSession().getId());
 
-    return handleRedirectToIntyg(request, intygId, enhetId, user);
+    return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
   }
 
   /**
@@ -275,15 +250,17 @@ public class IntygIntegrationController extends BaseIntegrationController {
    *
    * @param intygId The id of the certificate to view.
    */
-  @GetMapping("/{certId}/saved")
+  @GET
+  @Path("{certId}/saved")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "intyg-integration-get-redirect-to-certificate-saved",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<Void> getRedirectToIntyg(
-      HttpServletRequest request,
-      @PathVariable(PARAM_CERT_ID) String intygId,
-      @RequestParam(value = PARAM_ENHET_ID, required = false, defaultValue = "") String enhetId) {
+  public Response getRedirectToIntyg(
+      @Context HttpServletRequest request,
+      @Context UriInfo uriInfo,
+      @PathParam(PARAM_CERT_ID) String intygId,
+      @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
     final var user = getWebCertUserService().getUser();
     if (user.getParameters() == null) {
@@ -297,22 +274,24 @@ public class IntygIntegrationController extends BaseIntegrationController {
     cacheExistingLaunchIdForSession(
         user.getParameters().getLaunchId(), request.getSession().getId());
 
-    return handleRedirectToIntyg(request, intygId, enhetId, user);
+    return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
   }
 
   /**
    * Resumes launching the application and redirecting to provided certificate after user has
    * selected which unit (SelectedVardenhet) it chooses to be logged in to.
    */
-  @GetMapping("/{certId}/resume")
+  @GET
+  @Path("/{certId}/resume")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "intyg-integration-resume-redirect-to-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<Void> resumeRedirectToIntyg(
-      HttpServletRequest request,
-      @PathVariable(PARAM_CERT_ID) String intygId,
-      @RequestParam(value = PARAM_ENHET_ID, required = false, defaultValue = "") String enhetId) {
+  public Response resumeRedirectToIntyg(
+      @Context UriInfo uriInfo,
+      @Context HttpServletRequest request,
+      @PathParam(PARAM_CERT_ID) String intygId,
+      @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
     final var params =
         Map.of(
@@ -323,11 +302,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
     final var user = getWebCertUser(request.getSession());
     user.getParameters().getState().setRedirectToEnhetsval(false);
 
-    return handleRedirectToIntyg(request, intygId, enhetId, user);
+    return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
   }
 
-  private ResponseEntity<Void> handleRedirectToIntyg(
-      HttpServletRequest request, String intygId, String enhetId, WebCertUser user) {
+  private Response handleRedirectToIntyg(
+      UriInfo uriInfo, String intygId, String enhetId, WebCertUser user) {
     try {
       LOG.atDebug()
           .addKeyValue("event.certificate.id", intygId)
@@ -345,31 +324,31 @@ public class IntygIntegrationController extends BaseIntegrationController {
               "Redirecting to view intyg {} of type {}",
               intygId,
               prepareRedirectInfo.getIntygTyp());
-          return buildViewCertificateResponse(request, prepareRedirectInfo);
+          return buildViewCertificateResponse(uriInfo, prepareRedirectInfo);
         }
 
         LOG.info(
             "Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
         user.getParameters().getState().setRedirectToEnhetsval(true);
-        return buildSelectUnitResponse(request, intygId);
+        return buildSelectUnitResponse(uriInfo, intygId);
       }
 
       if (changeValdVardenhet(enhetId, user)) {
         final var prepareRedirectInfo = prepareRedirectToIntyg(intygId, user);
         LOG.debug(
             "Redirecting to view intyg {} of type {}", intygId, prepareRedirectInfo.getIntygTyp());
-        return buildViewCertificateResponse(request, prepareRedirectInfo);
+        return buildViewCertificateResponse(uriInfo, prepareRedirectInfo);
       }
 
       LOG.warn(
           "Validation failed for deep-integration request because user {} is not authorized for enhet {}",
           user.getHsaId(),
           enhetId);
-      return buildAuthorizedErrorResponse(request);
+      return buildAuthorizedErrorResponse(uriInfo);
     } catch (WebCertServiceException e) {
       if (e.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
         LOG.info(e.getMessage());
-        return buildNoContentErrorResponse(request);
+        return buildNoContentErrorResponse(uriInfo);
       } else {
         throw e;
       }
@@ -394,30 +373,29 @@ public class IntygIntegrationController extends BaseIntegrationController {
     return integrationService.prepareRedirectToIntyg(intygId, user);
   }
 
-  private ResponseEntity<Void> buildNoContentErrorResponse(HttpServletRequest request) {
-    return buildErrorResponse(request, "integration.nocontent");
+  private Response buildNoContentErrorResponse(UriInfo uriInfo) {
+    return buildErrorResponse(uriInfo, "integration.nocontent");
   }
 
-  private ResponseEntity<Void> buildAuthorizedErrorResponse(HttpServletRequest request) {
-    return buildErrorResponse(request, "login.medarbetaruppdrag");
+  private Response buildAuthorizedErrorResponse(UriInfo uriInfo) {
+    return buildErrorResponse(uriInfo, "login.medarbetaruppdrag");
   }
 
-  private ResponseEntity<Void> buildErrorResponse(HttpServletRequest request, String errorReason) {
-    final var location = reactUriFactory.uriForErrorResponse(request, errorReason);
-    return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
+  private Response buildErrorResponse(UriInfo uriInfo, String errorReason) {
+    final var location = reactUriFactory.uriForErrorResponse(uriInfo, errorReason);
+    return Response.seeOther(location).build();
   }
 
-  private ResponseEntity<Void> buildSelectUnitResponse(
-      HttpServletRequest request, String certificateId) {
-    final var location = reactUriFactory.uriForUnitSelection(request, certificateId);
-    return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
+  private Response buildSelectUnitResponse(UriInfo uriInfo, String certificateId) {
+    final var location = reactUriFactory.uriForUnitSelection(uriInfo, certificateId);
+    return Response.seeOther(location).build();
   }
 
-  private ResponseEntity<Void> buildViewCertificateResponse(
-      HttpServletRequest request, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+  private Response buildViewCertificateResponse(
+      UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
     final var location =
-        reactUriFactory.uriForCertificate(request, prepareRedirectToIntyg.getIntygId());
-    return ResponseEntity.status(HttpStatus.SEE_OTHER).location(location).build();
+        reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
+    return Response.seeOther(location).build();
   }
 
   private WebCertUser getWebCertUser(HttpSession session) {
@@ -463,33 +441,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
   private void validateRequest(Map<String, String> pathParameters) {
     super.validateParameters(pathParameters);
     super.validateAuthorities();
-  }
-
-  private static void rejectFormParamsInQueryString(HttpServletRequest request) {
-    final var queryString = request.getQueryString();
-    if (queryString == null || queryString.isEmpty()) {
-      return;
-    }
-
-    final var queryParamNames =
-        Arrays.stream(queryString.split("&"))
-            .map(
-                pair -> {
-                  final var eq = pair.indexOf('=');
-                  return URLDecoder.decode(
-                      eq >= 0 ? pair.substring(0, eq) : pair, StandardCharsets.UTF_8);
-                })
-            .collect(Collectors.toSet());
-
-    queryParamNames.retainAll(FORM_ONLY_PARAMS);
-
-    if (!queryParamNames.isEmpty()) {
-      LOG.warn("Rejected POST with integration parameters in query string: {}", queryParamNames);
-      throw new WebCertServiceException(
-          WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-          "Integration parameters must be provided in the request body, not in the query string: "
-              + queryParamNames);
-    }
   }
 
   private boolean launchIdShouldBeAdded(String launchId) {

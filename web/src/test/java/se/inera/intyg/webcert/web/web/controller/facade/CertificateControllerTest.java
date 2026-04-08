@@ -196,7 +196,7 @@ class CertificateControllerTest {
     @Test
     void shallIncludeResourceLinks() {
       final var response =
-          (CertificateResponseDTO) certificateController.getCertificate(CERTIFICATE_ID).getBody();
+          (CertificateResponseDTO) certificateController.getCertificate(CERTIFICATE_ID).getEntity();
       assertEquals(resourceLinks, response.getCertificate().getLinks());
     }
   }
@@ -270,7 +270,7 @@ class CertificateControllerTest {
     void shallReturnValidationErrors() {
       final var response =
           (ValidateCertificateResponseDTO)
-              certificateController.validateCertificate(CERTIFICATE_ID, certificate).getBody();
+              certificateController.validateCertificate(CERTIFICATE_ID, certificate).getEntity();
       assertEquals(validationErrors, response.getValidationErrors());
     }
   }
@@ -297,10 +297,11 @@ class CertificateControllerTest {
     @Test
     void shallIncludeResourceLinks() {
       when(httpServletRequest.getRemoteAddr()).thenReturn("userIpAddress");
-      final var response =
-          certificateController.signCertificate(CERTIFICATE_ID, certificate, httpServletRequest);
-      final var entity = (CertificateResponseDTO) response.getBody();
-      assertEquals(resourceLinks, entity.getCertificate().getLinks());
+      try (final var response =
+          certificateController.signCertificate(CERTIFICATE_ID, certificate, httpServletRequest)) {
+        final var entity = (CertificateResponseDTO) response.getEntity();
+        assertEquals(resourceLinks, entity.getCertificate().getLinks());
+      }
     }
   }
 
@@ -351,7 +352,7 @@ class CertificateControllerTest {
           (CertificateResponseDTO)
               certificateController
                   .revokeCertificate(CERTIFICATE_ID, revokeCertificateRequestDTO)
-                  .getBody();
+                  .getEntity();
 
       assertEquals(resourceLinks, response.getCertificate().getLinks());
     }
@@ -381,7 +382,7 @@ class CertificateControllerTest {
           (ReplaceCertificateResponseDTO)
               certificateController
                   .replaceCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
-                  .getBody();
+                  .getEntity();
 
       assertEquals(expectedId, response.getCertificateId());
     }
@@ -405,7 +406,7 @@ class CertificateControllerTest {
 
       final var response =
           (RenewCertificateResponseDTO)
-              certificateController.renewCertificate(CERTIFICATE_ID).getBody();
+              certificateController.renewCertificate(CERTIFICATE_ID).getEntity();
 
       assertEquals(expectedId, response.getCertificateId());
     }
@@ -440,7 +441,7 @@ class CertificateControllerTest {
           (CertificateResponseDTO)
               certificateController
                   .complementCertificate(CERTIFICATE_ID, complementCertificateRequest)
-                  .getBody();
+                  .getEntity();
 
       assertNotNull(response.getCertificate());
     }
@@ -451,7 +452,7 @@ class CertificateControllerTest {
           (CertificateResponseDTO)
               certificateController
                   .complementCertificate(CERTIFICATE_ID, complementCertificateRequest)
-                  .getBody();
+                  .getEntity();
 
       assertEquals(resourceLinks, response.getCertificate().getLinks());
     }
@@ -486,7 +487,7 @@ class CertificateControllerTest {
           (CertificateResponseDTO)
               certificateController
                   .answerComplementCertificate(CERTIFICATE_ID, complementCertificateRequest)
-                  .getBody();
+                  .getEntity();
 
       assertNotNull(response.getCertificate());
     }
@@ -497,7 +498,7 @@ class CertificateControllerTest {
           (CertificateResponseDTO)
               certificateController
                   .answerComplementCertificate(CERTIFICATE_ID, complementCertificateRequest)
-                  .getBody();
+                  .getEntity();
 
       assertEquals(resourceLinks, response.getCertificate().getLinks());
     }
@@ -527,7 +528,7 @@ class CertificateControllerTest {
           (CopyCertificateResponseDTO)
               certificateController
                   .copyCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
-                  .getBody();
+                  .getEntity();
 
       assertEquals(expectedId, response.getCertificateId());
     }
@@ -546,7 +547,7 @@ class CertificateControllerTest {
 
       final var response =
           (CreateCertificateFromTemplateResponseDTO)
-              certificateController.createCertificateFromTemplate(CERTIFICATE_ID).getBody();
+              certificateController.createCertificateFromTemplate(CERTIFICATE_ID).getEntity();
 
       assertEquals(expectedId, response.getCertificateId());
     }
@@ -563,7 +564,7 @@ class CertificateControllerTest {
 
       final var response =
           (CreateCertificateFromCandidateResponseDTO)
-              certificateController.updateCertificateFromCandidate(CERTIFICATE_ID).getBody();
+              certificateController.updateCertificateFromCandidate(CERTIFICATE_ID).getEntity();
 
       assertEquals(expectedId, response.getCertificateId());
     }
@@ -597,7 +598,7 @@ class CertificateControllerTest {
           (CertificateResponseDTO)
               certificateController
                   .forwardCertificate(CERTIFICATE_ID, forwardCertificateRequestDTO)
-                  .getBody();
+                  .getEntity();
 
       assertEquals(resourceLinks, response.getCertificate().getLinks());
     }
@@ -623,7 +624,7 @@ class CertificateControllerTest {
     @Test
     void shallIncludeResourceLinks() {
       final var response =
-          (CertificateResponseDTO) certificateController.readyForSign(CERTIFICATE_ID).getBody();
+          (CertificateResponseDTO) certificateController.readyForSign(CERTIFICATE_ID).getEntity();
 
       assertEquals(resourceLinks, response.getCertificate().getLinks());
     }
@@ -648,7 +649,7 @@ class CertificateControllerTest {
     void shallReturnCertificateEvents() {
       final var response =
           (CertificateEventResponseDTO)
-              certificateController.getCertificateEvents(CERTIFICATE_ID).getBody();
+              certificateController.getCertificateEvents(CERTIFICATE_ID).getEntity();
       assertEquals(certificateEvents, response.getCertificateEvents());
     }
   }
@@ -666,7 +667,7 @@ class CertificateControllerTest {
     void shallSendCertificate() {
       var result =
           (SendCertificateResponseDTO)
-              certificateController.sendCertificate(CERTIFICATE_ID).getBody();
+              certificateController.sendCertificate(CERTIFICATE_ID).getEntity();
       verify(sendCertificateFacadeService).sendCertificate(CERTIFICATE_ID);
       assertEquals(IntygServiceResult.OK.toString(), result.getResult());
       assertEquals(CERTIFICATE_ID, result.getCertificateId());
@@ -684,7 +685,7 @@ class CertificateControllerTest {
           .get(CERTIFICATE_ID);
       final var actualResponse =
           (GetRelatedCertificateDTO)
-              certificateController.getRelatedCertificate(CERTIFICATE_ID).getBody();
+              certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
       assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
     }
 
@@ -696,7 +697,7 @@ class CertificateControllerTest {
           .get(CERTIFICATE_ID);
       final var actualResponse =
           (GetRelatedCertificateDTO)
-              certificateController.getRelatedCertificate(CERTIFICATE_ID).getBody();
+              certificateController.getRelatedCertificate(CERTIFICATE_ID).getEntity();
       assertEquals(expectedRelatedCertificateId, actualResponse.getCertificateId());
     }
   }
@@ -712,7 +713,7 @@ class CertificateControllerTest {
           .get(CERTIFICATE_ID);
       final var actualDto =
           (GetCandidateMessageForCertificateDTO)
-              certificateController.getCandidateMessageForCertificate(CERTIFICATE_ID).getBody();
+              certificateController.getCandidateMessageForCertificate(CERTIFICATE_ID).getEntity();
       assertEquals(expectedDto.getMessage(), actualDto.getMessage());
     }
 
@@ -724,7 +725,7 @@ class CertificateControllerTest {
           .get(CERTIFICATE_ID);
       final var actualDto =
           (GetCandidateMessageForCertificateDTO)
-              certificateController.getCandidateMessageForCertificate(CERTIFICATE_ID).getBody();
+              certificateController.getCandidateMessageForCertificate(CERTIFICATE_ID).getEntity();
       assertEquals(expectedDto.getTitle(), actualDto.getTitle());
     }
   }
@@ -743,7 +744,7 @@ class CertificateControllerTest {
               certificateController
                   .createCertificate(
                       new CreateCertificateRequestDTO("certificateType", "patientId"))
-                  .getBody();
+                  .getEntity();
       assertEquals(expectedDto, actualDto);
     }
   }

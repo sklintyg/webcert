@@ -42,7 +42,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;

@@ -26,7 +26,6 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
@@ -46,7 +45,6 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 /**
  * @author andreaskaltenbach
  */
-@Component
 @SchemaValidation
 public class ReceiveQuestionResponderImpl
     implements ReceiveMedicalCertificateQuestionResponderInterface {

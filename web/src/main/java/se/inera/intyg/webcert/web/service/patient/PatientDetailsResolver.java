@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.service.patient;
 import java.util.List;
 import java.util.Map;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.infra.pu.integration.api.model.PersonSvar;
 
 /** Created by eriklupander on 2017-08-14. */
 public interface PatientDetailsResolver {

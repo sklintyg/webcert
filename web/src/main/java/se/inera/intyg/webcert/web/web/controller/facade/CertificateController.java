@@ -19,23 +19,27 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
@@ -69,7 +73,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFro
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.GetCandidateMessageForCertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.GetRelatedCertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.NewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.RenewCertificateResponseDTO;
@@ -79,8 +82,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveCertificateRespo
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SendCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateResponseDTO;
 
-@RestController
-@RequestMapping("/api/certificate")
+@Path("/certificate")
 public class CertificateController {
 
   private static final Logger LOG = LoggerFactory.getLogger(CertificateController.class);
@@ -145,37 +147,41 @@ public class CertificateController {
   private GetCandidateMesssageForCertificateFacadeService
       getCandidateMesssageForCertificateFacadeService;
 
-  @GetMapping("/{certificateId}")
+  @GET
+  @Path("/{certificateId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-get-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<CertificateResponseDTO> getCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response getCertificate(@PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Getting certificate with id: '{}'", certificateId);
     }
     final var certificate = getCertificateFacadeService.getCertificate(certificateId, true, true);
     final var resourceLinks = getCertificateResourceLinks.get(certificate);
     final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
-    return ResponseEntity.ok(CertificateResponseDTO.create(certificateDTO));
+    return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
   }
 
-  @PutMapping("/{certificateId}")
+  @PUT
+  @Path("/{certificateId}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-save-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-  public ResponseEntity<SaveCertificateResponseDTO> saveCertificate(
-      @PathVariable("certificateId") String certificateId,
+  public Response saveCertificate(
+      @PathParam("certificateId") String certificateId,
       @RequestBody @NotNull Certificate certificate,
-      HttpServletRequest request) {
+      @Context HttpServletRequest request) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Saving certificate with id: '{}'", certificate.getMetadata().getId());
     }
     final var pdlLog = isFirstTimeSavedDuringSession(certificateId, request);
     final var version = saveCertificateFacadeService.saveCertificate(certificate, pdlLog);
-    return ResponseEntity.ok(SaveCertificateResponseDTO.create(version));
+    return Response.ok(SaveCertificateResponseDTO.create(version)).build();
   }
 
   private boolean isFirstTimeSavedDuringSession(String certificateId, HttpServletRequest request) {
@@ -185,31 +191,35 @@ public class CertificateController {
     return !certificateId.equals(lastSavedDraft);
   }
 
-  @PostMapping("/{certificateId}/validate")
+  @POST
+  @Path("/{certificateId}/validate")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-validate-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<ValidateCertificateResponseDTO> validateCertificate(
-      @PathVariable("certificateId") String certificateId,
+  public Response validateCertificate(
+      @PathParam("certificateId") String certificateId,
       @RequestBody @NotNull Certificate certificate) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Validating certificate with id: '{}'", certificateId);
     }
 
     final var validationErrors = validationCertificateFacadeService.validate(certificate);
-    return ResponseEntity.ok(ValidateCertificateResponseDTO.create(validationErrors));
+    return Response.ok(ValidateCertificateResponseDTO.create(validationErrors)).build();
   }
 
-  @PostMapping("/{certificateId}/sign")
+  @POST
+  @Path("/{certificateId}/sign")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-sign-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<CertificateResponseDTO> signCertificate(
-      @PathVariable("certificateId") String certificateId,
+  public Response signCertificate(
+      @PathParam("certificateId") String certificateId,
       @RequestBody @NotNull Certificate certificate,
-      HttpServletRequest request) {
+      @Context HttpServletRequest request) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Signing certificate with id: '{}'", certificateId);
     }
@@ -217,31 +227,35 @@ public class CertificateController {
         signCertificateFacadeService.signCertificate(certificate, request.getRemoteAddr());
     final var resourceLinks = getCertificateResourceLinks.get(signedCertificate);
     final var certificateDTO = CertificateDTO.create(signedCertificate, resourceLinks);
-    return ResponseEntity.ok(CertificateResponseDTO.create(certificateDTO));
+    return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
   }
 
-  @DeleteMapping("/{certificateId}/{version}")
+  @DELETE
+  @Path("/{certificateId}/{version}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-delete-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-  public ResponseEntity<Void> deleteCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId,
-      @PathVariable("version") @NotNull long version) {
+  public Response deleteCertificate(
+      @PathParam("certificateId") @NotNull String certificateId,
+      @PathParam("version") @NotNull long version) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Deleting certificate with id: '{}' and version: '{}'", certificateId, version);
     }
     deleteCertificateFacadeService.deleteCertificate(certificateId, version);
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
-  @PostMapping("/{certificateId}/revoke")
+  @POST
+  @Path("/{certificateId}/revoke")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-revoke-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<CertificateResponseDTO> revokeCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId,
+  public Response revokeCertificate(
+      @PathParam("certificateId") @NotNull String certificateId,
       @RequestBody @NotNull RevokeCertificateRequestDTO revokeCertificate) {
     if (LOG.isDebugEnabled()) {
       LOG.debug(
@@ -256,74 +270,83 @@ public class CertificateController {
 
     final var resourceLinks = getCertificateResourceLinks.get(certificate);
     final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
-    return ResponseEntity.ok(CertificateResponseDTO.create(certificateDTO));
+    return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
   }
 
-  @PostMapping("/{certificateId}/replace")
+  @POST
+  @Path("/{certificateId}/replace")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-replace-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-  public ResponseEntity<ReplaceCertificateResponseDTO> replaceCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId,
-      @RequestBody(required = false) @NotNull NewCertificateRequestDTO newCertificateRequestDTO) {
+  public Response replaceCertificate(
+      @PathParam("certificateId") @NotNull String certificateId,
+      @RequestBody @NotNull NewCertificateRequestDTO newCertificateRequestDTO) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Replacing certificate with id: '{}'", certificateId);
     }
     final var newCertificateId = replaceCertificateFacadeService.replaceCertificate(certificateId);
-    return ResponseEntity.ok(ReplaceCertificateResponseDTO.create(newCertificateId));
+    return Response.ok(ReplaceCertificateResponseDTO.create(newCertificateId)).build();
   }
 
-  @PostMapping("/{certificateId}/renew")
+  @POST
+  @Path("/{certificateId}/renew")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-renew-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-  public ResponseEntity<RenewCertificateResponseDTO> renewCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response renewCertificate(@PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Renewing certificate with id: '{}'", certificateId);
     }
     final var newCertificateId = renewCertificateFacadeService.renewCertificate(certificateId);
-    return ResponseEntity.ok(RenewCertificateResponseDTO.create(newCertificateId));
+    return Response.ok(RenewCertificateResponseDTO.create(newCertificateId)).build();
   }
 
-  @PostMapping("/{certificateId}/template")
+  @POST
+  @Path("/{certificateId}/template")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-create-certificate-from-template",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-  public ResponseEntity<CreateCertificateFromTemplateResponseDTO> createCertificateFromTemplate(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response createCertificateFromTemplate(
+      @PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Creating draft from template with id: '{}'", certificateId);
     }
     final var newCertificateId =
         createCertificateFromTemplateFacadeService.createCertificateFromTemplate(certificateId);
-    return ResponseEntity.ok(CreateCertificateFromTemplateResponseDTO.create(newCertificateId));
+    return Response.ok(CreateCertificateFromTemplateResponseDTO.create(newCertificateId)).build();
   }
 
-  @PostMapping("/{certificateId}/candidate")
+  @POST
+  @Path("/{certificateId}/candidate")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "update-certificate-from-candidate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-  public ResponseEntity<CreateCertificateFromCandidateResponseDTO> updateCertificateFromCandidate(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response updateCertificateFromCandidate(
+      @PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Filling draft of id: '{}' with candidate", certificateId);
     }
     final var newCertificateId = updateCertificateFromCandidateFacadeService.update(certificateId);
-    return ResponseEntity.ok(CreateCertificateFromCandidateResponseDTO.create(newCertificateId));
+    return Response.ok(CreateCertificateFromCandidateResponseDTO.create(newCertificateId)).build();
   }
 
-  @PostMapping("/{certificateId}/complement")
+  @POST
+  @Path("/{certificateId}/complement")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-complement-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<CertificateResponseDTO> complementCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId,
+  public Response complementCertificate(
+      @PathParam("certificateId") @NotNull String certificateId,
       @RequestBody @NotNull ComplementCertificateRequestDTO complementCertificateRequest) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Complementing certificate with id: '{}'", certificateId);
@@ -334,16 +357,18 @@ public class CertificateController {
 
     final var resourceLinks = getCertificateResourceLinks.get(complementCertificate);
     final var certificateDTO = CertificateDTO.create(complementCertificate, resourceLinks);
-    return ResponseEntity.ok(CertificateResponseDTO.create(certificateDTO));
+    return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
   }
 
-  @PostMapping("/{certificateId}/answercomplement")
+  @POST
+  @Path("/{certificateId}/answercomplement")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-answer-complement-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<CertificateResponseDTO> answerComplementCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId,
+  public Response answerComplementCertificate(
+      @PathParam("certificateId") @NotNull String certificateId,
       @RequestBody @NotNull ComplementCertificateRequestDTO complementCertificateRequest) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Answer complement certificate with id: '{}'", certificateId);
@@ -354,31 +379,35 @@ public class CertificateController {
 
     final var resourceLinks = getCertificateResourceLinks.get(answeredComplementCertificate);
     final var certificateDTO = CertificateDTO.create(answeredComplementCertificate, resourceLinks);
-    return ResponseEntity.ok(CertificateResponseDTO.create(certificateDTO));
+    return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
   }
 
-  @PostMapping("/{certificateId}/copy")
+  @POST
+  @Path("/{certificateId}/copy")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-copy-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-  public ResponseEntity<CopyCertificateResponseDTO> copyCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId,
+  public Response copyCertificate(
+      @PathParam("certificateId") @NotNull String certificateId,
       @RequestBody @NotNull NewCertificateRequestDTO copyCertificate) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Copy certificate with id: '{}'", certificateId);
     }
     final var newCertificateId = copyCertificateFacadeService.copyCertificate(certificateId);
-    return ResponseEntity.ok(CopyCertificateResponseDTO.create(newCertificateId));
+    return Response.ok(CopyCertificateResponseDTO.create(newCertificateId)).build();
   }
 
-  @PostMapping("/{certificateId}/forward")
+  @POST
+  @Path("/{certificateId}/forward")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-forward-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<CertificateResponseDTO> forwardCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId,
+  public Response forwardCertificate(
+      @PathParam("certificateId") @NotNull String certificateId,
       @RequestBody @NotNull ForwardCertificateRequestDTO forwardCertificate) {
     if (LOG.isDebugEnabled()) {
       LOG.debug(
@@ -392,16 +421,17 @@ public class CertificateController {
 
     final var resourceLinks = getCertificateResourceLinks.get(certificate);
     final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
-    return ResponseEntity.ok(CertificateResponseDTO.create(certificateDTO));
+    return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
   }
 
-  @PostMapping("/{certificateId}/readyforsign")
+  @POST
+  @Path("/{certificateId}/readyforsign")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-ready-for-sign",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<CertificateResponseDTO> readyForSign(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response readyForSign(@PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Ready for sign certificate with id: '{}' ", certificateId);
     }
@@ -409,48 +439,52 @@ public class CertificateController {
 
     final var resourceLinks = getCertificateResourceLinks.get(certificate);
     final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
-    return ResponseEntity.ok(CertificateResponseDTO.create(certificateDTO));
+    return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
   }
 
-  @PostMapping("/{certificateId}/send")
+  @POST
+  @Path("/{certificateId}/send")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-send-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<SendCertificateResponseDTO> sendCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response sendCertificate(@PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Sending certificate with id: '{}'", certificateId);
     }
     final var result = sendCertificateFacadeService.sendCertificate(certificateId);
-    return ResponseEntity.ok(SendCertificateResponseDTO.create(certificateId, result));
+    return Response.ok(SendCertificateResponseDTO.create(certificateId, result)).build();
   }
 
-  @GetMapping("/{certificateId}/events")
+  @GET
+  @Path("/{certificateId}/events")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-get-certificate-events",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<CertificateEventResponseDTO> getCertificateEvents(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response getCertificateEvents(@PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Retrieving events for certificate with id: '{}'", certificateId);
     }
     try {
       final var certificateEvents =
           getCertificateEventsFacadeService.getCertificateEvents(certificateId);
-      return ResponseEntity.ok(CertificateEventResponseDTO.create(certificateEvents));
+      return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
     } catch (Exception e) {
-      return ResponseEntity.ok(CertificateEventResponseDTO.create(new CertificateEventDTO[0]));
+      return Response.ok(CertificateEventResponseDTO.create(new CertificateEventDTO[0])).build();
     }
   }
 
-  @PostMapping
+  @POST
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-create-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-  public ResponseEntity<CreateCertificateResponseDTO> createCertificate(
+  public Response createCertificate(
       @RequestBody @NotNull CreateCertificateRequestDTO createCertificateRequest) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Creating certificate with type: '{}'", createCertificateRequest.certificateType());
@@ -459,36 +493,39 @@ public class CertificateController {
       final var certificateId =
           createCertificateFacadeService.create(
               createCertificateRequest.certificateType(), createCertificateRequest.patientId());
-      return ResponseEntity.ok(new CreateCertificateResponseDTO(certificateId));
+      return Response.ok().entity(new CreateCertificateResponseDTO(certificateId)).build();
     } catch (CreateCertificateException e) {
-      return ResponseEntity.badRequest().body(null);
+      return Response.status(Status.BAD_REQUEST).build();
     }
   }
 
-  @GetMapping("/{certificateId}/related")
+  @GET
+  @Path("/{certificateId}/related")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-get-related-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<GetRelatedCertificateDTO> getRelatedCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response getRelatedCertificate(@PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Get related certificate for certificateId: '{}'", certificateId);
     }
     final var relatedCertificateId = getRelatedCertificateFacadeService.get(certificateId);
-    return ResponseEntity.ok(GetRelatedCertificateDTO.create(relatedCertificateId));
+    return Response.ok(GetRelatedCertificateDTO.create(relatedCertificateId)).build();
   }
 
-  @GetMapping("/{certificateId}/candidatemessage")
+  @GET
+  @Path("/{certificateId}/candidatemessage")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-get-candidate-message-for-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<GetCandidateMessageForCertificateDTO> getCandidateMessageForCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId) {
+  public Response getCandidateMessageForCertificate(
+      @PathParam("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Get candidate message for certificateId: '{}'", certificateId);
     }
-    return ResponseEntity.ok(getCandidateMesssageForCertificateFacadeService.get(certificateId));
+    return Response.ok(getCandidateMesssageForCertificateFacadeService.get(certificateId)).build();
   }
 }

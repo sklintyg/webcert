@@ -61,14 +61,15 @@ class CertificateTypeControllerTest {
       doReturn(types).when(certificateTypeInfoAggregator).get(any(Personnummer.class));
 
       final var response =
-          (List<CertificateTypeInfoDTO>) controller.getCertificateTypes("19121212-1212").getBody();
+          (List<CertificateTypeInfoDTO>)
+              controller.getCertificateTypes("19121212-1212").getEntity();
       assertTrue(response.contains(type));
     }
 
     @Test
     void shouldReturnBadRequestOnException() {
       final var response = controller.getCertificateTypes("19121212");
-      assertEquals(400, response.getStatusCode().value());
+      assertEquals(400, response.getStatus());
     }
 
     @Test
@@ -78,7 +79,7 @@ class CertificateTypeControllerTest {
       doReturn(types).when(certificateTypeInfoAggregator).get(any(Personnummer.class));
 
       final var response = controller.getCertificateTypes("19121212-1212");
-      assertEquals(200, response.getStatusCode().value());
+      assertEquals(200, response.getStatus());
     }
   }
 
@@ -100,9 +101,9 @@ class CertificateTypeControllerTest {
           .get(eq(certificateType), any(Personnummer.class));
 
       final var response = controller.getCertificateTypeInfoModal(certificateType, patientId);
-      final var result = (CertificateTypeInfoModalDTO) response.getBody();
+      final var result = (CertificateTypeInfoModalDTO) response.getEntity();
 
-      assertEquals(200, response.getStatusCode().value());
+      assertEquals(200, response.getStatus());
       assertNotNull(result);
       assertEquals(modal, result);
     }
@@ -118,8 +119,8 @@ class CertificateTypeControllerTest {
 
       final var response = controller.getCertificateTypeInfoModal(certificateType, patientId);
 
-      assertEquals(204, response.getStatusCode().value());
-      assertNull(response.getBody());
+      assertEquals(204, response.getStatus());
+      assertNull(response.getEntity());
     }
 
     @Test
@@ -130,7 +131,7 @@ class CertificateTypeControllerTest {
       final var response =
           controller.getCertificateTypeInfoModal(certificateType, invalidPatientId);
 
-      assertEquals(400, response.getStatusCode().value());
+      assertEquals(400, response.getStatus());
     }
 
     @Test

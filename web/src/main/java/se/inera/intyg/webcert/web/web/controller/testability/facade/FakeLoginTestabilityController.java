@@ -20,37 +20,33 @@ package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.web.service.testability.FakeLoginService;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLoginDTO;
 
 @RequiredArgsConstructor
 @Slf4j
-@RestController
-@RequestMapping("/testability")
-@Profile({"dev", "testability-api"})
 public class FakeLoginTestabilityController {
 
   private final FakeLoginService fakeLoginService;
   private final ObjectMapper objectMapper;
 
-  @PostMapping("/fake")
-  public ResponseEntity<Void> login(
-      HttpServletRequest request, @RequestBody FakeLoginDTO fakeLoginDTO) {
+  @POST
+  @Path(value = "/fake")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public void login(@Context HttpServletRequest request, FakeLoginDTO fakeLoginDTO) {
     fakeLoginService.login(fakeLoginDTO, request);
-    return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/logout")
-  public ResponseEntity<Void> logout(HttpServletRequest request) {
+  @POST
+  @Path("/logout")
+  public void logout(@Context HttpServletRequest request) {
     fakeLoginService.logout(request.getSession(false));
-    return ResponseEntity.noContent().build();
   }
 }

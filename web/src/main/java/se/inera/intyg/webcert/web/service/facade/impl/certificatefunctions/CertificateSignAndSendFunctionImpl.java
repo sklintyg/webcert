@@ -33,8 +33,8 @@ import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
-import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 

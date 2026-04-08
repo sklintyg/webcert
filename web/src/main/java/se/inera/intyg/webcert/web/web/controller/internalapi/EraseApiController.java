@@ -18,20 +18,19 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.erase.EraseService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
-@RestController
-@RequestMapping("/internalapi/v1/certificates")
+@Path("/v1/certificates")
 public class EraseApiController extends AbstractApiController {
 
   @Value("${erase.certificates.page.size:1000}")
@@ -39,12 +38,13 @@ public class EraseApiController extends AbstractApiController {
 
   @Autowired private EraseService eraseService;
 
-  @DeleteMapping("/{id}")
+  @DELETE
+  @Path("/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
   @PerformanceLogging(
       eventAction = "erase-erase-data-for-care-provider",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
-  public ResponseEntity<Void> eraseDataForCareProvider(@PathVariable("id") String careProviderId) {
+  public void eraseDataForCareProvider(@PathParam("id") String careProviderId) {
     eraseService.eraseCertificates(careProviderId, eraseCertificatesPageSize);
-    return ResponseEntity.noContent().build();
   }
 }

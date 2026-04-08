@@ -23,9 +23,9 @@ import java.util.Objects;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
-import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent;
-import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent.Source;
-import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEventType;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
 
 @Component
 public class CertificateRelationToIntygEventInfoConverter {

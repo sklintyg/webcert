@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
-import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificateInternalServiceFromWC;
 

@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 
 import java.util.Collections;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;

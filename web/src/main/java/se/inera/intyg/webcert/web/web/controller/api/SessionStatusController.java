@@ -21,13 +21,15 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.ResponseEntity;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.security.filter.SessionTimeoutFilter;
+import se.inera.intyg.infra.security.filter.SessionTimeoutFilter;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.api.dto.GetSessionStatusResponse;
@@ -45,12 +47,11 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.GetSessionStatusRespons
  * @see org.springframework.security.web.context.SecurityContextRepository SecurityContextRepository
  * @see HttpSessionSecurityContextRepository HttpSessionSecurityContextRepository
  */
-@RestController
-@RequestMapping("/api/session-auth-check")
+@Path(SessionStatusController.SESSION_STATUS_REQUEST_MAPPING)
 @Api(
     value = "session-auth-check",
     description = "REST API för sessionen",
-    produces = "application/json")
+    produces = MediaType.APPLICATION_JSON)
 public class SessionStatusController {
 
   public static final String SESSION_STATUS_REQUEST_MAPPING = "/session-auth-check";
@@ -58,20 +59,24 @@ public class SessionStatusController {
   public static final String SESSION_STATUS_EXTEND = "/extend";
   protected static final String UTF_8_CHARSET = ";charset=utf-8";
 
-  @GetMapping(SESSION_STATUS_PING)
+  @GET
+  @Path(SESSION_STATUS_PING)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PerformanceLogging(
       eventAction = "session-get-session-status",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<GetSessionStatusResponse> getSessionStatus(HttpServletRequest request) {
-    return ResponseEntity.ok(createStatusResponse(request));
+  public Response getSessionStatus(@Context HttpServletRequest request) {
+    return Response.ok().entity(createStatusResponse(request)).build();
   }
 
-  @GetMapping(SESSION_STATUS_EXTEND)
+  @GET
+  @Path(SESSION_STATUS_EXTEND)
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PerformanceLogging(
       eventAction = "session-get-extend-session",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<GetSessionStatusResponse> getExtendSession(HttpServletRequest request) {
-    return ResponseEntity.ok(createStatusResponse(request));
+  public Response getExtendSession(@Context HttpServletRequest request) {
+    return Response.ok().entity(createStatusResponse(request)).build();
   }
 
   private GetSessionStatusResponse createStatusResponse(HttpServletRequest request) {

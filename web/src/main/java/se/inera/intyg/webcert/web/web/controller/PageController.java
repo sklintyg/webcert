@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller;
 
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Arrays;
 import org.slf4j.Logger;
@@ -30,9 +31,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.util.UriComponentsBuilder;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -78,12 +78,10 @@ public class PageController {
     if (!user.changeValdVardenhet(enhetHsaId)) {
       HttpHeaders httpHeaders = new HttpHeaders();
       URI uri =
-          UriComponentsBuilder.fromPath("/error")
+          UriBuilder.fromPath("/error")
               .queryParam("reason", "enhet.auth.exception")
               .queryParam("enhetHsaId", enhetHsaId)
-              .encode()
-              .build()
-              .toUri();
+              .build();
       httpHeaders.setLocation(uri);
       return new ResponseEntity<>(httpHeaders, HttpStatus.FOUND);
     }

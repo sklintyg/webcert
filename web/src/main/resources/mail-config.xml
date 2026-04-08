@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2025 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:task="http://www.springframework.org/schema/task"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+  <!-- Task executor for mail notification service -->
+  <task:annotation-driven scheduler="scheduler"
+    executor="threadPoolTaskExecutor" />
+    
+  <task:scheduler id="scheduler" pool-size="1" />
+  
+  <task:executor id="threadPoolTaskExecutor" pool-size="10"
+    queue-capacity="100" rejection-policy="CALLER_RUNS" />
+
+  <!-- Mail configuration -->
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="${mail.host}" />
+    <property name="protocol" value="${mail.protocol}" />
+    <property name="username" value="${mail.username}" />
+    <property name="password" value="${mail.password}" />
+    <property name="defaultEncoding" value="${mail.defaultEncoding}" />
+    <property name="javaMailProperties">
+      <props>
+        <prop key="mail.smtps.auth">${mail.smtps.auth}</prop>
+        <prop key="mail.smtps.starttls.enable">${mail.smtps.starttls.enable}</prop>
+        <prop key="mail.smtps.debug">${mail.smtps.debug}</prop>
+      </props>
+    </property>
+  </bean>
+
+</beans>

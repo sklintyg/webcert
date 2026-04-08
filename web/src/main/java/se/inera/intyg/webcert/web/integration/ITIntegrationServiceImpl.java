@@ -30,10 +30,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.webcert.infra.certificate.dto.CertificateListRequest;
-import se.inera.intyg.webcert.infra.certificate.dto.CertificateListResponse;
-import se.inera.intyg.webcert.infra.intyginfo.dto.ItIntygInfo;
-import se.inera.intyg.webcert.infra.message.dto.MessageFromIT;
+import se.inera.intyg.infra.certificate.dto.CertificateListRequest;
+import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
+import se.inera.intyg.infra.intyginfo.dto.ItIntygInfo;
+import se.inera.intyg.infra.message.dto.MessageFromIT;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @Service

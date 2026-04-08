@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 import com.google.common.base.Strings;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 /**

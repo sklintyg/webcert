@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.csintegration.unit;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component

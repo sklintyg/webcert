@@ -26,6 +26,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,11 +39,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -64,6 +65,7 @@ class LaunchIntegrationControllerTest {
 
   @InjectMocks private LaunchIntegrationController launchIntegrationController;
 
+  private UriInfo uriInfo;
   private WebCertUser webcertUser;
   private static final String ORIGIN = "normal";
 
@@ -107,14 +109,14 @@ class LaunchIntegrationControllerTest {
 
       @Test
       void shouldUseReactIfFeatureIsActivated() {
-        launchIntegrationController.redirectToCertificate(null, CERTIFICATE_ID, ORIGIN);
+        launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
 
         verify(reactUriFactory).uriForCertificate(any(), any());
       }
 
       @Test
       void shouldSetLaunchFromOriginOnUser() {
-        launchIntegrationController.redirectToCertificate(null, CERTIFICATE_ID, ORIGIN);
+        launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
 
         verify(webcertUser).setLaunchFromOrigin(ORIGIN);
       }
@@ -137,14 +139,14 @@ class LaunchIntegrationControllerTest {
         @Test
         void shallChangeToCorrectUnit() {
           final var unitIdCaptor = ArgumentCaptor.forClass(String.class);
-          launchIntegrationController.redirectToCertificate(null, CERTIFICATE_ID, ORIGIN);
+          launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
           verify(webcertUser).changeValdVardenhet(unitIdCaptor.capture());
           assertEquals(UNIT_ID, unitIdCaptor.getValue());
         }
 
         @Test
         void shallUpdateFeatures() {
-          launchIntegrationController.redirectToCertificate(null, CERTIFICATE_ID, ORIGIN);
+          launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
           verify(webcertUser).setFeatures(any());
         }
       }
@@ -158,7 +160,8 @@ class LaunchIntegrationControllerTest {
           assertThrows(
               WebCertServiceException.class,
               () ->
-                  launchIntegrationController.redirectToCertificate(null, CERTIFICATE_ID, ORIGIN));
+                  launchIntegrationController.redirectToCertificate(
+                      uriInfo, CERTIFICATE_ID, ORIGIN));
         }
       }
     }
@@ -176,7 +179,7 @@ class LaunchIntegrationControllerTest {
 
       @Test
       void shouldDirectToCertificateQuestions() {
-        launchIntegrationController.directToCertificateQuestions(null, CERTIFICATE_ID);
+        launchIntegrationController.directToCertificateQuestions(uriInfo, CERTIFICATE_ID);
 
         verify(reactUriFactory).uriForCertificateQuestions(any(), any());
       }

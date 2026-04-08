@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.srs;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.infra.srs.model.SrsCertificate;
+import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
 @Service("getSrsCertificateAggregator")

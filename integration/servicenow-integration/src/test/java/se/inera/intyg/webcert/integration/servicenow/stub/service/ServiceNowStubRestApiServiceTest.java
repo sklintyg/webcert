@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.Response.Status;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
@@ -78,14 +78,15 @@ class ServiceNowStubRestApiServiceTest {
     when(stubState.getHttpErrorCode()).thenReturn(0);
     when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
-    final var organizations = ((OrganizationResponse) response.getBody()).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-    final var serviceCodeList = organizations.getFirst().getServiceCodes();
-    assertEquals(1, organizations.size());
-    assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
-    assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
+      final var serviceCodeList = organizations.getFirst().getServiceCodes();
+      assertEquals(1, organizations.size());
+      assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
+      assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
+    }
   }
 
   @Test
@@ -99,15 +100,16 @@ class ServiceNowStubRestApiServiceTest {
     when(stubState.getHttpErrorCode()).thenReturn(0);
     when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
-    final var organizations = ((OrganizationResponse) response.getBody()).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-    final var serviceCodeList = organizations.getFirst().getServiceCodes();
-    assertEquals(1, organizations.size());
-    assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
-    assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
-    assertTrue(serviceCodeList.contains(SERVICE_CODE_2));
+      final var serviceCodeList = organizations.getFirst().getServiceCodes();
+      assertEquals(1, organizations.size());
+      assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
+      assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
+      assertTrue(serviceCodeList.contains(SERVICE_CODE_2));
+    }
   }
 
   @Test
@@ -121,13 +123,14 @@ class ServiceNowStubRestApiServiceTest {
     when(stubState.getHttpErrorCode()).thenReturn(0);
     when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
-    final var organizations = ((OrganizationResponse) response.getBody()).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-    assertEquals(1, organizations.size());
-    assertEquals("ORGANIZATION_NUMBER_3", organizations.getFirst().getOrganizationNumber());
-    assertTrue(organizations.getFirst().getServiceCodes().isEmpty());
+      assertEquals(1, organizations.size());
+      assertEquals("ORGANIZATION_NUMBER_3", organizations.getFirst().getOrganizationNumber());
+      assertTrue(organizations.getFirst().getServiceCodes().isEmpty());
+    }
   }
 
   @Test
@@ -141,17 +144,18 @@ class ServiceNowStubRestApiServiceTest {
     when(stubState.getHttpErrorCode()).thenReturn(0);
     when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
-    final var organizations = ((OrganizationResponse) response.getBody()).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-    final var serviceCodeList1 = organizations.getFirst().getServiceCodes();
-    final var serviceCodeList2 = organizations.get(1).getServiceCodes();
-    assertEquals(2, organizations.size());
-    assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
-    assertEquals(ORGANIZATION_NUMBER_2, organizations.get(1).getOrganizationNumber());
-    assertEquals(1, serviceCodeList1.size());
-    assertEquals(2, serviceCodeList2.size());
+      final var serviceCodeList1 = organizations.getFirst().getServiceCodes();
+      final var serviceCodeList2 = organizations.get(1).getServiceCodes();
+      assertEquals(2, organizations.size());
+      assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
+      assertEquals(ORGANIZATION_NUMBER_2, organizations.get(1).getOrganizationNumber());
+      assertEquals(1, serviceCodeList1.size());
+      assertEquals(2, serviceCodeList2.size());
+    }
   }
 
   @Test
@@ -165,15 +169,16 @@ class ServiceNowStubRestApiServiceTest {
     when(stubState.getHttpErrorCode()).thenReturn(0);
     when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
-    final var organizations = ((OrganizationResponse) response.getBody()).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-    assertEquals(2, organizations.size());
-    assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
-    assertEquals("ORGANIZATION_NUMBER_3", organizations.get(1).getOrganizationNumber());
-    assertEquals(2, organizations.getFirst().getServiceCodes().size());
-    assertTrue(organizations.get(1).getServiceCodes().isEmpty());
+      assertEquals(2, organizations.size());
+      assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
+      assertEquals("ORGANIZATION_NUMBER_3", organizations.get(1).getOrganizationNumber());
+      assertEquals(2, organizations.getFirst().getServiceCodes().size());
+      assertTrue(organizations.get(1).getServiceCodes().isEmpty());
+    }
   }
 
   @Test
@@ -191,12 +196,13 @@ class ServiceNowStubRestApiServiceTest {
     when(stubState.getServiceCodeList())
         .thenReturn(List.of(SERVICE_CODE_1, SERVICE_CODE_2, "SERVICE_CODE_3"));
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
-    final var organizations = ((OrganizationResponse) response.getBody()).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-    assertEquals(1, organizations.size());
-    assertEquals(3, organizations.getFirst().getServiceCodes().size());
+      assertEquals(1, organizations.size());
+      assertEquals(3, organizations.getFirst().getServiceCodes().size());
+    }
   }
 
   @Test
@@ -212,12 +218,13 @@ class ServiceNowStubRestApiServiceTest {
     when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
     when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
-    final var organizations = ((OrganizationResponse) response.getBody()).getResult();
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
+      final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-    assertEquals(1, organizations.size());
-    assertEquals(0, organizations.getFirst().getServiceCodes().size());
+      assertEquals(1, organizations.size());
+      assertEquals(0, organizations.getFirst().getServiceCodes().size());
+    }
   }
 
   @Test
@@ -229,10 +236,11 @@ class ServiceNowStubRestApiServiceTest {
             .build();
     when(stubState.getHttpErrorCode()).thenReturn(403);
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
 
-    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+      assertEquals(Status.FORBIDDEN, response.getStatusInfo().toEnum());
+    }
   }
 
   @Test
@@ -244,10 +252,11 @@ class ServiceNowStubRestApiServiceTest {
             .build();
     when(stubState.getHttpErrorCode()).thenReturn(777);
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest);
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH, organizationRequest)) {
 
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+      assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
+    }
   }
 
   @Test
@@ -258,10 +267,11 @@ class ServiceNowStubRestApiServiceTest {
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
 
-    final var response =
-        serviceNowStubRestApiService.createSubscriptionResponse(null, organizationRequest);
+    try (final var response =
+        serviceNowStubRestApiService.createSubscriptionResponse(null, organizationRequest)) {
 
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());
+    }
   }
 
   private Map<String, List<String>> createActiveSubscriptions() {

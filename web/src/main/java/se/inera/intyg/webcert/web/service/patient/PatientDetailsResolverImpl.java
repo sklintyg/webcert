@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -42,13 +41,13 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PatientDetailResolveOrder;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.pu.integration.api.model.PersonSvar;
-import se.inera.intyg.webcert.infra.pu.integration.api.services.PUService;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -63,7 +62,6 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  *
  * <p>Created by eriklupander on 2017-07-03.
  */
-@Service
 public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
   private static final List<UtkastStatus> UTKAST_STATUSES =

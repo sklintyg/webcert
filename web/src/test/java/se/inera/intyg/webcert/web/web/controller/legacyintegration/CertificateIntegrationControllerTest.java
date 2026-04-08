@@ -26,6 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,9 +37,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -62,6 +63,7 @@ class CertificateIntegrationControllerTest {
 
   @InjectMocks private CertificateIntegrationController certificateIntegrationController;
 
+  private UriInfo uriInfo;
   private WebCertUser webcertUser;
 
   @BeforeEach
@@ -91,14 +93,14 @@ class CertificateIntegrationControllerTest {
 
     @Test
     void shouldUseReactIfFeatureIsActivatedFk7263() {
-      certificateIntegrationController.redirectToIntyg(null, CERTIFICATE_ID, UNIT_ID);
+      certificateIntegrationController.redirectToIntyg(uriInfo, CERTIFICATE_ID, UNIT_ID);
       verify(reactUriFactory).uriForCertificate(any(), any());
     }
 
     @Test
     void shouldUseReactIfFeatureIsActivated() {
       certificateIntegrationController.redirectToIntyg(
-          null, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+          uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
 
       verify(reactUriFactory).uriForCertificate(any(), any());
     }
@@ -106,7 +108,7 @@ class CertificateIntegrationControllerTest {
     @Test
     void shouldUpdateFeaturesForLoggedInUser() {
       certificateIntegrationController.redirectToIntyg(
-          null, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
+          uriInfo, CERTIFICATE_TYPE, CERTIFICATE_ID, UNIT_ID);
 
       verify(webcertUser).setFeatures(anyMap());
     }

@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import io.swagger.annotations.Api;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 /**
  * Controller to enable a landsting user to access certificates directly from a link.
@@ -29,9 +30,11 @@ import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
  * links. This inheritance is somewhat confusing but it make sense if we look at it from a
  * functional perspective.
  */
-@Controller
-@RequestMapping("/webcert/web/user/basic-certificate")
+// CHECKSTYLE:OFF LineLength
+@Path("/basic-certificate")
+@Api(value = "/webcert/web/user/basic-certificate", produces = MediaType.APPLICATION_JSON)
 public class CertificateIntegrationController extends FragaSvarUthoppController {
+  // CHECKSTYLE:ON LineLength
 
   @Override
   protected UserOriginType getGrantedRequestOrigin() {

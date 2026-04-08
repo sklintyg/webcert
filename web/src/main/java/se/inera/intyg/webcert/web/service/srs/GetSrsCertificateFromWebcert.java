@@ -27,7 +27,7 @@ import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.converter.util.ConverterException;
-import se.inera.intyg.webcert.infra.srs.model.SrsCertificate;
+import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;

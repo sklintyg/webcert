@@ -18,24 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.IcfFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
 
-@RestController
-@RequestMapping("/api/icf")
+@Path("/icf")
 public class IcfController {
 
   private static final Logger LOG = LoggerFactory.getLogger(IcfController.class);
@@ -43,14 +41,15 @@ public class IcfController {
 
   @Autowired private IcfFacadeService icfFacadeService;
 
-  @PostMapping
+  @POST
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "icf-get-icf", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<IcfResponseDTO> getIcf(@RequestBody IcfRequestDTO request) {
+  public Response getIcf(IcfRequestDTO request) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Getting icf data from icd codes: '{}'", Arrays.toString(request.getIcdCodes()));
     }
 
-    return ResponseEntity.ok(icfFacadeService.getIcfInformation(request));
+    return Response.ok(icfFacadeService.getIcfInformation(request)).build();
   }
 }

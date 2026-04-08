@@ -19,22 +19,21 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
-@RestController
-@RequestMapping("/api/v1/session")
-@Api(value = "invalidateSession", produces = "application/json")
+@Path(InvalidateSessionApiController.SESSION_STATUS_REQUEST_MAPPING)
+@Api(value = "invalidateSession", produces = MediaType.APPLICATION_JSON)
 public class InvalidateSessionApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(InvalidateSessionApiController.class);
@@ -43,23 +42,25 @@ public class InvalidateSessionApiController {
   protected static final String UTF_8_CHARSET = ";charset=utf-8";
   @Autowired private InvalidateSessionService invalidateSessionService;
 
-  @PostMapping(INVALIDATE_ENDPOINT)
+  @POST
+  @Path(INVALIDATE_ENDPOINT)
+  @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PerformanceLogging(
       eventAction = "invalidate-session-invalidate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<Void> invalidateSession(@RequestBody InvalidateRequest invalidateRequest) {
+  public Response invalidateSession(InvalidateRequest invalidateRequest) {
     if (invalidateRequest.formatIsWrong()) {
       LOG.info(
           String.format(
               "launchId: %s OR userHsaId: %s - is wrong format. request will not be handled any further",
               invalidateRequest.getLaunchId(), invalidateRequest.getUserHsaId()));
-      return ResponseEntity.noContent().build();
+      return Response.noContent().build();
     }
     try {
       invalidateSessionService.invalidateSessionIfActive(invalidateRequest);
     } catch (Exception exception) {
       LOG.error("Invalidate session failed. launchId: %s - userHsaId: %s", exception);
     }
-    return ResponseEntity.noContent().build();
+    return Response.noContent().build();
   }
 }

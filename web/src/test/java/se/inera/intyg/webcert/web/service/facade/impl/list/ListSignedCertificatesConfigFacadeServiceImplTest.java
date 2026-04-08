@@ -33,7 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;

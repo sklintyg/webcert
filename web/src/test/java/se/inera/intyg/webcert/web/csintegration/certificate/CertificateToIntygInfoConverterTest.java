@@ -41,9 +41,9 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
-import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent;
-import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEvent.Source;
-import se.inera.intyg.webcert.infra.intyginfo.dto.IntygInfoEventType;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
 import se.inera.intyg.webcert.web.service.intyginfo.GetIntygInfoEventsService;
 
 @ExtendWith(MockitoExtension.class)

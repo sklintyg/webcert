@@ -22,9 +22,9 @@ import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
 
 import org.apache.commons.lang3.StringUtils;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.AbstractVardenhet;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;

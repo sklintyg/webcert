@@ -18,20 +18,25 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 
-@Controller
-@RequestMapping({"/visa/anvandare", "/v2/visa/anvandare"})
+@Path("/anvandare")
+@Api(
+    value = "intyg (Djupintegration)",
+    description = "REST API för Djupintegration",
+    produces = MediaType.APPLICATION_JSON)
 public class UserIntegrationController extends BaseIntegrationController {
 
   private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
@@ -45,16 +50,17 @@ public class UserIntegrationController extends BaseIntegrationController {
         AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
       };
 
-  @GetMapping("/logout/now")
+  @GET
+  @Path("/logout/now")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-integration-logout-user-now",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
-  public ResponseEntity<Void> logoutUserNow(HttpServletRequest request) {
+  public Response logoutUserNow(@Context HttpServletRequest request) {
     super.validateAuthorities();
     HttpSession session = request.getSession();
     getWebCertUserService().removeSessionNow(session);
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
   @Override

@@ -21,17 +21,16 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 
@@ -39,12 +38,11 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhet
  * Testbarhetsresurs för att till och börja med radera och lista identifierade integrerade
  * vårdenheter.
  */
+@Service
 @Api(
     value = "testability integreradevardenheter",
     description = "REST API för testbarhet - Integrerade vårdenheter")
-@RestController
-@RequestMapping("/testability/integreradevardenheter")
-@Profile({"dev", "testability-api"})
+@Path("/integreradevardenheter")
 public class IntegreradEnhetResource {
 
   private static final int OK = 200;
@@ -52,38 +50,45 @@ public class IntegreradEnhetResource {
 
   @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-  @DeleteMapping("/{hsaId}")
+  @DELETE
+  @Path("/{hsaId}")
   @ApiResponses(
       value = {
         @ApiResponse(code = OK, message = "Given identified integrated unit was deleted"),
         @ApiResponse(code = BAD_REQUEST, message = "If supplied hsaId was null or blank")
       })
-  public ResponseEntity<String> deleteIntegreradVardenhet(@PathVariable("hsaId") String hsaId) {
+  public Response deleteIntegreradVardenhet(@PathParam("hsaId") String hsaId) {
     if (isNullOrEmpty(hsaId)) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Specified hsaId is null or blank");
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity("Specified hsaId is null or blank")
+          .build();
     }
 
     integreradeEnheterRegistry.deleteIntegreradEnhet(hsaId);
-    return ResponseEntity.ok().build();
+    return Response.ok().build();
   }
 
   private boolean isNullOrEmpty(String hsaId) {
     return hsaId == null || hsaId.trim().length() == 0;
   }
 
-  @GetMapping
+  @GET
+  @Path("/")
+  @Produces("application/json")
   @ApiResponses(
       value = {@ApiResponse(code = OK, message = "Listed current set of integrerade Vårdenheter")})
-  public ResponseEntity<Object> getIntegreradeVardenheter() {
-    return ResponseEntity.ok(integreradeEnheterRegistry.getIntegreradeVardenheter());
+  public Response getIntegreradeVardenheter() {
+    return Response.ok(integreradeEnheterRegistry.getIntegreradeVardenheter()).build();
   }
 
-  @PostMapping
+  @POST
+  @Path("/")
+  @Consumes("application/json")
+  @Produces("application/json")
   @ApiResponses(value = {@ApiResponse(code = OK, message = "Registered integrerad vardenhet")})
-  public ResponseEntity<IntegreradEnhetEntryWithSchemaVersion> registerIntegreradVardenhet(
-      @RequestBody IntegreradEnhetEntryWithSchemaVersion enhet) {
+  public Response registerIntegreradVardenhet(IntegreradEnhetEntryWithSchemaVersion enhet) {
     integreradeEnheterRegistry.putIntegreradEnhet(
         enhet, "1.0".equals(enhet.getSchemaVersion()), "2.0".equals(enhet.getSchemaVersion()));
-    return ResponseEntity.ok(enhet);
+    return Response.ok(enhet).build();
   }
 }

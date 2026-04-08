@@ -52,10 +52,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
+import se.inera.intyg.infra.xmldsig.model.ValidationResult;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
-import se.inera.intyg.webcert.infra.xmldsig.model.ValidationResponse;
-import se.inera.intyg.webcert.infra.xmldsig.model.ValidationResult;
 
 @ExtendWith(MockitoExtension.class)
 class DssSignMessageServiceTest {

@@ -32,7 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.infra.intyginfo.dto.WcIntygInfo;
+import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
 @ExtendWith(MockitoExtension.class)

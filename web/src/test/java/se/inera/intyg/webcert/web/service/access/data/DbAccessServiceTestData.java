@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.access.data;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 public class DbAccessServiceTestData implements AccessServiceTestData {
 

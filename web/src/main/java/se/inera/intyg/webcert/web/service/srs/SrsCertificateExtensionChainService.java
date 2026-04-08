@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.infra.srs.model.SrsCertificate;
+import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
 
 @Service("srsCertificateExtensionChainService")
 @RequiredArgsConstructor

@@ -286,14 +286,7 @@ Convert each remaining XML file to Java `@Configuration`:
 7. **`mail-config.xml`** → Java `@Configuration` or Spring Boot mail auto-config (in step 18+).
 8. **Module XML configs** (`fmb-services-config.xml`, `servicenow-services-config.xml`, etc.) → convert to `@Configuration` or
    `@ComponentScan`.
-9. **Stub XML configs** → convert to `@Configuration` with `@Profile`. **⚠️ Deferred from Step 11:**
-   `notification-stub-context.xml`, `mail-stub-testability-api-context.xml`, and `fmb-stub-context.xml`
-   each register a CXF JAX-RS `<jaxrs:server>` that references the root-context bean `jacksonJsonProvider`
-   by name. When converting these stubs, migrate their JAX-RS stub endpoints to Spring MVC `@RestController`
-   beans (or remove them if no longer needed). Once no stub XML references `jacksonJsonProvider`, delete the
-   `<bean id="jacksonJsonProvider" class="...JacksonJsonProvider">` definition from `webcert-config.xml`
-   (i.e., the Java `@Bean` equivalent should not be added) and remove the
-   `com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider` transitive dependency.
+9. **Stub XML configs** → convert to `@Configuration` with `@Profile`.
 10. **Test XML contexts** (notification-sender test configs) → replace with Java test configurations.
 11. **`WEB-INF/web-servlet.xml`** → this is the DispatcherServlet's Spring context config containing `<mvc:annotation-driven/>` and
     component scanning for `se.inera.intyg.webcert.web.web.controller`. Merge into main application context (may have been partially
@@ -358,15 +351,6 @@ This is the most critical step. All preparation is done — the switch should be
 10. Remove `web.xml`.
 11. **Add SpringDoc OpenAPI** — add `springdoc-openapi-starter-webmvc-ui` to replace the removed Swagger JAX-RS. This ensures API
     documentation is available as soon as Spring Boot is running, avoiding a multi-step gap without API docs.
-    **⚠️ Deferred from Step 11:** `io.swagger:swagger-jaxrs` was intentionally kept in `web/build.gradle`
-    in Step 11 because controllers and DTOs still use `io.swagger.annotations.*` (`@Api`, `@ApiOperation`,
-    `@ApiModel`, etc.). When adding SpringDoc here, also:
-    - Remove `implementation("io.swagger:swagger-jaxrs")` from `web/build.gradle`.
-    - Replace `io.swagger.annotations.*` imports with SpringDoc/OpenAPI 3 equivalents (`@Tag`, `@Operation`,
-      `@Schema` from `io.swagger.v3.oas.annotations`) — or remove the annotations if documentation coverage
-      is being rebuilt from scratch with SpringDoc.
-    - Verify zero remaining `io.swagger.annotations.*` imports in production code:
-      `grep -r "io.swagger.annotations" --include="*.java" web/src/main/java/`
 
 **Preserve OpenSamlConfig:** The custom `OpenSamlConfig` class (a local `@Component`) initializes OpenSAML with security hardening
 settings: XXE protection, entity expansion prevention, parser pool size of 100. Verify that Spring Boot's SAML auto-configuration

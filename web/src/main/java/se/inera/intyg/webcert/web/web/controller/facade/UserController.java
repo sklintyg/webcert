@@ -18,30 +18,29 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
-import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 
-@RestController
-@RequestMapping("/api/user")
+@Path("/user")
 public class UserController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
@@ -71,41 +70,45 @@ public class UserController {
     this.changeUnitService = changeUnitService;
   }
 
-  @GetMapping
+  @GET
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<UserResponseDTO> getUser() {
+  public Response getUser() {
     LOG.debug("Getting logged in user");
     final var loggedInUser = userService.getLoggedInUser();
     final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
-    return ResponseEntity.ok(UserResponseDTO.create(loggedInUser, resourceLinks));
+    return Response.ok(UserResponseDTO.create(loggedInUser, resourceLinks)).build();
   }
 
-  @GetMapping("/statistics")
+  @Path("/statistics")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-get-user-tabs",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public ResponseEntity<UserStatisticsDTO> getUserTabs() {
+  public Response getUserTabs() {
     LOG.debug("Getting user statistics");
     final var result = userStatisticsService.getUserStatistics();
-    return ResponseEntity.ok(result);
+    return Response.ok(result).build();
   }
 
-  @PostMapping("/unit/{unitHsaId}")
+  @POST
+  @Path("/unit/{unitHsaId}")
+  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-change-unit",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public ResponseEntity<UserResponseDTO> changeUnit(
-      @PathVariable("unitHsaId") @NotNull String unitHsaId) {
+  public Response changeUnit(@PathParam("unitHsaId") @NotNull String unitHsaId) {
     LOG.debug("Changing care unit to {}", unitHsaId);
     try {
       final var updatedUser = changeUnitService.change(unitHsaId);
       final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
-      return ResponseEntity.ok(UserResponseDTO.create(updatedUser, resourceLinks));
+      return Response.ok(UserResponseDTO.create(updatedUser, resourceLinks)).build();
     } catch (ChangeUnitException e) {
-      return ResponseEntity.badRequest().body(null);
+      return Response.status(Response.Status.BAD_REQUEST).build();
     }
   }
 }

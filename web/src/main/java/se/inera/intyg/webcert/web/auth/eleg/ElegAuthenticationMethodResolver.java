@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.auth.eleg;
 
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 
 @Service
 public class ElegAuthenticationMethodResolver {

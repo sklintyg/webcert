@@ -27,9 +27,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.webcert.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.CertificateListItemValueType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
@@ -129,7 +129,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
   }
 
   private String getSecondaryTitle(String unitId) {
-    if (unitId == null || unitId.isBlank() || webCertUserService.getUser().isPrivatLakare()) {
+    if (unitId.length() == 0 || webCertUserService.getUser().isPrivatLakare()) {
       return "Ärenden visas för alla enheter";
     }
     final var unit = hsaOrganizationsService.getVardenhet(unitId);

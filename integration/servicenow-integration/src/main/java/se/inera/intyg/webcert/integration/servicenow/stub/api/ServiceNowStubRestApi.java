@@ -18,32 +18,31 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.stub.api;
 
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStubRestApiService;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@Profile("(dev | wc-all-stubs | servicenow-integration-stub-v2) & !servicenow-integration-stub")
-@RequestMapping("/stubs/servicenowstub/api/nabia/v2/inera_services/services")
+@Path("/api/nabia/v2/inera_services/services")
 public class ServiceNowStubRestApi {
 
   private final ServiceNowStubRestApiService serviceNowStubRestApiService;
 
-  @PostMapping(
-      value = "/stub",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> getSubscriptionPost(
-      @RequestHeader("Authorization") String basicAuth, @RequestBody OrganizationRequest request) {
+  @POST
+  @Path("/stub")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getSubscriptionPost(
+      @HeaderParam("Authorization") String basicAuth, OrganizationRequest request) {
     return serviceNowStubRestApiService.createSubscriptionResponse(basicAuth, request);
   }
 }

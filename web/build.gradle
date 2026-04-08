@@ -27,7 +27,7 @@ gretty {
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,testability-api,caching-enabled,ia-stub,certificate-analytics-service-active",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-analytics-service-active",
                "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
@@ -84,15 +84,36 @@ dependencies {
     implementation project(':webcert-logging')
     implementation project(':integration-certificate-analytics-service')
     implementation project(':integration-private-practitioner-service')
-    implementation project(':infra')
 
     implementation "com.fasterxml.jackson.core:jackson-core"
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
-    implementation "se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:${intygTransportstyrelsenSchemasVersion}"
+    implementation "se.inera.intyg.infra:certificate:${infraVersion}"
+    implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
+    implementation "se.inera.intyg.infra:driftbanner-dto:${infraVersion}"
+    implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
+    implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
+    implementation "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
+    implementation "se.inera.intyg.infra:ia-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
+    implementation "se.inera.intyg.infra:intyginfo:${infraVersion}"
+    implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
+    implementation "se.inera.intyg.infra:message:${infraVersion}"
+    implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
+    implementation "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
+    implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
+    implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
+    implementation "se.inera.intyg.infra:security-common:${infraVersion}"
+    implementation "se.inera.intyg.infra:security-filter:${infraVersion}"
+    implementation "se.inera.intyg.infra:security-siths:${infraVersion}"
+    implementation "se.inera.intyg.infra:sjukfall-engine:${infraVersion}"
+    implementation "se.inera.intyg.infra:srs-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:testcertificate:${infraVersion}"
+    implementation "se.inera.intyg.infra:xmldsig:${infraVersion}"
+
     implementation "se.inera.intyg.common:af00213:${commonVersion}"
     implementation "se.inera.intyg.common:af00251:${commonVersion}"
     implementation "se.inera.intyg.common:ag114:${commonVersion}"
@@ -137,8 +158,7 @@ dependencies {
     implementation "net.javacrumbs.shedlock:shedlock-spring"
     implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring"
     implementation "org.apache.activemq:activemq-spring"
-    implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
-    implementation "org.apache.cxf:cxf-rt-transports-http"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
     implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common"
     implementation "org.hibernate.orm:hibernate-core"
@@ -155,6 +175,7 @@ dependencies {
 
     annotationProcessor 'org.projectlombok:lombok'
 
+    runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
     runtimeOnly "org.springframework:spring-webmvc"
 
     testAnnotationProcessor 'org.projectlombok:lombok'

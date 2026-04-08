@@ -18,13 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,48 +29,29 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeService;
-import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class FMBControllerTest {
 
   @Mock private ValidateSickLeavePeriodFacadeService validateSickLeavePeriodFacadeService;
-  @Mock private FmbDiagnosInformationService fmbDiagnosInformationService;
 
   @InjectMocks private FMBController fmbController;
 
+  private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
+  private static final long CERTIFICATE_VERSION = 1L;
+
   @Nested
   class ValidateSickLeavePeriod {
+
+    @BeforeEach
+    void setup() {}
 
     @Test
     void shallValidateSickLeavePeriod() {
       ValidateSickLeavePeriodRequestDTO request = new ValidateSickLeavePeriodRequestDTO();
       fmbController.validateSickLeavePeriod(request);
       verify(validateSickLeavePeriodFacadeService).validateSickLeavePeriod(any());
-    }
-  }
-
-  @Nested
-  class GetFmbData {
-
-    @Test
-    void shouldReturnBadContentIfIcd10IsNull() {
-      final var result = fmbController.getFmbForIcd10(null);
-      assertEquals(400, result.getStatusCode().value());
-    }
-
-    @Test
-    void shouldReturnFmbResponse() {
-      final var icd10 = "icd10";
-      final var expectedResponse = mock(FmbResponse.class);
-
-      when(fmbDiagnosInformationService.findFmbDiagnosInformationByIcd10Kod(icd10))
-          .thenReturn(Optional.of(expectedResponse));
-      final var result = fmbController.getFmbForIcd10(icd10);
-      assertEquals(200, result.getStatusCode().value());
-      assertEquals(expectedResponse, result.getBody());
     }
   }
 }

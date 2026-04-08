@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.service.log;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 

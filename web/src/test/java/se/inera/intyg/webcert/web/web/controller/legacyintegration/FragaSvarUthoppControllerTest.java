@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 class FragaSvarUthoppControllerTest {
 

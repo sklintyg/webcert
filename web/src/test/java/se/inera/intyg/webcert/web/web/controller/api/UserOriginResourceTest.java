@@ -31,7 +31,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -58,7 +58,7 @@ class UserOriginResourceTest extends AuthoritiesConfigurationTestSetup {
     Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
     // When
-    final String originResponse = userResource.getOrigin().getBody();
+    final String originResponse = (String) userResource.getOrigin().getEntity();
 
     // Then
     assertEquals(origin, originResponse);

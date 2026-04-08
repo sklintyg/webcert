@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import se.inera.intyg.webcert.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 
