@@ -19,26 +19,24 @@
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import com.google.common.base.Strings;
-import io.swagger.annotations.Api;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.UriInfo;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
@@ -52,14 +50,9 @@ import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationCont
  *
  * @author nikpet
  */
-// CHECKSTYLE:OFF LineLength
-@Path("/certificate")
-@Api(
-    value = "webcert web user certificate (Fråga/Svar uthopp)",
-    description = "REST API för fråga/svar via uthoppslänk, landstingspersonal",
-    produces = MediaType.APPLICATION_JSON)
+@Controller
+@RequestMapping("/webcert/web/user/certificate")
 public class FragaSvarUthoppController extends BaseIntegrationController {
-  // CHECKSTYLE:ON LineLength
 
   private static final Logger LOG = LoggerFactory.getLogger(FragaSvarUthoppController.class);
 
@@ -85,17 +78,16 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
    *
    * @param intygId The id of the certificate to view.
    */
-  @GET
-  @Path("/{type}/{intygId}/questions")
+  @GetMapping("/{type}/{intygId}/questions")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fragasvar-redirect-to-certificate-with-type",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response redirectToIntyg(
-      @Context UriInfo uriInfo,
-      @PathParam("type") String type,
-      @PathParam("intygId") String intygId,
-      @QueryParam("enhet") String enhetHsaId) {
+  public ResponseEntity<Void> redirectToIntyg(
+      HttpServletRequest request,
+      @PathVariable("type") String type,
+      @PathVariable("intygId") String intygId,
+      @RequestParam(value = "enhet", required = false) String enhetHsaId) {
 
     super.validateParameter("type", type);
     super.validateParameter("intygId", intygId);
@@ -103,26 +95,25 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     this.validateAndChangeEnhet(intygId, enhetHsaId);
 
     LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
-    return buildRedirectResponse(uriInfo, intygId);
+    return buildRedirectResponse(request, intygId);
   }
 
-  @GET
-  @Path("/{intygId}/questions")
+  @GetMapping("/{intygId}/questions")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fragasvar-redirect-to-certificate-without-type",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response redirectToIntyg(
-      @Context UriInfo uriInfo,
-      @PathParam("intygId") String intygId,
-      @QueryParam("enhet") String enhetHsaId) {
+  public ResponseEntity<Void> redirectToIntyg(
+      HttpServletRequest request,
+      @PathVariable("intygId") String intygId,
+      @RequestParam(value = "enhet", required = false) String enhetHsaId) {
 
     super.validateParameter("intygId", intygId);
     super.validateAuthorities();
     this.validateAndChangeEnhet(intygId, enhetHsaId);
 
     LOG.debug("Redirecting to view intyg {}", intygId);
-    return buildRedirectResponse(uriInfo, intygId);
+    return buildRedirectResponse(request, intygId);
   }
 
   @Override
@@ -170,8 +161,9 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
             Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
   }
 
-  private Response buildRedirectResponse(UriInfo uriInfo, String certificateId) {
-    final var uri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
-    return Response.status(Status.SEE_OTHER).location(uri).build();
+  private ResponseEntity<Void> buildRedirectResponse(
+      HttpServletRequest request, String certificateId) {
+    final var uri = reactUriFactory.uriForCertificate(request, certificateId);
+    return ResponseEntity.status(HttpStatus.SEE_OTHER).location(uri).build();
   }
 }

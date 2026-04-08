@@ -47,18 +47,18 @@ import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickle
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ResultCodeEnum;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
-import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
-import se.inera.intyg.infra.sjukfall.services.SjukfallEngineService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.infra.sjukfall.dto.IntygParametrar;
+import se.inera.intyg.webcert.infra.sjukfall.dto.SjukfallEnhet;
+import se.inera.intyg.webcert.infra.sjukfall.services.SjukfallEngineService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
@@ -401,8 +401,8 @@ class FmbSjukfallServiceImplTest {
     vardenhet.getMottagningar().add(mottagning);
     user.setValdVardenhet(vardenhet);
 
-    se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare vardgivare =
-        new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare();
+    se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare vardgivare =
+        new se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare();
     vardgivare.setId("vg1");
     vardgivare.getVardenheter().add(vardenhet);
     user.setVardgivare(Arrays.asList(vardgivare));

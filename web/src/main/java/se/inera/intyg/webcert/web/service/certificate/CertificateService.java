@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.certificate;
 
-import se.inera.intyg.infra.certificate.dto.CertificateListResponse;
+import se.inera.intyg.webcert.infra.certificate.dto.CertificateListResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 /** Service that retrieves certificates. */

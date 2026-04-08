@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integreradeenheter.IntegratedUnitDTO;
+import se.inera.intyg.webcert.infra.integreradeenheter.IntegratedUnitDTO;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 

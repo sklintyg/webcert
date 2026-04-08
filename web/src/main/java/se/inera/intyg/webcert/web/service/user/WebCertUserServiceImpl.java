@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import static se.inera.intyg.infra.security.filter.SessionTimeoutFilter.TIME_TO_INVALIDATE_ATTRIBUTE_NAME;
+import static se.inera.intyg.webcert.infra.security.filter.SessionTimeoutFilter.TIME_TO_INVALIDATE_ATTRIBUTE_NAME;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
@@ -32,15 +32,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
+import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.Privilege;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;

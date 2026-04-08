@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -55,7 +55,7 @@ public class ArendeViewConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
 
-  @Autowired private IntygModuleRegistryImpl moduleRegistry;
+  @Autowired private IntygModuleRegistry moduleRegistry;
 
   @Autowired private IntygService intygService;
 

@@ -25,6 +25,7 @@ include ':servicenow-integration'
 include ':webcert-logging'
 include ':integration-certificate-analytics-service'
 include ':integration-private-practitioner-service'
+include ':infra'
 
 project(':webcert-common').projectDir = "$rootDir/common" as File
 project(':webcert-persistence').projectDir = "$rootDir/persistence" as File
@@ -38,3 +39,4 @@ project(':servicenow-integration').projectDir = "$rootDir/integration/servicenow
 project(':webcert-logging').projectDir = "$rootDir/logging" as File
 project(':integration-certificate-analytics-service').projectDir = "$rootDir/integration-certificate-analytics-service" as File
 project(':integration-private-practitioner-service').projectDir = "$rootDir/integration-private-practitioner-service" as File
+project(':infra').projectDir = "$rootDir/infra" as File

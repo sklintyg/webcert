@@ -18,22 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import static se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 
-import io.swagger.annotations.Api;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.MediaType;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 
 /** Created by eriklupander on 2015-10-08. */
-// CHECKSTYLE:OFF LineLength
-@Path("/pp-certificate")
-@Api(
-    value = "webcert web user pp-certificate (Fråga/Svar, uthopp privatläkare)",
-    description = "REST API för fråga/svar via uthoppslänk, privatläkare",
-    produces = MediaType.APPLICATION_JSON)
+@Controller
+@RequestMapping("/webcert/web/user/pp-certificate")
 public class PrivatePractitionerFragaSvarUthoppController extends FragaSvarUthoppController {
-  // CHECKSTYLE:ON LineLength
 
   @Override
   protected String[] getGrantedRoles() {

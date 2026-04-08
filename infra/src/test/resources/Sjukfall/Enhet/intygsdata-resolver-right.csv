@@ -1,0 +1,21 @@
+INTYGSID,PERSONNUMMER,FÖRNAMN,MELLANNAMN,EFTERNAMN,DIAGNOSKOD,BIDIAGNOS,ENHETSID,ENHETSNAMN,LÄKAREID,LÄKARE,FÖRMÅGA,SYSSELSATTNING,ENKELTINTYG,SIGNERINGSTIDPUNKT
+fall-1-intyg-1,fall-1-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-01;2016-02-05;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-1-intyg-2,fall-1-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-08;2016-02-12;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-1-intyg-3,fall-1-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-15;2016-02-19;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-2-intyg-1,fall-2-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-01;2016-02-05;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-2-intyg-2,fall-2-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-08;2016-02-12;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-2-intyg-3,fall-2-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-22;2016-02-26;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-3-intyg-1,fall-3-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-08;2016-02-12;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-3-intyg-2,fall-3-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-15;2016-02-19;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-4-intyg-1,fall-4-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-01;2016-02-05;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-4-intyg-2,fall-4-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-04;2016-02-19;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-4-intyg-3,fall-4-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-08;2016-02-12;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-5-intyg-1,fall-5-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-01-27;2016-02-05;100],[Kock;Guide],false,2016-01-27T13:00:00.000
+fall-5-intyg-2,fall-5-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-08;2016-02-12;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-5-intyg-3,fall-5-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-22;2016-02-26;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-5-intyg-4,fall-5-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-01-25;2016-02-14;100],[Kock;Guide],false,2016-01-25T13:00:00.000
+fall-6-intyg-1,fall-6-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-01-27;2016-02-12;100],[Kock;Guide],false,2016-01-27T13:00:00.000
+fall-6-intyg-2,fall-6-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-08;2016-02-19;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+fall-6-intyg-3,fall-6-right,Alvar,,Alvarsson,M16,[A32;J11],IFV1239877878-1042,Webcert-Enhet1,IFV1239877878-1049,Jan Nilsson,[2016-02-29;2016-03-04;100],[Kock;Guide],false,2016-01-30T13:00:00.000
+
+

@@ -23,11 +23,11 @@ import java.util.Optional;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.PaTitle;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 
 /**
  * Helper for finding various HSA organization entities based on hsaId from a User's Vardgivare ->
@@ -42,7 +42,8 @@ public final class HoSPersonHelper {
   public static Optional<AbstractVardenhet> findVardenhetEllerMottagning(
       IntygUser user, String enhetsId) {
     for (Vardgivare vg : user.getVardgivare()) {
-      for (se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet ve : vg.getVardenheter()) {
+      for (se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet ve :
+          vg.getVardenheter()) {
         if (enhetsId.equalsIgnoreCase(ve.getId())) {
           return Optional.of(ve);
         }
@@ -68,7 +69,8 @@ public final class HoSPersonHelper {
   public static Optional<Vardgivare> findVardgivareForMottagning(
       IntygUser user, String mottagningsId) {
     for (Vardgivare vg : user.getVardgivare()) {
-      for (se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet ve : vg.getVardenheter()) {
+      for (se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet ve :
+          vg.getVardenheter()) {
         for (Mottagning m : ve.getMottagningar()) {
           if (mottagningsId.equalsIgnoreCase(m.getId())) {
             return Optional.of(vg);
@@ -92,9 +94,9 @@ public final class HoSPersonHelper {
                             + enhetId
                             + "'"));
 
-    if (enhet instanceof se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet) {
-      se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet hsaVardenhet =
-          (se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet) enhet;
+    if (enhet instanceof se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet) {
+      se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet hsaVardenhet =
+          (se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet) enhet;
       Vardgivare hsaVardgivare =
           HoSPersonHelper.findVardgivare(user, hsaVardenhet.getVardgivareHsaId())
               .orElseThrow(

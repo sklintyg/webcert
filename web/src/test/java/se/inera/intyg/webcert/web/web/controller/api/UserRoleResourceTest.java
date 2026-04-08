@@ -35,8 +35,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -65,8 +65,7 @@ class UserRoleResourceTest extends AuthoritiesConfigurationTestSetup {
     Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
     // When
-    final Collection<String> rolesResponse =
-        (Collection<String>) userResource.getUserRoles().getEntity();
+    final Collection<String> rolesResponse = userResource.getUserRoles().getBody();
 
     // Then
     assertArrayEquals(new String[] {role.getName()}, rolesResponse.toArray());

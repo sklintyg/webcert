@@ -54,7 +54,7 @@ class ListConfigControllerTest {
 
     @Test
     void shallIncludeConfigInResponse() {
-      final var response = listConfigController.getListOfDraftsConfig().getEntity();
+      final var response = listConfigController.getListOfDraftsConfig().getBody();
       assertEquals(config, response);
     }
   }
@@ -71,7 +71,7 @@ class ListConfigControllerTest {
 
     @Test
     void shallIncludeConfigInResponse() {
-      final var response = listConfigController.getListOfSignedCertificatesConfig().getEntity();
+      final var response = listConfigController.getListOfSignedCertificatesConfig().getBody();
       assertEquals(config, response);
     }
   }

@@ -18,10 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
-import static jakarta.ws.rs.core.Response.ok;
-import static jakarta.ws.rs.core.Response.status;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CAREGIVER_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CARE_UNIT_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CONNECTIVITY;
@@ -36,19 +32,18 @@ import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringReques
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 
 import io.swagger.annotations.Api;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.monitoring.logging.UserAgentInfo;
-import se.inera.intyg.infra.monitoring.logging.UserAgentParser;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentInfo;
+import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -56,8 +51,9 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 
 /** Controller that logs messages from JavaScript to the normal log. */
-@Path("/jslog")
-@Api(value = "jslog", produces = MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping("/api/jslog")
+@Api(value = "jslog", produces = "application/json")
 public class JsLogApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);
@@ -66,26 +62,24 @@ public class JsLogApiController extends AbstractApiController {
 
   @Autowired private UserAgentParser userAgentParser;
 
-  @POST
-  @Path("/debug")
+  @PostMapping("/debug")
   @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "js-log-debug", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response debug(String message) {
+  public ResponseEntity<Void> debug(@RequestBody(required = false) String message) {
     LOG.debug(message);
-    return ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @POST
-  @Path("/monitoring")
-  @Consumes(APPLICATION_JSON)
+  @PostMapping("/monitoring")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "js-log-monitoring",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response monitoring(
-      MonitoringRequest request, @HeaderParam(HttpHeaders.USER_AGENT) String userAgent) {
+  public ResponseEntity<Void> monitoring(
+      @RequestBody(required = false) MonitoringRequest request,
+      @RequestHeader(value = "User-Agent", required = false) String userAgent) {
     if (request == null || !request.isValid()) {
-      return status(BAD_REQUEST).build();
+      return ResponseEntity.badRequest().build();
     }
 
     switch (request.getEvent()) {
@@ -113,21 +107,20 @@ public class JsLogApiController extends AbstractApiController {
             request.getInfo().get(IP), request.getInfo().get(CONNECTIVITY));
         break;
       default:
-        return status(BAD_REQUEST).build();
+        return ResponseEntity.badRequest().build();
     }
-    return ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @POST
-  @Path("/srs")
-  @Consumes(APPLICATION_JSON)
+  @PostMapping("/srs")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "js-log-srs-monitoring",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response srsMonitoring(MonitoringRequest request) {
+  public ResponseEntity<Void> srsMonitoring(
+      @RequestBody(required = false) MonitoringRequest request) {
     if (request == null || !request.isValid()) {
-      return status(BAD_REQUEST).build();
+      return ResponseEntity.badRequest().build();
     }
     switch (request.getEvent()) {
       case SRS_LOADED:
@@ -223,9 +216,9 @@ public class JsLogApiController extends AbstractApiController {
             request.getInfo().get(CARE_UNIT_ID));
         break;
       default:
-        return status(BAD_REQUEST).build();
+        return ResponseEntity.badRequest().build();
     }
 
-    return ok().build();
+    return ResponseEntity.ok().build();
   }
 }

@@ -25,7 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import se.inera.intyg.infra.security.common.model.IntygUser;
+import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
@@ -38,6 +39,7 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
+@Component
 @SchemaValidation
 public class CreateDraftCertificateResponderImpl
     implements CreateDraftCertificateResponderInterface {

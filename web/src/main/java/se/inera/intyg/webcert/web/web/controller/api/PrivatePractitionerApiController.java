@@ -19,13 +19,13 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
@@ -34,7 +34,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 
-@Api(value = "private-practitioner", produces = MediaType.APPLICATION_JSON)
+@RestController
+@RequestMapping("/api/private-practitioner")
+@Api(value = "private-practitioner", produces = "application/json")
 public class PrivatePractitionerApiController {
 
   private static final String UTF_8_CHARSET = ";charset=utf-8";
@@ -45,19 +47,17 @@ public class PrivatePractitionerApiController {
     this.service = service;
   }
 
-  @POST
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PostMapping
   @PerformanceLogging(
       eventAction = "register-private-practitioner",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-  public Response registerPractitioner(
-      PrivatePractitionerDetails registerPrivatePractitionerRequest) {
+  public ResponseEntity<Void> registerPractitioner(
+      @RequestBody PrivatePractitionerDetails registerPrivatePractitionerRequest) {
     service.registerPrivatePractitioner(registerPrivatePractitionerRequest);
-    return Response.ok().build();
+    return ResponseEntity.ok().build();
   }
 
-  @GET
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping
   @PerformanceLogging(
       eventAction = "get-private-practitioner",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -65,9 +65,7 @@ public class PrivatePractitionerApiController {
     return service.getLoggedInPrivatePractitioner();
   }
 
-  @GET
-  @Path("/config")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/config")
   @PerformanceLogging(
       eventAction = "get-private-practitioner-config",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -75,9 +73,7 @@ public class PrivatePractitionerApiController {
     return service.getPrivatePractitionerConfig();
   }
 
-  @GET
-  @Path("/hospInformation")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/hospInformation")
   @PerformanceLogging(
       eventAction = "get-private-practitioner-hosp-information",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -85,13 +81,12 @@ public class PrivatePractitionerApiController {
     return service.getHospInformation();
   }
 
-  @PUT
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PutMapping
   @PerformanceLogging(
       eventAction = "update-private-practitioner",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public PrivatePractitionerResponse updatePrivatePractitioner(
-      PrivatePractitionerDetails updatePrivatePractitionerRequest) {
+      @RequestBody PrivatePractitionerDetails updatePrivatePractitionerRequest) {
     return service.editPrivatePractitioner(updatePrivatePractitionerRequest);
   }
 }

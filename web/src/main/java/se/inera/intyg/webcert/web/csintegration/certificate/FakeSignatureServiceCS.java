@@ -23,9 +23,9 @@ import java.security.cert.CertificateEncodingException;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.xmldsig.service.FakeSignatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.infra.xmldsig.service.FakeSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 
 @Service

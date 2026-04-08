@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
+import se.inera.intyg.webcert.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;

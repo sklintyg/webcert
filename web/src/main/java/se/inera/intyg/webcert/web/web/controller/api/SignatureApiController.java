@@ -18,36 +18,30 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import com.google.common.base.Strings;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.ResponseBuilder;
-import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -61,19 +55,17 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
-@Path("/signature")
+@RestController
+@RequestMapping("/api/signature")
 public class SignatureApiController extends AbstractApiController {
 
   public static final String SIGNATUR_API_CONTEXT_PATH = "/api/signature";
   public static final String SIGN_SERVICE_RESPONSE_PATH = "/signservice/v1/response";
   public static final String SIGN_SERVICE_METADATA_PATH = "/signservice/v1/metadata";
-  private static final Logger LOG = LoggerFactory.getLogger(SignatureApiController.class);
-  private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
   @Autowired private ReactUriFactory reactUriFactory;
 
@@ -90,19 +82,17 @@ public class SignatureApiController extends AbstractApiController {
 
   @Autowired private QRCodeService qrCodeService;
 
-  @POST
-  @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @PostMapping("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "signature-sign-draft",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public SignaturStateDTO signeraUtkast(
-      @PathParam("intygsTyp") String intygsTyp,
-      @PathParam("intygsId") String intygsId,
-      @PathParam("version") long version,
-      @PathParam("signMethod") String signMethodStr,
-      @Context HttpServletRequest request) {
+      @PathVariable("intygsTyp") String intygsTyp,
+      @PathVariable("intygsId") String intygsId,
+      @PathVariable("version") long version,
+      @PathVariable("signMethod") String signMethodStr,
+      HttpServletRequest request) {
 
     SignMethod signMethod;
     try {
@@ -150,16 +140,15 @@ public class SignatureApiController extends AbstractApiController {
     }
   }
 
-  @POST
-  @Path(SIGN_SERVICE_RESPONSE_PATH)
+  @PostMapping(SIGN_SERVICE_RESPONSE_PATH)
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "signature-sign-service-response",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response signServiceResponse(
-      @Context UriInfo uriInfo,
-      @FormParam("RelayState") String relayState,
-      @FormParam("EidSignResponse") String eidSignResponse) {
+  public ResponseEntity<Void> signServiceResponse(
+      HttpServletRequest request,
+      @RequestParam("RelayState") String relayState,
+      @RequestParam("EidSignResponse") String eidSignResponse) {
     SignaturBiljett signaturBiljett;
     monitoringLogService.logSignResponseReceived(relayState);
 
@@ -173,7 +162,7 @@ public class SignatureApiController extends AbstractApiController {
           relayState,
           signaturBiljett.getIntygsId(),
           "Could not decode sign response: " + e.getMessage());
-      return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
+      return getRedirectResponseWithReturnUrl(signaturBiljett, request);
     }
 
     var validationResponse = dssSignMessageService.validateDssMessageSignature(signResponseString);
@@ -184,14 +173,14 @@ public class SignatureApiController extends AbstractApiController {
           relayState,
           signaturBiljett.getIntygsId(),
           "Validation of sign response signature failed!");
-      return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
+      return getRedirectResponseWithReturnUrl(signaturBiljett, request);
     }
 
     signaturBiljett = dssSignatureService.receiveSignResponse(relayState, signResponseString);
 
     logIfSuccess(relayState, signaturBiljett);
 
-    return getRedirectResponseWithReturnUrl(signaturBiljett, uriInfo);
+    return getRedirectResponseWithReturnUrl(signaturBiljett, request);
   }
 
   private void logIfSuccess(String relayState, SignaturBiljett signaturBiljett) {
@@ -200,17 +189,17 @@ public class SignatureApiController extends AbstractApiController {
     }
   }
 
-  private Response getRedirectResponseWithReturnUrl(
-      SignaturBiljett signaturBiljett, UriInfo uriInfo) {
-    final var redirectUri = getRedirectUri(signaturBiljett, uriInfo);
-    return Response.seeOther(redirectUri).build();
+  private ResponseEntity<Void> getRedirectResponseWithReturnUrl(
+      SignaturBiljett signaturBiljett, HttpServletRequest request) {
+    final var redirectUri = getRedirectUri(signaturBiljett, request);
+    return ResponseEntity.status(HttpStatus.SEE_OTHER).location(redirectUri).build();
   }
 
-  private URI getRedirectUri(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
+  private URI getRedirectUri(SignaturBiljett signaturBiljett, HttpServletRequest request) {
     return signaturBiljett.getStatus().equals(SignaturStatus.ERROR)
         ? reactUriFactory.uriForCertificateWithSignError(
-            uriInfo, signaturBiljett.getIntygsId(), signaturBiljett.getStatus())
-        : reactUriFactory.uriForCertificate(uriInfo, signaturBiljett.getIntygsId());
+            request, signaturBiljett.getIntygsId(), signaturBiljett.getStatus())
+        : reactUriFactory.uriForCertificate(request, signaturBiljett.getIntygsId());
   }
 
   private SignaturStateDTO convertToSignatureStateDTO(SignaturBiljett sb) {
@@ -226,77 +215,28 @@ public class SignatureApiController extends AbstractApiController {
         .build();
   }
 
-  @GET
-  @Path(SIGN_SERVICE_METADATA_PATH)
+  @GetMapping(SIGN_SERVICE_METADATA_PATH)
   @PerformanceLogging(
       eventAction = "signature-sign-service-client-metadata",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response signServiceClientMetadata() {
+  public ResponseEntity<String> signServiceClientMetadata() {
 
     String clientMetadataAsString = dssMetadataService.getClientMetadataAsString();
 
-    ResponseBuilder responseBuilder =
-        Response.ok(clientMetadataAsString)
-            .header(HttpHeaders.CONTENT_TYPE, "application/samlmetadata+xml")
-            .header(
-                HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"wc_dss_client_metadata.xml\"");
-
-    return responseBuilder.build();
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType("application/samlmetadata+xml"))
+        .header(
+            HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"wc_dss_client_metadata.xml\"")
+        .body(clientMetadataAsString);
   }
 
-  @GET
-  @Path("/{intygsTyp}/{ticketId}/signeringsstatus")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/{intygsTyp}/{ticketId}/signeringsstatus")
   @PerformanceLogging(
       eventAction = "signature-sign-status",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public SignaturStateDTO signeringsStatus(
-      @PathParam("intygsTyp") String intygsTyp, @PathParam("ticketId") String ticketId) {
+      @PathVariable("intygsTyp") String intygsTyp, @PathVariable("ticketId") String ticketId) {
     final var sb = underskriftService.signeringsStatus(ticketId);
-    return convertToSignatureStateDTO(sb);
-  }
-
-  @POST
-  @Path("/{intygsTyp}/{biljettId}/signeranetidplugin")
-  @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-  @PerformanceLogging(
-      eventAction = "signature-client-sign-draft",
-      eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-  public SignaturStateDTO klientSigneraUtkast(
-      @PathParam("intygsTyp") String intygsTyp,
-      @PathParam("biljettId") String biljettId,
-      @Context HttpServletRequest request,
-      KlientSignaturRequest signaturRequest) {
-
-    LOG.debug("Signerar intyg med biljettId {}", biljettId);
-
-    if (signaturRequest.getSignatur() == null) {
-      LOG.error("Inkommande signaturRequest saknar signatur");
-      throw new WebCertServiceException(
-          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Signatur saknas");
-    }
-    if (Strings.isNullOrEmpty(signaturRequest.getCertifikat())) {
-      LOG.error("Inkommande signaturRequest saknar x509 certifikat.");
-      throw new WebCertServiceException(
-          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Certifikat saknas");
-    }
-
-    SignaturBiljett sb = null;
-    try {
-      sb =
-          underskriftService.netidSignature(
-              biljettId, signaturRequest.getSignatur(), signaturRequest.getCertifikat());
-    } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-      sb = underskriftService.signeringsStatus(biljettId);
-      monitoringLogService.logUtkastConcurrentlyEdited(sb.getIntygsId(), intygsTyp);
-      throw new WebCertServiceException(
-          WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-    }
-
-    request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
-
     return convertToSignatureStateDTO(sb);
   }
 }

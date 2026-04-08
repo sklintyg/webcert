@@ -35,7 +35,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.facade.list.PaginationAndLoggingServiceImpl;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;

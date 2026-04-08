@@ -33,10 +33,10 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation.PaTitle;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 class IntygConverterUtilTest {

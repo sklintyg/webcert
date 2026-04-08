@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.stereotype.Component;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -44,6 +45,7 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 
+@Component
 @Slf4j
 @SchemaValidation
 public class ListCertificatesForCareWithQAResponderImpl

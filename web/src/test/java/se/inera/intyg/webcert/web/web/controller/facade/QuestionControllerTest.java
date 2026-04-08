@@ -82,7 +82,7 @@ class QuestionControllerTest {
         .getQuestions("test");
     final var actualResponse = questionController.getQuestions("test");
 
-    assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
+    assertNotNull(((QuestionsResponseDTO) actualResponse.getBody()).getQuestions().get(0));
   }
 
   @Test
@@ -92,9 +92,9 @@ class QuestionControllerTest {
         .getComplementQuestions("test");
     final var actualResponse = questionController.getComplementQuestions("test");
 
-    assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
+    assertNotNull(((QuestionsResponseDTO) actualResponse.getBody()).getQuestions().get(0));
     Assertions.assertTrue(
-        ((QuestionsResponseDTO) actualResponse.getEntity())
+        ((QuestionsResponseDTO) actualResponse.getBody())
             .getQuestions()
             .get(0)
             .getLinks()
@@ -117,14 +117,14 @@ class QuestionControllerTest {
 
     final var actualResponse = questionController.createQuestion(createQuestionRequestDTO);
 
-    assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    assertNotNull(((QuestionResponseDTO) actualResponse.getBody()).getQuestion());
   }
 
   @Test
   void shallDeleteQuestion() {
     final var actualResponse = questionController.deleteQuestion("test");
 
-    assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+    assertEquals(HttpStatus.OK.value(), actualResponse.getStatusCode().value());
 
     verify(deleteQuestionFacadeService).delete("test");
   }
@@ -141,10 +141,10 @@ class QuestionControllerTest {
         questionController.saveQuestion(
             saveQuestionRequestDTO.getQuestion().getId(), saveQuestionRequestDTO);
 
-    assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+    assertEquals(HttpStatus.OK.value(), actualResponse.getStatusCode().value());
 
     verify(saveQuestionFacadeService).save(question);
-    assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    assertNotNull(((QuestionResponseDTO) actualResponse.getBody()).getQuestion());
   }
 
   @Test
@@ -159,10 +159,10 @@ class QuestionControllerTest {
         questionController.sendQuestion(
             sendQuestionRequestDTO.getQuestion().getId(), sendQuestionRequestDTO);
 
-    assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+    assertEquals(HttpStatus.OK.value(), actualResponse.getStatusCode().value());
 
     verify(sendQuestionFacadeService).send(question);
-    assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    assertNotNull(((QuestionResponseDTO) actualResponse.getBody()).getQuestion());
   }
 
   @Test
@@ -177,8 +177,8 @@ class QuestionControllerTest {
 
     final var actualResponse = questionController.saveQuestionAnswer(questionId, answerRequestDTO);
 
-    assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
-    assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    assertEquals(HttpStatus.OK.value(), actualResponse.getStatusCode().value());
+    assertNotNull(((QuestionResponseDTO) actualResponse.getBody()).getQuestion());
   }
 
   @Test
@@ -189,8 +189,8 @@ class QuestionControllerTest {
 
     final var actualResponse = questionController.deleteQuestionAnswer(questionId);
 
-    assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
-    assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    assertEquals(HttpStatus.OK.value(), actualResponse.getStatusCode().value());
+    assertNotNull(((QuestionResponseDTO) actualResponse.getBody()).getQuestion());
   }
 
   @Test
@@ -205,8 +205,8 @@ class QuestionControllerTest {
 
     final var actualResponse = questionController.sendQuestionAnswer(questionId, answerRequestDTO);
 
-    assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
-    assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    assertEquals(HttpStatus.OK.value(), actualResponse.getStatusCode().value());
+    assertNotNull(((QuestionResponseDTO) actualResponse.getBody()).getQuestion());
   }
 
   @Test
@@ -221,7 +221,7 @@ class QuestionControllerTest {
 
     final var actualResponse = questionController.handleQuestion(questionId, handleRequestDTO);
 
-    assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
-    assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+    assertEquals(HttpStatus.OK.value(), actualResponse.getStatusCode().value());
+    assertNotNull(((QuestionResponseDTO) actualResponse.getBody()).getQuestion());
   }
 }

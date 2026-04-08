@@ -22,7 +22,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
+import se.inera.intyg.webcert.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 

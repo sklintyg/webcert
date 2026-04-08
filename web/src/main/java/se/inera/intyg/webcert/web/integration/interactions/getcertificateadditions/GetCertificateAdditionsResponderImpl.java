@@ -28,6 +28,7 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IIType;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.inera.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
@@ -38,7 +39,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateaddit
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.IntygAdditionsType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.StatusType;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
@@ -46,6 +47,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.util.StreamUtil;
 
 /** Created by eriklupander on 2017-05-11. */
+@Component
 @SchemaValidation
 public class GetCertificateAdditionsResponderImpl
     implements GetCertificateAdditionsResponderInterface {

@@ -18,19 +18,20 @@
  */
 package se.inera.intyg.webcert.notificationstub;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 import se.inera.intyg.webcert.notificationstub.v3.stat.NotificationStubEntry;
@@ -38,23 +39,22 @@ import se.inera.intyg.webcert.notificationstub.v3.stat.StatTransformerUtil;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 // CHECKSTYLE:OFF LineLength
+@RestController
+@Profile("dev")
+@RequestMapping("/api/notification-api")
 public class NotificationStubRestApi {
 
   @Autowired private NotificationStoreV3 notificationStoreV3;
 
   @Autowired private NotificationStubStateBean stubStateBean;
 
-  @GET
-  @Path("/notifieringar/v3")
-  @Produces(MediaType.APPLICATION_JSON)
+  @GetMapping(value = "/notifieringar/v3", produces = MediaType.APPLICATION_JSON_VALUE)
   public Collection<CertificateStatusUpdateForCareType> notifieringarV3() {
     return notificationStoreV3.getNotifications();
   }
 
-  @GET
-  @Path("/notifieringar/v3/stats")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response notifieringarV3Stats() {
+  @GetMapping(value = "/notifieringar/v3/stats", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> notifieringarV3Stats() {
     Collection<CertificateStatusUpdateForCareType> notifs = notificationStoreV3.getNotifications();
     Map<String, List<NotificationStubEntry>> stringListMap =
         new StatTransformerUtil().toStat(notifs);
@@ -71,28 +71,26 @@ public class NotificationStubRestApi {
                       .append("\n"));
       buf.append("-----------------------------------------------\n\n");
     }
-    return Response.ok(buf.toString()).build();
+    return ResponseEntity.ok(buf.toString());
   }
 
-  @POST
-  @Path("/clear")
-  public void clear() {
+  @PostMapping("/clear")
+  public ResponseEntity<Void> clear() {
     notificationStoreV3.clear();
+    return ResponseEntity.noContent().build();
   }
 
-  @GET
-  @Path("/notifieringar/v3/emulateError")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getErrorCode() {
-    String errorCode = stubStateBean.getErrorCode();
-    return Response.ok("Stub is set to emulateError with code " + errorCode).build();
+  @GetMapping(value = "/notifieringar/v3/emulateError", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> getErrorCode() {
+    return ResponseEntity.ok(
+        "Stub is set to emulateError with code " + stubStateBean.getErrorCode());
   }
 
-  @GET
-  @Path("/notifieringar/v3/emulateError/{errorCode}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response setErrorCode(@PathParam("errorCode") String errorCode) {
+  @GetMapping(
+      value = "/notifieringar/v3/emulateError/{errorCode}",
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> setErrorCode(@PathVariable("errorCode") String errorCode) {
     stubStateBean.setErrorCode(errorCode);
-    return Response.ok("Stub set to emulateError with code " + errorCode).build();
+    return ResponseEntity.ok("Stub set to emulateError with code " + errorCode);
   }
 }

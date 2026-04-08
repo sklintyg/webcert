@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.csintegration.unit;
 
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 
 @Component
 public class CertificateServiceVardenhetConverter {

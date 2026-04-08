@@ -53,11 +53,11 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -280,13 +280,14 @@ class CertificateStatusUpdateForCareCreatorTest {
 
   private Vardgivare createCareProvider() {
     final var careProviderInfra =
-        new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare();
+        new se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare();
     careProviderInfra.setId(CARE_PROVIDER_ID);
     return careProviderInfra;
   }
 
   private Vardenhet createCareUnit() {
-    final var careUnitInfra = new se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet();
+    final var careUnitInfra =
+        new se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet();
     careUnitInfra.setId(UNIT_ID);
     return careUnitInfra;
   }

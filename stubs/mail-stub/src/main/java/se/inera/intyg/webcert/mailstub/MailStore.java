@@ -22,12 +22,14 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
  * @author andreaskaltenbach
  */
 @Component
+@Profile("dev")
 public class MailStore {
 
   private static final Logger LOG = LoggerFactory.getLogger(MailStore.class);

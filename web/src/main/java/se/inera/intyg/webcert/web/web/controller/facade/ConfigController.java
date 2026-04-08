@@ -19,28 +19,28 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import se.inera.intyg.infra.driftbannerdto.Application;
-import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
-import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
-import se.inera.intyg.infra.integration.ia.services.IABannerService;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.infra.driftbannerdto.Application;
+import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
+import se.inera.intyg.webcert.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.webcert.infra.ia.services.IABannerService;
+import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 
-@Path("/configuration")
+@RestController
+@RequestMapping("/api/configuration")
 @Slf4j
 public class ConfigController {
 
@@ -76,14 +76,12 @@ public class ConfigController {
     SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
   }
 
-  @GET
-  @Path("/")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-configuration",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public Response getConfiguration() {
+  public ResponseEntity<ConfigurationDTO> getConfiguration() {
     if (log.isDebugEnabled()) {
       log.debug("Getting configuration");
     }
@@ -112,9 +110,7 @@ public class ConfigController {
         .build();
   }
 
-  @GET
-  @Path("/links")
-  @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+  @GetMapping("/links")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-dynamic-links",

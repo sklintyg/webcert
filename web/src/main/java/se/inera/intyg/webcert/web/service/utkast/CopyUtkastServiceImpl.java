@@ -37,13 +37,13 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.pu.integration.api.model.Person;
-import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
-import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.infra.pu.integration.api.model.Person;
+import se.inera.intyg.webcert.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.webcert.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.logging.HashUtility;
@@ -97,7 +97,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
   @Qualifier("copyCompletionUtkastBuilder") private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
 
   @Autowired
-  @Qualifier("createRenewalUtkastBuilder") private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
+  @Qualifier("createRenewalCopyUtkastBuilder") private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
 
   @Autowired
   @Qualifier("createReplacementUtkastBuilder") private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
