@@ -16,21 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.config;
+package se.inera.intyg.webcert.web.config;
 
+import io.prometheus.client.servlet.jakarta.exporter.MetricsServlet;
+import lombok.RequiredArgsConstructor;
+import org.apache.cxf.transport.servlet.CXFServlet;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
 
 @Configuration
-public class ServiceNowStubBeanConfig {
+@RequiredArgsConstructor
+public class WebServletConfig {
+
+  private final MetricsServlet metricsServlet;
 
   @Bean
-  public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-    final var propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-    propertySourcesPlaceholderConfigurer.setLocation(
-        new ClassPathResource("application.properties"));
-    return propertySourcesPlaceholderConfigurer;
+  public ServletRegistrationBean<CXFServlet> cxfServlet() {
+    var registration = new ServletRegistrationBean<>(new CXFServlet(), "/services/*");
+    registration.setName("services");
+    registration.setLoadOnStartup(1);
+    return registration;
+  }
+
+  @Bean
+  public ServletRegistrationBean<MetricsServlet> metricsServletRegistrationBean() {
+    var registration = new ServletRegistrationBean<>(metricsServlet, "/metrics");
+    registration.setName("metrics");
+    return registration;
   }
 }

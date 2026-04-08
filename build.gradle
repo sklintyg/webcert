@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.com.github.ben.manes.versions)
     alias(libs.plugins.org.cyclonedx.bom)
     alias(libs.plugins.org.sonarqube)
-    id "org.gretty" version "4.1.10" apply false
+    alias(libs.plugins.org.springframework.boot) apply false
 }
 
 ext {

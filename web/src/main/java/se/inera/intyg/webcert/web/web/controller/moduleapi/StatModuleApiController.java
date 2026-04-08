@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import com.google.common.base.Joiner;
-import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,6 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardgivareStats;
  */
 @RestController
 @RequestMapping("/moduleapi/stat")
-@Api(value = "stat", produces = "application/json")
 public class StatModuleApiController extends AbstractApiController {
 
   private static final String SEPARATOR = " - ";

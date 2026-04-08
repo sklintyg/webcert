@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -44,10 +43,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorag
  */
 @RestController
 @RequestMapping("/api/anvandare")
-@Api(
-    value = "anvandare",
-    description = "REST API för användarhantering",
-    produces = "application/json")
 public class UserApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);

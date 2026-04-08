@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.authtestability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import io.swagger.annotations.Api;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -45,7 +44,6 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  * Rest interface only used for testing and in dev environments. It seems like it must be in the
  * same Spring context as the rest of the webservices to get access to the security context.
  */
-@Api(value = "user service", produces = "application/json")
 @RestController
 @RequestMapping("/authtestability/user")
 @Profile("!prod")

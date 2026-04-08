@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import io.swagger.annotations.Api;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 
-@Api(value = "testability fmb", description = "REST API för testbarhet - FMB")
 @RestController
 @RequestMapping("/testability/fmb")
 @Profile({"dev", "testability-api"})

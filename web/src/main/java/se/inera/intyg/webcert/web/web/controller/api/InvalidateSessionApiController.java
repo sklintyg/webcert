@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
 @RestController
 @RequestMapping("/api/v1/session")
-@Api(value = "invalidateSession", produces = "application/json")
 public class InvalidateSessionApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(InvalidateSessionApiController.class);

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,6 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
  */
 @RestController
 @RequestMapping("/moduleapi/diagnos")
-@Api(value = "diagnos", produces = "application/json")
 public class DiagnosModuleApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);

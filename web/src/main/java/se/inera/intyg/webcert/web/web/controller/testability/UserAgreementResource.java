@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +34,6 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepos
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 
 @Transactional
-@Api(value = "services anvandare", description = "REST API för testbarhet - Användare")
 @RestController
 @RequestMapping("/testability/anvandare")
 @Profile({"dev", "testability-api"})

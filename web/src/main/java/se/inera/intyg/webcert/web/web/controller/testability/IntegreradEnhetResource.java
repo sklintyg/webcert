@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -39,9 +36,6 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhet
  * Testbarhetsresurs för att till och börja med radera och lista identifierade integrerade
  * vårdenheter.
  */
-@Api(
-    value = "testability integreradevardenheter",
-    description = "REST API för testbarhet - Integrerade vårdenheter")
 @RestController
 @RequestMapping("/testability/integreradevardenheter")
 @Profile({"dev", "testability-api"})
@@ -53,11 +47,6 @@ public class IntegreradEnhetResource {
   @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
   @DeleteMapping("/{hsaId}")
-  @ApiResponses(
-      value = {
-        @ApiResponse(code = OK, message = "Given identified integrated unit was deleted"),
-        @ApiResponse(code = BAD_REQUEST, message = "If supplied hsaId was null or blank")
-      })
   public ResponseEntity<String> deleteIntegreradVardenhet(@PathVariable("hsaId") String hsaId) {
     if (isNullOrEmpty(hsaId)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Specified hsaId is null or blank");
@@ -72,14 +61,11 @@ public class IntegreradEnhetResource {
   }
 
   @GetMapping
-  @ApiResponses(
-      value = {@ApiResponse(code = OK, message = "Listed current set of integrerade Vårdenheter")})
   public ResponseEntity<Object> getIntegreradeVardenheter() {
     return ResponseEntity.ok(integreradeEnheterRegistry.getIntegreradeVardenheter());
   }
 
   @PostMapping
-  @ApiResponses(value = {@ApiResponse(code = OK, message = "Registered integrerad vardenhet")})
   public ResponseEntity<IntegreradEnhetEntryWithSchemaVersion> registerIntegreradVardenhet(
       @RequestBody IntegreradEnhetEntryWithSchemaVersion enhet) {
     integreradeEnheterRegistry.putIntegreradEnhet(

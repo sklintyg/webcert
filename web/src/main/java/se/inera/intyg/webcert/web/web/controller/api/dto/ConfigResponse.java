@@ -19,48 +19,33 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
 
-@ApiModel(description = "The global configuration of Webcert")
 public class ConfigResponse {
 
-  @ApiModelProperty(name = "VERSION", dataType = "String")
   private String version;
 
-  @ApiModelProperty(name = "BUILD_NUMBER", dataType = "String")
   private String buildNumber;
 
-  @ApiModelProperty(name = "PP_HOST", dataType = "String")
   private String ppHost;
 
-  @ApiModelProperty(name = "DASHBOARD_URL", dataType = "String")
   private String dashboardUrl;
 
-  @ApiModelProperty(name = "JS_MINIFIED", dataType = "Boolean")
   private Boolean jsMinified;
 
-  @ApiModelProperty(name = "SAKERHETSTJANST_IDP_URL", dataType = "String")
   private String sakerhetstjanstIdpUrl;
 
-  @ApiModelProperty(name = "CGI_FUNKTIONSTJANSTER_IDP_URL", dataType = "String")
   private String cgiFunktionstjansterIdpUrl;
 
-  @ApiModelProperty(name = "BANNERS")
   private List<Banner> banners;
 
-  @ApiModelProperty(name = "WEBCERT_USER_SURVEY_URL", dataType = "String")
   private String webcertUserSurveyUrl;
 
-  @ApiModelProperty(name = "WEBCERT_USER_SURVEY_DATE_TO", dataType = "String")
   private String webcertUserSurveyDateTo;
 
-  @ApiModelProperty(name = "WEBCERT_USER_SURVEY_DATE_FROM", dataType = "String")
   private String webcertUserSurveyDateFrom;
 
-  @ApiModelProperty(name = "WEBCERT_USER_SURVEY_VERSION", dataType = "String")
   private String webcertUserSurveyVersion;
 
   // CHECKSTYLE:OFF ParameterNumber

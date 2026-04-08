@@ -27,7 +27,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
@@ -52,20 +51,11 @@ public class NotificationCamelConfig {
     return new NotificationAggregator();
   }
 
-  // Bean name matches the XML id "processNotificationRequestRouteBuilder"
-  // referenced by the CamelContext and used in Camel bean lookups.
   @Bean
   public NotificationRouteBuilder processNotificationRequestRouteBuilder() {
     return new NotificationRouteBuilder();
   }
 
-  @Bean
-  public ObjectMapper objectMapper() {
-    return new CustomObjectMapper();
-  }
-
-  // Bean name "notificationMessageDataFormat" is referenced in routes via
-  // .unmarshal("notificationMessageDataFormat")
   @Bean
   public JacksonDataFormat notificationMessageDataFormat(ObjectMapper objectMapper) {
     return new JacksonDataFormat(objectMapper, NotificationMessage.class);

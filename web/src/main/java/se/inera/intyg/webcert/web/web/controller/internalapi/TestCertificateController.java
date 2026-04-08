@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +34,6 @@ import se.inera.intyg.webcert.web.service.testcertificate.TestCertificateService
 /** Internal REST endpoint for managing test certificates. */
 @RestController
 @RequestMapping("/internalapi/testCertificate")
-@Api(value = "/internalapi/testCertificate", produces = "application/json")
 public class TestCertificateController {
 
   @Autowired private TestCertificateService testCertificateService;

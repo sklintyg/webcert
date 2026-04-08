@@ -75,10 +75,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisIndexedHttpSession;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.util.ResourceUtils;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import se.inera.intyg.webcert.infra.security.common.cookie.IneraCookieSerializer;
 import se.inera.intyg.webcert.web.auth.CsrfCookieFilter;
 import se.inera.intyg.webcert.web.auth.CustomAccessDeniedHandler;
@@ -106,6 +106,9 @@ public class WebSecurityConfig {
   private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
   private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
   private final Environment environment;
+
+  @Value("${webcert.cookie.domain.name:}")
+  private String webcertCookieDomainName;
 
   @Value("${saml.sp.entity.id.eleg}")
   private String samlEntityIdEleg;
@@ -286,14 +289,18 @@ public class WebSecurityConfig {
     return http.build();
   }
 
-  @Bean(name = "mvcHandlerMappingIntrospector")
-  public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
-    return new HandlerMappingIntrospector();
+  @Bean
+  public DefaultCookieSerializer cookieSerializer() {
+    final var serializer = new IneraCookieSerializer(true);
+    if (!webcertCookieDomainName.isBlank()) {
+      serializer.setDomainName(webcertCookieDomainName);
+    }
+    return serializer;
   }
 
   @Bean
-  public DefaultCookieSerializer cookieSerializer() {
-    return new IneraCookieSerializer(true);
+  public HttpSessionEventPublisher httpSessionEventPublisher() {
+    return new HttpSessionEventPublisher();
   }
 
   @Bean

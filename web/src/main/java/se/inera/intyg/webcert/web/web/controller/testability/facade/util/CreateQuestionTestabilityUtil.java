@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;

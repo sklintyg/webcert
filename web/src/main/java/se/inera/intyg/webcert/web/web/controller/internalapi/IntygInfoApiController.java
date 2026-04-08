@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import io.swagger.annotations.Api;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,6 @@ import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @RestController
 @RequestMapping("/internalapi/intygInfo")
-@Api(value = "/internalapi/intygInfo", produces = "application/json")
 public class IntygInfoApiController {
 
   private final IntygInfoServiceInterface intygInfoService;

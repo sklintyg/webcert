@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +43,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
 
 @RestController
 @RequestMapping("/api/config")
-@Api(
-    value = "config",
-    description = "REST API för konfigurationsparametrar",
-    produces = "application/json")
 public class ConfigApiController extends AbstractApiController {
 
   @Value("${project.version}")
@@ -90,10 +84,6 @@ public class ConfigApiController extends AbstractApiController {
   @Autowired private IABannerService iaBannerService;
 
   @GetMapping
-  @ApiOperation(
-      value = "Get module configuration for Webcert",
-      httpMethod = "GET",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-config",
@@ -120,10 +110,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("/links")
-  @ApiOperation(
-      value = "Get dynamic links for Webcert",
-      httpMethod = "GET",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-dynamic-links",
@@ -133,10 +119,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("/kommuner")
-  @ApiOperation(
-      value = "Get list of kommuner from postnummerservice",
-      httpMethod = "GET",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-kommun-list",
@@ -146,10 +128,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("area/{zipcode}")
-  @ApiOperation(
-      value = "Get area for a given area from postnummerservice",
-      httpMethod = "GET",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-area-by-zid-code",

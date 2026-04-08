@@ -1,42 +1,22 @@
 apply plugin: 'org.cyclonedx.bom'
-apply plugin: 'org.gretty'
-apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+
+tasks.named('bootJar') {
+    archiveFileName.set('app.jar')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+springBoot {
+    mainClass = 'se.inera.intyg.webcert.WebcertApplication'
+}
 
 def buildDirectory = project.layout.buildDirectory.get().asFile
+def applicationDir = "${rootProject.projectDir}/devops/dev"
 
 ext {
     generatedJavaDir = file("${buildDirectory}/generatedSource/java")
     xsdBindings = file("src/main/resources/schemas/dss/bindings.xjb")
     xsdDir = file("src/main/resources/schemas/dss")
-}
-
-gretty {
-    def instance = System.properties['instance'] ?: '0'
-    def useHttpPort = 8020 + (instance as Integer)
-    def useInternalHttpPort = 8120 + (instance as Integer)
-    def applicationDir = "${rootProject.projectDir}/devops/dev"
-
-    servletContainer = 'tomcat10'
-    contextPath = '/'
-    integrationTestTask = null
-    scanInterval = 0
-    debugPort = 8820 + (instance as Integer)
-    fastReload = true
-    inplaceMode = 'hard'
-    debugSuspend = false
-    serverConfigFile = "tomcat-gretty.xml"
-
-    jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,testability-api,caching-enabled,ia-stub,certificate-analytics-service-active",
-               "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
-               "-Djava.awt.headless=true",
-               "-Dfile.encoding=UTF-8",
-               "-Dapplication.dir=${applicationDir}",
-               "-Ddev.config.file=${applicationDir}/config/application-dev.properties",
-               "-Ddev.http.port=${useHttpPort}",
-               "-Ddev.http.port.internal=${useInternalHttpPort}",
-               "-Dxml.catalog.cacheEnabled=false"
-    ]
 }
 
 configurations {
@@ -47,8 +27,6 @@ configurations {
 
     testImplemetationClasspath.extendsFrom implementation
 }
-
-war.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 tasks.register('xsd2Java') {
     doLast {
@@ -123,13 +101,11 @@ dependencies {
     implementation "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
 
     implementation "ch.qos.logback:logback-classic"
-    implementation "co.elastic.logging:logback-ecs-encoder"
     implementation "codes.rafael.jaxb2_commons:jaxb2-basics"
     implementation "com.google.guava:guava"
     implementation "commons-io:commons-io"
     implementation "io.prometheus:simpleclient_hotspot"
     implementation "io.prometheus:simpleclient_servlet_jakarta"
-    implementation("io.swagger:swagger-jaxrs") { exclude(module: "jsr311-api") }
     implementation "io.vavr:vavr"
     implementation "jakarta.mail:jakarta.mail-api"
     implementation "jakarta.persistence:jakarta.persistence-api"
@@ -143,19 +119,18 @@ dependencies {
     implementation "org.apache.lucene:lucene-analysis-common"
     implementation "org.hibernate.orm:hibernate-core"
     implementation "org.jxls:jxls-poi"
+    implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.data:spring-data-jpa"
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
     implementation "org.springframework.session:spring-session-data-redis"
     implementation "org.springframework:spring-jms"
-    implementation "org.springframework:spring-webmvc"
     implementation "org.springframework.ws:spring-xml"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9"
 
     implementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
 
     annotationProcessor 'org.projectlombok:lombok'
-
-    runtimeOnly "org.springframework:spring-webmvc"
 
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
@@ -173,4 +148,32 @@ dependencies {
 
     xsdgen "org.glassfish.jaxb:jaxb-xjc:${xsdgenVersion}"
     xsdgen "com.sun.xml.bind:jaxb-impl:${xsdgenVersion}"
+}
+
+bootRun {
+    systemProperty("spring.profiles.active", "dev,testability-api,caching-enabled,ia-stub,certificate-analytics-service-active")
+    systemProperty("spring.config.additional-location", "file:${applicationDir}/config/")
+    jvmArgs = [
+            "-Djava.awt.headless=true",
+            "-Dfile.encoding=UTF-8",
+            "-Dapplication.dir=${applicationDir}",
+            "-Ddev.http.port=8020",
+            "-Ddev.http.port.internal=8120",
+            "-Dxml.catalog.cacheEnabled=false"
+    ]
+}
+
+tasks.register("appRunDebug") {
+    println("######## Running in Debug mode ########")
+    doFirst {
+        bootRun.configure {
+            jvmArgs += ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8820"]
+        }
+    }
+    finalizedBy("bootRun")
+}
+
+tasks.register("appRun") {
+    println("######## Running in normal mode ########")
+    finalizedBy("bootRun")
 }

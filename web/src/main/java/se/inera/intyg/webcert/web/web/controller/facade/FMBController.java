@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,6 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
  */
 @RestController
 @RequestMapping("/moduleapi/intyg")
-@Api(value = "/moduleapi/intyg", produces = "application/json")
 public class IntygModuleApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);

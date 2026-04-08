@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,10 +48,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 // CHECKSTYLE:OFF ParameterNumber
 @RestController
 @RequestMapping("/api/srs")
-@Api(
-    value = "srs",
-    description = "REST API för Stöd för rätt sjukskrivning",
-    produces = "application/json")
 public class SrsApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(SrsApiController.class);
@@ -68,35 +59,20 @@ public class SrsApiController extends AbstractApiController {
   @Autowired private SrsService srsService;
 
   @PostMapping("/{intygId}/{personnummer}/{diagnosisCode}")
-  @ApiOperation(value = "Get SRS data", httpMethod = "POST", produces = "application/json")
-  @ApiResponses(
-      value = {
-        @ApiResponse(code = OK, message = "SRS data found", response = SrsResponse.class),
-        @ApiResponse(code = BAD_REQUEST, message = "Bad request"),
-        @ApiResponse(code = NO_CONTENT, message = "No prediction model found")
-      })
   @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "srs-get-srs", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public ResponseEntity<SrsResponse> getSrs(
-      @ApiParam(value = "Intyg id", required = true) @PathVariable("intygId") String intygId,
-      @ApiParam(value = "Personnummer", required = true) @PathVariable("personnummer")
-          String personnummer,
-      @ApiParam(value = "Diagnosis Code", required = true) @PathVariable("diagnosisCode")
-          String diagnosisCode,
-      @ApiParam(value = "Utdatafilter: Prediktion")
-          @RequestParam(value = "prediktion", required = false, defaultValue = "false")
+      @PathVariable("intygId") String intygId,
+      @PathVariable("personnummer") String personnummer,
+      @PathVariable("diagnosisCode") String diagnosisCode,
+      @RequestParam(value = "prediktion", required = false, defaultValue = "false")
           boolean prediktion,
-      @ApiParam(value = "Utdatafilter: AtgardRekommendation")
-          @RequestParam(value = "atgard", required = false, defaultValue = "false")
-          boolean atgard,
-      @ApiParam(value = "Utdatafilter: Statistik")
-          @RequestParam(value = "statistik", required = false, defaultValue = "false")
+      @RequestParam(value = "atgard", required = false, defaultValue = "false") boolean atgard,
+      @RequestParam(value = "statistik", required = false, defaultValue = "false")
           boolean statistik,
-      @ApiParam(value = "Dag i sjukskrivning")
-          @RequestParam(value = "daysIntoSickLeave", required = false, defaultValue = "15")
+      @RequestParam(value = "daysIntoSickLeave", required = false, defaultValue = "15")
           Integer daysIntoSickLeave,
-      @ApiParam(value = "Svar på frågor") @RequestBody(required = false)
-          List<SrsQuestionResponse> questions) {
+      @RequestBody(required = false) List<SrsQuestionResponse> questions) {
     authoritiesValidator
         .given(getWebCertUserService().getUser())
         .features(AuthoritiesConstants.FEATURE_SRS)
@@ -128,19 +104,13 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @GetMapping("/questions/{diagnosisCode}")
-  @ApiOperation(
-      value = "Get questions for diagnosis code",
-      httpMethod = "GET",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-get-question",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public ResponseEntity<List<SrsQuestion>> getQuestions(
-      @ApiParam(value = "Diagnosis code") @PathVariable("diagnosisCode") String diagnosisCode,
-      @ApiParam(value = "Prediction model version")
-          @RequestParam(value = "modelVersion", required = false)
-          String modelVersion) {
+      @PathVariable("diagnosisCode") String diagnosisCode,
+      @RequestParam(value = "modelVersion", required = false) String modelVersion) {
     authoritiesValidator
         .given(getWebCertUserService().getUser())
         .features(AuthoritiesConstants.FEATURE_SRS)
@@ -154,18 +124,13 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @GetMapping("/consent/{personnummer}/{vardenhetHsaId}")
-  @ApiOperation(
-      value = "Get consent for patient and careunit",
-      httpMethod = "GET",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-get-consent",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public ResponseEntity<Samtyckesstatus> getConsent(
-      @ApiParam(value = "Personnummer") @PathVariable("personnummer") String personnummer,
-      @ApiParam(value = "HsaId för vårdenhet") @PathVariable("vardenhetHsaId")
-          String careUnitHsaId) {
+      @PathVariable("personnummer") String personnummer,
+      @PathVariable("vardenhetHsaId") String careUnitHsaId) {
     authoritiesValidator
         .given(getWebCertUserService().getUser())
         .features(AuthoritiesConstants.FEATURE_SRS)
@@ -179,17 +144,13 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @PutMapping("/consent/{personnummer}/{vardenhetHsaId}")
-  @ApiOperation(
-      value = "Set consent for patient and careunit",
-      httpMethod = "PUT",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-set-consent",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public ResponseEntity<ResultCodeEnum> setConsent(
-      @ApiParam(value = "Personnummer") @PathVariable("personnummer") String personnummer,
-      @ApiParam(value = "HsaId för vårdenhet") @PathVariable("vardenhetHsaId") String careUnitHsaId,
+      @PathVariable("personnummer") String personnummer,
+      @PathVariable("vardenhetHsaId") String careUnitHsaId,
       @RequestBody boolean consent) {
     authoritiesValidator
         .given(getWebCertUserService().getUser())
@@ -205,23 +166,16 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @PutMapping("/opinion/{personnummer}/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}/{diagnoskod}")
-  @ApiOperation(
-      value = "Set own opinion for risk prediction",
-      httpMethod = "PUT",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-set-own-opinion",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public ResponseEntity<ResultCodeEnum> setOwnOpinion(
-      @ApiParam(value = "Personnummer") @PathVariable("personnummer") String personnummer,
-      @ApiParam(value = "HSA-Id för vårdgivare") @PathVariable("vardgivareHsaId")
-          String vardgivareHsaId,
-      @ApiParam(value = "HSA-Id för vårdenhet") @PathVariable("vardenhetHsaId")
-          String vardenhetHsaId,
-      @ApiParam(value = "Intyg id", required = true) @PathVariable("intygId") String intygId,
-      @ApiParam(value = "Diagnoskod", required = true) @PathVariable("diagnoskod")
-          String diagnosisCode,
+      @PathVariable("personnummer") String personnummer,
+      @PathVariable("vardgivareHsaId") String vardgivareHsaId,
+      @PathVariable("vardenhetHsaId") String vardenhetHsaId,
+      @PathVariable("intygId") String intygId,
+      @PathVariable("diagnoskod") String diagnosisCode,
       @RequestBody String opinion) {
     authoritiesValidator
         .given(getWebCertUserService().getUser())
@@ -244,9 +198,7 @@ public class SrsApiController extends AbstractApiController {
       eventAction = "srs-get-diagnosis-codes",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public ResponseEntity<List<String>> getDiagnosisCodes(
-      @ApiParam(value = "Prediction model version")
-          @RequestParam(value = "modelVersion", required = false)
-          String modelVersion) {
+      @RequestParam(value = "modelVersion", required = false) String modelVersion) {
     authoritiesValidator
         .given(getWebCertUserService().getUser())
         .features(AuthoritiesConstants.FEATURE_SRS)
@@ -255,10 +207,6 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @GetMapping("/atgarder/{diagnosisCode}")
-  @ApiOperation(
-      value = "Get SRS info for diagnosecode",
-      httpMethod = "GET",
-      produces = "application/json")
   @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-get-srs-for-diagnosis-codes",

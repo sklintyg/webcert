@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +34,6 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 
 @RestController
 @RequestMapping("/internalapi/certificate")
-@Api(value = "/internalapi/certificate", produces = "application/json")
 public class CertificateInternalApiController {
 
   private final GetCertificateInteralApi getCertificateInternalAggregator;

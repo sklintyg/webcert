@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Class that wraps the result of an access service evaluation. Contains AccessResultCode and String

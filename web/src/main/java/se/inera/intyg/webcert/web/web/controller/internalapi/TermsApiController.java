@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +29,6 @@ import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 
 @RestController
 @RequestMapping("/internalapi/terms")
-@Api(value = "/internalapi/terms/approved", produces = "application/json")
 public class TermsApiController {
 
   @Autowired private AvtalService avtalService;

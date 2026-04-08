@@ -31,7 +31,6 @@ import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringReques
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.USER_CLIENT_CONTEXT;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 /** Controller that logs messages from JavaScript to the normal log. */
 @RestController
 @RequestMapping("/api/jslog")
-@Api(value = "jslog", produces = "application/json")
 public class JsLogApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);
