@@ -265,8 +265,7 @@ public class CertificateController {
       eventAction = "certificate-replace-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
   public ResponseEntity<ReplaceCertificateResponseDTO> replaceCertificate(
-      @PathVariable("certificateId") @NotNull String certificateId,
-      @RequestBody(required = false) @NotNull NewCertificateRequestDTO newCertificateRequestDTO) {
+      @PathVariable("certificateId") @NotNull String certificateId) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Replacing certificate with id: '{}'", certificateId);
     }

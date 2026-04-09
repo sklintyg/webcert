@@ -59,7 +59,7 @@ public class IntygModuleApiController extends AbstractApiController {
   @PerformanceLogging(
       eventAction = "intyg-module-get-certificate-as-pdf",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public final ResponseEntity<byte[]> getIntygAsPdf(
+  public ResponseEntity<byte[]> getIntygAsPdf(
       @PathVariable("intygsTyp") String intygsTyp,
       @PathVariable("intygsId") final String intygsId,
       HttpServletRequest request) {
@@ -78,7 +78,7 @@ public class IntygModuleApiController extends AbstractApiController {
   @PerformanceLogging(
       eventAction = "intyg-module-get-certificate-as-pdf-for-employer",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public final ResponseEntity<byte[]> getIntygAsPdfForEmployer(
+  public ResponseEntity<byte[]> getIntygAsPdfForEmployer(
       @PathVariable("intygsTyp") String intygsTyp,
       @PathVariable("intygsId") final String intygsId,
       HttpServletRequest request) {
