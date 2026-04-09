@@ -34,4 +34,5 @@ public class ConfigurationDTO {
   String cgiFunktionstjansterIdpUrl;
   String forwardDraftOrQuestionUrl;
   List<String> idpConnectUrls;
+  Integer webcertFrontendApiTimeout;
 }
