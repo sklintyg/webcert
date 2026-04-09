@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
@@ -59,7 +58,6 @@ public class LaunchIntegrationController extends BaseIntegrationController {
   private static final Logger LOG = LoggerFactory.getLogger(LaunchIntegrationController.class);
 
   @GetMapping("/certificate/{certificateId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "launch-integration-get-redirect-to-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -73,7 +71,6 @@ public class LaunchIntegrationController extends BaseIntegrationController {
   }
 
   @GetMapping("/certificate/{certificateId}/questions")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "launch-integration-direct-to-certificate-questions",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

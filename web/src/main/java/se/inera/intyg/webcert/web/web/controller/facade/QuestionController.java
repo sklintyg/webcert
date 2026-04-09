@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
@@ -70,7 +69,6 @@ public class QuestionController {
   @Autowired private HandleQuestionFacadeService handleQuestionAggregator;
 
   @GetMapping("/{certificateId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-get-questions",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -86,7 +84,6 @@ public class QuestionController {
   }
 
   @GetMapping("/{certificateId}/complements")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-get-complement-questions",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -102,7 +99,6 @@ public class QuestionController {
   }
 
   @DeleteMapping("/{questionId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-delete-questions",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
@@ -117,7 +113,6 @@ public class QuestionController {
   }
 
   @PostMapping
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-create-question",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
@@ -140,7 +135,6 @@ public class QuestionController {
   }
 
   @PostMapping("/{questionId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-save-question",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -157,7 +151,6 @@ public class QuestionController {
   }
 
   @PostMapping("/{questionId}/send")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-send-question",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -174,7 +167,6 @@ public class QuestionController {
   }
 
   @PostMapping("/{questionId}/saveanswer")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-save-question-answer",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -192,7 +184,6 @@ public class QuestionController {
   }
 
   @DeleteMapping("/{questionId}/answer")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-delete-question-answer",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
@@ -208,7 +199,6 @@ public class QuestionController {
   }
 
   @PostMapping("/{questionId}/sendanswer")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-send-question-answer",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -226,7 +216,6 @@ public class QuestionController {
   }
 
   @PostMapping("/{questionId}/handle")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "question-handle-question",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)

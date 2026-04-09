@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
@@ -79,7 +78,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
    * @param intygId The id of the certificate to view.
    */
   @GetMapping("/{type}/{intygId}/questions")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fragasvar-redirect-to-certificate-with-type",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -99,7 +97,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
   }
 
   @GetMapping("/{intygId}/questions")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fragasvar-redirect-to-certificate-without-type",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

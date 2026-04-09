@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
@@ -47,7 +46,6 @@ public class CertificateInternalApiController {
   }
 
   @PostMapping("/{certificateId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-internal-get-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -58,7 +56,6 @@ public class CertificateInternalApiController {
   }
 
   @PostMapping("/{certificateId}/pdf")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-internal-get-pdf-data",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

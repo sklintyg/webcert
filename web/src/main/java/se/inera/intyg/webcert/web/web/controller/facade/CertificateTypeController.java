@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypeInfoModalFacadeService;
@@ -58,7 +57,6 @@ public class CertificateTypeController {
   }
 
   @GetMapping("/{patientId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-type-get-certificate-types",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -78,7 +76,6 @@ public class CertificateTypeController {
   }
 
   @GetMapping("/modal/{certificateType}/{patientId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-type-get-info-modal",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

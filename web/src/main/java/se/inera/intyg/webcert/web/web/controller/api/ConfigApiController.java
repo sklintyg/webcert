@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.webcert.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.webcert.infra.ia.services.IABannerService;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.postnummer.service.PostnummerService;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -82,7 +81,6 @@ public class ConfigApiController extends AbstractApiController {
   @Autowired private IABannerService iaBannerService;
 
   @GetMapping
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-config",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -108,7 +106,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("/links")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-dynamic-links",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -117,7 +114,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("/kommuner")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-kommun-list",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -126,7 +122,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("area/{zipcode}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-area-by-zid-code",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

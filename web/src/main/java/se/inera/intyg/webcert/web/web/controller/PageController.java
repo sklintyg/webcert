@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriComponentsBuilder;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -59,7 +58,6 @@ public class PageController {
   @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
   @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "page-redirect-to-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

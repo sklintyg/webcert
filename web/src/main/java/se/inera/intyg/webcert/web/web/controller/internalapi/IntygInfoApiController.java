@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.intyginfo.dto.WcIntygInfo;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
@@ -44,7 +43,6 @@ public class IntygInfoApiController {
   }
 
   @GetMapping("/{intygId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "intyg-info-get-certificate-info",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

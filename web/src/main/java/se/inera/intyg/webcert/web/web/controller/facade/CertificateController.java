@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
@@ -146,7 +145,6 @@ public class CertificateController {
       getCandidateMesssageForCertificateFacadeService;
 
   @GetMapping("/{certificateId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-get-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -162,7 +160,6 @@ public class CertificateController {
   }
 
   @PutMapping("/{certificateId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-save-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
@@ -186,7 +183,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/validate")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-validate-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -202,7 +198,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/sign")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-sign-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -221,7 +216,6 @@ public class CertificateController {
   }
 
   @DeleteMapping("/{certificateId}/{version}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-delete-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_DELETION)
@@ -236,7 +230,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/revoke")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-revoke-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -260,7 +253,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/replace")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-replace-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
@@ -274,7 +266,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/renew")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-renew-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
@@ -288,7 +279,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/template")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-create-certificate-from-template",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
@@ -303,7 +293,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/candidate")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "update-certificate-from-candidate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
@@ -317,7 +306,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/complement")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-complement-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -337,7 +325,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/answercomplement")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-answer-complement-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -357,7 +344,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/copy")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-copy-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
@@ -372,7 +358,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/forward")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-forward-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -395,7 +380,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/readyforsign")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-ready-for-sign",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -412,7 +396,6 @@ public class CertificateController {
   }
 
   @PostMapping("/{certificateId}/send")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-send-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -426,7 +409,6 @@ public class CertificateController {
   }
 
   @GetMapping("/{certificateId}/events")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-get-certificate-events",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -445,7 +427,6 @@ public class CertificateController {
   }
 
   @PostMapping
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-create-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_CREATION)
@@ -465,7 +446,6 @@ public class CertificateController {
   }
 
   @GetMapping("/{certificateId}/related")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-get-related-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -479,7 +459,6 @@ public class CertificateController {
   }
 
   @GetMapping("/{certificateId}/candidatemessage")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "certificate-get-candidate-message-for-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

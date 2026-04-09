@@ -20,23 +20,19 @@ package se.inera.intyg.webcert.infra.monitoring;
 
 import java.util.List;
 import org.springframework.stereotype.Controller;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 
 @Controller
 public class TestController {
 
   public static final String SAMPLE_NAME = "service_method_duration_seconds";
 
-  @PrometheusTimeMethod(name = SAMPLE_NAME, help = "API endpoint for test")
   public void named() throws InterruptedException {
     Thread.currentThread().sleep(10);
   }
 
-  @PrometheusTimeMethod(name = SAMPLE_NAME, help = "API endpoint for test")
   public void named2() throws InterruptedException {
     Thread.currentThread().sleep(10);
   }
 
-  @PrometheusTimeMethod
   public void unnamed(String s, List<?> l) throws InterruptedException {}
 }

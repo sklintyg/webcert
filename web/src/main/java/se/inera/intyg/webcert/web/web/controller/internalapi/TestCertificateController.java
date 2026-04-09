@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.testcertificate.dto.TestCertificateEraseRequest;
 import se.inera.intyg.webcert.infra.testcertificate.dto.TestCertificateEraseResult;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -38,7 +37,6 @@ public class TestCertificateController {
 
   @Autowired private TestCertificateService testCertificateService;
 
-  @PrometheusTimeMethod
   @PostMapping("/erase")
   @PerformanceLogging(
       eventAction = "test-certificate-erase",

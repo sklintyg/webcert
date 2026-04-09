@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
@@ -69,7 +68,6 @@ public class StatModuleApiController extends AbstractApiController {
   @Autowired private AuthoritiesHelper authoritiesHelper;
 
   @GetMapping
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "stat-module-get-statistics",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

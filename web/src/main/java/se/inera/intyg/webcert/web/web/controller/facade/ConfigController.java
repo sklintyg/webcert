@@ -32,7 +32,6 @@ import se.inera.intyg.webcert.infra.driftbannerdto.Application;
 import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.webcert.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.webcert.infra.ia.services.IABannerService;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
@@ -67,7 +66,6 @@ public class ConfigController {
   @Autowired private IABannerService iaBannerService;
 
   @GetMapping
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-configuration",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -99,7 +97,6 @@ public class ConfigController {
   }
 
   @GetMapping("/links")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-dynamic-links",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

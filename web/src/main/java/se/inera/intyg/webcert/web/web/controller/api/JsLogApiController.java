@@ -40,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentInfo;
 import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -61,7 +60,6 @@ public class JsLogApiController extends AbstractApiController {
   @Autowired private UserAgentParser userAgentParser;
 
   @PostMapping("/debug")
-  @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "js-log-debug", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public ResponseEntity<Void> debug(@RequestBody(required = false) String message) {
     LOG.debug(message);
@@ -69,7 +67,6 @@ public class JsLogApiController extends AbstractApiController {
   }
 
   @PostMapping("/monitoring")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "js-log-monitoring",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -111,7 +108,6 @@ public class JsLogApiController extends AbstractApiController {
   }
 
   @PostMapping("/srs")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "js-log-srs-monitoring",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

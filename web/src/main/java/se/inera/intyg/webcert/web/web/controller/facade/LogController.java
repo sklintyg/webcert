@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ErrorLogFacadeService;
@@ -44,7 +43,6 @@ public class LogController {
   @Autowired private ErrorLogFacadeService errorLogFacadeService;
 
   @PostMapping("/error")
-  @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "log-log-error", eventType = MdcLogConstants.EVENT_TYPE_ERROR)
   public ResponseEntity<Void> logError(@RequestBody @NotNull ErrorLogRequestDTO errorLogRequest) {
     if (LOG.isDebugEnabled()) {

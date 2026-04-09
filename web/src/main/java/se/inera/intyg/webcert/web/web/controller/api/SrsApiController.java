@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.srs.model.SrsForDiagnosisResponse;
 import se.inera.intyg.webcert.infra.srs.model.SrsQuestion;
@@ -59,7 +58,6 @@ public class SrsApiController extends AbstractApiController {
   @Autowired private SrsService srsService;
 
   @PostMapping("/{intygId}/{personnummer}/{diagnosisCode}")
-  @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "srs-get-srs", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public ResponseEntity<SrsResponse> getSrs(
       @PathVariable("intygId") String intygId,
@@ -104,7 +102,6 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @GetMapping("/questions/{diagnosisCode}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-get-question",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -124,7 +121,6 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @GetMapping("/consent/{personnummer}/{vardenhetHsaId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-get-consent",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -144,7 +140,6 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @PutMapping("/consent/{personnummer}/{vardenhetHsaId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-set-consent",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -166,7 +161,6 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @PutMapping("/opinion/{personnummer}/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}/{diagnoskod}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-set-own-opinion",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -193,7 +187,6 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @GetMapping("/codes")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-get-diagnosis-codes",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -207,7 +200,6 @@ public class SrsApiController extends AbstractApiController {
   }
 
   @GetMapping("/atgarder/{diagnosisCode}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "srs-get-srs-for-diagnosis-codes",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
