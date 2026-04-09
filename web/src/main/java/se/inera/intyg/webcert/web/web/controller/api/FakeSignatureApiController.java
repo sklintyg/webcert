@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -64,7 +63,6 @@ public class FakeSignatureApiController extends AbstractApiController {
    * @return SignaturTicketResponse
    */
   @PostMapping("/{intygsTyp}/{intygsId}/{version}/fejksignera/{ticketId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fake-signature-sign",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)

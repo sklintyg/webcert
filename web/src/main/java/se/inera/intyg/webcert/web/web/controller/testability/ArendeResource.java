@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import io.swagger.annotations.Api;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
@@ -48,7 +47,6 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.ArendeAffectedR
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SimpleArende;
 
 @Transactional
-@Api(value = "services arende", description = "REST API för testbarhet - Ärenden")
 @RestController
 @RequestMapping("/testability/arendetest")
 @Profile({"dev", "testability-api"})

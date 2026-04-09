@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
@@ -72,7 +71,6 @@ public class UserController {
   }
 
   @GetMapping
-  @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public ResponseEntity<UserResponseDTO> getUser() {
     LOG.debug("Getting logged in user");
@@ -82,7 +80,6 @@ public class UserController {
   }
 
   @GetMapping("/statistics")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-get-user-tabs",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -93,7 +90,6 @@ public class UserController {
   }
 
   @PostMapping("/unit/{unitHsaId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-change-unit",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)

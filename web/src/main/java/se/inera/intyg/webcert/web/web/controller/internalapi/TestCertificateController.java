@@ -18,14 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.testcertificate.dto.TestCertificateEraseRequest;
 import se.inera.intyg.webcert.infra.testcertificate.dto.TestCertificateEraseResult;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -35,12 +33,10 @@ import se.inera.intyg.webcert.web.service.testcertificate.TestCertificateService
 /** Internal REST endpoint for managing test certificates. */
 @RestController
 @RequestMapping("/internalapi/testCertificate")
-@Api(value = "/internalapi/testCertificate", produces = "application/json")
 public class TestCertificateController {
 
   @Autowired private TestCertificateService testCertificateService;
 
-  @PrometheusTimeMethod
   @PostMapping("/erase")
   @PerformanceLogging(
       eventAction = "test-certificate-erase",

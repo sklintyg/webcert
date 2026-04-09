@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
@@ -125,7 +126,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
   @Autowired private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
   @Autowired private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
   @Autowired private FragaSvarRepository fragaSvarRepository;
-  @Autowired private IntygService intygService;
+  @Autowired private @Lazy IntygService intygService;
   @Autowired private WebCertUserService webCertUserService;
   @Autowired private AuthoritiesHelper authoritiesHelper;
   @Autowired private NotificationService notificationService;

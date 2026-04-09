@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationService;
@@ -51,7 +50,6 @@ public class NotificationController {
   private final SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
   @PostMapping("/certificates")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "resend-status-updates-for-certificates",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -61,7 +59,6 @@ public class NotificationController {
   }
 
   @PostMapping("/count/certificates")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "count-status-updates-for-certificates",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -71,7 +68,6 @@ public class NotificationController {
   }
 
   @PostMapping("/{notificationId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "resend-status-update",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -81,7 +77,6 @@ public class NotificationController {
   }
 
   @PostMapping("/units")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "resend-status-updates-for-units",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -91,7 +86,6 @@ public class NotificationController {
   }
 
   @PostMapping("/count/units")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "count-status-updates-for-units",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -101,7 +95,6 @@ public class NotificationController {
   }
 
   @PostMapping("/caregiver/{careGiverId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "resend-status-updates-for-care-giver",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -112,7 +105,6 @@ public class NotificationController {
   }
 
   @PostMapping("/count/caregiver/{careGiverId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "count-status-updates-for-care-giver",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

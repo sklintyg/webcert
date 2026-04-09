@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.authtestability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import io.swagger.annotations.Api;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -45,7 +43,6 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  * Rest interface only used for testing and in dev environments. It seems like it must be in the
  * same Spring context as the rest of the webservices to get access to the security context.
  */
-@Api(value = "user service", produces = "application/json")
 @RestController
 @RequestMapping("/authtestability/user")
 @Profile("!prod")
@@ -57,7 +54,6 @@ public class UserResource {
 
   @GetMapping("/role")
   @JsonPropertyDescription("Get the roles for user in session")
-  @PrometheusTimeMethod
   public ResponseEntity<Set<String>> getUserRoles() {
     final WebCertUser user = webCertUserService.getUser();
     final Map<String, Role> roles = user.getRoles();
@@ -72,14 +68,12 @@ public class UserResource {
    */
   @GetMapping("/role/{role}")
   @JsonPropertyDescription("Set the roles for user in session")
-  @PrometheusTimeMethod
   public ResponseEntity<Void> setUserRole(@PathVariable("role") String role) {
     webCertUserService.updateUserRole(role);
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/origin")
-  @PrometheusTimeMethod
   public ResponseEntity<String> getOrigin() {
     final WebCertUser user = webCertUserService.getUser();
     final String currentOrigin = user.getOrigin();
@@ -93,34 +87,29 @@ public class UserResource {
    * tests.
    */
   @GetMapping("/origin/{origin}")
-  @PrometheusTimeMethod
   public ResponseEntity<Void> setOrigin(@PathVariable("origin") String origin) {
     webCertUserService.updateOrigin(origin);
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/preferences/delete")
-  @PrometheusTimeMethod
   public ResponseEntity<Void> deleteUserPreferences() {
     webCertUserService.deleteUserPreferences();
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/preferences")
-  @PrometheusTimeMethod
   public ResponseEntity<Object> getUserPreferences() {
     final var prefs = webCertUserService.getUser().getAnvandarPreference();
     return ResponseEntity.ok(prefs);
   }
 
   @GetMapping("/parameters")
-  @PrometheusTimeMethod
   public ResponseEntity<IntegrationParameters> getParameters() {
     return ResponseEntity.ok(webCertUserService.getUser().getParameters());
   }
 
   @PostMapping("/parameters/sjf")
-  @PrometheusTimeMethod
   public ResponseEntity<Void> setSjf() {
     webCertUserService
         .getUser()
@@ -138,7 +127,6 @@ public class UserResource {
    * @return 200 OK unless there's a problem.
    */
   @GetMapping("/parameters/ref/{refValue}")
-  @PrometheusTimeMethod
   public ResponseEntity<Void> setRef(@PathVariable("refValue") String refValue) {
     webCertUserService
         .getUser()
@@ -150,7 +138,6 @@ public class UserResource {
   }
 
   @PutMapping("/parameters/launchId/{launchId}")
-  @PrometheusTimeMethod
   public ResponseEntity<Void> setLaunchId(@PathVariable("launchId") String launchId) {
     webCertUserService
         .getUser()
@@ -162,14 +149,12 @@ public class UserResource {
   }
 
   @GetMapping("/features")
-  @PrometheusTimeMethod
   public ResponseEntity<Map<String, Feature>> getFeaturesForUser() {
     Map<String, Feature> features = webCertUserService.getUser().getFeatures();
     return ResponseEntity.ok(features);
   }
 
   @PutMapping("/personid")
-  @PrometheusTimeMethod
   public ResponseEntity<Void> getFeaturesForUser(@RequestBody String personId) {
     String oldPersonId = webCertUserService.getUser().getPersonId();
     webCertUserService.getUser().setPersonId(personId);
@@ -178,7 +163,6 @@ public class UserResource {
   }
 
   @GetMapping("/subscriptionInfo")
-  @PrometheusTimeMethod
   public ResponseEntity<Object> getSubscriptionInfo() {
     final var info = webCertUserService.getUser().getSubscriptionInfo();
     return ResponseEntity.ok(info);

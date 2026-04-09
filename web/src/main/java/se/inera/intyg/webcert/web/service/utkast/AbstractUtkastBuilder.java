@@ -25,6 +25,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -64,7 +65,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
   @Autowired private IntygModuleRegistry moduleRegistry;
 
-  @Autowired private IntygService intygService;
+  @Autowired private @Lazy IntygService intygService;
 
   @Autowired private CreateIntygsIdStrategy intygsIdStrategy;
 

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,6 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
  */
 @RestController
 @RequestMapping("/moduleapi/intyg")
-@Api(value = "/moduleapi/intyg", produces = "application/json")
 public class IntygModuleApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);
@@ -61,7 +59,7 @@ public class IntygModuleApiController extends AbstractApiController {
   @PerformanceLogging(
       eventAction = "intyg-module-get-certificate-as-pdf",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public final ResponseEntity<byte[]> getIntygAsPdf(
+  public ResponseEntity<byte[]> getIntygAsPdf(
       @PathVariable("intygsTyp") String intygsTyp,
       @PathVariable("intygsId") final String intygsId,
       HttpServletRequest request) {
@@ -80,7 +78,7 @@ public class IntygModuleApiController extends AbstractApiController {
   @PerformanceLogging(
       eventAction = "intyg-module-get-certificate-as-pdf-for-employer",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public final ResponseEntity<byte[]> getIntygAsPdfForEmployer(
+  public ResponseEntity<byte[]> getIntygAsPdfForEmployer(
       @PathVariable("intygsTyp") String intygsTyp,
       @PathVariable("intygsId") final String intygsId,
       HttpServletRequest request) {

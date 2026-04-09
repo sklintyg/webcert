@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,6 @@ import se.inera.intyg.webcert.web.service.integreradeenheter.IntegreradeEnheterS
 
 @RestController
 @RequestMapping("/internalapi/integratedUnits")
-@Api(value = "/internalapi/integratedUnits", produces = "application/json")
 public class IntegratedUnitsApiController {
 
   @Autowired private IntegreradeEnheterService integreradeEnheterService;

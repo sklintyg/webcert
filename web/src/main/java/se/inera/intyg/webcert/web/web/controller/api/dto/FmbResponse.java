@@ -18,33 +18,23 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.Collections;
 import java.util.List;
 
-@ApiModel(description = "An ICD10 code and its associated form data")
 public final class FmbResponse {
 
-  @ApiModelProperty(name = "ICD10 code", dataType = "String")
   private String icd10Code;
 
-  @ApiModelProperty(name = "ICD10 description", dataType = "String")
   private String icd10Description;
 
-  @ApiModelProperty(name = "FMB diagnose title", dataType = "String")
   private String diagnosTitle;
 
-  @ApiModelProperty(name = "FMB related diagnose codes", dataType = "String")
   private String relatedDiagnoses;
 
-  @ApiModelProperty(name = "Reference description", dataType = "String")
   private String referenceDescription;
 
-  @ApiModelProperty(name = "Reference Link", dataType = "String")
   private String referenceLink;
 
-  @ApiModelProperty(name = "forms")
   private List<FmbForm> forms;
 
   public FmbResponse() {}

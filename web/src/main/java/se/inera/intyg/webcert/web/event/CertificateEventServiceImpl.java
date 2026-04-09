@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -57,9 +58,9 @@ public class CertificateEventServiceImpl implements CertificateEventService {
 
   @Autowired UtkastRepository utkastRepository;
 
-  @Autowired IntygService intygService;
+  @Autowired @Lazy IntygService intygService;
 
-  @Autowired ArendeService arendeService;
+  @Autowired @Lazy ArendeService arendeService;
 
   @Override
   public void createCertificateEvent(String certificateId, String user, EventCode eventCode) {

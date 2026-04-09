@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.IcfFacadeService;
@@ -44,7 +43,6 @@ public class IcfController {
   @Autowired private IcfFacadeService icfFacadeService;
 
   @PostMapping
-  @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "icf-get-icf", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public ResponseEntity<IcfResponseDTO> getIcf(@RequestBody IcfRequestDTO request) {
     if (LOG.isDebugEnabled()) {

@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -154,7 +155,7 @@ public class ArendeServiceImpl implements ArendeService {
   @Autowired private StatisticsGroupByUtil statisticsGroupByUtil;
   @Autowired private IntygModuleFacade modelFacade;
   @Autowired private CertificateAccessServiceHelper certificateAccessServiceHelper;
-  @Autowired private IntygService intygService;
+  @Autowired private @Lazy IntygService intygService;
   @Autowired private LogService logService;
   @Autowired private MessageImportService messageImportService;
   @Autowired private PaginationAndLoggingService paginationAndLoggingService;

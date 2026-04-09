@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
@@ -85,7 +86,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
   public static final String ORIGINAL_CERTIFICATE_IS_REVOKED = "Original certificate is revoked";
   public static final String CREATE_RENEWAL = "create renewal";
   private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
-  @Autowired private IntygService intygService;
+  @Autowired private @Lazy IntygService intygService;
 
   @Autowired private CertificateRelationService certificateRelationService;
 

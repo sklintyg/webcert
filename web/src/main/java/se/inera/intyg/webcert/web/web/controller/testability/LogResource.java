@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.annotations.Api;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
@@ -38,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.infra.logmessages.PdlLogMessage;
 
-@Api(value = "testability logMessages")
 @RestController
 @RequestMapping("/testability/logMessages")
 @Profile({"dev", "testability-api"})

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +30,6 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 @RestController
 @RequestMapping("/api/subscription")
-@Api(value = "subscription", produces = "application/json")
 public class SubscriptionController extends AbstractApiController {
 
   @Autowired private SubscriptionService subscriptionService;

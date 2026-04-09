@@ -25,6 +25,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -87,7 +88,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
   @Autowired private LogRequestFactory logRequestFactory;
 
-  @Autowired private IntygService intygService;
+  @Autowired private @Lazy IntygService intygService;
 
   @Autowired private RedisTicketTracker redisTicketTracker;
 

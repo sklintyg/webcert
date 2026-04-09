@@ -16,19 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.infra.xmldsig.service;
+package se.inera.intyg.webcert;
 
-import java.security.cert.X509Certificate;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class FakeSignatureServiceBlocked implements FakeSignatureService {
+@SpringBootApplication
+public class WebcertApplication {
 
-  @Override
-  public String createSignature(String digest) {
-    throw new UnsupportedOperationException("Fake signing blocked.");
-  }
-
-  @Override
-  public X509Certificate getX509Certificate() {
-    throw new UnsupportedOperationException("Fake signing blocked.");
+  public static void main(String[] args) {
+    SpringApplication.run(WebcertApplication.class, args);
   }
 }

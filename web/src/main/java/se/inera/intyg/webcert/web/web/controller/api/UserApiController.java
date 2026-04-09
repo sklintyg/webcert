@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -44,16 +42,11 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorag
  */
 @RestController
 @RequestMapping("/api/anvandare")
-@Api(
-    value = "anvandare",
-    description = "REST API för användarhantering",
-    produces = "application/json")
 public class UserApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
 
   @PutMapping("/preferences")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-store-metadata-entry",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
@@ -65,7 +58,6 @@ public class UserApiController extends AbstractApiController {
   }
 
   @DeleteMapping("/preferences/{key}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-delete-user-preference-entry",
       eventType = MdcLogConstants.EVENT_TYPE_USER)
@@ -76,7 +68,6 @@ public class UserApiController extends AbstractApiController {
   }
 
   @GetMapping("/logout")
-  @PrometheusTimeMethod
   @PerformanceLogging(eventAction = "user-logout", eventType = MdcLogConstants.EVENT_TYPE_USER)
   public ResponseEntity<Void> logoutUserAfterTimeout(HttpServletRequest request) {
     HttpSession session = request.getSession();
@@ -87,7 +78,6 @@ public class UserApiController extends AbstractApiController {
   }
 
   @GetMapping("/logout/cancel")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-cancel-logout",
       eventType = MdcLogConstants.EVENT_TYPE_USER)

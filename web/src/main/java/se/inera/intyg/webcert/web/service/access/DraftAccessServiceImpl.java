@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.af00251.support.AF00251EntryPoint;
@@ -58,7 +59,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
   public DraftAccessServiceImpl(
       final WebCertUserService webCertUserService,
       final PatientDetailsResolver patientDetailsResolver,
-      final UtkastService utkastService,
+      @Lazy final UtkastService utkastService,
       IntygTextsService intygTextsService) {
     this.webCertUserService = webCertUserService;
     this.patientDetailsResolver = patientDetailsResolver;

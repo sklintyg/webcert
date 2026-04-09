@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +28,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.webcert.infra.driftbannerdto.Application;
 import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.webcert.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.webcert.infra.ia.services.IABannerService;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
@@ -71,13 +68,7 @@ public class ConfigController {
 
   @Autowired private IABannerService iaBannerService;
 
-  @PostConstruct
-  public void init() {
-    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-  }
-
   @GetMapping
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-configuration",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -110,7 +101,6 @@ public class ConfigController {
   }
 
   @GetMapping("/links")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-dynamic-links",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

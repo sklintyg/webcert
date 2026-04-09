@@ -360,29 +360,17 @@ class CertificateControllerTest {
   @Nested
   class ReplaceCertificate {
 
-    private Certificate certificate;
-
-    @BeforeEach
-    void setup() {
-      certificate = createCertificate();
-    }
-
     @Test
     void shallReturnIdOfNewCertificate() {
       final var expectedId = "newCertificateId";
 
       doReturn(expectedId).when(replaceCertificateFacadeService).replaceCertificate(anyString());
 
-      final var newCertificateRequestDTO = new NewCertificateRequestDTO();
-      newCertificateRequestDTO.setCertificateType("certificateType");
-      newCertificateRequestDTO.setPatientId(certificate.getMetadata().getPatient().getPersonId());
-
       final var response =
           (ReplaceCertificateResponseDTO)
-              certificateController
-                  .replaceCertificate(CERTIFICATE_ID, newCertificateRequestDTO)
-                  .getBody();
+              certificateController.replaceCertificate(CERTIFICATE_ID).getBody();
 
+      assertNotNull(response);
       assertEquals(expectedId, response.getCertificateId());
     }
   }

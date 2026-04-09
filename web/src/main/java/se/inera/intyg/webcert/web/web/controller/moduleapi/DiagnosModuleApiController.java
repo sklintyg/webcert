@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
@@ -42,7 +40,6 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
  */
 @RestController
 @RequestMapping("/moduleapi/diagnos")
-@Api(value = "diagnos", produces = "application/json")
 public class DiagnosModuleApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);
@@ -55,7 +52,6 @@ public class DiagnosModuleApiController extends AbstractApiController {
    * @param parameter A parameter object.
    */
   @PostMapping("/kod")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "diagnos-module-get-diagnosis-by-code",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -77,7 +73,6 @@ public class DiagnosModuleApiController extends AbstractApiController {
    * @param parameter A parameter object.
    */
   @PostMapping("/kod/sok")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "diagnos-module-search-diagnosis-by-code",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -97,7 +92,6 @@ public class DiagnosModuleApiController extends AbstractApiController {
    * service can be limited by setting the 'NbrOfResults' parameter to a positive number.
    */
   @PostMapping("/beskrivning/sok")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "diagnos-module-search-diagnosis-by-description",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

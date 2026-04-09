@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeService;
@@ -49,7 +48,6 @@ public class FMBController {
   private final FmbDiagnosInformationService fmbDiagnosInformationService;
 
   @GetMapping(value = "/{icd10}", produces = MediaType.APPLICATION_JSON_VALUE)
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fmb-get-fmb-data-for-icd10",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -65,7 +63,6 @@ public class FMBController {
   }
 
   @PostMapping("/validateSickLeavePeriod")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "fmb-validate-sickleave-period",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

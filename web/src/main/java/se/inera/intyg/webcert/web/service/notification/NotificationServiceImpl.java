@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -121,7 +122,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Autowired private ReferensService referensService;
 
-  @Autowired private IntygService intygService;
+  @Autowired private @Lazy IntygService intygService;
 
   @Autowired private IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
 

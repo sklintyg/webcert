@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -83,7 +82,6 @@ public class SignatureApiController extends AbstractApiController {
   @Autowired private QRCodeService qrCodeService;
 
   @PostMapping("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "signature-sign-draft",
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
@@ -141,7 +139,6 @@ public class SignatureApiController extends AbstractApiController {
   }
 
   @PostMapping(SIGN_SERVICE_RESPONSE_PATH)
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "signature-sign-service-response",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

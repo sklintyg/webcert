@@ -24,7 +24,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -46,7 +45,6 @@ public class UserIntegrationController extends BaseIntegrationController {
       };
 
   @GetMapping("/logout/now")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "user-integration-logout-user-now",
       eventType = MdcLogConstants.EVENT_TYPE_USER)

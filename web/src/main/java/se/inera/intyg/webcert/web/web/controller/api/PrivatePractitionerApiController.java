@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +35,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 
 @RestController
 @RequestMapping("/api/private-practitioner")
-@Api(value = "private-practitioner", produces = "application/json")
 public class PrivatePractitionerApiController {
 
   private static final String UTF_8_CHARSET = ";charset=utf-8";

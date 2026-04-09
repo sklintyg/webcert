@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +28,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.webcert.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.webcert.infra.ia.services.IABannerService;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.postnummer.service.PostnummerService;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -45,10 +40,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
 
 @RestController
 @RequestMapping("/api/config")
-@Api(
-    value = "config",
-    description = "REST API för konfigurationsparametrar",
-    produces = "application/json")
 public class ConfigApiController extends AbstractApiController {
 
   @Value("${project.version}")
@@ -90,11 +81,6 @@ public class ConfigApiController extends AbstractApiController {
   @Autowired private IABannerService iaBannerService;
 
   @GetMapping
-  @ApiOperation(
-      value = "Get module configuration for Webcert",
-      httpMethod = "GET",
-      produces = "application/json")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-config",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -120,11 +106,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("/links")
-  @ApiOperation(
-      value = "Get dynamic links for Webcert",
-      httpMethod = "GET",
-      produces = "application/json")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-dynamic-links",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -133,11 +114,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("/kommuner")
-  @ApiOperation(
-      value = "Get list of kommuner from postnummerservice",
-      httpMethod = "GET",
-      produces = "application/json")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-kommun-list",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -146,11 +122,6 @@ public class ConfigApiController extends AbstractApiController {
   }
 
   @GetMapping("area/{zipcode}")
-  @ApiOperation(
-      value = "Get area for a given area from postnummerservice",
-      httpMethod = "GET",
-      produces = "application/json")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "config-get-area-by-zid-code",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -169,10 +140,5 @@ public class ConfigApiController extends AbstractApiController {
                     .county(o.getLan())
                     .build())
         .toList();
-  }
-
-  @PostConstruct
-  public void init() {
-    SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
   }
 }

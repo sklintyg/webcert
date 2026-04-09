@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDate;
@@ -88,7 +87,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
 
 @Transactional
-@Api(value = "services intyg/utkast", description = "REST API för testbarhet - Intyg och Utkast")
 @RestController
 @RequestMapping("/testability/intyg")
 @Profile({"dev", "testability-api"})

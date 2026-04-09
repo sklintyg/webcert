@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
@@ -43,7 +42,6 @@ public class PatientController {
   @Autowired private GetPatientFacadeService getPatientFacadeService;
 
   @GetMapping("/{patientId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "patient-get-patient",
       eventType = MdcLogConstants.EVENT_TYPE_ERROR)

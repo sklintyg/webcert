@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.annotations.SchemaValidation;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.logging.HashUtility;
@@ -58,7 +59,7 @@ public class ListCertificatesForCareWithQAResponderImpl
   private final HashUtility hashUtility;
 
   public ListCertificatesForCareWithQAResponderImpl(
-      IntygService intygService,
+      @Lazy IntygService intygService,
       GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService,
       NotificationService notificationService,
       HashUtility hashUtility) {

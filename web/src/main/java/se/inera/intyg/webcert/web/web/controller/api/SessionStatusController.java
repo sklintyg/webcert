@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -47,10 +46,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.GetSessionStatusRespons
  */
 @RestController
 @RequestMapping("/api/session-auth-check")
-@Api(
-    value = "session-auth-check",
-    description = "REST API för sessionen",
-    produces = "application/json")
 public class SessionStatusController {
 
   public static final String SESSION_STATUS_REQUEST_MAPPING = "/session-auth-check";

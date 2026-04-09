@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.utkast.util;
 
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -39,7 +40,7 @@ public final class UtkastServiceHelper {
 
   @Autowired UtkastRepository utkastRepository;
   @Autowired private IntygModuleRegistry moduleRegistry;
-  @Autowired private IntygService intygService;
+  @Autowired private @Lazy IntygService intygService;
 
   public Utlatande getUtlatandeFromIT(String intygId, String intygsTyp, boolean pdlLoggning) {
     IntygContentHolder signedIntygHolder =

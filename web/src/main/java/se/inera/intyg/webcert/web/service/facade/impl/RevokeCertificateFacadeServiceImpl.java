@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -44,7 +45,7 @@ public class RevokeCertificateFacadeServiceImpl implements RevokeCertificateFaca
   @Autowired
   public RevokeCertificateFacadeServiceImpl(
       UtkastService utkastService,
-      IntygService intygService,
+      @Lazy IntygService intygService,
       GetCertificateFacadeService getCertificateFacadeService) {
     this.utkastService = utkastService;
     this.intygService = intygService;

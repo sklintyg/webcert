@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
@@ -62,7 +61,6 @@ public class ListController {
   }
 
   @PostMapping("/draft")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-get-list-of-drafts",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -73,7 +71,6 @@ public class ListController {
   }
 
   @PostMapping("/certificate")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-get-list-of-signed-certificates",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -84,7 +81,6 @@ public class ListController {
   }
 
   @PostMapping("/previous")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-get-list-of-previous-certificates",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -95,7 +91,6 @@ public class ListController {
   }
 
   @PostMapping("/question")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "list-get-list-of-certificates-with-questions",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 import static se.inera.intyg.common.support.facade.util.TestabilityToolkit.updateCertificate;
 import static se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType.MINIMAL;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.services.texts.IntygTextsService;

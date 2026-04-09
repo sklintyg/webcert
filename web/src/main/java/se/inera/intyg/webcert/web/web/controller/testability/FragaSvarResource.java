@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import io.swagger.annotations.Api;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
@@ -66,7 +65,6 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionPar
  * <p>Created by Pehr Assarsson on 9/24/13.
  */
 @Transactional
-@Api(value = "services fragasvar", description = "REST API för testbarhet - Fråga/Svar")
 @RestController
 @RequestMapping("/testability/fragasvar")
 @Profile({"dev", "testability-api"})

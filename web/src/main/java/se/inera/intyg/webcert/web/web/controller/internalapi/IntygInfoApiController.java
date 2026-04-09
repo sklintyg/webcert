@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import io.swagger.annotations.Api;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -28,14 +27,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.intyginfo.dto.WcIntygInfo;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @RestController
 @RequestMapping("/internalapi/intygInfo")
-@Api(value = "/internalapi/intygInfo", produces = "application/json")
 public class IntygInfoApiController {
 
   private final IntygInfoServiceInterface intygInfoService;
@@ -46,7 +43,6 @@ public class IntygInfoApiController {
   }
 
   @GetMapping("/{intygId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "intyg-info-get-certificate-info",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

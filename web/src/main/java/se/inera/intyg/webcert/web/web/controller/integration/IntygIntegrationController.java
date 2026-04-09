@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
@@ -143,7 +142,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
    *     the POST-version of this endpoint.
    */
   @GetMapping("/{certId}")
-  @PrometheusTimeMethod
   @Deprecated(since = "2019")
   @PerformanceLogging(
       eventAction = "intyg-integration-get-redirect-to-certificate",
@@ -198,7 +196,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
   }
 
   @PostMapping("/{certId}")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "intyg-integration-post-redirect-to-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -276,7 +273,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
    * @param intygId The id of the certificate to view.
    */
   @GetMapping("/{certId}/saved")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "intyg-integration-get-redirect-to-certificate-saved",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -305,7 +301,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
    * selected which unit (SelectedVardenhet) it chooses to be logged in to.
    */
   @GetMapping("/{certId}/resume")
-  @PrometheusTimeMethod
   @PerformanceLogging(
       eventAction = "intyg-integration-resume-redirect-to-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

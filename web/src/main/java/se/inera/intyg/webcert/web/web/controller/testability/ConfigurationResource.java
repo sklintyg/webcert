@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import io.swagger.annotations.Api;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
 import se.inera.intyg.webcert.infra.security.common.model.Feature;
 
-@Api(value = "testability configuration")
 @RestController
 @RequestMapping("/testability/config")
 @Profile({"dev", "testability-api"})

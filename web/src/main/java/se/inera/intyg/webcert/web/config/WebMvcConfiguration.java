@@ -21,30 +21,16 @@ package se.inera.intyg.webcert.web.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * MVC configuration. All component scanning is handled by {@code @SpringBootApplication} on {@link
+ * se.inera.intyg.webcert.WebcertApplication}.
+ */
 @Configuration
-@EnableWebMvc
-@ComponentScan("se.inera.intyg.webcert.web.web.controller")
-@ComponentScan(
-    value = "se.inera.intyg.webcert.notificationstub",
-    excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = Configuration.class))
-@ComponentScan(
-    value = "se.inera.intyg.webcert.integration.fmb.stub",
-    excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = Configuration.class))
-@ComponentScan(
-    value = {
-      "se.inera.intyg.webcert.integration.servicenow.stub.api",
-      "se.inera.intyg.webcert.integration.servicenow.stub.settings.api"
-    },
-    excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = Configuration.class))
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
   @Autowired private ObjectMapper objectMapper;

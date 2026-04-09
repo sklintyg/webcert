@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
