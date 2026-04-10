@@ -44,4 +44,3 @@ public class MailConfig {
     return executor;
   }
 }
-

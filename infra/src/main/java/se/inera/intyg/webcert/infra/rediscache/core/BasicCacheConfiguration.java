@@ -60,4 +60,3 @@ public class BasicCacheConfiguration {
             .entryTtl(Duration.ofSeconds(defaultEntryExpiry)));
   }
 }
-
