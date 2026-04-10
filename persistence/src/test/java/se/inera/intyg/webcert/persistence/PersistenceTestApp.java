@@ -18,11 +18,15 @@
  */
 package se.inera.intyg.webcert.persistence;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Configuration
-@DependsOn("dbUpdate")
-@PropertySource("classpath:test.properties")
-class TestConfig {}
+/**
+ * Minimal Spring Boot bootstrap needed so that @DataJpaTest can locate a
+ * @SpringBootConfiguration within this module. @DataJpaTest is a slice test
+ * that limits auto-configuration to JPA-relevant beans only — this class is
+ * the anchor for that slice, not a full application entry point.
+ */
+@SpringBootApplication
+class PersistenceTestApp {
+
+}
