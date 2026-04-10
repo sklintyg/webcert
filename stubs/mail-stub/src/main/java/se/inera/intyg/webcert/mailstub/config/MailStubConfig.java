@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.mailstub.JavaMailSenderAroundAdvice;
 @Profile("dev")
 public class MailStubConfig {
 
-  @Value("${mail.host}")
+  @Value("${spring.mail.host}")
   private String mailHost;
 
   @Bean
