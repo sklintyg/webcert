@@ -31,16 +31,12 @@ dependencies {
     implementation "org.springframework.session:spring-session-core"
 
     // ── Spring Data ───────────────────────────────────────────────────────────
+    // spring-data-redis is needed for BasicCacheConfiguration, CacheFactory, RedisCacheOptionsSetter
     implementation "org.springframework.data:spring-data-redis"
 
     // ── AOP (monitoring annotations) ─────────────────────────────────────────
     implementation "org.aspectj:aspectjweaver"
 
-    // ── Prometheus (monitoring) ───────────────────────────────────────────────
-    implementation "io.prometheus:simpleclient"
-    implementation "io.prometheus:simpleclient_common"
-    implementation "io.prometheus:simpleclient_hotspot"
-    implementation "io.prometheus:simpleclient_servlet_jakarta"
 
     // ── User-Agent parsing (monitoring) ──────────────────────────────────────
     implementation "com.github.ua-parser:uap-java:1.6.1"
@@ -80,7 +76,7 @@ dependencies {
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
     // ── Jedis (Redis client for BasicCacheConfiguration) ─────────────────────
-    implementation "redis.clients:jedis"
+    // Removed: jedis replaced by Lettuce via spring-boot-starter-data-redis in web/
 
     // ── Lombok ────────────────────────────────────────────────────────────────
     compileOnly "org.projectlombok:lombok"

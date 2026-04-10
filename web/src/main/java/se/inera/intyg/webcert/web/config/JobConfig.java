@@ -24,7 +24,7 @@ import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -34,10 +34,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableSchedulerLock(defaultLockAtMostFor = "PT10M")
 public class JobConfig {
 
-  @Autowired private JedisConnectionFactory jedisConnectionFactory;
+  @Autowired private RedisConnectionFactory redisConnectionFactory;
 
   @Bean
   public LockProvider lockProvider() {
-    return new RedisLockProvider(jedisConnectionFactory, "webcert");
+    return new RedisLockProvider(redisConnectionFactory, "webcert");
   }
 }

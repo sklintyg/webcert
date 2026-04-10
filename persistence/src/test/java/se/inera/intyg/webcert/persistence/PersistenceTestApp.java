@@ -16,16 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.infra.rediscache.core.util;
+package se.inera.intyg.webcert.persistence;
 
-import com.google.common.base.Splitter;
-import java.util.List;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public final class ConnectionStringUtil {
-
-  private ConnectionStringUtil() {}
-
-  public static List<String> parsePropertyString(String redisConnectionProperty) {
-    return Splitter.on(';').trimResults().omitEmptyStrings().splitToList(redisConnectionProperty);
-  }
-}
+/**
+ * Minimal Spring Boot bootstrap needed so that @DataJpaTest can locate a @SpringBootConfiguration
+ * within this module. @DataJpaTest is a slice test that limits auto-configuration to JPA-relevant
+ * beans only — this class is the anchor for that slice, not a full application entry point.
+ */
+@SpringBootApplication
+class PersistenceTestApp {}

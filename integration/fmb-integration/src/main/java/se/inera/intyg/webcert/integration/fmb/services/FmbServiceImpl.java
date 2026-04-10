@@ -45,7 +45,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +77,6 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 @Slf4j
 @Service
 @Transactional
-@EnableScheduling
 @RequiredArgsConstructor
 public class FmbServiceImpl implements FmbService {
 

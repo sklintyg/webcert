@@ -18,31 +18,19 @@
  */
 package se.inera.intyg.webcert.web.config;
 
-import io.prometheus.client.servlet.jakarta.exporter.MetricsServlet;
-import lombok.RequiredArgsConstructor;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@RequiredArgsConstructor
 public class WebServletConfig {
-
-  private final MetricsServlet metricsServlet;
 
   @Bean
   public ServletRegistrationBean<CXFServlet> cxfServlet() {
     var registration = new ServletRegistrationBean<>(new CXFServlet(), "/services/*");
     registration.setName("services");
     registration.setLoadOnStartup(1);
-    return registration;
-  }
-
-  @Bean
-  public ServletRegistrationBean<MetricsServlet> metricsServletRegistrationBean() {
-    var registration = new ServletRegistrationBean<>(metricsServlet, "/metrics");
-    registration.setName("metrics");
     return registration;
   }
 }

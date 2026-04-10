@@ -25,6 +25,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +39,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -76,7 +79,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     clearAuthenticationAttributes(request);
 
-    String targetUrl = savedRequest.getRedirectUrl().replace("localhost", webcertDomainName);
+    String targetUrl = buildTargetUrl(savedRequest.getRedirectUrl());
     String targetUri = ((DefaultSavedRequest) savedRequest).getRequestURI();
 
     if (savedRequest.getMethod().equalsIgnoreCase(HttpMethod.POST.name())
@@ -137,6 +140,18 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
               + "Please use a new user session for each deep integration link.");
     }
     return webCertUser;
+  }
+
+  private String buildTargetUrl(String redirectUrl) {
+    try {
+      final var original = new URI(redirectUrl);
+      if (original.getHost() == null) {
+        return redirectUrl;
+      }
+      return UriComponentsBuilder.fromUri(original).host(webcertDomainName).port(-1).toUriString();
+    } catch (URISyntaxException e) {
+      return redirectUrl.replace("localhost", webcertDomainName);
+    }
   }
 
   private String fromSavedReq(SavedRequest savedRequest, String paramName) {
