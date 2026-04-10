@@ -113,7 +113,8 @@ dependencies {
     implementation "jakarta.xml.ws:jakarta.xml.ws-api"
     implementation "net.javacrumbs.shedlock:shedlock-spring"
     implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring"
-    implementation "org.apache.activemq:activemq-spring"
+    implementation "org.springframework.boot:spring-boot-starter-activemq"
+    runtimeOnly "org.apache.activemq:activemq-broker"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
     implementation "org.apache.cxf:cxf-rt-transports-http"
     implementation "org.apache.httpcomponents.client5:httpclient5"
@@ -124,7 +125,6 @@ dependencies {
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
     implementation "org.springframework.session:spring-session-data-redis"
-    implementation "org.springframework:spring-jms"
     implementation "org.springframework.ws:spring-xml"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9"
 

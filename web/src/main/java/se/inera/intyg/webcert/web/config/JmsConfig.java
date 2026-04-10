@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.config;
 
 import jakarta.jms.ConnectionFactory;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +26,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
-import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DestinationResolver;
@@ -37,15 +35,6 @@ import org.springframework.jms.support.destination.DynamicDestinationResolver;
 @Configuration
 @EnableJms
 public class JmsConfig {
-
-  @Value("${activemq.broker.url}")
-  private String activeMqBrokerUrl;
-
-  @Value("${activemq.broker.username}")
-  private String activeMqBrokerUsername;
-
-  @Value("${activemq.broker.password}")
-  private String activeMqBrokerPassword;
 
   @Value("${log.queueName}")
   private String logQueueName;
@@ -86,13 +75,6 @@ public class JmsConfig {
   @Bean
   public JmsTransactionManager jmsTransactionManager(ConnectionFactory jmsConnectionFactory) {
     return new JmsTransactionManager(jmsConnectionFactory);
-  }
-
-  @Bean
-  public ConnectionFactory jmsConnectionFactory() {
-    return new CachingConnectionFactory(
-        new ActiveMQConnectionFactory(
-            activeMqBrokerUsername, activeMqBrokerPassword, activeMqBrokerUrl));
   }
 
   @Bean
