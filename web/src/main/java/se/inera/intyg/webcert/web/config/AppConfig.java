@@ -18,18 +18,20 @@
  */
 package se.inera.intyg.webcert.web.config;
 
-import jakarta.persistence.EntityManagerFactory;
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 import se.inera.intyg.common.support.modules.converter.SummaryConverter;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
@@ -40,19 +42,23 @@ import se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean;
 import se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean;
 
 @Configuration
-@DependsOn("liquibase")
+@DependsOn("dbUpdate")
+@RequiredArgsConstructor
 @EnableTransactionManagement
-@PropertySource(value = "classpath:version.properties", ignoreResourceNotFound = true)
-@PropertySource(
-    value = "classpath:webcert-notification-route-params.properties",
-    ignoreResourceNotFound = true)
+@PropertySources({
+  @PropertySource(value = "classpath:version.properties", ignoreResourceNotFound = true),
+  @PropertySource(
+      value = "classpath:webcert-notification-route-params.properties",
+      ignoreResourceNotFound = true),
+})
 @ComponentScan("se.inera.intyg.common")
-public class AppConfig {
+public class AppConfig implements TransactionManagementConfigurer {
 
-  @Bean
-  @Primary
-  public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-    return new JpaTransactionManager(entityManagerFactory);
+  private final JpaTransactionManager transactionManager;
+
+  @Override
+  public PlatformTransactionManager annotationDrivenTransactionManager() {
+    return transactionManager;
   }
 
   @Bean(name = Bus.DEFAULT_BUS_ID)
