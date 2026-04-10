@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.config;
 
 import jakarta.servlet.DispatcherType;
 import java.util.EnumSet;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -117,6 +118,7 @@ public class WebFilterConfig {
       unitSelectedAssuranceFilterRegistration() {
     var registration = new FilterRegistrationBean<>(unitSelectedAssuranceFilter);
     registration.addUrlPatterns("/api/*", "/moduleapi/*");
+    registration.setInitParameters(Map.of("ignoredUrls", "/api/config,/api/anvandare,/api/anvandare/andraenhet,/api/jslog,/moduleapi/stat,/api/user"));
     registration.setOrder(8);
     return registration;
   }
