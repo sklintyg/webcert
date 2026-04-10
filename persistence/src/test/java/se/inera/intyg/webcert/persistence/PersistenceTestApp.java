@@ -21,12 +21,9 @@ package se.inera.intyg.webcert.persistence;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Minimal Spring Boot bootstrap needed so that @DataJpaTest can locate a
- * @SpringBootConfiguration within this module. @DataJpaTest is a slice test
- * that limits auto-configuration to JPA-relevant beans only — this class is
- * the anchor for that slice, not a full application entry point.
+ * Minimal Spring Boot bootstrap needed so that @DataJpaTest can locate a @SpringBootConfiguration
+ * within this module. @DataJpaTest is a slice test that limits auto-configuration to JPA-relevant
+ * beans only — this class is the anchor for that slice, not a full application entry point.
  */
 @SpringBootApplication
-class PersistenceTestApp {
-
-}
+class PersistenceTestApp {}

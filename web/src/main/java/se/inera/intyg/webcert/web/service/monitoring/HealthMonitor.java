@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.Gauge;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PostConstruct;
 import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;
@@ -28,9 +28,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,52 +37,28 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 /**
- * Exposes health metrics as Prometheus values. To simplify any 3rd party scraping applications, all
- * metrics produced by this component uses the following conventions:
+ * Exposes health metrics via Micrometer. All metrics produced by this component use the following
+ * conventions:
  *
  * <p>All metrics are prefixed with "health_" All metrics are suffixed with their type, either
- * "_normal" that indicates a boolean value 0 or 1 OR "_value" that indiciates a numeric metric of
+ * "_normal" that indicates a boolean value 0 or 1 OR "_value" that indicates a numeric metric of
  * some kind.
  *
- * <p>Note that NORMAL values uses 0 to indicate OK state and 1 to indicate a problem.
+ * <p>Note that NORMAL values use 0 to indicate OK state and 1 to indicate a problem.
  *
- * <p>The implementation is somewhat quirky, registering an instace of this class as a Collector, so
- * the {@link Collector#collect()} method is invoked by the Prometheus registry on-demand. That
- * makes it possible for us to update the Gauges defined and registered in this collector with new
- * values as part of the normal collect() lifecycle.
+ * <p>Gauges are registered with pull-based supplier lambdas so that the health checks run on each
+ * Prometheus scrape.
  *
  * @author eriklupander
  */
 @Component
-public class HealthMonitor extends Collector {
+public class HealthMonitor {
 
   private static final String PREFIX = "health_";
   private static final String NORMAL = "_normal";
   private static final String VALUE = "_value";
 
   private static final long START_TIME = System.currentTimeMillis();
-
-  private static final Gauge UPTIME =
-      Gauge.build().name(PREFIX + "uptime" + VALUE).help("Current uptime in seconds").register();
-
-  private static final Gauge DB_ACCESSIBLE =
-      Gauge.build().name(PREFIX + "db_accessible" + NORMAL).help("0 == OK 1 == NOT OK").register();
-
-  private static final Gauge JMS_ACCESSIBLE =
-      Gauge.build().name(PREFIX + "jms_accessible" + NORMAL).help("0 == OK 1 == NOT OK").register();
-
-  private static final Gauge IT_ACCESSIBLE =
-      Gauge.build()
-          .name(PREFIX + "intygstjanst_accessible" + NORMAL)
-          .help("0 == OK 1 == NOT OK")
-          .register();
-
-  private static final Gauge SIGNATURE_QUEUE_DEPTH =
-      Gauge.build()
-          .name(PREFIX + "signature_queue_depth" + VALUE)
-          .help("Number of waiting messages")
-          .register();
-
   private static final long MILLIS_PER_SECOND = 1000L;
 
   private static final String PING_SQL = "SELECT 1";
@@ -99,6 +73,8 @@ public class HealthMonitor extends Collector {
   @Autowired
   @Qualifier("rediscache") private RedisTemplate<Object, Object> redisTemplate;
 
+  @Autowired private MeterRegistry meterRegistry;
+
   @Value("${intygstjanst.metrics.url}")
   private String itMetricsUrl;
 
@@ -108,30 +84,34 @@ public class HealthMonitor extends Collector {
     void run() throws Exception;
   }
 
-  /** Registers this class as a prometheus collector. */
   @PostConstruct
   public void init() {
-    this.register();
-  }
+    Gauge.builder(
+            PREFIX + "uptime" + VALUE,
+            this,
+            m -> (double) ((System.currentTimeMillis() - START_TIME) / MILLIS_PER_SECOND))
+        .description("Current uptime in seconds")
+        .register(meterRegistry);
 
-  /**
-   * Somewhat hacky way of updating our gauges "on-demand" (each being registered itself as a
-   * collector), with this method always returning an empty list of MetricFamilySamples.
-   *
-   * @return Always returns an empty list.
-   */
-  @Override
-  public List<MetricFamilySamples> collect() {
-    long secondsSinceStart = (System.currentTimeMillis() - START_TIME) / MILLIS_PER_SECOND;
+    Gauge.builder(PREFIX + "db_accessible" + NORMAL, this, m -> m.checkDbConnection() ? 0.0 : 1.0)
+        .description("0 == OK 1 == NOT OK")
+        .register(meterRegistry);
 
-    // Update the gauges.
-    UPTIME.set(secondsSinceStart);
-    DB_ACCESSIBLE.set(checkDbConnection() ? 0 : 1);
-    JMS_ACCESSIBLE.set(checkJmsConnection() ? 0 : 1);
-    IT_ACCESSIBLE.set(pingIntygstjanst() ? 0 : 1);
-    SIGNATURE_QUEUE_DEPTH.set(checkSignatureQueue());
+    Gauge.builder(PREFIX + "jms_accessible" + NORMAL, this, m -> m.checkJmsConnection() ? 0.0 : 1.0)
+        .description("0 == OK 1 == NOT OK")
+        .register(meterRegistry);
 
-    return Collections.emptyList();
+    Gauge.builder(
+            PREFIX + "intygstjanst_accessible" + NORMAL,
+            this,
+            m -> m.pingIntygstjanst() ? 0.0 : 1.0)
+        .description("0 == OK 1 == NOT OK")
+        .register(meterRegistry);
+
+    Gauge.builder(
+            PREFIX + "signature_queue_depth" + VALUE, this, m -> (double) m.checkSignatureQueue())
+        .description("Number of waiting messages")
+        .register(meterRegistry);
   }
 
   private boolean checkJmsConnection() {

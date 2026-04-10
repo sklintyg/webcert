@@ -36,11 +36,6 @@ dependencies {
     // ── AOP (monitoring annotations) ─────────────────────────────────────────
     implementation "org.aspectj:aspectjweaver"
 
-    // ── Prometheus (monitoring) ───────────────────────────────────────────────
-    implementation "io.prometheus:simpleclient"
-    implementation "io.prometheus:simpleclient_common"
-    implementation "io.prometheus:simpleclient_hotspot"
-    implementation "io.prometheus:simpleclient_servlet_jakarta"
 
     // ── User-Agent parsing (monitoring) ──────────────────────────────────────
     implementation "com.github.ua-parser:uap-java:1.6.1"
