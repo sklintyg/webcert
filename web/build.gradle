@@ -122,7 +122,7 @@ dependencies {
     implementation "org.jxls:jxls-poi"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.data:spring-data-jpa"
-    implementation 'org.springframework.security:spring-security-config'
+    implementation "org.springframework.boot:spring-boot-starter-security"
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
     implementation "org.springframework.session:spring-session-data-redis"
     implementation "org.springframework.ws:spring-xml"
