@@ -222,7 +222,7 @@ public class WebSecurityConfig {
     http.authorizeHttpRequests(
             request ->
                 request
-                    .requestMatchers(antMatcher("/metrics"))
+                    .requestMatchers(antMatcher("/actuator/**"))
                     .permitAll()
                     .requestMatchers(antMatcher("/services/**"))
                     .permitAll()
