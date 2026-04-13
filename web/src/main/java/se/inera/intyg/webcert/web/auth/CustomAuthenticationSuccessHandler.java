@@ -50,6 +50,8 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+  private static final int REMOVE_PORT = -1;
+
   @Value("${webcert.domain.name}")
   private String webcertDomainName;
 
@@ -145,12 +147,13 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
   private String buildTargetUrl(String redirectUrl) {
     try {
       final var original = new URI(redirectUrl);
-      if (original.getHost() == null) {
-        return redirectUrl;
-      }
-      return UriComponentsBuilder.fromUri(original).host(webcertDomainName).port(-1).toUriString();
+      return UriComponentsBuilder.fromUri(original)
+          .host(webcertDomainName)
+          .port(REMOVE_PORT)
+          .toUriString();
     } catch (URISyntaxException e) {
-      return redirectUrl.replace("localhost", webcertDomainName);
+      throw new IllegalStateException(
+          "Unable to build target url from %s.".formatted(redirectUrl), e);
     }
   }
 

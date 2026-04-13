@@ -63,8 +63,8 @@ class CustomAuthenticationSuccessHandlerTest {
   private static final String POST = "POST";
   private static final String PNR = "20121212-1212";
   private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
-  private static final String REDIRECT_URL = "/visa/intyg/1ff83a34-1f90-4859-90db-2a1ec65dd741";
-  private static final String REDIRECT_URL_WITH_HOST =
+  private static final String REDIRECT_URI = "/visa/intyg/1ff83a34-1f90-4859-90db-2a1ec65dd741";
+  private static final String REDIRECT_URL =
       "http://localhost:8080/visa/intyg/1ff83a34-1f90-4859-90db-2a1ec65dd741";
   private static final String WEBCERT_DOMAIN_NAME = "webcertDomainName";
   private static final String WEBCERT_DOMAIN_NAME_VALUE = "webcert.domain.name";
@@ -106,14 +106,18 @@ class CustomAuthenticationSuccessHandlerTest {
       when(savedRequest.getRedirectUrl()).thenReturn(REDIRECT_URL);
       when(savedRequest.getMethod()).thenReturn(GET);
       successHandler.onAuthenticationSuccess(req, resp, authentication);
-      verify(redirectStrategy, times(ONE)).sendRedirect(req, resp, REDIRECT_URL);
+      verify(redirectStrategy, times(ONE))
+          .sendRedirect(
+              req,
+              resp,
+              "http://webcert.domain.name/visa/intyg/1ff83a34-1f90-4859-90db-2a1ec65dd741");
     }
 
     @Test
     void shouldReplaceHostAndStripPortFromAbsoluteRedirectUrl()
         throws ServletException, IOException {
       when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
-      when(savedRequest.getRedirectUrl()).thenReturn(REDIRECT_URL_WITH_HOST);
+      when(savedRequest.getRedirectUrl()).thenReturn(REDIRECT_URL);
       when(savedRequest.getMethod()).thenReturn(GET);
       successHandler.onAuthenticationSuccess(req, resp, authentication);
       verify(redirectStrategy, times(ONE))
@@ -136,7 +140,7 @@ class CustomAuthenticationSuccessHandlerTest {
       when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
       when(savedRequest.getMethod()).thenReturn(POST);
       when(savedRequest.getRedirectUrl()).thenReturn(REDIRECT_URL);
-      when(savedRequest.getRequestURI()).thenReturn(REDIRECT_URL);
+      when(savedRequest.getRequestURI()).thenReturn(REDIRECT_URI);
       when(authentication.getPrincipal()).thenReturn(user);
       successHandler.setRedirectStrategy(redirectStrategy);
     }
@@ -145,7 +149,11 @@ class CustomAuthenticationSuccessHandlerTest {
     void shallRedirectToSavedEndpoint() throws ServletException, IOException {
       when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
       successHandler.onAuthenticationSuccess(req, resp, authentication);
-      verify(redirectStrategy, times(ONE)).sendRedirect(req, resp, REDIRECT_URL + "/saved");
+      verify(redirectStrategy, times(ONE))
+          .sendRedirect(
+              req,
+              resp,
+              "http://webcert.domain.name/visa/intyg/1ff83a34-1f90-4859-90db-2a1ec65dd741/saved");
     }
 
     @Test
