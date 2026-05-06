@@ -19,23 +19,5 @@
 package se.inera.intyg.webcert.infra.integration.hsatk.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Data;
 
-@Data
-public class HealthCareUnitMember implements Serializable {
-
-  private static final long serialVersionUID = 1L;
-  protected String healthCareUnitMemberName;
-  protected String healthCareUnitMemberPublicName;
-  protected String healthCareUnitMemberHsaId;
-  protected LocalDateTime healthCareUnitMemberStartDate;
-  protected LocalDateTime healthCareUnitMemberEndDate;
-  protected List<String> healthCareUnitMemberPrescriptionCode = new ArrayList<>();
-  protected List<String> healthCareUnitMemberTelephoneNumber = new ArrayList<>();
-  protected Address address;
-  protected Boolean feignedHealthCareUnitMember;
-  protected Boolean archivedHealthCareUnitMember;
-}
+public record Address(String address, String zipCode, String city) implements Serializable {}

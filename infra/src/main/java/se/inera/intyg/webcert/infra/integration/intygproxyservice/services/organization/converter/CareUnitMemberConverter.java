@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.infra.integration.intygproxyservice.services.orga
 
 import static se.inera.intyg.webcert.infra.integration.intygproxyservice.services.organization.OrganizationUtil.getWorkplaceCode;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.Address;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.HealthCareUnitMember;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.AgandeForm;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
@@ -32,8 +32,6 @@ import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
 @Slf4j
 @RequiredArgsConstructor
 public class CareUnitMemberConverter {
-
-  private final UnitAddressConverter unitAddressConverter;
 
   public Mottagning convert(
       HealthCareUnitMember hsaCareUnitMember, String parentId, AgandeForm parentAgandeForm) {
@@ -44,14 +42,7 @@ public class CareUnitMemberConverter {
         String.join(", ", hsaCareUnitMember.getHealthCareUnitMemberTelephoneNumber()));
     careUnitMember.setArbetsplatskod(
         getWorkplaceCode(hsaCareUnitMember.getHealthCareUnitMemberPrescriptionCode()));
-
-    if (hsaCareUnitMember.getHealthCareUnitMemberpostalAddress() != null) {
-      updateAddress(
-          careUnitMember,
-          hsaCareUnitMember.getHealthCareUnitMemberpostalAddress(),
-          hsaCareUnitMember.getHealthCareUnitMemberpostalCode());
-    }
-
+    updateAddress(careUnitMember, hsaCareUnitMember.getAddress());
     return careUnitMember;
   }
 
@@ -63,9 +54,12 @@ public class CareUnitMemberConverter {
         hsaCareUnitMember.getHealthCareUnitMemberEndDate());
   }
 
-  private void updateAddress(Mottagning unit, List<String> address, String postalCode) {
-    unit.setPostadress(unitAddressConverter.convertAddress(address));
-    unit.setPostnummer(unitAddressConverter.convertZipCode(address, postalCode));
-    unit.setPostort(unitAddressConverter.convertCity(address));
+  private void updateAddress(Mottagning unit, Address address) {
+    if (address == null) {
+      return;
+    }
+    unit.setPostadress(address.address());
+    unit.setPostnummer(address.zipCode());
+    unit.setPostort(address.city());
   }
 }

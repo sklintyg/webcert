@@ -19,26 +19,17 @@
 package se.inera.intyg.webcert.infra.integration.intygproxyservice.services.organization.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.infra.integration.intygproxyservice.services.organization.OrganizationUtil.DEFAULT_ARBETSPLATSKOD;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.Address;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.HealthCareUnitMember;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.AgandeForm;
 
-@ExtendWith(MockitoExtension.class)
 class CareUnitMemberConverterTest {
 
   private static final String ZIP_CODE = "ZIP_CODE";
@@ -47,9 +38,7 @@ class CareUnitMemberConverterTest {
   private static final String PARENT_ID = "PARENT_ID";
   private static final AgandeForm PARENT_AGANDE_FORM = AgandeForm.OFFENTLIG;
 
-  @Mock private UnitAddressConverter unitAddressConverter;
-
-  @InjectMocks private CareUnitMemberConverter converter;
+  private final CareUnitMemberConverter converter = new CareUnitMemberConverter();
 
   @Test
   void shouldConvertParentId() {
@@ -154,22 +143,12 @@ class CareUnitMemberConverterTest {
   @Nested
   class AddressTest {
 
-    @BeforeEach
-    void setup() {
-      when(unitAddressConverter.convertAddress(any(List.class))).thenReturn(ADDRESS);
-
-      when(unitAddressConverter.convertCity(any(List.class))).thenReturn(CITY);
-
-      when(unitAddressConverter.convertZipCode(any(List.class), anyString())).thenReturn(ZIP_CODE);
-    }
-
     @Test
     void shouldConvertAddress() {
       final var member = getMember();
 
       final var response = converter.convert(member, PARENT_ID, PARENT_AGANDE_FORM);
 
-      verify(unitAddressConverter).convertAddress(member.getHealthCareUnitMemberpostalAddress());
       assertEquals(ADDRESS, response.getPostadress());
     }
 
@@ -179,7 +158,6 @@ class CareUnitMemberConverterTest {
 
       final var response = converter.convert(member, PARENT_ID, PARENT_AGANDE_FORM);
 
-      verify(unitAddressConverter).convertCity(member.getHealthCareUnitMemberpostalAddress());
       assertEquals(CITY, response.getPostort());
     }
 
@@ -189,10 +167,6 @@ class CareUnitMemberConverterTest {
 
       final var response = converter.convert(member, PARENT_ID, PARENT_AGANDE_FORM);
 
-      verify(unitAddressConverter)
-          .convertZipCode(
-              member.getHealthCareUnitMemberpostalAddress(),
-              member.getHealthCareUnitMemberpostalCode());
       assertEquals(ZIP_CODE, response.getPostnummer());
     }
   }
@@ -204,8 +178,7 @@ class CareUnitMemberConverterTest {
     member.setHealthCareUnitMemberStartDate(LocalDateTime.now());
     member.setHealthCareUnitMemberEndDate(LocalDateTime.now().plusDays(5));
     member.setHealthCareUnitMemberTelephoneNumber(List.of("1", "2"));
-    member.setHealthCareUnitMemberpostalAddress(Collections.emptyList());
-    member.setHealthCareUnitMemberpostalCode("ZIP");
+    member.setAddress(new Address(ADDRESS, ZIP_CODE, CITY));
 
     return member;
   }
