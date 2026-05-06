@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.infra.integration.hsatk.model.Address;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.Commission;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.HealthCareUnitMembers;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.Unit;
@@ -41,7 +42,6 @@ public class CareUnitConverter {
 
   private static final String PUBLIC_PREFIX = "2";
 
-  private final UnitAddressConverter unitAddressConverter;
   private final CareUnitMemberConverter careUnitMemberConverter;
 
   public Vardenhet convert(Commission commission, Unit hsaUnit, HealthCareUnitMembers members) {
@@ -57,7 +57,7 @@ public class CareUnitConverter {
     unit.setTelefonnummer(
         hsaUnit.getTelephoneNumber().isEmpty() ? null : hsaUnit.getTelephoneNumber().get(0));
     unit.setMottagningar(getCareUnitMembers(members, unit.getId(), unit.getAgandeForm()));
-    updateAddress(unit, hsaUnit.getPostalAddress(), hsaUnit.getPostalCode());
+    updateAddress(unit, hsaUnit.getAddress());
 
     return unit;
   }
@@ -69,16 +69,12 @@ public class CareUnitConverter {
             unit.getUnitName(),
             unit.getUnitStartDate(),
             unit.getUnitEndDate());
-    final var postalAddress = unit.getPostalAddress();
     careUnit.setMottagningar(getCareUnitMembers(members, careUnit.getId(), AgandeForm.OKAND));
     careUnit.setArbetsplatskod(getWorkplaceCode(members.getHealthCareUnitPrescriptionCode()));
     careUnit.setTelefonnummer(
         unit.getTelephoneNumber().isEmpty() ? null : unit.getTelephoneNumber().get(0));
     careUnit.setEpost(unit.getMail());
-
-    if (postalAddress != null) {
-      updateAddress(careUnit, postalAddress, unit.getPostalCode());
-    }
+    updateAddress(careUnit, unit.getAddress());
 
     return careUnit;
   }
@@ -109,9 +105,12 @@ public class CareUnitConverter {
         .collect(Collectors.toList());
   }
 
-  private void updateAddress(Vardenhet unit, List<String> address, String postalCode) {
-    unit.setPostadress(unitAddressConverter.convertAddress(address));
-    unit.setPostnummer(unitAddressConverter.convertZipCode(address, postalCode));
-    unit.setPostort(unitAddressConverter.convertCity(address));
+  private void updateAddress(Vardenhet unit, Address address) {
+    if (address == null) {
+      return;
+    }
+    unit.setPostadress(address.address());
+    unit.setPostnummer(address.zipCode());
+    unit.setPostort(address.city());
   }
 }
