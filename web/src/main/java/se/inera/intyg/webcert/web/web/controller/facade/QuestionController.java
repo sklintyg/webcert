@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,6 +63,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestD
 
 @RestController
 @RequestMapping("/api/question")
+@Validated
 public class QuestionController {
 
   private static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
@@ -214,7 +216,7 @@ public class QuestionController {
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public ResponseEntity<QuestionResponseDTO> sendQuestionAnswer(
       @PathVariable("questionId") @NotNull String questionId,
-      @RequestBody AnswerRequestDTO answerRequestDTO) {
+      @RequestBody @Valid AnswerRequestDTO answerRequestDTO) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Send answer for question with id: '{}'", questionId);
     }
