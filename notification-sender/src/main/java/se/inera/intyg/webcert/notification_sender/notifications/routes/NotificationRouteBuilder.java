@@ -144,7 +144,7 @@ public class NotificationRouteBuilder extends RouteBuilder {
         .to("bean:notificationPostProcessor");
 
     from("direct:permanentErrorHandlerEndpoint")
-        .routeId("errorLogging")
+        .routeId("notificationPermanentErrorLogging")
         .log(
             LoggingLevel.ERROR,
             LOG,
@@ -155,7 +155,7 @@ public class NotificationRouteBuilder extends RouteBuilder {
         .stop();
 
     from("direct:temporaryErrorHandlerEndpoint")
-        .routeId("temporaryErrorLogging")
+        .routeId("notificationTemporaryErrorLogging")
         .choice()
         .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
         .log(
