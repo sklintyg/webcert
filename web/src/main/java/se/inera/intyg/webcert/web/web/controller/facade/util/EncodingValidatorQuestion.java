@@ -16,20 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
+package se.inera.intyg.webcert.web.web.controller.facade.util;
 
-import se.inera.intyg.webcert.web.web.controller.facade.util.EncodingConstraint;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import se.inera.intyg.common.support.facade.model.question.Question;
 
-public class AnswerRequestDTO {
+public class EncodingValidatorQuestion extends EncodingValidatorBase
+    implements ConstraintValidator<EncodingConstraint, Question> {
 
-  @EncodingConstraint(message = "message contains characters that are not allowed.")
-  private String message;
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
+  @Override
+  public boolean isValid(Question value, ConstraintValidatorContext context) {
+    if (value == null) {
+      return false;
+    }
+    String message = value.getMessage();
+    return super.isValid(message, context, "question.message contains illegal characters");
   }
 }

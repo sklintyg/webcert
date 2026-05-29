@@ -19,9 +19,11 @@
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.web.web.controller.facade.util.EncodingConstraint;
 
 public class SaveQuestionRequestDTO {
 
+  @EncodingConstraint(message = "question.message contains characters that are not allowed.")
   private Question question;
 
   public Question getQuestion() {
