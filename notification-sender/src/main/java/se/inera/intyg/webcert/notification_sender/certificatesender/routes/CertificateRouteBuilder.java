@@ -30,9 +30,6 @@ public class CertificateRouteBuilder extends RouteBuilder {
 
   private static final Logger LOG = LoggerFactory.getLogger(CertificateRouteBuilder.class);
 
-  @Value("${camel.message.delay.millis}")
-  private String messageDelayMillis;
-
   @Value("${receiveCertificateTransferEndpointUri}")
   private String receiveCertificateTransferUri;
 
@@ -50,14 +47,6 @@ public class CertificateRouteBuilder extends RouteBuilder {
    */
   @Override
   public void configure() {
-    long messageDelay;
-    try {
-      messageDelay = Long.parseLong(messageDelayMillis);
-    } catch (NumberFormatException e) {
-      throw new IllegalArgumentException(
-          "Cannot build certificate route, supplied message delay could not be parsed: "
-              + e.getMessage());
-    }
     errorHandler(defaultErrorHandler().logExhausted(false));
 
     from(receiveCertificateTransferUri)
@@ -70,10 +59,6 @@ public class CertificateRouteBuilder extends RouteBuilder {
         .to("direct:certTemporaryErrorHandlerEndpoint")
         .end()
         .transacted("txTemplate")
-        .choice()
-        .when(header(Constants.DELAY_MESSAGE))
-        .delay(messageDelay)
-        .endChoice()
         .end()
         .choice()
         .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.STORE_MESSAGE))
