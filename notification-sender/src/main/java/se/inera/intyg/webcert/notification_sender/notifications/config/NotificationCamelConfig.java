@@ -27,12 +27,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.webcert.notification_sender.certificatesender.routes.CertificateRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
 
 /**
- * Replaces notifications/beans-context.xml and notifications/camel-context.xml.
+ * Replaces notifications/beans-context.xml, notifications/camel-context.xml, and
+ * certificates/camel-context.xml. Creates a single unified CamelContext (following Spring Boot
+ * convention of one CamelContext per application) containing both notification and certificate
+ * routes.
  *
  * <p>Intentionally does NOT include notificationPatientEnricher — that bean is declared in
  * NotificationSenderConfig so unit/integration tests can load this config without pulling in
@@ -62,15 +66,17 @@ public class NotificationCamelConfig {
   }
 
   @Bean
-  public SpringCamelContext webcertNotification(
+  public SpringCamelContext webcertCamelContext(
       ApplicationContext applicationContext,
-      NotificationRouteBuilder processNotificationRequestRouteBuilder) {
+      NotificationRouteBuilder processNotificationRequestRouteBuilder,
+      CertificateRouteBuilder certificateRouteBuilder) {
     SpringCamelContext context = new SpringCamelContext(applicationContext);
-    context.setNameStrategy(new ExplicitCamelContextNameStrategy("webcertNotification"));
+    context.setNameStrategy(new ExplicitCamelContextNameStrategy("webcertCamelContext"));
     try {
       context.addRoutes(processNotificationRequestRouteBuilder);
+      context.addRoutes(certificateRouteBuilder);
     } catch (Exception e) {
-      throw new BeanCreationException("webcertNotification", "Failed to add routes", e);
+      throw new BeanCreationException("webcertCamelContext", "Failed to add routes", e);
     }
     return context;
   }

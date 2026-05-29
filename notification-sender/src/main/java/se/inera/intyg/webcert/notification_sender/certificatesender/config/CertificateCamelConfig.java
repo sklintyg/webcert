@@ -18,10 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.config;
 
-import org.apache.camel.impl.engine.ExplicitCamelContextNameStrategy;
-import org.apache.camel.spring.SpringCamelContext;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.webcert.notification_sender.certificatesender.routes.CertificateRouteBuilder;
@@ -32,8 +28,10 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.services.Reg
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.SendMessageToRecipientProcessor;
 
 /**
- * Replaces certificates/beans-context.xml and certificates/camel-context.xml. Defines all
- * certificate processor beans and creates the webcertCertificateSender CamelContext.
+ * Defines all certificate processor beans and the certificate route builder. The CamelContext is
+ * created in {@link
+ * se.inera.intyg.webcert.notification_sender.notifications.config.NotificationCamelConfig} as a
+ * single unified context (following Spring Boot convention of one CamelContext per application).
  */
 @Configuration
 public class CertificateCamelConfig {
@@ -66,18 +64,5 @@ public class CertificateCamelConfig {
   @Bean
   public CertificateRouteBuilder certificateRouteBuilder() {
     return new CertificateRouteBuilder();
-  }
-
-  @Bean
-  public SpringCamelContext webcertCertificateSender(
-      ApplicationContext applicationContext, CertificateRouteBuilder certificateRouteBuilder) {
-    SpringCamelContext context = new SpringCamelContext(applicationContext);
-    context.setNameStrategy(new ExplicitCamelContextNameStrategy("webcertCertificateSender"));
-    try {
-      context.addRoutes(certificateRouteBuilder);
-    } catch (Exception e) {
-      throw new BeanCreationException("webcertCertificateSender", "Failed to add routes", e);
-    }
-    return context;
   }
 }
