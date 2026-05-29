@@ -50,7 +50,7 @@ public class CertificateRouteBuilder extends RouteBuilder {
    */
   @Override
   public void configure() {
-    long messageDelay = 0;
+    long messageDelay;
     try {
       messageDelay = Long.parseLong(messageDelayMillis);
     } catch (NumberFormatException e) {
@@ -73,7 +73,6 @@ public class CertificateRouteBuilder extends RouteBuilder {
         .choice()
         .when(header(Constants.DELAY_MESSAGE))
         .delay(messageDelay)
-        .asyncDelayed()
         .endChoice()
         .end()
         .choice()
