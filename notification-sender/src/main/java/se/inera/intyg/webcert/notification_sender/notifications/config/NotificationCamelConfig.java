@@ -20,23 +20,15 @@ package se.inera.intyg.webcert.notification_sender.notifications.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.component.jackson.JacksonDataFormat;
-import org.apache.camel.impl.engine.ExplicitCamelContextNameStrategy;
-import org.apache.camel.spring.SpringCamelContext;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.webcert.notification_sender.certificatesender.routes.CertificateRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
 
 /**
- * Replaces notifications/beans-context.xml, notifications/camel-context.xml, and
- * certificates/camel-context.xml. Creates a single unified CamelContext (following Spring Boot
- * convention of one CamelContext per application) containing both notification and certificate
- * routes.
+ * Replaces notifications/beans-context.xml and notifications/camel-context.xml.
  *
  * <p>Intentionally does NOT include notificationPatientEnricher — that bean is declared in
  * NotificationSenderConfig so unit/integration tests can load this config without pulling in
@@ -63,21 +55,5 @@ public class NotificationCamelConfig {
   @Bean
   public JacksonDataFormat notificationMessageDataFormat(ObjectMapper objectMapper) {
     return new JacksonDataFormat(objectMapper, NotificationMessage.class);
-  }
-
-  @Bean
-  public SpringCamelContext webcertCamelContext(
-      ApplicationContext applicationContext,
-      NotificationRouteBuilder processNotificationRequestRouteBuilder,
-      CertificateRouteBuilder certificateRouteBuilder) {
-    SpringCamelContext context = new SpringCamelContext(applicationContext);
-    context.setNameStrategy(new ExplicitCamelContextNameStrategy("webcertCamelContext"));
-    try {
-      context.addRoutes(processNotificationRequestRouteBuilder);
-      context.addRoutes(certificateRouteBuilder);
-    } catch (Exception e) {
-      throw new BeanCreationException("webcertCamelContext", "Failed to add routes", e);
-    }
-    return context;
   }
 }

@@ -28,10 +28,9 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.services.Reg
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.SendMessageToRecipientProcessor;
 
 /**
- * Defines all certificate processor beans and the certificate route builder. The CamelContext is
- * created in {@link
- * se.inera.intyg.webcert.notification_sender.notifications.config.NotificationCamelConfig} as a
- * single unified context (following Spring Boot convention of one CamelContext per application).
+ * Replaces certificates/beans-context.xml and certificates/camel-context.xml. Defines all
+ * certificate processor beans; routes are registered in the single CamelContext managed by
+ * camel-spring-boot-starter.
  */
 @Configuration
 public class CertificateCamelConfig {

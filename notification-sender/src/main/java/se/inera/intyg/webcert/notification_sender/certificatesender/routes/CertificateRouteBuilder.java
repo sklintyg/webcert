@@ -101,7 +101,7 @@ public class CertificateRouteBuilder extends RouteBuilder {
         .stop();
 
     from("direct:certPermanentErrorHandlerEndpoint")
-        .routeId("permanentErrorLogging")
+        .routeId("certPermanentErrorLogging")
         .log(
             LoggingLevel.ERROR,
             LOG,
@@ -112,7 +112,7 @@ public class CertificateRouteBuilder extends RouteBuilder {
         .stop();
 
     from("direct:certTemporaryErrorHandlerEndpoint")
-        .routeId("temporaryErrorLogging")
+        .routeId("certTemporaryErrorLogging")
         .choice()
         .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
         .log(
