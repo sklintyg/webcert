@@ -55,7 +55,7 @@ public class NotificationJmsConfig {
     ActiveMQComponent component = new ActiveMQComponent();
     component.setConfiguration(camelJmsConfiguration);
     component.setTransacted(true);
-    component.setCacheLevelName("CACHE_CONSUMER");
+    component.setCacheLevelName("CACHE_NONE");
     return component;
   }
 
