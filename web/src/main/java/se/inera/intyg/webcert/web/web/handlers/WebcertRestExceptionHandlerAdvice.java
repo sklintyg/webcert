@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.web.handlers;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -80,15 +79,15 @@ public class WebcertRestExceptionHandlerAdvice {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ValidationErrorResponseDTO> handleMethodArgumentNotValid(
+  public ResponseEntity<WebcertRestExceptionResponse> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex) {
 
     List<String> errors =
         ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
 
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(new ValidationErrorResponseDTO(errors));
+    return ResponseEntity.badRequest()
+        .body(
+            new WebcertRestExceptionResponse(
+                WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, String.join("", errors)));
   }
-
-  public record ValidationErrorResponseDTO(List<String> errors) {}
 }

@@ -31,7 +31,7 @@ public abstract class EncodingValidatorBase {
   protected boolean isValid(
       String stringToCheck, ConstraintValidatorContext context, String customErrorMessage) {
     if (stringToCheck == null || stringToCheck.isEmpty()) {
-      return false;
+      return true;
     }
 
     final var invalidChars =
