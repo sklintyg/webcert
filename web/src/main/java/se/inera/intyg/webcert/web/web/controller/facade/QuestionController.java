@@ -18,11 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +35,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
+import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
+import se.inera.intyg.common.support.facade.model.question.Complement;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
@@ -52,6 +63,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestD
 
 @RestController
 @RequestMapping("/api/question")
+@Validated
 public class QuestionController {
 
   private static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
@@ -140,7 +152,7 @@ public class QuestionController {
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public ResponseEntity<QuestionResponseDTO> saveQuestion(
       @PathVariable("questionId") @NotNull String questionId,
-      @RequestBody SaveQuestionRequestDTO saveQuestionRequest) {
+      @RequestBody @Valid SaveQuestionRequestDTO saveQuestionRequest) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Saving question with id: '{}'", saveQuestionRequest.getQuestion().getId());
     }
@@ -156,7 +168,7 @@ public class QuestionController {
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public ResponseEntity<QuestionResponseDTO> sendQuestion(
       @PathVariable("questionId") @NotNull String questionId,
-      @RequestBody SendQuestionRequestDTO sendQuestionRequestDTO) {
+      @RequestBody @Valid SendQuestionRequestDTO sendQuestionRequestDTO) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Sending question with id: '{}'", questionId);
     }
@@ -172,7 +184,7 @@ public class QuestionController {
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public ResponseEntity<QuestionResponseDTO> saveQuestionAnswer(
       @PathVariable("questionId") @NotNull String questionId,
-      @RequestBody AnswerRequestDTO answerRequestDTO) {
+      @RequestBody @Valid AnswerRequestDTO answerRequestDTO) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Saving answer for question with id: '{}'", questionId);
     }
@@ -204,7 +216,7 @@ public class QuestionController {
       eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
   public ResponseEntity<QuestionResponseDTO> sendQuestionAnswer(
       @PathVariable("questionId") @NotNull String questionId,
-      @RequestBody AnswerRequestDTO answerRequestDTO) {
+      @RequestBody @Valid AnswerRequestDTO answerRequestDTO) {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Send answer for question with id: '{}'", questionId);
     }
