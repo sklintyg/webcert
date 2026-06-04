@@ -42,6 +42,7 @@ class CertificateTypeInfoConverterTest {
         .description("description")
         .links(List.of(new ResourceLinkDTO()))
         .type("type")
+            .message("message")
         .build();
   }
 
@@ -91,5 +92,13 @@ class CertificateTypeInfoConverterTest {
     final var response = certificateTypeInfoConverter.convert(typeInfo);
 
     assertEquals(typeInfo.getLinks(), response.getLinks());
+  }
+
+  @Test
+  void shouldConvertMessage() {
+    final var typeInfo = createTypeInfo();
+    final var response = certificateTypeInfoConverter.convert(typeInfo);
+
+    assertEquals(typeInfo.getMessage(), response.getMessage());
   }
 }
