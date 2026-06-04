@@ -42,7 +42,7 @@ class CertificateTypeInfoConverterTest {
         .description("description")
         .links(List.of(new ResourceLinkDTO()))
         .type("type")
-            .message("message")
+        .message("message")
         .build();
   }
 
