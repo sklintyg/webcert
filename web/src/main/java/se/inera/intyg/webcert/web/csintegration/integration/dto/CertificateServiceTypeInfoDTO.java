@@ -36,6 +36,7 @@ public class CertificateServiceTypeInfoDTO {
   String typeName;
   String name;
   String description;
+  String message;
   List<ResourceLinkDTO> links;
   CertificateConfirmationModal confirmationModal;
 

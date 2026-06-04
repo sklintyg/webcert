@@ -35,6 +35,7 @@ public class CertificateTypeInfoConverter {
     convertedTypeInfo.setDetailedDescription(typeInfo.getDescription());
     convertedTypeInfo.setLinks(typeInfo.getLinks());
     convertedTypeInfo.setConfirmationModal(typeInfo.getConfirmationModal());
+    convertedTypeInfo.setMessage(typeInfo.getMessage());
 
     return convertedTypeInfo;
   }
