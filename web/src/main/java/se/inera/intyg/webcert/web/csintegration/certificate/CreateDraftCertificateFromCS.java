@@ -126,7 +126,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
               "User '%s' on unit '%s' received error when creating draft: '%s'",
               user.getHsaId(), user.getValdVardenhet(), errorReason),
           exception);
-      return createErrorResponse(errorReason, ErrorIdType.VALIDATION_ERROR);
+      return createErrorResponse(errorReason, ErrorIdType.APPLICATION_ERROR);
     } catch (Exception exception) {
       log.error(
           String.format(
@@ -134,7 +134,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
               user.getHsaId(), user.getValdVardenhet()),
           exception);
       return createErrorResponse(
-          "Internal error. Could not create draft", ErrorIdType.APPLICATION_ERROR);
+          "Internal error. Could not create draft", ErrorIdType.VALIDATION_ERROR);
     }
   }
 

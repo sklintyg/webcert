@@ -169,7 +169,7 @@ class CreateDraftCertificateFromCSTest {
   }
 
   @Test
-  void shouldReturnApplicationErrorIfNotHttpServerErrorException() {
+  void shouldReturnValidationErrorIfHttpServerErrorException() {
     final var certificate = getIntyg(VALID_PERSON_ID);
     final var user = mock(IntygUser.class);
     final var modelIdDTO = CertificateModelIdDTO.builder().build();
@@ -182,11 +182,11 @@ class CreateDraftCertificateFromCSTest {
     when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
 
     final var result = createDraftCertificateFromCS.create(certificate, user);
-    assertEquals(APPLICATION_ERROR, result.getResult().getErrorId());
+    assertEquals(VALIDATION_ERROR, result.getResult().getErrorId());
   }
 
   @Test
-  void shouldReturnValidationErrorIfHttpServerErrorException() {
+  void shouldReturnApplicationErrorIfHttpServerErrorExceptionForbidden() {
     final var certificate = getIntyg(VALID_PERSON_ID);
     final var user = mock(IntygUser.class);
     final var modelIdDTO = CertificateModelIdDTO.builder().build();
@@ -202,7 +202,7 @@ class CreateDraftCertificateFromCSTest {
                 "", HttpStatus.FORBIDDEN, "", HttpHeaders.EMPTY, null, null));
 
     final var result = createDraftCertificateFromCS.create(certificate, user);
-    assertEquals(VALIDATION_ERROR, result.getResult().getErrorId());
+    assertEquals(APPLICATION_ERROR, result.getResult().getErrorId());
   }
 
   @Test
