@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
@@ -29,6 +28,8 @@ import jakarta.xml.bind.JAXBContext;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,6 +77,8 @@ class NotificationMessageFactoryTest {
   private static final ArendeCount ARENDE_COUNT = new ArendeCount(1, 1, 1, 1);
   private static final ArendeAmne QUESTION_TYPE = ArendeAmne.KOMPLT;
   private static final LocalDate LAST_DATE_TO_ANSWER = LocalDate.now();
+  private static final LocalDateTime EVENT_TIME =
+      LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.MILLIS);
   private Certificate certificate;
   private String xmlRepresentation;
   private HandelsekodEnum eventType;
@@ -123,7 +126,13 @@ class NotificationMessageFactoryTest {
   void shallConvertId() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(ID, result.getIntygsId());
   }
 
@@ -131,23 +140,41 @@ class NotificationMessageFactoryTest {
   void shallConvertType() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(TYPE_1, result.getIntygsTyp());
   }
 
   @Test
-  void shallSetCurrentTimestamp() {
+  void shallSetEventTimestamp() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
-    assertNotNull(result.getHandelseTid());
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
+    assertEquals(EVENT_TIME, result.getHandelseTid());
   }
 
   @Test
   void shallConvertEventType() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(eventType, result.getHandelse());
   }
 
@@ -155,7 +182,13 @@ class NotificationMessageFactoryTest {
   void shallConvertUnitId() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(UNIT_ID, result.getLogiskAdress());
   }
 
@@ -163,7 +196,13 @@ class NotificationMessageFactoryTest {
   void shallConvertFragorOchSvar() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(FragorOchSvar.getEmpty().getAntalFragor(), result.getFragaSvar().getAntalFragor());
     assertEquals(FragorOchSvar.getEmpty().getAntalSvar(), result.getFragaSvar().getAntalSvar());
     assertEquals(
@@ -178,7 +217,13 @@ class NotificationMessageFactoryTest {
   void shallConvertMottagnaFragor() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(ARENDE_COUNT.getBesvarade(), result.getSkickadeFragor().getBesvarade());
     assertEquals(ARENDE_COUNT.getHanterade(), result.getSkickadeFragor().getHanterade());
     assertEquals(ARENDE_COUNT.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
@@ -189,7 +234,13 @@ class NotificationMessageFactoryTest {
   void shallConvertSkickadeFragor() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(ARENDE_COUNT.getBesvarade(), result.getSkickadeFragor().getBesvarade());
     assertEquals(ARENDE_COUNT.getHanterade(), result.getSkickadeFragor().getHanterade());
     assertEquals(ARENDE_COUNT.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
@@ -200,7 +251,13 @@ class NotificationMessageFactoryTest {
   void shallConvertSchemaVersion() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(SchemaVersion.VERSION_3, result.getVersion());
   }
 
@@ -208,7 +265,13 @@ class NotificationMessageFactoryTest {
   void shallConvertExternalReference() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(EXTERNAL_REF, result.getReference());
   }
 
@@ -216,7 +279,13 @@ class NotificationMessageFactoryTest {
   void shallIncludeSubjectCode() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     final var subjectCode =
         AmneskodCreator.create(QUESTION_TYPE.name(), QUESTION_TYPE.getDescription());
 
@@ -233,7 +302,13 @@ class NotificationMessageFactoryTest {
   void shallIncludeLastDateToAnswer() {
     final var result =
         converter.create(
-            certificate, xmlRepresentation, eventType, HSA_ID, QUESTION_TYPE, LAST_DATE_TO_ANSWER);
+            certificate,
+            xmlRepresentation,
+            EVENT_TIME,
+            eventType,
+            HSA_ID,
+            QUESTION_TYPE,
+            LAST_DATE_TO_ANSWER);
     assertEquals(LAST_DATE_TO_ANSWER, result.getSistaSvarsDatum());
   }
 
@@ -246,6 +321,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
@@ -262,6 +338,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
@@ -276,6 +353,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
@@ -291,12 +369,13 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
               LAST_DATE_TO_ANSWER);
       final var careType = unmarshall(result.getStatusUpdateXml());
-      assertNotNull(careType.getHandelse().getTidpunkt());
+      assertEquals(EVENT_TIME, careType.getHandelse().getTidpunkt());
     }
 
     @Test
@@ -305,6 +384,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
@@ -319,6 +399,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
@@ -334,6 +415,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
@@ -352,6 +434,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
@@ -371,6 +454,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,
@@ -400,6 +484,7 @@ class NotificationMessageFactoryTest {
           converter.create(
               certificate,
               xmlRepresentation,
+              EVENT_TIME,
               eventType,
               HSA_ID,
               QUESTION_TYPE,

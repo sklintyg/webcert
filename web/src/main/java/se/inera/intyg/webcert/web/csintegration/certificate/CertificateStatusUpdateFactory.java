@@ -53,7 +53,7 @@ public class CertificateStatusUpdateFactory {
   public static byte[] create(
       String encodedXmlRepresentation,
       HandelsekodEnum eventType,
-      LocalDateTime now,
+      LocalDateTime eventTime,
       String handledByHsaId,
       String reference,
       ArendeCount sentQuestions,
@@ -65,7 +65,7 @@ public class CertificateStatusUpdateFactory {
     final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
     certificateStatusUpdateForCareType.setIntyg(request.getIntyg());
     certificateStatusUpdateForCareType.setHandelse(
-        NotificationRedeliveryUtil.getEventV3(eventType, now, subject, lastDateToAnswer));
+        NotificationRedeliveryUtil.getEventV3(eventType, eventTime, subject, lastDateToAnswer));
     certificateStatusUpdateForCareType.setSkickadeFragor(
         NotificationTypeConverter.toArenden(sentQuestions));
     certificateStatusUpdateForCareType.setMottagnaFragor(

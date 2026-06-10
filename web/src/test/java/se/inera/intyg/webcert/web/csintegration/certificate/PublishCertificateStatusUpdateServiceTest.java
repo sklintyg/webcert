@@ -18,9 +18,11 @@
  */
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -28,6 +30,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -138,7 +141,14 @@ class PublishCertificateStatusUpdateServiceTest {
     void shallCallNotificationMessageFactoryWithHsaIdFromIntygUserIfPresent() {
       doReturn(new NotificationMessage())
           .when(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, INTYG_USER_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(INTYG_USER_HSA_ID),
+              eq(null),
+              eq(null));
       doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);
 
       publishCertificateStatusUpdateService.publish(
@@ -150,7 +160,14 @@ class PublishCertificateStatusUpdateServiceTest {
           null);
 
       verify(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, INTYG_USER_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(INTYG_USER_HSA_ID),
+              eq(null),
+              eq(null));
     }
 
     @Test
@@ -159,13 +176,28 @@ class PublishCertificateStatusUpdateServiceTest {
       doReturn(webCertUser).when(webCertUserService).getUser();
       doReturn(new NotificationMessage())
           .when(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(WEBCERT_HSA_ID),
+              eq(null),
+              eq(null));
+
       doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);
 
       publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
 
       verify(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(WEBCERT_HSA_ID),
+              eq(null),
+              eq(null));
     }
 
     @Test
@@ -173,13 +205,27 @@ class PublishCertificateStatusUpdateServiceTest {
       doReturn(false).when(webCertUserService).hasAuthenticationContext();
       doReturn(new NotificationMessage())
           .when(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, null, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(null),
+              eq(null),
+              eq(null));
       doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);
 
       publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
 
       verify(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, null, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(null),
+              eq(null),
+              eq(null));
     }
 
     @Test
@@ -188,12 +234,26 @@ class PublishCertificateStatusUpdateServiceTest {
       doReturn(webCertUser).when(webCertUserService).getUser();
       doReturn(new NotificationMessage())
           .when(notificationMessageFactory)
-          .create(certificate, XML_DATA, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(XML_DATA),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(WEBCERT_HSA_ID),
+              eq(null),
+              eq(null));
 
       publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, XML_DATA);
 
       verify(notificationMessageFactory)
-          .create(certificate, XML_DATA, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(XML_DATA),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(WEBCERT_HSA_ID),
+              eq(null),
+              eq(null));
     }
 
     @Test
@@ -201,12 +261,13 @@ class PublishCertificateStatusUpdateServiceTest {
       doReturn(new NotificationMessage())
           .when(notificationMessageFactory)
           .create(
-              certificate,
-              xml,
-              HandelsekodEnum.SKAPAT,
-              INTYG_USER_HSA_ID,
-              ArendeAmne.KOMPLT,
-              LAST_DATE_TO_ANSWER);
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(INTYG_USER_HSA_ID),
+              eq(ArendeAmne.KOMPLT),
+              eq(LAST_DATE_TO_ANSWER));
       doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);
 
       publishCertificateStatusUpdateService.publish(
@@ -219,12 +280,13 @@ class PublishCertificateStatusUpdateServiceTest {
 
       verify(notificationMessageFactory)
           .create(
-              certificate,
-              xml,
-              HandelsekodEnum.SKAPAT,
-              INTYG_USER_HSA_ID,
-              ArendeAmne.KOMPLT,
-              LAST_DATE_TO_ANSWER);
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(INTYG_USER_HSA_ID),
+              eq(ArendeAmne.KOMPLT),
+              eq(LAST_DATE_TO_ANSWER));
     }
   }
 
@@ -246,7 +308,14 @@ class PublishCertificateStatusUpdateServiceTest {
 
       doReturn(expectedMessage)
           .when(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(WEBCERT_HSA_ID),
+              eq(null),
+              eq(null));
 
       publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
       verify(notificationService).send(argumentCaptor.capture(), eq(UNIT_ID), eq(TYPE_VERSION));
@@ -259,7 +328,14 @@ class PublishCertificateStatusUpdateServiceTest {
       final var argumentCaptor = ArgumentCaptor.forClass(String.class);
       doReturn(new NotificationMessage())
           .when(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(WEBCERT_HSA_ID),
+              eq(null),
+              eq(null));
 
       publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
       verify(notificationService)
@@ -273,7 +349,14 @@ class PublishCertificateStatusUpdateServiceTest {
       final var argumentCaptor = ArgumentCaptor.forClass(String.class);
       doReturn(new NotificationMessage())
           .when(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(WEBCERT_HSA_ID),
+              eq(null),
+              eq(null));
 
       publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
       verify(notificationService)
@@ -310,15 +393,37 @@ class PublishCertificateStatusUpdateServiceTest {
       doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
       doReturn(expectedHsaId).when(event).getHanteratAv();
       doReturn(HandelsekodEnum.SKAPAT).when(event).getCode();
+      final var eventTime = LocalDateTime.now();
+      doReturn(eventTime).when(event).getTimestamp();
+
       doReturn(notificationMessage)
           .when(notificationMessageFactory)
-          .create(certificate, xml, HandelsekodEnum.SKAPAT, expectedHsaId, null, null);
+          .create(certificate, xml, eventTime, HandelsekodEnum.SKAPAT, expectedHsaId, null, null);
       doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);
 
       publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
 
       verify(notificationRedeliveryService)
           .resend(notificationRedelivery, event, expectedStatusUpdate);
+    }
+
+    @Test
+    void shallUseMessageFromNotificationRedeliveryIfPresent() {
+      final var event = mock(Handelse.class);
+      final var notificationRedelivery = mock(NotificationRedelivery.class);
+      final var eventMessage = "event message".getBytes(StandardCharsets.UTF_8);
+      final ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
+
+      doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+      doReturn(eventMessage).when(notificationRedelivery).getMessage();
+
+      publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
+
+      verify(notificationRedeliveryService)
+          .resend(eq(notificationRedelivery), eq(event), byteCaptor.capture());
+      assertArrayEquals(eventMessage, byteCaptor.getValue());
+      verifyNoInteractions(csIntegrationService);
+      verifyNoInteractions(notificationMessageFactory);
     }
   }
 }
