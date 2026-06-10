@@ -18,10 +18,14 @@
  */
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -35,6 +39,7 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PublishCertificateStatusUpdateService {
@@ -45,6 +50,7 @@ public class PublishCertificateStatusUpdateService {
   private final NotificationRedeliveryService notificationRedeliveryService;
   private final NotificationService notificationService;
   private final WebCertUserService webCertUserService;
+  private final ObjectMapper objectMapper;
 
   public void publish(Certificate certificate, HandelsekodEnum eventType, String xml) {
     publish(certificate, eventType, Optional.empty(), Optional.of(xml), null, null);
@@ -124,7 +130,16 @@ public class PublishCertificateStatusUpdateService {
   private byte[] getStatusUpdateXml(
       Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
     if (notificationRedelivery.getMessage() != null) {
-      return notificationRedelivery.getMessage();
+      try {
+        final var xml = objectMapper.readValue(notificationRedelivery.getMessage(), String.class);
+        return xml.getBytes(StandardCharsets.UTF_8);
+      } catch (IOException e) {
+        log.error(
+            "Failed to JSON-decode stored redelivery message for correlationId {}; "
+                + "will regenerate status update XML.",
+            notificationRedelivery.getCorrelationId(),
+            e);
+      }
     }
 
     final var certificateXml =
