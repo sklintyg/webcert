@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -143,7 +144,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(INTYG_USER_HSA_ID),
               eq(null),
@@ -162,7 +163,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(INTYG_USER_HSA_ID),
               eq(null),
@@ -178,7 +179,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(WEBCERT_HSA_ID),
               eq(null),
@@ -192,7 +193,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(WEBCERT_HSA_ID),
               eq(null),
@@ -207,7 +208,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(null),
               eq(null),
@@ -220,7 +221,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(null),
               eq(null),
@@ -236,7 +237,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(XML_DATA),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(WEBCERT_HSA_ID),
               eq(null),
@@ -248,7 +249,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(XML_DATA),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(WEBCERT_HSA_ID),
               eq(null),
@@ -262,7 +263,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(INTYG_USER_HSA_ID),
               eq(ArendeAmne.KOMPLT),
@@ -281,7 +282,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(INTYG_USER_HSA_ID),
               eq(ArendeAmne.KOMPLT),
@@ -310,7 +311,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(WEBCERT_HSA_ID),
               eq(null),
@@ -330,7 +331,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(WEBCERT_HSA_ID),
               eq(null),
@@ -351,7 +352,7 @@ class PublishCertificateStatusUpdateServiceTest {
           .create(
               eq(certificate),
               eq(xml),
-              any(),
+              notNull(),
               eq(HandelsekodEnum.SKAPAT),
               eq(WEBCERT_HSA_ID),
               eq(null),
