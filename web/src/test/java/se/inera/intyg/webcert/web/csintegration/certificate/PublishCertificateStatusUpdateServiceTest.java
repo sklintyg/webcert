@@ -24,10 +24,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,6 +78,7 @@ class PublishCertificateStatusUpdateServiceTest {
   @Mock private NotificationMessageFactory notificationMessageFactory;
   @Mock private IntegreradeEnheterRegistry integreradeEnheterRegistry;
   @Mock private CSIntegrationService csIntegrationService;
+  @Mock private ObjectMapper objectMapper;
   @InjectMocks private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
   private final Certificate certificate = new Certificate();
@@ -408,22 +412,55 @@ class PublishCertificateStatusUpdateServiceTest {
     }
 
     @Test
-    void shallUseMessageFromNotificationRedeliveryIfPresent() {
+    void shallUseMessageFromNotificationRedeliveryIfPresent() throws Exception {
       final var event = mock(Handelse.class);
       final var notificationRedelivery = mock(NotificationRedelivery.class);
-      final var eventMessage = "event message".getBytes(StandardCharsets.UTF_8);
+      final var storedMessage = "\"<statusUpdate/>\"".getBytes(StandardCharsets.UTF_8);
+      final var decodedXml = "<statusUpdate/>";
+      final var expectedBytes = decodedXml.getBytes(StandardCharsets.UTF_8);
       final ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
 
       doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
-      doReturn(eventMessage).when(notificationRedelivery).getMessage();
+      doReturn(storedMessage).when(notificationRedelivery).getMessage();
+      doReturn(decodedXml).when(objectMapper).readValue(storedMessage, String.class);
 
       publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
 
       verify(notificationRedeliveryService)
           .resend(eq(notificationRedelivery), eq(event), byteCaptor.capture());
-      assertArrayEquals(eventMessage, byteCaptor.getValue());
+      assertArrayEquals(expectedBytes, byteCaptor.getValue());
       verifyNoInteractions(csIntegrationService);
       verifyNoInteractions(notificationMessageFactory);
+    }
+
+    @Test
+    void shallRegenerateFromEventWhenJsonDecodeOfStoredMessageFails() throws Exception {
+      final var event = mock(Handelse.class);
+      final var notificationRedelivery = mock(NotificationRedelivery.class);
+      final var storedMessage = "invalid-json".getBytes(StandardCharsets.UTF_8);
+      final var notificationMessage = new NotificationMessage();
+      final var expectedStatusUpdate = "<regenerated/>".getBytes(StandardCharsets.UTF_8);
+      notificationMessage.setStatusUpdateXml(expectedStatusUpdate);
+      final ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
+      final var eventTime = LocalDateTime.now();
+
+      doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+      doReturn(storedMessage).when(notificationRedelivery).getMessage();
+      doThrow(new IOException("decode failure"))
+          .when(objectMapper)
+          .readValue(storedMessage, String.class);
+      doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);
+      doReturn(eventTime).when(event).getTimestamp();
+      doReturn(HandelsekodEnum.SKAPAT).when(event).getCode();
+      doReturn(notificationMessage)
+          .when(notificationMessageFactory)
+          .create(certificate, xml, eventTime, HandelsekodEnum.SKAPAT, null, null, null);
+
+      publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
+
+      verify(notificationRedeliveryService)
+          .resend(eq(notificationRedelivery), eq(event), byteCaptor.capture());
+      assertArrayEquals(expectedStatusUpdate, byteCaptor.getValue());
     }
   }
 }
