@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -390,15 +392,37 @@ class PublishCertificateStatusUpdateServiceTest {
       doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
       doReturn(expectedHsaId).when(event).getHanteratAv();
       doReturn(HandelsekodEnum.SKAPAT).when(event).getCode();
+      final var eventTime = LocalDateTime.now();
+      doReturn(eventTime).when(event).getTimestamp();
+
       doReturn(notificationMessage)
           .when(notificationMessageFactory)
-          .create(certificate, xml, null, HandelsekodEnum.SKAPAT, expectedHsaId, null, null);
+          .create(certificate, xml, eventTime, HandelsekodEnum.SKAPAT, expectedHsaId, null, null);
       doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);
 
       publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
 
       verify(notificationRedeliveryService)
           .resend(notificationRedelivery, event, expectedStatusUpdate);
+    }
+
+    @Test
+    void shallUseMessageFromNotificationRedeliveryIfPresent() {
+      final var event = mock(Handelse.class);
+      final var notificationRedelivery = mock(NotificationRedelivery.class);
+      final var eventMessage = "event message".getBytes(StandardCharsets.UTF_8);
+      final ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
+
+      doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+      doReturn(eventMessage).when(notificationRedelivery).getMessage();
+
+      publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
+
+      verify(notificationRedeliveryService)
+          .resend(eq(notificationRedelivery), eq(event), byteCaptor.capture());
+      assertArrayEquals(eventMessage, byteCaptor.getValue());
+      verifyNoInteractions(csIntegrationService);
+      verifyNoInteractions(notificationMessageFactory);
     }
   }
 }

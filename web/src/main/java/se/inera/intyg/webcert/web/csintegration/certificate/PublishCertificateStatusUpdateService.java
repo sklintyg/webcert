@@ -115,6 +115,18 @@ public class PublishCertificateStatusUpdateService {
       return;
     }
 
+    notificationRedeliveryService.resend(
+        notificationRedelivery,
+        event,
+        getStatusUpdateXml(certificate, event, notificationRedelivery));
+  }
+
+  private byte[] getStatusUpdateXml(
+      Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
+    if (notificationRedelivery.getMessage() != null) {
+      return notificationRedelivery.getMessage();
+    }
+
     final var certificateXml =
         csIntegrationService.getInternalCertificateXml(certificate.getMetadata().getId());
 
@@ -127,9 +139,7 @@ public class PublishCertificateStatusUpdateService {
             event.getHanteratAv(),
             event.getAmne(),
             event.getSistaDatumForSvar());
-
-    notificationRedeliveryService.resend(
-        notificationRedelivery, event, notificationMessage.getStatusUpdateXml());
+    return notificationMessage.getStatusUpdateXml();
   }
 
   private boolean unitIsNotIntegrated(Certificate certificate) {
