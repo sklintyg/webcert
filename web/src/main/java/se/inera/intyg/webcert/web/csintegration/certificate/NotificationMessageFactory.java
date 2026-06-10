@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -44,17 +43,17 @@ public class NotificationMessageFactory {
   public NotificationMessage create(
       Certificate certificate,
       String encodedXmlRepresentation,
+      LocalDateTime eventTime,
       HandelsekodEnum eventType,
       String handledByHsaId,
       ArendeAmne questionType,
       LocalDate lastDateToAnswer) {
     final var questions = csIntegrationService.getQuestions(certificate.getMetadata().getId());
-    final var now = LocalDateTime.now();
     final var notificationMessage =
         new NotificationMessage(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getType(),
-            now,
+            eventTime,
             eventType,
             certificate.getMetadata().getUnit().getUnitId(),
             null,
@@ -64,13 +63,13 @@ public class NotificationMessageFactory {
                     .filter(
                         question ->
                             !FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
-                    .collect(Collectors.toList())),
+                    .toList()),
             questionCounter.calculateArendeCount(
                 questions.stream()
                     .filter(
                         question ->
                             FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
-                    .collect(Collectors.toList())),
+                    .toList()),
             SchemaVersion.VERSION_3,
             certificate.getMetadata().getExternalReference(),
             getSubjectCode(questionType),
@@ -80,7 +79,7 @@ public class NotificationMessageFactory {
         CertificateStatusUpdateFactory.create(
             encodedXmlRepresentation,
             eventType,
-            now,
+            eventTime,
             handledByHsaId,
             certificate.getMetadata().getExternalReference(),
             notificationMessage.getSkickadeFragor(),

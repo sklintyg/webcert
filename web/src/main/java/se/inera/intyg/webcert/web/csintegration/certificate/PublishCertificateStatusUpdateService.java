@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -91,6 +92,7 @@ public class PublishCertificateStatusUpdateService {
         notificationMessageFactory.create(
             certificate,
             certificateXml,
+            LocalDateTime.now(),
             eventType,
             handledByUserHsaId,
             questionType,
@@ -113,6 +115,18 @@ public class PublishCertificateStatusUpdateService {
       return;
     }
 
+    notificationRedeliveryService.resend(
+        notificationRedelivery,
+        event,
+        getStatusUpdateXml(certificate, event, notificationRedelivery));
+  }
+
+  private byte[] getStatusUpdateXml(
+      Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
+    if (notificationRedelivery.getMessage() != null) {
+      return notificationRedelivery.getMessage();
+    }
+
     final var certificateXml =
         csIntegrationService.getInternalCertificateXml(certificate.getMetadata().getId());
 
@@ -120,13 +134,12 @@ public class PublishCertificateStatusUpdateService {
         notificationMessageFactory.create(
             certificate,
             certificateXml,
+            event.getTimestamp(),
             event.getCode(),
             event.getHanteratAv(),
             event.getAmne(),
             event.getSistaDatumForSvar());
-
-    notificationRedeliveryService.resend(
-        notificationRedelivery, event, notificationMessage.getStatusUpdateXml());
+    return notificationMessage.getStatusUpdateXml();
   }
 
   private boolean unitIsNotIntegrated(Certificate certificate) {
