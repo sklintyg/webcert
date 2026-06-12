@@ -223,7 +223,9 @@ class UnansweredCommunicationServiceImplTest {
     final var notValidArende =
         getArende(ArendeAmne.PAMINN, Status.PENDING_INTERNAL_ACTION, certificateITwo, FK);
 
-    doReturn(List.of(arendeOther1, arendeOther2, arendeComplement1, arendeComplement2, notValidArende))
+    doReturn(
+            List.of(
+                arendeOther1, arendeOther2, arendeComplement1, arendeComplement2, notValidArende))
         .when(arendeService)
         .getArendenForPatientsWithTimestampAfterDate(eq(request.getPatientIds()), any());
 
