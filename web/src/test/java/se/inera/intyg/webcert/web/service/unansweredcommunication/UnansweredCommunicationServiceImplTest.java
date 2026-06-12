@@ -25,6 +25,7 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,10 +95,12 @@ class UnansweredCommunicationServiceImplTest {
 
   @Test
   void shouldFilterOnStatusIfNotObesvarad() {
-    final var arende = getArende(ArendeAmne.KOMPLT, Status.ANSWERED, null, FK);
+    final var arende = getArende(ArendeAmne.KOMPLT, Status.PENDING_EXTERNAL_ACTION, null, FK);
+
     doReturn(List.of(arende))
         .when(arendeService)
         .getArendenForPatientsWithTimestampAfterDate(eq(request.getPatientIds()), any());
+
     final var result = unansweredCommunicationService.get(request);
     Assertions.assertEquals(0, result.getUnansweredQAsMap().size());
   }
@@ -140,9 +143,13 @@ class UnansweredCommunicationServiceImplTest {
   @Test
   void shouldIncrementMultipleComplemented() {
     final var expecteCertificateId = EXPECTED_CERTIFICATE_ID;
-    final var arende =
+    final var arende1 =
         getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
-    doReturn(List.of(arende, arende, arende))
+    final var arende2 =
+        getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
+    final var arende3 =
+        getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
+    doReturn(List.of(arende1, arende2, arende3))
         .when(arendeService)
         .getArendenForPatientsWithTimestampAfterDate(eq(request.getPatientIds()), any());
     final var result = unansweredCommunicationService.get(request);
@@ -153,11 +160,17 @@ class UnansweredCommunicationServiceImplTest {
   @Test
   void shouldIncrementMultipleOther() {
     final var expecteCertificateId = EXPECTED_CERTIFICATE_ID;
-    final var arende =
+    final var arende1 =
         getArende(ArendeAmne.KONTKT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
-    doReturn(List.of(arende, arende, arende))
+    final var arende2 =
+        getArende(ArendeAmne.KONTKT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
+    final var arende3 =
+        getArende(ArendeAmne.KONTKT, Status.PENDING_INTERNAL_ACTION, expecteCertificateId, FK);
+
+    doReturn(List.of(arende1, arende2, arende3))
         .when(arendeService)
         .getArendenForPatientsWithTimestampAfterDate(eq(request.getPatientIds()), any());
+
     final var result = unansweredCommunicationService.get(request);
     Assertions.assertEquals(3, result.getUnansweredQAsMap().get(expecteCertificateId).getOthers());
   }
@@ -199,14 +212,18 @@ class UnansweredCommunicationServiceImplTest {
   void shouldIncrementComplementAndOtherForMultipleCertificates() {
     final var certificateIdOne = "certificateIdOne";
     final var certificateITwo = "certificateITwo";
-    final var arendeOther =
+    final var arendeOther1 =
         getArende(ArendeAmne.KONTKT, Status.PENDING_INTERNAL_ACTION, certificateIdOne, FK);
-    final var arendeComplement =
+    final var arendeOther2 =
+        getArende(ArendeAmne.KONTKT, Status.PENDING_INTERNAL_ACTION, certificateIdOne, FK);
+    final var arendeComplement1 =
+        getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, certificateITwo, FK);
+    final var arendeComplement2 =
         getArende(ArendeAmne.KOMPLT, Status.PENDING_INTERNAL_ACTION, certificateITwo, FK);
     final var notValidArende =
         getArende(ArendeAmne.PAMINN, Status.PENDING_INTERNAL_ACTION, certificateITwo, FK);
 
-    doReturn(List.of(arendeOther, arendeOther, arendeComplement, arendeComplement, notValidArende))
+    doReturn(List.of(arendeOther1, arendeOther2, arendeComplement1, arendeComplement2, notValidArende))
         .when(arendeService)
         .getArendenForPatientsWithTimestampAfterDate(eq(request.getPatientIds()), any());
 
@@ -223,6 +240,7 @@ class UnansweredCommunicationServiceImplTest {
     arende.setSvarPaId(PATIENT_ID);
     arende.setIntygsId(certificateId);
     arende.setSkickatAv(sendBy);
+    arende.setMeddelandeId(UUID.randomUUID().toString());
     return arende;
   }
 }
