@@ -61,8 +61,9 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
                 .toLocalDate()
                 .atStartOfDay());
 
-    final var arendeMap = arendenForPatients.stream()
-        .collect(Collectors.toMap(Arende::getMeddelandeId, Function.identity()));
+    final var arendeMap =
+        arendenForPatients.stream()
+            .collect(Collectors.toMap(Arende::getMeddelandeId, Function.identity()));
 
     return new UnansweredCommunicationResponse(createUnansweredCommunication(arendeMap));
   }
@@ -120,13 +121,13 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
     };
   }
 
-  private static boolean isAnsweredFromExternal(Status status, String svarPaId,
-      Map<String, Arende> arendeMap) {
+  private static boolean isAnsweredFromExternal(
+      Status status, String svarPaId, Map<String, Arende> arendeMap) {
     return status == Status.ANSWERED
         && svarPaId != null
         && !svarPaId.isEmpty()
         && Optional.ofNullable(arendeMap.get(svarPaId))
-        .map(arende -> arende.getStatus().equals(Status.CLOSED))
-        .orElse(false);
+            .map(arende -> arende.getStatus().equals(Status.CLOSED))
+            .orElse(false);
   }
 }
