@@ -25,6 +25,8 @@ import static se.inera.intyg.webcert.persistence.arende.model.ArendeAmne.KOMPLT;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.StatusType;
@@ -59,7 +61,10 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
                 .toLocalDate()
                 .atStartOfDay());
 
-    return new UnansweredCommunicationResponse(createUnansweredCommunication(arendenForPatients));
+    final var arendeMap = arendenForPatients.stream()
+        .collect(Collectors.toMap(Arende::getMeddelandeId, Function.identity()));
+
+    return new UnansweredCommunicationResponse(createUnansweredCommunication(arendeMap));
   }
 
   private void assertMaxDaysOfUnansweredCommunication(Integer maxDaysOfUnansweredCommunication) {
@@ -81,9 +86,9 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
         .collect(Collectors.toList());
   }
 
-  private Map<String, UnansweredQAs> createUnansweredCommunication(List<Arende> arenden) {
-    return arenden.stream()
-        .filter(this::isUnansweredCommunication)
+  private Map<String, UnansweredQAs> createUnansweredCommunication(Map<String, Arende> arendeMap) {
+    return arendeMap.values().stream()
+        .filter(arende -> isUnansweredCommunication(arende, arendeMap))
         .collect(
             Collectors.toMap(Arende::getIntygsId, this::createUnansweredQAs, UnansweredQAs::add));
   }
@@ -98,26 +103,30 @@ public class UnansweredCommunicationServiceImpl implements UnansweredCommunicati
     return unansweredQAs;
   }
 
-  private boolean isUnansweredCommunication(Arende arende) {
-    return status(arende) == OBESVARAD
+  private boolean isUnansweredCommunication(Arende arende, Map<String, Arende> arendeMap) {
+    return status(arende, arendeMap) == OBESVARAD
         && arende.getAmne() != ArendeAmne.PAMINN
         && arende.getSkickatAv().equals(FrageStallare.FORSAKRINGSKASSAN.getKod());
   }
 
-  private StatusType status(Arende arende) {
-    if (isAnsweredFromExternal(arende.getStatus(), arende.getSvarPaId())) {
+  private StatusType status(Arende arende, Map<String, Arende> arendeMap) {
+    if (isAnsweredFromExternal(arende.getStatus(), arende.getSvarPaId(), arendeMap)) {
       return BESVARAD;
     }
-    switch (arende.getStatus()) {
-      case CLOSED:
-      case PENDING_EXTERNAL_ACTION:
-        return BESVARAD;
-      default:
-        return OBESVARAD;
-    }
+
+    return switch (arende.getStatus()) {
+      case CLOSED, PENDING_EXTERNAL_ACTION -> BESVARAD;
+      default -> OBESVARAD;
+    };
   }
 
-  private static boolean isAnsweredFromExternal(Status status, String svarPaId) {
-    return status == Status.ANSWERED && svarPaId != null && !svarPaId.isEmpty();
+  private static boolean isAnsweredFromExternal(Status status, String svarPaId,
+      Map<String, Arende> arendeMap) {
+    return status == Status.ANSWERED
+        && svarPaId != null
+        && !svarPaId.isEmpty()
+        && Optional.ofNullable(arendeMap.get(svarPaId))
+        .map(arende -> arende.getStatus().equals(Status.CLOSED))
+        .orElse(false);
   }
 }
