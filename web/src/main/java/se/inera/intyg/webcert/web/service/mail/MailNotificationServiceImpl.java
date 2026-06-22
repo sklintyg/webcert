@@ -29,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
-import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -125,7 +124,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             mailBodyForFraga(recipient, mailNotification, employeeHsaName),
             recipient,
             reason);
-      } catch (MailSendException | MessagingException e) {
+      } catch (Exception e) {
         logError(type, mailNotification, e);
       }
     }
@@ -151,7 +150,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             mailBodyForSvar(recipient, mailNotification, employeeHsaName),
             recipient,
             reason);
-      } catch (MailSendException | MessagingException e) {
+      } catch (Exception e) {
         logError(type, mailNotification, e);
       }
     }
