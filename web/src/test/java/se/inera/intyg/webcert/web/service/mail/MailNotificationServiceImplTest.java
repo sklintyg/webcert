@@ -18,19 +18,28 @@
  */
 package se.inera.intyg.webcert.web.service.mail;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +48,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -71,14 +81,27 @@ class MailNotificationServiceImplTest {
 
   @Mock private EmployeeNameService employeeNameService;
 
+  @Mock private Appender<ILoggingEvent> mockAppender;
+
+  @Captor private ArgumentCaptor<MimeMessage> mimeCaptor;
+
+  @Captor private ArgumentCaptor<LoggingEvent> logCaptor;
+
   @BeforeEach
   void setUp() {
     ReflectionTestUtils.setField(mailNotificationService, "adminMailAddress", "AdminMail");
     ReflectionTestUtils.setField(mailNotificationService, "fromAddress", "FromAddress");
     ReflectionTestUtils.setField(mailNotificationService, "webCertHostUrl", "WebCertHostUrl");
+
+    final Logger logger = (Logger) LoggerFactory.getLogger(MailNotificationServiceImpl.class);
+    logger.addAppender(mockAppender);
   }
 
-  @Captor private ArgumentCaptor<MimeMessage> mimeCaptor;
+  @AfterEach
+  void tearDown() {
+    final Logger logger = (Logger) LoggerFactory.getLogger(MailNotificationServiceImpl.class);
+    logger.detachAppender(mockAppender);
+  }
 
   @Test
   void testSendMailForIncomingQuestionHsaIsCalledIfNotPrivatePractitioner()
@@ -89,10 +112,7 @@ class MailNotificationServiceImplTest {
             "intygsId",
             "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
-    Vardenhet vardenhet =
-        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
-    vardenhet.setEpost("epost@mockadress.net");
-    doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
+    doReturn(createVardenhetWithEmail()).when(hsaOrganizationUnitService).getVardenhet(anyString());
 
     MimeMessage mimeMessage = new MimeMessage(mock(MimeMessage.class));
     doReturn(mimeMessage).when(mailSender).createMimeMessage();
@@ -117,10 +137,7 @@ class MailNotificationServiceImplTest {
             "intygsId",
             "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
-    Vardenhet vardenhet =
-        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
-    vardenhet.setEpost("epost@mockadress.net");
-    doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
+    doReturn(createVardenhetWithEmail()).when(hsaOrganizationUnitService).getVardenhet(anyString());
 
     MimeMessage message = new MimeMessage(mock(MimeMessage.class));
     doReturn(message).when(mailSender).createMimeMessage();
@@ -148,7 +165,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals(url, "WebCertHostUrl/webcert/web/user/certificate/intygsId/questions");
+    assertEquals("WebCertHostUrl/webcert/web/user/certificate/intygsId/questions", url);
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -165,7 +182,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals(url, "WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions");
+    assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions", url);
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -183,10 +200,10 @@ class MailNotificationServiceImplTest {
 
     // Then
     assertEquals(
-        url,
         "WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet="
             + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX
-            + "AndSomeOtherText");
+            + "AndSomeOtherText",
+        url);
     verifyNoInteractions(utkastRepository);
   }
 
@@ -202,7 +219,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals(url, "WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions");
+    assertEquals("WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions", url);
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -219,7 +236,7 @@ class MailNotificationServiceImplTest {
     final String url = mailNotificationService.intygsUrl(mailNotification);
 
     // Then
-    assertEquals(url, "WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions");
+    assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions", url);
     verify(utkastRepository).findById(intygsId);
   }
 
@@ -238,19 +255,11 @@ class MailNotificationServiceImplTest {
 
     // Then
     assertEquals(
-        url,
         "WebCertHostUrl/webcert/web/user/pp-certificate/luse/intygsId/questions?enhet="
             + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX
-            + "AndSomeOtherText");
+            + "AndSomeOtherText",
+        url);
     verifyNoInteractions(utkastRepository);
-  }
-
-  private MailNotification mailNotification(String intygsId, String enhetsId) {
-    return mailNotification(intygsId, enhetsId, Fk7263EntryPoint.MODULE_ID);
-  }
-
-  private MailNotification mailNotification(String intygsId, String enhetsId, String intygsTyp) {
-    return new MailNotification(null, intygsId, intygsTyp, enhetsId, null, SIGNED_BY_HSA_ID);
   }
 
   @Test
@@ -263,10 +272,7 @@ class MailNotificationServiceImplTest {
 
     final var mailNotification = mailNotification("intygsId", UNIT_ID);
 
-    Vardenhet vardenhet =
-        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
-    vardenhet.setEpost("epost@mockadress.net");
-    doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
+    doReturn(createVardenhetWithEmail()).when(hsaOrganizationUnitService).getVardenhet(anyString());
 
     MimeMessage message = new MimeMessage(mock(MimeMessage.class));
     doReturn(message).when(mailSender).createMimeMessage();
@@ -293,10 +299,7 @@ class MailNotificationServiceImplTest {
     MimeMessage message = new MimeMessage(mock(MimeMessage.class));
     doReturn(message).when(mailSender).createMimeMessage();
 
-    Vardenhet vardenhet =
-        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
-    vardenhet.setEpost("epost@mockadress.net");
-    doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
+    doReturn(createVardenhetWithEmail()).when(hsaOrganizationUnitService).getVardenhet(anyString());
 
     doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
 
@@ -315,5 +318,72 @@ class MailNotificationServiceImplTest {
     mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
     verify(privatePractitionerService).getPrivatePractitioner(SIGNED_BY_HSA_ID);
+  }
+
+  @Test
+  void shouldLogErrorWhenRuntimeExceptionOccursForIncomingQuestion() throws MessagingException {
+    final var mailNotification = mailNotification("intygsId", UNIT_ID);
+
+    doReturn(createVardenhetWithEmail()).when(hsaOrganizationUnitService).getVardenhet(anyString());
+
+    MimeMessage message = new MimeMessage(mock(MimeMessage.class));
+    doReturn(message).when(mailSender).createMimeMessage();
+    doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+
+    doThrow(new RuntimeException("Test runtime exception")).when(mailSender).send(message);
+
+    assertDoesNotThrow(() -> mailNotificationService.sendMailForIncomingQuestion(mailNotification));
+
+    verify(mailSender, times(1)).send(message);
+
+    assertMailErrorLog(logCaptor);
+  }
+
+  @Test
+  void shouldLogErrorWhenRuntimeExceptionOccursForIncomingAnswer() throws MessagingException {
+    final var mailNotification = mailNotification("intygsId", UNIT_ID);
+
+    doReturn(createVardenhetWithEmail()).when(hsaOrganizationUnitService).getVardenhet(anyString());
+
+    MimeMessage message = new MimeMessage(mock(MimeMessage.class));
+    doReturn(message).when(mailSender).createMimeMessage();
+    doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+
+    doThrow(new RuntimeException("Test runtime exception")).when(mailSender).send(message);
+
+    assertDoesNotThrow(() -> mailNotificationService.sendMailForIncomingAnswer(mailNotification));
+
+    verify(mailSender, times(1)).send(message);
+
+    assertMailErrorLog(logCaptor);
+  }
+
+  private MailNotification mailNotification(String intygsId, String enhetsId) {
+    return mailNotification(intygsId, enhetsId, Fk7263EntryPoint.MODULE_ID);
+  }
+
+  private MailNotification mailNotification(String intygsId, String enhetsId, String intygsTyp) {
+    return new MailNotification(null, intygsId, intygsTyp, enhetsId, null, SIGNED_BY_HSA_ID);
+  }
+
+  private Vardenhet createVardenhetWithEmail() {
+    Vardenhet vardenhet =
+        new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
+    vardenhet.setEpost("epost@mockadress.net");
+    return vardenhet;
+  }
+
+  private void assertMailErrorLog(ArgumentCaptor<LoggingEvent> logCaptor) {
+    verify(mockAppender, atLeastOnce()).doAppend(logCaptor.capture());
+    final LoggingEvent errorLog =
+        logCaptor.getAllValues().stream()
+            .filter(log -> log.getLevel() == Level.ERROR)
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("No ERROR level log found"));
+
+    assertEquals(Level.ERROR, errorLog.getLevel());
+    assertEquals(
+        "Notification mail for {} '{}' concerning certificate '{}' couldn't be sent to {} ({}) due to reason '{}'",
+        errorLog.getMessage());
   }
 }
