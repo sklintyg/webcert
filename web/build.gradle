@@ -134,7 +134,6 @@ dependencies {
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
     implementation "org.springframework.boot:spring-boot-starter-session-data-redis"
     implementation "org.springframework.ws:spring-xml"
-    runtimeOnly "org.springframework.boot:spring-boot-properties-migrator"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9"
 
     implementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
