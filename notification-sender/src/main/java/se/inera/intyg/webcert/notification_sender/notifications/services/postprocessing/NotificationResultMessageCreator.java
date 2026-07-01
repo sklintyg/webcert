@@ -22,8 +22,6 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.UNRECOVERABLE_ERROR;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -50,13 +48,15 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component
 public class NotificationResultMessageCreator {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationResultMessageCreator.class);
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
 
   @Autowired private IntygModuleRegistry moduleRegistry;
 
@@ -176,7 +176,7 @@ public class NotificationResultMessageCreator {
     try {
       final var statusUpdateXml = certificateStatusUpdateForCareCreator.marshal(statusUpdate);
       return objectMapper.writeValueAsBytes(statusUpdateXml);
-    } catch (JAXBException | JsonProcessingException e) {
+    } catch (JAXBException | JacksonException e) {
       LOG.error("Exception occurred creating NotificationRedeliveryMessage", e);
       return null;
     }

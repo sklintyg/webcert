@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.infra.logmessages.PdlLogMessage;
+import tools.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/testability/logMessages")
@@ -96,8 +95,6 @@ public class LogResource {
       return objectMapper.readValue(body, PdlLogMessage.class);
     } catch (JMSException e) {
       throw new RuntimeException("Could not retreive log message: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new RuntimeException("Could not parse log message: " + e.getMessage(), e);
     } finally {
       jmsTemplate.setReceiveTimeout(originalTimeout);
     }

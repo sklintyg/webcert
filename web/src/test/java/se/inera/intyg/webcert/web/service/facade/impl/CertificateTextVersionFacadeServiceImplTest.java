@@ -30,8 +30,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -57,11 +55,14 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateTextVersionFacadeServiceImplTest {
 
-  @Spy private ObjectMapper mockObjectMapper;
+  @Spy private JsonMapper mockObjectMapper;
   @Mock private IntygModuleRegistry moduleRegistry;
   @Mock private ModuleApi moduleApi;
   @Mock private IntygTextsService intygTextsService;
@@ -70,7 +71,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
   @InjectMocks private CertificateTextVersionFacadeServiceImpl certificateTextVersionFacadeService;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new JsonMapper();
   private static final String LATEST_VERSION = "1.3";
   private static final String PREVIOUS_VERSION = "1.2";
 
@@ -88,7 +89,7 @@ class CertificateTextVersionFacadeServiceImplTest {
     }
 
     @Test
-    void shoulNotUpdateIfDraftIsLockedl() throws JsonProcessingException {
+    void shoulNotUpdateIfDraftIsLockedl() throws JacksonException {
       final var input = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_LOCKED);
       final var expected =
           createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_LOCKED);
@@ -101,7 +102,7 @@ class CertificateTextVersionFacadeServiceImplTest {
     }
 
     @Test
-    void shoulNotUpdateIfDraftIsSignedl() throws JsonProcessingException {
+    void shoulNotUpdateIfDraftIsSignedl() throws JacksonException {
       final var input = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.SIGNED);
       final var expected = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.SIGNED);
       final var actual = certificateTextVersionFacadeService.upgradeToLatestMinorTextVersion(input);
@@ -232,7 +233,7 @@ class CertificateTextVersionFacadeServiceImplTest {
         doReturn(getUtlatande(PREVIOUS_VERSION))
             .when(moduleApi)
             .getUtlatandeFromJson(anyString(), any());
-        doThrow(JsonProcessingException.class).when(mockObjectMapper).readTree(anyString());
+        doThrow(JacksonException.class).when(mockObjectMapper).readTree(anyString());
 
         final var input =
             createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
@@ -281,7 +282,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
   private Utkast createUtkast(
       String objectTextVersion, String jsonModelTextVersion, UtkastStatus status)
-      throws JsonProcessingException {
+      throws JacksonException {
     final var utkast = new Utkast();
     utkast.setIntygsId("certificateId");
     utkast.setIntygsTyp("certificateType");

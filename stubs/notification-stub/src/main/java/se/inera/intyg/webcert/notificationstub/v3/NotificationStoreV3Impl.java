@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.notificationstub.v3;
 
 import jakarta.annotation.PostConstruct;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import org.apache.commons.lang3.tuple.Pair;
@@ -73,7 +72,7 @@ public class NotificationStoreV3Impl extends BaseStore<CertificateStatusUpdateFo
   protected CertificateStatusUpdateForCareType transform(String s) {
     try {
       return objectMapper.readValue(s, CertificateStatusUpdateForCareType.class);
-    } catch (IOException e) {
+    } catch (Exception e) {
       return null;
     }
   }

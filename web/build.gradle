@@ -10,6 +10,13 @@ springBoot {
     mainClass = 'se.inera.intyg.webcert.WebcertApplication'
 }
 
+// Restore legacy SBOM output paths expected by the CI pipeline (Jenkins.properties: sbom.aggregation.module=webcert-web).
+// Spring Boot 4 + CycloneDX 3.x reconfigures cyclonedxBom to output application.cdx.json by default.
+tasks.named('cyclonedxBom') {
+    jsonOutput.set(file("build/reports/cyclonedx/bom.json"))
+    xmlOutput.set(file("build/reports/cyclonedx/bom.xml"))
+}
+
 def buildDirectory = project.layout.buildDirectory.get().asFile
 def applicationDir = "${rootProject.projectDir}/devops/dev"
 
@@ -64,11 +71,12 @@ dependencies {
     implementation project(':integration-private-practitioner-service')
     implementation project(':infra')
 
-    implementation "com.fasterxml.jackson.core:jackson-core"
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.core:jackson-databind"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "tools.jackson.core:jackson-core"
+    implementation "tools.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
+    implementation "tools.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
     implementation "se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:${intygTransportstyrelsenSchemasVersion}"
     implementation "se.inera.intyg.common:af00213:${commonVersion}"
@@ -120,12 +128,13 @@ dependencies {
     implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common"
     implementation "org.jxls:jxls-poi"
-    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-webmvc"
     implementation "org.springframework.data:spring-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
-    implementation "org.springframework.session:spring-session-data-redis"
+    implementation "org.springframework.boot:spring-boot-starter-session-data-redis"
     implementation "org.springframework.ws:spring-xml"
+    runtimeOnly "org.springframework.boot:spring-boot-properties-migrator"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9"
 
     implementation "se.inera.intyg.refdata:refdata:${refDataVersion}"

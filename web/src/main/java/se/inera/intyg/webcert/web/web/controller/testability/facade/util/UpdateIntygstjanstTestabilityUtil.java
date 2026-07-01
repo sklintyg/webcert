@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,6 +27,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class UpdateIntygstjanstTestabilityUtil {
 
   private final SendCertificateServiceClient sendCertificateServiceClient;
   private final CertificateEventService certificateEventService;
-  private final ObjectMapper objectMapper;
+  private final JsonMapper objectMapper;
   private final IntygModuleRegistry moduleRegistry;
 
   public void update(Utkast utkast, HoSPersonal hosPersonal, String personId) {

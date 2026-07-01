@@ -192,7 +192,9 @@ class SubscriptionRestClientTest {
 
   @Test
   void shouldThrowIfResponseBodyIsNull() {
-    doReturn(new ResponseEntity<>(null, HttpStatus.ACCEPTED))
+    doReturn(
+            new ResponseEntity<OrganizationResponse>(
+                (OrganizationResponse) null, HttpStatus.ACCEPTED))
         .when(restTemplate)
         .exchange(
             eq(SUBSCRIPTION_URL),

@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration.PrivatePractitionerConfigurationBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @Builder
 @JsonDeserialize(builder = PrivatePractitionerConfigurationBuilder.class)

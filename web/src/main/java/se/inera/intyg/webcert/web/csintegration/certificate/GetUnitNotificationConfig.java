@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -29,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j
 @Component
@@ -43,8 +42,7 @@ public class GetUnitNotificationConfig {
   public List<RegionNotificationConfig> get() {
     if (integratedUnitNotificationConfig == null) {
       integratedUnitNotificationConfig = new ArrayList<>();
-      final var objectMapper = new ObjectMapper();
-      objectMapper.registerModule(new JavaTimeModule());
+      final var objectMapper = JsonMapper.builder().build();
       try (final var resourceAsStream = new FileInputStream(unitNotificationConfigPath)) {
         integratedUnitNotificationConfig =
             objectMapper.readValue(resourceAsStream, new TypeReference<>() {});

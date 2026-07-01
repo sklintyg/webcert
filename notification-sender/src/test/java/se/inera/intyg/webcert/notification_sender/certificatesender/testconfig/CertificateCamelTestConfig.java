@@ -42,7 +42,7 @@ public class CertificateCamelTestConfig {
 
   @Bean
   public IntygModuleRegistry intygModuleRegistry() {
-    return null;
+    return mock(IntygModuleRegistry.class);
   }
 
   @Bean
@@ -52,12 +52,12 @@ public class CertificateCamelTestConfig {
 
   @Bean
   public SendMessageToRecipientResponderInterface sendMessageToRecipientResponderInterface() {
-    return null;
+    return mock(SendMessageToRecipientResponderInterface.class);
   }
 
   @Bean
   public RegisterApprovedReceiversResponderInterface registerApprovedReceiversResponderInterface() {
-    return null;
+    return mock(RegisterApprovedReceiversResponderInterface.class);
   }
 
   @Bean

@@ -19,8 +19,6 @@
 package se.inera.intyg.webcert.web.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_REQUEST_MATCHER;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_EMPLOYEE_HSA_ID;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_IDENTITY_PROVIDER_FOR_SIGN;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_LOGIN_METHOD;
@@ -60,16 +58,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.authentication.DefaultSaml2AuthenticatedPrincipal;
-import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.saml2.provider.service.web.DefaultRelyingPartyRegistrationResolver;
-import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml5AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
-import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml4LogoutRequestResolver;
+import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml5LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -222,27 +220,27 @@ public class WebSecurityConfig {
     http.authorizeHttpRequests(
             request ->
                 request
-                    .requestMatchers(antMatcher("/actuator/**"))
+                    .requestMatchers("/actuator/**")
                     .permitAll()
-                    .requestMatchers(antMatcher("/services/**"))
+                    .requestMatchers("/services/**")
                     .permitAll()
-                    .requestMatchers(antMatcher("/stubs/**"))
+                    .requestMatchers("/stubs/**")
                     .permitAll()
-                    .requestMatchers(antMatcher("/api/config/**"))
+                    .requestMatchers("/api/config/**")
                     .permitAll()
-                    .requestMatchers(antMatcher("/api/configuration/**"))
+                    .requestMatchers("/api/configuration/**")
                     .permitAll()
-                    .requestMatchers(antMatcher("/api/log/**"))
+                    .requestMatchers("/api/log/**")
                     .permitAll()
-                    .requestMatchers(antMatcher("/api/session-auth-check/**"))
+                    .requestMatchers("/api/session-auth-check/**")
                     .permitAll()
-                    .requestMatchers(antMatcher("/internalapi/**"))
+                    .requestMatchers("/internalapi/**")
                     .permitAll()
-                    .requestMatchers(antMatcher("/favicon.ico"))
+                    .requestMatchers("/favicon.ico")
                     .permitAll()
-                    .requestMatchers(antMatcher("/api/signature/signservice/v1/metadata"))
+                    .requestMatchers("/api/signature/signservice/v1/metadata")
                     .permitAll()
-                    .requestMatchers(antMatcher("/api/v1/session/invalidate"))
+                    .requestMatchers("/api/v1/session/invalidate")
                     .permitAll()
                     .anyRequest()
                     .fullyAuthenticated())
@@ -252,7 +250,7 @@ public class WebSecurityConfig {
                 saml2
                     .relyingPartyRegistrationRepository(relyingPartyRegistrationRepository)
                     .authenticationManager(
-                        new ProviderManager(getOpenSaml4AuthenticationProvider()))
+                        new ProviderManager(getOpenSaml5AuthenticationProvider()))
                     .failureHandler(customAuthenticationFailureHandler)
                     .successHandler(customAuthenticationSuccessHandler))
         .saml2Logout(
@@ -276,14 +274,15 @@ public class WebSecurityConfig {
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
                     .ignoringRequestMatchers(
-                        SITHS_REQUEST_MATCHER,
-                        antMatcher("/internalapi/**"),
-                        antMatcher("/api/signature/**"),
-                        antMatcher("/testability/**"),
-                        antMatcher("/authtestability/**"),
-                        antMatcher("/services/**"),
-                        antMatcher("/stubs/**"),
-                        antMatcher("/api/v1/session/invalidate")))
+                        "/v2/visa/intyg/*",
+                        "/visa/intyg/*",
+                        "/internalapi/**",
+                        "/api/signature/**",
+                        "/testability/**",
+                        "/authtestability/**",
+                        "/services/**",
+                        "/stubs/**",
+                        "/api/v1/session/invalidate"))
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 
     return http.build();
@@ -308,7 +307,7 @@ public class WebSecurityConfig {
       RelyingPartyRegistrationRepository registrations) {
     final var registrationResolver = new DefaultRelyingPartyRegistrationResolver(registrations);
     final var authenticationRequestResolver =
-        new OpenSaml4AuthenticationRequestResolver(registrationResolver);
+        new OpenSaml5AuthenticationRequestResolver(registrationResolver);
     authenticationRequestResolver.setAuthnRequestCustomizer(
         context -> context.getAuthnRequest().setAttributeConsumingServiceIndex(1));
     return authenticationRequestResolver;
@@ -317,7 +316,7 @@ public class WebSecurityConfig {
   @Bean
   Saml2LogoutRequestResolver logoutRequestResolver(
       RelyingPartyRegistrationRepository registrations) {
-    final var logoutRequestResolver = new OpenSaml4LogoutRequestResolver(registrations);
+    final var logoutRequestResolver = new OpenSaml5LogoutRequestResolver(registrations);
     logoutRequestResolver.setParametersConsumer(
         parameters -> {
           final var token = (Saml2AuthenticationToken) parameters.getAuthentication();
@@ -369,18 +368,18 @@ public class WebSecurityConfig {
     http.authorizeHttpRequests(
         request ->
             request
-                .requestMatchers(antMatcher("/testability/**"))
+                .requestMatchers("/testability/**")
                 .permitAll()
-                .requestMatchers(antMatcher("/api/hsa-api/**"))
+                .requestMatchers("/api/hsa-api/**")
                 .permitAll());
   }
 
-  private OpenSaml4AuthenticationProvider getOpenSaml4AuthenticationProvider() {
-    final var authenticationProvider = new OpenSaml4AuthenticationProvider();
+  private OpenSaml5AuthenticationProvider getOpenSaml5AuthenticationProvider() {
+    final var authenticationProvider = new OpenSaml5AuthenticationProvider();
     authenticationProvider.setResponseAuthenticationConverter(
         responseToken -> {
           final var authentication =
-              OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter()
+              OpenSaml5AuthenticationProvider.createDefaultResponseAuthenticationConverter()
                   .convert(responseToken);
 
           if (authentication == null || !authentication.isAuthenticated()) {

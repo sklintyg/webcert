@@ -29,7 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.ws.WebServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,6 +49,7 @@ import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import tools.jackson.databind.json.JsonMapper;
 
 /** Created by eriklupander on 2015-06-04. */
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
@@ -67,7 +67,7 @@ class SendCertificateServiceClientTest {
 
   @Mock SendCertificateToRecipientResponseType response;
 
-  @Mock ObjectMapper objectMapper;
+  @Mock JsonMapper objectMapper;
 
   @InjectMocks SendCertificateServiceClientImpl testee = new SendCertificateServiceClientImpl();
 
@@ -95,7 +95,8 @@ class SendCertificateServiceClientTest {
 
               @Override
               public HoSPersonal answer(InvocationOnMock invocation) throws Throwable {
-                return new ObjectMapper()
+                return JsonMapper.builder()
+                    .build()
                     .readValue((String) invocation.getArguments()[0], HoSPersonal.class);
               }
             });

@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.testability;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -28,6 +26,8 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceCreateRequest.CertificateServiceCreateRequestBuilder;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = CertificateServiceCreateRequestBuilder.class)
 @Value

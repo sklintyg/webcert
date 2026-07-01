@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 public class Period {
 

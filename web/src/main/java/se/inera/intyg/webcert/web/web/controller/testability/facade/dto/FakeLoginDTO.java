@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLoginDTO.FakeLoginDTOBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = FakeLoginDTOBuilder.class)
 @Value

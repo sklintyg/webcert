@@ -31,9 +31,6 @@ import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +62,6 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
@@ -75,6 +71,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 @CamelSpringTest
 @ContextConfiguration(classes = NotificationCamelTestConfig.class)
@@ -113,7 +112,7 @@ class NotificationRouteTest {
   @EndpointInject("mock:direct:temporaryErrorHandlerEndpoint")
   protected MockEndpoint temporaryErrorHandlerEndpoint;
 
-  private final ObjectMapper objectMapper = new CustomObjectMapper();
+  private final JsonMapper objectMapper = new JsonMapper();
   private final SortedMap<Integer, Exchange> messagesToSend = new TreeMap<>();
   private static final SchemaVersion SCHEMA_VERSION = SchemaVersion.VERSION_3;
   private static final String CERTIFICATE_ID_1 = UUID.randomUUID().toString();
@@ -135,7 +134,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForCreateEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForCreateEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -143,7 +142,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForChangeEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForChangeEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(1, 1, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -151,7 +150,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForSignEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForSignEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(1, 1, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SIGNAT);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -159,7 +158,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForSendEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForSendEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKICKA);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -167,7 +166,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForDeleteEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForDeleteEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, RADERA);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -175,7 +174,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForRevokeEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForRevokeEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, MAKULE);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -183,7 +182,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForReadyForSignEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForReadyForSignEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, KFSIGN);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -191,7 +190,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForQuestionEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForQuestionEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, NYFRFM);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -199,7 +198,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForAnswerEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForAnswerEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, NYSVFM);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -207,7 +206,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForHandledEvent() throws JsonProcessingException, InterruptedException {
+  void testRoutingForHandledEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
     addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, HANFRFM);
     sendMessagesToNotificationRoute(messagesToSend);
@@ -215,7 +214,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingWhenAggregatorException() throws JsonProcessingException, InterruptedException {
+  void testRoutingWhenAggregatorException() throws JacksonException, InterruptedException {
     setExpectedMessageCount(1, 1, 0, 0, 0, 0, 1);
 
     notificationAggregator.whenAnyExchangeReceived(
@@ -229,7 +228,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingWhenTransformerException() throws JsonProcessingException, InterruptedException {
+  void testRoutingWhenTransformerException() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 0, 0, 1, 0);
 
     notificationTransformer.whenAnyExchangeReceived(
@@ -243,7 +242,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingWhenSenderException() throws JsonProcessingException, InterruptedException {
+  void testRoutingWhenSenderException() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 1, 1, 0, 1, 0);
 
     notificationWSSender.whenAnyExchangeReceived(
@@ -257,7 +256,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testAggregationOfChangedEvents() throws JsonProcessingException, InterruptedException {
+  void testAggregationOfChangedEvents() throws JacksonException, InterruptedException {
     setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
     setEndpointReassertPeriod();
 
@@ -271,8 +270,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testAggregatorPassesOnLatestChangedEvent()
-      throws JsonProcessingException, InterruptedException {
+  void testAggregatorPassesOnLatestChangedEvent() throws JacksonException, InterruptedException {
     setExpectedMessageCount(3, 1, 1, 1, 1, 0, 0);
     setEndpointReassertPeriod();
 
@@ -304,7 +302,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testRoutingForFk7263() throws JsonProcessingException, InterruptedException {
+  void testRoutingForFk7263() throws JacksonException, InterruptedException {
     setExpectedMessageCount(0, 0, 5, 5, 5, 0, 0);
     setEndpointReassertPeriod();
 
@@ -320,7 +318,7 @@ class NotificationRouteTest {
 
   @Test
   void testSignEventFromDifferentCertificatIdShouldNotCancelAggregatedChangedEvents()
-      throws JsonProcessingException, InterruptedException {
+      throws JacksonException, InterruptedException {
     setExpectedMessageCount(4, 1, 3, 3, 3, 0, 0);
     setEndpointReassertPeriod();
 
@@ -336,8 +334,7 @@ class NotificationRouteTest {
   }
 
   @Test
-  void testSignEventCancelsAggregatedChangedEvents()
-      throws JsonProcessingException, InterruptedException {
+  void testSignEventCancelsAggregatedChangedEvents() throws JacksonException, InterruptedException {
     setExpectedMessageCount(3, 1, 2, 2, 2, 0, 0);
     setEndpointReassertPeriod();
 
@@ -358,7 +355,7 @@ class NotificationRouteTest {
 
   private void addMessageToSend(
       int order, String certificateId, String certificateType, HandelsekodEnum event)
-      throws JsonProcessingException {
+      throws JacksonException {
     messagesToSend.put(order, createExchange(certificateId, certificateType, event));
   }
 
@@ -367,8 +364,7 @@ class NotificationRouteTest {
   }
 
   private Exchange createExchange(
-      String certificateId, String certificateType, HandelsekodEnum event)
-      throws JsonProcessingException {
+      String certificateId, String certificateType, HandelsekodEnum event) throws JacksonException {
     final var message = new DefaultMessage(camelContext);
     message.setHeaders(getMessageHeaders(certificateType, event));
     message.setBody(createNotificationMessage(certificateId, certificateType, event));
@@ -434,7 +430,7 @@ class NotificationRouteTest {
 
   private String createNotificationMessage(
       String certificateId, String certificateType, HandelsekodEnum eventEnum)
-      throws JsonProcessingException {
+      throws JacksonException {
     final var notificationMessage = new NotificationMessage();
     notificationMessage.setIntygsId(certificateId);
     notificationMessage.setIntygsTyp(certificateType);

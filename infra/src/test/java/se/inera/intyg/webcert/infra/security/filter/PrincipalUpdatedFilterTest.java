@@ -135,7 +135,7 @@ class PrincipalUpdatedFilterTest {
   }
 
   private Authentication buildAuthentication(String state) {
-    return new AbstractAuthenticationToken(null) {
+    return new AbstractAuthenticationToken(java.util.List.of()) {
       @Override
       public Object getCredentials() {
         return null;

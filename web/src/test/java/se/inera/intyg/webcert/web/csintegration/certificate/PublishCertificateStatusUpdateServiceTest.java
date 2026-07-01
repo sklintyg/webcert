@@ -29,8 +29,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,6 +57,8 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(MockitoExtension.class)
 class PublishCertificateStatusUpdateServiceTest {
@@ -78,7 +78,7 @@ class PublishCertificateStatusUpdateServiceTest {
   @Mock private NotificationMessageFactory notificationMessageFactory;
   @Mock private IntegreradeEnheterRegistry integreradeEnheterRegistry;
   @Mock private CSIntegrationService csIntegrationService;
-  @Mock private ObjectMapper objectMapper;
+  @Mock private JsonMapper objectMapper;
   @InjectMocks private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
   private final Certificate certificate = new Certificate();
@@ -446,7 +446,7 @@ class PublishCertificateStatusUpdateServiceTest {
 
       doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
       doReturn(storedMessage).when(notificationRedelivery).getMessage();
-      doThrow(new IOException("decode failure"))
+      doThrow(new JacksonException("decode failure") {})
           .when(objectMapper)
           .readValue(storedMessage, String.class);
       doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);

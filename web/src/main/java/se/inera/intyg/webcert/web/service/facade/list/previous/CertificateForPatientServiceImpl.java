@@ -21,8 +21,6 @@ package se.inera.intyg.webcert.web.service.facade.list.previous;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,20 +44,22 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service(value = "certificatesForPatientServiceImpl")
 public class CertificateForPatientServiceImpl implements CertificateForPatientService {
 
   private static final Logger LOG = LoggerFactory.getLogger(CertificateForPatientServiceImpl.class);
   private final Cache certificatesForPatientCache;
-  private final ObjectMapper objectMapper;
+  private final JsonMapper objectMapper;
   private final IntygService intygService;
   private final UtkastService utkastService;
   private final WebCertUserService webCertUserService;
 
   public CertificateForPatientServiceImpl(
       Cache certificatesForPatientCache,
-      ObjectMapper objectMapper,
+      JsonMapper objectMapper,
       @Lazy IntygService intygService,
       UtkastService utkastService,
       WebCertUserService webCertUserService) {
@@ -171,7 +171,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
       return objectMapper.readValue(
           jsonData,
           objectMapper.getTypeFactory().constructCollectionType(List.class, ListIntygEntry.class));
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new RuntimeException(e);
     }
   }

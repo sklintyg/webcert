@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
@@ -27,6 +25,8 @@ import lombok.Value;
 import se.inera.intyg.webcert.common.dto.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO.MessageQueryCriteriaDTOBuilder;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = MessageQueryCriteriaDTOBuilder.class)
 @Value

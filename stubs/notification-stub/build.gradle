@@ -1,5 +1,5 @@
 dependencies {
-    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "tools.jackson.core:jackson-databind"
     implementation "com.google.guava:guava"
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
     implementation "org.apache.commons:commons-lang3"

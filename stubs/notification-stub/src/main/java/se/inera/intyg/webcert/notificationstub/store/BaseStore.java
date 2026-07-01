@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.notificationstub.store;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
@@ -31,7 +30,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /** Created by eriklupander on 2017-05-29. */
 public abstract class BaseStore<T> {
@@ -40,7 +41,7 @@ public abstract class BaseStore<T> {
 
   protected Map<String, String> notificationsMap;
 
-  protected CustomObjectMapper objectMapper = new CustomObjectMapper();
+  protected ObjectMapper objectMapper = JsonMapper.builder().findAndAddModules().build();
 
   protected final int maxSize = 100;
   protected final int minSize = 80;
@@ -52,7 +53,7 @@ public abstract class BaseStore<T> {
         purge();
       }
 
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       LOG.error(e.getMessage());
     }
   }

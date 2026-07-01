@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.integration.servicenow.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
@@ -40,9 +40,9 @@ public class ServiceNowIntegrationRestConfig {
 
   @Bean(SUBSCRIPTION_SERVICE_REST_TEMPLATE)
   RestTemplate restTemplate() {
-    final var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-    httpRequestFactory.setConnectionRequestTimeout(connectionRequestTimeout);
+    final var httpRequestFactory = new SimpleClientHttpRequestFactory();
     httpRequestFactory.setConnectTimeout(connectionTimeout);
+    httpRequestFactory.setReadTimeout(readTimeout);
     return new RestTemplate(httpRequestFactory);
   }
 }

@@ -18,22 +18,22 @@
  */
 package se.inera.intyg.webcert.web.csintegration.exception;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 @RequiredArgsConstructor
 public class HandleApiErrorService {
 
-  private final ObjectMapper objectMapper;
+  private final JsonMapper objectMapper;
 
   public String handle(String responseBodyAsString) {
     try {
       final var apiError = objectMapper.readValue(responseBodyAsString, ApiError.class);
       return apiError.getMessage();
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       return responseBodyAsString;
     }
   }

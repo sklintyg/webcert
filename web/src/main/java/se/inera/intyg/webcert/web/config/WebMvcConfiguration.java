@@ -18,13 +18,14 @@
  */
 package se.inera.intyg.webcert.web.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.ListIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * MVC configuration. All component scanning is handled by {@code @SpringBootApplication} on {@link
@@ -33,22 +34,24 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
 
   /**
-   * Swaps the ObjectMapper on the existing default Jackson converter to use our {@code
-   * CustomObjectMapper} bean (which handles LocalDateTime as ISO strings).
+   * Replaces the default Spring Boot Jackson 3 converter with one built from our auto-configured
+   * {@code JsonMapper} bean (which picks up any {@code JsonMapperBuilderCustomizer} beans and
+   * handles LocalDateTime as ISO strings).
    *
    * <p>Uses {@code extendMessageConverters} (not {@code configureMessageConverters}) to preserve
    * all default converters — ByteArrayHttpMessageConverter (PDF), StringHttpMessageConverter (raw
-   * strings), etc. The ObjectMapper is set in-place so the converter keeps its original position
-   * after StringHttpMessageConverter, avoiding double-encoding of String responses.
+   * strings), etc.
    */
   @Override
   public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-    for (HttpMessageConverter<?> converter : converters) {
-      if (converter instanceof MappingJackson2HttpMessageConverter jacksonConverter) {
-        jacksonConverter.setObjectMapper(objectMapper);
+    final var replacement = new JacksonJsonHttpMessageConverter(objectMapper);
+    final ListIterator<HttpMessageConverter<?>> it = converters.listIterator();
+    while (it.hasNext()) {
+      if (it.next() instanceof JacksonJsonHttpMessageConverter) {
+        it.set(replacement);
         break;
       }
     }

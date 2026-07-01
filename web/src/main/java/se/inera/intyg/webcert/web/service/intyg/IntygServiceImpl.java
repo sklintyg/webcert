@@ -23,8 +23,6 @@ import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHel
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotSent;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsSigned;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import jakarta.annotation.PostConstruct;
@@ -118,6 +116,8 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @author andreaskaltenbach
@@ -168,7 +168,7 @@ public class IntygServiceImpl implements IntygService {
 
   @Autowired private IntygDraftsConverter intygConverter;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
 
   @Autowired private IntygRelationHelper intygRelationHelper;
 
@@ -930,13 +930,13 @@ public class IntygServiceImpl implements IntygService {
     } catch (WebServiceException wse) {
       LOG.error("An WebServiceException occured when trying to send intyg: " + intygsId, wse);
       return IntygServiceResult.FAILED;
-    } catch (RuntimeException e) {
-      LOG.error(String.format("Module problems occured when trying to send intyg %s", intygsId), e);
-      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       LOG.error(
           String.format("Error writing skickatAv as string when trying to send intyg %s", intygsId),
           e);
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+    } catch (RuntimeException e) {
+      LOG.error(String.format("Module problems occured when trying to send intyg %s", intygsId), e);
       throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
     } catch (CertificateSenderException e) {
       throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);

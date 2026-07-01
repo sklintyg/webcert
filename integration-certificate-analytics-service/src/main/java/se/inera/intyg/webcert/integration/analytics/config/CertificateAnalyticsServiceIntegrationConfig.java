@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.integration.analytics.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.JacksonJsonMessageConverter;
 import org.springframework.jms.support.converter.MessageType;
+import tools.jackson.databind.json.JsonMapper;
 
 @Configuration
 @ComponentScan(basePackages = {"se.inera.intyg.webcert.integration.analytics"})
@@ -36,17 +36,16 @@ public class CertificateAnalyticsServiceIntegrationConfig {
   private String queueName;
 
   @Bean
-  public MappingJackson2MessageConverter messageConverter(ObjectMapper mapper) {
-    final var converter = new MappingJackson2MessageConverter();
+  public JacksonJsonMessageConverter messageConverter(JsonMapper mapper) {
+    final var converter = new JacksonJsonMessageConverter(mapper);
     converter.setTargetType(MessageType.TEXT);
     converter.setTypeIdPropertyName("_type");
-    converter.setObjectMapper(mapper);
     return converter;
   }
 
   @Bean
   public JmsTemplate jmsTemplateForCertificateAnalyticsMessages(
-      ConnectionFactory connectionFactory, MappingJackson2MessageConverter converter) {
+      ConnectionFactory connectionFactory, JacksonJsonMessageConverter converter) {
     final var jmsTemplate = new JmsTemplate(connectionFactory);
     jmsTemplate.setDefaultDestinationName(queueName);
     jmsTemplate.setMessageConverter(converter);

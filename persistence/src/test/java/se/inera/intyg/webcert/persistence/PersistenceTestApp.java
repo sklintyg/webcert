@@ -26,4 +26,4 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * beans only — this class is the anchor for that slice, not a full application entry point.
  */
 @SpringBootApplication
-class PersistenceTestApp {}
+public class PersistenceTestApp {}

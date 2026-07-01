@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +34,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.facade.CertificateTextVersionFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 @Service
 public class CertificateTextVersionFacadeServiceImpl
@@ -47,14 +47,14 @@ public class CertificateTextVersionFacadeServiceImpl
 
   private final IntygTextsService intygTextsService;
   private final UtkastRepository utkastRepository;
-  private final ObjectMapper objectMapper;
+  private final JsonMapper objectMapper;
   private final IntygModuleRegistry moduleRegistry;
   private final MonitoringLogService monitoringLogService;
 
   public CertificateTextVersionFacadeServiceImpl(
       IntygTextsService intygTextsService,
       UtkastRepository utkastRepository,
-      ObjectMapper objectMapper,
+      JsonMapper objectMapper,
       IntygModuleRegistry moduleRegistry,
       MonitoringLogService monitoringLogService) {
     this.intygTextsService = intygTextsService;
@@ -101,7 +101,7 @@ public class CertificateTextVersionFacadeServiceImpl
       monitoringLogService.logUtkastConcurrentlyEdited(certificateId, certificateType);
       throw new WebCertServiceException(
           WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       LOG.error(
           "Failure updating json model to latest minor text version for certificate {} of type {} with text version {}.",
           certificateId,
@@ -139,8 +139,7 @@ public class CertificateTextVersionFacadeServiceImpl
         && modelTextVersion.equals(latestTextVersion);
   }
 
-  private void updateJsonModelTextVersion(Utkast utkast, String latestTextVersion)
-      throws JsonProcessingException {
+  private void updateJsonModelTextVersion(Utkast utkast, String latestTextVersion) {
     final var jsonModel = utkast.getModel();
     final var jsonNode = objectMapper.readTree(jsonModel);
     final var textVersionNode = objectMapper.readTree("\"" + latestTextVersion + "\"");

@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.monitoring;
 
 import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -41,6 +40,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 @Slf4j
@@ -872,7 +872,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
   @Override
   public void logIdpConnectivityCheck(String ip, String connectivity) {
     final var connectivityResult = new StringBuilder();
-    final var objectMapper = new ObjectMapper();
+    final var objectMapper = JsonMapper.builder().build();
 
     try {
       Arrays.stream(objectMapper.readValue(connectivity, IdpConnectivity[].class))

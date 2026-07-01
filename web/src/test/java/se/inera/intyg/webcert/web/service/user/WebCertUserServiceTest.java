@@ -417,7 +417,8 @@ class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
   private void applyUserToThreadLocalCtx(final WebCertUser user) {
     Authentication auth =
-        new AbstractAuthenticationToken(null) {
+        new AbstractAuthenticationToken(
+            (java.util.Collection<org.springframework.security.core.GrantedAuthority>) null) {
           @Override
           public Object getCredentials() {
             return null;

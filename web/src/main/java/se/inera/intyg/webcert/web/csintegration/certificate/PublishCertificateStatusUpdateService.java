@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +36,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j
 @Service
@@ -50,7 +50,7 @@ public class PublishCertificateStatusUpdateService {
   private final NotificationRedeliveryService notificationRedeliveryService;
   private final NotificationService notificationService;
   private final WebCertUserService webCertUserService;
-  private final ObjectMapper objectMapper;
+  private final JsonMapper objectMapper;
 
   public void publish(Certificate certificate, HandelsekodEnum eventType, String xml) {
     publish(certificate, eventType, Optional.empty(), Optional.of(xml), null, null);
@@ -133,7 +133,7 @@ public class PublishCertificateStatusUpdateService {
       try {
         final var xml = objectMapper.readValue(notificationRedelivery.getMessage(), String.class);
         return xml.getBytes(StandardCharsets.UTF_8);
-      } catch (IOException e) {
+      } catch (JacksonException e) {
         log.error(
             "Failed to JSON-decode stored redelivery message for correlationId {}; "
                 + "will regenerate status update XML.",

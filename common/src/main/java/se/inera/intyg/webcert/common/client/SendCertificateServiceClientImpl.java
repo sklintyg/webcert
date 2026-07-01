@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.common.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -26,6 +25,7 @@ import se.inera.intyg.webcert.common.client.converter.SendCertificateToRecipient
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Exposes the SendCertificateToRecipient SOAP service.
@@ -37,7 +37,7 @@ public class SendCertificateServiceClientImpl implements SendCertificateServiceC
 
   @Autowired private SendCertificateToRecipientResponderInterface sendService;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
 
   @Override
   public SendCertificateToRecipientResponseType sendCertificate(

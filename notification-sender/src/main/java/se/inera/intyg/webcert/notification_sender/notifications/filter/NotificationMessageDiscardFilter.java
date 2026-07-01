@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,12 +28,13 @@ import java.util.stream.Collectors;
 import org.apache.camel.Message;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 /** Created by eriklupander on 2016-07-04. */
 public class NotificationMessageDiscardFilter {
 
-  private ObjectMapper om = new CustomObjectMapper();
+  private final JsonMapper om = JsonMapper.builder().findAndAddModules().build();
 
   public List<Message> process(List<Message> messageList) {
 
@@ -129,7 +128,7 @@ public class NotificationMessageDiscardFilter {
   private NotificationMessage getNotificationFromBody(Message existingMsg) {
     try {
       return om.readValue((String) existingMsg.getBody(), NotificationMessage.class);
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       throw new IllegalArgumentException(e.getMessage());
     }
   }

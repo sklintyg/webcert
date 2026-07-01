@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.receiver;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import jakarta.xml.ws.WebServiceException;
 import java.util.ArrayList;
@@ -49,6 +47,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class CertificateReceiverServiceImpl implements CertificateReceiverService {
@@ -66,7 +66,7 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
 
   @Autowired private IntygModuleRegistry intygModuleRegistry;
 
-  private ObjectMapper objectMapper = new ObjectMapper();
+  private JsonMapper objectMapper = JsonMapper.builder().build();
 
   /** Registration of approved receivers goes through our messaging solution. */
   @Override
@@ -100,7 +100,7 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
     try {
       certificateSenderService.sendRegisterApprovedReceivers(
           intygsId, intygsTyp, objectMapper.writeValueAsString(receiverApprovalStatuses));
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new WebCertServiceException(
           WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
           "Could not convert list of approved receivers to JSON array.");

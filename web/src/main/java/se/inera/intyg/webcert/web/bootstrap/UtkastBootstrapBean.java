@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.bootstrap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import jakarta.annotation.PostConstruct;
@@ -71,6 +70,7 @@ import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
+import tools.jackson.core.JacksonException;
 
 public class UtkastBootstrapBean {
 
@@ -340,7 +340,7 @@ public class UtkastBootstrapBean {
     return fs;
   }
 
-  private Utkast createUtkast(Utlatande json, UtkastStatus status) throws JsonProcessingException {
+  private Utkast createUtkast(Utlatande json, UtkastStatus status) throws JacksonException {
     final var utkast = new Utkast();
     utkast.setIntygsId(json.getId());
     utkast.setIntygsTyp(json.getTyp());

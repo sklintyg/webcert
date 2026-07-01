@@ -20,10 +20,7 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.ws.WebServiceException;
-import java.io.IOException;
 import java.util.List;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
@@ -43,6 +40,9 @@ import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 public class RegisterApprovedReceiversProcessor {
 
@@ -52,7 +52,7 @@ public class RegisterApprovedReceiversProcessor {
   @Autowired private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
   @Autowired private MdcHelper mdcHelper;
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final JsonMapper objectMapper = JsonMapper.builder().build();
 
   public void process(
       @Body String jsonBody,
@@ -120,7 +120,7 @@ public class RegisterApprovedReceiversProcessor {
       throws TemporaryException {
     try {
       return objectMapper.readValue(jsonBody, new TypeReference<>() {});
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       throw new TemporaryException("Could not parse message body into list of approved receivers.");
     }
   }

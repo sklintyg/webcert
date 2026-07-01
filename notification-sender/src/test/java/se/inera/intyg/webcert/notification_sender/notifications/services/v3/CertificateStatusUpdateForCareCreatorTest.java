@@ -31,8 +31,6 @@ import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 import static se.inera.intyg.common.support.Constants.KV_INTYGSTYP_CODE_SYSTEM;
 import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -65,6 +63,8 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateStatusUpdateForCareCreatorTest {
@@ -96,7 +96,7 @@ class CertificateStatusUpdateForCareCreatorTest {
   private static final LocalDateTime EVENT_TIMESTAMP =
       LocalDateTime.of(2021, 2, 22, 15, 15, 15, 123456789);
 
-  private static final TextNode UTKAST_JSON = JsonNodeFactory.instance.textNode("UTKAST_JSON");
+  private static final StringNode UTKAST_JSON = JsonNodeFactory.instance.stringNode("UTKAST_JSON");
   private static final String SUBJECT_CODE = "KOMPLT";
 
   @Test

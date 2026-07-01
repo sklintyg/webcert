@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredQAs;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(
     builder =

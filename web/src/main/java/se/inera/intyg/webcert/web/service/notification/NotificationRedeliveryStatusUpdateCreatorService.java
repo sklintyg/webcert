@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +36,14 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class NotificationRedeliveryStatusUpdateCreatorService {
 
   @Autowired private UtkastRepository draftRepo;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
 
   @Autowired private HsaOrganizationsService hsaOrganizationsService;
 

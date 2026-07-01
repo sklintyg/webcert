@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.web.service.testability.FakeLoginService;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLoginDTO;
+import tools.jackson.databind.json.JsonMapper;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLogi
 public class FakeLoginTestabilityController {
 
   private final FakeLoginService fakeLoginService;
-  private final ObjectMapper objectMapper;
+  private final JsonMapper objectMapper;
 
   @PostMapping("/fake")
   public ResponseEntity<Void> login(
