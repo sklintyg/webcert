@@ -280,7 +280,7 @@ public class IntygResource {
   @PostMapping("/utkast")
   public ResponseEntity<Void> insertUtkast(@RequestBody IntygContentWrapper intygContents)
       throws ModuleNotFoundException, IOException {
-    String intygsTyp = intygContents.getContents().get("typ").textValue();
+    String intygsTyp = intygContents.getContents().get("typ").stringValue();
 
     String model = intygContents.getContents().toString();
     Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(intygsTyp, model);

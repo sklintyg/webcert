@@ -541,7 +541,7 @@ class NotificationResultMessageCreatorTest {
     final var notificationMessage = new NotificationMessage();
     notificationMessage.setIntygsTyp(CERTIFICATE_TYPE_INTERNAL);
     notificationMessage.setIntygsId(CERTIFICATE_ID);
-    notificationMessage.setUtkast(JsonNodeFactory.instance.textNode("UTKAST_JSON"));
+    notificationMessage.setUtkast(JsonNodeFactory.instance.stringNode("UTKAST_JSON"));
     notificationMessage.setHandelse(EVENT_ENUM);
     notificationMessage.setHandelseTid(LocalDateTime.now());
     notificationMessage.setAmne(AmneskodCreator.create(SUBJECT_CODE, "Komplettering"));

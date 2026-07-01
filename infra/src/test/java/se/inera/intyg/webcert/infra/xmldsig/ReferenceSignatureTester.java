@@ -37,6 +37,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.XMLStructure;
 import javax.xml.crypto.dom.DOMStructure;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
@@ -88,7 +89,7 @@ class ReferenceSignatureTesters {
     // you are signing the whole document, so a URI of "" signifies
     // that, and also specify the SHA1 digest algorithm and
     // the ENVELOPED Transform.
-    List transforms = new ArrayList();
+    List<Transform> transforms = new ArrayList<>();
     // transforms.add(fac.newTransform(
     //        "http://www.w3.org/2001/10/xml-exc-c14n#", (TransformParameterSpec) null));
     // DOMStructure stylesheet = new DOMStructure(loadXslt("stripparentelement_2.xslt"));
@@ -308,7 +309,7 @@ class ReferenceSignatureTesters {
     KeyInfoFactory kif = xmlSigFactory.getKeyInfoFactory();
     X509Data x509data = kif.newX509Data(Collections.nCopies(1, signingCertificate_));
     KeyValue kval = kif.newKeyValue(pubKey_);
-    List keyInfoItems = new ArrayList();
+    List<XMLStructure> keyInfoItems = new ArrayList<>();
     keyInfoItems.add(kval);
     keyInfoItems.add(x509data);
     // Object list[];

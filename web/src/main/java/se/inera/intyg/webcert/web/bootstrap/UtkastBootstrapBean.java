@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.bootstrap;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import jakarta.annotation.PostConstruct;
 import jakarta.xml.bind.JAXB;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -180,7 +180,7 @@ public class UtkastBootstrapBean {
   private Utlatande buildUtlatande(Resource resource, String moduleName, String intygTypeVersion)
       throws ModuleException, ModuleNotFoundException, IOException {
 
-    final var xml = Resources.toString(resource.getURL(), Charsets.UTF_8);
+    final var xml = Resources.toString(resource.getURL(), StandardCharsets.UTF_8);
     final var utlatande =
         registry.getModuleApi(moduleName, intygTypeVersion).getUtlatandeFromXml(xml);
 
@@ -191,7 +191,7 @@ public class UtkastBootstrapBean {
       case "lisjp":
         RegisterCertificateType jaxbObject =
             JAXB.unmarshal(
-                new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)),
+                new StringReader(Resources.toString(resource.getURL(), StandardCharsets.UTF_8)),
                 RegisterCertificateType.class);
         Patient patient = jaxbObject.getIntyg().getPatient();
         utlatande.getGrundData().getPatient().setFornamn(patient.getFornamn());
@@ -207,7 +207,7 @@ public class UtkastBootstrapBean {
       case "fk7263":
         RegisterMedicalCertificateType jaxbObject2 =
             JAXB.unmarshal(
-                new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)),
+                new StringReader(Resources.toString(resource.getURL(), StandardCharsets.UTF_8)),
                 RegisterMedicalCertificateType.class);
         PatientType patient2 = jaxbObject2.getLakarutlatande().getPatient();
         utlatande.getGrundData().getPatient().setEfternamn(patient2.getFullstandigtNamn());

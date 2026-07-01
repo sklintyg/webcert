@@ -25,9 +25,9 @@ import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryS
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;

@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.config;
 
-import java.util.List;
-import java.util.ListIterator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tools.jackson.databind.json.JsonMapper;
@@ -41,19 +39,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
    * {@code JsonMapper} bean (which picks up any {@code JsonMapperBuilderCustomizer} beans and
    * handles LocalDateTime as ISO strings).
    *
-   * <p>Uses {@code extendMessageConverters} (not {@code configureMessageConverters}) to preserve
-   * all default converters — ByteArrayHttpMessageConverter (PDF), StringHttpMessageConverter (raw
-   * strings), etc.
+   * <p>Uses {@code withJsonConverter} to replace only the default JSON converter while preserving
+   * all other default converters — ByteArrayHttpMessageConverter (PDF), StringHttpMessageConverter
+   * (raw strings), etc.
    */
   @Override
-  public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-    final var replacement = new JacksonJsonHttpMessageConverter(objectMapper);
-    final ListIterator<HttpMessageConverter<?>> it = converters.listIterator();
-    while (it.hasNext()) {
-      if (it.next() instanceof JacksonJsonHttpMessageConverter) {
-        it.set(replacement);
-        break;
-      }
-    }
+  public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
+    builder.withJsonConverter(new JacksonJsonHttpMessageConverter(objectMapper));
   }
 }

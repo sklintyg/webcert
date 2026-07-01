@@ -83,7 +83,7 @@ class TestCertificateServiceTest {
     final var rootStaffReference = mock(VardpersonReferens.class);
     doReturn(rootStaffReference).when(testCertificateRoot).getSkapadAv();
     doReturn(TEST_CERTIFICATE_ROOT_STAFF_ID).when(rootStaffReference).getHsaId();
-    doReturn(testCertificateRoot).when(utkastRepository).getOne(TEST_CERTIFICATE_ROOT_ID);
+    doReturn(testCertificateRoot).when(utkastRepository).getReferenceById(TEST_CERTIFICATE_ROOT_ID);
     final var rootChildrenRelation = mock(WebcertCertificateRelation.class);
     doReturn(TEST_CERTIFICATE_BRANCH_ID).when(rootChildrenRelation).getIntygsId();
     doReturn(Collections.emptyList())
@@ -98,7 +98,9 @@ class TestCertificateServiceTest {
     final var branchStaffReference = mock(VardpersonReferens.class);
     doReturn(branchStaffReference).when(testCertificateBranch).getSkapadAv();
     doReturn(TEST_CERTIFICATE_BRANCH_STAFF_ID).when(branchStaffReference).getHsaId();
-    doReturn(testCertificateBranch).when(utkastRepository).getOne(TEST_CERTIFICATE_BRANCH_ID);
+    doReturn(testCertificateBranch)
+        .when(utkastRepository)
+        .getReferenceById(TEST_CERTIFICATE_BRANCH_ID);
     final var branchParentRelation = mock(WebcertCertificateRelation.class);
     doReturn(TEST_CERTIFICATE_ROOT_ID).when(branchParentRelation).getIntygsId();
     final var branchChildrenRelation = mock(WebcertCertificateRelation.class);
@@ -115,7 +117,7 @@ class TestCertificateServiceTest {
     final var leafStaffReference = mock(VardpersonReferens.class);
     doReturn(leafStaffReference).when(testCertificateLeaf).getSkapadAv();
     doReturn(TEST_CERTIFICATE_LEAF_ID).when(leafStaffReference).getHsaId();
-    doReturn(testCertificateLeaf).when(utkastRepository).getOne(TEST_CERTIFICATE_LEAF_ID);
+    doReturn(testCertificateLeaf).when(utkastRepository).getReferenceById(TEST_CERTIFICATE_LEAF_ID);
     final var leafParentRelation = mock(WebcertCertificateRelation.class);
     doReturn(TEST_CERTIFICATE_BRANCH_ID).when(leafParentRelation).getIntygsId();
     doReturn(Arrays.asList(leafParentRelation))
@@ -132,7 +134,9 @@ class TestCertificateServiceTest {
     final var singleStaffReference = mock(VardpersonReferens.class);
     doReturn(singleStaffReference).when(testCertificateSingle).getSkapadAv();
     doReturn(TEST_CERTIFICATE_SINGLE_STAFF_ID).when(singleStaffReference).getHsaId();
-    doReturn(testCertificateSingle).when(utkastRepository).getOne(TEST_CERTIFICATE_SINGLE_ID);
+    doReturn(testCertificateSingle)
+        .when(utkastRepository)
+        .getReferenceById(TEST_CERTIFICATE_SINGLE_ID);
     doReturn(Collections.emptyList())
         .when(utkastRepository)
         .findParentRelation(TEST_CERTIFICATE_SINGLE_ID);

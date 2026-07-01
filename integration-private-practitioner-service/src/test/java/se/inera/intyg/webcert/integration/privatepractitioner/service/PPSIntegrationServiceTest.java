@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +49,6 @@ import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestBodyUriSpec;
-import org.springframework.web.client.RestClient.RequestHeadersUriSpec;
 import org.springframework.web.client.RestClient.ResponseSpec;
 import org.springframework.web.util.UriBuilder;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInformationRequest;
@@ -71,7 +71,7 @@ class PPSIntegrationServiceTest {
   @Mock private RestClient ppsRestClient;
   @InjectMocks private PPSIntegrationService ppsIntegrationService;
 
-  private RequestHeadersUriSpec requestHeadersUriSpec;
+  private RestClient.RequestBodyUriSpec requestHeadersUriSpec;
   private RequestBodyUriSpec requestBodyUriSpec;
   private ResponseSpec responseSpec;
 
@@ -144,7 +144,7 @@ class PPSIntegrationServiceTest {
       requestHeadersUriSpec = mock(RestClient.RequestBodyUriSpec.class);
       responseSpec = mock(RestClient.ResponseSpec.class);
 
-      when(ppsRestClient.get()).thenReturn(requestHeadersUriSpec);
+      doReturn(requestHeadersUriSpec).when(ppsRestClient).get();
       when(requestHeadersUriSpec.uri("/configuration")).thenReturn(requestHeadersUriSpec);
       when(requestHeadersUriSpec.accept(MediaType.APPLICATION_JSON))
           .thenReturn(requestHeadersUriSpec);
@@ -310,7 +310,7 @@ class PPSIntegrationServiceTest {
       requestHeadersUriSpec = mock(RestClient.RequestBodyUriSpec.class);
       responseSpec = mock(RestClient.ResponseSpec.class);
 
-      when(ppsRestClient.get()).thenReturn(requestHeadersUriSpec);
+      doReturn(requestHeadersUriSpec).when(ppsRestClient).get();
       when(requestHeadersUriSpec.uri(ArgumentMatchers.<Function<UriBuilder, URI>>any()))
           .thenReturn(requestHeadersUriSpec);
       when(requestHeadersUriSpec.accept(MediaType.APPLICATION_JSON))

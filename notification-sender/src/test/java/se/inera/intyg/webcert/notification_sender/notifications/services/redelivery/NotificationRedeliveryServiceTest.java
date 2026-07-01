@@ -113,7 +113,7 @@ class NotificationRedeliveryServiceTest {
             expectedNotificationRedeliveryMiddle,
             expectedNotificationRedeliveryLast);
 
-    final var captureEventIds = ArgumentCaptor.forClass(List.class);
+    final ArgumentCaptor<List<Long>> captureEventIds = ArgumentCaptor.captor();
 
     doReturn(expectedNotificationRedeliveryList)
         .when(notificationRedeliveryRepo)
