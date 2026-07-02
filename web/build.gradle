@@ -71,9 +71,7 @@ dependencies {
     implementation project(':integration-private-practitioner-service')
     implementation project(':infra')
 
-    implementation "com.fasterxml.jackson.core:jackson-annotations"
-    implementation "tools.jackson.core:jackson-core"
-    implementation "tools.jackson.core:jackson-databind"
+    implementation "org.springframework.boot:spring-boot-starter-jackson"
     implementation "tools.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
     implementation "se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:${intygTransportstyrelsenSchemasVersion}"
