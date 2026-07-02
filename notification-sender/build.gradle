@@ -29,7 +29,6 @@ dependencies {
     implementation "tools.jackson.core:jackson-core"
     implementation "tools.jackson.core:jackson-databind"
     implementation "ch.qos.logback:logback-classic"
-    implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.google.guava:guava"
     implementation "com.helger.schematron:ph-schematron-xslt"
     implementation "jakarta.persistence:jakarta.persistence-api"
