@@ -1,0 +1,3 @@
+[submodule ".ai-resources"]
+	path = .ai-resources
+	url = https://bitbucket.drift.inera.se/scm/k1j/ai-resources.git
