@@ -20,17 +20,13 @@ package se.inera.intyg.webcert.notification_sender.notifications.testconfig;
 
 import static org.mockito.Mockito.mock;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import org.apache.camel.Exchange;
-import org.apache.camel.spi.DataFormat;
+import org.apache.camel.component.jackson3.JacksonDataFormat;
 import org.apache.camel.spring.spi.SpringTransactionPolicy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPostProcessor;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
@@ -67,25 +63,8 @@ public class NotificationCamelTestConfig {
   }
 
   @Bean
-  public DataFormat notificationMessageDataFormat() {
-    JsonMapper mapper = new CustomObjectMapper();
-    return new DataFormat() {
-      @Override
-      public void marshal(Exchange exchange, Object graph, OutputStream stream) throws Exception {
-        mapper.writeValue(stream, graph);
-      }
-
-      @Override
-      public Object unmarshal(Exchange exchange, InputStream stream) throws Exception {
-        return mapper.readValue(stream, NotificationMessage.class);
-      }
-
-      @Override
-      public void start() {}
-
-      @Override
-      public void stop() {}
-    };
+  public JacksonDataFormat notificationMessageDataFormat() {
+    return new JacksonDataFormat(JsonMapper.builder().build(), NotificationMessage.class);
   }
 
   @Bean

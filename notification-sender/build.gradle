@@ -40,6 +40,7 @@ dependencies {
     implementation "org.apache.camel:camel-core"
     implementation "org.apache.camel:camel-jaxb"
     implementation "org.apache.camel:camel-jms"
+    implementation("org.apache.camel:camel-jackson3")
     implementation "org.apache.commons:commons-lang3"
     implementation "org.springframework:spring-context-support"
     implementation "org.springframework:spring-jms"
