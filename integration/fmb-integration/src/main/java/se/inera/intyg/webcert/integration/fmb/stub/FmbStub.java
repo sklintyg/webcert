@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -41,11 +42,12 @@ import tools.jackson.databind.json.JsonMapper;
 @RestController
 @Profile({"dev", "wc-fmb-stub"})
 @RequestMapping("/stubs/fmbstubs")
+@RequiredArgsConstructor
 public class FmbStub {
 
   private static final Logger LOG = LoggerFactory.getLogger(FmbStub.class);
 
-  private static final JsonMapper mapper = JsonMapper.builder().build();
+  private final JsonMapper mapper;
 
   @GetMapping("/typfall")
   public ResponseEntity<String> getTypfall() throws IOException {
