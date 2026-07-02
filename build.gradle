@@ -73,10 +73,8 @@ subprojects {
 
     dependencies {
         implementation platform("se.inera.intyg.bom:platform:${intygBomVersion}")
-        implementation platform("tools.jackson:jackson-bom:3.2.0")
         annotationProcessor platform("se.inera.intyg.bom:platform:${intygBomVersion}")
         testImplementation platform("se.inera.intyg.bom:platform:${intygBomVersion}")
-        testImplementation platform("tools.jackson:jackson-bom:3.2.0")
         testAnnotationProcessor platform("se.inera.intyg.bom:platform:${intygBomVersion}")
         mockitoAgent platform("se.inera.intyg.bom:platform:${intygBomVersion}")
         mockitoAgent("org.mockito:mockito-core") { transitive = false }
