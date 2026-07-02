@@ -28,13 +28,14 @@ import java.util.stream.Collectors;
 import org.apache.camel.Message;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
 /** Created by eriklupander on 2016-07-04. */
 public class NotificationMessageDiscardFilter {
 
-  private final JsonMapper om = JsonMapper.builder().findAndAddModules().build();
+  private final JsonMapper om = new CustomObjectMapper();
 
   public List<Message> process(List<Message> messageList) {
 
