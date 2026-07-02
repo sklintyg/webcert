@@ -18,22 +18,28 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration.configuration;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
-import org.springframework.web.client.RestClient;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@Configuration
-public class CertificateServiceRestClientConfiguration {
-  @Bean("csRestClient")
-  public RestClient csRestClient(CustomObjectMapper objectMapper) {
-    return RestClient.builder()
-        .configureMessageConverters(
-            messageConverters ->
-                messageConverters
-                    .registerDefaults()
-                    .withJsonConverter(new JacksonJsonHttpMessageConverter(objectMapper)))
-        .build();
+import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+
+class CertificateServiceRestClientConfigurationTest {
+
+  @Test
+  void shouldAllowNullPrimitivesForCsResponses() {
+    final var objectMapper =
+        new CustomObjectMapper()
+            .rebuild()
+            .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+            .build();
+
+    final var result = objectMapper.readValue("{\"value\":null}", PrimitiveHolder.class);
+
+    assertFalse(result.value);
+  }
+
+  private static class PrimitiveHolder {
+    private boolean value;
   }
 }

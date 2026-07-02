@@ -18,22 +18,20 @@
  */
 package se.inera.intyg.webcert.web.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import tools.jackson.databind.json.JsonMapper;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 /**
  * MVC configuration. All component scanning is handled by {@code @SpringBootApplication} on {@link
  * se.inera.intyg.webcert.WebcertApplication}.
  */
 @Configuration
+@RequiredArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
-
-  @Autowired private JsonMapper objectMapper;
-
   /**
    * Replaces the default Spring Boot Jackson 3 converter with one built from our auto-configured
    * {@code JsonMapper} bean (which picks up any {@code JsonMapperBuilderCustomizer} beans and
@@ -43,6 +41,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
    * all other default converters — ByteArrayHttpMessageConverter (PDF), StringHttpMessageConverter
    * (raw strings), etc.
    */
+  private final CustomObjectMapper objectMapper;
+
   @Override
   public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
     builder.withJsonConverter(new JacksonJsonHttpMessageConverter(objectMapper));
