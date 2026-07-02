@@ -39,13 +39,14 @@ public class GetUnitNotificationConfig {
 
   private List<RegionNotificationConfig> integratedUnitNotificationConfig;
 
+  private final JsonMapper jsonMapper;
+
   public List<RegionNotificationConfig> get() {
     if (integratedUnitNotificationConfig == null) {
       integratedUnitNotificationConfig = new ArrayList<>();
-      final var objectMapper = JsonMapper.builder().build();
       try (final var resourceAsStream = new FileInputStream(unitNotificationConfigPath)) {
         integratedUnitNotificationConfig =
-            objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
+            jsonMapper.readValue(resourceAsStream, new TypeReference<>() {});
         log.info(
             "Integrated Unit Notification was loaded with configuration: {}",
             integratedUnitNotificationConfig);

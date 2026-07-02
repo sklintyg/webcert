@@ -24,11 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(MockitoExtension.class)
 class GetUnitNotificationConfigTest {
@@ -58,7 +59,12 @@ class GetUnitNotificationConfigTest {
               "UnitNotificationConfig",
               "unit-notification-config-with-value-with-multiple-configurations.json")
           .toString();
-  @InjectMocks private GetUnitNotificationConfig getUnitNotificationConfig;
+  private GetUnitNotificationConfig getUnitNotificationConfig;
+
+  @BeforeEach
+  void setUp() {
+    getUnitNotificationConfig = new GetUnitNotificationConfig(JsonMapper.builder().build());
+  }
 
   @Test
   void shallReturnEmptyListIfPathIsInvalid() {
