@@ -18,18 +18,13 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.config;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import org.apache.camel.Exchange;
-import org.apache.camel.spi.DataFormat;
+import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
-import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Replaces notifications/beans-context.xml and notifications/camel-context.xml.
@@ -57,24 +52,7 @@ public class NotificationCamelConfig {
   }
 
   @Bean
-  public DataFormat notificationMessageDataFormat() {
-    JsonMapper mapper = new CustomObjectMapper();
-    return new DataFormat() {
-      @Override
-      public void marshal(Exchange exchange, Object graph, OutputStream stream) throws Exception {
-        mapper.writeValue(stream, graph);
-      }
-
-      @Override
-      public Object unmarshal(Exchange exchange, InputStream stream) throws Exception {
-        return mapper.readValue(stream, NotificationMessage.class);
-      }
-
-      @Override
-      public void start() {}
-
-      @Override
-      public void stop() {}
-    };
+  public JacksonDataFormat notificationMessageDataFormat() {
+    return new JacksonDataFormat(NotificationMessage.class);
   }
 }
