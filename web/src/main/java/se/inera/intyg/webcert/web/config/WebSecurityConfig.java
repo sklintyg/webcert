@@ -57,8 +57,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.saml2.core.Saml2X509Credential;
-import org.springframework.security.saml2.provider.service.authentication.DefaultSaml2AuthenticatedPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider;
+import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider.ResponseAuthenticationConverter;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AssertionAuthentication;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
@@ -210,8 +211,7 @@ public class WebSecurityConfig {
       CustomAuthenticationEntrypoint customAuthenticationEntrypoint,
       CustomAccessDeniedHandler customAccessDeniedHandler,
       CustomXFrameOptionsHeaderWriter customXFrameOptionsHeaderWriter,
-      RequestCache requestCache)
-      throws Exception {
+      RequestCache requestCache) {
 
     if (environment.matchesProfiles("dev", "testability-api")) {
       configureTestability(http);
@@ -320,10 +320,12 @@ public class WebSecurityConfig {
     logoutRequestResolver.setParametersConsumer(
         parameters -> {
           final var token = (Saml2AuthenticationToken) parameters.getAuthentication();
-          final var principal =
-              (DefaultSaml2AuthenticatedPrincipal) token.getSaml2Authentication().getPrincipal();
-          final var registrationId = principal.getRelyingPartyRegistrationId();
-          final var name = principal.getName();
+          final var samlAuthentication =
+              (Saml2AssertionAuthentication) token.getSaml2Authentication();
+          final var registrationId = samlAuthentication.getRelyingPartyRegistrationId();
+          final var name = samlAuthentication.getName();
+          final var assertion = samlAuthentication.getCredentials();
+
           final var logoutRequest = parameters.getLogoutRequest();
           final var nameId = logoutRequest.getNameID();
           final var sessionIndex =
@@ -333,7 +335,7 @@ public class WebSecurityConfig {
 
           nameId.setValue(name);
           nameId.setFormat(SAML_2_0_NAMEID_FORMAT_TRANSIENT);
-          sessionIndex.setValue(principal.getSessionIndexes().getFirst());
+          sessionIndex.setValue(assertion.getSessionIndexes().getFirst());
           logoutRequest.getSessionIndexes().add(sessionIndex);
 
           if (registrationId.equals(REGISTRATION_ID_SITHS)
@@ -364,7 +366,7 @@ public class WebSecurityConfig {
         .build();
   }
 
-  private void configureTestability(HttpSecurity http) throws Exception {
+  private void configureTestability(HttpSecurity http) {
     http.authorizeHttpRequests(
         request ->
             request
@@ -378,9 +380,7 @@ public class WebSecurityConfig {
     final var authenticationProvider = new OpenSaml5AuthenticationProvider();
     authenticationProvider.setResponseAuthenticationConverter(
         responseToken -> {
-          final var authentication =
-              OpenSaml5AuthenticationProvider.createDefaultResponseAuthenticationConverter()
-                  .convert(responseToken);
+          final var authentication = new ResponseAuthenticationConverter().convert(responseToken);
 
           if (authentication == null || !authentication.isAuthenticated()) {
             return null;
@@ -428,8 +428,7 @@ public class WebSecurityConfig {
   }
 
   private String getRegistrationId(Saml2Authentication saml2Authentication) {
-    return ((DefaultSaml2AuthenticatedPrincipal) saml2Authentication.getPrincipal())
-        .getRelyingPartyRegistrationId();
+    return ((Saml2AssertionAuthentication) saml2Authentication).getRelyingPartyRegistrationId();
   }
 
   private String getElegAuthScheme(Saml2Authentication saml2Authentication) {
@@ -442,8 +441,8 @@ public class WebSecurityConfig {
   }
 
   private String getAttribute(Saml2Authentication samlCredential, String attributeId) {
-    final var principal = (DefaultSaml2AuthenticatedPrincipal) samlCredential.getPrincipal();
-    final var attributes = principal.getAttributes();
+    final var assertion = ((Saml2AssertionAuthentication) samlCredential).getCredentials();
+    final var attributes = assertion.getAttributes();
     if (attributes.containsKey(attributeId)) {
       return (String) attributes.get(attributeId).getFirst();
     }
