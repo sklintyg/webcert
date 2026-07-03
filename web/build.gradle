@@ -1,5 +1,7 @@
-apply plugin: 'org.cyclonedx.bom'
-apply plugin: 'org.springframework.boot'
+plugins {
+    alias(libs.plugins.org.springframework.boot)
+    alias(libs.plugins.org.cyclonedx.bom)
+}
 
 tasks.named('bootJar') {
     archiveFileName.set('app.jar')
