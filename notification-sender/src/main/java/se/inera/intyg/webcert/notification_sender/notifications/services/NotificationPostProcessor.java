@@ -23,8 +23,6 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.LOGISK_ADRESS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Message;
 import org.slf4j.MDC;
@@ -34,13 +32,15 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationPostProcessingService;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j
 @Component
 public class NotificationPostProcessor {
 
   @Autowired private MdcHelper mdcHelper;
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
   @Autowired private NotificationPostProcessingService notificationPostProcessingService;
 
   public void process(Message message) {
@@ -56,15 +56,14 @@ public class NotificationPostProcessor {
 
       final var resultMessage = getNotificationResultMessage(message);
       notificationPostProcessingService.processNotificationResult(resultMessage);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       log.error(getLogErrorMessage(message), e);
     } finally {
       MDC.clear();
     }
   }
 
-  private NotificationResultMessage getNotificationResultMessage(Message message)
-      throws JsonProcessingException {
+  private NotificationResultMessage getNotificationResultMessage(Message message) {
     return objectMapper.readValue(message.getBody(String.class), NotificationResultMessage.class);
   }
 

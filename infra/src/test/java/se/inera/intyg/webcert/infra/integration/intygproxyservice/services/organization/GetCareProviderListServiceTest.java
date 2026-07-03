@@ -90,7 +90,7 @@ class GetCareProviderListServiceTest {
       commissionA.setHealthCareProviderHsaId(CARE_PROVIDER_A_ID);
       commissionB.setHealthCareProviderHsaId(CARE_PROVIDER_B_ID);
 
-      when(getCareUnitListService.get(any(List.class))).thenReturn(CARE_UNITS);
+      when(getCareUnitListService.get(anyList())).thenReturn(CARE_UNITS);
 
       when(careProviderConverter.convert(commissionA, List.of(UNIT_A1, UNIT_A2)))
           .thenReturn(providerA);
@@ -127,7 +127,7 @@ class GetCareProviderListServiceTest {
 
     @Test
     void shouldSendUnitListToConverterWhenSeveralUnits() {
-      final var captor = ArgumentCaptor.forClass(List.class);
+      final ArgumentCaptor<List<Vardenhet>> captor = ArgumentCaptor.captor();
 
       getCareProviderListService.get(List.of(commissionA, commissionB));
 
@@ -137,7 +137,7 @@ class GetCareProviderListServiceTest {
 
     @Test
     void shouldSendUnitListToConverter() {
-      final var captor = ArgumentCaptor.forClass(List.class);
+      final ArgumentCaptor<List<Vardenhet>> captor = ArgumentCaptor.captor();
 
       getCareProviderListService.get(List.of(commissionA, commissionB));
 
@@ -147,7 +147,7 @@ class GetCareProviderListServiceTest {
 
     @Test
     void shouldCallGetCareUnitListServiceOnlyOnce() {
-      final var captor = ArgumentCaptor.forClass(List.class);
+      final ArgumentCaptor<List<Commission>> captor = ArgumentCaptor.captor();
 
       getCareProviderListService.get(List.of(commissionA, commissionB));
 

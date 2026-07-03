@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +39,8 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.logging.MdcHelper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationAggregatorTest {
@@ -112,7 +112,7 @@ class NotificationAggregatorTest {
   }
 
   private Message buildMessage(String intygsId, HandelsekodEnum ht, LocalDateTime tid)
-      throws JsonProcessingException {
+      throws JacksonException {
     Message message = mock(Message.class);
     NotificationMessage nf = new NotificationMessage();
     nf.setIntygsId(intygsId);

@@ -29,7 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +43,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.Notification
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationPostProcessingService;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationPostProcessorTest {
@@ -51,7 +51,7 @@ class NotificationPostProcessorTest {
   @Mock private NotificationPostProcessingService notificationPostProcessingService;
   @Spy private MdcHelper mdcHelper;
   @Mock private Message message;
-  @Spy private ObjectMapper objectMapper;
+  @Spy private JsonMapper objectMapper;
 
   @InjectMocks private NotificationPostProcessor notificationPostProcessor;
 

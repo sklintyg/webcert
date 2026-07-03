@@ -17,17 +17,18 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetSrsInformationStub"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetPredictionQuestionsStub"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetConsentStub"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.stub.SetConsentStub"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetDiagnosisCodesStub"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.stub.GetSRSInformationForDiagnosisStub"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.services.SrsInfraServiceImpl"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository"/>
-    <bean class="se.inera.intyg.webcert.infra.srs.stub.SetOwnOpinionStub"/>
+  <bean class="tools.jackson.databind.json.JsonMapper"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.stub.GetSrsInformationStub"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.stub.GetPredictionQuestionsStub"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.stub.GetConsentStub"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.stub.SetConsentStub"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.stub.GetDiagnosisCodesStub"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.stub.GetSRSInformationForDiagnosisStub"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.services.SrsInfraServiceImpl"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository"/>
+  <bean class="se.inera.intyg.webcert.infra.srs.stub.SetOwnOpinionStub"/>
 </beans>

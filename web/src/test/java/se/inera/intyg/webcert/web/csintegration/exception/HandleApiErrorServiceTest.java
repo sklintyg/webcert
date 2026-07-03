@@ -21,19 +21,19 @@ package se.inera.intyg.webcert.web.csintegration.exception;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(MockitoExtension.class)
 class HandleApiErrorServiceTest {
 
   @InjectMocks private HandleApiErrorService service;
-  @Mock private ObjectMapper objectMapper;
+  @Mock private JsonMapper objectMapper;
 
   @Test
   void shouldReturnApiErrorMessageWhenParsingSucceeds() throws Exception {
@@ -51,7 +51,7 @@ class HandleApiErrorServiceTest {
   void shouldReturnExceptionMessageWhenParsingFails() throws Exception {
     final var json = "{\"message\":\"Resource not found\"}";
     when(objectMapper.readValue(json, ApiError.class))
-        .thenThrow(new JsonProcessingException("Error parsing JSON") {});
+        .thenThrow(new JacksonException("Error parsing JSON") {});
 
     final var result = service.handle(json);
     assertEquals(json, result);

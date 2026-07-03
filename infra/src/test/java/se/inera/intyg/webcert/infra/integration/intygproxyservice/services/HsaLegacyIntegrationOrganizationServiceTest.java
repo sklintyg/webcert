@@ -234,7 +234,7 @@ class HsaLegacyIntegrationOrganizationServiceTest {
       final var expected = List.of(new CredentialInformation());
       when(getCredentialInformationForPersonService.get(any())).thenReturn(expected);
 
-      final var captor = ArgumentCaptor.forClass(List.class);
+      final ArgumentCaptor<List<CredentialInformation>> captor = ArgumentCaptor.captor();
       hsaLegacyIntegrationOrganizationService.getAuthorizedEnheterForHosPerson("HSA_ID");
 
       verify(getUserAuthorizationInfoService).get(captor.capture());

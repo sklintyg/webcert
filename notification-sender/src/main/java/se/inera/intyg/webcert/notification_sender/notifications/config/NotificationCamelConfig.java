@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.component.jackson3.JacksonDataFormat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Replaces notifications/beans-context.xml and notifications/camel-context.xml.
@@ -53,7 +53,7 @@ public class NotificationCamelConfig {
   }
 
   @Bean
-  public JacksonDataFormat notificationMessageDataFormat(ObjectMapper objectMapper) {
+  public JacksonDataFormat notificationMessageDataFormat(JsonMapper objectMapper) {
     return new JacksonDataFormat(objectMapper, NotificationMessage.class);
   }
 }

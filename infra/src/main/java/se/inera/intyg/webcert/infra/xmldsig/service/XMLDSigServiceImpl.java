@@ -190,8 +190,8 @@ public class XMLDSigServiceImpl implements XMLDSigService {
           map.put(
               intygsId,
               CertificateInfo.CertificateInfoBuilder.aCertificateInfo()
-                  .withSubject(x509Certificate.getSubjectDN().getName())
-                  .withIssuer(x509Certificate.getIssuerDN().getName())
+                  .withSubject(x509Certificate.getSubjectX500Principal().getName())
+                  .withIssuer(x509Certificate.getIssuerX500Principal().getName())
                   .withAlg(x509Certificate.getSigAlgName())
                   .withCertificateType(x509Certificate.getType())
                   .build());

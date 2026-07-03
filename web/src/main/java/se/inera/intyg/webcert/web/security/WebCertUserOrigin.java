@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +27,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.infra.security.common.model.UserOrigin;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component
 @Slf4j
@@ -68,11 +68,11 @@ public class WebCertUserOrigin implements UserOrigin {
   }
 
   private String extractOriginFromRequest(SavedRequest savedRequest) {
-    final var mapper = new ObjectMapper();
+    final var mapper = JsonMapper.builder().build();
     try {
       final var content = String.valueOf(savedRequest.getParameterMap().get(USER_JSON_DISPLAY)[0]);
       final var actualObj = mapper.readTree(content);
-      return actualObj.get(ORIGIN).asText();
+      return actualObj.get(ORIGIN).asString();
 
     } catch (Exception e) {
       log.warn("Could not get origin from fake login request.");

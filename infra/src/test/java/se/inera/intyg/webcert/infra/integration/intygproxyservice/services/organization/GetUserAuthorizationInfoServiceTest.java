@@ -82,7 +82,7 @@ class GetUserAuthorizationInfoServiceTest {
 
     @Test
     void shouldSendCredentials() {
-      final var captor = ArgumentCaptor.forClass(List.class);
+      final ArgumentCaptor<List<CredentialInformation>> captor = ArgumentCaptor.captor();
 
       getUserAuthorizationInfoService.get(credentials);
       verify(userCredentialListConverter).convert(captor.capture());
@@ -106,7 +106,7 @@ class GetUserAuthorizationInfoServiceTest {
 
     @Test
     void shouldFilterCommissions() {
-      final var captor = ArgumentCaptor.forClass(List.class);
+      final ArgumentCaptor<List<Commission>> captor = ArgumentCaptor.captor();
 
       getUserAuthorizationInfoService.get(credentials);
       verify(getCareProviderListService).get(captor.capture());
@@ -131,7 +131,7 @@ class GetUserAuthorizationInfoServiceTest {
 
     @Test
     void shouldFilterInactiveCommissions() {
-      final var captor = ArgumentCaptor.forClass(List.class);
+      final ArgumentCaptor<List<Commission>> captor = ArgumentCaptor.captor();
 
       getUserAuthorizationInfoService.get(credentials);
       verify(commissionNameMapConverter).convert(captor.capture());

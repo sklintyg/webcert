@@ -23,20 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.persistence.PersistenceTestApp;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 
 /** Created by eriklupander on 2015-08-05. */
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
+@SpringBootTest(classes = PersistenceTestApp.class)
 class AnvandarPreferenceRepositoryTest {
 
   private static final String HSA_ID = "hsaId1";
@@ -46,8 +43,6 @@ class AnvandarPreferenceRepositoryTest {
   public static final String KEY_2 = "key2";
 
   @Autowired private AnvandarPreferenceRepository anvandarMetadataRepository;
-
-  @PersistenceContext private EntityManager em;
 
   @Test
   void testFindOne() {

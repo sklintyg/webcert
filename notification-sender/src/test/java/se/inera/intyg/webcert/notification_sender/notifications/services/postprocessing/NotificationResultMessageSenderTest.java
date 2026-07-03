@@ -29,8 +29,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.OK;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSException;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
@@ -52,6 +50,8 @@ import se.inera.intyg.webcert.notification_sender.notifications.dto.Notification
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationResultMessageSenderTest {
@@ -61,7 +61,7 @@ class NotificationResultMessageSenderTest {
 
   @Mock private Session session;
 
-  @Spy private ObjectMapper objectMapper;
+  @Spy private JsonMapper objectMapper;
 
   @InjectMocks private NotificationResultMessageSender notificationResultMessageSender;
 
@@ -101,7 +101,7 @@ class NotificationResultMessageSenderTest {
   }
 
   @Test
-  void shouldSetProperTextMessageOnJmsMessage() throws JMSException, JsonProcessingException {
+  void shouldSetProperTextMessageOnJmsMessage() throws JMSException, JacksonException {
     final var notificationResultMessage = createNotificationResultMessage();
 
     ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);

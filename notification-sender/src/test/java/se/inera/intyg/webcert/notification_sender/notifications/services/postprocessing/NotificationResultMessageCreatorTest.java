@@ -33,9 +33,6 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.WEBCERT_EXCEPTION;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.ERROR;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -90,6 +87,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationResultMessageCreatorTest {
@@ -102,7 +102,7 @@ class NotificationResultMessageCreatorTest {
 
   @Spy CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
-  @Spy private ObjectMapper objectMapper;
+  @Spy private JsonMapper objectMapper;
 
   @Mock private UnitMapperUtil unitMapperUtil;
 
@@ -322,8 +322,7 @@ class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  void redeliveryMessageXmlShouldHaveCorrectDataWhenSignedCertificate()
-      throws JsonProcessingException {
+  void redeliveryMessageXmlShouldHaveCorrectDataWhenSignedCertificate() throws JacksonException {
     final var statusUpdate = createStatusUpdateForCareWithSignedCertificate();
     final var notificationResultMessage = new NotificationResultMessage();
     final var resultTypeV3 = new ResultType();
@@ -343,8 +342,7 @@ class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  void redeliveryMessageXmlShouldHaveCorrectDataWhenUnsignedCertificate()
-      throws JsonProcessingException {
+  void redeliveryMessageXmlShouldHaveCorrectDataWhenUnsignedCertificate() throws JacksonException {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     final var notificationResultMessage = new NotificationResultMessage();
     final var resultTypeV3 = new ResultType();
@@ -364,7 +362,7 @@ class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  void redeliveryMessageXmlShouldHaveProperlySetArenden() throws JsonProcessingException {
+  void redeliveryMessageXmlShouldHaveProperlySetArenden() throws JacksonException {
     final var statusUpdate = createStatusUpdateForCareWithArenden();
     final var notificationResultMessage = new NotificationResultMessage();
     final var resultTypeV3 = new ResultType();
@@ -421,15 +419,14 @@ class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  void shouldSetRedeliveryMessageToNullIfExceptionInBytesConversion()
-      throws JsonProcessingException {
+  void shouldSetRedeliveryMessageToNullIfExceptionInBytesConversion() throws JacksonException {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     final var resultTypeV3 = createNotificationResultType();
     final var notificationResultMessage = new NotificationResultMessage();
     final var notNullBytes = "NOT_NULL_FOR_TESTING".getBytes();
     notificationResultMessage.setStatusUpdateXml(notNullBytes);
 
-    doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(String.class));
+    doThrow(JacksonException.class).when(objectMapper).writeValueAsBytes(any(String.class));
 
     notificationResultMessageCreator.addToResultMessage(
         notificationResultMessage, statusUpdate, resultTypeV3);
@@ -438,14 +435,14 @@ class NotificationResultMessageCreatorTest {
   }
 
   @Test
-  void shouldSetReResultTypeNormallyIfExceptionInBytesConversion() throws JsonProcessingException {
+  void shouldSetReResultTypeNormallyIfExceptionInBytesConversion() throws JacksonException {
     final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
     final var resultTypeV3 = createNotificationResultType();
     final var notificationResultMessage = new NotificationResultMessage();
     final var notNullBytes = "NOT_NULL_FOR_TESTING".getBytes();
     notificationResultMessage.setStatusUpdateXml(notNullBytes);
 
-    doThrow(JsonProcessingException.class).when(objectMapper).writeValueAsBytes(any(String.class));
+    doThrow(JacksonException.class).when(objectMapper).writeValueAsBytes(any(String.class));
 
     notificationResultMessageCreator.addToResultMessage(
         notificationResultMessage, statusUpdate, resultTypeV3);
@@ -544,7 +541,7 @@ class NotificationResultMessageCreatorTest {
     final var notificationMessage = new NotificationMessage();
     notificationMessage.setIntygsTyp(CERTIFICATE_TYPE_INTERNAL);
     notificationMessage.setIntygsId(CERTIFICATE_ID);
-    notificationMessage.setUtkast(JsonNodeFactory.instance.textNode("UTKAST_JSON"));
+    notificationMessage.setUtkast(JsonNodeFactory.instance.stringNode("UTKAST_JSON"));
     notificationMessage.setHandelse(EVENT_ENUM);
     notificationMessage.setHandelseTid(LocalDateTime.now());
     notificationMessage.setAmne(AmneskodCreator.create(SUBJECT_CODE, "Komplettering"));

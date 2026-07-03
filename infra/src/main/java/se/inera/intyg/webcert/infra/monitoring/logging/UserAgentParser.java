@@ -63,13 +63,13 @@ public class UserAgentParser {
   }
 
   private String getOSFamily(OS os) {
-    if (os != null && !StringUtils.isEmpty(os.family)) {
+    if (os != null && StringUtils.hasText(os.family)) {
       return os.family;
     }
     return UNKNOWN_OS;
   }
 
   private String getVersionOrZero(String version) {
-    return StringUtils.isEmpty(version) ? "0" : version;
+    return StringUtils.hasText(version) ? version : "0";
   }
 }

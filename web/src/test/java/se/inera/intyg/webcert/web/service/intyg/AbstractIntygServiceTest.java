@@ -22,7 +22,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -67,6 +66,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import tools.jackson.databind.json.JsonMapper;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
@@ -108,7 +108,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
   @Mock protected IntygModuleRegistry moduleRegistry;
 
-  @Spy protected ObjectMapper objectMapper = new CustomObjectMapper();
+  @Spy protected JsonMapper objectMapper = new CustomObjectMapper();
 
   @Mock protected CertificateAccessServiceHelper certificateAccessServiceHelper;
 

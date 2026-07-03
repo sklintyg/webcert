@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,6 +54,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
+import tools.jackson.core.JacksonException;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateForPatientServiceImplTest {
@@ -145,7 +145,7 @@ class CertificateForPatientServiceImplTest {
   class CachedDataNoChanges {
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
+    void setUp() throws JacksonException {
       final var fromWebcert =
           List.of(utkastFromWC("4", "2014-01-03T12:12:18", CertificateState.SENT.name()));
       doReturn(fromWebcert).when(utkastService).findUtkastByPatientAndUnits(notNull(), notNull());
@@ -178,7 +178,7 @@ class CertificateForPatientServiceImplTest {
   class CachedDataWithNewCertificateInWebcert {
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
+    void setUp() throws JacksonException {
       final var fromWebcert =
           List.of(
               utkastFromWC("4", "2014-01-03T12:12:18", CertificateState.SENT.name()),
@@ -214,7 +214,7 @@ class CertificateForPatientServiceImplTest {
   class CachedDataWithUpdatedCertificateInWebcert {
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
+    void setUp() throws JacksonException {
       final var fromWebcert =
           List.of(
               utkastFromWC("4", "2014-01-03T12:12:18", CertificateState.SENT.name()),
@@ -249,7 +249,7 @@ class CertificateForPatientServiceImplTest {
   class CachedDataWithCancelledCertificateInIntygstjanst {
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
+    void setUp() throws JacksonException {
       final var fromWebcert =
           List.of(
               utkastFromWC("4", "2014-01-03T12:12:18", CertificateState.SENT.name()),
@@ -285,7 +285,7 @@ class CertificateForPatientServiceImplTest {
   class CachedDataWithSentCertificateInIntygstjanst {
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
+    void setUp() throws JacksonException {
       final var fromWebcert =
           List.of(
               utkastFromWC("4", "2014-01-03T12:12:18", CertificateState.RECEIVED.name()),
@@ -320,7 +320,7 @@ class CertificateForPatientServiceImplTest {
   class CachedDataWithSentCertificateInIntygstjanstButCancelledInWebcert {
 
     @BeforeEach
-    void setUp() throws JsonProcessingException {
+    void setUp() throws JacksonException {
       final var fromWebcert =
           List.of(
               utkastFromWC("4", "2014-01-03T12:12:18", CertificateState.RECEIVED.name()),

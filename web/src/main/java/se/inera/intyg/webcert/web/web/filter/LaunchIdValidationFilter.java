@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,13 +26,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
@@ -41,6 +40,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionResponse;
+import tools.jackson.databind.ObjectMapper;
 
 @Component(value = "launchIdValidationFilter")
 public class LaunchIdValidationFilter extends OncePerRequestFilter {
@@ -59,9 +59,10 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
   }
 
   private static void ignorePatterns(String... antPatterns) {
+    PathPatternRequestMatcher.Builder builder = PathPatternRequestMatcher.withDefaults();
     List<RequestMatcher> matchers = new ArrayList<>();
     for (String pattern : antPatterns) {
-      matchers.add(new AntPathRequestMatcher(pattern, null));
+      matchers.add(builder.matcher(pattern));
     }
     requestMatcher = new OrRequestMatcher(matchers);
   }

@@ -18,15 +18,28 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration.configuration;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@Configuration
-public class CertificateServiceRestTemplateConfiguration {
+import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
 
-  @Bean("csRestTemplate")
-  public RestTemplate csRestTemplate() {
-    return new RestTemplate();
+class CertificateServiceRestClientConfigurationTest {
+
+  @Test
+  void shouldAllowNullPrimitivesForCsResponses() {
+    final var objectMapper =
+        new CustomObjectMapper()
+            .rebuild()
+            .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+            .build();
+
+    final var result = objectMapper.readValue("{\"value\":null}", PrimitiveHolder.class);
+
+    assertFalse(result.value);
+  }
+
+  private static class PrimitiveHolder {
+    private boolean value;
   }
 }

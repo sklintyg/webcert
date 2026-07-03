@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.integration.fmb.model;
 
 import static com.google.common.collect.MoreCollectors.toOptional;
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -44,7 +43,7 @@ public enum TidEnhet {
 
   public static Optional<TidEnhet> of(final String text) {
     return Stream.of(TidEnhet.values())
-        .filter(code -> equalsIgnoreCase(text, code.getCode()))
+        .filter(code -> text.equalsIgnoreCase(code.getCode()))
         .collect(toOptional());
   }
 

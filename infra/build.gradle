@@ -11,10 +11,9 @@ dependencies {
 
     // ── Jackson ──────────────────────────────────────────────────────────────
     implementation "com.fasterxml.jackson.core:jackson-annotations"
-    implementation "com.fasterxml.jackson.core:jackson-core"
-    implementation "com.fasterxml.jackson.core:jackson-databind"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "tools.jackson.core:jackson-core"
+    implementation "tools.jackson.core:jackson-databind"
+    implementation "tools.jackson.dataformat:jackson-dataformat-yaml"
 
     // ── Spring Framework ─────────────────────────────────────────────────────
     implementation "org.springframework:spring-context"
@@ -61,7 +60,7 @@ dependencies {
     // ── Apache CXF (SRS stubs use JAX-RS / CXF annotations) ─────────────────
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
-    implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
+    implementation "tools.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
     // ── Jakarta APIs ─────────────────────────────────────────────────────────
     compileOnly "jakarta.servlet:jakarta.servlet-api"
@@ -88,7 +87,7 @@ dependencies {
     testAnnotationProcessor "org.projectlombok:lombok"
     testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.springframework:spring-test"
-    testImplementation "org.springframework.boot:spring-boot-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.apache.cxf:cxf-core"
 }

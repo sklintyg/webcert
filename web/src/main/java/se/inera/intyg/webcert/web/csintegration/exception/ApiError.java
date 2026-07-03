@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.csintegration.exception;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.exception.ApiError.ApiErrorBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = ApiErrorBuilder.class)
 @Value

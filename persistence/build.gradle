@@ -10,6 +10,7 @@ dependencies {
     implementation "commons-io:commons-io"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.liquibase:liquibase-core"
+    implementation "org.springframework.boot:spring-boot-starter-liquibase"
     implementation "com.mysql:mysql-connector-j"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.inera.intyg.common:common-support:${commonVersion}"
@@ -18,5 +19,6 @@ dependencies {
 
     testImplementation "com.h2database:h2"
     testImplementation "org.mockito:mockito-junit-jupiter"
+    testImplementation "org.springframework.boot:spring-boot-starter-data-jpa-test"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 }

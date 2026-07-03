@@ -1,13 +1,12 @@
 plugins {
     alias(libs.plugins.com.diffplug.spotless)
     alias(libs.plugins.com.github.ben.manes.versions)
-    alias(libs.plugins.org.cyclonedx.bom)
     alias(libs.plugins.org.sonarqube)
     alias(libs.plugins.org.springframework.boot) apply false
 }
 
 ext {
-    commonVersion = System.properties['commonVersion'] ?: '4.3.0-SNAPSHOT'
+    commonVersion = System.properties['commonVersion'] ?: '4.4.0-SNAPSHOT'
     refDataVersion = '2.0.22'
 
     intygClinicalprocessSchemasVersion = "1.0.24.2"
@@ -113,8 +112,10 @@ subprojects {
         }
     }
 
-    tasks.matching { it.name == "cyclonedxDirectBom" }.configureEach { t ->
-        t.includeConfigs = ['^runtimeClasspath$']
+    pluginManager.withPlugin('org.cyclonedx.bom') {
+        tasks.named('cyclonedxDirectBom').configure { t ->
+            t.includeConfigs = ['^runtimeClasspath$']
+        }
     }
 }
 

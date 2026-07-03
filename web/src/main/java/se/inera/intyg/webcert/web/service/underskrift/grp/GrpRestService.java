@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +37,7 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpSubjectIdentifi
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j
 @Service
@@ -57,7 +57,7 @@ public class GrpRestService {
 
   private final RestClient grpRestClient;
   private final RedisTicketTracker redisTicketTracker;
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final JsonMapper objectMapper = JsonMapper.builder().build();
 
   public GrpRestService(
       @Qualifier("grpRestClient") RestClient grpRestClient, RedisTicketTracker redisTicketTracker) {
@@ -84,7 +84,7 @@ public class GrpRestService {
       return grpRestClient
           .post()
           .uri(
-              UriComponentsBuilder.fromHttpUrl(grpBaseUrl)
+              UriComponentsBuilder.fromUriString(grpBaseUrl)
                   .path(INIT_PATH)
                   .queryParam(SERVICE_ID, serviceId)
                   .queryParam(DISPLAY_NAME, displayName)
@@ -111,7 +111,7 @@ public class GrpRestService {
       return grpRestClient
           .get()
           .uri(
-              UriComponentsBuilder.fromHttpUrl(grpBaseUrl)
+              UriComponentsBuilder.fromUriString(grpBaseUrl)
                   .path(COLLECT_PATH)
                   .queryParam(SERVICE_ID, serviceId)
                   .queryParam(REF_ID, refId)

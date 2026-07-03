@@ -21,11 +21,11 @@ package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 class ListFilterDateRangeValueTest {
 

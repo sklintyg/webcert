@@ -25,7 +25,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -54,8 +53,11 @@ public class MarkerFilter extends AbstractMatcherFilter<ILoggingEvent> {
       return FilterReply.NEUTRAL;
     }
 
-    final Marker marker = event.getMarker();
-    return Objects.nonNull(marker) && this.markersToMatch.stream().anyMatch(m -> m.contains(marker))
+    final List<Marker> markers = event.getMarkerList();
+    return markers != null
+            && !markers.isEmpty()
+            && markers.stream()
+                .anyMatch(marker -> this.markersToMatch.stream().anyMatch(m -> m.contains(marker)))
         ? getOnMatch()
         : getOnMismatch();
   }

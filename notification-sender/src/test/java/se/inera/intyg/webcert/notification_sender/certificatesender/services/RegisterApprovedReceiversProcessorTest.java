@@ -26,8 +26,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.ws.WebServiceException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +45,9 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedrec
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcHelper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(MockitoExtension.class)
 class RegisterApprovedReceiversProcessorTest {
@@ -56,7 +57,7 @@ class RegisterApprovedReceiversProcessorTest {
 
   private static final String LOGICAL_ADDRESS = "logisk-adress";
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new JsonMapper();
 
   @Mock private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
   @Spy private MdcHelper mdcHelper;
@@ -64,7 +65,7 @@ class RegisterApprovedReceiversProcessorTest {
   @InjectMocks private RegisterApprovedReceiversProcessor testee;
 
   @Test
-  void testRegisterOk() throws TemporaryException, JsonProcessingException {
+  void testRegisterOk() throws TemporaryException, JacksonException {
     when(registerApprovedReceiversClient.registerApprovedReceivers(
             anyString(), any(RegisterApprovedReceiversType.class)))
         .thenReturn(buildResponse(ResultCodeType.OK));
@@ -169,7 +170,7 @@ class RegisterApprovedReceiversProcessorTest {
     return resp;
   }
 
-  private String buildRequestBody(String... mottagare) throws JsonProcessingException {
+  private String buildRequestBody(String... mottagare) throws JacksonException {
     List<ReceiverApprovalStatus> approved =
         Stream.of(mottagare)
             .map(

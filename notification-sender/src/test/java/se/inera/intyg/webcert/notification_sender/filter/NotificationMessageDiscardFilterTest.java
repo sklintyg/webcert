@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.notification_sender.filter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -36,13 +34,15 @@ import org.apache.camel.support.DefaultMessage;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /** Created by eriklupander on 2016-07-04. */
 class NotificationMessageDiscardFilterTest {
 
-  private final ObjectMapper om = new CustomObjectMapper();
+  private final ObjectMapper om = new JsonMapper();
   private final NotificationMessageDiscardFilter testee = new NotificationMessageDiscardFilter();
   private final CamelContext camelContext = new DefaultCamelContext();
 
@@ -61,7 +61,7 @@ class NotificationMessageDiscardFilterTest {
   }
 
   @Test
-  void testFiltersOutAndratAndSignatButRetainsOthers() throws JsonProcessingException {
+  void testFiltersOutAndratAndSignatButRetainsOthers() throws JacksonException {
     List<Message> processed =
         testee.process(
             buildMsgList(
@@ -92,13 +92,13 @@ class NotificationMessageDiscardFilterTest {
     assertEquals(first, notificationMessage.getHandelseTid());
   }
 
-  private Message to(NotificationMessage nm) throws JsonProcessingException {
+  private Message to(NotificationMessage nm) throws JacksonException {
     DefaultMessage df = new DefaultMessage(camelContext);
     df.setBody(om.writeValueAsString(nm));
     return df;
   }
 
-  private List<Message> buildMsgList(HandelsekodEnum... typer) throws JsonProcessingException {
+  private List<Message> buildMsgList(HandelsekodEnum... typer) throws JacksonException {
     List<Message> msgList = new ArrayList<>();
     String intygsId = UUID.randomUUID().toString();
     for (HandelsekodEnum ht : typer) {

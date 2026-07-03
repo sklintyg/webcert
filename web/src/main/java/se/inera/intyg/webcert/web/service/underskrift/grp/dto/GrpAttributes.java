@@ -19,11 +19,11 @@
 package se.inera.intyg.webcert.web.service.underskrift.grp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpAttributes.GrpAttributesBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = GrpAttributesBuilder.class)
 @Value

@@ -28,6 +28,6 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 public class UserPatternLayout extends PatternLayoutEncoder {
 
   static {
-    PatternLayout.defaultConverterMap.put("user", UserConverter.class.getName());
+    PatternLayout.DEFAULT_CONVERTER_SUPPLIER_MAP.put("user", UserConverter::new);
   }
 }

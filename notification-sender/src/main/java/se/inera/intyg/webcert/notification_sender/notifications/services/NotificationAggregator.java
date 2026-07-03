@@ -53,7 +53,8 @@ public class NotificationAggregator {
       MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
       MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
-      List<Exchange> grouped = exchange.getIn().getBody(List.class);
+      @SuppressWarnings("unchecked")
+      List<Exchange> grouped = (List<Exchange>) exchange.getIn().getBody(List.class);
 
       if (grouped == null || grouped.isEmpty()) {
         log.info(

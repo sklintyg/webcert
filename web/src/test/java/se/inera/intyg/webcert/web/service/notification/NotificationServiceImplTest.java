@@ -36,7 +36,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Session;
@@ -94,6 +93,7 @@ import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensServiceImpl;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
+import tools.jackson.databind.json.JsonMapper;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -148,7 +148,7 @@ class NotificationServiceImplTest {
 
   @Mock private IntygService intygService;
 
-  @Spy private ObjectMapper objectMapper = new CustomObjectMapper();
+  @Spy private JsonMapper objectMapper = new CustomObjectMapper();
 
   @InjectMocks private NotificationServiceImpl notificationService;
 

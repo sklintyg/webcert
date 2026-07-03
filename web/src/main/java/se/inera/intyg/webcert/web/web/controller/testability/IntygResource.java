@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDate;
@@ -85,6 +84,8 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 @Transactional
 @RestController
@@ -279,7 +280,7 @@ public class IntygResource {
   @PostMapping("/utkast")
   public ResponseEntity<Void> insertUtkast(@RequestBody IntygContentWrapper intygContents)
       throws ModuleNotFoundException, IOException {
-    String intygsTyp = intygContents.getContents().get("typ").textValue();
+    String intygsTyp = intygContents.getContents().get("typ").stringValue();
 
     String model = intygContents.getContents().toString();
     Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(intygsTyp, model);
@@ -501,7 +502,7 @@ public class IntygResource {
         StringWriter writer = new StringWriter();
         mapper.writeValue(writer, utlatande);
         utkast.setModel(writer.toString());
-      } catch (IOException e) {
+      } catch (JacksonException e) {
         LOG.error("Could not update the model of the utkast. Failed with message ", e.getMessage());
       }
 

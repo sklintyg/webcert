@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.infra.pu.integration.intygproxyservice.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.infra.pu.integration.api.model.Person;
 import se.inera.intyg.webcert.infra.pu.integration.api.model.PersonSvar.Status;
 import se.inera.intyg.webcert.infra.pu.integration.intygproxyservice.dto.PersonResponseDTO.PersonResponseDTOBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = PersonResponseDTOBuilder.class)
 @Value

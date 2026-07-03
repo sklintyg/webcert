@@ -95,7 +95,7 @@ public class TestCertificateService {
   private void collectLogInformation(
       List<String> idsToErase, Map<String, String> unitMap, Map<String, String> userMap) {
     for (var idToErase : idsToErase) {
-      final var certificateToErase = utkastRepository.getOne(idToErase);
+      final var certificateToErase = utkastRepository.getReferenceById(idToErase);
       unitMap.put(certificateToErase.getIntygsId(), certificateToErase.getEnhetsId());
       userMap.put(certificateToErase.getIntygsId(), certificateToErase.getSkapadAv().getHsaId());
     }

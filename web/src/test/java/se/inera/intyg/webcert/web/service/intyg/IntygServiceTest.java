@@ -42,7 +42,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -146,6 +145,7 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @author andreaskaltenbach
@@ -194,7 +194,7 @@ class IntygServiceTest {
   @Mock private PatientDetailsResolver patientDetailsResolver;
   @Mock private UtkastIntygDecorator utkastIntygDecorator;
   @Mock private ReferensService referensService;
-  @Spy private ObjectMapper objectMapper = new CustomObjectMapper();
+  @Spy private JsonMapper objectMapper = new CustomObjectMapper();
   @Mock private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
   @Mock private CertificateAccessServiceHelper certificateAccessServiceHelper;
   @Mock private IntygTextsService intygTextsService;

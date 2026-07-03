@@ -37,8 +37,6 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
@@ -89,6 +87,8 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -112,7 +112,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Autowired private NotificationMessageFactory notificationMessageFactory;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
 
   @Autowired private MonitoringLogService monitoringLog;
 
@@ -380,7 +380,7 @@ public class NotificationServiceImpl implements NotificationService {
               null);
 
       send(notificationMessage, careUnitId, utlatande.getTextVersion());
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new WebCertServiceException(
           WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
     }
@@ -699,7 +699,7 @@ public class NotificationServiceImpl implements NotificationService {
   private String notificationMessageToJson(NotificationMessage notificationMessage) {
     try {
       return objectMapper.writeValueAsString(notificationMessage);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       LOGGER.error("Problem occured when trying to create and marshall NotificationMessage.", e);
       throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
     }

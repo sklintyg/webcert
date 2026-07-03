@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 /**
  * Deserializes a JSON string into {@link LocalDateTime}, accepting both:
@@ -42,7 +42,7 @@ public class LocalDateTimeFromStringDeserializer extends StdDeserializer<LocalDa
 
   @Override
   public LocalDateTime deserialize(JsonParser parser, DeserializationContext context)
-      throws IOException {
+      throws JacksonException {
     final String value = parser.getText().trim();
     if (value.isEmpty()) {
       return null;

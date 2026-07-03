@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Data;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationResponseDTO.CountNotificationResponseDTOBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @Data
 @Builder

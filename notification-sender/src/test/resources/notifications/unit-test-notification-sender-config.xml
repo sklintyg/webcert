@@ -34,13 +34,6 @@
 
   <bean id="notificationAggregator" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator"/>
 
-  <bean id="customObjectMapper" class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
-
-  <bean id="notificationMessageDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat">
-    <constructor-arg ref="customObjectMapper"/>
-    <constructor-arg value="se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage"/>
-  </bean>
-
   <camel:camelContext id="webcertNotification">
     <camel:routeBuilder ref="processNotificationRequestRouteBuilder"/>
   </camel:camelContext>

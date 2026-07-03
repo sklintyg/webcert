@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -43,7 +44,7 @@ import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.common.ts_bas.v6.rest.TsBasModuleApiV6;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({MockitoExtension.class, SpringExtension.class})
 @ContextConfiguration(
     classes = {
       BefattningService.class,

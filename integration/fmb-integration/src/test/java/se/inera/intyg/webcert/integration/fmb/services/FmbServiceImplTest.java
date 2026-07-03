@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.MoreCollectors;
 import java.net.URL;
 import java.util.ArrayList;
@@ -57,6 +56,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
+import tools.jackson.databind.json.JsonMapper;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -74,11 +74,12 @@ class FmbServiceImplTest {
   @Test
   void testGoldenMaster() throws Exception {
     // Given
-    ObjectMapper mapper = new ObjectMapper();
+    JsonMapper mapper = JsonMapper.builder().build();
     final URL typfallJson = getClass().getResource("/TypfallStubResponse.json");
-    final Typfall typfall = mapper.readValue(typfallJson, Typfall.class);
+    final Typfall typfall = mapper.readValue(typfallJson.openStream(), Typfall.class);
     final URL fmdxInfoJson = getClass().getResource("/FmdxInfoStubResponse.json");
-    final FmdxInformation fmdxInformation = mapper.readValue(fmdxInfoJson, FmdxInformation.class);
+    final FmdxInformation fmdxInformation =
+        mapper.readValue(fmdxInfoJson.openStream(), FmdxInformation.class);
     Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation())
         .thenReturn(fmdxInformation);
     Mockito.when(fmbConsumer.getTypfall()).thenReturn(typfall);

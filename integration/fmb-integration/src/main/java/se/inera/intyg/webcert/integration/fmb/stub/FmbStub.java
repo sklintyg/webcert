@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.integration.fmb.stub;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -38,22 +37,22 @@ import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
+import tools.jackson.databind.json.JsonMapper;
 
 @RestController
 @Profile({"dev", "wc-fmb-stub"})
 @RequestMapping("/stubs/fmbstubs")
+@RequiredArgsConstructor
 public class FmbStub {
 
   private static final Logger LOG = LoggerFactory.getLogger(FmbStub.class);
 
-  // The registered Jdk8Module is required for handling java.util.Optional members present in
-  // several models used in parsing fmb data.
-  private static final ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module());
+  private final JsonMapper mapper;
 
   @GetMapping("/typfall")
   public ResponseEntity<String> getTypfall() throws IOException {
     final URL typfallJson = getClass().getResource("/TypfallStubResponse.json");
-    final Typfall typfall = mapper.readValue(typfallJson, Typfall.class);
+    final Typfall typfall = mapper.readValue(typfallJson.openStream(), Typfall.class);
     addHardcodedInfo(typfall);
     return ResponseEntity.ok(mapper.writeValueAsString(typfall));
   }
@@ -61,7 +60,8 @@ public class FmbStub {
   @GetMapping("/forsakringsmedicinskdiagnosinformation")
   public ResponseEntity<String> getForsakringsmedicinskDiagnosinformation() throws IOException {
     final URL typfallJson = getClass().getResource("/FmdxInfoStubResponse.json");
-    final FmdxInformation fmdxInformation = mapper.readValue(typfallJson, FmdxInformation.class);
+    final FmdxInformation fmdxInformation =
+        mapper.readValue(typfallJson.openStream(), FmdxInformation.class);
     addHardcodedInfo(fmdxInformation);
     return ResponseEntity.ok(mapper.writeValueAsString(fmdxInformation));
   }

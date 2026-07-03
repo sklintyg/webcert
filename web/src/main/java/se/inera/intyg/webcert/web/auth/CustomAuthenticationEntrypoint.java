@@ -28,9 +28,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
@@ -87,6 +88,7 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
   }
 
   private static RequestMatcher addPatterns(Map<String, List<String>> antPatterns) {
+    final var builder = PathPatternRequestMatcher.withDefaults();
     final var antMatchers =
         antPatterns.entrySet().stream()
             .flatMap(
@@ -95,7 +97,7 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
                         .map(
                             value ->
                                 (RequestMatcher)
-                                    new AntPathRequestMatcher(entrySet.getKey(), value)))
+                                    builder.matcher(HttpMethod.valueOf(value), entrySet.getKey())))
             .toList();
     return new OrRequestMatcher(antMatchers);
   }

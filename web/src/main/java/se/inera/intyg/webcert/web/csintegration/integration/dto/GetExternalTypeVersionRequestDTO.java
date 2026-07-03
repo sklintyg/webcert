@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetExternalTypeVersionRequestDTO.GetExternalTypeVersionRequestDTOBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = GetExternalTypeVersionRequestDTOBuilder.class)
 @Value

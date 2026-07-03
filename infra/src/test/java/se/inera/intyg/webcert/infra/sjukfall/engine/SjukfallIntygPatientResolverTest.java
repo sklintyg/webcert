@@ -68,7 +68,7 @@ class SjukfallIntygPatientResolverTest {
 
   @Test
   void testHappyDays() {
-    Map<Integer, List<SjukfallIntyg>> mockedInstance = Mockito.mock(Map.class);
+    Map<Integer, List<SjukfallIntyg>> mockedInstance = Mockito.mock();
     Mockito.doReturn(mockedInstance).when(creatorSpy).create(intygDataList, 0, activeDate);
 
     // invoke testing method

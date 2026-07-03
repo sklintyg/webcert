@@ -37,7 +37,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClient.RequestHeadersUriSpec;
 import org.springframework.web.client.RestClient.ResponseSpec;
 import se.inera.intyg.webcert.infra.integration.intygproxyservice.dto.authorization.GetHospLastUpdateResponseDTO;
 
@@ -48,7 +47,7 @@ class HsaIntygProxyServiceHospLastUpdateClientTest {
 
   @InjectMocks private HsaIntygProxyServiceHospLastUpdateClient hospLastUpdateClient;
 
-  private RequestHeadersUriSpec requestBodyUriSpec;
+  private RestClient.RequestBodyUriSpec requestBodyUriSpec;
   private ResponseSpec responseSpec;
 
   @BeforeEach
@@ -62,7 +61,7 @@ class HsaIntygProxyServiceHospLastUpdateClientTest {
     MDC.put(TRACE_ID_KEY, "traceId");
     MDC.put(SESSION_ID_KEY, "sessionId");
 
-    when(restClient.get()).thenReturn(requestBodyUriSpec);
+    doReturn(requestBodyUriSpec).when(restClient).get();
     when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
     when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, "traceId")).thenReturn(requestBodyUriSpec);
     when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, "sessionId"))

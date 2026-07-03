@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.infra.dynamiclink.repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Collections;
@@ -35,6 +33,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.json.JsonMapper;
 
 /** Created by eriklupander on 2017-05-03. */
 @Service
@@ -59,7 +59,8 @@ public class DynamicLinkRepositoryImpl implements DynamicLinkRepository {
 
     try {
       List<DynamicLink> dynamicLinks =
-          new ObjectMapper()
+          JsonMapper.builder()
+              .build()
               .readValue(
                   resourceLoader.getResource(location).getInputStream(),
                   new TypeReference<List<DynamicLink>>() {});

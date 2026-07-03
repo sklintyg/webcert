@@ -18,15 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigurationManager {
@@ -40,7 +39,7 @@ public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigu
   public <T> T unmarshallConfig(String configAsJson, Class<T> configClazz) {
     try {
       return objectMapper.readValue(configAsJson, configClazz);
-    } catch (IOException e) {
+    } catch (JacksonException e) {
       LOG.error("Module problems occured when trying to unmarshall configation.", e);
       throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
     }
@@ -50,7 +49,7 @@ public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigu
   public String marshallConfig(Object config) {
     try {
       return objectMapper.writeValueAsString(config);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       LOG.error("Module problems occured when trying to create and marshall configuration.", e);
       throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
     }

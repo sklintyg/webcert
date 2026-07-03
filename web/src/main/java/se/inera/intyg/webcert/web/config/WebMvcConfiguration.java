@@ -18,39 +18,33 @@
  */
 package se.inera.intyg.webcert.web.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 /**
  * MVC configuration. All component scanning is handled by {@code @SpringBootApplication} on {@link
  * se.inera.intyg.webcert.WebcertApplication}.
  */
 @Configuration
+@RequiredArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
-
-  @Autowired private ObjectMapper objectMapper;
-
   /**
-   * Swaps the ObjectMapper on the existing default Jackson converter to use our {@code
-   * CustomObjectMapper} bean (which handles LocalDateTime as ISO strings).
+   * Replaces the default Spring Boot Jackson 3 converter with one built from our auto-configured
+   * {@code JsonMapper} bean (which picks up any {@code JsonMapperBuilderCustomizer} beans and
+   * handles LocalDateTime as ISO strings).
    *
-   * <p>Uses {@code extendMessageConverters} (not {@code configureMessageConverters}) to preserve
-   * all default converters — ByteArrayHttpMessageConverter (PDF), StringHttpMessageConverter (raw
-   * strings), etc. The ObjectMapper is set in-place so the converter keeps its original position
-   * after StringHttpMessageConverter, avoiding double-encoding of String responses.
+   * <p>Uses {@code withJsonConverter} to replace only the default JSON converter while preserving
+   * all other default converters — ByteArrayHttpMessageConverter (PDF), StringHttpMessageConverter
+   * (raw strings), etc.
    */
+  private final CustomObjectMapper objectMapper;
+
   @Override
-  public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-    for (HttpMessageConverter<?> converter : converters) {
-      if (converter instanceof MappingJackson2HttpMessageConverter jacksonConverter) {
-        jacksonConverter.setObjectMapper(objectMapper);
-        break;
-      }
-    }
+  public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
+    builder.withJsonConverter(new JacksonJsonHttpMessageConverter(objectMapper));
   }
 }

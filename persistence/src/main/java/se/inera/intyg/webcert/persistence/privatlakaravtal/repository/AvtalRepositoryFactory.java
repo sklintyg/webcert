@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
-import com.google.common.base.Charsets;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -60,7 +60,8 @@ public class AvtalRepositoryFactory {
     if (latestAvtalVersion == -1) {
       try {
         final String avtalText =
-            IOUtils.toString(resourceLoader.getResource(location).getInputStream(), Charsets.UTF_8);
+            IOUtils.toString(
+                resourceLoader.getResource(location).getInputStream(), StandardCharsets.UTF_8);
         final Avtal avtal = new Avtal();
         avtal.setAvtalText(avtalText);
         avtal.setAvtalVersion(1);

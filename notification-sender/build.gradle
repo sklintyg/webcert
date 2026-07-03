@@ -6,6 +6,8 @@ tasks.register('camelTest', Test) {
     useJUnitPlatform()
     outputs.upToDateWhen { false }
     include '**/*IT*'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
 }
 
 camelTest.mustRunAfter test
@@ -24,17 +26,21 @@ dependencies {
     implementation project(':webcert-logging')
     implementation project(':webcert-persistence')
 
+    implementation "tools.jackson.core:jackson-core"
+    implementation "tools.jackson.core:jackson-databind"
     implementation "ch.qos.logback:logback-classic"
-    implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.google.guava:guava"
     implementation "com.helger.schematron:ph-schematron-xslt"
     implementation "jakarta.persistence:jakarta.persistence-api"
     implementation "jakarta.transaction:jakarta.transaction-api"
     implementation "jakarta.xml.ws:jakarta.xml.ws-api"
-    implementation "org.apache.camel:camel-activemq"
+    implementation("org.apache.camel:camel-activemq") {
+        exclude group: "org.apache.activemq", module: "activemq-client-jakarta"
+    }
     implementation "org.apache.camel:camel-core"
     implementation "org.apache.camel:camel-jaxb"
     implementation "org.apache.camel:camel-jms"
+    implementation("org.apache.camel:camel-jackson3")
     implementation "org.apache.commons:commons-lang3"
     implementation "org.springframework:spring-context-support"
     implementation "org.springframework:spring-jms"

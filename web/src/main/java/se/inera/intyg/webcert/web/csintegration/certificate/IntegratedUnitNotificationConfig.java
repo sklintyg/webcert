@@ -20,13 +20,13 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationConfig.IntegratedUnitNotificationConfigBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonInclude
 @JsonDeserialize(builder = IntegratedUnitNotificationConfigBuilder.class)

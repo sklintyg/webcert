@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.web.bootstrap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import jakarta.annotation.PostConstruct;
 import jakarta.xml.bind.JAXB;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -71,6 +70,7 @@ import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
+import tools.jackson.core.JacksonException;
 
 public class UtkastBootstrapBean {
 
@@ -180,7 +180,7 @@ public class UtkastBootstrapBean {
   private Utlatande buildUtlatande(Resource resource, String moduleName, String intygTypeVersion)
       throws ModuleException, ModuleNotFoundException, IOException {
 
-    final var xml = Resources.toString(resource.getURL(), Charsets.UTF_8);
+    final var xml = Resources.toString(resource.getURL(), StandardCharsets.UTF_8);
     final var utlatande =
         registry.getModuleApi(moduleName, intygTypeVersion).getUtlatandeFromXml(xml);
 
@@ -191,7 +191,7 @@ public class UtkastBootstrapBean {
       case "lisjp":
         RegisterCertificateType jaxbObject =
             JAXB.unmarshal(
-                new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)),
+                new StringReader(Resources.toString(resource.getURL(), StandardCharsets.UTF_8)),
                 RegisterCertificateType.class);
         Patient patient = jaxbObject.getIntyg().getPatient();
         utlatande.getGrundData().getPatient().setFornamn(patient.getFornamn());
@@ -207,7 +207,7 @@ public class UtkastBootstrapBean {
       case "fk7263":
         RegisterMedicalCertificateType jaxbObject2 =
             JAXB.unmarshal(
-                new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)),
+                new StringReader(Resources.toString(resource.getURL(), StandardCharsets.UTF_8)),
                 RegisterMedicalCertificateType.class);
         PatientType patient2 = jaxbObject2.getLakarutlatande().getPatient();
         utlatande.getGrundData().getPatient().setEfternamn(patient2.getFullstandigtNamn());
@@ -340,7 +340,7 @@ public class UtkastBootstrapBean {
     return fs;
   }
 
-  private Utkast createUtkast(Utlatande json, UtkastStatus status) throws JsonProcessingException {
+  private Utkast createUtkast(Utlatande json, UtkastStatus status) throws JacksonException {
     final var utkast = new Utkast();
     utkast.setIntygsId(json.getId());
     utkast.setIntygsTyp(json.getTyp());

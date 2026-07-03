@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.PostConstruct;
 import jakarta.jms.JMSException;
@@ -52,6 +50,8 @@ import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -346,7 +346,7 @@ public class LogServiceImpl implements LogService {
     public Message createMessage(Session session) throws JMSException {
       try {
         return session.createTextMessage(objectMapper.writeValueAsString(logMsg));
-      } catch (JsonProcessingException e) {
+      } catch (JacksonException e) {
         throw new IllegalArgumentException(
             "Could not serialize log message of type '"
                 + logMsg.getClass().getName()

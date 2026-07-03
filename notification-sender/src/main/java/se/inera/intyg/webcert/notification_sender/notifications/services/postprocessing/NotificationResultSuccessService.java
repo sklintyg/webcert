@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 
 import jakarta.transaction.Transactional;
 import java.util.Optional;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;

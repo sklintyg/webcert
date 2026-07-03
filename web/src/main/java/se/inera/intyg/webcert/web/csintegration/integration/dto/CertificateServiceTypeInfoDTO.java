@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO.CertificateServiceTypeInfoDTOBuilder;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonDeserialize(builder = CertificateServiceTypeInfoDTOBuilder.class)
 @Value
