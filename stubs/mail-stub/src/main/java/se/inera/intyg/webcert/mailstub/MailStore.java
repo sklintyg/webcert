@@ -35,8 +35,6 @@ public class MailStore {
   private static final Logger LOG = LoggerFactory.getLogger(MailStore.class);
 
   private static final long MAX_TIMEOUT = 5000;
-  private static final long POLL_INTERVAL = 10L;
-  private static final int MAX_POLLS = 100;
   private List<OutgoingMail> mails = new CopyOnWriteArrayList<>();
   private boolean doWait;
 
@@ -44,25 +42,12 @@ public class MailStore {
     return mails;
   }
 
-  public void waitForMails(int count) {
-    int loops = MAX_POLLS;
-    while (mails.size() < count) {
-      try {
-        Thread.sleep(POLL_INTERVAL);
-      } catch (InterruptedException e) {
-        if (--loops == 0) {
-          break;
-        }
-      }
-    }
-  }
-
   void waitToContinue() {
     synchronized (this) {
       if (doWait) {
         try {
           this.wait(MAX_TIMEOUT);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
           LOG.info("Interrupt encountered. Continuing.");
         }
       }

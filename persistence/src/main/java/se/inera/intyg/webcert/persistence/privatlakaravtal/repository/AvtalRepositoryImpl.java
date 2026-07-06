@@ -35,7 +35,7 @@ public class AvtalRepositoryImpl implements AvtalRepositoryCustom {
               .createQuery("SELECT MAX(a.avtalVersion) FROM Avtal a", Integer.class)
               .getSingleResult();
       return latestAvtalVersion == null ? -1 : latestAvtalVersion;
-    } catch (NoResultException e) {
+    } catch (NoResultException _) {
       return -1;
     }
   }

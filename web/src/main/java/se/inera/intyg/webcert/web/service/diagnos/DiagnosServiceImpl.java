@@ -322,7 +322,8 @@ public class DiagnosServiceImpl implements DiagnosService {
     try {
       return Diagnoskodverk.valueOf(codeSystemStr);
     } catch (IllegalArgumentException e) {
-      LOG.warn("Can not validate diagnosis code, unknown code system '{}'", codeSystemStr);
+      LOG.warn(
+          "Can not validate diagnosis code, unknown code system '%s'".formatted(codeSystemStr), e);
       return null;
     }
   }

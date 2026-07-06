@@ -101,7 +101,8 @@ public class SignatureApiController extends AbstractApiController {
           "Parameter signMethod is missing or has illegal value. Allowed values are: "
               + Arrays.stream(SignMethod.values())
                   .map(SignMethod::name)
-                  .collect(Collectors.joining(", ")));
+                  .collect(Collectors.joining(", ")),
+          e);
     }
 
     try {

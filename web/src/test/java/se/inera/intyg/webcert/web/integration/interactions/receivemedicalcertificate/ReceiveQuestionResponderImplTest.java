@@ -129,14 +129,12 @@ class ReceiveQuestionResponderImplTest {
     try {
       JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-      QuestionFromFkType question =
-          unmarshaller
-              .unmarshal(
-                  new StreamSource(new ClassPathResource(filePath).getInputStream()),
-                  QuestionFromFkType.class)
-              .getValue();
-      return question;
-    } catch (Exception e) {
+      return unmarshaller
+          .unmarshal(
+              new StreamSource(new ClassPathResource(filePath).getInputStream()),
+              QuestionFromFkType.class)
+          .getValue();
+    } catch (Exception _) {
       return null;
     }
   }

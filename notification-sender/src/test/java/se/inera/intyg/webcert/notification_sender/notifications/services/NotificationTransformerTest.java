@@ -155,7 +155,7 @@ class NotificationTransformerTest {
     try {
       notificationTransformer.process(mockMessage);
       fail("Should have thrown exception due to unsupported version!");
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException _) {
       assertTrue(true);
     }
   }
@@ -247,7 +247,7 @@ class NotificationTransformerTest {
     try {
       notificationTransformer.process(mockMessage);
       Assertions.fail("Should have thrown exception due to transformation error!");
-    } catch (Exception e) {
+    } catch (Exception _) {
       verify(notificationResultMessageSender)
           .sendResultMessage(captureNotificationResultMessage.capture());
 

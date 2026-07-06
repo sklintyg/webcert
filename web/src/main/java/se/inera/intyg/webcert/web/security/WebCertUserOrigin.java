@@ -75,7 +75,7 @@ public class WebCertUserOrigin implements UserOrigin {
       return actualObj.get(ORIGIN).asString();
 
     } catch (Exception e) {
-      log.warn("Could not get origin from fake login request.");
+      log.warn("Could not get origin from fake login request.", e);
       return UserOriginType.NORMAL.name();
     }
   }

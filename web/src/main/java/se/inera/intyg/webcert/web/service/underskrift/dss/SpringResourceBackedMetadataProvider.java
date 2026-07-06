@@ -49,11 +49,11 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
    */
   public SpringResourceBackedMetadataProvider(Timer timer, Resource resource)
       throws ComponentInitializationException {
-    super(timer);
     if (!resource.exists()) {
       throw new ComponentInitializationException(
           "Resource " + resource.toString() + " does not exist.");
     }
+    super(timer);
 
     metadataResource = resource;
   }

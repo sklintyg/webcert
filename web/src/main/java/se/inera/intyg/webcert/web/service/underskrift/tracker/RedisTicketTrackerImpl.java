@@ -19,13 +19,15 @@
 package se.inera.intyg.webcert.web.service.underskrift.tracker;
 
 import jakarta.annotation.Resource;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.lang.NonNull;
+import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -57,8 +59,7 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
     valueOps.set(
         buildKey(signaturBiljett.getTicketId()),
         signaturBiljett,
-        TICKET_EXPIRY_MINUTES,
-        TimeUnit.MINUTES);
+        Expiration.from(Duration.of(TICKET_EXPIRY_MINUTES, ChronoUnit.MINUTES)));
   }
 
   @Override
@@ -77,7 +78,10 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
     }
 
     sb.setStatus(status);
-    valueOps.set(buildKey(ticketId), sb, TICKET_EXPIRY_MINUTES, TimeUnit.MINUTES);
+    valueOps.set(
+        buildKey(ticketId),
+        sb,
+        Expiration.from(Duration.of(TICKET_EXPIRY_MINUTES, ChronoUnit.MINUTES)));
     return sb;
   }
 
@@ -92,7 +96,10 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
     }
 
     sb.setAutoStartToken(autoStartToken);
-    valueOps.set(buildKey(ticketId), sb, TICKET_EXPIRY_MINUTES, TimeUnit.MINUTES);
+    valueOps.set(
+        buildKey(ticketId),
+        sb,
+        Expiration.from(Duration.of(TICKET_EXPIRY_MINUTES, ChronoUnit.MINUTES)));
   }
 
   @Override
@@ -107,7 +114,10 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
 
     sb.setQrStartToken(qrStartToken);
     sb.setQrStartSecret(qrStartSecret);
-    valueOps.set(buildKey(ticketId), sb, TICKET_EXPIRY_MINUTES, TimeUnit.MINUTES);
+    valueOps.set(
+        buildKey(ticketId),
+        sb,
+        Expiration.from(Duration.of(TICKET_EXPIRY_MINUTES, ChronoUnit.MINUTES)));
   }
 
   private String buildKey(String ticketId) {

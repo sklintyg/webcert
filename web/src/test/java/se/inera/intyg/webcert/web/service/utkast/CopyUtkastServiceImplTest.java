@@ -1002,7 +1002,7 @@ class CopyUtkastServiceImplTest {
       }
       doReturn(grundData).when(utlatande).getGrundData();
 
-    } catch (Exception ex) {
+    } catch (Exception _) {
       fail();
     }
   }

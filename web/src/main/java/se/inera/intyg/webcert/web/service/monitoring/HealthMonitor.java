@@ -129,7 +129,7 @@ public class HealthMonitor {
   private int checkSignatureQueue() {
     try {
       return jmsCertificateSenderTemplate.browse(
-          (session, browser) -> {
+          (_, browser) -> {
             Enumeration<?> enumeration = browser.getEnumeration();
             int qd = 0;
             while (enumeration.hasMoreElements()) {
@@ -138,7 +138,7 @@ public class HealthMonitor {
             }
             return qd;
           });
-    } catch (Exception e) {
+    } catch (Exception _) {
       return -1;
     }
   }
@@ -146,7 +146,7 @@ public class HealthMonitor {
   private boolean invoke(Tester tester) {
     try {
       tester.run();
-    } catch (Exception e) {
+    } catch (Exception _) {
       return false;
     }
     return true;
@@ -160,7 +160,7 @@ public class HealthMonitor {
           int respCode = httpConnection.getResponseCode();
           httpConnection.disconnect();
           if (respCode != HttpServletResponse.SC_OK) {
-            throw new RuntimeException();
+            throw new IllegalStateException();
           }
         });
   }

@@ -75,14 +75,15 @@ public class AnvandarPreferenceRepositoryImpl implements AnvandarPreferenceRepos
           .setParameter("hsaId", hsaId)
           .setParameter("key", key)
           .getSingleResult();
-    } catch (NoResultException nre) {
+    } catch (NoResultException _) {
       return null;
     } catch (NonUniqueResultException nure) {
       throw new IllegalStateException(
           "Query for AnvandarPreference returned multiple records, should never occur. hsaId: "
               + hsaId
               + ", key: "
-              + key);
+              + key,
+          nure);
     }
   }
 }

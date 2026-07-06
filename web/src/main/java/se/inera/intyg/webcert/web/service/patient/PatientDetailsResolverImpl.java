@@ -224,7 +224,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return resolvePatient(personnummer);
       }
     } catch (ModuleNotFoundException e) {
-      throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp);
+      throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp, e);
     }
   }
 
@@ -258,7 +258,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                   resolveOrder.getPredecessorType(), newest.getIntygTypeVersion());
           predecessor = moduleApi.getUtlatandeFromJson(newest.getModel());
         } catch (ModuleException | ModuleNotFoundException | IOException e) {
-          LOG.info("No predecessor found!");
+          LOG.info("No predecessor found!", e);
         }
       }
     }

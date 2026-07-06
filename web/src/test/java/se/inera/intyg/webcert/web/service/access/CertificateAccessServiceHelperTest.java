@@ -76,7 +76,7 @@ class CertificateAccessServiceHelperTest {
           .allowToRenew(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToRenew(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -136,7 +136,7 @@ class CertificateAccessServiceHelperTest {
           .allowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
       certificateAccessServiceHelper.validateAccessToAnswerComplementQuestion(certificate, true);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -200,7 +200,7 @@ class CertificateAccessServiceHelperTest {
           .allowToReplace(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToReplace(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -260,7 +260,7 @@ class CertificateAccessServiceHelperTest {
           .allowToCreateDraftFromSignedTemplate(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAllowCreateDraftFromSignedTemplate(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -324,7 +324,7 @@ class CertificateAccessServiceHelperTest {
           .allowToInvalidate(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToInvalidate(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -384,7 +384,7 @@ class CertificateAccessServiceHelperTest {
           .allowToSend(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToSend(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -444,7 +444,7 @@ class CertificateAccessServiceHelperTest {
           .allowToApproveReceivers(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToApproveReceivers(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -506,7 +506,7 @@ class CertificateAccessServiceHelperTest {
           .allowToPrint(any(AccessEvaluationParameters.class), anyBoolean());
       certificateAccessServiceHelper.validateAccessToPrint(certificate, false);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -568,7 +568,7 @@ class CertificateAccessServiceHelperTest {
           .allowToRead(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToRead(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -628,7 +628,7 @@ class CertificateAccessServiceHelperTest {
           .allowToForwardQuestions(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToForwardQuestions(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -690,7 +690,7 @@ class CertificateAccessServiceHelperTest {
           .allowToCreateQuestion(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToCreateQuestion(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -752,7 +752,7 @@ class CertificateAccessServiceHelperTest {
           .allowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToAnswerAdminQuestion(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -816,7 +816,7 @@ class CertificateAccessServiceHelperTest {
           .allowToReadQuestions(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToReadQuestions(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -878,7 +878,7 @@ class CertificateAccessServiceHelperTest {
           .allowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToSetComplementAsHandled(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -942,7 +942,7 @@ class CertificateAccessServiceHelperTest {
           .allowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
       certificateAccessServiceHelper.validateAccessToSetQuestionAsHandled(certificate);
       fail();
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }

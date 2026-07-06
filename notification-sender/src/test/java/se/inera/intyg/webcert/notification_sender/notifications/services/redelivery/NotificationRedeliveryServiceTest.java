@@ -239,7 +239,7 @@ class NotificationRedeliveryServiceTest {
       notificationRedeliveryService.resend(
           expectedNotificationRedelivery, expectedEvent, expectedMessage);
       fail("Expected an exception to be thrown when sending message failed!");
-    } catch (Exception ex) {
+    } catch (Exception _) {
       assertTrue(true);
     }
   }

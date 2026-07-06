@@ -54,7 +54,7 @@ public class MdcUserServletFilter implements Filter {
       final var careProviderId = selectedUnitId(user.getValdVardgivare());
       final var userRole = userRole(user.getRoles());
       final var userOrigin = userOrigin(user);
-      try (final var mdcLogConstants =
+      try (final var _ =
           MdcCloseableMap.builder()
               .put(MdcLogConstants.USER_ID, user.getHsaId())
               .put(MdcLogConstants.ORGANIZATION_ID, unitId)
