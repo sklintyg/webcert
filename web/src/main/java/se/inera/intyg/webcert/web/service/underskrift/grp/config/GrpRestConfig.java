@@ -27,8 +27,8 @@ import org.springframework.web.client.RestClient;
 public class GrpRestConfig {
 
   @Bean(name = "grpRestClient")
-  public RestClient grpRestClient() {
-    return RestClient.builder().build();
+  public RestClient grpRestClient(RestClient.Builder client) {
+    return client.build();
   }
 
   @Bean(name = "grpTaskExecutor")

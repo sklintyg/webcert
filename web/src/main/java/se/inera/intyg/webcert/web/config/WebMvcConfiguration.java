@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * MVC configuration. All component scanning is handled by {@code @SpringBootApplication} on {@link
@@ -41,7 +41,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
    * all other default converters — ByteArrayHttpMessageConverter (PDF), StringHttpMessageConverter
    * (raw strings), etc.
    */
-  private final CustomObjectMapper objectMapper;
+  private final JsonMapper objectMapper;
 
   @Override
   public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {

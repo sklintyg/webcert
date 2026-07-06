@@ -27,8 +27,8 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 @Configuration
 public class CertificateServiceRestClientConfiguration {
   @Bean("csRestClient")
-  public RestClient csRestClient(CustomObjectMapper objectMapper) {
-    return RestClient.builder()
+  public RestClient csRestClient(RestClient.Builder client, CustomObjectMapper objectMapper) {
+    return client
         .configureMessageConverters(
             messageConverters ->
                 messageConverters

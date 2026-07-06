@@ -23,12 +23,9 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
@@ -47,40 +44,35 @@ public class SubscriptionRestClient {
   @Value("#{${servicenow.subscription.service.names}}")
   private List<String> serviceNowSubscriptionServiceNames;
 
-  private final RestTemplate serviceNowRestTemplate;
+  private final RestClient serviceNowRestClient;
 
   public SubscriptionRestClient(
-      @Qualifier("serviceNowRestTemplate") RestTemplate serviceNowRestTemplate) {
-    this.serviceNowRestTemplate = serviceNowRestTemplate;
+      @Qualifier("serviceNowRestClient") RestClient serviceNowRestClient) {
+    this.serviceNowRestClient = serviceNowRestClient;
   }
 
   public OrganizationResponse getSubscriptionServiceResponse(Set<String> organizationNumbers) {
-    final var httpEntity = getRequestEntity(organizationNumbers);
     final var response =
-        serviceNowRestTemplate.exchange(
-            serviceNowSubscriptionServiceUrl,
-            HttpMethod.POST,
-            httpEntity,
-            OrganizationResponse.class);
+        serviceNowRestClient
+            .post()
+            .uri(serviceNowSubscriptionServiceUrl)
+            .headers(h -> h.setBasicAuth(serviceNowUsername, serviceNowPassword))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .body(buildRequest(organizationNumbers))
+            .retrieve()
+            .body(OrganizationResponse.class);
 
-    if (response.getBody() == null) {
+    if (response == null) {
       throw new IllegalStateException("Response body was null");
     }
-
-    return response.getBody();
+    return response;
   }
 
-  private HttpEntity<OrganizationRequest> getRequestEntity(Set<String> organizationNumbers) {
-    final var requestBody =
-        OrganizationRequest.builder()
-            .services(serviceNowSubscriptionServiceNames)
-            .customers(new ArrayList<>(organizationNumbers))
-            .build();
-
-    final var headers = new HttpHeaders();
-    headers.setBasicAuth(serviceNowUsername, serviceNowPassword);
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-    return new HttpEntity<>(requestBody, headers);
+  private OrganizationRequest buildRequest(Set<String> organizationNumbers) {
+    return OrganizationRequest.builder()
+        .services(serviceNowSubscriptionServiceNames)
+        .customers(new ArrayList<>(organizationNumbers))
+        .build();
   }
 }

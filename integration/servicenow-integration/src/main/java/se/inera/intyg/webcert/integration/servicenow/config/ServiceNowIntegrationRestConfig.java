@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.integration.servicenow.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestClient;
 
 @Configuration
 public class ServiceNowIntegrationRestConfig {
@@ -30,19 +30,17 @@ public class ServiceNowIntegrationRestConfig {
   @Value("${servicenow.connection.request.timeout}")
   private int connectionRequestTimeout;
 
-  @Value("${servicenow.connection.timeout}")
-  private int connectionTimeout;
-
   @Value("${servicenow.read.timeout}")
   private int readTimeout;
 
-  private static final String SUBSCRIPTION_SERVICE_REST_TEMPLATE = "serviceNowRestTemplate";
+  private static final String SUBSCRIPTION_REST_CLIENT = "serviceNowRestClient";
 
-  @Bean(SUBSCRIPTION_SERVICE_REST_TEMPLATE)
-  RestTemplate restTemplate() {
-    final var httpRequestFactory = new SimpleClientHttpRequestFactory();
-    httpRequestFactory.setConnectTimeout(connectionTimeout);
-    httpRequestFactory.setReadTimeout(readTimeout);
-    return new RestTemplate(httpRequestFactory);
+  @Bean(SUBSCRIPTION_REST_CLIENT)
+  RestClient restClient(RestClient.Builder client) {
+    final var factory = new HttpComponentsClientHttpRequestFactory();
+    factory.setConnectionRequestTimeout(connectionRequestTimeout);
+    factory.setReadTimeout(readTimeout);
+
+    return client.requestFactory(factory).build();
   }
 }
