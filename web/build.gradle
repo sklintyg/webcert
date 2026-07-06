@@ -73,9 +73,6 @@ dependencies {
     implementation project(':integration-private-practitioner-service')
     implementation project(':infra')
 
-    implementation "org.springframework.boot:spring-boot-starter-jackson"
-    implementation "tools.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
-
     implementation "se.inera.intyg.transportstyrelsen:intyg-transportstyrelsen-schemas:${intygTransportstyrelsenSchemasVersion}"
     implementation "se.inera.intyg.common:af00213:${commonVersion}"
     implementation "se.inera.intyg.common:af00251:${commonVersion}"
@@ -106,12 +103,19 @@ dependencies {
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     implementation "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
 
+    implementation "org.springframework.boot:spring-boot-starter-activemq"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-data-redis"
+    implementation "org.springframework.boot:spring-boot-starter-jackson"
+    implementation "org.springframework.boot:spring-boot-starter-mail"
+    implementation "org.springframework.boot:spring-boot-starter-webmvc"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-session-data-redis"
+
     implementation "codes.rafael.jaxb2_commons:jaxb2-basics"
     implementation "com.google.guava:guava"
     implementation "commons-io:commons-io"
-    implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-data-redis"
-    implementation "org.springframework.boot:spring-boot-starter-mail"
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "io.vavr:vavr"
     implementation "jakarta.persistence:jakarta.persistence-api"
@@ -119,20 +123,16 @@ dependencies {
     implementation "jakarta.xml.ws:jakarta.xml.ws-api"
     implementation "net.javacrumbs.shedlock:shedlock-spring"
     implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring"
-    implementation "org.springframework.boot:spring-boot-starter-activemq"
     runtimeOnly "org.apache.activemq:activemq-broker"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxws"
     implementation "org.apache.cxf:cxf-rt-transports-http"
     implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common"
     implementation "org.jxls:jxls-poi"
-    implementation "org.springframework.boot:spring-boot-starter-webmvc"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation "org.springframework.boot:spring-boot-starter-security"
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
-    implementation "org.springframework.boot:spring-boot-starter-session-data-redis"
     implementation "org.springframework.ws:spring-xml"
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9"
+    implementation "tools.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
     implementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
 

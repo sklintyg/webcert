@@ -4,12 +4,12 @@ dependencies {
 
     implementation "ch.qos.logback:logback-classic"
     implementation "com.fasterxml.jackson.core:jackson-annotations"
-    implementation "tools.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
-    implementation "org.springframework:spring-context-support"
     implementation "org.apache.httpcomponents.client5:httpclient5"
-    implementation "org.springframework:spring-web"
+    implementation "org.springframework.boot:spring-boot-starter-restclient"
+    implementation "org.springframework:spring-context-support"
+    implementation "tools.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
 
     annotationProcessor 'org.projectlombok:lombok'
 

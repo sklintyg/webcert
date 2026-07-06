@@ -36,11 +36,11 @@ public class ServiceNowIntegrationRestConfig {
   private static final String SUBSCRIPTION_REST_CLIENT = "serviceNowRestClient";
 
   @Bean(SUBSCRIPTION_REST_CLIENT)
-  RestClient restClient() {
+  RestClient restClient(RestClient.Builder client) {
     final var factory = new HttpComponentsClientHttpRequestFactory();
     factory.setConnectionRequestTimeout(connectionRequestTimeout);
     factory.setReadTimeout(readTimeout);
 
-    return RestClient.builder().requestFactory(factory).build();
+    return client.requestFactory(factory).build();
   }
 }
