@@ -8,10 +8,13 @@ dependencies {
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
     implementation "org.springframework:spring-context-support"
+    implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.springframework:spring-web"
 
     annotationProcessor 'org.projectlombok:lombok'
 
+    testImplementation "org.hamcrest:hamcrest-core"
     testImplementation "org.mockito:mockito-junit-jupiter"
+    testImplementation "org.skyscreamer:jsonassert"
     testImplementation "org.springframework:spring-test"
 }
