@@ -13,8 +13,6 @@ dependencies {
 
     annotationProcessor 'org.projectlombok:lombok'
 
-    testImplementation "org.hamcrest:hamcrest-core"
-    testImplementation "org.mockito:mockito-junit-jupiter"
-    testImplementation "org.skyscreamer:jsonassert"
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework:spring-test"
 }
