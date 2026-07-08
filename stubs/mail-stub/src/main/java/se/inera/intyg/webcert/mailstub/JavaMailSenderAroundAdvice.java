@@ -21,22 +21,23 @@ package se.inera.intyg.webcert.mailstub;
 import com.google.common.base.Strings;
 import jakarta.mail.internet.MimeMessage;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author andreaskaltenbach
  */
 @Aspect
+@RequiredArgsConstructor
 public class JavaMailSenderAroundAdvice {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaMailSenderAroundAdvice.class);
 
-  @Autowired private MailStore mailStore;
+  private final MailStore mailStore;
 
   private String mailHost;
 

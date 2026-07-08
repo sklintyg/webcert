@@ -21,20 +21,21 @@ package se.inera.intyg.webcert.notificationstub.v3;
 import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.support.collections.DefaultRedisMap;
 import se.inera.intyg.webcert.notificationstub.store.BaseStore;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
+@RequiredArgsConstructor
 public class NotificationStoreV3Impl extends BaseStore<CertificateStatusUpdateForCareType>
     implements NotificationStoreV3 {
 
   private static final String NOTIFICATION_STORE_V3 = "NOTIFICATION_STORE_V3";
 
-  @Autowired private RedisConnectionFactory redisConnectionFactory;
+  private final RedisConnectionFactory redisConnectionFactory;
 
   private StringRedisTemplate stringRedisTemplate;
 

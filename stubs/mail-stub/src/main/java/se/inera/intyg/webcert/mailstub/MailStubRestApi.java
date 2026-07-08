@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.mailstub;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,9 +33,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Profile("dev")
 @RequestMapping("/api/mail-api/mails")
+@RequiredArgsConstructor
 public class MailStubRestApi {
 
-  @Autowired private MailStore mailStore;
+  private final MailStore mailStore;
 
   @GetMapping
   public List<OutgoingMail> mails() {
