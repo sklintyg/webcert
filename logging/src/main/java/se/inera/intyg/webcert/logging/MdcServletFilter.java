@@ -22,42 +22,33 @@ import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.SPAN_ID_KEY;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
-public class MdcServletFilter implements Filter {
+@RequiredArgsConstructor
+public class MdcServletFilter extends OncePerRequestFilter {
 
-  @Autowired private MdcHelper mdcHelper;
+  private final MdcHelper mdcHelper;
 
   @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
     try {
-      if (request instanceof HttpServletRequest http) {
-        MDC.put(SESSION_ID_KEY, mdcHelper.sessionId(http));
-        MDC.put(TRACE_ID_KEY, mdcHelper.traceId(http));
-        MDC.put(SPAN_ID_KEY, mdcHelper.spanId());
-      }
-      chain.doFilter(request, response);
+      MDC.put(SESSION_ID_KEY, mdcHelper.sessionId(request));
+      MDC.put(TRACE_ID_KEY, mdcHelper.traceId(request));
+      MDC.put(SPAN_ID_KEY, mdcHelper.spanId());
+      filterChain.doFilter(request, response);
     } finally {
       MDC.clear();
     }
-  }
-
-  @Override
-  public void init(FilterConfig filterConfig) {
-    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(
-        this, filterConfig.getServletContext());
   }
 }
