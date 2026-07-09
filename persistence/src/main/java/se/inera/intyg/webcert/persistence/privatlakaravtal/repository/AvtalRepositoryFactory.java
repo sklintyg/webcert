@@ -22,10 +22,10 @@ import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
 /** Created by eriklupander on 2015-08-05. */
 @Service
+@RequiredArgsConstructor
 public class AvtalRepositoryFactory {
 
   private static final Logger LOG = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
@@ -42,9 +43,8 @@ public class AvtalRepositoryFactory {
   @Value("${privatepractitioner.defaultterms.file}")
   private String location;
 
-  @Autowired private AvtalRepository avtalRepository;
-
-  @Autowired ResourceLoader resourceLoader;
+  private final AvtalRepository avtalRepository;
+  private final ResourceLoader resourceLoader;
 
   @PostConstruct
   @Transactional
