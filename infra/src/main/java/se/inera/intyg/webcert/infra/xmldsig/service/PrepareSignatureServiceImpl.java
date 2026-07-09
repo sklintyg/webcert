@@ -139,7 +139,7 @@ public class PrepareSignatureServiceImpl implements PrepareSignatureService {
       t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
       t.setOutputProperty(OutputKeys.INDENT, "no");
       t.transform(new DOMSource(node), new StreamResult(sw));
-    } catch (TransformerException te) {
+    } catch (TransformerException _) {
       System.out.println("nodeToString Transformer Exception");
     }
     return sw.toString();

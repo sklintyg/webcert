@@ -121,7 +121,8 @@ public class RegisterApprovedReceiversProcessor {
     try {
       return objectMapper.readValue(jsonBody, new TypeReference<>() {});
     } catch (JacksonException e) {
-      throw new TemporaryException("Could not parse message body into list of approved receivers.");
+      throw new TemporaryException(
+          "Could not parse message body into list of approved receivers.", e);
     }
   }
 }

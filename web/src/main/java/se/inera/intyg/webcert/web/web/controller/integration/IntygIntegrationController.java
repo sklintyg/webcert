@@ -497,7 +497,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
       LOG.info(
           String.format(
               "Provided launchId was not correct format: %s. LaunchId should be of type GUID",
-              launchId));
+              launchId),
+          exception);
       throw new IllegalArgumentException(
           String.format(
               "Provided launchId was not correct format: %s. LaunchId should be of type GUID",

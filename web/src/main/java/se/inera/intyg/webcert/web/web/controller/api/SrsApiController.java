@@ -51,10 +51,6 @@ public class SrsApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(SrsApiController.class);
 
-  private static final int OK = 200;
-  private static final int NO_CONTENT = 204;
-  private static final int BAD_REQUEST = 400;
-
   @Autowired private SrsService srsService;
 
   @PostMapping("/{intygId}/{personnummer}/{diagnosisCode}")
@@ -96,7 +92,7 @@ public class SrsApiController extends AbstractApiController {
               questions,
               daysIntoSickLeave);
       return ResponseEntity.ok(srsResponse);
-    } catch (InvalidPersonNummerException | IllegalArgumentException e) {
+    } catch (InvalidPersonNummerException | IllegalArgumentException _) {
       return ResponseEntity.badRequest().body(null);
     }
   }
@@ -115,7 +111,7 @@ public class SrsApiController extends AbstractApiController {
     try {
       List<SrsQuestion> questionList = srsService.getQuestions(diagnosisCode, modelVersion);
       return ResponseEntity.ok(questionList);
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException _) {
       return ResponseEntity.badRequest().body(null);
     }
   }
@@ -134,7 +130,7 @@ public class SrsApiController extends AbstractApiController {
     try {
       Samtyckesstatus response = srsService.getConsent(careUnitHsaId, personnummer);
       return ResponseEntity.ok(response);
-    } catch (InvalidPersonNummerException e) {
+    } catch (InvalidPersonNummerException _) {
       return ResponseEntity.badRequest().body(null);
     }
   }
@@ -155,7 +151,7 @@ public class SrsApiController extends AbstractApiController {
     try {
       ResultCodeEnum result = srsService.setConsent(personnummer, careUnitHsaId, consent);
       return ResponseEntity.ok(result);
-    } catch (InvalidPersonNummerException e) {
+    } catch (InvalidPersonNummerException _) {
       return ResponseEntity.badRequest().body(null);
     }
   }
@@ -181,7 +177,7 @@ public class SrsApiController extends AbstractApiController {
           srsService.setOwnOpinion(
               personnummer, vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode, opinion);
       return ResponseEntity.ok(result);
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException _) {
       return ResponseEntity.badRequest().body(null);
     }
   }

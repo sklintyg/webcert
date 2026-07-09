@@ -67,7 +67,7 @@ class LockedDraftAccessServiceHelperTest {
           .allowToRead(any(AccessEvaluationParameters.class));
       lockedDraftAccessServiceHelper.validateAccessToRead(draft);
       assertTrue(false, "Should throw exception if no access");
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -127,7 +127,7 @@ class LockedDraftAccessServiceHelperTest {
           .allowToCopy(any(AccessEvaluationParameters.class));
       lockedDraftAccessServiceHelper.validateAccessToCopy(draft);
       assertTrue(false, "Should throw exception if no access");
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -187,7 +187,7 @@ class LockedDraftAccessServiceHelperTest {
           .allowToInvalidate(any(AccessEvaluationParameters.class));
       lockedDraftAccessServiceHelper.validateAccessToInvalidate(draft);
       assertTrue(false, "Should throw exception if no access");
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }
@@ -247,7 +247,7 @@ class LockedDraftAccessServiceHelperTest {
           .allowToPrint(any(AccessEvaluationParameters.class));
       lockedDraftAccessServiceHelper.validateAccessToPrint(draft);
       assertTrue(false, "Should throw exception if no access");
-    } catch (AuthoritiesException ex) {
+    } catch (AuthoritiesException _) {
       assertTrue(true);
     }
   }

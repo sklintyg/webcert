@@ -166,7 +166,8 @@ class SendMessageToCareResponderImplTest {
   void testSendRequestToServiceFailedWithHttpClientException() throws WebCertServiceException {
     when(processIncomingMessageAggregator.process(any()))
         .thenThrow(
-            new HttpClientErrorException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, "Exception message"));
+            new HttpClientErrorException(
+                HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, "Exception message"));
     SendMessageToCareResponseType response =
         responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
     assertNotNull(response.getResult());

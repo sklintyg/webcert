@@ -45,8 +45,6 @@ public class UserController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
-  private static final String UTF_8_CHARSET = ";charset=utf-8";
-
   private final UserService userService;
 
   private final GetUserResourceLinks getUserResourceLinks;
@@ -100,7 +98,7 @@ public class UserController {
       final var updatedUser = changeUnitService.change(unitHsaId);
       final var resourceLinks = getUserResourceLinks.get(webCertUserService.getUser());
       return ResponseEntity.ok(UserResponseDTO.create(updatedUser, resourceLinks));
-    } catch (ChangeUnitException e) {
+    } catch (ChangeUnitException _) {
       return ResponseEntity.badRequest().body(null);
     }
   }

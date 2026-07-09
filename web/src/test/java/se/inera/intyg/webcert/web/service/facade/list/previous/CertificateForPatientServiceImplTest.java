@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -120,7 +119,7 @@ class CertificateForPatientServiceImplTest {
     }
 
     @Test
-    void shouldCacheListWithCertificatesFromIT() throws IOException {
+    void shouldCacheListWithCertificatesFromIT() {
       final var expectedResult =
           List.of(intygListItemFromIT("3", "2014-01-02T10:11:23", CertificateState.SENT.name()));
 

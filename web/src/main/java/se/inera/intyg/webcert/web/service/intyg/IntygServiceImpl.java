@@ -833,7 +833,7 @@ public class IntygServiceImpl implements IntygService {
       return new IntygWithNotificationsResponse(
           intyg, notifications, arenden.getLeft(), arenden.getRight(), ref);
     } catch (ModuleNotFoundException | ModuleException | IOException e) {
-      LOG.error("Could not convert intyg {} to external format", draft.getIntygsId());
+      LOG.error("Could not convert intyg %s to external format".formatted(draft.getIntygsId()), e);
       return null;
     }
   }
@@ -851,7 +851,9 @@ public class IntygServiceImpl implements IntygService {
           intyg, notifications, arenden.getLeft(), arenden.getRight(), "");
     } catch (ModuleNotFoundException | ModuleException e) {
       LOG.error(
-          "Could not convert intyg {} to external format", certificate.getUtlatande().getId());
+          "Could not convert intyg %s to external format"
+              .formatted(certificate.getUtlatande().getId()),
+          e);
       return null;
     }
   }
@@ -996,8 +998,9 @@ public class IntygServiceImpl implements IntygService {
                 utlatande.getGrundData().getPatient(), newPatientData);
       } catch (IOException e) {
         LOG.error(
-            "Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information",
-            intygId);
+            "Failed to getUtlatandeFromJson intygsId %s while checking for updated patient information"
+                .formatted(intygId),
+            e);
       }
 
       // Get the module api and use the "updateBeforeViewing" to update the outbound "model" with
@@ -1054,7 +1057,7 @@ public class IntygServiceImpl implements IntygService {
         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
       }
       return buildIntygContentHolderFromUtkast(utkast);
-    } catch (WebServiceException wse) {
+    } catch (WebServiceException _) {
       // Something went wrong communication-wise, try to find a matching Utkast instead.
       Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, intygType);
       if (utkast == null) {

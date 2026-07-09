@@ -63,7 +63,7 @@ public final class XsltUtil {
       // Apply the xsl file to the source file and write the result
       // to the output file
       xformer.transform(source, result);
-    } catch (FileNotFoundException | TransformerConfigurationException e) {
+    } catch (FileNotFoundException | TransformerConfigurationException _) {
     } catch (IOException e) {
       LOG.error("XSLT transformer IOException: {}", e.getMessage());
     } catch (TransformerException e) {

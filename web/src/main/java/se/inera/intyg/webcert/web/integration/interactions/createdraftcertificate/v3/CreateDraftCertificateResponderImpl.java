@@ -69,7 +69,7 @@ public class CreateDraftCertificateResponderImpl
     IntygUser user;
     try {
       user = webcertUserDetailsService.buildUserPrincipal(invokingUserHsaId, "");
-    } catch (Exception e) {
+    } catch (Exception _) {
       return createMIUErrorResponse(utkastsParams);
     }
 

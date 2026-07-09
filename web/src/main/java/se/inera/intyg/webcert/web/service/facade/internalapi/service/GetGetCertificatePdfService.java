@@ -77,7 +77,8 @@ public class GetGetCertificatePdfService
       throw new IllegalStateException(
           String.format(
               "Module api not found with typeVersion '%s' and type '%s'",
-              certificateTypeVersion, certificateType));
+              certificateTypeVersion, certificateType),
+          exception);
     }
   }
 
@@ -94,7 +95,8 @@ public class GetGetCertificatePdfService
       }
       return moduleApi.pdf(jsonModel, statuses, ApplicationOrigin.MINA_INTYG, status);
     } catch (ModuleException exception) {
-      throw new IllegalStateException("Unable to get pdf from module api implementation");
+      throw new IllegalStateException(
+          "Unable to get pdf from module api implementation", exception);
     }
   }
 }

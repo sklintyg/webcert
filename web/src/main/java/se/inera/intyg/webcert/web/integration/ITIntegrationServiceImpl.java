@@ -62,7 +62,7 @@ public class ITIntegrationServiceImpl implements ITIntegrationService {
     final var url = intygstjanstenUrl + "/internalapi/intygInfo/" + certificateId;
     try {
       return restTemplate.getForObject(url, ItIntygInfo.class);
-    } catch (HttpClientErrorException ex) {
+    } catch (HttpClientErrorException _) {
       return new ItIntygInfo();
     }
   }

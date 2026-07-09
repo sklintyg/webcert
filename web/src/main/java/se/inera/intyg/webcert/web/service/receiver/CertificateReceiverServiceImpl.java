@@ -103,7 +103,8 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
     } catch (JacksonException e) {
       throw new WebCertServiceException(
           WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-          "Could not convert list of approved receivers to JSON array.");
+          "Could not convert list of approved receivers to JSON array.",
+          e);
     }
   }
 
@@ -142,7 +143,8 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
       return intygReceivers;
     } catch (WebServiceException wse) {
       LOG.warn(
-          "Caught WebServiceException fetching approved or possible receivers, only returning Huvudmottagare.");
+          "Caught WebServiceException fetching approved or possible receivers, only returning Huvudmottagare.",
+          wse);
       return getIntygReceiverFromEntryPoint(intygsTyp);
     }
   }
@@ -234,7 +236,8 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
           .collect(Collectors.toList());
     } catch (WebServiceException e) {
       LOG.warn(
-          "Caught WebServiceException fetching approved or possible receivers, only returning Huvudmottagare.");
+          "Caught WebServiceException fetching approved or possible receivers, only returning Huvudmottagare.",
+          e);
       return getIntygReceiverFromEntryPoint(intygsTyp);
     }
   }

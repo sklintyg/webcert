@@ -60,8 +60,7 @@ public class WebCertUserServiceImpl implements WebCertUserService, LoggedInWebce
 
   @Override
   public boolean hasAuthenticationContext() {
-    return SecurityContextHolder.getContext() != null
-        && SecurityContextHolder.getContext().getAuthentication() != null
+    return SecurityContextHolder.getContext().getAuthentication() != null
         && SecurityContextHolder.getContext().getAuthentication().getPrincipal()
             instanceof WebCertUser;
   }

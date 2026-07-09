@@ -49,7 +49,7 @@ public class ConfigurationResource {
       try {
         final var replacedFeature = switchFeature(feature, currentFeatures);
         replacedFeatures.putIfAbsent(replacedFeature.getName(), replacedFeature);
-      } catch (NoSuchElementException e) {
+      } catch (NoSuchElementException _) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body("Feature " + feature.getName() + " does not exist.");
       }

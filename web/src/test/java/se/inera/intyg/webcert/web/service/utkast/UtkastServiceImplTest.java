@@ -418,7 +418,7 @@ class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     try {
       utkastService.deleteUnsignedDraft(INTYG_ID, version);
       Assertions.fail("OptimisticLockException expected");
-    } catch (OptimisticLockException e) {
+    } catch (OptimisticLockException _) {
       // Expected
     }
 

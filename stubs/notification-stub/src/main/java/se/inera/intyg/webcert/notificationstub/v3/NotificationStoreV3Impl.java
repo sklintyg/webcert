@@ -72,7 +72,7 @@ public class NotificationStoreV3Impl extends BaseStore<CertificateStatusUpdateFo
   protected CertificateStatusUpdateForCareType transform(String s) {
     try {
       return objectMapper.readValue(s, CertificateStatusUpdateForCareType.class);
-    } catch (Exception e) {
+    } catch (Exception _) {
       return null;
     }
   }

@@ -78,8 +78,7 @@ public class NotificationRedeliveryStatusUpdateCreatorService {
     return redelivery.getMessage() != null;
   }
 
-  private String getStatusUpdateXmlFromNotificationRedelivery(NotificationRedelivery redelivery)
-      throws IOException {
+  private String getStatusUpdateXmlFromNotificationRedelivery(NotificationRedelivery redelivery) {
     return objectMapper.readValue(redelivery.getMessage(), String.class);
   }
 
