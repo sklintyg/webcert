@@ -19,12 +19,12 @@
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import jakarta.xml.ws.WebServiceException;
+import lombok.RequiredArgsConstructor;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -34,12 +34,13 @@ import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
+@RequiredArgsConstructor
 public class CertificateSendProcessor {
 
   private static final Logger LOG = LoggerFactory.getLogger(CertificateSendProcessor.class);
 
-  @Autowired private SendCertificateServiceClient sendServiceClient;
-  @Autowired private MdcHelper mdcHelper;
+  private final SendCertificateServiceClient sendServiceClient;
+  private final MdcHelper mdcHelper;
 
   public void process(
       @Body String skickatAv,

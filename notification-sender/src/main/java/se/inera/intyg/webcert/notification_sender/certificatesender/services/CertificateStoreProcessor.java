@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.common.Constants;
@@ -33,10 +33,11 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
  * Camel message processor responsible for consuming {@link Constants#STORE_MESSAGE} messages, using
  * the ModuleApi to register certificates in intygstjansten.
  */
+@RequiredArgsConstructor
 public class CertificateStoreProcessor {
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
-  @Autowired private MdcHelper mdcHelper;
+  private final IntygModuleRegistry moduleRegistry;
+  private final MdcHelper mdcHelper;
 
   public void process(
       @Body String utkastAsJson,

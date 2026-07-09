@@ -23,10 +23,10 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.LOGISK_ADRESS;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Message;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -37,11 +37,12 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class NotificationPostProcessor {
 
-  @Autowired private MdcHelper mdcHelper;
-  @Autowired private JsonMapper objectMapper;
-  @Autowired private NotificationPostProcessingService notificationPostProcessingService;
+  private final MdcHelper mdcHelper;
+  private final JsonMapper objectMapper;
+  private final NotificationPostProcessingService notificationPostProcessingService;
 
   public void process(Message message) {
     try {
