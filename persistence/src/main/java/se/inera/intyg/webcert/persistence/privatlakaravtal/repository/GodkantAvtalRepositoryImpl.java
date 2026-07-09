@@ -70,9 +70,9 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
               .setParameter("avtalVersion", avtalVersion)
               .getSingleResult();
       return godkantAvtal != null;
-    } catch (NoResultException e) {
+    } catch (NoResultException _) {
       return false;
-    } catch (NonUniqueResultException e) {
+    } catch (NonUniqueResultException _) {
       // This should never occur if we set up our constraints correctly.
       return true;
     }
@@ -93,7 +93,7 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
       if (godkantAvtal != null) {
         entityManager.remove(godkantAvtal);
       }
-    } catch (NoResultException e) {
+    } catch (NoResultException _) {
       LOG.warn(
           "Could not remove GodkantAvtal for user with hsaId '"
               + hsaId

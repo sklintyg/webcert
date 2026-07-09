@@ -26,19 +26,17 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Setter
 @Getter
-public class WebCertUser extends IntygUser implements Serializable, Saml2AuthenticatedPrincipal {
+public class WebCertUser extends IntygUser implements Serializable {
 
   @Serial private static final long serialVersionUID = -2624303818412468774L;
 
@@ -131,17 +129,8 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
     return parameters != null && parameters.isInactiveUnit();
   }
 
-  @Override
   public String getName() {
     return "";
-  }
-
-  @Override
-  public String getRelyingPartyRegistrationId() {
-    return switch (authenticationMethod) {
-      case BANK_ID, MOBILT_BANK_ID -> AuthConstants.REGISTRATION_ID_ELEG;
-      default -> AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
-    };
   }
 
   public boolean isUnauthorizedPrivatePractitioner() {

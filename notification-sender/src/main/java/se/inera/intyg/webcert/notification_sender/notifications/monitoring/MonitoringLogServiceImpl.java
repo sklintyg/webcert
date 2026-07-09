@@ -38,7 +38,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
       String correlationId,
       String unitId,
       int sendAttempt) {
-    try (MdcCloseableMap ignored =
+    try (var _ =
         setMdc(eventId, eventType, unitId, certificateId, correlationId, sendAttempt)
             .put(
                 MdcLogConstants.EVENT_ACTION,
@@ -66,7 +66,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
       String message,
       int sendAttempt,
       LocalDateTime nextAttempt) {
-    try (MdcCloseableMap ignored =
+    try (var _ =
         setMdc(eventId, eventType, unitId, certificateId, correlationId, sendAttempt)
             .put(
                 MdcLogConstants.EVENT_ACTION,
@@ -98,7 +98,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
       String errorCode,
       String message,
       int sendAttempt) {
-    try (MdcCloseableMap ignored =
+    try (var _ =
         setMdc(eventId, eventType, unitId, certificateId, correlationId, sendAttempt)
             .put(
                 MdcLogConstants.EVENT_ACTION,

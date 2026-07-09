@@ -640,7 +640,7 @@ class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     try {
       service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
       fail("should throw exception");
-    } catch (WebCertServiceException e) {
+    } catch (WebCertServiceException _) {
       verifyNoInteractions(arendeRepository);
       verifyNoInteractions(notificationService);
       verifyNoInteractions(arendeDraftService);

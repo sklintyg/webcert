@@ -50,7 +50,7 @@ public class PerformanceLoggingAdvice {
         final var duration = Duration.between(start, end).toMillis();
         final var className = joinPoint.getSignature().getDeclaringTypeName();
         final var methodName = joinPoint.getSignature().getName();
-        try (final var ignored =
+        try (final var _ =
             MdcCloseableMap.builder()
                 .put(MdcLogConstants.EVENT_START, start.toString())
                 .put(MdcLogConstants.EVENT_END, end.toString())

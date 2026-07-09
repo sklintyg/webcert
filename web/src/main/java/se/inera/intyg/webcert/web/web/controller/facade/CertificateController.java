@@ -84,8 +84,6 @@ public class CertificateController {
 
   private static final Logger LOG = LoggerFactory.getLogger(CertificateController.class);
 
-  private static final String UTF_8_CHARSET = ";charset=utf-8";
-
   public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
   @Autowired
@@ -421,7 +419,7 @@ public class CertificateController {
       final var certificateEvents =
           getCertificateEventsFacadeService.getCertificateEvents(certificateId);
       return ResponseEntity.ok(CertificateEventResponseDTO.create(certificateEvents));
-    } catch (Exception e) {
+    } catch (Exception _) {
       return ResponseEntity.ok(CertificateEventResponseDTO.create(new CertificateEventDTO[0]));
     }
   }
@@ -440,7 +438,7 @@ public class CertificateController {
           createCertificateFacadeService.create(
               createCertificateRequest.certificateType(), createCertificateRequest.patientId());
       return ResponseEntity.ok(new CreateCertificateResponseDTO(certificateId));
-    } catch (CreateCertificateException e) {
+    } catch (CreateCertificateException _) {
       return ResponseEntity.badRequest().body(null);
     }
   }

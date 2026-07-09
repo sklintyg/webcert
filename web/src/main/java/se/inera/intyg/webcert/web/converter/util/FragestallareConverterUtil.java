@@ -34,7 +34,8 @@ public final class FragestallareConverterUtil {
     } catch (IllegalArgumentException ie) {
       throw new WebCertServiceException(
           WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-          "Invalid PartCode found when converting Arende");
+          "Invalid PartCode found when converting Arende",
+          ie);
     }
   }
 

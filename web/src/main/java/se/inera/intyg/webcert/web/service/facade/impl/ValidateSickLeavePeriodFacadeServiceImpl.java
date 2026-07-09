@@ -63,7 +63,7 @@ public class ValidateSickLeavePeriodFacadeServiceImpl
       final var response =
           fmbDiagnosInformationService.validateSjukskrivningtidForPatient(sickLeaveTimeRequest);
       return getResponseText(response, totalDays.get());
-    } catch (Exception e) {
+    } catch (Exception _) {
       return "På grund av ett tekniskt fel kan vi just nu inte räkna"
           + " ut om patienten överskrider FMB:s rekommenderade sjukskrivningslängd.";
     }

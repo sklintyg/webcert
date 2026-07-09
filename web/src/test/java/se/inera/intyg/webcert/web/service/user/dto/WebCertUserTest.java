@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.user.dto;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -28,8 +27,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.infra.security.common.model.AuthenticationMethod;
-import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,40 +89,6 @@ class WebCertUserTest {
     void shallReturnFalseIfParameterIsNull() {
       final var webCertUser = new WebCertUser();
       assertFalse(webCertUser.isUnitInactive());
-    }
-  }
-
-  @Nested
-  class RelyingPartyRegistrationId {
-
-    @Test
-    void shouldReturnRegistrationIdElegForAuthMethodBankId() {
-      final var webCertUser = new WebCertUser();
-      webCertUser.setAuthenticationMethod(AuthenticationMethod.BANK_ID);
-      assertEquals(AuthConstants.REGISTRATION_ID_ELEG, webCertUser.getRelyingPartyRegistrationId());
-    }
-
-    @Test
-    void shouldReturnRegistrationIdElegForAuthMethodMobiltBankId() {
-      final var webCertUser = new WebCertUser();
-      webCertUser.setAuthenticationMethod(AuthenticationMethod.MOBILT_BANK_ID);
-      assertEquals(AuthConstants.REGISTRATION_ID_ELEG, webCertUser.getRelyingPartyRegistrationId());
-    }
-
-    @Test
-    void shouldReturnRegistrationIdSithsNormalForAuthMethodSiths() {
-      final var webCertUser = new WebCertUser();
-      webCertUser.setAuthenticationMethod(AuthenticationMethod.SITHS);
-      assertEquals(
-          AuthConstants.REGISTRATION_ID_SITHS_NORMAL, webCertUser.getRelyingPartyRegistrationId());
-    }
-
-    @Test
-    void shouldReturnRegistrationIdSithsNormalForAuthMethodNetId() {
-      final var webCertUser = new WebCertUser();
-      webCertUser.setAuthenticationMethod(AuthenticationMethod.NET_ID);
-      assertEquals(
-          AuthConstants.REGISTRATION_ID_SITHS_NORMAL, webCertUser.getRelyingPartyRegistrationId());
     }
   }
 }

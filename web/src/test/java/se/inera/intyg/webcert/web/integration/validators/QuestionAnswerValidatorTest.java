@@ -548,7 +548,7 @@ class QuestionAnswerValidatorTest {
 
       return request;
     } catch (Exception e) {
-      throw new RuntimeException("Failed to load QuestionRequest template");
+      throw new RuntimeException("Failed to load QuestionRequest template", e);
     }
   }
 
@@ -572,7 +572,7 @@ class QuestionAnswerValidatorTest {
 
       return request;
     } catch (Exception e) {
-      throw new RuntimeException("Failed to load QuestionRequest template");
+      throw new RuntimeException("Failed to load QuestionRequest template", e);
     }
   }
 }

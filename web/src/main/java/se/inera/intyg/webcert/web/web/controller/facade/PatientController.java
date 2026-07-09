@@ -37,8 +37,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
 @RequestMapping("/api/patient")
 public class PatientController {
 
-  private static final String UTF_8_CHARSET = ";charset=utf-8";
-
   @Autowired private GetPatientFacadeService getPatientFacadeService;
 
   @GetMapping("/{patientId}")
@@ -50,11 +48,11 @@ public class PatientController {
     try {
       final var patient = getPatientFacadeService.getPatient(patientId);
       return ResponseEntity.ok(PatientResponseDTO.create(patient));
-    } catch (InvalidPatientIdException e) {
+    } catch (InvalidPatientIdException _) {
       return ResponseEntity.ok(PatientResponseDTO.createInvalidPatientIdResponse());
-    } catch (PatientSearchErrorException e) {
+    } catch (PatientSearchErrorException _) {
       return ResponseEntity.ok(PatientResponseDTO.createErrorResponse());
-    } catch (PatientNoNameException e) {
+    } catch (PatientNoNameException _) {
       return ResponseEntity.ok(PatientResponseDTO.createNoNameResponse());
     }
   }

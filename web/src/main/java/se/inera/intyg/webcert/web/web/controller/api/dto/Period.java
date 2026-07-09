@@ -58,7 +58,7 @@ public class Period {
     try {
       final ObjectMapper objectMapper = new CustomObjectMapper();
       return objectMapper.readValue(value, Period.class);
-    } catch (Exception ex) {
+    } catch (Exception _) {
       return null;
     }
   }

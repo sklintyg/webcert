@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import static se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP;
 import static se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode.NO_ACCOUNT;
 
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Vardgivare;

@@ -34,7 +34,7 @@ public class RedisCacheOptionsSetter {
           cacheName,
           RedisCacheConfiguration.defaultCacheConfig()
               .entryTtl(Duration.ofSeconds(Long.parseLong(expiryTimeInSeconds))));
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException _) {
       return redisCacheFactory.createCache(cacheName);
     }
   }

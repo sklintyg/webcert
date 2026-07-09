@@ -120,7 +120,7 @@ class MailNotificationServiceImplTest {
     // When
     try {
       mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException _) {
       // Expected
     }
 
@@ -145,7 +145,7 @@ class MailNotificationServiceImplTest {
     // When
     try {
       mailNotificationService.sendMailForIncomingAnswer(mailNotification);
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException _) {
       // Expected
     }
 

@@ -58,7 +58,8 @@ public class IntygDraftDecorator {
     } catch (ModuleNotFoundException e) {
       listIntygEntry.setIntygTypeName(listIntygEntry.getIntygType());
       LOG.error(
-          "Could not find ModuleEntryPoint for certificate type: " + listIntygEntry.getIntygType());
+          "Could not find ModuleEntryPoint for certificate type: " + listIntygEntry.getIntygType(),
+          e);
     }
   }
 

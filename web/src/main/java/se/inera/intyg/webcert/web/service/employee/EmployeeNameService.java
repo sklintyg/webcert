@@ -45,7 +45,7 @@ public class EmployeeNameService {
   private List<PersonInformation> getEmployee(String employeeHsaId) {
     try {
       return hsaEmployeeService.getEmployee(employeeHsaId, null, null);
-    } catch (WebServiceException e) {
+    } catch (WebServiceException _) {
       return Collections.emptyList();
     }
   }

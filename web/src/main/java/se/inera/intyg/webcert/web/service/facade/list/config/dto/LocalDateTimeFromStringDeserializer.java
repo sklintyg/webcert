@@ -43,7 +43,7 @@ public class LocalDateTimeFromStringDeserializer extends StdDeserializer<LocalDa
   @Override
   public LocalDateTime deserialize(JsonParser parser, DeserializationContext context)
       throws JacksonException {
-    final String value = parser.getText().trim();
+    final String value = parser.getString().trim();
     if (value.isEmpty()) {
       return null;
     }

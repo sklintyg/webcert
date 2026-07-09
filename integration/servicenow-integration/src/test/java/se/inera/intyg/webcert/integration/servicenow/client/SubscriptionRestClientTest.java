@@ -153,10 +153,10 @@ class SubscriptionRestClientTest {
   @Test
   void shouldThrowIfResponseBodyIsNull() {
     mockServer.expect(requestTo(SUBSCRIPTION_URL)).andRespond(withNoContent());
-
+    final var no1 = Set.of(ORG_NO_1);
     assertThrows(
         IllegalStateException.class,
-        () -> subscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1)));
+        () -> subscriptionRestClient.getSubscriptionServiceResponse(no1));
   }
 
   private String getBasicAuthString() {

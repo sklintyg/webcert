@@ -54,7 +54,7 @@ public class NotificationAggregator {
       MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
       @SuppressWarnings("unchecked")
-      List<Exchange> grouped = (List<Exchange>) exchange.getIn().getBody(List.class);
+      List<Exchange> grouped = exchange.getIn().getBody(List.class);
 
       if (grouped == null || grouped.isEmpty()) {
         log.info(

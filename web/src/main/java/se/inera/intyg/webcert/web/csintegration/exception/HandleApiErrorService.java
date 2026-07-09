@@ -33,7 +33,7 @@ public class HandleApiErrorService {
     try {
       final var apiError = objectMapper.readValue(responseBodyAsString, ApiError.class);
       return apiError.getMessage();
-    } catch (JacksonException e) {
+    } catch (JacksonException _) {
       return responseBodyAsString;
     }
   }

@@ -30,7 +30,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,7 +62,6 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
@@ -136,8 +134,6 @@ class ArendeViewConverterTest {
                             CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))))
                 .revoked(false)
                 .relations(new Relations())
-                // .setReplacedByRelation(null)
-                // .setComplementedByRelation(null)
                 .deceased(false)
                 .sekretessmarkering(false)
                 .patientNameChangedInPU(false)
@@ -149,7 +145,7 @@ class ArendeViewConverterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  void testConvertToArendeForLuse() throws ModuleNotFoundException, ModuleException {
+  void testConvertToArendeForLuse() throws ModuleException {
     ArendeView result = converter.convertToDto(buildArende("luse"));
 
     assertNotNull(result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -169,7 +165,7 @@ class ArendeViewConverterTest {
   }
 
   @Test
-  void convertToJson() throws IOException {
+  void convertToJson() {
     Arende arende = buildArende("lisjp");
     StringWriter jsonWriter = new StringWriter();
     CustomObjectMapper objectMapper = new CustomObjectMapper();
@@ -178,7 +174,7 @@ class ArendeViewConverterTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  void testConvertToArendeForLisjp() throws ModuleNotFoundException, ModuleException {
+  void testConvertToArendeForLisjp() throws ModuleException {
     ArendeView result = converter.convertToDto(buildArende("lisjp"));
 
     assertEquals(

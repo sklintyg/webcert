@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.notification_sender.filter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -47,14 +46,14 @@ class NotificationMessageDiscardFilterTest {
   private final CamelContext camelContext = new DefaultCamelContext();
 
   @Test
-  void testReturnsNothingWhenBothSignedAndSavedExists() throws IOException {
+  void testReturnsNothingWhenBothSignedAndSavedExists() {
     List<Message> processed =
         testee.process(buildMsgList(HandelsekodEnum.SIGNAT, HandelsekodEnum.ANDRAT));
     assertEquals(0, processed.size());
   }
 
   @Test
-  void testReturnsNothingWhenBothSignedAndSavedExistsAndratBeforeSignerat() throws IOException {
+  void testReturnsNothingWhenBothSignedAndSavedExistsAndratBeforeSignerat() {
     List<Message> processed =
         testee.process(buildMsgList(HandelsekodEnum.ANDRAT, HandelsekodEnum.SIGNAT));
     assertEquals(0, processed.size());
@@ -74,7 +73,7 @@ class NotificationMessageDiscardFilterTest {
   }
 
   @Test
-  void testReturnsLatestSaved() throws IOException {
+  void testReturnsLatestSaved() {
     String intygsId = UUID.randomUUID().toString();
     LocalDateTime first = LocalDateTime.now().minusSeconds(5).truncatedTo(ChronoUnit.MILLIS);
     NotificationMessage nm2 =
@@ -88,7 +87,7 @@ class NotificationMessageDiscardFilterTest {
     List<Message> processed = testee.process(Arrays.asList(to(nm2), to(nm1), to(nm3)));
     assertEquals(1, processed.size());
     NotificationMessage notificationMessage =
-        om.readValue((String) processed.get(0).getBody(), NotificationMessage.class);
+        om.readValue((String) processed.getFirst().getBody(), NotificationMessage.class);
     assertEquals(first, notificationMessage.getHandelseTid());
   }
 

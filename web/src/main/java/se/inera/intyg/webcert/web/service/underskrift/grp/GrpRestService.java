@@ -150,7 +150,7 @@ public class GrpRestService {
     try {
       return objectMapper.readValue(e.getResponseBodyAsString(), GrpErrorResponse.class);
 
-    } catch (Exception ex) {
+    } catch (Exception _) {
       log.error("Failed to parse GRP error response", e);
       return GrpErrorResponse.builder().build();
     }

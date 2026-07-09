@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.config;
 
+import static org.springframework.boot.tomcat.TomcatWebServerFactory.DEFAULT_PROTOCOL;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +51,7 @@ public class TomcatConfig {
   public WebServerFactoryCustomizer<TomcatServletWebServerFactory>
       internalApiConnectorCustomizer() {
     return factory -> {
-      final var connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
+      final var connector = new Connector(DEFAULT_PROTOCOL);
       connector.setPort(internalPort);
       factory.addAdditionalConnectors(connector);
     };
