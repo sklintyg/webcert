@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.infra.pu.integration.intygproxyservice.client;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -30,10 +30,10 @@ import se.inera.intyg.webcert.infra.pu.integration.intygproxyservice.dto.PersonR
 import se.inera.intyg.webcert.infra.pu.integration.intygproxyservice.dto.PersonResponseDTO;
 
 @Service
+@RequiredArgsConstructor
 public class GetPersonIntygProxyServiceClient {
 
-  @Autowired
-  @Qualifier("puIntygProxyServiceRestClient") private RestClient ipsRestClient;
+  @Qualifier("puIntygProxyServiceRestClient") private final RestClient ipsRestClient;
 
   @Value("${integration.intygproxyservice.person.endpoint}")
   private String personEndpoint;

@@ -40,8 +40,8 @@ public class BasicCacheConfiguration {
 
   @Bean
   @DependsOn("cacheManager")
-  public RedisCacheOptionsSetter redisCacheOptionsSetter() {
-    return new RedisCacheOptionsSetter();
+  public RedisCacheOptionsSetter redisCacheOptionsSetter(CacheFactory cacheFactory) {
+    return new RedisCacheOptionsSetter(cacheFactory);
   }
 
   @Bean(name = "rediscache")

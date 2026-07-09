@@ -21,16 +21,17 @@ package se.inera.intyg.webcert.infra.dynamiclink.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.webcert.infra.dynamiclink.repository.DynamicLinkRepository;
 
 /** Created by eriklupander on 2017-05-03. */
 @Service
+@RequiredArgsConstructor
 public class DynamicLinkServiceImpl implements DynamicLinkService {
 
-  @Autowired private DynamicLinkRepository dynamicLinkRepository;
+  private final DynamicLinkRepository dynamicLinkRepository;
 
   @Override
   public Map<String, DynamicLink> getAllAsMap() {

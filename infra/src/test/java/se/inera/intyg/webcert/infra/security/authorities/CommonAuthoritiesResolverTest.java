@@ -41,8 +41,7 @@ class CommonAuthoritiesResolverTest {
           featuresConfigurationLocation,
           defaultMaxAliasesForCollections);
 
-  private static final CommonAuthoritiesResolver commonAuthoritiesResolver =
-      new CommonAuthoritiesResolver();
+  private static CommonAuthoritiesResolver commonAuthoritiesResolver;
 
   @BeforeAll
   static void setupAuthoritiesConfiguration() {
@@ -50,7 +49,7 @@ class CommonAuthoritiesResolverTest {
     configurationLoader.afterPropertiesSet();
 
     // Setup resolver class
-    commonAuthoritiesResolver.setConfigurationLoader(configurationLoader);
+    commonAuthoritiesResolver = new CommonAuthoritiesResolver(configurationLoader);
   }
 
   @Test

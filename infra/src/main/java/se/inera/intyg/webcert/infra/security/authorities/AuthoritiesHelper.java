@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import se.inera.intyg.webcert.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.Feature;
@@ -37,14 +37,10 @@ import se.inera.intyg.webcert.infra.security.common.model.UserDetails;
 /**
  * @author Magnus Ekstrand on 2016-05-13.
  */
+@RequiredArgsConstructor
 public class AuthoritiesHelper {
 
-  private CommonAuthoritiesResolver authoritiesResolver;
-
-  @Autowired
-  public AuthoritiesHelper(CommonAuthoritiesResolver authoritiesResolver) {
-    this.authoritiesResolver = authoritiesResolver;
-  }
+  private final CommonAuthoritiesResolver authoritiesResolver;
 
   /**
    * Method returns all granted intygstyper for a certain user's privilege. If user doesn't have a

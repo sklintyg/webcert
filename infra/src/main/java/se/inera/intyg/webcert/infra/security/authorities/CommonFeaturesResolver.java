@@ -23,9 +23,9 @@ import static se.inera.intyg.webcert.infra.security.authorities.AuthoritiesResol
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
 import se.inera.intyg.webcert.infra.security.common.model.Feature;
@@ -34,11 +34,12 @@ import se.inera.intyg.webcert.infra.security.common.model.Feature;
  * @Author Joy Zomborszki on 2018-06-18.
  */
 @Service
+@RequiredArgsConstructor
 public class CommonFeaturesResolver {
 
   private static final Logger LOG = LoggerFactory.getLogger(CommonFeaturesResolver.class);
 
-  @Autowired private SecurityConfigurationLoader configurationLoader;
+  private final SecurityConfigurationLoader configurationLoader;
 
   public Map<String, Feature> getFeatures() {
     List<Feature> featureList =
@@ -51,9 +52,5 @@ public class CommonFeaturesResolver {
 
   public SecurityConfigurationLoader getConfigurationLoader() {
     return configurationLoader;
-  }
-
-  public void setConfigurationLoader(SecurityConfigurationLoader configurationLoader) {
-    this.configurationLoader = configurationLoader;
   }
 }

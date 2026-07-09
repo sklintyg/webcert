@@ -33,9 +33,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation;
@@ -56,11 +56,12 @@ import se.inera.intyg.webcert.infra.security.common.model.TitleCode;
 
 /** Created by Magnus Ekstrand on 20/11/15. */
 @Service
+@RequiredArgsConstructor
 public class CommonAuthoritiesResolver {
 
   private static final Logger LOG = LoggerFactory.getLogger(CommonAuthoritiesResolver.class);
 
-  @Autowired private SecurityConfigurationLoader configurationLoader;
+  private final SecurityConfigurationLoader configurationLoader;
   private Function<String, RequestOrigin> fnRequestOrigin =
       (name) -> getRequestOrigins().stream().filter(isRequestOrigin(name)).findFirst().orElse(null);
   private Function<String, Role> fnRole =
@@ -168,10 +169,6 @@ public class CommonAuthoritiesResolver {
 
   public SecurityConfigurationLoader getConfigurationLoader() {
     return configurationLoader;
-  }
-
-  public void setConfigurationLoader(SecurityConfigurationLoader configurationLoader) {
-    this.configurationLoader = configurationLoader;
   }
 
   /**

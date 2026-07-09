@@ -19,13 +19,18 @@
 package se.inera.intyg.webcert.web.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import se.inera.intyg.webcert.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
+import se.inera.intyg.webcert.infra.integration.hsatk.services.legacy.HsaPersonService;
+import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.infra.security.common.model.UserOrigin;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.infra.security.common.service.AuthenticationLogger;
 import se.inera.intyg.webcert.infra.security.siths.BaseUserDetailsService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
@@ -33,11 +38,28 @@ import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service(value = "webcertUserDetailsService")
-@RequiredArgsConstructor
 public class WebcertUserDetailsService extends BaseUserDetailsService {
 
   private final AnvandarPreferenceRepository anvandarMetadataRepository;
   private final SubscriptionService subscriptionService;
+
+  public WebcertUserDetailsService(
+      ObjectProvider<UserOrigin> userOrigin,
+      HsaOrganizationsService hsaOrganizationsService,
+      HsaPersonService hsaPersonService,
+      AuthenticationLogger monitoringLogService,
+      CommonAuthoritiesResolver commonAuthoritiesResolver,
+      AnvandarPreferenceRepository anvandarMetadataRepository,
+      SubscriptionService subscriptionService) {
+    super(
+        userOrigin,
+        hsaOrganizationsService,
+        hsaPersonService,
+        monitoringLogService,
+        commonAuthoritiesResolver);
+    this.anvandarMetadataRepository = anvandarMetadataRepository;
+    this.subscriptionService = subscriptionService;
+  }
 
   public WebCertUser buildFakeUserPrincipal(String hsaId) {
     return buildUserPrincipal(

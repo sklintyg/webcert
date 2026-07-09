@@ -23,9 +23,8 @@ import static se.inera.intyg.webcert.infra.security.authorities.AuthoritiesResol
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.UserAuthorizationInfo;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.UserCredentials;
@@ -48,21 +47,26 @@ public abstract class BaseUserDetailsService {
 
   protected abstract HttpServletRequest getCurrentRequest();
 
-  @Autowired(required = false)
-  private Optional<UserOrigin> userOrigin;
-
-  @Autowired private HsaOrganizationsService hsaOrganizationsService;
-  @Autowired private HsaPersonService hsaPersonService;
-  @Autowired private AuthenticationLogger monitoringLogService;
-
-  @Autowired
-  public void setCommonAuthoritiesResolver(CommonAuthoritiesResolver commonAuthoritiesResolver) {
-    this.commonAuthoritiesResolver = commonAuthoritiesResolver;
-  }
-
-  protected CommonAuthoritiesResolver commonAuthoritiesResolver;
+  private final ObjectProvider<UserOrigin> userOrigin;
+  protected final HsaOrganizationsService hsaOrganizationsService;
+  protected final HsaPersonService hsaPersonService;
+  protected final AuthenticationLogger monitoringLogService;
+  protected final CommonAuthoritiesResolver commonAuthoritiesResolver;
   private final DefaultUserDetailsDecorator defaultUserDetailsDecorator =
       new DefaultUserDetailsDecorator();
+
+  protected BaseUserDetailsService(
+      ObjectProvider<UserOrigin> userOrigin,
+      HsaOrganizationsService hsaOrganizationsService,
+      HsaPersonService hsaPersonService,
+      AuthenticationLogger monitoringLogService,
+      CommonAuthoritiesResolver commonAuthoritiesResolver) {
+    this.userOrigin = userOrigin;
+    this.hsaOrganizationsService = hsaOrganizationsService;
+    this.hsaPersonService = hsaPersonService;
+    this.monitoringLogService = monitoringLogService;
+    this.commonAuthoritiesResolver = commonAuthoritiesResolver;
+  }
 
   protected IntygUser buildUserPrincipal(String employeeHsaId, String authenticationScheme) {
     log.debug("Creating user object...");
@@ -245,7 +249,7 @@ public abstract class BaseUserDetailsService {
 
     intygUser.setAuthenticationScheme(authenticationScheme);
 
-    userOrigin.ifPresent(
+    userOrigin.ifAvailable(
         origin ->
             intygUser.setOrigin(
                 commonAuthoritiesResolver

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +38,10 @@ import se.inera.intyg.webcert.infra.ia.cache.IaCacheConfiguration;
 @RestController
 @Profile("dev")
 @RequestMapping("/api/ia-api")
+@RequiredArgsConstructor
 public class IAStubRestApi {
 
-  @Autowired private Cache iaCache;
+  private final Cache iaCache;
 
   @GetMapping("")
   public List<Banner> getBanners() {

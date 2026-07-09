@@ -19,13 +19,14 @@
 package se.inera.intyg.webcert.infra.rediscache.core;
 
 import java.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 
+@RequiredArgsConstructor
 public class RedisCacheOptionsSetter {
 
-  @Autowired private CacheFactory redisCacheFactory;
+  private final CacheFactory redisCacheFactory;
 
   public Cache createCache(String cacheName, String expiryTimeInSeconds) {
     try {

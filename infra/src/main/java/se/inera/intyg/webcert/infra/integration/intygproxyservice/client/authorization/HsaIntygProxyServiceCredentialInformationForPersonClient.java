@@ -23,8 +23,8 @@ import static se.inera.intyg.webcert.infra.integration.intygproxyservice.configu
 import static se.inera.intyg.webcert.infra.integration.intygproxyservice.configuration.HsaRestClientConfig.SESSION_ID_KEY;
 import static se.inera.intyg.webcert.infra.integration.intygproxyservice.configuration.HsaRestClientConfig.TRACE_ID_KEY;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -34,10 +34,10 @@ import se.inera.intyg.webcert.infra.integration.intygproxyservice.dto.authorizat
 import se.inera.intyg.webcert.infra.integration.intygproxyservice.dto.authorization.GetCredentialInformationResponseDTO;
 
 @Service
+@RequiredArgsConstructor
 public class HsaIntygProxyServiceCredentialInformationForPersonClient {
 
-  @Autowired
-  @Qualifier("hsaIntygProxyServiceRestClient") private RestClient ipsRestClient;
+  @Qualifier("hsaIntygProxyServiceRestClient") private final RestClient ipsRestClient;
 
   @Value("${integration.intygproxyservice.credentialinformationforperson.endpoint}")
   private String credentialInformationForPerson;

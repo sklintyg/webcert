@@ -30,7 +30,6 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.infra.integration.hsatk.services.legacy.HsaPersonService;
@@ -64,17 +63,16 @@ class AuthoritiesHelperTest {
           authoritiesConfigurationLocation,
           featuresConfigurationLocation,
           defaultMaxAliasesForCollections);
-  private final CommonAuthoritiesResolver authoritiesResolver = new CommonAuthoritiesResolver();
+  private AuthoritiesHelper authoritiesHelper;
+  private CommonAuthoritiesResolver authoritiesResolver;
 
   @Mock private HsaPersonService hsaPersonService;
-
-  @InjectMocks
-  private AuthoritiesHelper authoritiesHelper = new AuthoritiesHelper(authoritiesResolver);
 
   @BeforeEach
   void setup() {
     configurationLoader.afterPropertiesSet();
-    authoritiesResolver.setConfigurationLoader(configurationLoader);
+    authoritiesResolver = new CommonAuthoritiesResolver(configurationLoader);
+    authoritiesHelper = new AuthoritiesHelper(authoritiesResolver);
   }
 
   // Kända intygstyper

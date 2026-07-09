@@ -29,8 +29,8 @@ import se.inera.intyg.webcert.infra.monitoring.logging.LogMDCServletFilter;
 public class MonitoringConfiguration {
 
   @Bean
-  public LogMDCServletFilter logMDCServletFilter() {
-    return new LogMDCServletFilter();
+  public LogMDCServletFilter logMDCServletFilter(LogMDCHelper mdcHelper) {
+    return new LogMDCServletFilter(mdcHelper);
   }
 
   @Bean

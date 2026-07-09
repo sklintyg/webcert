@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentRequestType;
@@ -89,6 +89,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
 @Service
+@RequiredArgsConstructor
 public class SrsInfraServiceImpl implements SrsInfraService {
 
   private static final int POSTNUMMER_LENGTH = 5;
@@ -97,13 +98,13 @@ public class SrsInfraServiceImpl implements SrsInfraService {
   private static final String CONSUMER_HSA_ID = "SE5565594230-B31";
   private static final String DIAGNOS_CODE_SYSTEM = "1.2.752.116.1.1.1.1.3";
 
-  @Autowired private GetSRSInformationResponderInterface getSRSInformation;
-  @Autowired private GetPredictionQuestionsResponderInterface getPrediction;
-  @Autowired private GetConsentResponderInterface getConsent;
-  @Autowired private SetConsentResponderInterface setConsent;
-  @Autowired private GetDiagnosisCodesResponderInterface getDiagnosisCodes;
-  @Autowired private GetSRSInformationForDiagnosisResponderInterface getSRSInformationForDiagnosis;
-  @Autowired private SetOwnOpinionResponderInterface setOwnOpinion;
+  private final GetSRSInformationResponderInterface getSRSInformation;
+  private final GetPredictionQuestionsResponderInterface getPrediction;
+  private final GetConsentResponderInterface getConsent;
+  private final SetConsentResponderInterface setConsent;
+  private final GetDiagnosisCodesResponderInterface getDiagnosisCodes;
+  private final GetSRSInformationForDiagnosisResponderInterface getSRSInformationForDiagnosis;
+  private final SetOwnOpinionResponderInterface setOwnOpinion;
 
   @Override
   public SrsResponse getSrs(

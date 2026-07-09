@@ -22,19 +22,15 @@ import static java.util.Optional.ofNullable;
 
 import java.util.Collections;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.infra.security.common.model.Feature;
 
 @Component
+@RequiredArgsConstructor
 public class FeaturesHelper {
 
-  private CommonFeaturesResolver featuresResolver;
-
-  @Autowired
-  public FeaturesHelper(CommonFeaturesResolver featuresResolver) {
-    this.featuresResolver = featuresResolver;
-  }
+  private final CommonFeaturesResolver featuresResolver;
 
   public boolean isFeatureActive(String feature) {
     return ofNullable(featuresResolver.getFeatures().get(feature))

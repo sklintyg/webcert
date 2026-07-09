@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
@@ -34,14 +34,14 @@ import se.inera.intyg.webcert.infra.driftbannerdto.Application;
 import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
 import se.inera.intyg.webcert.infra.ia.cache.IaCacheConfiguration;
 
+@RequiredArgsConstructor
 public class IABannerServiceImpl implements IABannerService {
 
   private static final Logger LOG = LoggerFactory.getLogger(IABannerServiceImpl.class);
 
-  @Autowired
-  @Qualifier("iaRestTemplate") private RestTemplate restTemplate;
+  @Qualifier("iaRestTemplate") private final RestTemplate restTemplate;
 
-  @Autowired private Cache iaCache;
+  private final Cache iaCache;
 
   @Value("${intygsadmin.url}")
   private String iaUrl;

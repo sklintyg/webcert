@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.infra.postnummer.service;
 
 import jakarta.annotation.PostConstruct;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.postnummer.model.Omrade;
@@ -30,6 +30,7 @@ import se.inera.intyg.webcert.infra.postnummer.repository.PostnummerRepository;
 import se.inera.intyg.webcert.infra.postnummer.repository.PostnummerRepositoryFactory;
 
 @Service
+@RequiredArgsConstructor
 public class PostnummerServiceImpl implements PostnummerService {
 
   private static final Logger LOG = LoggerFactory.getLogger(PostnummerRepositoryFactory.class);
@@ -37,7 +38,7 @@ public class PostnummerServiceImpl implements PostnummerService {
   @Value("${postnummer.file}")
   private String sourceFile;
 
-  @Autowired private PostnummerRepositoryFactory postnummerRepositoryFactory;
+  private final PostnummerRepositoryFactory postnummerRepositoryFactory;
 
   private PostnummerRepository postnummerRepository;
 

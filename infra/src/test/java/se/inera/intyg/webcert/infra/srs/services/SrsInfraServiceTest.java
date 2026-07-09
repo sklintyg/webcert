@@ -313,82 +313,82 @@ class SrsInfraServiceTest {
 
   @Test
   void testGetPostNummerVardenhetVald() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     String postnummer = svc.getPostnummer(createUserVardenhetVald("111 11", null));
     assertEquals("11111", postnummer);
   }
 
   @Test
   void testGetPostNummerVardenhetValdNoPostnummerAtVardenhet() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     IntygUser user = createUserVardenhetVald(null, "222 22");
     assertThrows(IllegalArgumentException.class, () -> svc.getPostnummer(user));
   }
 
   @Test
   void testGetPostNummerVardenhetValdNoPostnummer() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     IntygUser user = createUserVardenhetVald(null, null);
     assertThrows(IllegalArgumentException.class, () -> svc.getPostnummer(user));
   }
 
   @Test
   void testGetPostNummerMottagningVald() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     String postnummer = svc.getPostnummer(createUserMottagningVald("111 11", "222 22"));
     assertEquals("22222", postnummer);
   }
 
   @Test
   void testGetPostNummerFromParentMottagningVald() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     String postnummer = svc.getPostnummer(createUserMottagningVald("111 11", null));
     assertEquals("11111", postnummer);
   }
 
   @Test
   void testGetPostNummerMottagningValdNoPostnummer() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     IntygUser user = createUserMottagningVald(null, null);
     assertThrows(IllegalArgumentException.class, () -> svc.getPostnummer(user));
   }
 
   @Test
   void testGetPostnummerVardenhetValdIncorrecLength() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     IntygUser user = createUserVardenhetVald("111 11111", null);
     assertThrows(IllegalArgumentException.class, () -> svc.getPostnummer(user));
   }
 
   @Test
   void testGetPostnummerFromParentMottagningValdIncorrectLength() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     IntygUser user = createUserMottagningVald("111 11111", null);
     assertThrows(IllegalArgumentException.class, () -> svc.getPostnummer(user));
   }
 
   @Test
   void testGetPostnummerMottagningValdIncorrectLength() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     IntygUser user = createUserMottagningVald("111 11", "222 22222");
     assertThrows(IllegalArgumentException.class, () -> svc.getPostnummer(user));
   }
 
   @Test
   void formatPostnummer() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     assertEquals("11111", svc.formatPostnummer("111 11"));
   }
 
   @Test
   void formatPostnummerIncorrectLength() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     assertThrows(IllegalArgumentException.class, () -> svc.formatPostnummer("1111"));
   }
 
   @Test
   void formatPostnummerNull() {
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     assertThrows(IllegalArgumentException.class, () -> svc.formatPostnummer(null));
   }
 
@@ -397,7 +397,7 @@ class SrsInfraServiceTest {
     Mottagning mt = createMottagning("mtId", "veId", "222 22");
     Vardenhet ve = createVardenhet("veId", Lists.newArrayList(mt), "111 11");
     Vardgivare vg = createVardgivare("vgId", Lists.newArrayList(ve));
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     assertEquals("222 22", svc.getPostnummer(mt, vg));
   }
 
@@ -406,7 +406,7 @@ class SrsInfraServiceTest {
     Mottagning mt = createMottagning("mtId", "veId", null);
     Vardenhet ve = createVardenhet("veId", Lists.newArrayList(mt), "111 11");
     Vardgivare vg = createVardgivare("vgId", Lists.newArrayList(ve));
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     assertEquals("111 11", svc.getPostnummer(mt, vg));
   }
 
@@ -415,12 +415,16 @@ class SrsInfraServiceTest {
     Mottagning mt = createMottagning("mtId", "veId", null);
     Vardenhet ve = createVardenhet("veId", Lists.newArrayList(mt), null);
     Vardgivare vg = createVardgivare("vgId", Lists.newArrayList(ve));
-    SrsInfraServiceImpl svc = new SrsInfraServiceImpl();
+    SrsInfraServiceImpl svc = newSrsInfraServiceForPostnummerTests();
     assertNull(svc.getPostnummer(mt, vg));
   }
 
   private Personnummer createPnr(String pnr) {
     return Personnummer.createPersonnummer(pnr).get();
+  }
+
+  private SrsInfraServiceImpl newSrsInfraServiceForPostnummerTests() {
+    return new SrsInfraServiceImpl(null, null, null, null, null, null, null);
   }
 
   private IntygUser createUser() {

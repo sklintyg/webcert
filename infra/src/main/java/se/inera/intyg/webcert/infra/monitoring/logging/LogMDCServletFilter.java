@@ -30,14 +30,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 /** Tags log records with trace id and session id. */
+@RequiredArgsConstructor
 public class LogMDCServletFilter implements Filter {
 
-  @Autowired private LogMDCHelper mdcHelper;
+  private final LogMDCHelper mdcHelper;
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -51,10 +51,7 @@ public class LogMDCServletFilter implements Filter {
   }
 
   @Override
-  public void init(FilterConfig filterConfig) {
-    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(
-        this, filterConfig.getServletContext());
-  }
+  public void init(FilterConfig filterConfig) {}
 
   @Override
   public void destroy() {}
