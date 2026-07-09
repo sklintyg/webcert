@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.converter;
 
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
@@ -32,9 +32,10 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CertificateEventDTO.Ext
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 
 @Component
+@RequiredArgsConstructor
 public class CertificateEventConverter {
 
-  @Autowired private @Lazy IntygService intygService;
+  @Lazy private final IntygService intygService;
 
   public CertificateEventDTO convertToCertificateEventDTO(CertificateEvent event) {
     CertificateEventDTO eventDto = new CertificateEventDTO(event);

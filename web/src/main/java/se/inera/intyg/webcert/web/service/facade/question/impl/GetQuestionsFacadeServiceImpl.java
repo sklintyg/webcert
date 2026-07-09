@@ -19,9 +19,8 @@
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -29,21 +28,14 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeServ
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 
 @Service(value = "GetQuestionsFacadeServiceImpl")
+@RequiredArgsConstructor
 public class GetQuestionsFacadeServiceImpl implements GetQuestionsFacadeService {
 
   private final IntygService intygService;
-  private final GetQuestionsFacadeService arendeToQuestionFacadeService;
-  private final GetQuestionsFacadeService fragaSvarToQuestionFacadeService;
 
-  @Autowired
-  public GetQuestionsFacadeServiceImpl(
-      @Lazy IntygService intygService,
-      @Qualifier("ArendeToQuestionFacadeService") GetQuestionsFacadeService arendeToQuestionFacadeService,
-      @Qualifier("FragaSvarToQuestionFacadeService") GetQuestionsFacadeService fragaSvarToQuestionFacadeService) {
-    this.intygService = intygService;
-    this.arendeToQuestionFacadeService = arendeToQuestionFacadeService;
-    this.fragaSvarToQuestionFacadeService = fragaSvarToQuestionFacadeService;
-  }
+  @Qualifier("ArendeToQuestionFacadeService") private final GetQuestionsFacadeService arendeToQuestionFacadeService;
+
+  @Qualifier("FragaSvarToQuestionFacadeService") private final GetQuestionsFacadeService fragaSvarToQuestionFacadeService;
 
   @Override
   public List<Question> getQuestions(String certificateId) {

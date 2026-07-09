@@ -18,25 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Component
+@RequiredArgsConstructor
 public final class LockedDraftAccessServiceHelper {
 
   private final LockedDraftAccessService lockedDraftAccessService;
   private final AccessResultExceptionHelper accessResultExceptionHelper;
-
-  @Autowired
-  public LockedDraftAccessServiceHelper(
-      LockedDraftAccessService lockedDraftAccessService,
-      AccessResultExceptionHelper accessResultExceptionHelper) {
-    this.lockedDraftAccessService = lockedDraftAccessService;
-    this.accessResultExceptionHelper = accessResultExceptionHelper;
-  }
 
   public boolean isAllowToRead(Utkast draft) {
     return evaluateAllowToRead(draft).isAllowed();

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -63,17 +62,32 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractUtkastBuilder.class);
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  protected final IntygModuleRegistry moduleRegistry;
 
-  @Autowired private @Lazy IntygService intygService;
+  @Lazy protected final IntygService intygService;
 
-  @Autowired private CreateIntygsIdStrategy intygsIdStrategy;
+  protected final CreateIntygsIdStrategy intygsIdStrategy;
 
-  @Autowired private UtkastRepository utkastRepository;
+  protected final UtkastRepository utkastRepository;
 
-  @Autowired private IntygTextsService intygTextsService;
+  protected final IntygTextsService intygTextsService;
 
-  @Autowired private DefaultTypeAheadProvider defaultTypeAheadProvider;
+  protected final DefaultTypeAheadProvider defaultTypeAheadProvider;
+
+  protected AbstractUtkastBuilder(
+      IntygModuleRegistry moduleRegistry,
+      @Lazy IntygService intygService,
+      CreateIntygsIdStrategy intygsIdStrategy,
+      UtkastRepository utkastRepository,
+      IntygTextsService intygTextsService,
+      DefaultTypeAheadProvider defaultTypeAheadProvider) {
+    this.moduleRegistry = moduleRegistry;
+    this.intygService = intygService;
+    this.intygsIdStrategy = intygsIdStrategy;
+    this.utkastRepository = utkastRepository;
+    this.intygTextsService = intygTextsService;
+    this.defaultTypeAheadProvider = defaultTypeAheadProvider;
+  }
 
   /*
    * (non-Javadoc)

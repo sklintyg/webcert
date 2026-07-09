@@ -35,6 +35,10 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.services.BefattningService;
+import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
+import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean;
 import se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean;
 import se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean;
@@ -79,19 +83,24 @@ public class AppConfig {
 
   @Bean
   @Profile("dev")
-  public FragaSvarBootstrapBean fragaSvarBootstrapBean() {
-    return new FragaSvarBootstrapBean();
+  public FragaSvarBootstrapBean fragaSvarBootstrapBean(FragaSvarRepository fragaSvarRepository) {
+    return new FragaSvarBootstrapBean(fragaSvarRepository);
   }
 
   @Bean
   @Profile("dev")
-  public IntegreradeEnheterBootstrapBean integreradeEnheterBootstrapBean() {
-    return new IntegreradeEnheterBootstrapBean();
+  public IntegreradeEnheterBootstrapBean integreradeEnheterBootstrapBean(
+      IntegreradEnhetRepository integreradEnhetRepository) {
+    return new IntegreradeEnheterBootstrapBean(integreradEnhetRepository);
   }
 
   @Bean
   @Profile("dev")
-  public UtkastBootstrapBean utkastBootstrapBean() {
-    return new UtkastBootstrapBean();
+  public UtkastBootstrapBean utkastBootstrapBean(
+      IntygModuleRegistry registry,
+      UtkastRepository utkastRepo,
+      FragaSvarRepository fragaRepo,
+      ArendeRepository arendeRepo) {
+    return new UtkastBootstrapBean(registry, utkastRepo, fragaRepo, arendeRepo);
   }
 }

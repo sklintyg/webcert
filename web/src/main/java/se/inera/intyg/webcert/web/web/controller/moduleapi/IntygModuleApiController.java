@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.PrintCertificateAggregator;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 /**
@@ -46,7 +46,14 @@ public class IntygModuleApiController extends AbstractApiController {
 
   private static final String CONTENT_DISPOSITION = "Content-Disposition";
 
-  @Autowired private PrintCertificateAggregator printCertificateAggregator;
+  private final PrintCertificateAggregator printCertificateAggregator;
+
+  public IntygModuleApiController(
+      WebCertUserService webCertUserService,
+      PrintCertificateAggregator printCertificateAggregator) {
+    super(webCertUserService);
+    this.printCertificateAggregator = printCertificateAggregator;
+  }
 
   /**
    * Return the signed certificate identified by the given id as PDF.

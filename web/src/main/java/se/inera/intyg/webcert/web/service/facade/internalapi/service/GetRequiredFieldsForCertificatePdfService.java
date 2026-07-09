@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.RequiredFieldsForCertificatePdf;
 
 @Service
+@RequiredArgsConstructor
 public class GetRequiredFieldsForCertificatePdfService {
 
   private static final Logger LOG =
@@ -47,16 +48,6 @@ public class GetRequiredFieldsForCertificatePdfService {
   private final ITIntegrationService itIntegrationService;
   private static final boolean SHOULD_NOT_PDL_LOG = false;
   private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
-
-  @Autowired
-  public GetRequiredFieldsForCertificatePdfService(
-      UtkastService utkastService,
-      IntygService intygService,
-      ITIntegrationService itIntegrationService) {
-    this.utkastService = utkastService;
-    this.intygService = intygService;
-    this.itIntegrationService = itIntegrationService;
-  }
 
   public RequiredFieldsForCertificatePdf get(String certificateId) {
     final var draft = getCertificateFromWebcert(certificateId, SHOULD_NOT_PDL_LOG);

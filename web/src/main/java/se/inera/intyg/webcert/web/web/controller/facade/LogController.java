@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,13 +34,14 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 
 @RestController
 @RequestMapping("/api/log")
+@RequiredArgsConstructor
 public class LogController {
 
   private static final Logger LOG = LoggerFactory.getLogger(LogController.class);
 
   private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-  @Autowired private ErrorLogFacadeService errorLogFacadeService;
+  private final ErrorLogFacadeService errorLogFacadeService;
 
   @PostMapping("/error")
   @PerformanceLogging(eventAction = "log-log-error", eventType = MdcLogConstants.EVENT_TYPE_ERROR)

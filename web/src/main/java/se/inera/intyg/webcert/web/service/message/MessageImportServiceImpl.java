@@ -26,9 +26,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,19 +48,20 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMe
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
 @Service
+@RequiredArgsConstructor
 public class MessageImportServiceImpl implements MessageImportService {
 
   private static final Logger LOG = LoggerFactory.getLogger(MessageImportServiceImpl.class);
 
-  @Autowired private UtkastRepository draftRepository;
+  private final UtkastRepository draftRepository;
 
-  @Autowired private ITIntegrationService itIntegrationService;
+  private final ITIntegrationService itIntegrationService;
 
-  @Autowired @Lazy private IntygService certificateService;
+  @Lazy private final IntygService certificateService;
 
-  @Autowired private ArendeRepository messageRepository;
+  private final ArendeRepository messageRepository;
 
-  @Autowired private MonitoringLogService monitoringLogService;
+  private final MonitoringLogService monitoringLogService;
 
   @Override
   public boolean isImportNeeded(String certificateId) {

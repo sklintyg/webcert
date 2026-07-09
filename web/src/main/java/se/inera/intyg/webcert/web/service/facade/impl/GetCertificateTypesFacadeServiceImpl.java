@@ -23,7 +23,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @Service("getCertificateTypeInfoFromWebcert")
+@RequiredArgsConstructor
 public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypesFacadeService {
 
   private final IntygModuleRegistry intygModuleRegistry;
@@ -62,30 +63,6 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
   private final MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
   private final FeaturesHelper featuresHelper;
   private final CertificateTypeInfoModalService certificateTypeInfoModalService;
-
-  @Autowired
-  public GetCertificateTypesFacadeServiceImpl(
-      IntygModuleRegistry intygModuleRegistry,
-      ResourceLinkHelper resourceLinkHelper,
-      AuthoritiesHelper authoritiesHelper,
-      WebCertUserService webCertUserService,
-      IntygTextsService intygTextsService,
-      CertificateTypeMessageService certificateTypeMessageService,
-      PatientDetailsResolver patientDetailsResolver,
-      MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation,
-      FeaturesHelper featuresHelper,
-      CertificateTypeInfoModalService certificateTypeInfoModalService) {
-    this.intygModuleRegistry = intygModuleRegistry;
-    this.resourceLinkHelper = resourceLinkHelper;
-    this.authoritiesHelper = authoritiesHelper;
-    this.webCertUserService = webCertUserService;
-    this.intygTextsService = intygTextsService;
-    this.certificateTypeMessageService = certificateTypeMessageService;
-    this.patientDetailsResolver = patientDetailsResolver;
-    this.missingRelatedCertificateConfirmation = missingRelatedCertificateConfirmation;
-    this.featuresHelper = featuresHelper;
-    this.certificateTypeInfoModalService = certificateTypeInfoModalService;
-  }
 
   @Override
   public List<CertificateTypeInfoDTO> get(Personnummer patientId) {

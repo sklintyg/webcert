@@ -28,6 +28,7 @@ import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Controller
 @RequestMapping({"/visa/anvandare", "/v2/visa/anvandare"})
@@ -43,6 +44,10 @@ public class UserIntegrationController extends BaseIntegrationController {
         AuthoritiesConstants.ROLE_BARNMORSKA,
         AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
       };
+
+  public UserIntegrationController(WebCertUserService webCertUserService) {
+    super(webCertUserService);
+  }
 
   @GetMapping("/logout/now")
   @PerformanceLogging(

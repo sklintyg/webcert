@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -36,10 +36,10 @@ import se.inera.intyg.webcert.infra.message.dto.MessageFromIT;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @Service
+@RequiredArgsConstructor
 public class ITIntegrationServiceImpl implements ITIntegrationService {
 
-  @Autowired
-  @Qualifier("itRestTemplate") private RestTemplate restTemplate;
+  @Qualifier("itRestTemplate") private final RestTemplate restTemplate;
 
   @Value("${intygstjanst.base.url}")
   private String intygstjanstenUrl;

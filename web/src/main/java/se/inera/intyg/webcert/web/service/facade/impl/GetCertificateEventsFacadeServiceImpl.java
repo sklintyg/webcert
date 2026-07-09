@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
@@ -67,7 +66,6 @@ public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEven
           EventCode.PAMINNELSE,
           EventCode.KFSIGN);
 
-  @Autowired
   public GetCertificateEventsFacadeServiceImpl(
       CertificateRelationService certificateRelationService,
       CertificateEventService certificateEventService,

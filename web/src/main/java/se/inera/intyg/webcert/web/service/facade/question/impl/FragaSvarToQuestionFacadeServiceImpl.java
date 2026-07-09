@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
@@ -29,19 +29,12 @@ import se.inera.intyg.webcert.web.service.facade.question.util.FragaSvarToQuesti
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 
 @Service(value = "FragaSvarToQuestionFacadeService")
+@RequiredArgsConstructor
 public class FragaSvarToQuestionFacadeServiceImpl implements GetQuestionsFacadeService {
 
   private final FragaSvarService fragaSvarService;
 
   private final FragaSvarToQuestionConverter fragaSvarToQuestionConverter;
-
-  @Autowired
-  public FragaSvarToQuestionFacadeServiceImpl(
-      FragaSvarService fragaSvarService,
-      FragaSvarToQuestionConverter fragaSvarToQuestionConverter) {
-    this.fragaSvarService = fragaSvarService;
-    this.fragaSvarToQuestionConverter = fragaSvarToQuestionConverter;
-  }
 
   @Override
   public List<Question> getComplementQuestions(String certificateId) {

@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,13 +36,14 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 @RestController
 @RequestMapping("/testability/event")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class EventResource {
 
-  @Autowired HandelseRepository handelseRepository;
+  private final HandelseRepository handelseRepository;
 
-  @Autowired NotificationRedeliveryRepository redeliveryRepository;
+  private final NotificationRedeliveryRepository redeliveryRepository;
 
-  @Autowired CertificateEventRepository certificateEventRepository;
+  private final CertificateEventRepository certificateEventRepository;
 
   @GetMapping("/eventCount")
   public Long getEventCountForCertificateIds(@RequestBody List<String> certificateIds) {

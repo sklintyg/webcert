@@ -78,9 +78,7 @@ class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
   @Mock private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
-  @InjectMocks
-  private CreateUtkastFromTemplateBuilder createUtkastFromTemplateBuilder =
-      new CreateUtkastFromTemplateBuilder();
+  @InjectMocks private CreateUtkastFromTemplateBuilder createUtkastFromTemplateBuilder;
 
   @BeforeEach
   void expectCallToModuleRegistry() throws Exception {

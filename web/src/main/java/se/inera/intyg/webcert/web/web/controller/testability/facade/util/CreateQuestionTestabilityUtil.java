@@ -22,7 +22,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -37,21 +37,12 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateQuestionRequestDTO;
 
 @Component
+@RequiredArgsConstructor
 public class CreateQuestionTestabilityUtil {
 
   private final UtkastService utkastService;
   private final ArendeRepository arendeRepository;
   private final ArendeDraftRepository arendeDraftRepository;
-
-  @Autowired
-  public CreateQuestionTestabilityUtil(
-      UtkastService utkastService,
-      ArendeRepository arendeRepository,
-      ArendeDraftRepository arendeDraftRepository) {
-    this.utkastService = utkastService;
-    this.arendeRepository = arendeRepository;
-    this.arendeDraftRepository = arendeDraftRepository;
-  }
 
   public String createNewQuestion(
       @NotNull String certificateId, CreateQuestionRequestDTO createQuestionRequest) {

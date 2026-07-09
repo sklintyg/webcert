@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,13 +33,14 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
 @RestController
 @RequestMapping("/api/v1/session")
+@RequiredArgsConstructor
 public class InvalidateSessionApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(InvalidateSessionApiController.class);
   public static final String SESSION_STATUS_REQUEST_MAPPING = "/v1/session";
   public static final String INVALIDATE_ENDPOINT = "/invalidate";
   protected static final String UTF_8_CHARSET = ";charset=utf-8";
-  @Autowired private InvalidateSessionService invalidateSessionService;
+  private final InvalidateSessionService invalidateSessionService;
 
   @PostMapping(INVALIDATE_ENDPOINT)
   @PerformanceLogging(

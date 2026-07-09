@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.web.service.srs;
 
 import com.google.common.base.Strings;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
@@ -49,21 +49,22 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
 @Service
+@RequiredArgsConstructor
 public class SrsServiceImpl implements SrsService {
 
-  @Autowired private SrsInfraService srsInfraService;
+  private final SrsInfraService srsInfraService;
 
-  @Autowired private LogService logService;
+  private final LogService logService;
 
-  @Autowired private MonitoringLogService monitoringLog;
+  private final MonitoringLogService monitoringLog;
 
-  @Autowired private DiagnosService diagnosService;
+  private final DiagnosService diagnosService;
 
-  @Autowired private @Lazy IntygService intygService;
+  @Lazy private final IntygService intygService;
 
-  @Autowired private IntygModuleFacade intygModuleFacade;
+  private final IntygModuleFacade intygModuleFacade;
 
-  @Autowired private SrsCertificateExtensionChainService srsCertificateExtensionChainService;
+  private final SrsCertificateExtensionChainService srsCertificateExtensionChainService;
 
   private static final Logger LOG = LoggerFactory.getLogger(SrsServiceImpl.class);
 

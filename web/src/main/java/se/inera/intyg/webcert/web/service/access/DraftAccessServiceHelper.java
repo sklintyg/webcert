@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -26,18 +26,11 @@ import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Component
+@RequiredArgsConstructor
 public final class DraftAccessServiceHelper {
 
   private final DraftAccessService draftAccessService;
   private final AccessResultExceptionHelper accessResultExceptionHelper;
-
-  @Autowired
-  public DraftAccessServiceHelper(
-      DraftAccessService draftAccessService,
-      AccessResultExceptionHelper accessResultExceptionHelper) {
-    this.draftAccessService = draftAccessService;
-    this.accessResultExceptionHelper = accessResultExceptionHelper;
-  }
 
   public boolean isAllowedToCreateUtkast(String intygsTyp, Personnummer personnummer) {
     return evaluateAllowToCreateUtkast(intygsTyp, personnummer).isAllowed();

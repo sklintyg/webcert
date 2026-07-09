@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -33,9 +33,10 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 /** Created by eriklupander on 2017-05-15. */
 @Service
+@RequiredArgsConstructor
 public class CertificateRelationServiceImpl implements CertificateRelationService {
 
-  @Autowired private UtkastRepositoryCustom utkastRepoCustom;
+  private final UtkastRepositoryCustom utkastRepoCustom;
 
   @Override
   public Relations getRelations(String intygsId) {

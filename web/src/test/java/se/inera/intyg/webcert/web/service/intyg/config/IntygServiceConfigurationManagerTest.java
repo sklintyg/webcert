@@ -32,8 +32,7 @@ class IntygServiceConfigurationManagerTest {
 
   @BeforeEach
   void setup() {
-    configurationManager = new IntygServiceConfigurationManagerImpl();
-    configurationManager.setObjectMapper(new CustomObjectMapper());
+    configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
   }
 
   @Test

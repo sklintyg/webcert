@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
@@ -39,24 +39,13 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 /** Class that handles the different resource links for a specific certificate. */
 @Service
+@RequiredArgsConstructor
 public class GetCertificateResourceLinksImpl implements GetCertificateResourceLinks {
 
   private final GetCertificatesAvailableFunctions getCertificatesAvailableFunctions;
   private final DraftAccessServiceHelper draftAccessServiceHelper;
   private final LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
   private final CertificateAccessServiceHelper certificateAccessServiceHelper;
-
-  @Autowired
-  public GetCertificateResourceLinksImpl(
-      GetCertificatesAvailableFunctions getCertificatesAvailableFunctions,
-      DraftAccessServiceHelper draftAccessServiceHelper,
-      LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper,
-      CertificateAccessServiceHelper certificateAccessServiceHelper) {
-    this.getCertificatesAvailableFunctions = getCertificatesAvailableFunctions;
-    this.draftAccessServiceHelper = draftAccessServiceHelper;
-    this.lockedDraftAccessServiceHelper = lockedDraftAccessServiceHelper;
-    this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-  }
 
   /**
    * Fetch all resource links for a specific certificate in a specific context. The context is

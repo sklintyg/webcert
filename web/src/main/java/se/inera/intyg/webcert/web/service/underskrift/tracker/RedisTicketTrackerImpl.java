@@ -22,7 +22,7 @@ import jakarta.annotation.Resource;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -42,13 +42,13 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
  */
 @Service
 @DependsOn("rediscache")
+@RequiredArgsConstructor
 public class RedisTicketTrackerImpl implements RedisTicketTracker {
 
   private static final String SIGNATURE_CACHE = "webcert.signature.ticket";
   private static final long TICKET_EXPIRY_MINUTES = 15L;
 
-  @Autowired
-  @Qualifier("rediscache") private RedisTemplate<Object, Object> redisTemplate;
+  @Qualifier("rediscache") private final RedisTemplate<Object, Object> redisTemplate;
 
   // inject the template as ValueOperations
   @Resource(name = "rediscache")

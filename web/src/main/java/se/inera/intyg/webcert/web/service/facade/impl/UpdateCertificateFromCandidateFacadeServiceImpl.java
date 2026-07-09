@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import jakarta.persistence.OptimisticLockException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -33,6 +33,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service("updateCertificateFromCandidateFromWC")
+@RequiredArgsConstructor
 public class UpdateCertificateFromCandidateFacadeServiceImpl
     implements UpdateCertificateFromCandidateFacadeService {
 
@@ -42,18 +43,6 @@ public class UpdateCertificateFromCandidateFacadeServiceImpl
   private final DraftAccessServiceHelper draftAccessServiceHelper;
   private final MonitoringLogService monitoringLogService;
   private final CandidateDataHelper candidateDataHelper;
-
-  @Autowired
-  public UpdateCertificateFromCandidateFacadeServiceImpl(
-      UtkastService utkastService,
-      DraftAccessServiceHelper draftAccessServiceHelper,
-      MonitoringLogService monitoringLogService,
-      CandidateDataHelper candidateDataHelper) {
-    this.utkastService = utkastService;
-    this.draftAccessServiceHelper = draftAccessServiceHelper;
-    this.monitoringLogService = monitoringLogService;
-    this.candidateDataHelper = candidateDataHelper;
-  }
 
   @Override
   public String update(String certificateId) {

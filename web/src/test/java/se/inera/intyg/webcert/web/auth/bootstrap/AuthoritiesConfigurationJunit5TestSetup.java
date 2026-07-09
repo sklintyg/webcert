@@ -33,12 +33,11 @@ public abstract class AuthoritiesConfigurationJunit5TestSetup {
   protected static final SecurityConfigurationLoader CONFIGURATION_LOADER =
       new SecurityConfigurationLoader(
           AUTH_CONFIG_LOCATION, FEATURES_CONFIG_LOCATION, MAX_ALIASES_FOR_COLLECTIONS);
-  public static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER =
-      new CommonAuthoritiesResolver();
+  public static CommonAuthoritiesResolver AUTHORITIES_RESOLVER;
 
   @BeforeAll
   public static void setupAuthoritiesConfiguration() {
     CONFIGURATION_LOADER.afterPropertiesSet();
-    AUTHORITIES_RESOLVER.setConfigurationLoader(CONFIGURATION_LOADER);
+    AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver(CONFIGURATION_LOADER);
   }
 }

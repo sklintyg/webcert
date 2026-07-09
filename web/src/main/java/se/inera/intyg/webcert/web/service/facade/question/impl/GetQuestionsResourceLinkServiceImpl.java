@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.link.ResourceLink;
@@ -40,21 +40,12 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
+@RequiredArgsConstructor
 public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResourceLinkService {
 
   private final GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService;
   private final CertificateAccessServiceHelper certificateAccessServiceHelper;
   private final GetCertificateFacadeService getCertificateFacadeService;
-
-  @Autowired
-  public GetQuestionsResourceLinkServiceImpl(
-      GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService,
-      CertificateAccessServiceHelper certificateAccessServiceHelper,
-      GetCertificateFacadeService getCertificateFacadeService) {
-    this.getQuestionsAvailableFunctionsService = getQuestionsAvailableFunctionsService;
-    this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-    this.getCertificateFacadeService = getCertificateFacadeService;
-  }
 
   @Override
   public List<ResourceLinkDTO> get(Question question) {

@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -31,6 +31,7 @@ import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
 @Service("renewCertificateFromWebcert")
+@RequiredArgsConstructor
 public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacadeService {
 
   private static final Logger LOG =
@@ -39,16 +40,6 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
   private final CopyUtkastServiceHelper copyUtkastServiceHelper;
   private final CopyUtkastService copyUtkastService;
   private final GetCertificateFacadeService getCertificateFacadeService;
-
-  @Autowired
-  public RenewCertificateFacadeServiceImpl(
-      CopyUtkastServiceHelper copyUtkastServiceHelper,
-      CopyUtkastService copyUtkastService,
-      GetCertificateFacadeService getCertificateFacadeService) {
-    this.copyUtkastServiceHelper = copyUtkastServiceHelper;
-    this.copyUtkastService = copyUtkastService;
-    this.getCertificateFacadeService = getCertificateFacadeService;
-  }
 
   @Override
   public String renewCertificate(String certificateId) {

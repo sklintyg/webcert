@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +38,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.UpdateListConfigRequ
 
 @RestController
 @RequestMapping("/api/list/config")
+@RequiredArgsConstructor
 public class ListConfigController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ListConfigController.class);
@@ -50,18 +51,6 @@ public class ListConfigController {
   private final ListPreviousCertificatesConfigFacadeServiceImpl
       listPreviousCertificatesConfigFacadeService;
   private final ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService;
-
-  @Autowired
-  public ListConfigController(
-      ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService,
-      ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService,
-      ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService,
-      ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService) {
-    this.draftListConfigFacadeService = draftListConfigFacadeService;
-    this.listSignedCertificatesConfigFacadeService = listSignedCertificatesConfigFacadeService;
-    this.listPreviousCertificatesConfigFacadeService = listPreviousCertificatesConfigFacadeService;
-    this.listQuestionsConfigFacadeService = listQuestionsConfigFacadeService;
-  }
 
   @GetMapping("/draft")
   @PerformanceLogging(

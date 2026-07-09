@@ -39,10 +39,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,6 +124,7 @@ import tools.jackson.databind.json.JsonMapper;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class IntygServiceImpl implements IntygService {
 
   private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
@@ -134,59 +135,59 @@ public class IntygServiceImpl implements IntygService {
   @Value("${sekretessmarkering.prod.date}")
   private String sekretessmarkeringProdDate;
 
-  @Autowired private CSIntegrationService csIntegrationService;
+  private final CSIntegrationService csIntegrationService;
 
-  @Autowired private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
+  private final GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
 
-  @Autowired private ListCertificatesForCareResponderInterface listCertificateService;
+  private final ListCertificatesForCareResponderInterface listCertificateService;
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired private CertificateEventService certificateEventService;
+  private final CertificateEventService certificateEventService;
 
-  @Autowired private IntygModuleFacade moduleFacade;
+  private final IntygModuleFacade moduleFacade;
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final IntygModuleRegistry moduleRegistry;
 
-  @Autowired private LogService logService;
+  private final LogService logService;
 
-  @Autowired private LogRequestFactory logRequestFactory;
+  private final LogRequestFactory logRequestFactory;
 
-  @Autowired private NotificationService notificationService;
+  private final NotificationService notificationService;
 
-  @Autowired private MonitoringLogService monitoringService;
+  private final MonitoringLogService monitoringService;
 
-  @Autowired private ArendeService arendeService;
+  private final ArendeService arendeService;
 
-  @Autowired private FragorOchSvarCreator fragorOchSvarCreator;
+  private final FragorOchSvarCreator fragorOchSvarCreator;
 
-  @Autowired private CertificateSenderService certificateSenderService;
+  private final CertificateSenderService certificateSenderService;
 
-  @Autowired private UtkastIntygDecorator utkastIntygDecorator;
+  private final UtkastIntygDecorator utkastIntygDecorator;
 
-  @Autowired private IntygDraftsConverter intygConverter;
+  private final IntygDraftsConverter intygConverter;
 
-  @Autowired private JsonMapper objectMapper;
+  private final JsonMapper objectMapper;
 
-  @Autowired private IntygRelationHelper intygRelationHelper;
+  private final IntygRelationHelper intygRelationHelper;
 
-  @Autowired private CertificateRelationService certificateRelationService;
+  private final CertificateRelationService certificateRelationService;
 
-  @Autowired private AuthoritiesHelper authoritiesHelper;
+  private final AuthoritiesHelper authoritiesHelper;
 
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
+  private final PatientDetailsResolver patientDetailsResolver;
 
-  @Autowired private ReferensService referensService;
+  private final ReferensService referensService;
 
-  @Autowired private CertificateAccessServiceHelper certificateAccessServiceHelper;
+  private final CertificateAccessServiceHelper certificateAccessServiceHelper;
 
-  @Autowired private IntygTextsService intygTextsService;
+  private final IntygTextsService intygTextsService;
 
-  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
   private ChronoLocalDateTime sekretessmarkeringStartDatum;
 

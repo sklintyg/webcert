@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -46,6 +46,7 @@ import se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepositoryFactory;
  * @author npet
  */
 @Service
+@RequiredArgsConstructor
 public class DiagnosServiceImpl implements DiagnosService {
 
   /**
@@ -85,7 +86,7 @@ public class DiagnosServiceImpl implements DiagnosService {
   @Value("${ksh97p.diagnos.code.files}")
   private String ksh97pCodeFilesStr;
 
-  @Autowired private DiagnosRepositoryFactory diagnosRepositoryFactory;
+  private final DiagnosRepositoryFactory diagnosRepositoryFactory;
 
   private DiagnosRepository icd10seDiagnosRepo;
 

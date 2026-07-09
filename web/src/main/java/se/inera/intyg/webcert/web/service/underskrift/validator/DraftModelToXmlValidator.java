@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.validator;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -32,13 +32,14 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 
 @Service
+@RequiredArgsConstructor
 public class DraftModelToXmlValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(DraftModelToXmlValidator.class);
 
-  @Autowired private UtkastModelToXMLConverter draftModelToXMLConverter;
+  private final UtkastModelToXMLConverter draftModelToXMLConverter;
 
-  @Autowired private IntygModuleRegistry intygModuleRegistry;
+  private final IntygModuleRegistry intygModuleRegistry;
 
   public ValidateXmlResponse validateDraftModelAsXml(Utkast draft)
       throws ModuleException, ModuleNotFoundException {

@@ -60,7 +60,7 @@ class LaunchIdValidationFilterTest {
 
   @Captor ArgumentCaptor<Map> mapArgumentCaptor;
 
-  @InjectMocks private LaunchIdValidationFilter filter = new LaunchIdValidationFilter();
+  @InjectMocks private LaunchIdValidationFilter filter;
 
   @Test
   void filterChainShouldContinueWhenRequestLaunchIdIsNull() throws ServletException, IOException {

@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,12 +35,13 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
 
 @RestController
 @RequestMapping("/api/icf")
+@RequiredArgsConstructor
 public class IcfController {
 
   private static final Logger LOG = LoggerFactory.getLogger(IcfController.class);
   private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-  @Autowired private IcfFacadeService icfFacadeService;
+  private final IcfFacadeService icfFacadeService;
 
   @PostMapping
   @PerformanceLogging(eventAction = "icf-get-icf", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

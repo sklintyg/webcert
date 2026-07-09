@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.notification;
 
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -39,21 +39,22 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import tools.jackson.databind.json.JsonMapper;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationRedeliveryStatusUpdateCreatorService {
 
-  @Autowired private UtkastRepository draftRepo;
+  private final UtkastRepository draftRepo;
 
-  @Autowired private JsonMapper objectMapper;
+  private final JsonMapper objectMapper;
 
-  @Autowired private HsaOrganizationsService hsaOrganizationsService;
+  private final HsaOrganizationsService hsaOrganizationsService;
 
-  @Autowired private HsaPersonService hsaPersonService;
+  private final HsaPersonService hsaPersonService;
 
-  @Autowired private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+  private final CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
-  @Autowired private @Lazy IntygService intygService;
+  @Lazy private final IntygService intygService;
 
-  @Autowired private NotificationMessageFactory notificationMessageFactory;
+  private final NotificationMessageFactory notificationMessageFactory;
 
   /**
    * Returns an XML String of a {@link CertificateStatusUpdateForCareType} created based on the

@@ -33,7 +33,6 @@ import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringReques
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +44,7 @@ import se.inera.intyg.webcert.infra.monitoring.logging.UserAgentParser;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 
@@ -55,9 +55,18 @@ public class JsLogApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);
 
-  @Autowired private MonitoringLogService monitoringService;
+  private final MonitoringLogService monitoringService;
 
-  @Autowired private UserAgentParser userAgentParser;
+  private final UserAgentParser userAgentParser;
+
+  public JsLogApiController(
+      WebCertUserService webCertUserService,
+      MonitoringLogService monitoringService,
+      UserAgentParser userAgentParser) {
+    super(webCertUserService);
+    this.monitoringService = monitoringService;
+    this.userAgentParser = userAgentParser;
+  }
 
   @PostMapping("/debug")
   @PerformanceLogging(eventAction = "js-log-debug", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

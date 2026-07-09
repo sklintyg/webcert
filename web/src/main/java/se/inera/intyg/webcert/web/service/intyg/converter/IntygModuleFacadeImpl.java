@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.Status;
@@ -43,12 +43,13 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 @Component
+@RequiredArgsConstructor
 public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
   private static final Logger LOG = LoggerFactory.getLogger(IntygModuleFacadeImpl.class);
   private static final String HSVARD_RECIPIENT_ID = "HSVARD";
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final IntygModuleRegistry moduleRegistry;
 
   @Value("${intygstjanst.logicaladdress}")
   private String logicalAddress;

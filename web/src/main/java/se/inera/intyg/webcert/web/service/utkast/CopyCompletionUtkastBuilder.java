@@ -19,26 +19,50 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
 import com.google.common.base.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.infra.pu.integration.api.model.Person;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
+import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 @Component
 public class CopyCompletionUtkastBuilder
     extends AbstractUtkastBuilder<CreateCompletionCopyRequest> {
 
-  @Autowired private ArendeService arendeService;
+  private final ArendeService arendeService;
+
+  public CopyCompletionUtkastBuilder(
+      IntygModuleRegistry moduleRegistry,
+      @Lazy IntygService intygService,
+      CreateIntygsIdStrategy intygsIdStrategy,
+      UtkastRepository utkastRepository,
+      IntygTextsService intygTextsService,
+      DefaultTypeAheadProvider defaultTypeAheadProvider,
+      ArendeService arendeService) {
+    super(
+        moduleRegistry,
+        intygService,
+        intygsIdStrategy,
+        utkastRepository,
+        intygTextsService,
+        defaultTypeAheadProvider);
+    this.arendeService = arendeService;
+  }
 
   @Override
   public Relation createRelation(CreateCompletionCopyRequest copyRequest) {

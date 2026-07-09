@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.underskrift;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -38,13 +37,24 @@ public abstract class BaseSignatureService {
 
   private static final Logger LOG = LoggerFactory.getLogger(BaseSignatureService.class);
 
-  @Autowired protected UtkastRepository utkastRepository;
+  protected final UtkastRepository utkastRepository;
 
-  @Autowired protected IntygModuleRegistry moduleRegistry;
+  protected final IntygModuleRegistry moduleRegistry;
 
-  @Autowired protected IntygService intygService;
+  protected final IntygService intygService;
 
-  @Autowired protected RedisTicketTracker redisTicketTracker;
+  protected final RedisTicketTracker redisTicketTracker;
+
+  protected BaseSignatureService(
+      UtkastRepository utkastRepository,
+      IntygModuleRegistry moduleRegistry,
+      IntygService intygService,
+      RedisTicketTracker redisTicketTracker) {
+    this.utkastRepository = utkastRepository;
+    this.moduleRegistry = moduleRegistry;
+    this.intygService = intygService;
+    this.redisTicketTracker = redisTicketTracker;
+  }
 
   protected Utkast updateAndSaveUtkast(
       Utkast utkast, String payloadJson, Signatur signatur, WebCertUser user) {

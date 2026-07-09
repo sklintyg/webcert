@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.web.handlers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
       "se.inera.intyg.webcert.web.web.controller.integration",
       "se.inera.intyg.webcert.web.web.controller.legacyintegration"
     })
+@RequiredArgsConstructor
 public class WebcertRedirectExceptionHandlerAdvice {
 
   private static final Logger LOG =
@@ -56,7 +57,7 @@ public class WebcertRedirectExceptionHandlerAdvice {
   public static final String ERROR_REASON_PU_PROBLEM = "pu-problem";
   public static final String ERROR_REASON_UNKNOWN = "unknown";
 
-  @Autowired private ReactUriFactory reactUriFactory;
+  private final ReactUriFactory reactUriFactory;
 
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<Void> handleException(RuntimeException ex, HttpServletRequest request) {

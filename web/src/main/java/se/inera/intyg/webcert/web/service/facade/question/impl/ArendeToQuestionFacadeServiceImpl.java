@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.service.facade.question.util.ComplementConvert
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @Service(value = "ArendeToQuestionFacadeService")
+@RequiredArgsConstructor
 public class ArendeToQuestionFacadeServiceImpl implements GetQuestionsFacadeService {
 
   private final ArendeService arendeService;
@@ -57,20 +58,6 @@ public class ArendeToQuestionFacadeServiceImpl implements GetQuestionsFacadeServ
   private final QuestionConverter questionConverter;
   private final ComplementConverter complementConverter;
   private final GetCertificateFacadeService getCertificateFacadeService;
-
-  @Autowired
-  public ArendeToQuestionFacadeServiceImpl(
-      ArendeService arendeService,
-      ArendeDraftService arendeDraftService,
-      QuestionConverter questionConverter,
-      ComplementConverter complementConverter,
-      GetCertificateFacadeService getCertificateFacadeService) {
-    this.arendeService = arendeService;
-    this.arendeDraftService = arendeDraftService;
-    this.questionConverter = questionConverter;
-    this.complementConverter = complementConverter;
-    this.getCertificateFacadeService = getCertificateFacadeService;
-  }
 
   @Override
   public List<Question> getComplementQuestions(String certificateId) {

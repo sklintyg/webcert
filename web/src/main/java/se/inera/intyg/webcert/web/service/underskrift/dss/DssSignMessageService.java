@@ -48,7 +48,6 @@ import org.apache.xml.security.signature.XMLSignature;
 import org.apache.xml.security.transforms.Transforms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -76,13 +75,12 @@ public class DssSignMessageService {
   @Value("${dss.client.keystore.file}")
   private Resource keystoreFile;
 
-  private DssMetadataService dssMetadataService;
+  private final DssMetadataService dssMetadataService;
 
   private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
   private KeyStore clientKeyStore;
 
-  @Autowired
   public DssSignMessageService(DssMetadataService dssMetadataService) {
     this.dssMetadataService = dssMetadataService;
 

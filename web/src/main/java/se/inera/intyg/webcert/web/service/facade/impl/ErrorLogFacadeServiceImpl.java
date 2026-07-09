@@ -18,21 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.ErrorLogFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 
 @Service
+@RequiredArgsConstructor
 public class ErrorLogFacadeServiceImpl implements ErrorLogFacadeService {
 
   private final MonitoringLogService monitoringService;
-
-  @Autowired
-  public ErrorLogFacadeServiceImpl(MonitoringLogService monitoringService) {
-    this.monitoringService = monitoringService;
-  }
 
   @Override
   public void log(ErrorLogRequestDTO request) {

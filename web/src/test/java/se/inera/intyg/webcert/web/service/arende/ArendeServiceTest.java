@@ -39,6 +39,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -71,10 +72,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -82,6 +83,7 @@ import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -194,7 +196,9 @@ class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
   @Mock private MonitoringLogService monitoringLog;
 
-  @Spy private ArendeViewConverter arendeViewConverter;
+  @Mock private IntygModuleRegistry moduleRegistry;
+
+  private ArendeViewConverter arendeViewConverter;
 
   @Mock private FragaSvarService fragaSvarService;
 
@@ -233,6 +237,8 @@ class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
   @BeforeEach
   @SuppressWarnings("unchecked")
   void setUp() {
+    arendeViewConverter = spy(new ArendeViewConverter(moduleRegistry, intygService));
+    ReflectionTestUtils.setField(service, "arendeViewConverter", arendeViewConverter);
     service.setMockSystemClock(Clock.fixed(FIXED_TIME_INSTANT, ZoneId.systemDefault()));
 
     // always return the Arende that is saved

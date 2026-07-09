@@ -22,9 +22,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Session;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.JmsException;
@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.common.Constants;
 
 /** Created by eriklupander on 2015-05-20. */
 @Component
+@RequiredArgsConstructor
 public class CertificateSenderServiceImpl implements CertificateSenderService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CertificateSenderServiceImpl.class);
@@ -43,8 +44,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
   @Value("${intygstjanst.logicaladdress}")
   private String logicalAddress;
 
-  @Autowired
-  @Qualifier("jmsCertificateSenderTemplate") private JmsTemplate jmsTemplate;
+  @Qualifier("jmsCertificateSenderTemplate") private final JmsTemplate jmsTemplate;
 
   @PostConstruct
   public void checkJmsTemplate() {

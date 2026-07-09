@@ -20,16 +20,13 @@ package se.inera.intyg.webcert.web.logging;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.infra.security.common.model.Role;
@@ -38,11 +35,11 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@Setter
 @Component
+@RequiredArgsConstructor
 public class MdcUserServletFilter implements Filter {
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -68,12 +65,6 @@ public class MdcUserServletFilter implements Filter {
     } else {
       chain.doFilter(request, response);
     }
-  }
-
-  @Override
-  public void init(FilterConfig filterConfig) {
-    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(
-        this, filterConfig.getServletContext());
   }
 
   private String selectedUnitId(SelectableVardenhet selectableVardenhet) {

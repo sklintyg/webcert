@@ -25,9 +25,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -38,13 +38,14 @@ import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 
 @Service
+@RequiredArgsConstructor
 public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistry {
 
   private static final Logger LOG = LoggerFactory.getLogger(IntegreradeEnheterRegistryImpl.class);
   private final Set<String> oldIntygTypes =
       Stream.of(Fk7263EntryPoint.MODULE_ID).collect(Collectors.toSet());
 
-  @Autowired private IntegreradEnhetRepository integreradEnhetRepository;
+  private final IntegreradEnhetRepository integreradEnhetRepository;
 
   /*
    * (non-Javadoc)

@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.web.controller.authtestability;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import java.util.Map;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,11 +46,12 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @RestController
 @RequestMapping("/authtestability/user")
 @Profile("!prod")
+@RequiredArgsConstructor
 public class UserResource {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
   @GetMapping("/role")
   @JsonPropertyDescription("Get the roles for user in session")

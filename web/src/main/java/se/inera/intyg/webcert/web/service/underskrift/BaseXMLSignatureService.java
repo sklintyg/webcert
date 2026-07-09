@@ -22,12 +22,12 @@ import jakarta.xml.bind.JAXBElement;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.ObjectFactory;
 import org.w3._2000._09.xmldsig_.SignatureType;
 import org.w3._2000._09.xmldsig_.SignatureValueType;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
@@ -39,23 +39,42 @@ import se.inera.intyg.webcert.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.webcert.infra.xmldsig.service.XMLDSigService;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
-  @Autowired private UtkastModelToXMLConverter utkastModelToXMLConverter;
+  protected final UtkastModelToXMLConverter utkastModelToXMLConverter;
 
-  @Autowired private PrepareSignatureService prepareSignatureService;
+  protected final PrepareSignatureService prepareSignatureService;
 
-  @Autowired private SignCertificateService signCertificateService;
+  protected final SignCertificateService signCertificateService;
 
-  @Autowired private XMLDSigService xmldSigService;
+  protected final XMLDSigService xmldSigService;
+
+  protected BaseXMLSignatureService(
+      UtkastRepository utkastRepository,
+      IntygModuleRegistry moduleRegistry,
+      IntygService intygService,
+      RedisTicketTracker redisTicketTracker,
+      UtkastModelToXMLConverter utkastModelToXMLConverter,
+      PrepareSignatureService prepareSignatureService,
+      SignCertificateService signCertificateService,
+      XMLDSigService xmldSigService) {
+    super(utkastRepository, moduleRegistry, intygService, redisTicketTracker);
+    this.utkastModelToXMLConverter = utkastModelToXMLConverter;
+    this.prepareSignatureService = prepareSignatureService;
+    this.signCertificateService = signCertificateService;
+    this.xmldSigService = xmldSigService;
+  }
 
   protected SignaturBiljett finalizeXMLDSigSignature(
       String x509certificate,

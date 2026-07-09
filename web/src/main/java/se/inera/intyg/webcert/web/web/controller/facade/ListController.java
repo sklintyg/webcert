@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.list.ListRequestDTO;
 
 @RestController
 @RequestMapping("/api/list")
+@RequiredArgsConstructor
 public class ListController {
 
   private static final Logger LOG = LoggerFactory.getLogger(ListController.class);
@@ -47,18 +48,6 @@ public class ListController {
   private final ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService;
   private final ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService;
   private final ListQuestionsFacadeServiceImpl listQuestionsFacadeService;
-
-  @Autowired
-  public ListController(
-      ListDraftsFacadeServiceImpl listDraftsFacadeService,
-      ListSignedCertificatesFacadeServiceImpl listSignedCertificatesFacadeService,
-      ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService,
-      ListQuestionsFacadeServiceImpl listQuestionsFacadeService) {
-    this.listDraftsFacadeService = listDraftsFacadeService;
-    this.listSignedCertificatesFacadeService = listSignedCertificatesFacadeService;
-    this.listPreviousCertificatesFacadeService = listPreviousCertificatesFacadeService;
-    this.listQuestionsFacadeService = listQuestionsFacadeService;
-  }
 
   @PostMapping("/draft")
   @PerformanceLogging(

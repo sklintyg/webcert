@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -31,6 +31,7 @@ import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConvert
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service("forwardCertificateFromWC")
+@RequiredArgsConstructor
 public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFacadeService {
 
   private static final Logger LOG =
@@ -43,18 +44,6 @@ public class ForwardCertificateFacadeServiceImpl implements ForwardCertificateFa
   private final UtkastToCertificateConverter utkastToCertificateConverter;
 
   private final ArendeService arendeService;
-
-  @Autowired
-  public ForwardCertificateFacadeServiceImpl(
-      UtkastService utkastService,
-      GetCertificateFacadeService getCertificateFacadeService,
-      UtkastToCertificateConverter utkastToCertificateConverter,
-      ArendeService arendeService) {
-    this.utkastService = utkastService;
-    this.getCertificateFacadeService = getCertificateFacadeService;
-    this.utkastToCertificateConverter = utkastToCertificateConverter;
-    this.arendeService = arendeService;
-  }
 
   @Override
   public Certificate forwardCertificate(String certificateId, boolean forwarded) {

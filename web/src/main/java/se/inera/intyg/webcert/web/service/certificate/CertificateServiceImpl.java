@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -43,15 +42,14 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @Service
 public class CertificateServiceImpl implements CertificateService {
 
-  private ITIntegrationService itIntegrationService;
-  private PatientDetailsResolver patientDetailsResolver;
-  private LogService logService;
-  private WebCertUserService webcertUserService;
-  private AuthoritiesHelper authoritiesHelper;
+  private final ITIntegrationService itIntegrationService;
+  private final PatientDetailsResolver patientDetailsResolver;
+  private final LogService logService;
+  private final WebCertUserService webcertUserService;
+  private final AuthoritiesHelper authoritiesHelper;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CertificateServiceImpl.class);
 
-  @Autowired
   public CertificateServiceImpl(
       ITIntegrationService itIntegrationService,
       PatientDetailsResolver patientDetailsResolver,

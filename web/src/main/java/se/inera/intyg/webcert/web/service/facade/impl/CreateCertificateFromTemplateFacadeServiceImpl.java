@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
 @Service("createCertificateFromTemplateFromWC")
+@RequiredArgsConstructor
 public class CreateCertificateFromTemplateFacadeServiceImpl
     implements CreateCertificateFromTemplateFacadeService {
 
@@ -46,18 +47,6 @@ public class CreateCertificateFromTemplateFacadeServiceImpl
   private final CopyUtkastService copyUtkastService;
   private final IntygTextsService intygTextsService;
   private final GetCertificateFacadeService getCertificateFacadeService;
-
-  @Autowired
-  public CreateCertificateFromTemplateFacadeServiceImpl(
-      CopyUtkastServiceHelper copyUtkastServiceHelper,
-      CopyUtkastService copyUtkastService,
-      IntygTextsService intygTextsService,
-      GetCertificateFacadeService getCertificateFacadeService) {
-    this.copyUtkastServiceHelper = copyUtkastServiceHelper;
-    this.copyUtkastService = copyUtkastService;
-    this.intygTextsService = intygTextsService;
-    this.getCertificateFacadeService = getCertificateFacadeService;
-  }
 
   @Override
   public String createCertificateFromTemplate(String certificateId) {

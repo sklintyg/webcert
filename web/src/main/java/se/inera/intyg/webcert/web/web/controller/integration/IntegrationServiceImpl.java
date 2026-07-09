@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -45,10 +44,21 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
   protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-  @Autowired private @Lazy IntygService intygService;
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
-  @Autowired private UtkastRepository utkastRepository;
-  @Autowired private ReferensService referensService;
+  @Lazy protected final IntygService intygService;
+  protected final PatientDetailsResolver patientDetailsResolver;
+  protected final UtkastRepository utkastRepository;
+  protected final ReferensService referensService;
+
+  protected IntegrationServiceImpl(
+      @Lazy IntygService intygService,
+      PatientDetailsResolver patientDetailsResolver,
+      UtkastRepository utkastRepository,
+      ReferensService referensService) {
+    this.intygService = intygService;
+    this.patientDetailsResolver = patientDetailsResolver;
+    this.utkastRepository = utkastRepository;
+    this.referensService = referensService;
+  }
 
   // api
 

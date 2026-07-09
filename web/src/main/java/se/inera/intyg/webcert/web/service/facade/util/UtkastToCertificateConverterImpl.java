@@ -22,9 +22,9 @@ import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusCo
 import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.isRevoked;
 
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
@@ -42,6 +42,7 @@ import se.inera.intyg.webcert.web.service.facade.modal.confirmation.Confirmation
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
+@RequiredArgsConstructor
 public class UtkastToCertificateConverterImpl implements UtkastToCertificateConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(UtkastToCertificateConverterImpl.class);
@@ -65,30 +66,6 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
   private final DraftAccessServiceHelper draftAccessServiceHelper;
 
   private final FeaturesHelper featuresHelper;
-
-  @Autowired
-  public UtkastToCertificateConverterImpl(
-      IntygModuleRegistry moduleRegistry,
-      IntygTextsService intygTextsService,
-      PatientConverter patientConverter,
-      CertificateRelationsConverter certificateRelationsConverter,
-      WebCertUserService webCertUserService,
-      HsatkOrganizationService hsatkOrganizationService,
-      TypeAheadProvider typeAheadProvider,
-      CertificateRecipientConverter certificateRecipientConverter,
-      DraftAccessServiceHelper draftAccessServiceHelper,
-      FeaturesHelper featuresHelper) {
-    this.moduleRegistry = moduleRegistry;
-    this.intygTextsService = intygTextsService;
-    this.patientConverter = patientConverter;
-    this.certificateRelationsConverter = certificateRelationsConverter;
-    this.webCertUserService = webCertUserService;
-    this.hsatkOrganizationService = hsatkOrganizationService;
-    this.typeAheadProvider = typeAheadProvider;
-    this.certificateRecipientConverter = certificateRecipientConverter;
-    this.draftAccessServiceHelper = draftAccessServiceHelper;
-    this.featuresHelper = featuresHelper;
-  }
 
   @Override
   public Certificate convert(Utkast certificate) {

@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -31,6 +30,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service("revokeCertificateFromWC")
+@RequiredArgsConstructor
 public class RevokeCertificateFacadeServiceImpl implements RevokeCertificateFacadeService {
 
   private static final Logger LOG =
@@ -41,16 +41,6 @@ public class RevokeCertificateFacadeServiceImpl implements RevokeCertificateFaca
   private final IntygService intygService;
 
   private final GetCertificateFacadeService getCertificateFacadeService;
-
-  @Autowired
-  public RevokeCertificateFacadeServiceImpl(
-      UtkastService utkastService,
-      @Lazy IntygService intygService,
-      GetCertificateFacadeService getCertificateFacadeService) {
-    this.utkastService = utkastService;
-    this.intygService = intygService;
-    this.getCertificateFacadeService = getCertificateFacadeService;
-  }
 
   @Override
   public Certificate revokeCertificate(String certificateId, String reason, String message) {

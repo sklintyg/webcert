@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.jobs;
 
+import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -31,13 +31,14 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.web.service.notification.NotificationRedeliveryJobService;
 
 @Component
+@RequiredArgsConstructor
 public class NotificationRedeliveryJob {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryJob.class);
 
-  @Autowired private NotificationRedeliveryJobService notificationRedeliveryJobService;
+  private final NotificationRedeliveryJobService notificationRedeliveryJobService;
 
-  @Autowired private MdcHelper mdcHelper;
+  private final MdcHelper mdcHelper;
 
   private static final String JOB_NAME = "NotificationRedeliveryJob.run";
   private static final String LOCK_AT_MOST = "PT29S";

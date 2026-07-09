@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.web.controller.facade;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.UserResponseDTO;
 
 @RestController
 @RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class UserController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
@@ -53,20 +54,6 @@ public class UserController {
 
   private final UserStatisticsService userStatisticsService;
   private final ChangeUnitService changeUnitService;
-
-  @Autowired
-  public UserController(
-      UserService userService,
-      GetUserResourceLinks getUserResourceLinks,
-      UserStatisticsService userStatisticsService,
-      WebCertUserService webCertUserService,
-      ChangeUnitService changeUnitService) {
-    this.userService = userService;
-    this.getUserResourceLinks = getUserResourceLinks;
-    this.webCertUserService = webCertUserService;
-    this.userStatisticsService = userStatisticsService;
-    this.changeUnitService = changeUnitService;
-  }
 
   @GetMapping
   @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

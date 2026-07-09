@@ -36,9 +36,9 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.oxm.MarshallingFailureException;
@@ -107,6 +107,7 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.S
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ArendeServiceImpl implements ArendeService {
 
   private static final String MAKULERING = "MAKULERING";
@@ -139,28 +140,28 @@ public class ArendeServiceImpl implements ArendeService {
   @Value("${sendmessagetofk.logicaladdress}")
   private String sendMessageToFKLogicalAddress;
 
-  @Autowired private ArendeRepository arendeRepository;
-  @Autowired private UtkastRepository utkastRepository;
-  @Autowired private WebCertUserService webcertUserService;
-  @Autowired private AuthoritiesHelper authoritiesHelper;
-  @Autowired private MonitoringLogService monitoringLog;
-  @Autowired private ArendeViewConverter arendeViewConverter;
-  @Autowired private EmployeeNameService employeeNameService;
-  @Autowired private FragaSvarService fragaSvarService;
-  @Autowired private NotificationService notificationService;
-  @Autowired private CertificateEventService certificateEventService;
-  @Autowired private CertificateSenderService certificateSenderService;
-  @Autowired private ArendeDraftService arendeDraftService;
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
-  @Autowired private StatisticsGroupByUtil statisticsGroupByUtil;
-  @Autowired private IntygModuleFacade modelFacade;
-  @Autowired private CertificateAccessServiceHelper certificateAccessServiceHelper;
-  @Autowired private @Lazy IntygService intygService;
-  @Autowired private LogService logService;
-  @Autowired private MessageImportService messageImportService;
-  @Autowired private PaginationAndLoggingService paginationAndLoggingService;
-  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final ArendeRepository arendeRepository;
+  private final UtkastRepository utkastRepository;
+  private final WebCertUserService webcertUserService;
+  private final AuthoritiesHelper authoritiesHelper;
+  private final MonitoringLogService monitoringLog;
+  private final ArendeViewConverter arendeViewConverter;
+  private final EmployeeNameService employeeNameService;
+  private final FragaSvarService fragaSvarService;
+  private final NotificationService notificationService;
+  private final CertificateEventService certificateEventService;
+  private final CertificateSenderService certificateSenderService;
+  private final ArendeDraftService arendeDraftService;
+  private final PatientDetailsResolver patientDetailsResolver;
+  private final StatisticsGroupByUtil statisticsGroupByUtil;
+  private final IntygModuleFacade modelFacade;
+  private final CertificateAccessServiceHelper certificateAccessServiceHelper;
+  @Lazy private final IntygService intygService;
+  private final LogService logService;
+  private final MessageImportService messageImportService;
+  private final PaginationAndLoggingService paginationAndLoggingService;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
   private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 

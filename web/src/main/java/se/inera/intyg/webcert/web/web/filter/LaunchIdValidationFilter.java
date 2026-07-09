@@ -26,10 +26,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
@@ -43,15 +43,15 @@ import se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionResponse;
 import tools.jackson.databind.ObjectMapper;
 
 @Component(value = "launchIdValidationFilter")
+@RequiredArgsConstructor
 public class LaunchIdValidationFilter extends OncePerRequestFilter {
 
   private static final Logger LOG = LoggerFactory.getLogger(LaunchIdValidationFilter.class);
   private static RequestMatcher requestMatcher;
 
-  @Autowired
-  @Qualifier("objectMapper") private ObjectMapper mapper;
+  @Qualifier("objectMapper") private final ObjectMapper mapper;
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
   static {
     final String[] publicEndPoints = {"/api/configuration/**", "/api/log/**"};

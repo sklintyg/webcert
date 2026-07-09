@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.facade.patient;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
@@ -31,19 +31,12 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
 
   private final PUService puService;
   private final MonitoringLogService monitoringService;
   private final HashUtility hashUtility;
-
-  @Autowired
-  public GetPatientFacadeServiceImpl(
-      PUService puService, MonitoringLogService monitoringService, HashUtility hashUtility) {
-    this.puService = puService;
-    this.monitoringService = monitoringService;
-    this.hashUtility = hashUtility;
-  }
 
   @Override
   public Patient getPatient(String patientId)

@@ -74,7 +74,7 @@ class IntygModuleFacadeTest {
 
   @Mock private ModuleApi moduleApi;
 
-  @InjectMocks private IntygModuleFacadeImpl moduleFacade = new IntygModuleFacadeImpl();
+  @InjectMocks private IntygModuleFacadeImpl moduleFacade;
 
   @BeforeEach
   void setupCommonExpectations() throws Exception {

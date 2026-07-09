@@ -194,7 +194,39 @@ class CopyUtkastServiceImplTest {
 
   @Mock private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-  @InjectMocks private CopyUtkastService copyService = new CopyUtkastServiceImpl();
+  @InjectMocks private CopyUtkastServiceImpl copyService;
+
+  @BeforeEach
+  void initCopyService() {
+    copyService =
+        new CopyUtkastServiceImpl(
+            intygService,
+            certificateRelationService,
+            mockUtkastRepository,
+            mockPUService,
+            copyCompletionUtkastBuilder,
+            createRenewalCopyUtkastBuilder,
+            createReplacementUtkastBuilder,
+            createUtkastFromTemplateBuilder,
+            createUtkastCopyBuilder,
+            mockIntegreradeEnheterRegistry,
+            mockNotificationService,
+            certificateEventService,
+            logService,
+            logRequestFactory,
+            monitoringLogService,
+            userService,
+            utkastService,
+            referensService,
+            utkastServiceHelper,
+            certificateAccessServiceHelper,
+            draftAccessServiceHelper,
+            lockedDraftAccessServiceHelper,
+            patientDetailsResolver,
+            hashUtility,
+            certificateAnalyticsMessageFactory,
+            publishCertificateAnalyticsMessage);
+  }
 
   private static Personnummer createPnr(String personId) {
     return Personnummer.createPersonnummer(personId)

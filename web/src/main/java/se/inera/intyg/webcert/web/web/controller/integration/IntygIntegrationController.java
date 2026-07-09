@@ -31,7 +31,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.http.HttpStatus;
@@ -51,6 +50,7 @@ import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -115,13 +115,25 @@ public class IntygIntegrationController extends BaseIntegrationController {
         AuthoritiesConstants.ROLE_BARNMORSKA,
       };
 
-  @Autowired private ReactUriFactory reactUriFactory;
-  @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  private final ReactUriFactory reactUriFactory;
+  private final CommonAuthoritiesResolver commonAuthoritiesResolver;
 
-  @Autowired
-  @Qualifier("integrationCertificateAggregator") private IntegrationService integrationService;
+  @Qualifier("integrationCertificateAggregator") private final IntegrationService integrationService;
 
-  @Autowired private Cache redisCacheLaunchId;
+  private final Cache redisCacheLaunchId;
+
+  public IntygIntegrationController(
+      WebCertUserService webCertUserService,
+      ReactUriFactory reactUriFactory,
+      CommonAuthoritiesResolver commonAuthoritiesResolver,
+      @Qualifier("integrationCertificateAggregator") IntegrationService integrationService,
+      Cache redisCacheLaunchId) {
+    super(webCertUserService);
+    this.reactUriFactory = reactUriFactory;
+    this.commonAuthoritiesResolver = commonAuthoritiesResolver;
+    this.integrationService = integrationService;
+    this.redisCacheLaunchId = redisCacheLaunchId;
+  }
 
   @Override
   protected String[] getGrantedRoles() {

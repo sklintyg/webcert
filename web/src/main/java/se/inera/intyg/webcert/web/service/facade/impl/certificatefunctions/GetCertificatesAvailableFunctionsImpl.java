@@ -29,7 +29,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
+@RequiredArgsConstructor
 public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAvailableFunctions {
 
   private static final String EDIT_NAME = "Ändra";
@@ -95,7 +96,9 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
   private final AuthoritiesHelper authoritiesHelper;
   private final WebCertUserService webCertUserService;
   private final UserService userService;
-  private final GetQuestionsFacadeService getQuestionsFacadeService;
+
+  @Qualifier("GetQuestionsFacadeServiceImpl") private final GetQuestionsFacadeService getQuestionsFacadeService;
+
   private final CertificateSignConfirmationFunction certificateSignConfirmationFunction;
   private final DisplayPatientAddressInCertificate displayPatientAddressInCertificate;
   private final SendCertificateFunction sendCertificateFunction;
@@ -110,35 +113,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
    * Top level resource for getting resource links for UNSIGNED, SIGNED, LOCKED, REVOKED
    * certificates.
    */
-  @Autowired
-  public GetCertificatesAvailableFunctionsImpl(
-      AuthoritiesHelper authoritiesHelper,
-      WebCertUserService webCertUserService,
-      UserService userService,
-      @Qualifier("GetQuestionsFacadeServiceImpl") GetQuestionsFacadeService getQuestionsFacadeService,
-      CertificateSignConfirmationFunction certificateSignConfirmationFunction,
-      DisplayPatientAddressInCertificate displayPatientAddressInCertificate,
-      SendCertificateFunction sendCertificateFunction,
-      CreateCertificateFromTemplateFunction createCertificateFromTemplateFunction,
-      ShowRelatedCertificateFunction showRelatedCertificateFunction,
-      CreateCertificateFromCandidateFunction createCertificateFromCandidateFunction,
-      CopyCertificateFunction copyCertificateFunction,
-      SrsFunction srsFunction,
-      CertificateSignAndSendFunction certificateSignAndSendFunction) {
-    this.authoritiesHelper = authoritiesHelper;
-    this.webCertUserService = webCertUserService;
-    this.userService = userService;
-    this.getQuestionsFacadeService = getQuestionsFacadeService;
-    this.certificateSignConfirmationFunction = certificateSignConfirmationFunction;
-    this.displayPatientAddressInCertificate = displayPatientAddressInCertificate;
-    this.sendCertificateFunction = sendCertificateFunction;
-    this.createCertificateFromTemplateFunction = createCertificateFromTemplateFunction;
-    this.showRelatedCertificateFunction = showRelatedCertificateFunction;
-    this.createCertificateFromCandidateFunction = createCertificateFromCandidateFunction;
-    this.copyCertificateFunction = copyCertificateFunction;
-    this.srsFunction = srsFunction;
-    this.certificateSignAndSendFunction = certificateSignAndSendFunction;
-  }
 
   /**
    * Resource for getting ResourceLinkDTO.

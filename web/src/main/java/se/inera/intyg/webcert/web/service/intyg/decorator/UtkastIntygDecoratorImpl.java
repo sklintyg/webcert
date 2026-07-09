@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -38,9 +38,10 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
  * possible.
  */
 @Component
+@RequiredArgsConstructor
 public class UtkastIntygDecoratorImpl implements UtkastIntygDecorator {
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
   @Override
   public void decorateWithUtkastStatus(CertificateResponse certificate) {

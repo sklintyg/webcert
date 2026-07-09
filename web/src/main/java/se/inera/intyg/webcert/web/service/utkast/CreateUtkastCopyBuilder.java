@@ -18,14 +18,37 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Relation;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
+import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 @Component
 public class CreateUtkastCopyBuilder
     extends AbstractUtkastBuilder<CreateUtkastFromTemplateRequest> {
+
+  public CreateUtkastCopyBuilder(
+      IntygModuleRegistry moduleRegistry,
+      @Lazy IntygService intygService,
+      CreateIntygsIdStrategy intygsIdStrategy,
+      UtkastRepository utkastRepository,
+      IntygTextsService intygTextsService,
+      DefaultTypeAheadProvider defaultTypeAheadProvider) {
+    super(
+        moduleRegistry,
+        intygService,
+        intygsIdStrategy,
+        utkastRepository,
+        intygTextsService,
+        defaultTypeAheadProvider);
+  }
 
   @Override
   public Relation createRelation(CreateUtkastFromTemplateRequest request) {

@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -74,18 +73,24 @@ public class FragaSvarResource {
 
   @PersistenceContext private EntityManager entityManager;
 
-  private TransactionTemplate transactionTemplate;
+  private final TransactionTemplate transactionTemplate;
 
-  @Autowired
-  public void setTxManager(PlatformTransactionManager transactionManager) {
+  private final FragaSvarService fragaSvarService;
+
+  private final FragaSvarRepository fragasvarRepository;
+
+  private final CommonAuthoritiesResolver authoritiesResolver;
+
+  public FragaSvarResource(
+      PlatformTransactionManager transactionManager,
+      FragaSvarService fragaSvarService,
+      FragaSvarRepository fragasvarRepository,
+      CommonAuthoritiesResolver authoritiesResolver) {
     this.transactionTemplate = new TransactionTemplate(transactionManager);
+    this.fragaSvarService = fragaSvarService;
+    this.fragasvarRepository = fragasvarRepository;
+    this.authoritiesResolver = authoritiesResolver;
   }
-
-  @Autowired private FragaSvarService fragaSvarService;
-
-  @Autowired private FragaSvarRepository fragasvarRepository;
-
-  @Autowired private CommonAuthoritiesResolver authoritiesResolver;
 
   @PostMapping
   public ResponseEntity<FragaSvar> insertFragaSvar(@RequestBody FragaSvar fragaSvar) {

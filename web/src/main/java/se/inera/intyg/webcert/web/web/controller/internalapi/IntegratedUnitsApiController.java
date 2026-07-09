@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,9 +34,10 @@ import se.inera.intyg.webcert.web.service.integreradeenheter.IntegreradeEnheterS
 
 @RestController
 @RequestMapping("/internalapi/integratedUnits")
+@RequiredArgsConstructor
 public class IntegratedUnitsApiController {
 
-  @Autowired private IntegreradeEnheterService integreradeEnheterService;
+  private final IntegreradeEnheterService integreradeEnheterService;
 
   @GetMapping("/{hsaId}")
   @PerformanceLogging(

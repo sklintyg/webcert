@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -35,16 +35,17 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliveryJobService {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(NotificationRedeliveryJobServiceImpl.class);
 
-  @Autowired private NotificationRedeliveryAggregator notificationRedeliveryAggregator;
+  private final NotificationRedeliveryAggregator notificationRedeliveryAggregator;
 
-  @Autowired private NotificationRedeliveryService notificationRedeliveryService;
+  private final NotificationRedeliveryService notificationRedeliveryService;
 
-  @Autowired private HandelseRepository eventRepository;
+  private final HandelseRepository eventRepository;
 
   @Override
   @PerformanceLogging(

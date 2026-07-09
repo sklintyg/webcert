@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.privatlakaravtal;
 
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
@@ -29,13 +29,14 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 /** Created by eriklupander on 2015-08-05. */
 @Service("AvtalService")
+@RequiredArgsConstructor
 public class AvtalServiceImpl implements AvtalService {
 
-  @Autowired private AvtalRepository avtalRepository;
+  private final AvtalRepository avtalRepository;
 
-  @Autowired private GodkantAvtalRepository godkantAvtalRepository;
+  private final GodkantAvtalRepository godkantAvtalRepository;
 
-  @Autowired private MonitoringLogService monitoringLogService;
+  private final MonitoringLogService monitoringLogService;
 
   @Override
   public boolean userHasApprovedLatestAvtal(String userId) {

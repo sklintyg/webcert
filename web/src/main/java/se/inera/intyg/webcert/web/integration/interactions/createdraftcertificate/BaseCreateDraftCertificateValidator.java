@@ -24,7 +24,6 @@ import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -45,13 +44,24 @@ public abstract class BaseCreateDraftCertificateValidator {
   private static final Logger LOG =
       LoggerFactory.getLogger(BaseCreateDraftCertificateValidator.class);
 
-  @Autowired protected IntygModuleRegistry moduleRegistry;
+  protected final IntygModuleRegistry moduleRegistry;
 
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
+  private final PatientDetailsResolver patientDetailsResolver;
 
-  @Autowired private AuthoritiesHelper authoritiesHelper;
+  private final AuthoritiesHelper authoritiesHelper;
 
-  @Autowired private FeaturesHelper featuresHelper;
+  private final FeaturesHelper featuresHelper;
+
+  protected BaseCreateDraftCertificateValidator(
+      IntygModuleRegistry moduleRegistry,
+      PatientDetailsResolver patientDetailsResolver,
+      AuthoritiesHelper authoritiesHelper,
+      FeaturesHelper featuresHelper) {
+    this.moduleRegistry = moduleRegistry;
+    this.patientDetailsResolver = patientDetailsResolver;
+    this.authoritiesHelper = authoritiesHelper;
+    this.featuresHelper = featuresHelper;
+  }
 
   protected Optional<Personnummer> createPersonnummer(ResultValidator errors, String personId) {
     Optional<Personnummer> personnummer = Personnummer.createPersonnummer(personId);

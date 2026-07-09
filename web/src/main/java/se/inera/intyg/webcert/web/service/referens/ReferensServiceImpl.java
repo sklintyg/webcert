@@ -18,15 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.referens;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.referens.model.Referens;
 import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ReferensServiceImpl implements ReferensService {
 
-  @Autowired ReferensRepository repo;
+  private final ReferensRepository repo;
 
   @Override
   public void saveReferens(String intygsId, String referens) {

@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 
 import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createErrorResponse;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
@@ -41,20 +41,20 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
 @Component
 @SchemaValidation
+@RequiredArgsConstructor
 public class CreateDraftCertificateResponderImpl
     implements CreateDraftCertificateResponderInterface {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(CreateDraftCertificateResponderImpl.class);
 
-  @Autowired private CreateDraftCertificateValidator validator;
+  private final CreateDraftCertificateValidator validator;
 
-  @Autowired private MonitoringLogService monitoringLogService;
+  private final MonitoringLogService monitoringLogService;
 
-  @Autowired private WebcertUserDetailsService webcertUserDetailsService;
+  private final WebcertUserDetailsService webcertUserDetailsService;
 
-  @Autowired
-  @Qualifier("createDraftCertificateAggregator") private CreateDraftCertificate createDraftCertificateAggregator;
+  @Qualifier("createDraftCertificateAggregator") private final CreateDraftCertificate createDraftCertificateAggregator;
 
   @Override
   @PerformanceLogging(

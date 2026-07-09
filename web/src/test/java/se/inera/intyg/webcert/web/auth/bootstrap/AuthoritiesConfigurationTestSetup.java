@@ -37,24 +37,17 @@ public abstract class AuthoritiesConfigurationTestSetup {
           AUTHORITIES_CONFIGURATION_LOCATION,
           FEATURES_CONFIGURATION_LOCATION,
           DEFAULT_MAX_ALIASES_FOR_COLLECTIONS);
-  public static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER =
-      new CommonAuthoritiesResolver();
+  public static CommonAuthoritiesResolver AUTHORITIES_RESOLVER;
 
   @BeforeClass
   public static void setupAuthoritiesConfiguration() throws Exception {
-    // Load configuration
     CONFIGURATION_LOADER.afterPropertiesSet();
-
-    // Setup resolver class
-    AUTHORITIES_RESOLVER.setConfigurationLoader(CONFIGURATION_LOADER);
+    AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver(CONFIGURATION_LOADER);
   }
 
   @BeforeAll
   public static void setupForJunit4() throws Exception {
-    // Load configuration
     CONFIGURATION_LOADER.afterPropertiesSet();
-
-    // Setup resolver class
-    AUTHORITIES_RESOLVER.setConfigurationLoader(CONFIGURATION_LOADER);
+    AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver(CONFIGURATION_LOADER);
   }
 }

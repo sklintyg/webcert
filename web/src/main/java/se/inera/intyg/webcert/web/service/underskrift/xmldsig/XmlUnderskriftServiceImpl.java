@@ -21,14 +21,18 @@ package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.infra.xmldsig.factory.PartialSignatureFactory;
 import se.inera.intyg.webcert.infra.xmldsig.model.IntygXMLDSignature;
 import se.inera.intyg.webcert.infra.xmldsig.service.PrepareSignatureService;
+import se.inera.intyg.webcert.infra.xmldsig.service.XMLDSigService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
@@ -36,6 +40,7 @@ import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Slf4j
@@ -43,9 +48,29 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService
     implements CommonUnderskriftService {
 
-  @Autowired private PrepareSignatureService prepareSignatureService;
+  private final MonitoringLogService monitoringLogService;
 
-  @Autowired private MonitoringLogService monitoringLogService;
+  public XmlUnderskriftServiceImpl(
+      UtkastRepository utkastRepository,
+      IntygModuleRegistry moduleRegistry,
+      IntygService intygService,
+      RedisTicketTracker redisTicketTracker,
+      UtkastModelToXMLConverter utkastModelToXMLConverter,
+      PrepareSignatureService prepareSignatureService,
+      SignCertificateService signCertificateService,
+      XMLDSigService xmldSigService,
+      MonitoringLogService monitoringLogService) {
+    super(
+        utkastRepository,
+        moduleRegistry,
+        intygService,
+        redisTicketTracker,
+        utkastModelToXMLConverter,
+        prepareSignatureService,
+        signCertificateService,
+        xmldSigService);
+    this.monitoringLogService = monitoringLogService;
+  }
 
   @Override
   public SignaturBiljett skapaSigneringsBiljettMedDigest(

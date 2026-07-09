@@ -23,7 +23,7 @@ import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
 import java.util.Enumeration;
 import java.util.Objects;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +39,7 @@ import tools.jackson.databind.ObjectMapper;
 @RestController
 @RequestMapping("/testability/logMessages")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class LogResource {
 
   private static final int DEFAULT_TIMEOUT = 1000;
@@ -47,8 +48,7 @@ public class LogResource {
 
   private final ObjectMapper objectMapper = new CustomObjectMapper();
 
-  @Autowired
-  @Qualifier("jmsPDLLogTemplateNoTx") private JmsTemplate jmsTemplate;
+  @Qualifier("jmsPDLLogTemplateNoTx") private final JmsTemplate jmsTemplate;
 
   @DeleteMapping
   public ResponseEntity<Void> deleteLogMessages() {

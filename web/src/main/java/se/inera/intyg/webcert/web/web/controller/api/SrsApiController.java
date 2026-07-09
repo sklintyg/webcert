@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +40,7 @@ import se.inera.intyg.webcert.infra.srs.model.SrsResponse;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.srs.SrsService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
@@ -51,7 +51,12 @@ public class SrsApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(SrsApiController.class);
 
-  @Autowired private SrsService srsService;
+  private final SrsService srsService;
+
+  public SrsApiController(WebCertUserService webCertUserService, SrsService srsService) {
+    super(webCertUserService);
+    this.srsService = srsService;
+  }
 
   @PostMapping("/{intygId}/{personnummer}/{diagnosisCode}")
   @PerformanceLogging(eventAction = "srs-get-srs", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)

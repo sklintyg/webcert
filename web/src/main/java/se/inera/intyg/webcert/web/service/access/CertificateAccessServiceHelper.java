@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -26,18 +26,11 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Component
+@RequiredArgsConstructor
 public final class CertificateAccessServiceHelper {
 
   private final CertificateAccessService certificateAccessService;
   private final AccessResultExceptionHelper accessResultExceptionHelper;
-
-  @Autowired
-  public CertificateAccessServiceHelper(
-      CertificateAccessService certificateAccessService,
-      AccessResultExceptionHelper accessResultExceptionHelper) {
-    this.certificateAccessService = certificateAccessService;
-    this.accessResultExceptionHelper = accessResultExceptionHelper;
-  }
 
   public boolean isAllowToRenew(Utlatande certificate) {
     return evaluateAccessToRenew(certificate).isAllowed();

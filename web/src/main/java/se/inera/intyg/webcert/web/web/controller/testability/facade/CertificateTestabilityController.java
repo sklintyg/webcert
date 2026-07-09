@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,24 +42,13 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.util.Support
 @RestController
 @RequestMapping("/testability/certificate")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class CertificateTestabilityController {
 
   private final CreateCertificateTestabilityUtil createCertificateTestabilityUtil;
   private final CreateQuestionTestabilityUtil createQuestionTestabilityUtil;
   private final SupportedCertificateTypesUtil supportedCertificateTypesUtil;
   private final SupportedPatientsUtil supportedPatientsUtil;
-
-  @Autowired
-  public CertificateTestabilityController(
-      CreateCertificateTestabilityUtil createCertificateTestabilityUtil,
-      CreateQuestionTestabilityUtil createQuestionTestabilityUtil,
-      SupportedCertificateTypesUtil supportedCertificateTypesUtil,
-      SupportedPatientsUtil supportedPatientsUtil) {
-    this.createCertificateTestabilityUtil = createCertificateTestabilityUtil;
-    this.createQuestionTestabilityUtil = createQuestionTestabilityUtil;
-    this.supportedCertificateTypesUtil = supportedCertificateTypesUtil;
-    this.supportedPatientsUtil = supportedPatientsUtil;
-  }
 
   @PostMapping
   public ResponseEntity<CreateCertificateResponseDTO> createCertificate(

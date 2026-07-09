@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +39,7 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -59,13 +59,26 @@ public class StatModuleApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(StatModuleApiController.class);
 
-  @Autowired private FragaSvarService fragaSvarService;
+  private final FragaSvarService fragaSvarService;
 
-  @Autowired private ArendeService arendeService;
+  private final ArendeService arendeService;
 
-  @Autowired private UtkastService intygDraftService;
+  private final UtkastService intygDraftService;
 
-  @Autowired private AuthoritiesHelper authoritiesHelper;
+  private final AuthoritiesHelper authoritiesHelper;
+
+  public StatModuleApiController(
+      WebCertUserService webCertUserService,
+      FragaSvarService fragaSvarService,
+      ArendeService arendeService,
+      UtkastService intygDraftService,
+      AuthoritiesHelper authoritiesHelper) {
+    super(webCertUserService);
+    this.fragaSvarService = fragaSvarService;
+    this.arendeService = arendeService;
+    this.intygDraftService = intygDraftService;
+    this.authoritiesHelper = authoritiesHelper;
+  }
 
   @GetMapping
   @PerformanceLogging(
