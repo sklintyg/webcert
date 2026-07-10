@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
@@ -89,7 +88,6 @@ class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
     LogMessagePopulator logMessagePopulator = new LogMessagePopulatorImpl();
     ReflectionTestUtils.setField(logMessagePopulator, "systemId", "webcert");
     ReflectionTestUtils.setField(logMessagePopulator, "systemName", "WebCert");
-    lenient().when(jmsTemplateProvider.getIfAvailable()).thenReturn(template);
     logService =
         new LogServiceImpl(
             jmsTemplateProvider, userService, logMessagePopulator, logRequestFactory);
@@ -98,6 +96,7 @@ class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
   @Test
   void serviceSendsDocumentAndIdForCreate() throws Exception {
     when(userService.getUser()).thenReturn(createUser());
+    when(jmsTemplateProvider.getIfAvailable()).thenReturn(template);
 
     ArgumentCaptor<MessageCreator> messageCreatorCaptor =
         ArgumentCaptor.forClass(MessageCreator.class);
@@ -154,6 +153,7 @@ class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   @Test
   void logServiceJmsException() {
+    when(jmsTemplateProvider.getIfAvailable()).thenReturn(template);
     assertThrows(
         JmsException.class,
         () -> {
@@ -217,6 +217,7 @@ class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     when(logRequest.getPatientId()).thenReturn(createPnr(patientId));
     when(logRequestFactory.createLogRequestFromUser(user, patientId)).thenReturn(logRequest);
+    when(jmsTemplateProvider.getIfAvailable()).thenReturn(template);
 
     logService.logReadLevelOne(user, patientId);
 
