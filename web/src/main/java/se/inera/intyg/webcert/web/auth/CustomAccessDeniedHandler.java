@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.web.logging.HashPatientIdHelper;
 
 @Component
 @Slf4j
@@ -40,7 +41,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     log.warn(
         "Unauthenticated user was denied access to secured location '{}'",
-        request.getRequestURI(),
+        HashPatientIdHelper.fromUrl(request.getRequestURI()),
         accessDeniedException);
     response.sendRedirect("/error?reason=auth-exception-resource");
   }
