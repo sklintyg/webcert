@@ -24,31 +24,45 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class HashPatientIdHelperTest {
 
-  @Test
-  void testHashPatientIdAtEnd() {
-    final var url = "api/test/191212121212";
-    final var hashedUrl = HashPatientIdHelper.fromUrl(url);
+  static Stream<String> patientIds() {
+    return Stream.of(
+        "191212121212",
+        "19121212-1212",
+        "19121212+1212",
+        "1212121212",
+        "121212-1212",
+        "121212+1212");
+  }
 
+  @ParameterizedTest
+  @MethodSource("patientIds")
+  void testHashPatientIdAtEnd(String patientId) {
+    final var url = "api/test/" + patientId;
+    final var hashedUrl = HashPatientIdHelper.fromUrl(url);
     assertAll(
         () -> assertNotEquals(url, hashedUrl),
         () -> assertTrue(hashedUrl.startsWith("api/test/")),
-        () -> assertFalse(hashedUrl.contains("191212121212")));
+        () -> assertFalse(hashedUrl.contains(patientId)));
   }
 
-  @Test
-  void testHashPatientIdInMiddle() {
-    final var url = "api/191212121212/api";
+  @ParameterizedTest
+  @MethodSource("patientIds")
+  void testHashPatientIdInMiddle(String patientId) {
+    final var url = "api/" + patientId + "/api";
     final var hashedUrl = HashPatientIdHelper.fromUrl(url);
 
     assertAll(
         () -> assertNotEquals(url, hashedUrl),
         () -> assertTrue(hashedUrl.startsWith("api/")),
         () -> assertTrue(hashedUrl.endsWith("/api")),
-        () -> assertFalse(hashedUrl.contains("191212121212")));
+        () -> assertFalse(hashedUrl.contains(patientId)));
   }
 
   @Test

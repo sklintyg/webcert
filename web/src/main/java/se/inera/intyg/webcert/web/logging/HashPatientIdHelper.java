@@ -25,16 +25,18 @@ import java.util.regex.Pattern;
 
 public class HashPatientIdHelper {
 
+  private static final Pattern PATIENT_ID_PATTERN =
+      Pattern.compile("\\b\\d{6}(?:\\d{2})?[-+]?\\d{4}\\b");
+
   private HashPatientIdHelper() {}
 
   public static String fromUrl(String url) {
-    final var pattern = Pattern.compile("\\b\\d{12}\\b");
-    final var matcher = pattern.matcher(url);
+    final var matcher = PATIENT_ID_PATTERN.matcher(url);
 
     if (matcher.find()) {
       final var patientId = matcher.group();
       final var hashedPatientId = hashString(patientId);
-      return url.replaceFirst(patientId, hashedPatientId);
+      return url.replace(patientId, hashedPatientId);
     }
 
     return url;

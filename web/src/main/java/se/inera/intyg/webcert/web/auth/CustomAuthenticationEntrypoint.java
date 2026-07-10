@@ -35,6 +35,7 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.web.logging.HashPatientIdHelper;
 
 @Component
 @Slf4j
@@ -82,7 +83,7 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
     } else {
       log.warn(
           "Unauthenticated user was denied access to secured location '{}'",
-          request.getRequestURI());
+          HashPatientIdHelper.fromUrl(request.getRequestURI()));
       response.sendRedirect(ACCESS_DENIED_REDIRECT_PATH);
     }
   }
