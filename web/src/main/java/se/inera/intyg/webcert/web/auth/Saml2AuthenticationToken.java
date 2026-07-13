@@ -19,59 +19,38 @@
 package se.inera.intyg.webcert.web.auth;
 
 import java.util.Objects;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
+import org.jspecify.annotations.NullMarked;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AssertionAuthentication;
 
-public class Saml2AuthenticationToken extends AbstractAuthenticationToken {
+public class Saml2AuthenticationToken extends Saml2AssertionAuthentication {
 
-  private final Object principal;
-  private final Saml2Authentication saml2Authentication;
   private final String name;
 
-  public Saml2AuthenticationToken(Object principal, Saml2Authentication authentication) {
-    super(authentication.getAuthorities());
-    this.principal = principal;
-    this.saml2Authentication = authentication;
+  public Saml2AuthenticationToken(Object principal, Saml2AssertionAuthentication authentication) {
+    super(
+        principal,
+        authentication.getCredentials(),
+        authentication.getAuthorities(),
+        authentication.getRelyingPartyRegistrationId());
     this.name = authentication.getName();
   }
 
   @Override
-  public Object getCredentials() {
-    return saml2Authentication.getCredentials();
-  }
-
-  @Override
-  public Object getPrincipal() {
-    return principal;
-  }
-
-  @Override
+  @NullMarked
   public String getName() {
     return name;
   }
 
-  public Saml2Authentication getSaml2Authentication() {
-    return saml2Authentication;
-  }
-
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    Saml2AuthenticationToken token = (Saml2AuthenticationToken) o;
-    return Objects.equals(saml2Authentication, token.saml2Authentication)
-        && Objects.equals(name, token.name);
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    Saml2AuthenticationToken that = (Saml2AuthenticationToken) o;
+    return Objects.equals(name, that.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), principal, saml2Authentication, name);
+    return Objects.hash(super.hashCode(), name);
   }
 }
