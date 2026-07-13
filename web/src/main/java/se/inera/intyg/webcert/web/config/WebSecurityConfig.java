@@ -60,7 +60,6 @@ import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider.ResponseAuthenticationConverter;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AssertionAuthentication;
-import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
@@ -319,9 +318,8 @@ public class WebSecurityConfig {
     final var logoutRequestResolver = new OpenSaml5LogoutRequestResolver(registrations);
     logoutRequestResolver.setParametersConsumer(
         parameters -> {
-          final var token = (Saml2AuthenticationToken) parameters.getAuthentication();
           final var samlAuthentication =
-              (Saml2AssertionAuthentication) token.getSaml2Authentication();
+              (Saml2AssertionAuthentication) parameters.getAuthentication();
           final var registrationId = samlAuthentication.getRelyingPartyRegistrationId();
           final var name = samlAuthentication.getName();
           final var assertion = samlAuthentication.getCredentials();
@@ -382,21 +380,24 @@ public class WebSecurityConfig {
         responseToken -> {
           final var authentication = new ResponseAuthenticationConverter().convert(responseToken);
 
-          if (authentication == null || !authentication.isAuthenticated()) {
+          if (!(authentication instanceof Saml2AssertionAuthentication assertionAuthentication)
+              || !assertionAuthentication.isAuthenticated()) {
             return null;
           }
 
-          final var isElegLogin = getRegistrationId(authentication).equals(REGISTRATION_ID_ELEG);
+          final var isElegLogin =
+              getRegistrationId(assertionAuthentication).equals(REGISTRATION_ID_ELEG);
+
           return isElegLogin
-              ? elegSaml2AuthenticationToken(authentication)
-              : sithsSaml2AuthenticationToken(authentication);
+              ? elegSaml2Principal(assertionAuthentication)
+              : sithsSaml2Principal(assertionAuthentication);
         });
 
     return authenticationProvider;
   }
 
-  private Saml2AuthenticationToken sithsSaml2AuthenticationToken(
-      Saml2Authentication authentication) {
+  private Saml2AuthenticationToken sithsSaml2Principal(
+      Saml2AssertionAuthentication authentication) {
     final var authMethod = getSithsAuthMethod(authentication);
     final var personId = getAttribute(authentication, ATTRIBUTE_EMPLOYEE_HSA_ID);
     final var identityProviderForSign =
@@ -408,8 +409,7 @@ public class WebSecurityConfig {
     return saml2AuthenticationToken;
   }
 
-  private Saml2AuthenticationToken elegSaml2AuthenticationToken(
-      Saml2Authentication authentication) {
+  private Saml2AuthenticationToken elegSaml2Principal(Saml2AssertionAuthentication authentication) {
     final var personId = getAttribute(authentication, ATTRIBUTE_SUBJECT_SERIAL_NUMBER);
     final var authScheme = getElegAuthScheme(authentication);
     final var loginMethod = getAttribute(authentication, ATTRIBUTE_LOGIN_METHOD);
@@ -421,17 +421,17 @@ public class WebSecurityConfig {
     return saml2AuthenticationToken;
   }
 
-  private String getSithsAuthMethod(Saml2Authentication authentication) {
+  private String getSithsAuthMethod(Saml2AssertionAuthentication authentication) {
     final var saml2Response = authentication.getSaml2Response();
     final var matcher = AUTHN_CONTEXT_CLASS_REF_PATTERN.matcher(saml2Response);
     return matcher.find() ? matcher.group() : null;
   }
 
-  private String getRegistrationId(Saml2Authentication saml2Authentication) {
-    return ((Saml2AssertionAuthentication) saml2Authentication).getRelyingPartyRegistrationId();
+  private String getRegistrationId(Saml2AssertionAuthentication saml2Authentication) {
+    return saml2Authentication.getRelyingPartyRegistrationId();
   }
 
-  private String getElegAuthScheme(Saml2Authentication saml2Authentication) {
+  private String getElegAuthScheme(Saml2AssertionAuthentication saml2Authentication) {
     final var securityLevelDescription =
         getAttribute(saml2Authentication, ATTRIBUTE_SECURITY_LEVEL_DESCRIPTION);
     return AuthConstants.ELEG_AUTHN_CLASSES.stream()
@@ -440,8 +440,8 @@ public class WebSecurityConfig {
         .orElse(securityLevelDescription);
   }
 
-  private String getAttribute(Saml2Authentication samlCredential, String attributeId) {
-    final var assertion = ((Saml2AssertionAuthentication) samlCredential).getCredentials();
+  private String getAttribute(Saml2AssertionAuthentication samlCredential, String attributeId) {
+    final var assertion = samlCredential.getCredentials();
     final var attributes = assertion.getAttributes();
     if (attributes.containsKey(attributeId)) {
       return (String) attributes.get(attributeId).getFirst();
