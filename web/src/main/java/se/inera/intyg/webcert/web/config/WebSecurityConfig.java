@@ -380,8 +380,12 @@ public class WebSecurityConfig {
         responseToken -> {
           final var authentication = new ResponseAuthenticationConverter().convert(responseToken);
 
-          if (!(authentication instanceof Saml2AssertionAuthentication assertionAuthentication)
-              || !assertionAuthentication.isAuthenticated()) {
+          if (!(authentication instanceof Saml2AssertionAuthentication assertionAuthentication)) {
+            throw new IllegalStateException(
+                "Expected Saml2AssertionAuthentication from default SAML converter");
+          }
+
+          if (!assertionAuthentication.isAuthenticated()) {
             return null;
           }
 
