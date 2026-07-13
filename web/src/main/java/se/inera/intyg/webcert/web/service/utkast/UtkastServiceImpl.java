@@ -35,9 +35,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -113,6 +113,7 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 
 @Service
+@RequiredArgsConstructor
 public class UtkastServiceImpl implements UtkastService {
 
   public static final String INTYG_INDICATOR = "intyg";
@@ -129,27 +130,27 @@ public class UtkastServiceImpl implements UtkastService {
           UtkastStatus.DRAFT_LOCKED,
           UtkastStatus.SIGNED);
   private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
-  @Autowired private CreateIntygsIdStrategy intygsIdStrategy;
-  @Autowired private UtkastRepository utkastRepository;
-  @Autowired private IntygModuleRegistry moduleRegistry;
-  @Autowired private LogService logService;
-  @Autowired private LogRequestFactory logRequestFactory;
-  @Autowired private NotificationService notificationService;
-  @Autowired private CertificateEventService certificateEventService;
-  @Autowired private MonitoringLogService monitoringService;
-  @Autowired private WebCertUserService webCertUserService;
-  @Autowired private IntygTextsService intygTextsService;
-  @Autowired private AuthoritiesHelper authoritiesHelper;
-  @Autowired private StatisticsGroupByUtil statisticsGroupByUtil;
-  @Autowired private ReferensService referensService;
-  @Autowired private DraftAccessServiceHelper draftAccessServiceHelper;
-  @Autowired private EmployeeNameService employeeNameService;
-  @Autowired private UtkastServiceHelper utkastServiceHelper;
-  @Autowired private HashUtility hashUtility;
-  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-  @Autowired private DefaultTypeAheadProvider defaultTypeAheadProvider;
-  @Autowired private HandleObsoleteDraftsService handleObsoleteDraftsService;
+  private final CreateIntygsIdStrategy intygsIdStrategy;
+  private final UtkastRepository utkastRepository;
+  private final IntygModuleRegistry moduleRegistry;
+  private final LogService logService;
+  private final LogRequestFactory logRequestFactory;
+  private final NotificationService notificationService;
+  private final CertificateEventService certificateEventService;
+  private final MonitoringLogService monitoringService;
+  private final WebCertUserService webCertUserService;
+  private final IntygTextsService intygTextsService;
+  private final AuthoritiesHelper authoritiesHelper;
+  private final StatisticsGroupByUtil statisticsGroupByUtil;
+  private final ReferensService referensService;
+  private final DraftAccessServiceHelper draftAccessServiceHelper;
+  private final EmployeeNameService employeeNameService;
+  private final UtkastServiceHelper utkastServiceHelper;
+  private final HashUtility hashUtility;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final DefaultTypeAheadProvider defaultTypeAheadProvider;
+  private final HandleObsoleteDraftsService handleObsoleteDraftsService;
 
   public static boolean isUtkast(Utkast utkast) {
     return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());

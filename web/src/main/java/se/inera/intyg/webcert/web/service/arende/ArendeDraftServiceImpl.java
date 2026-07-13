@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.arende;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
@@ -28,9 +28,10 @@ import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepositor
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ArendeDraftServiceImpl implements ArendeDraftService {
 
-  @Autowired private ArendeDraftRepository arendeDraftRepository;
+  private final ArendeDraftRepository arendeDraftRepository;
 
   @Override
   public boolean saveDraft(String intygId, String questionId, String text, String amne) {

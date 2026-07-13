@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -52,6 +52,7 @@ import org.springframework.stereotype.Component;
  * @author eriklupander
  */
 @Component
+@RequiredArgsConstructor
 public class HealthMonitor {
 
   private static final String PREFIX = "health_";
@@ -65,15 +66,13 @@ public class HealthMonitor {
 
   @PersistenceContext private EntityManager entityManager;
 
-  @Autowired
-  @Qualifier("jmsCertificateSenderTemplate") private JmsTemplate jmsCertificateSenderTemplate;
+  @Qualifier("jmsCertificateSenderTemplate") private final JmsTemplate jmsCertificateSenderTemplate;
 
-  @Autowired private ConnectionFactory connectionFactory;
+  private final ConnectionFactory connectionFactory;
 
-  @Autowired
-  @Qualifier("rediscache") private RedisTemplate<Object, Object> redisTemplate;
+  @Qualifier("rediscache") private final RedisTemplate<Object, Object> redisTemplate;
 
-  @Autowired private MeterRegistry meterRegistry;
+  private final MeterRegistry meterRegistry;
 
   @Value("${intygstjanst.metrics.url}")
   private String itMetricsUrl;

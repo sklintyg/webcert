@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.erase.EraseService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 @RestController
@@ -37,7 +37,12 @@ public class EraseApiController extends AbstractApiController {
   @Value("${erase.certificates.page.size:1000}")
   private int eraseCertificatesPageSize;
 
-  @Autowired private EraseService eraseService;
+  private final EraseService eraseService;
+
+  public EraseApiController(WebCertUserService webCertUserService, EraseService eraseService) {
+    super(webCertUserService);
+    this.eraseService = eraseService;
+  }
 
   @DeleteMapping("/{id}")
   @PerformanceLogging(

@@ -49,8 +49,7 @@ class CertificateSendProcessorTest {
   @Mock private SendCertificateServiceClient sendServiceClient;
   @Spy private MdcHelper mdcHelper;
 
-  @InjectMocks
-  private CertificateSendProcessor certificateSendProcessor = new CertificateSendProcessor();
+  @InjectMocks private CertificateSendProcessor certificateSendProcessor;
 
   @Test
   void testSendCertificate() throws Exception {

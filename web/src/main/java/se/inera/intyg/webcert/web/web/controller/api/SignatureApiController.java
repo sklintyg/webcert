@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +52,7 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.QRCodeService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
@@ -66,20 +66,38 @@ public class SignatureApiController extends AbstractApiController {
   public static final String SIGN_SERVICE_RESPONSE_PATH = "/signservice/v1/response";
   public static final String SIGN_SERVICE_METADATA_PATH = "/signservice/v1/metadata";
 
-  @Autowired private ReactUriFactory reactUriFactory;
+  private final ReactUriFactory reactUriFactory;
 
-  @Autowired
-  @Qualifier("signAggregator") private UnderskriftService underskriftService;
+  @Qualifier("signAggregator") private final UnderskriftService underskriftService;
 
-  @Autowired private MonitoringLogService monitoringLogService;
+  private final MonitoringLogService monitoringLogService;
 
-  @Autowired private DssMetadataService dssMetadataService;
+  private final DssMetadataService dssMetadataService;
 
-  @Autowired private DssSignatureService dssSignatureService;
+  private final DssSignatureService dssSignatureService;
 
-  @Autowired private DssSignMessageService dssSignMessageService;
+  private final DssSignMessageService dssSignMessageService;
 
-  @Autowired private QRCodeService qrCodeService;
+  private final QRCodeService qrCodeService;
+
+  public SignatureApiController(
+      WebCertUserService webCertUserService,
+      ReactUriFactory reactUriFactory,
+      @Qualifier("signAggregator") UnderskriftService underskriftService,
+      MonitoringLogService monitoringLogService,
+      DssMetadataService dssMetadataService,
+      DssSignatureService dssSignatureService,
+      DssSignMessageService dssSignMessageService,
+      QRCodeService qrCodeService) {
+    super(webCertUserService);
+    this.reactUriFactory = reactUriFactory;
+    this.underskriftService = underskriftService;
+    this.monitoringLogService = monitoringLogService;
+    this.dssMetadataService = dssMetadataService;
+    this.dssSignatureService = dssSignatureService;
+    this.dssSignMessageService = dssSignMessageService;
+    this.qrCodeService = qrCodeService;
+  }
 
   @PostMapping("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
   @PerformanceLogging(

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,18 +49,19 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CertificateEventServiceImpl implements CertificateEventService {
 
   private static final String UNKNOWN_USER = "unknown";
   private static final String WEBCERT_USER = "Webcert";
 
-  @Autowired CertificateEventRepository certificateEventRepository;
+  private final CertificateEventRepository certificateEventRepository;
 
-  @Autowired UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired @Lazy IntygService intygService;
+  @Lazy private final IntygService intygService;
 
-  @Autowired @Lazy ArendeService arendeService;
+  @Lazy private final ArendeService arendeService;
 
   @Override
   public void createCertificateEvent(String certificateId, String user, EventCode eventCode) {

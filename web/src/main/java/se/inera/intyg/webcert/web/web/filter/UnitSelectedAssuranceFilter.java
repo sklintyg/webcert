@@ -26,9 +26,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.web.logging.HashPatientIdHelper;
@@ -36,11 +36,12 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component(value = "unitSelectedAssuranceFilter")
+@RequiredArgsConstructor
 public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
 
   private static final Logger LOG = LoggerFactory.getLogger(UnitSelectedAssuranceFilter.class);
 
-  @Autowired private WebCertUserService userService;
+  private final WebCertUserService userService;
 
   private String ignoredUrls;
 

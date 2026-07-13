@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @Service
+@RequiredArgsConstructor
 public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
 
   private final CertificateAccessServiceHelper certificateAccessServiceHelper;
@@ -54,20 +55,6 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
   private final UserService userService;
   private final CertificateRelationsConverter certificateRelationsConverter;
   private final AuthoritiesHelper authoritiesHelper;
-
-  @Autowired
-  public ResourceLinkListHelperImpl(
-      CertificateAccessServiceHelper certificateAccessServiceHelper,
-      WebCertUserService webCertUserService,
-      UserService userService,
-      CertificateRelationsConverter certificateRelationsConverter,
-      AuthoritiesHelper authoritiesHelper) {
-    this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-    this.webCertUserService = webCertUserService;
-    this.userService = userService;
-    this.certificateRelationsConverter = certificateRelationsConverter;
-    this.authoritiesHelper = authoritiesHelper;
-  }
 
   @Override
   public List<ResourceLinkDTO> get(CertificateListEntry entry, CertificateListItemStatus status) {

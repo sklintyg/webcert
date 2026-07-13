@@ -21,18 +21,45 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.util.Base64;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.infra.xmldsig.service.FakeSignatureService;
+import se.inera.intyg.webcert.infra.xmldsig.service.PrepareSignatureService;
+import se.inera.intyg.webcert.infra.xmldsig.service.XMLDSigService;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 
 @Service
-@RequiredArgsConstructor
 public class FakeSignatureServiceCS extends BaseXMLSignatureService {
 
   private final FakeSignatureService fakeSignatureService;
+
+  public FakeSignatureServiceCS(
+      UtkastRepository utkastRepository,
+      IntygModuleRegistry moduleRegistry,
+      IntygService intygService,
+      RedisTicketTracker redisTicketTracker,
+      UtkastModelToXMLConverter utkastModelToXMLConverter,
+      PrepareSignatureService prepareSignatureService,
+      SignCertificateService signCertificateService,
+      XMLDSigService xmldSigService,
+      FakeSignatureService fakeSignatureService) {
+    super(
+        utkastRepository,
+        moduleRegistry,
+        intygService,
+        redisTicketTracker,
+        utkastModelToXMLConverter,
+        prepareSignatureService,
+        signCertificateService,
+        xmldSigService);
+    this.fakeSignatureService = fakeSignatureService;
+  }
 
   public FinalizedCertificateSignature finalizeFakeSignature(String ticketId) {
     final var ticket = redisTicketTracker.findBiljett(ticketId);

@@ -18,22 +18,23 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.config;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component
+@RequiredArgsConstructor
 public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigurationManager {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(IntygServiceConfigurationManagerImpl.class);
 
-  @Autowired private ObjectMapper objectMapper;
+  private final JsonMapper objectMapper;
 
   @Override
   public <T> T unmarshallConfig(String configAsJson, Class<T> configClazz) {
@@ -53,9 +54,5 @@ public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigu
       LOG.error("Module problems occured when trying to create and marshall configuration.", e);
       throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
     }
-  }
-
-  public void setObjectMapper(ObjectMapper objectMapper) {
-    this.objectMapper = objectMapper;
   }
 }

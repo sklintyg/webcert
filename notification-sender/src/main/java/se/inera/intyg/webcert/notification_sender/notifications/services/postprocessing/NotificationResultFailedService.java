@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.postpr
 
 import jakarta.transaction.Transactional;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
@@ -34,15 +34,14 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationResultFailedService {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationResultFailedService.class);
 
-  @Autowired private MonitoringLogService logService;
-
-  @Autowired private HandelseRepository handelseRepo;
-
-  @Autowired private NotificationRedeliveryRepository notificationRedeliveryRepo;
+  private final MonitoringLogService logService;
+  private final HandelseRepository handelseRepo;
+  private final NotificationRedeliveryRepository notificationRedeliveryRepo;
 
   @Transactional
   public void process(@NonNull NotificationResultMessage resultMessage) {

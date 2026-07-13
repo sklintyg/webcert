@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 @Service
+@RequiredArgsConstructor
 public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
   private static final ListType LIST_TYPE = ListType.DRAFTS;
@@ -54,28 +55,6 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
   private final CertificateListItemConverter certificateListItemConverter;
   private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
   private final ListCertificatesAggregator listCertificatesAggregator;
-
-  @Autowired
-  public ListDraftsFacadeServiceImpl(
-      WebCertUserService webCertUserService,
-      UtkastService utkastService,
-      LogService logService,
-      DraftFilterConverter draftFilterConverter,
-      ListPaginationHelper listPaginationHelper,
-      ListSortHelper listSortHelper,
-      ListDecorator listDecorator,
-      CertificateListItemConverter certificateListItemConverter,
-      ListCertificatesAggregator listCertificatesAggregator) {
-    this.webCertUserService = webCertUserService;
-    this.utkastService = utkastService;
-    this.logService = logService;
-    this.draftFilterConverter = draftFilterConverter;
-    this.listPaginationHelper = listPaginationHelper;
-    this.listSortHelper = listSortHelper;
-    this.listDecorator = listDecorator;
-    this.certificateListItemConverter = certificateListItemConverter;
-    this.listCertificatesAggregator = listCertificatesAggregator;
-  }
 
   @Override
   public ListInfo get(ListFilter filter) {

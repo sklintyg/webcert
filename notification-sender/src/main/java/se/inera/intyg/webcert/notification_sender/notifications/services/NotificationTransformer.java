@@ -24,11 +24,11 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import lombok.RequiredArgsConstructor;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -44,15 +44,16 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.postpro
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
+@RequiredArgsConstructor
 public class NotificationTransformer {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationTransformer.class);
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
-  @Autowired private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-  @Autowired private NotificationResultMessageCreator notificationResultMessageCreator;
-  @Autowired private NotificationResultMessageSender notificationResultMessageSender;
-  @Autowired private MdcHelper mdcHelper;
+  private final IntygModuleRegistry moduleRegistry;
+  private final CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+  private final NotificationResultMessageCreator notificationResultMessageCreator;
+  private final NotificationResultMessageSender notificationResultMessageSender;
+  private final MdcHelper mdcHelper;
 
   /**
    * Process message by adding headers and creating a CertificateStatusUpdateForCareType based on

@@ -24,9 +24,9 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -80,68 +80,64 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 
 @Service
+@RequiredArgsConstructor
 public class CopyUtkastServiceImpl implements CopyUtkastService {
 
   public static final String CREATE_REPLACEMENT = "create replacement";
   public static final String ORIGINAL_CERTIFICATE_IS_REVOKED = "Original certificate is revoked";
   public static final String CREATE_RENEWAL = "create renewal";
   private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
-  @Autowired private @Lazy IntygService intygService;
+  @Lazy private final IntygService intygService;
 
-  @Autowired private CertificateRelationService certificateRelationService;
+  private final CertificateRelationService certificateRelationService;
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired private PUService puService;
+  private final PUService puService;
 
-  @Autowired
-  @Qualifier("copyCompletionUtkastBuilder") private CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
+  @Qualifier("copyCompletionUtkastBuilder") private final CopyUtkastBuilder<CreateCompletionCopyRequest> copyCompletionUtkastBuilder;
 
-  @Autowired
-  @Qualifier("createRenewalCopyUtkastBuilder") private CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
+  @Qualifier("createRenewalCopyUtkastBuilder") private final CopyUtkastBuilder<CreateRenewalCopyRequest> createRenewalUtkastBuilder;
 
-  @Autowired
-  @Qualifier("createReplacementUtkastBuilder") private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
+  @Qualifier("createReplacementUtkastBuilder") private final CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
 
-  @Autowired
-  @Qualifier("createUtkastFromTemplateBuilder") private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastFromTemplateBuilder;
+  @Qualifier("createUtkastFromTemplateBuilder") private final CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastFromTemplateBuilder;
 
-  @Autowired
-  @Qualifier("createUtkastCopyBuilder") private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastCopyBuilder;
+  @Qualifier("createUtkastCopyBuilder") private final CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastCopyBuilder;
 
-  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-  @Autowired private NotificationService notificationService;
+  private final NotificationService notificationService;
 
-  @Autowired private CertificateEventService certificateEventService;
+  private final CertificateEventService certificateEventService;
 
-  @Autowired private LogService logService;
+  private final LogService logService;
 
-  @Autowired private LogRequestFactory logRequestFactory;
+  private final LogRequestFactory logRequestFactory;
 
-  @Autowired private MonitoringLogService monitoringService;
+  private final MonitoringLogService monitoringService;
 
-  @Autowired private WebCertUserService userService;
+  private final WebCertUserService userService;
 
-  @Autowired private UtkastService utkastService;
+  private final UtkastService utkastService;
 
-  @Autowired private ReferensService referensService;
+  private final ReferensService referensService;
 
-  @Autowired private UtkastServiceHelper utkastServiceHelper;
+  private final UtkastServiceHelper utkastServiceHelper;
 
-  @Autowired private CertificateAccessServiceHelper certificateAccessServiceHelper;
+  private final CertificateAccessServiceHelper certificateAccessServiceHelper;
 
-  @Autowired private DraftAccessServiceHelper draftAccessServiceHelper;
+  private final DraftAccessServiceHelper draftAccessServiceHelper;
 
-  @Autowired private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
+  private final LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
+  private final PatientDetailsResolver patientDetailsResolver;
 
-  @Autowired private HashUtility hashUtility;
+  private final HashUtility hashUtility;
 
-  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
   @Override
   public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {

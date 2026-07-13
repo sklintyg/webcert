@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.service.facade.util;
 import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.getStatus;
 
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
@@ -42,6 +42,7 @@ import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 @Component
+@RequiredArgsConstructor
 public class IntygToCertificateConverterImpl implements IntygToCertificateConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(IntygToCertificateConverterImpl.class);
@@ -62,26 +63,6 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
   private final CertificateRecipientConverter certificateRecipientConverter;
 
   private final FeaturesHelper featuresHelper;
-
-  @Autowired
-  public IntygToCertificateConverterImpl(
-      IntygModuleRegistry moduleRegistry,
-      IntygTextsService intygTextsService,
-      PatientConverter patientConverter,
-      CertificateRelationsConverter certificateRelationsConverter,
-      HsatkOrganizationService hsatkOrganizationService,
-      TypeAheadProvider typeAheadProvider,
-      CertificateRecipientConverter certificateRecipientConverter,
-      FeaturesHelper featuresHelper) {
-    this.moduleRegistry = moduleRegistry;
-    this.intygTextsService = intygTextsService;
-    this.patientConverter = patientConverter;
-    this.certificateRelationsConverter = certificateRelationsConverter;
-    this.hsatkOrganizationService = hsatkOrganizationService;
-    this.typeAheadProvider = typeAheadProvider;
-    this.certificateRecipientConverter = certificateRecipientConverter;
-    this.featuresHelper = featuresHelper;
-  }
 
   @Override
   public Certificate convert(IntygContentHolder intygContentHolder) {

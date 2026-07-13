@@ -58,7 +58,7 @@ class UnitSelectedAssuranceFilterTest {
 
   @Mock private WebCertUserServiceImpl webCertUserService;
 
-  @InjectMocks private UnitSelectedAssuranceFilter filter = new UnitSelectedAssuranceFilter();
+  @InjectMocks private UnitSelectedAssuranceFilter filter;
 
   @BeforeEach
   void setup() throws ServletException {

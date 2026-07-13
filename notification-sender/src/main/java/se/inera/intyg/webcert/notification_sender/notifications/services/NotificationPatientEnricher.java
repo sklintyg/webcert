@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.Constants;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -35,14 +34,15 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 /** For SMI-intyg, use the PU-service to fetch patient details and add them to the Utlatande. */
+@RequiredArgsConstructor
 public class NotificationPatientEnricher {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationPatientEnricher.class);
   private static final String SEKRETESSMARKERING = "Skyddade personuppgifter";
   private static final String EMPTY_STRING = "";
 
-  @Autowired private PUService puService;
-  @Autowired private HashUtility hashUtility;
+  private final PUService puService;
+  private final HashUtility hashUtility;
 
   public void enrichWithPatient(Intyg intyg) {
     // INTYG-4190, hämta patientens uppgifter från PU-tjänsten och klistra in i utlåtandet.
@@ -123,10 +123,5 @@ public class NotificationPatientEnricher {
 
   private String nullSafe(String str) {
     return Objects.requireNonNullElse(str, EMPTY_STRING);
-  }
-
-  @VisibleForTesting
-  public void setPuService(PUService puService) {
-    this.puService = puService;
   }
 }

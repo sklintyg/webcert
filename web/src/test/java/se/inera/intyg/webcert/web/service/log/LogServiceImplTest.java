@@ -39,9 +39,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -73,11 +73,13 @@ class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   @Mock private JmsTemplate template = mock(JmsTemplate.class);
 
+  @Mock private ObjectProvider<JmsTemplate> jmsTemplateProvider;
+
   @Mock private WebCertUserService userService = mock(WebCertUserService.class);
 
   @Mock private LogRequestFactory logRequestFactory;
 
-  @InjectMocks private LogServiceImpl logService = new LogServiceImpl();
+  private LogServiceImpl logService;
 
   private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -86,12 +88,15 @@ class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
     LogMessagePopulator logMessagePopulator = new LogMessagePopulatorImpl();
     ReflectionTestUtils.setField(logMessagePopulator, "systemId", "webcert");
     ReflectionTestUtils.setField(logMessagePopulator, "systemName", "WebCert");
-    logService.setLogMessagePopulator(logMessagePopulator);
+    logService =
+        new LogServiceImpl(
+            jmsTemplateProvider, userService, logMessagePopulator, logRequestFactory);
   }
 
   @Test
   void serviceSendsDocumentAndIdForCreate() throws Exception {
     when(userService.getUser()).thenReturn(createUser());
+    when(jmsTemplateProvider.getIfAvailable()).thenReturn(template);
 
     ArgumentCaptor<MessageCreator> messageCreatorCaptor =
         ArgumentCaptor.forClass(MessageCreator.class);
@@ -148,6 +153,7 @@ class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
   @Test
   void logServiceJmsException() {
+    when(jmsTemplateProvider.getIfAvailable()).thenReturn(template);
     assertThrows(
         JmsException.class,
         () -> {
@@ -211,6 +217,7 @@ class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     when(logRequest.getPatientId()).thenReturn(createPnr(patientId));
     when(logRequestFactory.createLogRequestFromUser(user, patientId)).thenReturn(logRequest);
+    when(jmsTemplateProvider.getIfAvailable()).thenReturn(template);
 
     logService.logReadLevelOne(user, patientId);
 

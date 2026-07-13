@@ -16,6 +16,7 @@ dependencies {
     implementation "se.inera.intyg.common:common-support:${commonVersion}"
 
     annotationProcessor "org.projectlombok:lombok"
+    compileOnly "org.projectlombok:lombok"
 
     testImplementation "com.h2database:h2"
     testImplementation "org.mockito:mockito-junit-jupiter"

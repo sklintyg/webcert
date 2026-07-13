@@ -42,7 +42,7 @@ class ReferensServiceTest {
 
   @Mock private ReferensRepository repo;
 
-  @InjectMocks private ReferensService referensService = new ReferensServiceImpl();
+  @InjectMocks private ReferensServiceImpl referensService;
 
   @BeforeEach
   void setup() {

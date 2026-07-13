@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.certificate;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -34,6 +33,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Service
+@RequiredArgsConstructor
 public class GetCertificateServiceImpl implements GetCertificateService {
 
   private final IntygModuleRegistry intygModuleRegistry;
@@ -41,16 +41,6 @@ public class GetCertificateServiceImpl implements GetCertificateService {
   private final IntygService intygService;
 
   private static final Logger LOG = LoggerFactory.getLogger(GetCertificateServiceImpl.class);
-
-  @Autowired
-  public GetCertificateServiceImpl(
-      IntygModuleRegistry intygModuleRegistry,
-      UtkastService utkastService,
-      @Lazy IntygService intygService) {
-    this.intygModuleRegistry = intygModuleRegistry;
-    this.utkastService = utkastService;
-    this.intygService = intygService;
-  }
 
   @Override
   public Intyg getCertificateAsIntyg(String certificateId, String certificateType) {

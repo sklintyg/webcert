@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.CertificateListItemValueType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadin
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
+@RequiredArgsConstructor
 public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfigFacadeService {
 
   private static final String TITLE = "Signerade intyg";
@@ -44,11 +45,6 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
       "Det finns inga signerade intyg de senaste 3 månaderna för den enhet du är inloggad på.";
 
   private final WebCertUserService webCertUserService;
-
-  @Autowired
-  public ListSignedCertificatesConfigFacadeServiceImpl(WebCertUserService webCertUserService) {
-    this.webCertUserService = webCertUserService;
-  }
 
   @Override
   public ListConfig get() {

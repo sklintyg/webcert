@@ -21,10 +21,10 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.common.Constants;
@@ -32,10 +32,11 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 
+@RequiredArgsConstructor
 public class CertificateRevokeProcessor {
 
-  @Autowired private IntygModuleRegistry registry;
-  @Autowired private MdcHelper mdcHelper;
+  private final IntygModuleRegistry registry;
+  private final MdcHelper mdcHelper;
 
   public void process(
       @Body String xmlBody,

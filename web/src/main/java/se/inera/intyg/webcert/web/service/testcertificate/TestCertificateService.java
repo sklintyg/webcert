@@ -25,9 +25,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.infra.testcertificate.dto.TestCertificateEraseResult;
@@ -35,15 +35,16 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Service
+@RequiredArgsConstructor
 public class TestCertificateService {
 
   private static final Logger LOG = LoggerFactory.getLogger(TestCertificateService.class);
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired private EraseTestCertificateService eraseTestCertificateService;
+  private final EraseTestCertificateService eraseTestCertificateService;
 
-  @Autowired private MonitoringLogService monitoringLogService;
+  private final MonitoringLogService monitoringLogService;
 
   @Transactional(readOnly = true)
   public TestCertificateEraseResult eraseTestCertificates(LocalDateTime from, LocalDateTime to) {

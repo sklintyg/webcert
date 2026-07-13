@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +36,10 @@ import se.inera.intyg.webcert.infra.security.common.model.Feature;
 @RestController
 @RequestMapping("/testability/config")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class ConfigurationResource {
 
-  @Autowired private SecurityConfigurationLoader configLoader;
+  private final SecurityConfigurationLoader configLoader;
 
   private final HashMap<String, Feature> replacedFeatures = new HashMap<>();
 

@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 @RestController
 @RequestMapping("/api/configuration")
 @Slf4j
+@RequiredArgsConstructor
 public class ConfigController {
 
   private static final String UTF_8_CHARSET = ";charset=utf-8";
@@ -64,9 +65,9 @@ public class ConfigController {
   @Value("${webcert.frontend.api.timeout:30000}")
   private Integer webcertFrontendApiTimeout;
 
-  @Autowired private DynamicLinkService dynamicLinkService;
+  private final DynamicLinkService dynamicLinkService;
 
-  @Autowired private IABannerService iaBannerService;
+  private final IABannerService iaBannerService;
 
   @GetMapping
   @PerformanceLogging(

@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.testcertificate;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +28,14 @@ import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 @Service
+@RequiredArgsConstructor
 public class EraseTestCertificateService {
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired private ReferensRepository referensRepository;
+  private final ReferensRepository referensRepository;
 
-  @Autowired private HandelseRepository handelseRepository;
+  private final HandelseRepository handelseRepository;
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void eraseTestCertificates(List<String> testCertificateIds) {

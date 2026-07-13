@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
+@RequiredArgsConstructor
 public class ChangeUnitServiceImpl implements ChangeUnitService {
 
   private final WebCertUserService webCertUserService;
@@ -40,18 +41,6 @@ public class ChangeUnitServiceImpl implements ChangeUnitService {
   private final UserService userService;
 
   private static final Logger LOG = LoggerFactory.getLogger(ChangeUnitServiceImpl.class);
-
-  @Autowired
-  public ChangeUnitServiceImpl(
-      WebCertUserService webCertUserService,
-      DssSignatureService dssSignatureService,
-      CommonAuthoritiesResolver commonAuthoritiesResolver,
-      UserService userService) {
-    this.webCertUserService = webCertUserService;
-    this.dssSignatureService = dssSignatureService;
-    this.commonAuthoritiesResolver = commonAuthoritiesResolver;
-    this.userService = userService;
-  }
 
   @Override
   public User change(String unitId) throws ChangeUnitException {

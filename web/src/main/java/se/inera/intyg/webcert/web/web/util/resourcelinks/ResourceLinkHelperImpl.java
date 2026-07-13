@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.web.util.resourcelinks;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -39,21 +39,12 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @Component
+@RequiredArgsConstructor
 public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
   private final DraftAccessServiceHelper draftAccessServiceHelper;
   private final LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
   private final CertificateAccessServiceHelper certificateAccessServiceHelper;
-
-  @Autowired
-  public ResourceLinkHelperImpl(
-      DraftAccessServiceHelper draftAccessServiceHelper,
-      LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper,
-      CertificateAccessServiceHelper certificateAccessServiceHelper) {
-    this.draftAccessServiceHelper = draftAccessServiceHelper;
-    this.lockedDraftAccessServiceHelper = lockedDraftAccessServiceHelper;
-    this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-  }
 
   @Override
   public void decorateIntygModuleWithValidActionLinks(

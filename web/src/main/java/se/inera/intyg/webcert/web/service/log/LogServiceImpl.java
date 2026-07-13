@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.PostConstruct;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.Session;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -59,6 +59,7 @@ import tools.jackson.databind.ObjectMapper;
  * @author nikpet
  */
 @Service
+@RequiredArgsConstructor
 public class LogServiceImpl implements LogService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LogServiceImpl.class);
@@ -70,18 +71,17 @@ public class LogServiceImpl implements LogService {
       "Prediktion från SRS av risk för lång sjukskrivning";
   private static final String SET_OWN_OPINION = "Läkarens egen bedömning";
 
-  @Autowired(required = false)
-  @Qualifier("jmsPDLLogTemplate") private JmsTemplate jmsTemplate;
+  @Qualifier("jmsPDLLogTemplate") private final ObjectProvider<JmsTemplate> jmsTemplateProvider;
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-  @Autowired private LogMessagePopulator logMessagePopulator;
+  private final LogMessagePopulator logMessagePopulator;
 
-  @Autowired private LogRequestFactory logRequestFactory;
+  private final LogRequestFactory logRequestFactory;
 
   @PostConstruct
   public void checkJmsTemplate() {
-    if (jmsTemplate == null) {
+    if (jmsTemplateProvider.getIfAvailable() == null) {
       LOGGER.error("PDL logging is disabled!");
     }
   }
@@ -310,6 +310,7 @@ public class LogServiceImpl implements LogService {
       return;
     }
 
+    final var jmsTemplate = jmsTemplateProvider.getIfAvailable();
     if (jmsTemplate == null) {
       LOGGER.warn(
           "Can not log {} of Intyg '{}' since PDL logging is disabled!",
@@ -325,11 +326,6 @@ public class LogServiceImpl implements LogService {
         logMsg.getActivityLevel());
 
     jmsTemplate.send(new MC(logMsg));
-  }
-
-  @VisibleForTesting
-  void setLogMessagePopulator(LogMessagePopulator logMessagePopulator) {
-    this.logMessagePopulator = logMessagePopulator;
   }
 
   private static final class MC implements MessageCreator {

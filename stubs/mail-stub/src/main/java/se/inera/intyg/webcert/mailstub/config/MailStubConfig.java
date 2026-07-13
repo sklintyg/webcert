@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import se.inera.intyg.webcert.mailstub.JavaMailSenderAroundAdvice;
+import se.inera.intyg.webcert.mailstub.MailStore;
 
 @Configuration
 @Profile("dev")
@@ -32,8 +33,8 @@ public class MailStubConfig {
   private String mailHost;
 
   @Bean
-  public JavaMailSenderAroundAdvice mailAdvice() {
-    JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
+  public JavaMailSenderAroundAdvice mailAdvice(MailStore mailStore) {
+    JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice(mailStore);
     advice.setMailHost(mailHost);
     return advice;
   }

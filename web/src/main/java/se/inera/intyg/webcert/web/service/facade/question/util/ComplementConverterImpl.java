@@ -23,10 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.services.texts.CertificateTextProvider;
 import se.inera.intyg.common.support.facade.model.question.Complement;
@@ -42,19 +42,13 @@ import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 
 @Component
+@RequiredArgsConstructor
 public class ComplementConverterImpl implements ComplementConverter {
 
   private final GetCertificateService getCertificateService;
   private final IntygModuleRegistry intygModuleRegistry;
 
   private static final Logger LOG = LoggerFactory.getLogger(ComplementConverterImpl.class);
-
-  @Autowired
-  public ComplementConverterImpl(
-      GetCertificateService getCertificateService, IntygModuleRegistry intygModuleRegistry) {
-    this.getCertificateService = getCertificateService;
-    this.intygModuleRegistry = intygModuleRegistry;
-  }
 
   @Override
   public Complement[] convert(Arende complementQuestion) {

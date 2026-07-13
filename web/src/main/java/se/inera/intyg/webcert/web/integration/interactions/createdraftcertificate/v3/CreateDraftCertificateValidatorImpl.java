@@ -20,12 +20,16 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 
 import java.util.Collections;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.webcert.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.webcert.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -35,6 +39,14 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 @Component(value = "createDraftCertificateValidatorImplV2")
 public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertificateValidator
     implements CreateDraftCertificateValidator {
+
+  public CreateDraftCertificateValidatorImpl(
+      IntygModuleRegistry moduleRegistry,
+      PatientDetailsResolver patientDetailsResolver,
+      AuthoritiesHelper authoritiesHelper,
+      FeaturesHelper featuresHelper) {
+    super(moduleRegistry, patientDetailsResolver, authoritiesHelper, featuresHelper);
+  }
 
   @Override
   public ResultValidator validate(Intyg intyg) {

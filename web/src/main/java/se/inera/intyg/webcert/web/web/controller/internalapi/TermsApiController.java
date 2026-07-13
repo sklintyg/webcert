@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,9 +29,10 @@ import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 
 @RestController
 @RequestMapping("/internalapi/terms")
+@RequiredArgsConstructor
 public class TermsApiController {
 
-  @Autowired private AvtalService avtalService;
+  private final AvtalService avtalService;
 
   @GetMapping("/approved/{hsaId}")
   @PerformanceLogging(

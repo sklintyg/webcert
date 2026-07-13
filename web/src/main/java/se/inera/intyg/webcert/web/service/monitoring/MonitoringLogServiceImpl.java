@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -44,13 +44,14 @@ import tools.jackson.databind.json.JsonMapper;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MonitoringLogServiceImpl implements MonitoringLogService {
 
   private static final String NO_AMNE = "NO AMNE";
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-  @Autowired private HashUtility hashUtility;
+  private final HashUtility hashUtility;
 
   @Override
   public void logMailSent(String unitHsaId, String reason, MailNotification mailNotification) {

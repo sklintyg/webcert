@@ -63,7 +63,7 @@ class ArendeServiceImplTest {
   private static final String PATIENT_PERSON_ID = "191212121212";
   private static final String CERTIFICATE_ID = "certificateId";
 
-  @InjectMocks private ArendeServiceImpl arendeServiceReal = new ArendeServiceImpl();
+  @InjectMocks private ArendeServiceImpl arendeServiceReal;
 
   @Mock private WebCertUserService webcertUserService;
 

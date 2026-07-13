@@ -22,10 +22,10 @@ import com.google.common.base.Strings;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 @Component
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
   private static final String FRAGESTALLARE_FK = FrageStallare.FORSAKRINGSKASSAN.getKod();
@@ -48,9 +49,9 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
   private static final Logger LOG = LoggerFactory.getLogger(FragorOchSvarCreatorImpl.class);
 
-  @Autowired private FragaSvarRepository fragaSvarRepository;
+  private final FragaSvarRepository fragaSvarRepository;
 
-  @Autowired private ArendeRepository arendeRepository;
+  private final ArendeRepository arendeRepository;
 
   /*
    * (non-Javadoc)

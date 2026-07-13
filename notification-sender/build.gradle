@@ -62,6 +62,7 @@ dependencies {
     implementation "org.apache.cxf:cxf-rt-features-logging"
 
     annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
 
     testImplementation project(':notification-stub')
     testImplementation "org.mockito:mockito-junit-jupiter"

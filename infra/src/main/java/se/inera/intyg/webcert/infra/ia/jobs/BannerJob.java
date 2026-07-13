@@ -22,7 +22,6 @@ import java.util.List;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import se.inera.intyg.webcert.infra.driftbannerdto.Application;
 import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
@@ -36,9 +35,14 @@ public abstract class BannerJob {
   private static final String LOCK_AT_MOST = "PT10M"; // 10 * 60 * 1000
   private static final String LOCK_AT_LEAST = "PT30S"; // 30 * 1000;
 
-  @Autowired private IABannerService iaBannerService;
+  private final IABannerService iaBannerService;
 
-  @Autowired private LogMDCHelper logMDCHelper;
+  private final LogMDCHelper logMDCHelper;
+
+  protected BannerJob(IABannerService iaBannerService, LogMDCHelper logMDCHelper) {
+    this.iaBannerService = iaBannerService;
+    this.logMDCHelper = logMDCHelper;
+  }
 
   @Scheduled(cron = "${intygsadmin.cron}")
   @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)

@@ -34,9 +34,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -91,29 +91,30 @@ import tools.jackson.databind.JsonNode;
 @RestController
 @RequestMapping("/testability/intyg")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class IntygResource {
 
   public static final Logger LOG = LoggerFactory.getLogger(IntygResource.class);
 
   protected static final String UTF_8_CHARSET = ";charset=utf-8";
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired private UtkastService utkastService;
+  private final UtkastService utkastService;
 
-  @Autowired private FragaSvarRepository fragaSvarRepository;
+  private final FragaSvarRepository fragaSvarRepository;
 
-  @Autowired private ArendeRepository arendeRepository;
+  private final ArendeRepository arendeRepository;
 
-  @Autowired private IntygModuleFacade moduleFacade;
+  private final IntygModuleFacade moduleFacade;
 
-  @Autowired private ResourceLoader resourceLoader;
+  private final ResourceLoader resourceLoader;
 
-  @Autowired private RedisTicketTracker redisTicketTracker;
+  private final RedisTicketTracker redisTicketTracker;
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final IntygModuleRegistry moduleRegistry;
 
-  @Autowired private HandelseRepository handelseRepository;
+  private final HandelseRepository handelseRepository;
 
   /**
    * This method is not very safe nor accurate - it parses the [intygsTyp].sch file using XPath and

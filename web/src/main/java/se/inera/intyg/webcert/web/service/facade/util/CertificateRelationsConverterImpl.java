@@ -22,9 +22,9 @@ import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusCo
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @Component
+@RequiredArgsConstructor
 public class CertificateRelationsConverterImpl implements CertificateRelationsConverter {
 
   private static final Logger LOG =
@@ -43,14 +44,6 @@ public class CertificateRelationsConverterImpl implements CertificateRelationsCo
   private final CertificateRelationService certificateRelationService;
 
   private final CertificateRelationsParentHelper certificateRelationsParentHelper;
-
-  @Autowired
-  public CertificateRelationsConverterImpl(
-      CertificateRelationService certificateRelationService,
-      CertificateRelationsParentHelper certificateRelationsParentHelper) {
-    this.certificateRelationService = certificateRelationService;
-    this.certificateRelationsParentHelper = certificateRelationsParentHelper;
-  }
 
   @Override
   public CertificateRelations convert(String certificateId) {

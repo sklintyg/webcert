@@ -29,9 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -64,6 +64,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  * <p>Created by eriklupander on 2017-07-03.
  */
 @Service
+@RequiredArgsConstructor
 public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
   private static final List<UtkastStatus> UTKAST_STATUSES =
@@ -71,13 +72,13 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
           UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE, UtkastStatus.SIGNED);
 
   private static final Logger LOG = LoggerFactory.getLogger(PatientDetailsResolverImpl.class);
-  @Autowired private PUService puService;
+  private final PUService puService;
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final IntygModuleRegistry moduleRegistry;
 
   /**
    * Just forwards the call to the PU service so we don't have to expose both this class and {@link

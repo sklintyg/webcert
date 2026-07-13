@@ -100,7 +100,9 @@ class NotificationResultMessageCreatorTest {
 
   @Mock private ModuleEntryPoint moduleEntryPoint;
 
-  @Spy CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+  @Spy
+  private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator =
+      new CertificateStatusUpdateForCareCreator(null, null);
 
   @Spy private JsonMapper objectMapper;
 

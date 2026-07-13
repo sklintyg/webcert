@@ -22,13 +22,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import jakarta.xml.ws.WebServiceException;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.inera.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
@@ -44,13 +44,14 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 
+@RequiredArgsConstructor
 public class RegisterApprovedReceiversProcessor {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(RegisterApprovedReceiversProcessor.class);
 
-  @Autowired private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
-  @Autowired private MdcHelper mdcHelper;
+  private final RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
+  private final MdcHelper mdcHelper;
 
   private final JsonMapper objectMapper = JsonMapper.builder().build();
 

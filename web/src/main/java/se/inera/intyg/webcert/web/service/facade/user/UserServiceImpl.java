@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CareProvider;
 import se.inera.intyg.common.support.facade.model.CareUnit;
@@ -49,7 +48,6 @@ public class UserServiceImpl implements UserService {
 
   private final WebCertUserService webCertUserService;
 
-  @Autowired
   public UserServiceImpl(WebCertUserService webCertUserService) {
     this.webCertUserService = webCertUserService;
     SORT_SWEDISH.setStrength(Collator.PRIMARY);

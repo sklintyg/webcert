@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
@@ -37,17 +37,11 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 @Service
+@RequiredArgsConstructor
 public class PaginationAndLoggingServiceImpl implements PaginationAndLoggingService {
 
   private final LogService logService;
   private final AuthoritiesHelper authoritiesHelper;
-
-  @Autowired
-  public PaginationAndLoggingServiceImpl(
-      LogService logService, AuthoritiesHelper authoritiesHelper) {
-    this.logService = logService;
-    this.authoritiesHelper = authoritiesHelper;
-  }
 
   @Override
   public List<ArendeListItem> get(

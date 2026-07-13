@@ -18,15 +18,14 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate;
 
-// CHECKSTYLE:OFF LineLength
-
 import com.google.common.base.Joiner;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+// CHECKSTYLE:OFF LineLength
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
@@ -50,16 +49,17 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
  */
 @Component
 @SchemaValidation
+@RequiredArgsConstructor
 public class ReceiveAnswerResponderImpl
     implements ReceiveMedicalCertificateAnswerResponderInterface {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveAnswerResponderImpl.class);
 
-  @Autowired private FragaSvarService fragaSvarService;
+  private final FragaSvarService fragaSvarService;
 
-  @Autowired private NotificationService notificationService;
+  private final NotificationService notificationService;
 
-  @Autowired private CertificateEventService certificateEventService;
+  private final CertificateEventService certificateEventService;
 
   @Override
   @PerformanceLogging(

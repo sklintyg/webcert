@@ -86,7 +86,7 @@ class PatientDetailsResolverTest {
 
   @Mock private IntygModuleRegistry moduleRegistry;
 
-  @InjectMocks private PatientDetailsResolverImpl testee = new PatientDetailsResolverImpl();
+  @InjectMocks private PatientDetailsResolverImpl testee;
 
   @Mock private WebCertUser integratedWebCertUser;
 

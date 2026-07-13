@@ -64,8 +64,7 @@ class CertificateStoreProcessorTest {
   @Mock private ModuleApi moduleApi;
   @Spy private MdcHelper mdcHelper;
 
-  @InjectMocks
-  private CertificateStoreProcessor certificateStoreProcessor = new CertificateStoreProcessor();
+  @InjectMocks private CertificateStoreProcessor certificateStoreProcessor;
 
   @BeforeEach
   void setup() throws ModuleNotFoundException {

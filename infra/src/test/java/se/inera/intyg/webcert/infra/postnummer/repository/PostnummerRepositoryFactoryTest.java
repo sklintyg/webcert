@@ -22,15 +22,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ResourceLoader;
 import se.inera.intyg.webcert.infra.postnummer.model.Omrade;
 
 @ExtendWith(MockitoExtension.class)
 class PostnummerRepositoryFactoryTest {
 
-  private PostnummerRepositoryFactory factory = new PostnummerRepositoryFactory();
+  @Mock private ResourceLoader resourceLoader;
+
+  private PostnummerRepositoryFactory factory;
+
+  @BeforeEach
+  void setUp() {
+    factory = new PostnummerRepositoryFactory(resourceLoader);
+  }
 
   private static final String LINE_1 = "13100;NACKA;01;STOCKHOLM;0182;NACKA";
   private static final String LINE_1_POSTNUMMER = "13100";

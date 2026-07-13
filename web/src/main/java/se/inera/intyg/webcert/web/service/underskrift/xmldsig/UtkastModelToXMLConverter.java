@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
 import jakarta.xml.bind.JAXBElement;
 import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -35,11 +35,12 @@ import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.Regi
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Service
+@RequiredArgsConstructor
 public class UtkastModelToXMLConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(UtkastModelToXMLConverter.class);
 
-  @Autowired private IntygModuleRegistry intygModuleRegistry;
+  private final IntygModuleRegistry intygModuleRegistry;
 
   public String utkastToXml(String json, String intygsTyp) {
     Intyg intyg = utkastToJAXBObject(intygsTyp, json);

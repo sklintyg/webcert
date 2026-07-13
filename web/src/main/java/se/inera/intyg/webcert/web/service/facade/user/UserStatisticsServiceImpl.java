@@ -21,10 +21,10 @@ package se.inera.intyg.webcert.web.service.facade.user;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.security.authorities.AuthoritiesHelper;
@@ -38,6 +38,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserStatisticsServiceImpl implements UserStatisticsService {
 
   @Value("${max.number.of.commissions.for.statistics:15}")
@@ -50,20 +51,6 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
   private final AuthoritiesHelper authoritiesHelper;
   private final ArendeService arendeService;
   private final CertificateServiceStatisticService certificateServiceStatisticService;
-
-  @Autowired
-  public UserStatisticsServiceImpl(
-      WebCertUserService webCertUserService,
-      UtkastService utkastService,
-      AuthoritiesHelper authoritiesHelper,
-      ArendeService arendeService,
-      CertificateServiceStatisticService certificateServiceStatisticService) {
-    this.webCertUserService = webCertUserService;
-    this.utkastService = utkastService;
-    this.authoritiesHelper = authoritiesHelper;
-    this.arendeService = arendeService;
-    this.certificateServiceStatisticService = certificateServiceStatisticService;
-  }
 
   @Override
   public UserStatisticsDTO getUserStatistics() {

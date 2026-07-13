@@ -27,9 +27,9 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import java.io.IOException;
 import javax.xml.namespace.QName;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -54,14 +54,14 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Component
+@RequiredArgsConstructor
 public class CertificateStatusUpdateForCareCreator {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(CertificateStatusUpdateForCareCreator.class);
 
-  @Autowired private NotificationPatientEnricher notificationPatientEnricher;
-
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final NotificationPatientEnricher notificationPatientEnricher;
+  private final IntygModuleRegistry moduleRegistry;
 
   private static final String XML_LOCAL_PART = "CertificateStatusUpdateForCare";
 

@@ -22,12 +22,25 @@ import static se.inera.intyg.webcert.infra.security.common.model.AuthoritiesCons
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 /** Created by eriklupander on 2015-10-08. */
 @Controller
 @RequestMapping("/webcert/web/user/pp-certificate")
 public class PrivatePractitionerFragaSvarUthoppController extends FragaSvarUthoppController {
+
+  public PrivatePractitionerFragaSvarUthoppController(
+      WebCertUserService webCertUserService,
+      GetIssuingUnitIdAggregator getIssuingUnitIdAggregator,
+      ReactUriFactory reactUriFactory,
+      CommonAuthoritiesResolver commonAuthoritiesResolver) {
+    super(
+        webCertUserService, getIssuingUnitIdAggregator, reactUriFactory, commonAuthoritiesResolver);
+  }
 
   @Override
   protected String[] getGrantedRoles() {

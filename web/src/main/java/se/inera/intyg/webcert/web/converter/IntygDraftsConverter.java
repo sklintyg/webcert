@@ -23,9 +23,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
@@ -40,6 +40,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 
 @Component
+@RequiredArgsConstructor
 public class IntygDraftsConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
@@ -53,9 +54,9 @@ public class IntygDraftsConverter {
   private static final List<String> ARCHIVED_STATUSES =
       Arrays.asList(StatusKod.DELETE.name(), StatusKod.RESTOR.name());
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final IntygModuleRegistry moduleRegistry;
 
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
+  private final PatientDetailsResolver patientDetailsResolver;
 
   public static List<ListIntygEntry> merge(
       List<ListIntygEntry> intygList, List<Utkast> utkastList) {

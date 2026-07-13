@@ -183,7 +183,7 @@ class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         }
       };
 
-  @InjectMocks private UtkastService utkastService = new UtkastServiceImpl();
+  @InjectMocks private UtkastServiceImpl utkastService;
 
   private Utkast utkast;
   private Utkast lockedUtkast;

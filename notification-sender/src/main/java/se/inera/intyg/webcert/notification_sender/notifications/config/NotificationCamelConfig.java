@@ -21,10 +21,15 @@ package se.inera.intyg.webcert.notification_sender.notifications.config;
 import org.apache.camel.component.jackson3.JacksonDataFormat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
+import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -38,13 +43,23 @@ import tools.jackson.databind.json.JsonMapper;
 public class NotificationCamelConfig {
 
   @Bean
-  public NotificationTransformer notificationTransformer() {
-    return new NotificationTransformer();
+  public NotificationTransformer notificationTransformer(
+      IntygModuleRegistry moduleRegistry,
+      CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator,
+      NotificationResultMessageCreator notificationResultMessageCreator,
+      NotificationResultMessageSender notificationResultMessageSender,
+      MdcHelper mdcHelper) {
+    return new NotificationTransformer(
+        moduleRegistry,
+        certificateStatusUpdateForCareCreator,
+        notificationResultMessageCreator,
+        notificationResultMessageSender,
+        mdcHelper);
   }
 
   @Bean
-  public NotificationAggregator notificationAggregator() {
-    return new NotificationAggregator();
+  public NotificationAggregator notificationAggregator(MdcHelper mdcHelper) {
+    return new NotificationAggregator(mdcHelper);
   }
 
   @Bean

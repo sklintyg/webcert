@@ -77,9 +77,7 @@ class NotificationMessageFactoryTest {
 
   @Mock private ReferensService referenceService;
 
-  @InjectMocks
-  private NotificationMessageFactory notificationMessageFactory =
-      new NotificationMessageFactoryImpl();
+  @InjectMocks private NotificationMessageFactoryImpl notificationMessageFactory;
 
   @Test
   void testCreateNotificationMessageForUtkast() {

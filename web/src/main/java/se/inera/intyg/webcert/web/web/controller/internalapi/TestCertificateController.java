@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,9 +33,10 @@ import se.inera.intyg.webcert.web.service.testcertificate.TestCertificateService
 /** Internal REST endpoint for managing test certificates. */
 @RestController
 @RequestMapping("/internalapi/testCertificate")
+@RequiredArgsConstructor
 public class TestCertificateController {
 
-  @Autowired private TestCertificateService testCertificateService;
+  private final TestCertificateService testCertificateService;
 
   @PostMapping("/erase")
   @PerformanceLogging(

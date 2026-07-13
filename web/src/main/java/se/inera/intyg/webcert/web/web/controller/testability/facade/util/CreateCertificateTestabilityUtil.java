@@ -23,7 +23,7 @@ import static se.inera.intyg.webcert.web.web.controller.testability.facade.dto.C
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
@@ -56,6 +56,7 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
 
 @Component
+@RequiredArgsConstructor
 public class CreateCertificateTestabilityUtil {
 
   private final IntygModuleRegistry moduleRegistry;
@@ -70,34 +71,6 @@ public class CreateCertificateTestabilityUtil {
   private final CSIntegrationService csIntegrationService;
   private final CSTestabilityIntegrationService csTestabilityIntegrationService;
   private final UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil;
-
-  @Autowired
-  public CreateCertificateTestabilityUtil(
-      IntygModuleRegistry moduleRegistry,
-      WebcertUserDetailsService webcertUserDetailsService,
-      PatientDetailsResolver patientDetailsResolver,
-      UtkastService utkastService,
-      UtkastToCertificateConverter utkastToCertificateConverter,
-      UtkastRepository utkastRepository,
-      IntygTextsService intygTextsService,
-      TypeAheadProvider typeAheadProvider,
-      CertificateServiceTestabilityUtil certificateServiceTestabilityUtil,
-      CSIntegrationService csIntegrationService,
-      CSTestabilityIntegrationService csTestabilityIntegrationService,
-      UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil) {
-    this.moduleRegistry = moduleRegistry;
-    this.webcertUserDetailsService = webcertUserDetailsService;
-    this.patientDetailsResolver = patientDetailsResolver;
-    this.utkastService = utkastService;
-    this.utkastToCertificateConverter = utkastToCertificateConverter;
-    this.utkastRepository = utkastRepository;
-    this.intygTextsService = intygTextsService;
-    this.typeAheadProvider = typeAheadProvider;
-    this.certificateServiceTestabilityUtil = certificateServiceTestabilityUtil;
-    this.csIntegrationService = csIntegrationService;
-    this.csTestabilityIntegrationService = csTestabilityIntegrationService;
-    this.updateIntygstjanstTestabilityUtil = updateIntygstjanstTestabilityUtil;
-  }
 
   private static String getSkickadTillMottagare(String certificateType) {
     return switch (certificateType) {

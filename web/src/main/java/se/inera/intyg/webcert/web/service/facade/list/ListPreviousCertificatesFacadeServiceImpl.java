@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -84,7 +83,6 @@ public class ListPreviousCertificatesFacadeServiceImpl
   private final CertificateForPatientService certificateForPatientService;
   private final ListCertificatesAggregator listCertificatesAggregator;
 
-  @Autowired
   public ListPreviousCertificatesFacadeServiceImpl(
       WebCertUserService webCertUserService,
       LogService logService,

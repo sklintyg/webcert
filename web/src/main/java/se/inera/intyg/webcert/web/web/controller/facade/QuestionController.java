@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -55,21 +55,22 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestD
 @RestController
 @RequestMapping("/api/question")
 @Validated
+@RequiredArgsConstructor
 public class QuestionController {
 
   private static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
   private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-  @Autowired private DeleteQuestionFacadeService deleteQuestionAggregator;
-  @Autowired private CreateQuestionFacadeService createQuestionAggregator;
-  @Autowired private SaveQuestionFacadeService saveQuestionAggregator;
-  @Autowired private SendQuestionFacadeService sendQuestionAggregator;
-  @Autowired private SaveQuestionAnswerFacadeService saveAnswerAggregator;
-  @Autowired private DeleteQuestionAnswerFacadeService deleteAnswerAggregator;
-  @Autowired private SendQuestionAnswerFacadeService sendAnswerAggregator;
-  @Autowired private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
-  @Autowired private GetQuestionsFacadeService getQuestionsAggregator;
-  @Autowired private HandleQuestionFacadeService handleQuestionAggregator;
+  private final DeleteQuestionFacadeService deleteQuestionAggregator;
+  private final CreateQuestionFacadeService createQuestionAggregator;
+  private final SaveQuestionFacadeService saveQuestionAggregator;
+  private final SendQuestionFacadeService sendQuestionAggregator;
+  private final SaveQuestionAnswerFacadeService saveAnswerAggregator;
+  private final DeleteQuestionAnswerFacadeService deleteAnswerAggregator;
+  private final SendQuestionAnswerFacadeService sendAnswerAggregator;
+  private final GetQuestionsResourceLinkService getQuestionsResourceLinkService;
+  private final GetQuestionsFacadeService getQuestionsAggregator;
+  private final HandleQuestionFacadeService handleQuestionAggregator;
 
   @GetMapping("/{certificateId}")
   @PerformanceLogging(

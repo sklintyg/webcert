@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,11 +42,11 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 @RestController
 @Profile("dev")
 @RequestMapping("/api/notification-api")
+@RequiredArgsConstructor
 public class NotificationStubRestApi {
 
-  @Autowired private NotificationStoreV3 notificationStoreV3;
-
-  @Autowired private NotificationStubStateBean stubStateBean;
+  private final NotificationStoreV3 notificationStoreV3;
+  private final NotificationStubStateBean stubStateBean;
 
   @GetMapping(value = "/notifieringar/v3", produces = MediaType.APPLICATION_JSON_VALUE)
   public Collection<CertificateStatusUpdateForCareType> notifieringarV3() {

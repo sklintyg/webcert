@@ -118,7 +118,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
   @Mock protected CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-  @InjectMocks protected IntygServiceImpl intygService = new IntygServiceImpl();
+  @InjectMocks protected IntygServiceImpl intygService;
 
   protected String json;
   protected Fk7263Utlatande utlatande;

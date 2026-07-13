@@ -21,9 +21,15 @@ package se.inera.intyg.webcert.web.jobs;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.infra.driftbannerdto.Application;
 import se.inera.intyg.webcert.infra.ia.jobs.BannerJob;
+import se.inera.intyg.webcert.infra.ia.services.IABannerService;
+import se.inera.intyg.webcert.infra.monitoring.logging.LogMDCHelper;
 
 @Component
 public class WCBannerJob extends BannerJob {
+
+  public WCBannerJob(IABannerService iaBannerService, LogMDCHelper logMDCHelper) {
+    super(iaBannerService, logMDCHelper);
+  }
 
   @Override
   protected Application getApplication() {

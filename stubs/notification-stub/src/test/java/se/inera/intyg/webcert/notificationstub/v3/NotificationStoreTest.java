@@ -46,7 +46,7 @@ class NotificationStoreTest {
   @Test
   void testPurge() {
 
-    NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl();
+    NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl(null);
     notificationStore.initForTesting();
     LocalDateTime now = LocalDateTime.now();
     populateNotificationsMap(100, notificationStore, now);

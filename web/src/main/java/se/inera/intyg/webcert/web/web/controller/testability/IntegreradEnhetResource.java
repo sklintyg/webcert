@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,12 +39,13 @@ import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhet
 @RestController
 @RequestMapping("/testability/integreradevardenheter")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class IntegreradEnhetResource {
 
   private static final int OK = 200;
   private static final int BAD_REQUEST = 400;
 
-  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
   @DeleteMapping("/{hsaId}")
   public ResponseEntity<String> deleteIntegreradVardenhet(@PathVariable("hsaId") String hsaId) {

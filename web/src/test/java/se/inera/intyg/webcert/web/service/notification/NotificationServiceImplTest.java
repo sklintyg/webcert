@@ -56,6 +56,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -130,6 +131,8 @@ class NotificationServiceImplTest {
 
   @Mock private JmsTemplate template;
 
+  @Mock private ObjectProvider<JmsTemplate> jmsTemplateForAggregationProvider;
+
   @Mock private SendNotificationStrategy mockSendNotificationStrategy;
 
   @Mock private NotificationMessageFactory mockNotificationMessageFactory;
@@ -154,6 +157,7 @@ class NotificationServiceImplTest {
 
   @BeforeEach
   void setup() throws Exception {
+    when(jmsTemplateForAggregationProvider.getIfAvailable()).thenReturn(template);
     setupMocks(SchemaVersion.VERSION_3);
 
     when(session.createTextMessage(anyString()))

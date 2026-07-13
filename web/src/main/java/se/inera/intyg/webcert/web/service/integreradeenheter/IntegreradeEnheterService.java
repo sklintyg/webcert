@@ -21,16 +21,17 @@ package se.inera.intyg.webcert.web.service.integreradeenheter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.integreradeenheter.IntegratedUnitDTO;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 
 @Service
+@RequiredArgsConstructor
 public class IntegreradeEnheterService {
 
-  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
   public Optional<IntegratedUnitDTO> getIntegratedUnit(String hsaId) {
     IntegreradEnhet enhet = integreradeEnheterRegistry.getIntegreradEnhet(hsaId);

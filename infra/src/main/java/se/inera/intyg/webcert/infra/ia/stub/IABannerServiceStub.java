@@ -19,13 +19,19 @@
 package se.inera.intyg.webcert.infra.ia.stub;
 
 import java.util.List;
+import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.webcert.infra.driftbannerdto.Application;
 import se.inera.intyg.webcert.infra.driftbannerdto.Banner;
 import se.inera.intyg.webcert.infra.ia.services.IABannerServiceImpl;
 
 @Profile({"dev"})
 public class IABannerServiceStub extends IABannerServiceImpl {
+
+  public IABannerServiceStub(RestTemplate restTemplate, Cache iaCache) {
+    super(restTemplate, iaCache);
+  }
 
   @Override
   public List<Banner> loadBanners(Application application) {

@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +29,7 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
 
@@ -44,7 +44,13 @@ public class DiagnosModuleApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);
 
-  @Autowired private DiagnosService diagnosService;
+  private final DiagnosService diagnosService;
+
+  public DiagnosModuleApiController(
+      WebCertUserService webCertUserService, DiagnosService diagnosService) {
+    super(webCertUserService);
+    this.diagnosService = diagnosService;
+  }
 
   /**
    * Gets the diagnosis matching a code exactly.

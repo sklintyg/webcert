@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
@@ -31,15 +31,15 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @SchemaValidation
+@RequiredArgsConstructor
 public class CertificateStatusUpdateForCareResponderStub
     implements CertificateStatusUpdateForCareResponderInterface {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
 
-  @Autowired private NotificationStoreV3 notificationStoreV3;
-
-  @Autowired private NotificationStubStateBean notificationStubStateBean;
+  private final NotificationStoreV3 notificationStoreV3;
+  private final NotificationStubStateBean notificationStubStateBean;
 
   @Override
   public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(

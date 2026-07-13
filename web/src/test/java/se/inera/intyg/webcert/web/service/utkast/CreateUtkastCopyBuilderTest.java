@@ -79,8 +79,7 @@ class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
 
   @Mock private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
-  @InjectMocks
-  private CreateUtkastCopyBuilder createUtkastCopyBuilder = new CreateUtkastCopyBuilder();
+  @InjectMocks private CreateUtkastCopyBuilder createUtkastCopyBuilder;
 
   @BeforeEach
   void expectCallToModuleRegistry() throws Exception {

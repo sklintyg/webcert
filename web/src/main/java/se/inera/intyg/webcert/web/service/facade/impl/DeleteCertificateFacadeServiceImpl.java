@@ -18,25 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service("deleteCertificateFromWebcert")
+@RequiredArgsConstructor
 public class DeleteCertificateFacadeServiceImpl implements DeleteCertificateFacadeService {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(DeleteCertificateFacadeServiceImpl.class);
 
   private final UtkastService utkastService;
-
-  @Autowired
-  public DeleteCertificateFacadeServiceImpl(UtkastService utkastService) {
-    this.utkastService = utkastService;
-  }
 
   @Override
   public boolean deleteCertificate(String certificateId, long version) {

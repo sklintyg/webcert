@@ -80,8 +80,7 @@ class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest {
 
   @Mock private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
-  @InjectMocks
-  private CreateRenewalCopyUtkastBuilder renewalBuilder = new CreateRenewalCopyUtkastBuilder();
+  @InjectMocks private CreateRenewalCopyUtkastBuilder renewalBuilder;
 
   @BeforeEach
   void expectCallToModuleRegistry() throws Exception {

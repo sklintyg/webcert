@@ -69,7 +69,7 @@ class SendCertificateServiceClientTest {
 
   @Mock JsonMapper objectMapper;
 
-  @InjectMocks SendCertificateServiceClientImpl testee = new SendCertificateServiceClientImpl();
+  @InjectMocks SendCertificateServiceClientImpl testee;
 
   private static String createSkickatAvJson() {
     StringBuilder sb = new StringBuilder();

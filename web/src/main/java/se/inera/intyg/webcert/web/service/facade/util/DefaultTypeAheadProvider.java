@@ -19,21 +19,17 @@
 package se.inera.intyg.webcert.web.service.facade.util;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadEnum;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.webcert.infra.postnummer.service.PostnummerService;
 
 @Component
+@RequiredArgsConstructor
 public class DefaultTypeAheadProvider implements TypeAheadProvider {
 
   private final PostnummerService postnummerService;
-
-  @Autowired
-  public DefaultTypeAheadProvider(PostnummerService postnummerService) {
-    this.postnummerService = postnummerService;
-  }
 
   @Override
   public List<String> getValues(TypeAheadEnum typeAheadEnum) {

@@ -23,14 +23,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@RequiredArgsConstructor
 public class CreateCsrfTokenFilter extends OncePerRequestFilter {
 
-  @Autowired private CookieCsrfTokenRepository csrfTokenRepository;
+  private final CookieCsrfTokenRepository csrfTokenRepository;
 
   @Override
   protected void doFilterInternal(

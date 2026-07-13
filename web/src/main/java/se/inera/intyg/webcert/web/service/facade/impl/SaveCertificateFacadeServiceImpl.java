@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -30,19 +30,13 @@ import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service("saveCertificateFacadeServiceWC")
+@RequiredArgsConstructor
 public class SaveCertificateFacadeServiceImpl implements SaveCertificateFacadeService {
 
   private static final Logger LOG = LoggerFactory.getLogger(SaveCertificateFacadeServiceImpl.class);
 
   private final UtkastService utkastService;
   private final IntygModuleRegistry moduleRegistry;
-
-  @Autowired
-  public SaveCertificateFacadeServiceImpl(
-      UtkastService utkastService, IntygModuleRegistry moduleRegistry) {
-    this.utkastService = utkastService;
-    this.moduleRegistry = moduleRegistry;
-  }
 
   @Override
   public long saveCertificate(Certificate certificate, boolean pdlLog) {

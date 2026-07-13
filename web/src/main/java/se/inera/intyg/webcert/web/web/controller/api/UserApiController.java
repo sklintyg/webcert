@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorageRequest;
 
@@ -45,6 +46,10 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorag
 public class UserApiController extends AbstractApiController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
+
+  public UserApiController(WebCertUserService webCertUserService) {
+    super(webCertUserService);
+  }
 
   @PutMapping("/preferences")
   @PerformanceLogging(

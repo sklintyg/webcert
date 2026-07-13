@@ -22,11 +22,12 @@ import jakarta.xml.ws.Endpoint;
 import java.util.List;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import se.inera.intyg.webcert.notificationstub.v3.CertificateStatusUpdateForCareResponderStub;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3Impl;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 
@@ -35,8 +36,9 @@ import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 public class NotificationStubConfig {
 
   @Bean
-  public NotificationStoreV3Impl notificationStoreV3() {
-    return new NotificationStoreV3Impl();
+  public NotificationStoreV3Impl notificationStoreV3(
+      RedisConnectionFactory redisConnectionFactory) {
+    return new NotificationStoreV3Impl(redisConnectionFactory);
   }
 
   @Bean
@@ -45,10 +47,13 @@ public class NotificationStubConfig {
   }
 
   @Bean
-  public Endpoint notificationStubSoapEndpoint(Bus bus, ApplicationContext applicationContext) {
+  public Endpoint notificationStubSoapEndpoint(
+      Bus bus,
+      NotificationStoreV3 notificationStoreV3,
+      NotificationStubStateBean notificationStubStateBean) {
     CertificateStatusUpdateForCareResponderStub impl =
-        new CertificateStatusUpdateForCareResponderStub();
-    applicationContext.getAutowireCapableBeanFactory().autowireBean(impl);
+        new CertificateStatusUpdateForCareResponderStub(
+            notificationStoreV3, notificationStubStateBean);
     EndpointImpl endpoint = new EndpointImpl(bus, impl);
     endpoint.setSchemaLocations(
         List.of(

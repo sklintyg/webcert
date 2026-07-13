@@ -24,9 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -50,19 +50,20 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
  * @author Magnus Ekstrand on 2019-08-27.
  */
 @Service
+@RequiredArgsConstructor
 public class UtkastCandidateServiceImpl {
 
   private static final Logger LOG = LoggerFactory.getLogger(UtkastCandidateServiceImpl.class);
 
-  @Autowired private DraftAccessServiceHelper draftAccessServiceHelper;
+  private final DraftAccessServiceHelper draftAccessServiceHelper;
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired private LogService logService;
+  private final LogService logService;
 
-  @Autowired private LogRequestFactory logRequestFactory;
+  private final LogRequestFactory logRequestFactory;
 
   public Optional<UtkastCandidateMetaData> getCandidateMetaData(
       ModuleApi moduleApi,

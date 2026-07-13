@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -37,7 +38,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -45,6 +45,7 @@ import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
 @Component
+@RequiredArgsConstructor
 public class IcfTextResourceImpl implements IcfTextResource {
 
   private static final Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
@@ -61,7 +62,7 @@ public class IcfTextResourceImpl implements IcfTextResource {
   @Value("${icf.text.resource.path}")
   private String location;
 
-  @Autowired ResourceLoader resourceLoader;
+  private final ResourceLoader resourceLoader;
 
   @PostConstruct
   void init() {

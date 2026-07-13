@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createErrorResponse;
 
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -56,18 +56,19 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CreateDraftCertificateFromWC implements CreateDraftCertificate {
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
-  @Autowired private IntygTextsService intygTextsService;
+  private final IntygModuleRegistry moduleRegistry;
+  private final IntygTextsService intygTextsService;
   private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-  @Autowired private UtkastService utkastService;
-  @Autowired private CreateNewDraftRequestBuilder draftRequestBuilder;
-  @Lazy @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
-  @Autowired private CreateDraftCertificateValidator validator;
-  @Autowired private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
-  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final UtkastService utkastService;
+  private final CreateNewDraftRequestBuilder draftRequestBuilder;
+  @Lazy private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final CreateDraftCertificateValidator validator;
+  private final LoggedInWebcertUserFactory loggedInWebcertUserFactory;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
   @Override
   public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {

@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.infra.srs.stub.config;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.Bus;
 import org.apache.cxf.jaxws.EndpointImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -35,9 +35,10 @@ import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
 
 @Configuration
 @Profile("dev")
+@RequiredArgsConstructor
 public class SrsStubConfiguration {
 
-  @Autowired private Bus bus;
+  private final Bus bus;
 
   @Bean
   public ConsentRepository consentRepository() {
@@ -55,13 +56,13 @@ public class SrsStubConfiguration {
   }
 
   @Bean
-  public GetConsentStub getConsentStub() {
-    return new GetConsentStub();
+  public GetConsentStub getConsentStub(ConsentRepository consentRepository) {
+    return new GetConsentStub(consentRepository);
   }
 
   @Bean
-  public SetConsentStub setConsentStub() {
-    return new SetConsentStub();
+  public SetConsentStub setConsentStub(ConsentRepository consentRepository) {
+    return new SetConsentStub(consentRepository);
   }
 
   @Bean

@@ -23,8 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 @Component
+@RequiredArgsConstructor
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {
 
   private static final List<HandelsekodEnum> USES_FRAGOR_OCH_SVAR =
@@ -52,10 +53,10 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
           HandelsekodEnum.HANFRFV,
           HandelsekodEnum.MAKULE);
 
-  @Autowired private FragorOchSvarCreator fragorOchSvarCreator;
-  @Autowired private SendNotificationStrategy sendNotificationStrategy;
-  @Autowired private ReferensService referenceService;
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final FragorOchSvarCreator fragorOchSvarCreator;
+  private final SendNotificationStrategy sendNotificationStrategy;
+  private final ReferensService referenceService;
+  private final IntygModuleRegistry moduleRegistry;
 
   @Override
   public NotificationMessage createNotificationMessage(

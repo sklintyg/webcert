@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +32,10 @@ import se.inera.intyg.webcert.integration.fmb.services.FmbService;
 @RestController
 @RequestMapping("/testability/fmb")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class FmbResource {
 
-  @Autowired private Optional<FmbService> fmbService;
+  private final Optional<FmbService> fmbService;
 
   /**
    * Populate FMB data using the configured endpoint. Using a GET to update data might not be

@@ -20,12 +20,17 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.certificatesender.routes.CertificateRouteBuilder;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateRevokeProcessor;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateSendProcessor;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.CertificateStoreProcessor;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.RegisterApprovedReceiversProcessor;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.SendMessageToRecipientProcessor;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 
 /**
  * Replaces certificates/beans-context.xml and certificates/camel-context.xml. Defines all
@@ -36,28 +41,35 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.services.Sen
 public class CertificateCamelConfig {
 
   @Bean
-  public CertificateStoreProcessor certificateStoreProcessor() {
-    return new CertificateStoreProcessor();
+  public CertificateStoreProcessor certificateStoreProcessor(
+      IntygModuleRegistry moduleRegistry, MdcHelper mdcHelper) {
+    return new CertificateStoreProcessor(moduleRegistry, mdcHelper);
   }
 
   @Bean
-  public CertificateSendProcessor certificateSendProcessor() {
-    return new CertificateSendProcessor();
+  public CertificateSendProcessor certificateSendProcessor(
+      SendCertificateServiceClient sendServiceClient, MdcHelper mdcHelper) {
+    return new CertificateSendProcessor(sendServiceClient, mdcHelper);
   }
 
   @Bean
-  public CertificateRevokeProcessor certificateRevokeProcessor() {
-    return new CertificateRevokeProcessor();
+  public CertificateRevokeProcessor certificateRevokeProcessor(
+      IntygModuleRegistry registry, MdcHelper mdcHelper) {
+    return new CertificateRevokeProcessor(registry, mdcHelper);
   }
 
   @Bean
-  public SendMessageToRecipientProcessor sendMessageToRecipientProcessor() {
-    return new SendMessageToRecipientProcessor();
+  public SendMessageToRecipientProcessor sendMessageToRecipientProcessor(
+      SendMessageToRecipientResponderInterface sendMessageToRecipientResponder,
+      MdcHelper mdcHelper) {
+    return new SendMessageToRecipientProcessor(sendMessageToRecipientResponder, mdcHelper);
   }
 
   @Bean
-  public RegisterApprovedReceiversProcessor registerApprovedReceiversProcessor() {
-    return new RegisterApprovedReceiversProcessor();
+  public RegisterApprovedReceiversProcessor registerApprovedReceiversProcessor(
+      RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient,
+      MdcHelper mdcHelper) {
+    return new RegisterApprovedReceiversProcessor(registerApprovedReceiversClient, mdcHelper);
   }
 
   @Bean

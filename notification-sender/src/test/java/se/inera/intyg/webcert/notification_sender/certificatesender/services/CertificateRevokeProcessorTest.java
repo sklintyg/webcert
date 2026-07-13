@@ -53,8 +53,7 @@ class CertificateRevokeProcessorTest {
   @Mock private IntygModuleRegistry registry;
   @Spy private MdcHelper mdcHelper;
 
-  @InjectMocks
-  CertificateRevokeProcessor certificateRevokeProcessor = new CertificateRevokeProcessor();
+  @InjectMocks private CertificateRevokeProcessor certificateRevokeProcessor;
 
   @Test
   void testRevokeCertificate() throws Exception {

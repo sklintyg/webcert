@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.web.controller;
 
 import java.net.URI;
 import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,17 +45,18 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  */
 @Controller
 @RequestMapping(value = "")
+@RequiredArgsConstructor
 public class PageController {
 
   private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-  @Autowired private MailLinkService mailLinkService;
+  private final MailLinkService mailLinkService;
 
-  @Autowired private @Lazy IntygService intygService;
+  @Lazy private final IntygService intygService;
 
-  @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  private final CommonAuthoritiesResolver commonAuthoritiesResolver;
 
   @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
   @PerformanceLogging(

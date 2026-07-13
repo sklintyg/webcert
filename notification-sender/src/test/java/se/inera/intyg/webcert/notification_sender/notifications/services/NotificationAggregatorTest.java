@@ -47,7 +47,7 @@ class NotificationAggregatorTest {
 
   @Spy private MdcHelper mdcHelper;
 
-  @InjectMocks private final NotificationAggregator aggregator = new NotificationAggregator();
+  @InjectMocks private NotificationAggregator aggregator;
 
   final ObjectMapper objectMapper = new CustomObjectMapper();
 

@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,11 +37,12 @@ import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository
 @RestController
 @RequestMapping("/testability/referens")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class ReferensResource {
 
   public static final Logger LOG = LoggerFactory.getLogger(ReferensResource.class);
 
-  @Autowired private ReferensRepository referensRepository;
+  private final ReferensRepository referensRepository;
 
   @PostMapping
   public ResponseEntity<Void> insertReferens(@RequestBody Referens referens) {

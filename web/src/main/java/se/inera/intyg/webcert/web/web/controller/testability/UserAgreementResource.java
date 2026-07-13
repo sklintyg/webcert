@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,13 +37,14 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvt
 @RestController
 @RequestMapping("/testability/anvandare")
 @Profile({"dev", "testability-api"})
+@RequiredArgsConstructor
 public class UserAgreementResource {
 
-  @Autowired private AvtalRepository avtalRepository;
+  private final AvtalRepository avtalRepository;
 
-  @Autowired private GodkantAvtalRepository godkantAvtalRepository;
+  private final GodkantAvtalRepository godkantAvtalRepository;
 
-  @Autowired private AnvandarPreferenceRepository anvandarPreferenceRepository;
+  private final AnvandarPreferenceRepository anvandarPreferenceRepository;
 
   @PutMapping("/godkannavtal/{hsaId}")
   public ResponseEntity<Void> godkannAvtal(@PathVariable("hsaId") String hsaId) {

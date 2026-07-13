@@ -22,7 +22,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.lisjp.model.internal.Sjukskrivning.SjukskrivningsGrad;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
@@ -36,16 +36,11 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 
 @Service
+@RequiredArgsConstructor
 public class ValidateSickLeavePeriodFacadeServiceImpl
     implements ValidateSickLeavePeriodFacadeService {
 
   private final FmbDiagnosInformationService fmbDiagnosInformationService;
-
-  @Autowired
-  public ValidateSickLeavePeriodFacadeServiceImpl(
-      FmbDiagnosInformationService fmbDiagnosInformationService) {
-    this.fmbDiagnosInformationService = fmbDiagnosInformationService;
-  }
 
   @Override
   public String validateSickLeavePeriod(ValidateSickLeavePeriodRequestDTO request) {

@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -39,12 +39,13 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @Component(value = "createNewDraftRequestBuilderImplV2")
+@RequiredArgsConstructor
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
 
   private static final Logger LOG = LoggerFactory.getLogger(CreateNewDraftRequestBuilderImpl.class);
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final IntygModuleRegistry moduleRegistry;
 
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
+  private final PatientDetailsResolver patientDetailsResolver;
 
   private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 

@@ -201,7 +201,7 @@ class IntygServiceTest {
   @Mock private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
   @Mock private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-  @InjectMocks private IntygDraftsConverter intygConverter = new IntygDraftsConverter();
+  @InjectMocks private IntygDraftsConverter intygConverter;
 
   @InjectMocks private IntygServiceImpl intygService;
 

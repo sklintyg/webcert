@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.infra.ia.cache;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.infra.rediscache.core.RedisCacheOptionsSetter;
 
 @Configuration
 @Profile({"qa", "prod", "caching-enabled"})
+@RequiredArgsConstructor
 public class IaCacheConfiguration {
 
   public static final String CACHE_KEY = "BANNER";
@@ -39,7 +40,7 @@ public class IaCacheConfiguration {
   @Value("${intygsadmin.cache.expiry}")
   private String iaCacheExpirySeconds;
 
-  @Autowired private RedisCacheOptionsSetter redisCacheOptionsSetter;
+  private final RedisCacheOptionsSetter redisCacheOptionsSetter;
 
   @Bean
   public Cache iaCache() {

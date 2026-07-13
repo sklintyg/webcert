@@ -34,7 +34,6 @@ import java.util.Random;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
@@ -76,10 +75,21 @@ public class UtkastBootstrapBean {
 
   public static final Logger LOG = LoggerFactory.getLogger(UtkastBootstrapBean.class);
 
-  @Autowired private IntygModuleRegistry registry;
-  @Autowired private UtkastRepository utkastRepo;
-  @Autowired private FragaSvarRepository fragaRepo;
-  @Autowired private ArendeRepository arendeRepo;
+  private final IntygModuleRegistry registry;
+  private final UtkastRepository utkastRepo;
+  private final FragaSvarRepository fragaRepo;
+  private final ArendeRepository arendeRepo;
+
+  public UtkastBootstrapBean(
+      IntygModuleRegistry registry,
+      UtkastRepository utkastRepo,
+      FragaSvarRepository fragaRepo,
+      ArendeRepository arendeRepo) {
+    this.registry = registry;
+    this.utkastRepo = utkastRepo;
+    this.fragaRepo = fragaRepo;
+    this.arendeRepo = arendeRepo;
+  }
 
   private final Random rand = new Random();
   private final CustomObjectMapper mapper = new CustomObjectMapper();

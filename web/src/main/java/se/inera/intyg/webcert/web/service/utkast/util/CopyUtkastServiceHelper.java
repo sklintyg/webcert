@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.utkast.util;
 
 import com.google.common.base.Strings;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -42,18 +42,14 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Service
+@RequiredArgsConstructor
 public class CopyUtkastServiceHelper {
 
   private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceHelper.class);
 
-  private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
   private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-
-  @Autowired
-  public void setWebCertUserService(WebCertUserService webCertUserService) {
-    this.webCertUserService = webCertUserService;
-  }
 
   public CreateUtkastFromTemplateRequest createUtkastFromUtkast(
       String orgIntygsId, String intygsTyp, CopyIntygRequest request) {

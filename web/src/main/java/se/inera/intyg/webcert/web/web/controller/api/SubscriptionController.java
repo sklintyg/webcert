@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,13 +25,20 @@ import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
 @RestController
 @RequestMapping("/api/subscription")
 public class SubscriptionController extends AbstractApiController {
 
-  @Autowired private SubscriptionService subscriptionService;
+  private final SubscriptionService subscriptionService;
+
+  public SubscriptionController(
+      WebCertUserService webCertUserService, SubscriptionService subscriptionService) {
+    super(webCertUserService);
+    this.subscriptionService = subscriptionService;
+  }
 
   @GetMapping("/acknowledgeSubscriptionModal")
   @PerformanceLogging(

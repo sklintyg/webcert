@@ -19,10 +19,10 @@
 package se.inera.intyg.webcert.infra.srs.stub;
 
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentRequestType;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponseType;
@@ -32,11 +32,12 @@ import se.inera.intyg.webcert.infra.srs.stub.repository.ConsentRepository;
 import se.inera.intyg.webcert.infra.srs.stub.repository.model.Consent;
 
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
+@RequiredArgsConstructor
 public class GetConsentStub implements GetConsentResponderInterface {
 
   private static final Logger LOG = LoggerFactory.getLogger(GetConsentStub.class);
 
-  @Autowired private ConsentRepository consentRepository;
+  private final ConsentRepository consentRepository;
 
   @Override
   public GetConsentResponseType getConsent(GetConsentRequestType getConsentRequestType) {

@@ -6,5 +6,8 @@ dependencies {
     implementation "org.springframework:spring-context-support"
     implementation "org.springframework:spring-webmvc"
 
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+
     testImplementation "org.mockito:mockito-junit-jupiter"
 }

@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.CertificateListItemValueType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadin
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
+@RequiredArgsConstructor
 public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeService {
 
   private static final String TITLE = "Ej signerade utkast";
@@ -45,13 +46,6 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
 
   private final GetStaffInfoFacadeService getStaffInfoFacadeService;
   private final WebCertUserService webCertUserService;
-
-  @Autowired
-  public ListDraftsConfigFacadeServiceImpl(
-      GetStaffInfoFacadeService getStaffInfoFacadeService, WebCertUserService webCertUserService) {
-    this.getStaffInfoFacadeService = getStaffInfoFacadeService;
-    this.webCertUserService = webCertUserService;
-  }
 
   @Override
   public ListConfig get() {

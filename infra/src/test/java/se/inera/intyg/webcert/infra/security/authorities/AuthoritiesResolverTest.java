@@ -57,8 +57,7 @@ class AuthoritiesResolverTest {
           featuresConfigurationLocation,
           defaultMaxAliasesForCollections);
 
-  @InjectMocks
-  private CommonAuthoritiesResolver authoritiesResolver = new CommonAuthoritiesResolver();
+  @InjectMocks private CommonAuthoritiesResolver authoritiesResolver;
 
   @BeforeEach
   public void setup() {

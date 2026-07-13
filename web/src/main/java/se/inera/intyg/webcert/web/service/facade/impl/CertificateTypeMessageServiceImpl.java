@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
@@ -36,19 +36,13 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 @Service
+@RequiredArgsConstructor
 public class CertificateTypeMessageServiceImpl implements CertificateTypeMessageService {
 
   private final UtkastService utkastService;
   private final WebCertUserService webCertUserService;
   private final List<String> allowedTypes =
       List.of(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
-
-  @Autowired
-  public CertificateTypeMessageServiceImpl(
-      UtkastService utkastService, WebCertUserService webCertUserService) {
-    this.utkastService = utkastService;
-    this.webCertUserService = webCertUserService;
-  }
 
   @Override
   public Optional<CertificateMessage> get(String certificateType, Personnummer patientId) {

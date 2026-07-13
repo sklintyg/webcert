@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -28,21 +28,12 @@ import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFa
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
 
 @Service("deleteAnswerFromWC")
+@RequiredArgsConstructor
 public class DeleteQuestionAnswerFacadeServiceImpl implements DeleteQuestionAnswerFacadeService {
 
   private final ArendeService arendeService;
   private final ArendeDraftService arendeDraftService;
   private final GetQuestionFacadeService getQuestionFacadeService;
-
-  @Autowired
-  public DeleteQuestionAnswerFacadeServiceImpl(
-      ArendeService arendeService,
-      ArendeDraftService arendeDraftService,
-      GetQuestionFacadeService getQuestionFacadeService) {
-    this.arendeService = arendeService;
-    this.arendeDraftService = arendeDraftService;
-    this.getQuestionFacadeService = getQuestionFacadeService;
-  }
 
   @Override
   public Question delete(String questionId) {

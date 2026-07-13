@@ -20,7 +20,11 @@ package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 /**
  * Controller to enable a landsting user to access certificates directly from a link.
@@ -32,6 +36,15 @@ import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 @Controller
 @RequestMapping("/webcert/web/user/basic-certificate")
 public class CertificateIntegrationController extends FragaSvarUthoppController {
+
+  public CertificateIntegrationController(
+      WebCertUserService webCertUserService,
+      GetIssuingUnitIdAggregator getIssuingUnitIdAggregator,
+      ReactUriFactory reactUriFactory,
+      CommonAuthoritiesResolver commonAuthoritiesResolver) {
+    super(
+        webCertUserService, getIssuingUnitIdAggregator, reactUriFactory, commonAuthoritiesResolver);
+  }
 
   @Override
   protected UserOriginType getGrantedRequestOrigin() {

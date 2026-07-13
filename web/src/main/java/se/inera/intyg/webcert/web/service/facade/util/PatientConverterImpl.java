@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
@@ -30,18 +30,12 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Component
+@RequiredArgsConstructor
 public class PatientConverterImpl implements PatientConverter {
 
   private final PatientDetailsResolver patientDetailsResolver;
 
   private final WebCertUserService webCertUserService;
-
-  @Autowired
-  public PatientConverterImpl(
-      PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService) {
-    this.patientDetailsResolver = patientDetailsResolver;
-    this.webCertUserService = webCertUserService;
-  }
 
   @Override
   public Patient convert(

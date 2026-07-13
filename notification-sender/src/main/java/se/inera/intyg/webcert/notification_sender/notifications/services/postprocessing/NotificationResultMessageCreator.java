@@ -25,9 +25,9 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -52,17 +52,15 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
 @Component
+@RequiredArgsConstructor
 public class NotificationResultMessageCreator {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationResultMessageCreator.class);
 
-  @Autowired private JsonMapper objectMapper;
-
-  @Autowired private IntygModuleRegistry moduleRegistry;
-
-  @Autowired private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-
-  @Autowired private UnitMapperUtil unitMapperUtil;
+  private final JsonMapper objectMapper;
+  private final IntygModuleRegistry moduleRegistry;
+  private final CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+  private final UnitMapperUtil unitMapperUtil;
 
   public NotificationResultMessage createFailureMessage(
       NotificationMessage notificationMessage,

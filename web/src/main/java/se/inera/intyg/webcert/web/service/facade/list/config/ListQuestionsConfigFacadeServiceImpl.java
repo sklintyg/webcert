@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
+@RequiredArgsConstructor
 public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigFacadeService {
 
   private static final String TITLE = "Ej hanterade ärenden";
@@ -60,18 +61,6 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
   private final WebCertUserService webCertUserService;
   private final HsaOrganizationsService hsaOrganizationsService;
   private final CalculateQuestionsForUnitService calculateQuestionsForUnitService;
-
-  @Autowired
-  public ListQuestionsConfigFacadeServiceImpl(
-      GetStaffInfoFacadeService getStaffInfoFacadeService,
-      WebCertUserService webCertUserService,
-      HsaOrganizationsService hsaOrganizationsService,
-      CalculateQuestionsForUnitService calculateQuestionsForUnitService) {
-    this.getStaffInfoFacadeService = getStaffInfoFacadeService;
-    this.webCertUserService = webCertUserService;
-    this.hsaOrganizationsService = hsaOrganizationsService;
-    this.calculateQuestionsForUnitService = calculateQuestionsForUnitService;
-  }
 
   @Override
   public ListConfig get(String unitId) {

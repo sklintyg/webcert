@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
@@ -39,17 +39,13 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Component
+@RequiredArgsConstructor
 public class CertificateSignConfirmationFunctionImpl
     implements CertificateSignConfirmationFunction {
 
   private final UtkastService utkastService;
   private final List<String> allowedTypes =
       List.of(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
-
-  @Autowired
-  public CertificateSignConfirmationFunctionImpl(UtkastService utkastService) {
-    this.utkastService = utkastService;
-  }
 
   @Override
   public Optional<ResourceLinkDTO> get(Certificate certificate, WebCertUser webCertUser) {

@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.question.impl;
 
 import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubjectAsString;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
@@ -28,17 +28,11 @@ import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeServ
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
 @Service("saveQuestionFromWC")
+@RequiredArgsConstructor
 public class SaveQuestionFacadeServiceImpl implements SaveQuestionFacadeService {
 
   private final ArendeDraftService arendeDraftService;
   private final QuestionConverter questionConverter;
-
-  @Autowired
-  public SaveQuestionFacadeServiceImpl(
-      ArendeDraftService arendeDraftService, QuestionConverter questionConverter) {
-    this.arendeDraftService = arendeDraftService;
-    this.questionConverter = questionConverter;
-  }
 
   @Override
   public Question save(Question question) {

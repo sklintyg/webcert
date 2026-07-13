@@ -48,9 +48,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jms.JmsException;
@@ -97,38 +98,38 @@ import tools.jackson.databind.json.JsonMapper;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
-  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-  @Autowired private MailNotificationService mailNotificationService;
+  private final MailNotificationService mailNotificationService;
 
-  @Autowired(required = false)
-  @Qualifier("jmsNotificationTemplateForAggregation") private JmsTemplate jmsTemplateForAggregation;
+  @Qualifier("jmsNotificationTemplateForAggregation") private final ObjectProvider<JmsTemplate> jmsTemplateForAggregationProvider;
 
-  @Autowired private SendNotificationStrategy sendNotificationStrategy;
+  private final SendNotificationStrategy sendNotificationStrategy;
 
-  @Autowired private NotificationMessageFactory notificationMessageFactory;
+  private final NotificationMessageFactory notificationMessageFactory;
 
-  @Autowired private JsonMapper objectMapper;
+  private final JsonMapper objectMapper;
 
-  @Autowired private MonitoringLogService monitoringLog;
+  private final MonitoringLogService monitoringLog;
 
-  @Autowired private UtkastRepository utkastRepo;
+  private final UtkastRepository utkastRepo;
 
-  @Autowired private HandelseRepository handelseRepo;
+  private final HandelseRepository handelseRepo;
 
-  @Autowired private ReferensService referensService;
+  private final ReferensService referensService;
 
-  @Autowired private @Lazy IntygService intygService;
+  @Lazy private final IntygService intygService;
 
-  @Autowired private IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
+  private final IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
 
   @PostConstruct
   public void checkJmsTemplate() {
-    if (Objects.isNull(jmsTemplateForAggregation)) {
+    if (Objects.isNull(jmsTemplateForAggregationProvider.getIfAvailable())) {
       LOGGER.error("Notification is disabled!");
     }
   }
@@ -649,6 +650,7 @@ public class NotificationServiceImpl implements NotificationService {
   @Override
   public void send(
       NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
+    final var jmsTemplateForAggregation = jmsTemplateForAggregationProvider.getIfAvailable();
     if (Objects.isNull(jmsTemplateForAggregation)) {
       LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
       return;

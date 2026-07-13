@@ -23,7 +23,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,6 +38,7 @@ import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
@@ -65,11 +65,22 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
       };
   private static final UserOriginType GRANTED_ORIGIN = UserOriginType.NORMAL;
 
-  @Autowired private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
+  private final GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
 
-  @Autowired private ReactUriFactory reactUriFactory;
+  private final ReactUriFactory reactUriFactory;
 
-  @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  private final CommonAuthoritiesResolver commonAuthoritiesResolver;
+
+  public FragaSvarUthoppController(
+      WebCertUserService webCertUserService,
+      GetIssuingUnitIdAggregator getIssuingUnitIdAggregator,
+      ReactUriFactory reactUriFactory,
+      CommonAuthoritiesResolver commonAuthoritiesResolver) {
+    super(webCertUserService);
+    this.getIssuingUnitIdAggregator = getIssuingUnitIdAggregator;
+    this.reactUriFactory = reactUriFactory;
+    this.commonAuthoritiesResolver = commonAuthoritiesResolver;
+  }
 
   /**
    * Fetches a certificate from IT and then performs a redirect to the view that displays the

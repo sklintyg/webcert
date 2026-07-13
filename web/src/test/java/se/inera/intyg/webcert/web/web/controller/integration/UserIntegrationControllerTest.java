@@ -51,8 +51,7 @@ class UserIntegrationControllerTest {
 
   @Mock private WebCertUserService webCertUserService;
 
-  @InjectMocks
-  UserIntegrationController userIntegrationController = new UserIntegrationController();
+  @InjectMocks UserIntegrationController userIntegrationController;
 
   @Test
   void testLogoutNowWithDjupintegration() {

@@ -28,9 +28,9 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum.UNRECOVERABLE_ERROR;
 
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.enumerations.Not
 import se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationResultTypeEnum;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationPostProcessingService {
 
   private static final Logger LOG =
@@ -48,11 +49,9 @@ public class NotificationPostProcessingService {
   private static final String MARSHALLING_ERROR = "Marshalling Error";
   private static final String UNMARSHALLING_ERROR = "Unmarshalling Error";
 
-  @Autowired private NotificationResultSuccessService notificationResultSuccessService;
-
-  @Autowired private NotificationResultFailedService notificationResultFailedService;
-
-  @Autowired private NotificationResultResendService notificationResultResendService;
+  private final NotificationResultSuccessService notificationResultSuccessService;
+  private final NotificationResultFailedService notificationResultFailedService;
+  private final NotificationResultResendService notificationResultResendService;
 
   public void processNotificationResult(NotificationResultMessage resultMessage) {
 

@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
@@ -37,24 +37,13 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
+@RequiredArgsConstructor
 public class CertificateAccessServiceImpl implements CertificateAccessService {
 
   private final WebCertUserService webCertUserService;
   private final PatientDetailsResolver patientDetailsResolver;
   private final UtkastService utkastService;
   private final IntygTextsService intygTextsService;
-
-  @Autowired
-  public CertificateAccessServiceImpl(
-      final WebCertUserService webCertUserService,
-      final PatientDetailsResolver patientDetailsResolver,
-      final UtkastService utkastService,
-      IntygTextsService intygTextsService) {
-    this.webCertUserService = webCertUserService;
-    this.patientDetailsResolver = patientDetailsResolver;
-    this.utkastService = utkastService;
-    this.intygTextsService = intygTextsService;
-  }
 
   @Override
   public AccessResult allowToRead(AccessEvaluationParameters accessEvaluationParameters) {

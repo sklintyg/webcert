@@ -45,7 +45,7 @@ class JavaMailSenderAroundAdviceTest {
 
   @Mock private ProceedingJoinPoint pjp;
 
-  @InjectMocks private JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
+  @InjectMocks private JavaMailSenderAroundAdvice advice;
 
   @Test
   void testAroundAdviceInterceptsAndStoresMessageWhenMailServerNotSet() throws Throwable {

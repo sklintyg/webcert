@@ -20,8 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -30,17 +29,11 @@ import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
 @Service("sendCertificateFromWebcert")
+@RequiredArgsConstructor
 public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeService {
 
   private final IntygService intygService;
   private final CertificateReceiverService certificateReceiverService;
-
-  @Autowired
-  public SendCertificateFacadeServiceImpl(
-      @Lazy IntygService intygService, CertificateReceiverService certificateReceiverService) {
-    this.intygService = intygService;
-    this.certificateReceiverService = certificateReceiverService;
-  }
 
   @Override
   public String sendCertificate(String certificateId) {

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
@@ -42,11 +42,12 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  * <p>Created by eriklupander on 2017-08-21.
  */
 @Component
+@RequiredArgsConstructor
 public class StatisticsGroupByUtil {
 
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
+  private final PatientDetailsResolver patientDetailsResolver;
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
   private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 

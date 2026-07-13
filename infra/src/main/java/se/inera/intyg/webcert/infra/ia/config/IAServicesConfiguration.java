@@ -18,9 +18,12 @@
  */
 package se.inera.intyg.webcert.infra.ia.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.webcert.infra.ia.services.IABannerService;
 import se.inera.intyg.webcert.infra.ia.services.IABannerServiceImpl;
 import se.inera.intyg.webcert.infra.ia.stub.IABannerServiceStub;
@@ -30,13 +33,15 @@ public class IAServicesConfiguration {
 
   @Bean
   @Profile("ia-stub")
-  public IABannerService iaBannerServiceStub() {
-    return new IABannerServiceStub();
+  public IABannerService iaBannerServiceStub(
+      @Qualifier("iaRestTemplate") RestTemplate restTemplate, Cache iaCache) {
+    return new IABannerServiceStub(restTemplate, iaCache);
   }
 
   @Bean
   @Profile("!ia-stub")
-  public IABannerService iaBannerService() {
-    return new IABannerServiceImpl();
+  public IABannerService iaBannerService(
+      @Qualifier("iaRestTemplate") RestTemplate restTemplate, Cache iaCache) {
+    return new IABannerServiceImpl(restTemplate, iaCache);
   }
 }

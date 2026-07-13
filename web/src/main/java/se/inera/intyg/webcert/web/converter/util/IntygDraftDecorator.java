@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.converter.util;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -34,9 +33,8 @@ public class IntygDraftDecorator {
 
   private static final Logger LOG = LoggerFactory.getLogger(IntygDraftDecorator.class);
 
-  private IntygModuleRegistry intygModuleRegistry;
+  private final IntygModuleRegistry intygModuleRegistry;
 
-  @Autowired
   public IntygDraftDecorator(IntygModuleRegistry intygModuleRegistry) {
     this.intygModuleRegistry = intygModuleRegistry;
   }

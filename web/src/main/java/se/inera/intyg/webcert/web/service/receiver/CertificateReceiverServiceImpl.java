@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.clinicalprocess.healthcond.certificate.receiver.types.v1.ApprovalStatusType;
@@ -51,6 +51,7 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
 @Service
+@RequiredArgsConstructor
 public class CertificateReceiverServiceImpl implements CertificateReceiverService {
 
   private static final Logger LOG = LoggerFactory.getLogger(CertificateReceiverServiceImpl.class);
@@ -58,13 +59,13 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
   @Value("${intygstjanst.logicaladdress}")
   private String logicalAddress;
 
-  @Autowired private ListPossibleReceiversResponderInterface listPossibleReceiversClient;
+  private final ListPossibleReceiversResponderInterface listPossibleReceiversClient;
 
-  @Autowired private ListApprovedReceiversResponderInterface listApprovedReceiversClient;
+  private final ListApprovedReceiversResponderInterface listApprovedReceiversClient;
 
-  @Autowired private CertificateSenderService certificateSenderService;
+  private final CertificateSenderService certificateSenderService;
 
-  @Autowired private IntygModuleRegistry intygModuleRegistry;
+  private final IntygModuleRegistry intygModuleRegistry;
 
   private JsonMapper objectMapper = JsonMapper.builder().build();
 

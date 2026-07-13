@@ -22,9 +22,10 @@ import jakarta.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
@@ -63,46 +64,46 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service("signServiceForWC")
+@RequiredArgsConstructor
 public class UnderskriftServiceImpl implements UnderskriftService {
 
   private static final Logger LOG = LoggerFactory.getLogger(UnderskriftServiceImpl.class);
 
-  @Autowired private WebCertUserService webCertUserService;
+  private final WebCertUserService webCertUserService;
 
-  @Autowired private GrpSignatureService grpUnderskriftService;
+  private final GrpSignatureService grpUnderskriftService;
 
-  @Autowired private XmlUnderskriftServiceImpl xmlUnderskriftService;
+  private final XmlUnderskriftServiceImpl xmlUnderskriftService;
 
-  @Autowired private UtkastRepository utkastRepository;
+  private final UtkastRepository utkastRepository;
 
-  @Autowired private CertificateEventService certificateEventService;
+  private final CertificateEventService certificateEventService;
 
-  @Autowired private IntygModuleRegistry moduleRegistry;
+  private final IntygModuleRegistry moduleRegistry;
 
-  @Autowired(required = false)
-  private FakeUnderskriftService fakeUnderskriftService;
+  private final ObjectProvider<FakeUnderskriftService> fakeUnderskriftService;
 
-  @Autowired private NotificationService notificationService;
+  private final NotificationService notificationService;
 
-  @Autowired private LogService logService;
+  private final LogService logService;
 
-  @Autowired private LogRequestFactory logRequestFactory;
+  private final LogRequestFactory logRequestFactory;
 
-  @Autowired private @Lazy IntygService intygService;
+  @Lazy private final IntygService intygService;
 
-  @Autowired private RedisTicketTracker redisTicketTracker;
+  private final RedisTicketTracker redisTicketTracker;
 
-  @Autowired private DraftAccessService draftAccessService;
+  private final DraftAccessService draftAccessService;
 
-  @Autowired private AccessResultExceptionHelper accessResultExceptionHelper;
+  private final AccessResultExceptionHelper accessResultExceptionHelper;
 
-  @Autowired private DraftModelToXmlValidator draftModelToXMLValidator;
+  private final DraftModelToXmlValidator draftModelToXMLValidator;
 
-  @Autowired private UtkastModelToXMLConverter utkastModelToXMLConverter;
+  private final UtkastModelToXMLConverter utkastModelToXMLConverter;
 
-  @Autowired private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+  private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
-  @Autowired private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+  private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
   @Override
   public SignaturBiljett startSigningProcess(
@@ -186,7 +187,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     Utkast utkast = getUtkastForSignering(intygsId, version, user);
 
     SignaturBiljett signaturBiljett =
-        fakeUnderskriftService.finalizeFakeSignature(ticketId, utkast, user);
+        fakeUnderskriftService.getIfAvailable().finalizeFakeSignature(ticketId, utkast, user);
 
     finalizeSignature(utkast, user);
     return signaturBiljett;

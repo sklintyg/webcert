@@ -23,7 +23,7 @@ import static se.inera.intyg.common.fkparent.model.converter.RespConstants.DIAGN
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.icf.AvailableIcfCodes;
 import se.inera.intyg.common.support.facade.model.icf.Icd10Code;
@@ -40,17 +40,12 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfResponseDTO;
 
 @Service
+@RequiredArgsConstructor
 public class IcfFacadeServiceImpl implements IcfFacadeService {
 
   private final IcfService icfService;
 
   private final WebcertModuleService moduleService;
-
-  @Autowired
-  public IcfFacadeServiceImpl(IcfService icfService, WebcertModuleService moduleService) {
-    this.icfService = icfService;
-    this.moduleService = moduleService;
-  }
 
   @Override
   public IcfResponseDTO getIcfInformation(IcfRequestDTO request) {

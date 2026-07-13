@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.facade.list;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @Service
+@RequiredArgsConstructor
 public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFacadeService {
 
   private static final Logger LOG = LoggerFactory.getLogger(ListQuestionsFacadeServiceImpl.class);
@@ -52,24 +53,6 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
   private final CertificateAccessServiceHelper certificateAccessServiceHelper;
   private final PaginationAndLoggingService paginationAndLoggingService;
   private final ListCertificateQuestionsFromCS listCertificateQuestionsFromCS;
-
-  @Autowired
-  public ListQuestionsFacadeServiceImpl(
-      QuestionFilterConverter questionFilterConverter,
-      CertificateListItemConverter certificateListItemConverter,
-      ArendeService arendeService,
-      WebCertUserService webCertUserService,
-      CertificateAccessServiceHelper certificateAccessServiceHelper,
-      PaginationAndLoggingService paginationAndLoggingService,
-      ListCertificateQuestionsFromCS listCertificateQuestionsFromCS) {
-    this.questionFilterConverter = questionFilterConverter;
-    this.certificateListItemConverter = certificateListItemConverter;
-    this.arendeService = arendeService;
-    this.webCertUserService = webCertUserService;
-    this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-    this.paginationAndLoggingService = paginationAndLoggingService;
-    this.listCertificateQuestionsFromCS = listCertificateQuestionsFromCS;
-  }
 
   @Override
   public ListInfo get(ListFilter filter) {

@@ -24,10 +24,10 @@ import jakarta.jms.JMSException;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.jms.TextMessage;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @Service
+@RequiredArgsConstructor
 public class InternalNotificationMessageListener implements MessageListener {
 
   private static final Logger LOG =
@@ -57,18 +58,18 @@ public class InternalNotificationMessageListener implements MessageListener {
   @Value("${internal.notification.queueName}")
   private String queueName;
 
-  @Autowired private IntygModuleRegistry intygModuleRegistry;
+  private final IntygModuleRegistry intygModuleRegistry;
 
-  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-  @Autowired private NotificationService notificationService;
+  private final NotificationService notificationService;
 
   @Value("${intygstjanst.logicaladdress}")
   private String logicalAddress;
 
-  @Autowired private CSIntegrationService csIntegrationService;
+  private final CSIntegrationService csIntegrationService;
 
-  @Autowired private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
   @Override
   @JmsListener(destination = "${internal.notification.queueName}")

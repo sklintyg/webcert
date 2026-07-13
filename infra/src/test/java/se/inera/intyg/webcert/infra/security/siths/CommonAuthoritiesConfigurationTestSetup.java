@@ -36,8 +36,7 @@ public class CommonAuthoritiesConfigurationTestSetup {
           AUTHORITIES_CONFIGURATION_LOCATION,
           FEATURES_CONFIGURATION_LOCATION,
           DEFAULT_MAX_ALIASES_FOR_COLLECTIONS);
-  protected static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER =
-      new CommonAuthoritiesResolver();
+  protected static CommonAuthoritiesResolver AUTHORITIES_RESOLVER;
 
   @BeforeAll
   public static void setupAuthoritiesConfiguration() {
@@ -45,6 +44,6 @@ public class CommonAuthoritiesConfigurationTestSetup {
     CONFIGURATION_LOADER.afterPropertiesSet();
 
     // Setup resolver class
-    AUTHORITIES_RESOLVER.setConfigurationLoader(CONFIGURATION_LOADER);
+    AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver(CONFIGURATION_LOADER);
   }
 }

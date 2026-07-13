@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.service.facade.list;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesAggregator;
 import se.inera.intyg.webcert.web.service.certificate.CertificateService;
@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.web.service.facade.list.filter.ListFilterHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
+@RequiredArgsConstructor
 public class ListSignedCertificatesFacadeServiceImpl
     implements ListSignedCertificatesFacadeService {
 
@@ -50,24 +51,6 @@ public class ListSignedCertificatesFacadeServiceImpl
   private final GetStaffInfoFacadeService getStaffInfoFacadeService;
   private final ListCertificatesAggregator listCertificatesAggregator;
   private final ListSortHelper listSortHelper;
-
-  @Autowired
-  public ListSignedCertificatesFacadeServiceImpl(
-      WebCertUserService webCertUserService,
-      CertificateService certificateService,
-      CertificateFilterConverter certificateFilterConverter,
-      CertificateListItemConverter certificateListItemConverter,
-      GetStaffInfoFacadeService getStaffInfoFacadeService,
-      ListCertificatesAggregator listCertificatesAggregator,
-      ListSortHelper listSortHelper) {
-    this.webCertUserService = webCertUserService;
-    this.certificateService = certificateService;
-    this.certificateFilterConverter = certificateFilterConverter;
-    this.certificateListItemConverter = certificateListItemConverter;
-    this.getStaffInfoFacadeService = getStaffInfoFacadeService;
-    this.listCertificatesAggregator = listCertificatesAggregator;
-    this.listSortHelper = listSortHelper;
-  }
 
   @Override
   public ListInfo get(ListFilter filter) {

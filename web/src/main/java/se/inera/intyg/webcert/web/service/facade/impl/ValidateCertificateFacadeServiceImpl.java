@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import com.google.common.base.Strings;
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigType;
@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 
 @Service("validateCertificateFromWC")
+@RequiredArgsConstructor
 public class ValidateCertificateFacadeServiceImpl implements ValidateCertificateFacadeService {
 
   private static final Logger LOG =
@@ -43,13 +44,6 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
   private final UtkastService utkastService;
   private final IntygModuleRegistry moduleRegistry;
-
-  @Autowired
-  public ValidateCertificateFacadeServiceImpl(
-      UtkastService utkastService, IntygModuleRegistry moduleRegistry) {
-    this.utkastService = utkastService;
-    this.moduleRegistry = moduleRegistry;
-  }
 
   @Override
   public ValidationErrorDTO[] validate(Certificate certificate) {

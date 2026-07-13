@@ -85,8 +85,7 @@ class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
 
   @Mock private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
-  @InjectMocks
-  private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
+  @InjectMocks private CopyCompletionUtkastBuilder copyCompletionBuilder;
 
   @BeforeEach
   void expectCallToModuleRegistry() throws Exception {

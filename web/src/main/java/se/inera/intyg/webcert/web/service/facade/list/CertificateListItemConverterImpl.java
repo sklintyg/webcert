@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
+@RequiredArgsConstructor
 public class CertificateListItemConverterImpl implements CertificateListItemConverter {
 
   public static final String DRAFT_LOCKED_CANCELLED = "DRAFT_LOCKED_CANCELLED";
@@ -52,14 +53,6 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
   private final HsaOrganizationsService hsaOrganizationsService;
   private final ResourceLinkListHelper resourceLinkListHelper;
-
-  @Autowired
-  public CertificateListItemConverterImpl(
-      HsaOrganizationsService hsaOrganizationsService,
-      ResourceLinkListHelper resourceLinkListHelper) {
-    this.hsaOrganizationsService = hsaOrganizationsService;
-    this.resourceLinkListHelper = resourceLinkListHelper;
-  }
 
   @Override
   public CertificateListItem convert(ListIntygEntry listIntygEntry, ListType listType) {

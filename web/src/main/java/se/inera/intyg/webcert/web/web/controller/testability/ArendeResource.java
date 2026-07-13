@@ -23,7 +23,6 @@ import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -54,16 +53,20 @@ public class ArendeResource {
 
   @PersistenceContext private EntityManager entityManager;
 
-  private TransactionTemplate transactionTemplate;
+  private final TransactionTemplate transactionTemplate;
 
-  @Autowired
-  public void setTxManager(PlatformTransactionManager transactionManager) {
+  private final ArendeRepository arendeRepository;
+
+  private final ArendeDraftRepository arendeDraftRepository;
+
+  public ArendeResource(
+      PlatformTransactionManager transactionManager,
+      ArendeRepository arendeRepository,
+      ArendeDraftRepository arendeDraftRepository) {
     this.transactionTemplate = new TransactionTemplate(transactionManager);
+    this.arendeRepository = arendeRepository;
+    this.arendeDraftRepository = arendeDraftRepository;
   }
-
-  @Autowired private ArendeRepository arendeRepository;
-
-  @Autowired private ArendeDraftRepository arendeDraftRepository;
 
   @GetMapping("/intyg/{intygsId}")
   public ResponseEntity<List<String>> getStalldaFragor(@PathVariable("intygsId") String intygsId) {

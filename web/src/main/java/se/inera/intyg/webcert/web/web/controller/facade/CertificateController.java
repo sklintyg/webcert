@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -80,66 +80,54 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateCertificateR
 
 @RestController
 @RequestMapping("/api/certificate")
+@RequiredArgsConstructor
 public class CertificateController {
 
   private static final Logger LOG = LoggerFactory.getLogger(CertificateController.class);
 
   public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
-  @Autowired
-  @Qualifier("getCertificateAggregator") private GetCertificateFacadeService getCertificateFacadeService;
+  @Qualifier("getCertificateAggregator") private final GetCertificateFacadeService getCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("saveCertificateAggregator") private SaveCertificateFacadeService saveCertificateFacadeService;
+  @Qualifier("saveCertificateAggregator") private final SaveCertificateFacadeService saveCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("validateCertificateAggregator") private ValidateCertificateFacadeService validationCertificateFacadeService;
+  @Qualifier("validateCertificateAggregator") private final ValidateCertificateFacadeService validationCertificateFacadeService;
 
-  @Autowired private SignCertificateFacadeService signCertificateFacadeService;
+  private final SignCertificateFacadeService signCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("deleteCertificateAggregator") private DeleteCertificateFacadeService deleteCertificateFacadeService;
+  @Qualifier("deleteCertificateAggregator") private final DeleteCertificateFacadeService deleteCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("revokeCertificateAggregator") private RevokeCertificateFacadeService revokeCertificateFacadeService;
+  @Qualifier("revokeCertificateAggregator") private final RevokeCertificateFacadeService revokeCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("replaceCertificateAggregator") private ReplaceCertificateFacadeService replaceCertificateFacadeService;
+  @Qualifier("replaceCertificateAggregator") private final ReplaceCertificateFacadeService replaceCertificateFacadeService;
 
-  @Autowired private CopyCertificateFacadeService copyCertificateFacadeService;
+  private final CopyCertificateFacadeService copyCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("renewCertificateAggregator") private RenewCertificateFacadeService renewCertificateFacadeService;
+  @Qualifier("renewCertificateAggregator") private final RenewCertificateFacadeService renewCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("forwardCertificateAggregator") private ForwardCertificateFacadeService forwardCertificateFacadeService;
+  @Qualifier("forwardCertificateAggregator") private final ForwardCertificateFacadeService forwardCertificateFacadeService;
 
-  @Autowired private ReadyForSignFacadeService readyForSignAggregator;
+  private final ReadyForSignFacadeService readyForSignAggregator;
 
-  @Autowired
-  @Qualifier("getCertificateEventsAggregator") private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
+  @Qualifier("getCertificateEventsAggregator") private final GetCertificateEventsFacadeService getCertificateEventsFacadeService;
 
-  @Autowired private GetCertificateResourceLinks getCertificateResourceLinks;
+  private final GetCertificateResourceLinks getCertificateResourceLinks;
 
-  @Autowired
-  @Qualifier("sendCertificateAggregator") private SendCertificateFacadeService sendCertificateFacadeService;
+  @Qualifier("sendCertificateAggregator") private final SendCertificateFacadeService sendCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("complementCertificateAggregator") private ComplementCertificateFacadeService complementCertificateFacadeService;
+  @Qualifier("complementCertificateAggregator") private final ComplementCertificateFacadeService complementCertificateFacadeService;
 
-  @Autowired
-  @Qualifier("createCertificateFromTemplateAggregator") private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
+  @Qualifier("createCertificateFromTemplateAggregator") private final CreateCertificateFromTemplateFacadeService
+      createCertificateFromTemplateFacadeService;
 
-  @Autowired
-  @Qualifier("updateCertificateFromCandidateAggregator") private UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFacadeService;
+  @Qualifier("updateCertificateFromCandidateAggregator") private final UpdateCertificateFromCandidateFacadeService
+      updateCertificateFromCandidateFacadeService;
 
-  @Autowired
-  @Qualifier("createCertificateAggregator") private CreateCertificateFacadeService createCertificateFacadeService;
+  @Qualifier("createCertificateAggregator") private final CreateCertificateFacadeService createCertificateFacadeService;
 
-  @Autowired private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
+  private final GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
 
-  @Autowired
-  private GetCandidateMesssageForCertificateFacadeService
+  private final GetCandidateMesssageForCertificateFacadeService
       getCandidateMesssageForCertificateFacadeService;
 
   @GetMapping("/{certificateId}")

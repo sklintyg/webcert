@@ -63,8 +63,7 @@ class SendNotificationStrategyTest {
 
   @Mock private UtkastRepository mockUtkastRepository;
 
-  @InjectMocks
-  private SendNotificationStrategy sendStrategy = new DefaultSendNotificationStrategyImpl();
+  @InjectMocks private DefaultSendNotificationStrategyImpl sendStrategy;
 
   @BeforeEach
   void setupIntegreradeEnheter() {

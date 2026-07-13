@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,7 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
@@ -51,8 +51,14 @@ public class FakeSignatureApiController extends AbstractApiController {
 
   private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
-  @Autowired
-  @Qualifier("signAggregator") private UnderskriftService underskriftService;
+  @Qualifier("signAggregator") private final UnderskriftService underskriftService;
+
+  public FakeSignatureApiController(
+      WebCertUserService webCertUserService,
+      @Qualifier("signAggregator") UnderskriftService underskriftService) {
+    super(webCertUserService);
+    this.underskriftService = underskriftService;
+  }
 
   /**
    * Signera utkast. Endast fejkinloggning.

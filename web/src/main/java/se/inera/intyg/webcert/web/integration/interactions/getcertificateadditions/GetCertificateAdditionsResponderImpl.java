@@ -24,10 +24,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IIType;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
@@ -48,13 +48,14 @@ import se.inera.intyg.webcert.web.util.StreamUtil;
 /** Created by eriklupander on 2017-05-11. */
 @Component
 @SchemaValidation
+@RequiredArgsConstructor
 public class GetCertificateAdditionsResponderImpl
     implements GetCertificateAdditionsResponderInterface {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(GetCertificateAdditionsResponderImpl.class);
 
-  @Autowired private ArendeService arendeService;
+  private final ArendeService arendeService;
 
   @Override
   public GetCertificateAdditionsResponseType getCertificateAdditions(

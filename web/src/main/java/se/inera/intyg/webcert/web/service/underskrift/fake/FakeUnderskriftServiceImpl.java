@@ -22,16 +22,23 @@ import java.nio.charset.Charset;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.infra.xmldsig.service.FakeSignatureService;
+import se.inera.intyg.webcert.infra.xmldsig.service.PrepareSignatureService;
+import se.inera.intyg.webcert.infra.xmldsig.service.XMLDSigService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
@@ -39,9 +46,33 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService
     implements FakeUnderskriftService {
 
-  @Autowired private FakeSignatureService fakeSignatureService;
+  private final FakeSignatureService fakeSignatureService;
 
-  @Autowired private MonitoringLogService monitoringLogService;
+  private final MonitoringLogService monitoringLogService;
+
+  public FakeUnderskriftServiceImpl(
+      UtkastRepository utkastRepository,
+      IntygModuleRegistry moduleRegistry,
+      IntygService intygService,
+      RedisTicketTracker redisTicketTracker,
+      UtkastModelToXMLConverter utkastModelToXMLConverter,
+      PrepareSignatureService prepareSignatureService,
+      SignCertificateService signCertificateService,
+      XMLDSigService xmldSigService,
+      FakeSignatureService fakeSignatureService,
+      MonitoringLogService monitoringLogService) {
+    super(
+        utkastRepository,
+        moduleRegistry,
+        intygService,
+        redisTicketTracker,
+        utkastModelToXMLConverter,
+        prepareSignatureService,
+        signCertificateService,
+        xmldSigService);
+    this.fakeSignatureService = fakeSignatureService;
+    this.monitoringLogService = monitoringLogService;
+  }
 
   @Override
   public SignaturBiljett finalizeFakeSignature(String ticketId, Utkast utkast, WebCertUser user) {

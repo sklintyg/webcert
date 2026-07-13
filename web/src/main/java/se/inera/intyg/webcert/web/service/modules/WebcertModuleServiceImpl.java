@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.service.modules;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.common.support.modules.service.WebcertModuleService;
@@ -36,11 +36,12 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
  * @author npet
  */
 @Component
+@RequiredArgsConstructor
 public class WebcertModuleServiceImpl implements WebcertModuleService {
 
   private static final Logger LOG = LoggerFactory.getLogger(WebcertModuleService.class);
 
-  @Autowired private DiagnosService diagnosService;
+  private final DiagnosService diagnosService;
 
   /*
    * (non-Javadoc)

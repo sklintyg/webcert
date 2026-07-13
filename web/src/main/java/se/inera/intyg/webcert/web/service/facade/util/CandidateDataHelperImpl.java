@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.util;
 
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -33,21 +33,12 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 
 @Component
+@RequiredArgsConstructor
 public class CandidateDataHelperImpl implements CandidateDataHelper {
 
   private final UtkastCandidateServiceImpl utkastCandidateService;
   private final IntygModuleRegistry moduleRegistry;
   private final PatientDetailsResolver patientDetailsResolver;
-
-  @Autowired
-  public CandidateDataHelperImpl(
-      UtkastCandidateServiceImpl utkastCandidateService,
-      IntygModuleRegistry moduleRegistry,
-      PatientDetailsResolver patientDetailsResolver) {
-    this.utkastCandidateService = utkastCandidateService;
-    this.moduleRegistry = moduleRegistry;
-    this.patientDetailsResolver = patientDetailsResolver;
-  }
 
   @Override
   public Optional<UtkastCandidateMetaData> getCandidateMetadata(

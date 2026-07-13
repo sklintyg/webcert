@@ -22,7 +22,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,6 +37,7 @@ import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 @Controller
@@ -52,10 +52,21 @@ public class LaunchIntegrationController extends BaseIntegrationController {
         AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
         AuthoritiesConstants.ROLE_BARNMORSKA
       };
-  @Autowired private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
-  @Autowired private ReactUriFactory reactUriFactory;
-  @Autowired private CommonAuthoritiesResolver commonAuthoritiesResolver;
+  private final GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
+  private final ReactUriFactory reactUriFactory;
+  private final CommonAuthoritiesResolver commonAuthoritiesResolver;
   private static final Logger LOG = LoggerFactory.getLogger(LaunchIntegrationController.class);
+
+  public LaunchIntegrationController(
+      WebCertUserService webCertUserService,
+      GetIssuingUnitIdAggregator getIssuingUnitIdAggregator,
+      ReactUriFactory reactUriFactory,
+      CommonAuthoritiesResolver commonAuthoritiesResolver) {
+    super(webCertUserService);
+    this.getIssuingUnitIdAggregator = getIssuingUnitIdAggregator;
+    this.reactUriFactory = reactUriFactory;
+    this.commonAuthoritiesResolver = commonAuthoritiesResolver;
+  }
 
   @GetMapping("/certificate/{certificateId}")
   @PerformanceLogging(

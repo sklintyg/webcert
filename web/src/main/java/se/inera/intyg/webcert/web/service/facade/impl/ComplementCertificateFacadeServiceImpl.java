@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
@@ -31,24 +31,13 @@ import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
 @Service("complementCertificateFromWebcert")
+@RequiredArgsConstructor
 public class ComplementCertificateFacadeServiceImpl implements ComplementCertificateFacadeService {
 
   private final GetCertificateFacadeService getCertificateFacadeService;
   private final ArendeService arendeService;
   private final CopyUtkastServiceHelper copyUtkastServiceHelper;
   private final CopyUtkastService copyUtkastService;
-
-  @Autowired
-  public ComplementCertificateFacadeServiceImpl(
-      GetCertificateFacadeService getCertificateFacadeService,
-      ArendeService arendeService,
-      CopyUtkastServiceHelper copyUtkastServiceHelper,
-      CopyUtkastService copyUtkastService) {
-    this.getCertificateFacadeService = getCertificateFacadeService;
-    this.arendeService = arendeService;
-    this.copyUtkastServiceHelper = copyUtkastServiceHelper;
-    this.copyUtkastService = copyUtkastService;
-  }
 
   @Override
   public Certificate complement(String certificateId, String message) {

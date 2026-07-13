@@ -24,7 +24,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.MDC;
@@ -33,10 +32,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpOrderResponse;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.IntygGRPSignature;
@@ -44,11 +46,11 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPoll
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class GrpSignatureServiceImpl extends BaseSignatureService implements GrpSignatureService {
 
   @Qualifier("grpTaskExecutor") private final ThreadPoolTaskExecutor taskExecutor;
@@ -56,6 +58,22 @@ public class GrpSignatureServiceImpl extends BaseSignatureService implements Grp
   private final GrpCollectPollerFactory grpCollectPollerFactory;
   private final SignCertificateService signCertificateService;
   private final GrpRestService grpRestService;
+
+  public GrpSignatureServiceImpl(
+      UtkastRepository utkastRepository,
+      IntygModuleRegistry moduleRegistry,
+      IntygService intygService,
+      RedisTicketTracker redisTicketTracker,
+      @Qualifier("grpTaskExecutor") ThreadPoolTaskExecutor taskExecutor,
+      GrpCollectPollerFactory grpCollectPollerFactory,
+      SignCertificateService signCertificateService,
+      GrpRestService grpRestService) {
+    super(utkastRepository, moduleRegistry, intygService, redisTicketTracker);
+    this.taskExecutor = taskExecutor;
+    this.grpCollectPollerFactory = grpCollectPollerFactory;
+    this.signCertificateService = signCertificateService;
+    this.grpRestService = grpRestService;
+  }
 
   @Override
   public SignaturBiljett skapaSigneringsBiljettMedDigest(

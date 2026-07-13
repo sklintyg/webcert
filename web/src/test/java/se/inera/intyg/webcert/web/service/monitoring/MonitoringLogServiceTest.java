@@ -34,10 +34,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.webcert.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.logging.HashUtility;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 /**
  * Unit test to assure that the monitoring log produces relevant messages.
@@ -51,7 +54,11 @@ class MonitoringLogServiceTest {
 
   @Captor private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
 
-  private final MonitoringLogService monitoringLogService = new MonitoringLogServiceImpl();
+  @Mock private WebCertUserService webCertUserService;
+
+  @Mock private HashUtility hashUtility;
+
+  @InjectMocks private MonitoringLogServiceImpl monitoringLogService;
 
   @BeforeEach
   void setup() {

@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.notification_sender.config;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.Bus;
 import org.apache.cxf.ext.logging.LoggingFeature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -28,10 +29,13 @@ import org.springframework.context.annotation.Configuration;
  * outbound JAX-WS client for sending certificate status updates.
  */
 @Configuration
+@RequiredArgsConstructor
 public class NotificationWsClientConfig {
 
-  @Autowired
-  void configureBus(Bus bus) {
+  private final Bus bus;
+
+  @PostConstruct
+  void configureBus() {
     bus.getFeatures().add(new LoggingFeature());
   }
 }

@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
 import jakarta.jms.TextMessage;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -30,14 +30,14 @@ import se.inera.intyg.webcert.notification_sender.notifications.routes.Notificat
 import tools.jackson.databind.json.JsonMapper;
 
 @Component
+@RequiredArgsConstructor
 public class NotificationResultMessageSender {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationResultMessageSender.class);
 
-  @Autowired
-  @Qualifier("jmsTemplateNotificationPostProcessing") private JmsTemplate jmsTemplateNotificationPostProcessing;
+  @Qualifier("jmsTemplateNotificationPostProcessing") private final JmsTemplate jmsTemplateNotificationPostProcessing;
 
-  @Autowired private JsonMapper objectMapper;
+  private final JsonMapper objectMapper;
 
   public boolean sendResultMessage(NotificationResultMessage resultMessage) {
 

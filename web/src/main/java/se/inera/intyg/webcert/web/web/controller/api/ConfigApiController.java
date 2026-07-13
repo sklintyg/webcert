@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.web.controller.api;
 
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +33,7 @@ import se.inera.intyg.webcert.infra.ia.services.IABannerService;
 import se.inera.intyg.webcert.infra.postnummer.service.PostnummerService;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Area;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
@@ -54,7 +54,7 @@ public class ConfigApiController extends AbstractApiController {
   @Value("${certificate.view.url.base}")
   private String dashboardUrl;
 
-  @Autowired private Environment environment;
+  private final Environment environment;
 
   @Value("${sakerhetstjanst.saml.idp.metadata.url}")
   private String sakerhetstjanstIdpUrl;
@@ -74,11 +74,24 @@ public class ConfigApiController extends AbstractApiController {
   @Value("${webcert.user.survey.version:}")
   private String webcertUserSurveyVersion;
 
-  @Autowired private DynamicLinkService dynamicLinkService;
+  private final DynamicLinkService dynamicLinkService;
 
-  @Autowired private PostnummerService postnummerService;
+  private final PostnummerService postnummerService;
 
-  @Autowired private IABannerService iaBannerService;
+  private final IABannerService iaBannerService;
+
+  public ConfigApiController(
+      WebCertUserService webCertUserService,
+      Environment environment,
+      DynamicLinkService dynamicLinkService,
+      PostnummerService postnummerService,
+      IABannerService iaBannerService) {
+    super(webCertUserService);
+    this.environment = environment;
+    this.dynamicLinkService = dynamicLinkService;
+    this.postnummerService = postnummerService;
+    this.iaBannerService = iaBannerService;
+  }
 
   @GetMapping
   @PerformanceLogging(

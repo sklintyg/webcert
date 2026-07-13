@@ -31,9 +31,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
@@ -45,18 +45,16 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationRedeliveryService {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryService.class);
 
-  @Autowired private NotificationRedeliveryRepository notificationRedeliveryRepo;
+  private final NotificationRedeliveryRepository notificationRedeliveryRepo;
+  private final NotificationResultMessageCreator notificationResultMessageCreator;
+  private final NotificationResultMessageSender notificationResultMessageSender;
 
-  @Autowired private NotificationResultMessageCreator notificationResultMessageCreator;
-
-  @Autowired private NotificationResultMessageSender notificationResultMessageSender;
-
-  @Autowired
-  @Qualifier("jmsTemplateNotificationWSSender") private JmsTemplate jmsTemplate;
+  @Qualifier("jmsTemplateNotificationWSSender") private final JmsTemplate jmsTemplate;
 
   @Transactional
   public List<NotificationRedelivery> getNotificationsForRedelivery(int batchSize) {

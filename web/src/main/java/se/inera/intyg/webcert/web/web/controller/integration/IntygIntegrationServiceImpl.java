@@ -19,13 +19,17 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import com.google.common.base.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
@@ -37,11 +41,25 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest
 @Service("integrationServiceForWC")
 public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
-  @Autowired private MonitoringLogService monitoringLog;
+  private final MonitoringLogService monitoringLog;
 
-  @Autowired private UtkastService utkastService;
+  private final UtkastService utkastService;
 
-  @Autowired private DraftAccessServiceHelper draftAccessServiceHelper;
+  private final DraftAccessServiceHelper draftAccessServiceHelper;
+
+  public IntygIntegrationServiceImpl(
+      @Lazy IntygService intygService,
+      PatientDetailsResolver patientDetailsResolver,
+      UtkastRepository utkastRepository,
+      ReferensService referensService,
+      MonitoringLogService monitoringLog,
+      UtkastService utkastService,
+      DraftAccessServiceHelper draftAccessServiceHelper) {
+    super(intygService, patientDetailsResolver, utkastRepository, referensService);
+    this.monitoringLog = monitoringLog;
+    this.utkastService = utkastService;
+    this.draftAccessServiceHelper = draftAccessServiceHelper;
+  }
 
   @Override
   void ensurePreparation(

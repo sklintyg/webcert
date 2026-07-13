@@ -23,12 +23,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
+@ExtendWith(MockitoExtension.class)
 class FragaSvarUthoppControllerTest {
 
-  private final FragaSvarUthoppController fragaSvarUthoppController =
-      new FragaSvarUthoppController();
+  @Mock private WebCertUserService webCertUserService;
+  @Mock private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
+  @Mock private ReactUriFactory reactUriFactory;
+  @Mock private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
+  @InjectMocks private FragaSvarUthoppController fragaSvarUthoppController;
 
   @Test
   void shouldReturnArrayOfGrantedRoles() {

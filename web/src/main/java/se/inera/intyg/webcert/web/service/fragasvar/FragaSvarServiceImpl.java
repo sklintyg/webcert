@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-// CHECKSTYLE:OFF LineLength
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import jakarta.xml.ws.soap.SOAPFaultException;
@@ -33,9 +31,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+// CHECKSTYLE:OFF LineLength
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -102,6 +101,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class FragaSvarServiceImpl implements FragaSvarService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
@@ -123,20 +123,20 @@ public class FragaSvarServiceImpl implements FragaSvarService {
   @Value("${fk7263.send.medical.certificate.answer.force.fullstandigtnamn}")
   private String forceFullstandigtNamn;
 
-  @Autowired private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
-  @Autowired private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
-  @Autowired private FragaSvarRepository fragaSvarRepository;
-  @Autowired private @Lazy IntygService intygService;
-  @Autowired private WebCertUserService webCertUserService;
-  @Autowired private AuthoritiesHelper authoritiesHelper;
-  @Autowired private NotificationService notificationService;
-  @Autowired private MonitoringLogService monitoringService;
-  @Autowired private CertificateEventService certificateEventService;
-  @Autowired private UtkastRepository utkastRepository;
-  @Autowired private ArendeDraftService arendeDraftService;
-  @Autowired private StatisticsGroupByUtil statisticsGroupByUtil;
-  @Autowired private PatientDetailsResolver patientDetailsResolver;
-  @Autowired private HashUtility hashUtility;
+  private final SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
+  private final SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
+  private final FragaSvarRepository fragaSvarRepository;
+  @Lazy private final IntygService intygService;
+  private final WebCertUserService webCertUserService;
+  private final AuthoritiesHelper authoritiesHelper;
+  private final NotificationService notificationService;
+  private final MonitoringLogService monitoringService;
+  private final CertificateEventService certificateEventService;
+  private final UtkastRepository utkastRepository;
+  private final ArendeDraftService arendeDraftService;
+  private final StatisticsGroupByUtil statisticsGroupByUtil;
+  private final PatientDetailsResolver patientDetailsResolver;
+  private final HashUtility hashUtility;
   private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
   private static Predicate<FragaSvar> isCorrectAmne(Amne amne) {

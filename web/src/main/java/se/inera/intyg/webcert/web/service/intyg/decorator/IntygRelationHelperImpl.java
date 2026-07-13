@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.intyg.decorator;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.IntygRelations;
@@ -38,15 +38,15 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 /** Created by eriklupander on 2017-05-18. */
 @Service
+@RequiredArgsConstructor
 public class IntygRelationHelperImpl implements IntygRelationHelper {
 
   @Value("${intygstjanst.logicaladdress}")
   private String logicalAddress;
 
-  @Autowired private CertificateRelationService certificateRelationService;
+  private final CertificateRelationService certificateRelationService;
 
-  @Autowired
-  private ListRelationsForCertificateResponderInterface
+  private final ListRelationsForCertificateResponderInterface
       listRelationsForCertificateResponderInterface;
 
   @Override

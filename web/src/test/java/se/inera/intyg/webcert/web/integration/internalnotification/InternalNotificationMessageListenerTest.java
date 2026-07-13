@@ -71,8 +71,7 @@ class InternalNotificationMessageListenerTest {
 
   @Mock private NotificationService notificationService;
 
-  @InjectMocks
-  private InternalNotificationMessageListener testee = new InternalNotificationMessageListener();
+  @InjectMocks private InternalNotificationMessageListener testee;
 
   @BeforeEach
   void init() {

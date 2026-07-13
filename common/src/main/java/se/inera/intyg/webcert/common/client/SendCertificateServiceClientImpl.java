@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.common.client;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.webcert.common.client.converter.SendCertificateToRecipientTypeConverter;
@@ -33,11 +33,11 @@ import tools.jackson.databind.json.JsonMapper;
  * <p>Created by eriklupander on 2015-06-03.
  */
 @Component
+@RequiredArgsConstructor
 public class SendCertificateServiceClientImpl implements SendCertificateServiceClient {
 
-  @Autowired private SendCertificateToRecipientResponderInterface sendService;
-
-  @Autowired private JsonMapper objectMapper;
+  private final SendCertificateToRecipientResponderInterface sendService;
+  private final JsonMapper objectMapper;
 
   @Override
   public SendCertificateToRecipientResponseType sendCertificate(

@@ -22,6 +22,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import se.inera.intyg.webcert.infra.pu.integration.api.services.PUService;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.notification_sender.certificatesender.config.CertificateCamelConfig;
 import se.inera.intyg.webcert.notification_sender.notifications.config.NotificationCamelConfig;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher;
@@ -44,7 +46,8 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.Notific
 public class NotificationSenderConfig {
 
   @Bean
-  public NotificationPatientEnricher notificationPatientEnricher() {
-    return new NotificationPatientEnricher();
+  public NotificationPatientEnricher notificationPatientEnricher(
+      PUService puService, HashUtility hashUtility) {
+    return new NotificationPatientEnricher(puService, hashUtility);
   }
 }

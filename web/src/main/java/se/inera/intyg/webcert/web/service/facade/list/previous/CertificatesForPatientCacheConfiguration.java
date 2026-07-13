@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.previous;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import se.inera.intyg.webcert.infra.rediscache.core.RedisCacheOptionsSetter;
 
 @Configuration
+@RequiredArgsConstructor
 public class CertificatesForPatientCacheConfiguration {
 
   @Value("${app.name:webcert}")
@@ -34,7 +35,7 @@ public class CertificatesForPatientCacheConfiguration {
   @Value("${certificatesForPatientCache.cache.expiry}")
   private String cacheExpirySeconds;
 
-  @Autowired private RedisCacheOptionsSetter redisCacheOptionsSetter;
+  private final RedisCacheOptionsSetter redisCacheOptionsSetter;
 
   @Bean
   public Cache certificatesForPatientCache() {

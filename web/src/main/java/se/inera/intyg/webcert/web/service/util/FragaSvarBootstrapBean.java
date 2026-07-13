@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
@@ -35,7 +34,11 @@ public class FragaSvarBootstrapBean {
 
   private static final Logger LOG = LoggerFactory.getLogger(FragaSvarBootstrapBean.class);
 
-  @Autowired private FragaSvarRepository fragaSvarRepository;
+  private final FragaSvarRepository fragaSvarRepository;
+
+  public FragaSvarBootstrapBean(FragaSvarRepository fragaSvarRepository) {
+    this.fragaSvarRepository = fragaSvarRepository;
+  }
 
   @PostConstruct
   public void initData() {

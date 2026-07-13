@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -26,17 +26,11 @@ import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeServi
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
 
 @Service("sendAnswerFromWC")
+@RequiredArgsConstructor
 public class SendQuestionAnswerFacadeServiceImpl implements SendQuestionAnswerFacadeService {
 
   private final ArendeService arendeService;
   private final GetQuestionFacadeService getQuestionFacadeService;
-
-  @Autowired
-  public SendQuestionAnswerFacadeServiceImpl(
-      ArendeService arendeService, GetQuestionFacadeService getQuestionFacadeService) {
-    this.arendeService = arendeService;
-    this.getQuestionFacadeService = getQuestionFacadeService;
-  }
 
   @Override
   public Question send(String questionId, String message) {

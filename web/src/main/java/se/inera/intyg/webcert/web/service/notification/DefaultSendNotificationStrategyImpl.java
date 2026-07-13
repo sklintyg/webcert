@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
@@ -29,11 +29,12 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 
 @Component
+@RequiredArgsConstructor
 public class DefaultSendNotificationStrategyImpl implements SendNotificationStrategy {
 
   private static final Logger LOG = LoggerFactory.getLogger(SendNotificationStrategy.class);
 
-  @Autowired private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+  private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
   @Override
   public Optional<SchemaVersion> decideNotificationForIntyg(Utkast utkast) {
