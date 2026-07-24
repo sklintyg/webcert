@@ -49,6 +49,7 @@ import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
@@ -81,6 +82,7 @@ class IntygInfoServiceTest {
   @Mock private CertificateRelationService relationService;
   @Mock private GetIntygInfoEventsService getIntygInfoEventsService;
   @Mock private ModuleApi moduleApi;
+  @Mock private ModuleEntryPoint moduleEntryPoint;
 
   @InjectMocks private IntygInfoService testee;
 
@@ -180,7 +182,7 @@ class IntygInfoServiceTest {
   }
 
   @Test
-  void existingUtkastLocked() throws IOException, ModuleException {
+  void existingUtkastLocked() throws IOException, ModuleException, ModuleNotFoundException {
     // Arrange
     String intygId = "existingIntyg";
     Utkast utkast = createUtkast(intygId, UtkastStatus.DRAFT_LOCKED);
@@ -191,6 +193,9 @@ class IntygInfoServiceTest {
     when(getIntygInfoEventsService.get(intygId))
         .thenReturn(
             List.of(new IntygInfoEvent(Source.WEBCERT), new IntygInfoEvent(Source.WEBCERT)));
+
+    when(moduleRegistry.getModuleEntryPoint("lisjp")).thenReturn(moduleEntryPoint);
+    when(moduleEntryPoint.getDefaultRecipient()).thenReturn("FKASSA");
 
     // Act
     Optional<WcIntygInfo> optIntygInfo = testee.getIntygInfo(intygId);
@@ -215,8 +220,9 @@ class IntygInfoServiceTest {
     assertEquals(0, intygInfo.getKompletteringarAnswered());
     assertEquals(0, intygInfo.getAdministrativaFragorReceived());
     assertEquals(0, intygInfo.getAdministrativaFragorReceivedAnswered());
+    assertEquals(1, intygInfo.getNumberOfRecipients());
 
-    verifyNoInteractions(moduleRegistry);
+    verify(moduleRegistry).getModuleEntryPoint(utkast.getIntygsTyp());
     verify(relationService).findChildRelations(intygId);
     verify(arendeService).getArendenInternal(intygId);
     verify(fragaSvarRepository).findByIntygsReferensIntygsId(intygId);
@@ -251,6 +257,9 @@ class IntygInfoServiceTest {
     Utkast utkast2 = createUtkast("forId", UtkastStatus.SIGNED);
     when(utkastRepository.findById(eq("forId"))).thenReturn(Optional.of(utkast2));
 
+    when(moduleRegistry.getModuleEntryPoint("lisjp")).thenReturn(moduleEntryPoint);
+    when(moduleEntryPoint.getDefaultRecipient()).thenReturn("FKASSA");
+
     // Act
     Optional<WcIntygInfo> optIntygInfo = testee.getIntygInfo(intygId);
 
@@ -274,6 +283,7 @@ class IntygInfoServiceTest {
     assertEquals(1, intygInfo.getKompletteringarAnswered());
     assertEquals(1, intygInfo.getAdministrativaFragorReceived());
     assertEquals(1, intygInfo.getAdministrativaFragorReceivedAnswered());
+    assertEquals(1, intygInfo.getNumberOfRecipients());
 
     verify(moduleRegistry).getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
     verify(relationService).findChildRelations(intygId);
