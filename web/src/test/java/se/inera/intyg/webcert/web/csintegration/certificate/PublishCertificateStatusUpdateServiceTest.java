@@ -51,6 +51,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.redeliv
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -79,6 +80,7 @@ class PublishCertificateStatusUpdateServiceTest {
   @Mock private IntegreradeEnheterRegistry integreradeEnheterRegistry;
   @Mock private CSIntegrationService csIntegrationService;
   @Mock private JsonMapper objectMapper;
+  @Mock private IntegreradEnhetRepository integreradEnhetRepository;
   @InjectMocks private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
   private final Certificate certificate = new Certificate();
@@ -297,9 +299,12 @@ class PublishCertificateStatusUpdateServiceTest {
   @Nested
   class NotificationServiceTest {
 
+    private IntegreradEnhet integreradEnhet;
+
     @BeforeEach
     void setUp() {
-      doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+      integreradEnhet = new IntegreradEnhet();
+      doReturn(integreradEnhet).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
       doReturn(xml).when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID);
       doReturn(true).when(webCertUserService).hasAuthenticationContext();
       doReturn(webCertUser).when(webCertUserService).getUser();
@@ -367,6 +372,24 @@ class PublishCertificateStatusUpdateServiceTest {
           .send(any(NotificationMessage.class), eq(UNIT_ID), argumentCaptor.capture());
 
       assertEquals(TYPE_VERSION, argumentCaptor.getValue());
+    }
+
+    @Test
+    void shallPersistUnitWithUpdatedControlTimeStamp() {
+      doReturn(new NotificationMessage())
+          .when(notificationMessageFactory)
+          .create(
+              eq(certificate),
+              eq(xml),
+              notNull(),
+              eq(HandelsekodEnum.SKAPAT),
+              eq(WEBCERT_HSA_ID),
+              eq(null),
+              eq(null));
+
+      publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
+
+      verify(integreradEnhetRepository).save(integreradEnhet);
     }
   }
 

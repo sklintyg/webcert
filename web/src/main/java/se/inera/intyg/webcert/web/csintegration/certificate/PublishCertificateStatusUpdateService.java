@@ -31,6 +31,8 @@ import se.inera.intyg.webcert.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -51,6 +53,7 @@ public class PublishCertificateStatusUpdateService {
   private final NotificationService notificationService;
   private final WebCertUserService webCertUserService;
   private final JsonMapper objectMapper;
+  private final IntegreradEnhetRepository integreradEnhetRepository;
 
   public void publish(Certificate certificate, HandelsekodEnum eventType, String xml) {
     publish(certificate, eventType, Optional.empty(), Optional.of(xml), null, null);
@@ -76,7 +79,8 @@ public class PublishCertificateStatusUpdateService {
       Optional<String> xml,
       ArendeAmne questionType,
       LocalDate lastDateToAnswer) {
-    if (unitIsNotIntegrated(certificate)) {
+    final var integratedUnit = getIntegratedUnit(certificate);
+    if (integratedUnit.isEmpty()) {
       return;
     }
 
@@ -104,6 +108,10 @@ public class PublishCertificateStatusUpdateService {
             questionType,
             lastDateToAnswer);
 
+    final var integreradEnhet = integratedUnit.get();
+    integreradEnhet.setSenasteKontrollDatum(LocalDateTime.now());
+    integreradEnhetRepository.save(integreradEnhet);
+
     notificationService.send(
         notificationMessage,
         certificate.getMetadata().getUnit().getUnitId(),
@@ -117,7 +125,8 @@ public class PublishCertificateStatusUpdateService {
 
   private void resendEvent(
       Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
-    if (unitIsNotIntegrated(certificate)) {
+    final var integratedUnit = getIntegratedUnit(certificate);
+    if (integratedUnit.isEmpty()) {
       return;
     }
 
@@ -157,9 +166,9 @@ public class PublishCertificateStatusUpdateService {
     return notificationMessage.getStatusUpdateXml();
   }
 
-  private boolean unitIsNotIntegrated(Certificate certificate) {
-    return integreradeEnheterRegistry.getIntegreradEnhet(
-            certificate.getMetadata().getUnit().getUnitId())
-        == null;
+  private Optional<IntegreradEnhet> getIntegratedUnit(Certificate certificate) {
+    return Optional.ofNullable(
+        integreradeEnheterRegistry.getIntegreradEnhet(
+            certificate.getMetadata().getUnit().getUnitId()));
   }
 }
