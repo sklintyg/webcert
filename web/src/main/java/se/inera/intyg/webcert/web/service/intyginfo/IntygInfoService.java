@@ -117,6 +117,13 @@ public class IntygInfoService implements IntygInfoServiceInterface {
     response.setCareGiverHsaId(utkast.getVardgivarId());
     response.setCareGiverName(utkast.getVardgivarNamn());
 
+    try {
+      final var moduleEntryPoint = moduleRegistry.getModuleEntryPoint(utkast.getIntygsTyp());
+      response.setNumberOfRecipients(moduleEntryPoint.getDefaultRecipient() != null ? 1 : 0);
+    } catch (ModuleNotFoundException e) {
+      LOG.error("ModuleEntryPoint not found for intyg " + intygId, e);
+    }
+
     if (utkast.getSignatur() != null) {
       Signatur signatur = utkast.getSignatur();
 
@@ -129,7 +136,6 @@ public class IntygInfoService implements IntygInfoServiceInterface {
         Utlatande utlatande = moduleApi.getUtlatandeFromJson(utkast.getModel());
 
         response.setSignedByName(utlatande.getGrundData().getSkapadAv().getFullstandigtNamn());
-
       } catch (ModuleNotFoundException | ModuleException | IOException e) {
         LOG.error("Module not found for intyg " + intygId, e);
       }
