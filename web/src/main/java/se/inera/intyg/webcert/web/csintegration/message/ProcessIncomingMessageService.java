@@ -72,9 +72,7 @@ public class ProcessIncomingMessageService {
         isAnswer,
         sendMessageToCare.getMeddelandeId());
 
-    final var shouldReceiveMailNotifications = shouldReciveMailNotifications(certificate);
-
-    if (!unitIsIntegrated(certificate) || shouldReceiveMailNotifications) {
+    if (!unitIsIntegrated(certificate) || shouldReciveMailNotifications(certificate)) {
       sendMailNotificationForReceivedMessageService.send(sendMessageToCare, certificate);
     } else {
       publishCertificateStatusUpdateService.publish(
