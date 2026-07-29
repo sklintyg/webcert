@@ -12,13 +12,6 @@ springBoot {
     mainClass = 'se.inera.intyg.webcert.WebcertApplication'
 }
 
-// Restore legacy SBOM output paths expected by the CI pipeline (Jenkins.properties: sbom.aggregation.module=webcert-web).
-// Spring Boot 4 + CycloneDX 3.x reconfigures cyclonedxBom to output application.cdx.json by default.
-tasks.named('cyclonedxBom') {
-    jsonOutput.set(file("build/reports/cyclonedx/bom.json"))
-    xmlOutput.set(file("build/reports/cyclonedx/bom.xml"))
-}
-
 def buildDirectory = project.layout.buildDirectory.get().asFile
 def applicationDir = "${rootProject.projectDir}/devops/dev"
 
