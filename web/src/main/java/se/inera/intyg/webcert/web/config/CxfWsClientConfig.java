@@ -182,7 +182,9 @@ public class CxfWsClientConfig {
       @Value("${ntjp.ws.certificate.type}") String certificateType,
       @Value("${ntjp.ws.truststore.file}") String truststoreFile,
       @Value("${ntjp.ws.truststore.password}") String truststorePassword,
-      @Value("${ntjp.ws.truststore.type}") String truststoreType) {
+      @Value("${ntjp.ws.truststore.type}") String truststoreType,
+      @Value("${ntjp.ws.tls.version:TLS}") String tlsVersion,
+      @Value("#{'${ntjp.ws.tls.cipherSuites:}'.split(',')}") List<String> cipherSuites) {
 
     return (name, address, conduit) -> {
       if (!isNtjpConduit(name)) {
@@ -209,6 +211,12 @@ public class CxfWsClientConfig {
         tlsParams.setDisableCNCheck(true);
         tlsParams.setKeyManagers(kmf.getKeyManagers());
         tlsParams.setTrustManagers(tmf.getTrustManagers());
+        tlsParams.setSecureSocketProtocol(tlsVersion);
+        tlsParams.setCipherSuites(
+            cipherSuites.stream()
+                .map(String::trim)
+                .filter(cipherSuite -> !cipherSuite.isEmpty())
+                .toList());
 
         FiltersType filters = new FiltersType();
         filters
