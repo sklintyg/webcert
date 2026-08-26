@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
@@ -64,5 +66,14 @@ public class CertificateInternalApiController {
       @PathVariable("certificateId") String certificateId) {
     return getCertificateInternalPdfAggregator.get(
         request.getCustomizationId(), certificateId, request.getPersonId());
+  }
+
+  @GetMapping("/{certificateId}/binary")
+  @PerformanceLogging(
+      eventAction = "certificate-internal-get-binary-certificate",
+      eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+  public GetBinaryCertificateResponseDTO getBinaryCertificateData(
+      @PathVariable("certificateId") String certificateId) {
+    return GetBinaryCertificateResponseDTO.builder().build();
   }
 }
