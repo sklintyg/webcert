@@ -33,6 +33,7 @@ import se.inera.intyg.webcert.web.csintegration.aggregate.GetCertificateInternal
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetGetCertificateInternalPdfAggregator;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
@@ -101,6 +102,17 @@ class CertificateInternalApiControllerTest {
       final var actualPrintCertificateResponse =
           certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
       assertEquals(EXPECTED_PDF_DATA, actualPrintCertificateResponse.getPdfData());
+    }
+  }
+
+  @Nested
+  class GetBinaryCertificateTests {
+
+    @Test
+    void shallReturnGetBinaryCertificateResponse() {
+      final var response =
+          certificateInternalApiController.getBinaryCertificateData(CERTIFICATE_ID);
+      assertEquals(GetBinaryCertificateResponseDTO.class, response.getClass());
     }
   }
 }
