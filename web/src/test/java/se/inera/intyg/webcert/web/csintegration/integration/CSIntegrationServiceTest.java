@@ -94,6 +94,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEv
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateInternalPdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
@@ -214,6 +215,9 @@ class CSIntegrationServiceTest {
               .filename(FILE_NAME)
               .pdfData(PDF_DATA)
               .build();
+  private static final GetCertificateInternalPdfResponseDTO
+      GET_CERTIFICATE_INTERNAL_PDF_RESPONSE_DTO =
+          GetCertificateInternalPdfResponseDTO.builder().pdfData(PDF_DATA).build();
   private static final String ID = "ID";
   private static final DeleteCertificateRequestDTO DELETE_CERTIFICATE_REQUEST =
       DeleteCertificateRequestDTO.builder().build();
@@ -2802,6 +2806,68 @@ class CSIntegrationServiceTest {
       verify(requestBodyUriSpec).uri(captor.capture());
 
       assertEquals(captor.getValue(), "baseUrl/internalapi/certificate/ID/xml");
+    }
+  }
+
+  @Nested
+  class GetCertificatePdf {
+
+    @BeforeEach
+    void setUp() {
+      responseSpec = mock(RestClient.ResponseSpec.class);
+      requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
+      requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
+
+      final String uri = "baseUrl/internalapi/certificate/ID/pdf";
+      ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+      when(restClient.get()).thenReturn(requestHeadersUriSpec);
+      when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+      when(requestHeadersSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
+      when(requestHeadersSpec.header(any(), any())).thenReturn(requestHeadersSpec);
+      when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+    }
+
+    @Test
+    void shouldThrowExceptionIfNullResponse() {
+      assertThrows(IllegalStateException.class, () -> csIntegrationService.getCertificatePdf(ID));
+    }
+
+    @Test
+    void shouldThrowIfPdfDataIsNull() {
+      doReturn(GetCertificateInternalPdfResponseDTO.builder().build())
+          .when(responseSpec)
+          .body(GetCertificateInternalPdfResponseDTO.class);
+
+      assertThrows(IllegalStateException.class, () -> csIntegrationService.getCertificatePdf(ID));
+    }
+
+    @Nested
+    class HasResponse {
+
+      @BeforeEach
+      void setup() {
+        doReturn(GET_CERTIFICATE_INTERNAL_PDF_RESPONSE_DTO)
+            .when(responseSpec)
+            .body(GetCertificateInternalPdfResponseDTO.class);
+      }
+
+      @Test
+      void shouldReturnPdf() {
+        final var response = csIntegrationService.getCertificatePdf(ID);
+
+        assertEquals(PDF_DATA, response.getPdfData());
+      }
+
+      @Test
+      void shouldSetUrlCorrect() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+
+        csIntegrationService.getCertificatePdf(ID);
+        verify(requestHeadersUriSpec).uri(captor.capture());
+
+        assertEquals(captor.getValue(), "baseUrl/internalapi/certificate/ID/pdf");
+      }
     }
   }
 
