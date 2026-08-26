@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
-import java.util.Base64;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,9 +59,8 @@ public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
             requiredFieldsForCertificatePdf.getStatus());
 
     final var pdfData = pdfResponse.getPdfData();
-    final var encodedPdfData = Base64.getEncoder().encode(pdfData);
 
-    return GetBinaryCertificateResponseDTO.builder().pdfData(encodedPdfData).build();
+    return GetBinaryCertificateResponseDTO.builder().pdfData(pdfData).build();
   }
 
   private PdfResponse getPdfResponse(

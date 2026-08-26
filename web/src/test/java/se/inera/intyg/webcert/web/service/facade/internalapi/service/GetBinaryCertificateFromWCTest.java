@@ -23,9 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +59,7 @@ class GetBinaryCertificateFromWCTest {
           INTERNAL_JSON_MODEL,
           STATUSES,
           UtkastStatus.SIGNED);
-  private static final PdfResponse PDF_RESPONSE = new PdfResponse(PDF_BYTES, null);
+  private static final PdfResponse PDF_RESPONSE = new PdfResponse(PDF_BYTES, "fileName");
 
   @Mock private GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
   @Mock private IntygModuleRegistryImpl moduleRegistry;
@@ -78,16 +76,14 @@ class GetBinaryCertificateFromWCTest {
   }
 
   @Test
-  void shouldReturnBase64EncodedPdfData() throws ModuleException {
+  void shouldReturnPdfData() throws ModuleException {
     when(moduleApi.pdf(
             INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
         .thenReturn(PDF_RESPONSE);
 
     final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    assertEquals(
-        Base64.getEncoder().encodeToString(PDF_BYTES),
-        new String(response.getPdfData(), StandardCharsets.UTF_8));
+    assertEquals(PDF_BYTES, response.getPdfData());
   }
 
   @Test
