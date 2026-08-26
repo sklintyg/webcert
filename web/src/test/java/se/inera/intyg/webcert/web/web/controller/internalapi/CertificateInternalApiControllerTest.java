@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -47,6 +48,7 @@ class CertificateInternalApiControllerTest {
   private static final String CERTIFICATE_ID = "certificateId";
   private static final String CUSTOMIZATION_ID = "customizationId";
   private static final String PERSON_ID = "personId";
+  @Mock private GetBinaryCertificate getBinaryCertificate;
   @Mock private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
 
   @Mock private GetCertificateInternalAggregator certificateInternalAggregator;
@@ -110,6 +112,8 @@ class CertificateInternalApiControllerTest {
 
     @Test
     void shallReturnGetBinaryCertificateResponse() {
+      when(getBinaryCertificate.get(CERTIFICATE_ID))
+          .thenReturn(GetBinaryCertificateResponseDTO.builder().build());
       final var response =
           certificateInternalApiController.getBinaryCertificateData(CERTIFICATE_ID);
       assertEquals(GetBinaryCertificateResponseDTO.class, response.getClass());

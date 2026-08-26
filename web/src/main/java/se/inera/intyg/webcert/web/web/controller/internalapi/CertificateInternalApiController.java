@@ -39,12 +39,15 @@ public class CertificateInternalApiController {
 
   private final GetCertificateInteralApi getCertificateInternalAggregator;
   private final GetCertificatePdfService getCertificateInternalPdfAggregator;
+  private final GetBinaryCertificate getBinaryCertificate;
 
   public CertificateInternalApiController(
       @Qualifier("getCertificateInternalAggregator") GetCertificateInteralApi getCertificateInternalAggregator,
-      @Qualifier("getCertificateInternalPdfAggregator") GetCertificatePdfService getCertificateInternalPdfAggregator) {
+      @Qualifier("getCertificateInternalPdfAggregator") GetCertificatePdfService getCertificateInternalPdfAggregator,
+      @Qualifier("getBinaryCertificateInternalAggregator") GetBinaryCertificate getBinaryCertificate) {
     this.getCertificateInternalAggregator = getCertificateInternalAggregator;
     this.getCertificateInternalPdfAggregator = getCertificateInternalPdfAggregator;
+    this.getBinaryCertificate = getBinaryCertificate;
   }
 
   @PostMapping("/{certificateId}")
@@ -74,6 +77,6 @@ public class CertificateInternalApiController {
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
   public GetBinaryCertificateResponseDTO getBinaryCertificateData(
       @PathVariable("certificateId") String certificateId) {
-    return GetBinaryCertificateResponseDTO.builder().build();
+    return getBinaryCertificate.get(certificateId);
   }
 }
