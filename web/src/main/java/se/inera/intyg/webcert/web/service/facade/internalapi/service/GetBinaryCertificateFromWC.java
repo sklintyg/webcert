@@ -18,9 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetBinaryCertificate;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
 
@@ -29,8 +38,50 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertif
 @RequiredArgsConstructor
 public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
 
+  private final GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
+  private final IntygModuleRegistry moduleRegistry;
+
   @Override
   public GetBinaryCertificateResponseDTO get(String certificateId) {
-    return GetBinaryCertificateResponseDTO.builder().build();
+    final var requiredFieldsForCertificatePdf =
+        getRequiredFieldsForCertificatePdfService.get(certificateId);
+
+    final var moduleApi =
+        getModuleApi(
+            requiredFieldsForCertificatePdf.getCertificateType(),
+            requiredFieldsForCertificatePdf.getCertificateTypeVersion());
+
+    final var pdfResponse =
+        getPdfResponse(
+            moduleApi,
+            requiredFieldsForCertificatePdf.getInternalJsonModel(),
+            requiredFieldsForCertificatePdf.getStatuses(),
+            requiredFieldsForCertificatePdf.getStatus());
+
+    final var pdfData = pdfResponse.getPdfData();
+
+    return GetBinaryCertificateResponseDTO.builder().pdfData(pdfData).build();
+  }
+
+  private PdfResponse getPdfResponse(
+      ModuleApi moduleApi, String jsonModel, List<Status> statuses, UtkastStatus status) {
+    try {
+      return moduleApi.pdf(jsonModel, statuses, ApplicationOrigin.WEBCERT, status);
+    } catch (ModuleException exception) {
+      throw new IllegalStateException(
+          "Unable to get pdf from module api implementation", exception);
+    }
+  }
+
+  private ModuleApi getModuleApi(String certificateType, String certificateTypeVersion) {
+    try {
+      return moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
+    } catch (ModuleNotFoundException exception) {
+      throw new IllegalStateException(
+          String.format(
+              "Module api not found with typeVersion '%s' and type '%s'",
+              certificateTypeVersion, certificateType),
+          exception);
+    }
   }
 }
