@@ -36,7 +36,7 @@ public class BinaryUnitDTO {
   String city;
   String phoneNumber;
   String workplaceCode;
-  BinaryUnitDTO careProvider;
+  BinaryCareProviderDTO careProvider;
   String email;
 
   @JsonPOJOBuilder(withPrefix = "")

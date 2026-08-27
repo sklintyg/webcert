@@ -18,28 +18,80 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model;
 
+import java.util.List;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.CVType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Specialistkompetens;
+import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Component
 public class BinaryCertificateMetadataConverter {
 
   public BinaryCertificateMetadataDTO toBinaryCertificate(Intyg intyg, Certificate certificate) {
+    final var metadata = certificate.getMetadata();
     return BinaryCertificateMetadataDTO.builder()
-        .certificateId(certificate.getMetadata().getId())
+        .certificateId(metadata.getId())
         .type(
             BinaryCertificateTypeDTO.builder()
-                .code(intyg.getTyp().getCode())
+                .code(metadata.getType())
                 .codeSystem(intyg.getTyp().getCodeSystem())
-                .displayName(intyg.getTyp().getDisplayName())
+                .displayName(metadata.getTypeName())
                 .build())
-        .version(certificate.getMetadata().getTypeVersion())
+        .version(metadata.getTypeVersion())
         .sentAt(intyg.getSkickatTidpunkt())
-        .signedAt(certificate.getMetadata().getSigned())
-        .revokedAt(certificate.getMetadata().getRevokedAt())
-        .patient(certificate.getMetadata().getPatient())
-        .relations(certificate.getMetadata().getRelations())
+        .signedAt(metadata.getSigned())
+        .revokedAt(metadata.getRevokedAt())
+        .patient(metadata.getPatient())
+        .relations(metadata.getRelations())
+        .issuedBy(toIssuedBy(intyg.getSkapadAv(), metadata))
         .build();
+  }
+
+  private BinaryStaffDTO toIssuedBy(HosPersonal skapadAv, CertificateMetadata metadata) {
+    return BinaryStaffDTO.builder()
+        .personId(metadata.getIssuedBy().getPersonId())
+        .fullName(metadata.getIssuedBy().getFullName())
+        .titles(toTypes(skapadAv.getBefattning()))
+        .specialities(
+            skapadAv.getSpecialistkompetens().stream()
+                .map(Specialistkompetens::getDisplayName)
+                .toList())
+        .licences(toTypes(skapadAv.getLegitimeratYrke()))
+        .unit(toUnit(metadata.getUnit(), metadata.getCareProvider()))
+        .build();
+  }
+
+  private BinaryUnitDTO toUnit(Unit unit, Unit careProvider) {
+    return BinaryUnitDTO.builder()
+        .unitId(unit.getUnitId())
+        .unitName(unit.getUnitName())
+        .address(unit.getAddress())
+        .zipCode(unit.getZipCode())
+        .city(unit.getCity())
+        .phoneNumber(unit.getPhoneNumber())
+        .workplaceCode(unit.getWorkplaceCode())
+        .email(unit.getEmail())
+        .careProvider(
+            BinaryCareProviderDTO.builder()
+                .unitId(careProvider.getUnitId())
+                .unitName(careProvider.getUnitName())
+                .build())
+        .build();
+  }
+
+  private List<BinaryCertificateTypeDTO> toTypes(List<? extends CVType> types) {
+    return types.stream()
+        .map(
+            type ->
+                BinaryCertificateTypeDTO.builder()
+                    .code(type.getCode())
+                    .codeSystem(type.getCodeSystem())
+                    .displayName(type.getDisplayName())
+                    .build())
+        .toList();
   }
 }
