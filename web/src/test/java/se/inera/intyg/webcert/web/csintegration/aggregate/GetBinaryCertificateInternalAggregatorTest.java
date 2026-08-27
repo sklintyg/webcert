@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetBinaryCertificate;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
 class GetBinaryCertificateInternalAggregatorTest {

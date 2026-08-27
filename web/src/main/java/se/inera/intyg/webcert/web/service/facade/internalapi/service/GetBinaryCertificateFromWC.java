@@ -18,19 +18,94 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
+import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataConverter;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetBinaryCertificate;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
 
+  private final GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
+  private final IntygModuleRegistry moduleRegistry;
+  private final GetCertificateFacadeServiceImpl getCertificateFacadeService;
+  private final GetCertificateService getCertificateService;
+  private final BinaryCertificateMetadataConverter binaryCertificateMetadataConverter;
+
   @Override
   public GetBinaryCertificateResponseDTO get(String certificateId) {
-    return GetBinaryCertificateResponseDTO.builder().build();
+    final var pdfData = getPdfData(certificateId);
+    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, false);
+    if (certificate.getMetadata().getStatus().equals(CertificateStatus.UNSIGNED)) {
+      throw new IllegalStateException(
+          "Certificate is draft and not eligible to export as BinaryCertificate");
+    }
+
+    final var certificateAsIntyg =
+        getCertificateService.getCertificateAsIntyg(
+            certificateId, certificate.getMetadata().getType());
+
+    return GetBinaryCertificateResponseDTO.builder()
+        .pdfData(pdfData)
+        .metadata(
+            binaryCertificateMetadataConverter.toBinaryCertificate(certificateAsIntyg, certificate))
+        .build();
+  }
+
+  private byte[] getPdfData(String certificateId) {
+    final var requiredFieldsForCertificatePdf =
+        getRequiredFieldsForCertificatePdfService.get(certificateId);
+
+    final var moduleApi =
+        getModuleApi(
+            requiredFieldsForCertificatePdf.getCertificateType(),
+            requiredFieldsForCertificatePdf.getCertificateTypeVersion());
+
+    final var pdfResponse =
+        getPdfResponse(
+            moduleApi,
+            requiredFieldsForCertificatePdf.getInternalJsonModel(),
+            requiredFieldsForCertificatePdf.getStatuses(),
+            requiredFieldsForCertificatePdf.getStatus());
+
+    return pdfResponse.getPdfData();
+  }
+
+  private PdfResponse getPdfResponse(
+      ModuleApi moduleApi, String jsonModel, List<Status> statuses, UtkastStatus status) {
+    try {
+      return moduleApi.pdf(jsonModel, statuses, ApplicationOrigin.WEBCERT, status);
+    } catch (ModuleException exception) {
+      throw new IllegalStateException(
+          "Unable to get pdf from module api implementation", exception);
+    }
+  }
+
+  private ModuleApi getModuleApi(String certificateType, String certificateTypeVersion) {
+    try {
+      return moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
+    } catch (ModuleNotFoundException exception) {
+      throw new IllegalStateException(
+          String.format(
+              "Module api not found with typeVersion '%s' and type '%s'",
+              certificateTypeVersion, certificateType),
+          exception);
+    }
   }
 }

@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
