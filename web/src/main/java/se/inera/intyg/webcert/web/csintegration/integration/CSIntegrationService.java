@@ -1503,8 +1503,8 @@ public class CSIntegrationService {
     return Optional.of(response);
   }
 
-  public GetCertificateInternalPdfResponseDTO getCertificatePdf(String certificateId) {
-    final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/pdf";
+  public GetCertificateInternalPdfResponseDTO getBinaryCertificate(String certificateId) {
+    final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/binary";
 
     final var response =
         restClient

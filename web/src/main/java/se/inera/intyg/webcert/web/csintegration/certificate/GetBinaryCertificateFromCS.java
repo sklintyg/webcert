@@ -40,10 +40,11 @@ public class GetBinaryCertificateFromCS implements GetBinaryCertificate {
       return null;
     }
 
-    final var certificatePdfResponse = csIntegrationService.getCertificatePdf(certificateId);
+    final var binaryCertificate = csIntegrationService.getBinaryCertificate(certificateId);
 
     return GetBinaryCertificateResponseDTO.builder()
-        .pdfData(certificatePdfResponse.getPdfData())
+        .pdfData(binaryCertificate.getPdfData())
+        .metadata(binaryCertificate.getMetadata())
         .build();
   }
 }

@@ -158,6 +158,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.UpdateWithCandid
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UpdateWithCandidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -215,10 +216,15 @@ class CSIntegrationServiceTest {
               .filename(FILE_NAME)
               .pdfData(PDF_DATA)
               .build();
+  private static final String ID = "ID";
+  private static final BinaryCertificateMetadataDTO BINARY_CERTIFICATE_METADATA =
+      BinaryCertificateMetadataDTO.builder().certificateId(ID).build();
   private static final GetCertificateInternalPdfResponseDTO
       GET_CERTIFICATE_INTERNAL_PDF_RESPONSE_DTO =
-          GetCertificateInternalPdfResponseDTO.builder().pdfData(PDF_DATA).build();
-  private static final String ID = "ID";
+          GetCertificateInternalPdfResponseDTO.builder()
+              .pdfData(PDF_DATA)
+              .metadata(BINARY_CERTIFICATE_METADATA)
+              .build();
   private static final DeleteCertificateRequestDTO DELETE_CERTIFICATE_REQUEST =
       DeleteCertificateRequestDTO.builder().build();
   private static final GetPatientCertificatesRequestDTO PATIENT_LIST_REQUEST =
@@ -2810,7 +2816,7 @@ class CSIntegrationServiceTest {
   }
 
   @Nested
-  class GetCertificatePdf {
+  class GetBinaryCertificate {
 
     @BeforeEach
     void setUp() {
@@ -2818,7 +2824,7 @@ class CSIntegrationServiceTest {
       requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
       requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
 
-      final String uri = "baseUrl/internalapi/certificate/ID/pdf";
+      final String uri = "baseUrl/internalapi/certificate/ID/binary";
       ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
       when(restClient.get()).thenReturn(requestHeadersUriSpec);
@@ -2830,7 +2836,8 @@ class CSIntegrationServiceTest {
 
     @Test
     void shouldThrowExceptionIfNullResponse() {
-      assertThrows(IllegalStateException.class, () -> csIntegrationService.getCertificatePdf(ID));
+      assertThrows(
+          IllegalStateException.class, () -> csIntegrationService.getBinaryCertificate(ID));
     }
 
     @Test
@@ -2839,7 +2846,8 @@ class CSIntegrationServiceTest {
           .when(responseSpec)
           .body(GetCertificateInternalPdfResponseDTO.class);
 
-      assertThrows(IllegalStateException.class, () -> csIntegrationService.getCertificatePdf(ID));
+      assertThrows(
+          IllegalStateException.class, () -> csIntegrationService.getBinaryCertificate(ID));
     }
 
     @Nested
@@ -2854,19 +2862,27 @@ class CSIntegrationServiceTest {
 
       @Test
       void shouldReturnPdf() {
-        final var response = csIntegrationService.getCertificatePdf(ID);
+        final var response = csIntegrationService.getBinaryCertificate(ID);
 
         assertEquals(PDF_DATA, response.getPdfData());
+      }
+
+      @Test
+      void shouldReturnMetadata() {
+        final var response = csIntegrationService.getBinaryCertificate(ID);
+
+        assertEquals(
+            GET_CERTIFICATE_INTERNAL_PDF_RESPONSE_DTO.getMetadata(), response.getMetadata());
       }
 
       @Test
       void shouldSetUrlCorrect() {
         final var captor = ArgumentCaptor.forClass(String.class);
 
-        csIntegrationService.getCertificatePdf(ID);
+        csIntegrationService.getBinaryCertificate(ID);
         verify(requestHeadersUriSpec).uri(captor.capture());
 
-        assertEquals(captor.getValue(), "baseUrl/internalapi/certificate/ID/pdf");
+        assertEquals(captor.getValue(), "baseUrl/internalapi/certificate/ID/binary");
       }
     }
   }

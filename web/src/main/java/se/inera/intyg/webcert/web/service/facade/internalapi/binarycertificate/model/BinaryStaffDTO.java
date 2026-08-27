@@ -34,6 +34,7 @@ public class BinaryStaffDTO {
   String firstName;
   String middleName;
   String lastName;
+  String fullName;
   List<BinaryCertificateTypeDTO> titles;
   List<String> specialities;
   List<BinaryCertificateTypeDTO> licences;
