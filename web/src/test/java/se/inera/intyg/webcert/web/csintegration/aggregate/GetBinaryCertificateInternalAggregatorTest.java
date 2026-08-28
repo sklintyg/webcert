@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -27,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetBinaryCertificate;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
 class GetBinaryCertificateInternalAggregatorTest {
@@ -56,7 +57,26 @@ class GetBinaryCertificateInternalAggregatorTest {
     final var actualResponse = aggregator.get(CERTIFICATE_ID);
 
     assertEquals(expectedResponse, actualResponse);
+  }
+
+  @Test
+  void shouldNotGetResponseFromWCWhenCSReturnsResponse() {
+    when(getBinaryCertificateFromCS.get(CERTIFICATE_ID))
+        .thenReturn(GetBinaryCertificateResponseDTO.builder().build());
+
+    aggregator.get(CERTIFICATE_ID);
+
     verifyNoInteractions(getBinaryCertificateFromWC);
+  }
+
+  @Test
+  void shouldUseCertificateIdWhenGettingResponseFromCS() {
+    when(getBinaryCertificateFromCS.get(CERTIFICATE_ID))
+        .thenReturn(GetBinaryCertificateResponseDTO.builder().build());
+
+    aggregator.get(CERTIFICATE_ID);
+
+    verify(getBinaryCertificateFromCS).get(CERTIFICATE_ID);
   }
 
   @Test
@@ -68,5 +88,14 @@ class GetBinaryCertificateInternalAggregatorTest {
     final var actualResponse = aggregator.get(CERTIFICATE_ID);
 
     assertEquals(expectedResponse, actualResponse);
+  }
+
+  @Test
+  void shouldUseCertificateIdWhenGettingResponseFromWC() {
+    when(getBinaryCertificateFromCS.get(CERTIFICATE_ID)).thenReturn(null);
+
+    aggregator.get(CERTIFICATE_ID);
+
+    verify(getBinaryCertificateFromWC).get(CERTIFICATE_ID);
   }
 }

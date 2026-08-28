@@ -16,21 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
+package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO.GetBinaryCertificateResponseDTOBuilder;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO.BinaryCertificateMetadataDTOBuilder;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
-@JsonDeserialize(builder = GetBinaryCertificateResponseDTOBuilder.class)
 @Value
 @Builder
-public class GetBinaryCertificateResponseDTO {
+@JsonDeserialize(builder = BinaryCertificateMetadataDTOBuilder.class)
+public class BinaryCertificateMetadataDTO {
 
-  byte[] pdfData;
+  String certificateId;
+  BinaryCertificateCodeDTO type;
+  String version;
+  LocalDateTime signedAt;
+  LocalDateTime revokedAt;
+  LocalDateTime sentAt;
+  BinaryCertificatePatientDTO patient;
+  BinaryCertificateStaffDTO issuedBy;
+  CertificateRelations relations;
 
   @JsonPOJOBuilder(withPrefix = "")
-  public static class GetBinaryCertificateResponseDTOBuilder {}
+  public static class BinaryCertificateMetadataDTOBuilder {}
 }

@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetBinaryCertificate;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
 
 @Service("getBinaryCertificateInternalAggregator")
 public class GetBinaryCertificateInternalAggregator implements GetBinaryCertificate {

@@ -19,7 +19,8 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.AssertionsKt.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetBinaryCertificateResponseDTO;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
 class GetBinaryCertificateFromCSTest {
@@ -42,7 +43,17 @@ class GetBinaryCertificateFromCSTest {
   @Test
   void shouldReturnNullIfCertificateDoesNotExistInCertificateService() {
     when(csIntegrationService.certificateExists(CERTIFICATE_ID)).thenReturn(false);
+
     assertNull(getBinaryCertificateFromCS.get(CERTIFICATE_ID));
+  }
+
+  @Test
+  void shouldUseCertificateIdWhenCheckingIfCertificateExists() {
+    when(csIntegrationService.certificateExists(CERTIFICATE_ID)).thenReturn(false);
+
+    getBinaryCertificateFromCS.get(CERTIFICATE_ID);
+
+    verify(csIntegrationService).certificateExists(CERTIFICATE_ID);
   }
 
   @Test
@@ -52,6 +63,7 @@ class GetBinaryCertificateFromCSTest {
     when(csIntegrationService.certificateExists(CERTIFICATE_ID)).thenReturn(true);
 
     final var actualResponse = getBinaryCertificateFromCS.get(CERTIFICATE_ID);
+
     assertEquals(expectedResponse, actualResponse);
   }
 }

@@ -16,11 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.internalapi;
+package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model;
 
-import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateCodeDTO.BinaryCertificateCodeDTOBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
-public interface GetBinaryCertificate {
+@JsonDeserialize(builder = BinaryCertificateCodeDTOBuilder.class)
+@Value
+@Builder
+public class BinaryCertificateCodeDTO {
 
-  GetBinaryCertificateResponseDTO get(String certificateId);
+  String code;
+  String codeSystem;
+  String displayName;
+
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class BinaryCertificateCodeDTOBuilder {}
 }
