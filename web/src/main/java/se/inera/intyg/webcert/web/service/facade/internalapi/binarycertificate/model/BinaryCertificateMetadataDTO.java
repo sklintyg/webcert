@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO.BinaryCertificateMetadataDTOBuilder;
 import tools.jackson.databind.annotation.JsonDeserialize;
