@@ -31,9 +31,6 @@ import tools.jackson.databind.annotation.JsonPOJOBuilder;
 public class BinaryStaffDTO {
 
   String personId;
-  String firstName;
-  String middleName;
-  String lastName;
   String fullName;
   List<BinaryCertificateTypeDTO> titles;
   List<String> specialities;

@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -110,13 +111,28 @@ class CertificateInternalApiControllerTest {
   @Nested
   class GetBinaryCertificateTests {
 
+    private static final GetBinaryCertificateResponseDTO EXPECTED_BINARY_CERTIFICATE_RESPONSE =
+        GetBinaryCertificateResponseDTO.builder().build();
+
     @Test
     void shallReturnGetBinaryCertificateResponse() {
       when(getBinaryCertificate.get(CERTIFICATE_ID))
-          .thenReturn(GetBinaryCertificateResponseDTO.builder().build());
+          .thenReturn(EXPECTED_BINARY_CERTIFICATE_RESPONSE);
+
       final var response =
           certificateInternalApiController.getBinaryCertificateData(CERTIFICATE_ID);
-      assertEquals(GetBinaryCertificateResponseDTO.class, response.getClass());
+
+      assertEquals(EXPECTED_BINARY_CERTIFICATE_RESPONSE, response);
+    }
+
+    @Test
+    void shallUseCertificateIdFromPathVariable() {
+      when(getBinaryCertificate.get(CERTIFICATE_ID))
+          .thenReturn(EXPECTED_BINARY_CERTIFICATE_RESPONSE);
+
+      certificateInternalApiController.getBinaryCertificateData(CERTIFICATE_ID);
+
+      verify(getBinaryCertificate).get(CERTIFICATE_ID);
     }
   }
 }

@@ -31,6 +31,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -40,7 +43,12 @@ import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
+import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateFacadeServiceImpl;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataConverter;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.RequiredFieldsForCertificatePdf;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @ExtendWith(MockitoExtension.class)
 class GetBinaryCertificateFromWCTest {
@@ -60,10 +68,16 @@ class GetBinaryCertificateFromWCTest {
           STATUSES,
           UtkastStatus.SIGNED);
   private static final PdfResponse PDF_RESPONSE = new PdfResponse(PDF_BYTES, "fileName");
+  private static final Intyg INTYG = new Intyg();
+  private static final BinaryCertificateMetadataDTO METADATA =
+      BinaryCertificateMetadataDTO.builder().certificateId(CERTIFICATE_ID).build();
 
   @Mock private GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
   @Mock private IntygModuleRegistryImpl moduleRegistry;
   @Mock private ModuleApi moduleApi;
+  @Mock private GetCertificateFacadeServiceImpl getCertificateFacadeService;
+  @Mock private GetCertificateService getCertificateService;
+  @Mock private BinaryCertificateMetadataConverter binaryCertificateMetadataConverter;
 
   @InjectMocks private GetBinaryCertificateFromWC getBinaryCertificateFromWC;
 
@@ -75,11 +89,39 @@ class GetBinaryCertificateFromWCTest {
         .thenReturn(moduleApi);
   }
 
-  @Test
-  void shouldReturnPdfData() throws ModuleException {
+  private void mockPdf() throws ModuleException {
     when(moduleApi.pdf(
             INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
         .thenReturn(PDF_RESPONSE);
+  }
+
+  private Certificate mockCertificate(CertificateStatus status) {
+    final var certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .id(CERTIFICATE_ID)
+            .type(CERTIFICATE_TYPE)
+            .status(status)
+            .build());
+    when(getCertificateFacadeService.getCertificate(CERTIFICATE_ID, false, false))
+        .thenReturn(certificate);
+    return certificate;
+  }
+
+  private void mockIntyg() {
+    when(getCertificateService.getCertificateAsIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE))
+        .thenReturn(INTYG);
+  }
+
+  private void mockSignedCertificate() throws ModuleException {
+    mockPdf();
+    mockCertificate(CertificateStatus.SIGNED);
+    mockIntyg();
+  }
+
+  @Test
+  void shouldReturnPdfData() throws ModuleException {
+    mockSignedCertificate();
 
     final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
@@ -87,10 +129,32 @@ class GetBinaryCertificateFromWCTest {
   }
 
   @Test
+  void shouldReturnMetadataFromConverter() throws ModuleException {
+    mockPdf();
+    final var certificate = mockCertificate(CertificateStatus.SIGNED);
+    mockIntyg();
+    when(binaryCertificateMetadataConverter.toBinaryCertificate(INTYG, certificate))
+        .thenReturn(METADATA);
+
+    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    assertEquals(METADATA, response.getMetadata());
+  }
+
+  @Test
+  void shouldUseIntygAndCertificateWhenConvertingMetadata() throws ModuleException {
+    mockPdf();
+    final var certificate = mockCertificate(CertificateStatus.SIGNED);
+    mockIntyg();
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(binaryCertificateMetadataConverter).toBinaryCertificate(INTYG, certificate);
+  }
+
+  @Test
   void shouldUseCertificateIdWhenGettingRequiredFields() throws ModuleException {
-    when(moduleApi.pdf(
-            INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
-        .thenReturn(PDF_RESPONSE);
+    mockSignedCertificate();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
@@ -100,9 +164,7 @@ class GetBinaryCertificateFromWCTest {
   @Test
   void shouldUseCertificateTypeAndVersionFromRequiredFieldsWhenGettingModuleApi()
       throws ModuleNotFoundException, ModuleException {
-    when(moduleApi.pdf(
-            INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
-        .thenReturn(PDF_RESPONSE);
+    mockSignedCertificate();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
@@ -112,14 +174,38 @@ class GetBinaryCertificateFromWCTest {
   @Test
   void shouldUseJsonModelStatusesOriginAndStatusFromRequiredFieldsWhenGeneratingPdf()
       throws ModuleException {
-    when(moduleApi.pdf(
-            INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
-        .thenReturn(PDF_RESPONSE);
+    mockSignedCertificate();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
     verify(moduleApi)
         .pdf(INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED);
+  }
+
+  @Test
+  void shouldGetCertificateWithoutValidationAndRelations() throws ModuleException {
+    mockSignedCertificate();
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, false);
+  }
+
+  @Test
+  void shouldUseCertificateIdAndTypeWhenGettingCertificateAsIntyg() throws ModuleException {
+    mockSignedCertificate();
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(getCertificateService).getCertificateAsIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE);
+  }
+
+  @Test
+  void shouldThrowIllegalStateExceptionIfCertificateIsUnsigned() throws ModuleException {
+    mockPdf();
+    mockCertificate(CertificateStatus.UNSIGNED);
+
+    assertThrows(IllegalStateException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
   }
 
   @Test
