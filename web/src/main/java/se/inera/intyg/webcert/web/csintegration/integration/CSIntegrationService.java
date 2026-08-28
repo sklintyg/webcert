@@ -80,6 +80,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEv
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateInternalPdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
@@ -1500,5 +1501,25 @@ public class CSIntegrationService {
     }
 
     return Optional.of(response);
+  }
+
+  public GetCertificateInternalPdfResponseDTO getBinaryCertificate(String certificateId) {
+    final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/binary";
+
+    final var response =
+        restClient
+            .get()
+            .uri(url)
+            .accept(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .retrieve()
+            .body(GetCertificateInternalPdfResponseDTO.class);
+
+    if (response == null || response.getPdfData() == null) {
+      throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+    }
+
+    return response;
   }
 }

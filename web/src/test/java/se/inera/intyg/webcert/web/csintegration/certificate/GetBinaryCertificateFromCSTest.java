@@ -29,12 +29,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateInternalPdfResponseDTO;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
 class GetBinaryCertificateFromCSTest {
 
   private static final String CERTIFICATE_ID = "certificateId";
+  private static final byte[] PDF_DATA = "pdfData".getBytes();
+  private static final BinaryCertificateMetadataDTO METADATA =
+      BinaryCertificateMetadataDTO.builder().certificateId(CERTIFICATE_ID).build();
 
   @Mock private CSIntegrationService csIntegrationService;
 
@@ -58,9 +63,16 @@ class GetBinaryCertificateFromCSTest {
 
   @Test
   void shouldReturnGetBinaryCertificateResponseWhenCertificateExistsInCertificateService() {
-    final var expectedResponse = GetBinaryCertificateResponseDTO.builder().build();
+    final var expectedResponse =
+        GetBinaryCertificateResponseDTO.builder().pdfData(PDF_DATA).metadata(METADATA).build();
 
     when(csIntegrationService.certificateExists(CERTIFICATE_ID)).thenReturn(true);
+    when(csIntegrationService.getBinaryCertificate(CERTIFICATE_ID))
+        .thenReturn(
+            GetCertificateInternalPdfResponseDTO.builder()
+                .pdfData(PDF_DATA)
+                .metadata(METADATA)
+                .build());
 
     final var actualResponse = getBinaryCertificateFromCS.get(CERTIFICATE_ID);
 
