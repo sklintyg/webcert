@@ -19,10 +19,14 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.dto.PersonIdType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.CVType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Specialistkompetens;
 import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
@@ -48,10 +52,18 @@ public class BinaryCertificateMetadataConverter {
         .patient(
             BinaryCertificatePatientDTO.builder()
                 .patientId(metadata.getPatient().getPersonId().getId())
+                .type(getPatientIdType(metadata.getPatient().getPersonId().getId()))
                 .build())
         .relations(metadata.getRelations())
         .issuedBy(toIssuedBy(intyg.getSkapadAv(), metadata))
         .build();
+  }
+
+  private PersonIdType getPatientIdType(String patientId) {
+    final var personnummer = Personnummer.createPersonnummer(patientId).orElseThrow();
+    return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personnummer))
+        ? PersonIdType.COORDINATION_NUMBER
+        : PersonIdType.PERSONAL_IDENTITY_NUMBER;
   }
 
   private BinaryCertificateStaffDTO toIssuedBy(HosPersonal skapadAv, CertificateMetadata metadata) {

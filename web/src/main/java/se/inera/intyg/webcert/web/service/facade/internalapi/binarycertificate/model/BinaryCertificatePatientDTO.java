@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.
 
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.webcert.common.dto.PersonIdType;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificatePatientDTO.BinaryCertificatePatientDTOBuilder;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonPOJOBuilder;
@@ -30,6 +31,7 @@ import tools.jackson.databind.annotation.JsonPOJOBuilder;
 public class BinaryCertificatePatientDTO {
 
   String patientId;
+  PersonIdType type;
 
   @JsonPOJOBuilder(withPrefix = "")
   public static class BinaryCertificatePatientDTOBuilder {}
