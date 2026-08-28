@@ -18,30 +18,27 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model;
 
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.Patient;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO.BinaryCertificateMetadataDTOBuilder;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateUnitDTO.BinaryCertificateUnitDTOBuilder;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
+@JsonDeserialize(builder = BinaryCertificateUnitDTOBuilder.class)
 @Value
 @Builder
-@JsonDeserialize(builder = BinaryCertificateMetadataDTOBuilder.class)
-public class BinaryCertificateMetadataDTO {
+public class BinaryCertificateUnitDTO {
 
-  String certificateId;
-  BinaryCertificateCodeDTO type;
-  String version;
-  LocalDateTime signedAt;
-  LocalDateTime revokedAt;
-  LocalDateTime sentAt;
-  BinaryCertificatePatientDTO patient;
-  BinaryCertificateStaffDTO issuedBy;
-  CertificateRelations relations;
+  String unitId;
+  String unitName;
+  String address;
+  String zipCode;
+  String city;
+  String phoneNumber;
+  String workplaceCode;
+  BinaryCertificateCareProviderDTO careProvider;
+  String email;
 
   @JsonPOJOBuilder(withPrefix = "")
-  public static class BinaryCertificateMetadataDTOBuilder {}
+  public static class BinaryCertificateUnitDTOBuilder {}
 }

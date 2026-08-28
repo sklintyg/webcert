@@ -19,10 +19,14 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.dto.PersonIdType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.CVType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Specialistkompetens;
 import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
@@ -36,7 +40,7 @@ public class BinaryCertificateMetadataConverter {
     return BinaryCertificateMetadataDTO.builder()
         .certificateId(metadata.getId())
         .type(
-            BinaryCertificateTypeDTO.builder()
+            BinaryCertificateCodeDTO.builder()
                 .code(metadata.getType())
                 .codeSystem(intyg.getTyp().getCodeSystem())
                 .displayName(metadata.getTypeName())
@@ -45,14 +49,25 @@ public class BinaryCertificateMetadataConverter {
         .sentAt(intyg.getSkickatTidpunkt())
         .signedAt(metadata.getSigned())
         .revokedAt(metadata.getRevokedAt())
-        .patient(metadata.getPatient())
+        .patient(
+            BinaryCertificatePatientDTO.builder()
+                .patientId(metadata.getPatient().getPersonId().getId())
+                .type(getPatientIdType(metadata.getPatient().getPersonId().getId()))
+                .build())
         .relations(metadata.getRelations())
         .issuedBy(toIssuedBy(intyg.getSkapadAv(), metadata))
         .build();
   }
 
-  private BinaryStaffDTO toIssuedBy(HosPersonal skapadAv, CertificateMetadata metadata) {
-    return BinaryStaffDTO.builder()
+  private PersonIdType getPatientIdType(String patientId) {
+    final var personnummer = Personnummer.createPersonnummer(patientId).orElseThrow();
+    return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personnummer))
+        ? PersonIdType.COORDINATION_NUMBER
+        : PersonIdType.PERSONAL_IDENTITY_NUMBER;
+  }
+
+  private BinaryCertificateStaffDTO toIssuedBy(HosPersonal skapadAv, CertificateMetadata metadata) {
+    return BinaryCertificateStaffDTO.builder()
         .personId(metadata.getIssuedBy().getPersonId())
         .fullName(metadata.getIssuedBy().getFullName())
         .titles(toTypes(skapadAv.getBefattning()))
@@ -65,8 +80,8 @@ public class BinaryCertificateMetadataConverter {
         .build();
   }
 
-  private BinaryUnitDTO toUnit(Unit unit, Unit careProvider) {
-    return BinaryUnitDTO.builder()
+  private BinaryCertificateUnitDTO toUnit(Unit unit, Unit careProvider) {
+    return BinaryCertificateUnitDTO.builder()
         .unitId(unit.getUnitId())
         .unitName(unit.getUnitName())
         .address(unit.getAddress())
@@ -76,18 +91,18 @@ public class BinaryCertificateMetadataConverter {
         .workplaceCode(unit.getWorkplaceCode())
         .email(unit.getEmail())
         .careProvider(
-            BinaryCareProviderDTO.builder()
+            BinaryCertificateCareProviderDTO.builder()
                 .unitId(careProvider.getUnitId())
                 .unitName(careProvider.getUnitName())
                 .build())
         .build();
   }
 
-  private List<BinaryCertificateTypeDTO> toTypes(List<? extends CVType> types) {
+  private List<BinaryCertificateCodeDTO> toTypes(List<? extends CVType> types) {
     return types.stream()
         .map(
             type ->
-                BinaryCertificateTypeDTO.builder()
+                BinaryCertificateCodeDTO.builder()
                     .code(type.getCode())
                     .codeSystem(type.getCodeSystem())
                     .displayName(type.getDisplayName())
