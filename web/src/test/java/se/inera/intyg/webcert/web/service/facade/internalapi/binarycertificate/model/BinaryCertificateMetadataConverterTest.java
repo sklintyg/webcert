@@ -53,8 +53,13 @@ class BinaryCertificateMetadataConverterTest {
   private static final LocalDateTime SIGNED_AT = LocalDateTime.of(2026, 1, 2, 10, 0);
   private static final LocalDateTime REVOKED_AT = LocalDateTime.of(2026, 1, 4, 12, 0);
   private static final LocalDateTime SENT_AT = LocalDateTime.of(2026, 1, 3, 11, 0);
+  private static final String PATIENT_ID = "191212121212";
   private static final Patient PATIENT =
-      Patient.builder().personId(PersonId.builder().id("191212121212").build()).build();
+      Patient.builder()
+          .personId(PersonId.builder().id(PATIENT_ID).build())
+          .firstName("Tolvan")
+          .lastName("Tolvansson")
+          .build();
   private static final CertificateRelations RELATIONS = CertificateRelations.builder().build();
 
   private static final String STAFF_PERSON_ID = "TSTNMT2321000156-1079";
@@ -245,8 +250,8 @@ class BinaryCertificateMetadataConverterTest {
   class PatientTest {
 
     @Test
-    void shouldSetPatientFromCertificate() {
-      assertEquals(PATIENT, convert().getPatient());
+    void shouldSetPatientIdFromCertificate() {
+      assertEquals(PATIENT_ID, convert().getPatient().getPatientId());
     }
   }
 

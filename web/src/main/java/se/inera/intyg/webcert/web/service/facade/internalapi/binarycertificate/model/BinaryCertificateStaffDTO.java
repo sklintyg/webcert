@@ -18,20 +18,25 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCareProviderDTO.BinaryCareProviderDTOBuilder;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateStaffDTO.BinaryCertificateStaffDTOBuilder;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
-@JsonDeserialize(builder = BinaryCareProviderDTOBuilder.class)
+@JsonDeserialize(builder = BinaryCertificateStaffDTOBuilder.class)
 @Value
 @Builder
-public class BinaryCareProviderDTO {
+public class BinaryCertificateStaffDTO {
 
-  String unitId;
-  String unitName;
+  String personId;
+  String fullName;
+  List<BinaryCertificateCodeDTO> titles;
+  List<String> specialities;
+  List<BinaryCertificateCodeDTO> licences;
+  BinaryCertificateUnitDTO unit;
 
   @JsonPOJOBuilder(withPrefix = "")
-  public static class BinaryCareProviderDTOBuilder {}
+  public static class BinaryCertificateStaffDTOBuilder {}
 }

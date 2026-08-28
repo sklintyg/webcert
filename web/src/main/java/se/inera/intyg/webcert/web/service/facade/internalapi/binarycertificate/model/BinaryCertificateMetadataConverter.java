@@ -36,7 +36,7 @@ public class BinaryCertificateMetadataConverter {
     return BinaryCertificateMetadataDTO.builder()
         .certificateId(metadata.getId())
         .type(
-            BinaryCertificateTypeDTO.builder()
+            BinaryCertificateCodeDTO.builder()
                 .code(metadata.getType())
                 .codeSystem(intyg.getTyp().getCodeSystem())
                 .displayName(metadata.getTypeName())
@@ -45,14 +45,17 @@ public class BinaryCertificateMetadataConverter {
         .sentAt(intyg.getSkickatTidpunkt())
         .signedAt(metadata.getSigned())
         .revokedAt(metadata.getRevokedAt())
-        .patient(metadata.getPatient())
+        .patient(
+            BinaryCertificatePatientDTO.builder()
+                .patientId(metadata.getPatient().getPersonId().getId())
+                .build())
         .relations(metadata.getRelations())
         .issuedBy(toIssuedBy(intyg.getSkapadAv(), metadata))
         .build();
   }
 
-  private BinaryStaffDTO toIssuedBy(HosPersonal skapadAv, CertificateMetadata metadata) {
-    return BinaryStaffDTO.builder()
+  private BinaryCertificateStaffDTO toIssuedBy(HosPersonal skapadAv, CertificateMetadata metadata) {
+    return BinaryCertificateStaffDTO.builder()
         .personId(metadata.getIssuedBy().getPersonId())
         .fullName(metadata.getIssuedBy().getFullName())
         .titles(toTypes(skapadAv.getBefattning()))
@@ -65,8 +68,8 @@ public class BinaryCertificateMetadataConverter {
         .build();
   }
 
-  private BinaryUnitDTO toUnit(Unit unit, Unit careProvider) {
-    return BinaryUnitDTO.builder()
+  private BinaryCertificateUnitDTO toUnit(Unit unit, Unit careProvider) {
+    return BinaryCertificateUnitDTO.builder()
         .unitId(unit.getUnitId())
         .unitName(unit.getUnitName())
         .address(unit.getAddress())
@@ -76,18 +79,18 @@ public class BinaryCertificateMetadataConverter {
         .workplaceCode(unit.getWorkplaceCode())
         .email(unit.getEmail())
         .careProvider(
-            BinaryCareProviderDTO.builder()
+            BinaryCertificateCareProviderDTO.builder()
                 .unitId(careProvider.getUnitId())
                 .unitName(careProvider.getUnitName())
                 .build())
         .build();
   }
 
-  private List<BinaryCertificateTypeDTO> toTypes(List<? extends CVType> types) {
+  private List<BinaryCertificateCodeDTO> toTypes(List<? extends CVType> types) {
     return types.stream()
         .map(
             type ->
-                BinaryCertificateTypeDTO.builder()
+                BinaryCertificateCodeDTO.builder()
                     .code(type.getCode())
                     .codeSystem(type.getCodeSystem())
                     .displayName(type.getDisplayName())

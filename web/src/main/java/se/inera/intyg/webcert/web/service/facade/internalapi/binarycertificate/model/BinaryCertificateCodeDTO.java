@@ -18,29 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model;
 
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO.BinaryCertificateMetadataDTOBuilder;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateCodeDTO.BinaryCertificateCodeDTOBuilder;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonPOJOBuilder;
 
+@JsonDeserialize(builder = BinaryCertificateCodeDTOBuilder.class)
 @Value
 @Builder
-@JsonDeserialize(builder = BinaryCertificateMetadataDTOBuilder.class)
-public class BinaryCertificateMetadataDTO {
+public class BinaryCertificateCodeDTO {
 
-  String certificateId;
-  BinaryCertificateCodeDTO type;
-  String version;
-  LocalDateTime signedAt;
-  LocalDateTime revokedAt;
-  LocalDateTime sentAt;
-  BinaryCertificatePatientDTO patient;
-  BinaryCertificateStaffDTO issuedBy;
-  CertificateRelations relations;
+  String code;
+  String codeSystem;
+  String displayName;
 
   @JsonPOJOBuilder(withPrefix = "")
-  public static class BinaryCertificateMetadataDTOBuilder {}
+  public static class BinaryCertificateCodeDTOBuilder {}
 }
