@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,10 +35,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -73,7 +76,7 @@ class GetBinaryCertificateFromWCTest {
       BinaryCertificateMetadataDTO.builder().certificateId(CERTIFICATE_ID).build();
 
   @Mock private GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
-  @Mock private IntygModuleRegistryImpl moduleRegistry;
+  @Mock private IntygModuleRegistry moduleRegistry;
   @Mock private ModuleApi moduleApi;
   @Mock private GetCertificateFacadeServiceImpl getCertificateFacadeService;
   @Mock private GetCertificateService getCertificateService;
@@ -133,7 +136,8 @@ class GetBinaryCertificateFromWCTest {
     mockPdf();
     final var certificate = mockCertificate(CertificateStatus.SIGNED);
     mockIntyg();
-    when(binaryCertificateMetadataConverter.toBinaryCertificate(INTYG, certificate))
+    when(binaryCertificateMetadataConverter.toBinaryCertificate(
+            INTYG, certificate, (Certificate) null))
         .thenReturn(METADATA);
 
     final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
@@ -149,7 +153,8 @@ class GetBinaryCertificateFromWCTest {
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    verify(binaryCertificateMetadataConverter).toBinaryCertificate(INTYG, certificate);
+    verify(binaryCertificateMetadataConverter)
+        .toBinaryCertificate(INTYG, certificate, (Certificate) null);
   }
 
   @Test
@@ -223,5 +228,92 @@ class GetBinaryCertificateFromWCTest {
         .thenThrow(new ModuleException("Failed to generate pdf"));
 
     assertThrows(IllegalStateException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
+  }
+
+  private static final String PARENT_CERTIFICATE_ID = "parent-cert-id";
+
+  private Certificate mockCertificateWithRelations(CertificateRelations relations) {
+    final var certificate = new Certificate();
+    certificate.setMetadata(
+        CertificateMetadata.builder()
+            .id(CERTIFICATE_ID)
+            .type(CERTIFICATE_TYPE)
+            .status(CertificateStatus.SIGNED)
+            .relations(relations)
+            .build());
+    when(getCertificateFacadeService.getCertificate(CERTIFICATE_ID, false, false))
+        .thenReturn(certificate);
+    return certificate;
+  }
+
+  @Test
+  void shouldPassNullParentCertificateToConverterWhenRelationsIsNull() throws ModuleException {
+    mockPdf();
+    final var certificate = mockCertificateWithRelations(null);
+    mockIntyg();
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(binaryCertificateMetadataConverter)
+        .toBinaryCertificate(INTYG, certificate, (Certificate) null);
+  }
+
+  @Test
+  void shouldPassNullParentCertificateToConverterWhenParentIsNull() throws ModuleException {
+    mockPdf();
+    final var certificate =
+        mockCertificateWithRelations(CertificateRelations.builder().parent(null).build());
+    mockIntyg();
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(binaryCertificateMetadataConverter)
+        .toBinaryCertificate(INTYG, certificate, (Certificate) null);
+  }
+
+  @Test
+  void shouldNotFetchParentCertificateWhenParentIsNull() throws ModuleException {
+    mockPdf();
+    mockCertificateWithRelations(CertificateRelations.builder().parent(null).build());
+    mockIntyg();
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(getCertificateFacadeService, never())
+        .getCertificate(PARENT_CERTIFICATE_ID, false, false);
+  }
+
+  @Test
+  void shouldFetchParentCertificateWhenParentRelationExists() throws ModuleException {
+    mockPdf();
+    final var parentRelation =
+        CertificateRelation.builder().certificateId(PARENT_CERTIFICATE_ID).build();
+    mockCertificateWithRelations(CertificateRelations.builder().parent(parentRelation).build());
+    mockIntyg();
+    final var parentCertificate = new Certificate();
+    when(getCertificateFacadeService.getCertificate(PARENT_CERTIFICATE_ID, false, false))
+        .thenReturn(parentCertificate);
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(getCertificateFacadeService).getCertificate(PARENT_CERTIFICATE_ID, false, false);
+  }
+
+  @Test
+  void shouldPassParentCertificateToConverterWhenParentRelationExists() throws ModuleException {
+    mockPdf();
+    final var parentRelation =
+        CertificateRelation.builder().certificateId(PARENT_CERTIFICATE_ID).build();
+    final var certificate =
+        mockCertificateWithRelations(CertificateRelations.builder().parent(parentRelation).build());
+    mockIntyg();
+    final var parentCertificate = new Certificate();
+    when(getCertificateFacadeService.getCertificate(PARENT_CERTIFICATE_ID, false, false))
+        .thenReturn(parentCertificate);
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(binaryCertificateMetadataConverter)
+        .toBinaryCertificate(INTYG, certificate, parentCertificate);
   }
 }

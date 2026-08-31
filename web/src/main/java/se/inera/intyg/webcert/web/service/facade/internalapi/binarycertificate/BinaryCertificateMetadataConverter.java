@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -31,6 +32,7 @@ import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.m
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateCodeDTO;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificatePatientDTO;
+import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateRelationDTO;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateStaffDTO;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateUnitDTO;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.CVType;
@@ -41,7 +43,8 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 @Component
 public class BinaryCertificateMetadataConverter {
 
-  public BinaryCertificateMetadataDTO toBinaryCertificate(Intyg intyg, Certificate certificate) {
+  public BinaryCertificateMetadataDTO toBinaryCertificate(
+      Intyg intyg, Certificate certificate, Certificate parentCertificate) {
     final var metadata = certificate.getMetadata();
     return BinaryCertificateMetadataDTO.builder()
         .certificateId(metadata.getId())
@@ -52,16 +55,33 @@ public class BinaryCertificateMetadataConverter {
                 .displayName(metadata.getTypeName())
                 .build())
         .version(metadata.getTypeVersion())
+        .recipientId(metadata.getRecipient().getId())
         .sentAt(intyg.getSkickatTidpunkt())
-        .signedAt(metadata.getSigned())
+        .signedAt(intyg.getSigneringstidpunkt())
         .revokedAt(metadata.getRevokedAt())
         .patient(
             BinaryCertificatePatientDTO.builder()
                 .patientId(metadata.getPatient().getPersonId().getId())
                 .type(getPatientIdType(metadata.getPatient().getPersonId().getId()))
                 .build())
-        .relations(metadata.getRelations())
+        .parentRelation(toRelation(metadata.getRelations(), parentCertificate))
         .issuedBy(toIssuedBy(intyg.getSkapadAv(), metadata))
+        .build();
+  }
+
+  private BinaryCertificateRelationDTO toRelation(
+      CertificateRelations relations, Certificate parentCertificate) {
+    if (relations == null || relations.getParent() == null) {
+      return null;
+    }
+
+    final var parentRelation = relations.getParent();
+    final var parentIssuingUnitId = parentCertificate.getMetadata().getUnit().getUnitId();
+
+    return BinaryCertificateRelationDTO.builder()
+        .certificateId(parentRelation.getCertificateId())
+        .issuingUnitId(parentIssuingUnitId)
+        .type(parentRelation.getType())
         .build();
   }
 

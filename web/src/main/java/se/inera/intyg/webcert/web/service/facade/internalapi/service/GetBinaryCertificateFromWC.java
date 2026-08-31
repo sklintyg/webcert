@@ -19,10 +19,14 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -61,11 +65,23 @@ public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
         getCertificateService.getCertificateAsIntyg(
             certificateId, certificate.getMetadata().getType());
 
+    final var parentCertificate =
+        getParentCertificateId(certificate)
+            .map(id -> getCertificateFacadeService.getCertificate(id, false, false))
+            .orElse(null);
+
     return GetBinaryCertificateResponseDTO.builder()
         .pdfData(pdfData)
         .metadata(
-            binaryCertificateMetadataConverter.toBinaryCertificate(certificateAsIntyg, certificate))
+            binaryCertificateMetadataConverter.toBinaryCertificate(
+                certificateAsIntyg, certificate, parentCertificate))
         .build();
+  }
+
+  private Optional<String> getParentCertificateId(Certificate certificate) {
+    return Optional.ofNullable(certificate.getMetadata().getRelations())
+        .map(CertificateRelations::getParent)
+        .map(CertificateRelation::getCertificateId);
   }
 
   private byte[] getPdfData(String certificateId) {
