@@ -50,9 +50,9 @@ public class BinaryCertificateMetadataConverter {
         .certificateId(metadata.getId())
         .type(
             BinaryCertificateCodeDTO.builder()
-                .code(metadata.getType())
+                .code(metadata.getTypeName())
                 .codeSystem(intyg.getTyp().getCodeSystem())
-                .displayName(metadata.getTypeName())
+                .displayName(metadata.getName())
                 .build())
         .version(metadata.getTypeVersion())
         .recipientId(metadata.getRecipient().getId())
@@ -61,7 +61,7 @@ public class BinaryCertificateMetadataConverter {
         .revokedAt(metadata.getRevokedAt())
         .patient(
             BinaryCertificatePatientDTO.builder()
-                .patientId(metadata.getPatient().getPersonId().getId())
+                .patientId(metadata.getPatient().getPersonId().getId().replace("-", ""))
                 .type(getPatientIdType(metadata.getPatient().getPersonId().getId()))
                 .build())
         .parentRelation(toRelation(metadata.getRelations(), parentCertificate))

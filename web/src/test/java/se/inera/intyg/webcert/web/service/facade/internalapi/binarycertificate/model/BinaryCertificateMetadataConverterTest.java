@@ -50,7 +50,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 class BinaryCertificateMetadataConverterTest {
 
   private static final String CERTIFICATE_ID = "e5f6a1b2-3c4d-4e5f-8a1b-2c3d4e5f6a1b";
-  private static final String CERTIFICATE_TYPE = "lisjp";
+  private static final String CERTIFICATE_TYPE = "LISJP";
   private static final String CERTIFICATE_TYPE_NAME = "Läkarintyg för sjukpenning";
   private static final String CERTIFICATE_TYPE_VERSION = "1.3";
   private static final String CERTIFICATE_TYPE_CODE_SYSTEM = "b64ea353-e8f6-4832-b563-fc7d46f29548";
@@ -61,7 +61,8 @@ class BinaryCertificateMetadataConverterTest {
       LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0);
   private static final LocalDateTime REVOKED_AT = LocalDateTime.of(2026, Month.JANUARY, 4, 12, 0);
   private static final LocalDateTime SENT_AT = LocalDateTime.of(2026, Month.JANUARY, 3, 11, 0);
-  private static final String PATIENT_ID = "191212121212";
+  private static final String PATIENT_ID = "19121212-1212";
+  private static final String PATIENT_ID_WITHOUT_DASH = "191212121212";
   private static final String RECIPIENT_ID = "FKASSA";
   private static final Patient PATIENT =
       Patient.builder().personId(PersonId.builder().id(PATIENT_ID).build()).build();
@@ -151,7 +152,8 @@ class BinaryCertificateMetadataConverterTest {
     return CertificateMetadata.builder()
         .id(CERTIFICATE_ID)
         .type(CERTIFICATE_TYPE)
-        .typeName(CERTIFICATE_TYPE_NAME)
+        .name(CERTIFICATE_TYPE_NAME)
+        .typeName(CERTIFICATE_TYPE)
         .typeVersion(CERTIFICATE_TYPE_VERSION)
         .signed(SIGNED_AT)
         .revokedAt(REVOKED_AT)
@@ -261,7 +263,7 @@ class BinaryCertificateMetadataConverterTest {
 
     @Test
     void shouldSetPatientIdFromCertificate() {
-      assertEquals(PATIENT_ID, convert().getPatient().getPatientId());
+      assertEquals(PATIENT_ID_WITHOUT_DASH, convert().getPatient().getPatientId());
     }
 
     @Test
