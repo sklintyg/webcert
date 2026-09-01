@@ -24,15 +24,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.common.dto.PersonIdType.PERSONAL_IDENTITY_NUMBER;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.BinaryCertificateMetadataConverter;
@@ -46,16 +50,20 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 class BinaryCertificateMetadataConverterTest {
 
   private static final String CERTIFICATE_ID = "e5f6a1b2-3c4d-4e5f-8a1b-2c3d4e5f6a1b";
-  private static final String CERTIFICATE_TYPE = "lisjp";
+  private static final String CERTIFICATE_TYPE = "LISJP";
   private static final String CERTIFICATE_TYPE_NAME = "Läkarintyg för sjukpenning";
   private static final String CERTIFICATE_TYPE_VERSION = "1.3";
   private static final String CERTIFICATE_TYPE_CODE_SYSTEM = "b64ea353-e8f6-4832-b563-fc7d46f29548";
   private static final String INTYG_TYPE_CODE = "LISJP";
   private static final String INTYG_TYPE_DISPLAY_NAME = "Intyg från Intyg";
-  private static final LocalDateTime SIGNED_AT = LocalDateTime.of(2026, 1, 2, 10, 0);
-  private static final LocalDateTime REVOKED_AT = LocalDateTime.of(2026, 1, 4, 12, 0);
-  private static final LocalDateTime SENT_AT = LocalDateTime.of(2026, 1, 3, 11, 0);
-  private static final String PATIENT_ID = "191212121212";
+  private static final LocalDateTime SIGNED_AT = LocalDateTime.of(2026, Month.JANUARY, 2, 10, 0);
+  private static final LocalDateTime INTYG_SIGNED_AT =
+      LocalDateTime.of(2020, Month.JANUARY, 1, 0, 0);
+  private static final LocalDateTime REVOKED_AT = LocalDateTime.of(2026, Month.JANUARY, 4, 12, 0);
+  private static final LocalDateTime SENT_AT = LocalDateTime.of(2026, Month.JANUARY, 3, 11, 0);
+  private static final String PATIENT_ID = "19121212-1212";
+  private static final String PATIENT_ID_WITHOUT_DASH = "191212121212";
+  private static final String RECIPIENT_ID = "FKASSA";
   private static final Patient PATIENT =
       Patient.builder().personId(PersonId.builder().id(PATIENT_ID).build()).build();
   private static final CertificateRelations RELATIONS = CertificateRelations.builder().build();
@@ -128,7 +136,7 @@ class BinaryCertificateMetadataConverterTest {
     final var intyg = new Intyg();
     intyg.setTyp(typ);
     intyg.setVersion("intygVersion");
-    intyg.setSigneringstidpunkt(LocalDateTime.of(2020, 1, 1, 0, 0));
+    intyg.setSigneringstidpunkt(INTYG_SIGNED_AT);
     intyg.setSkickatTidpunkt(SENT_AT);
     intyg.setSkapadAv(skapadAv);
     return intyg;
@@ -144,12 +152,14 @@ class BinaryCertificateMetadataConverterTest {
     return CertificateMetadata.builder()
         .id(CERTIFICATE_ID)
         .type(CERTIFICATE_TYPE)
-        .typeName(CERTIFICATE_TYPE_NAME)
+        .name(CERTIFICATE_TYPE_NAME)
+        .typeName(CERTIFICATE_TYPE)
         .typeVersion(CERTIFICATE_TYPE_VERSION)
         .signed(SIGNED_AT)
         .revokedAt(REVOKED_AT)
         .patient(PATIENT)
         .relations(RELATIONS)
+        .recipient(CertificateRecipient.builder().id(RECIPIENT_ID).build())
         .issuedBy(Staff.builder().personId(STAFF_PERSON_ID).fullName(STAFF_FULL_NAME).build())
         .unit(
             Unit.builder()
@@ -171,7 +181,11 @@ class BinaryCertificateMetadataConverterTest {
   }
 
   private BinaryCertificateMetadataDTO convert() {
-    return converter.toBinaryCertificate(intyg, certificate);
+    return converter.toBinaryCertificate(intyg, certificate, null);
+  }
+
+  private BinaryCertificateMetadataDTO convertWithParent(Certificate parentCertificate) {
+    return converter.toBinaryCertificate(intyg, certificate, parentCertificate);
   }
 
   @Nested
@@ -215,8 +229,8 @@ class BinaryCertificateMetadataConverterTest {
   class Timestamps {
 
     @Test
-    void shouldSetSignedAtFromCertificate() {
-      assertEquals(SIGNED_AT, convert().getSignedAt());
+    void shouldSetSignedAtFromIntyg() {
+      assertEquals(INTYG_SIGNED_AT, convert().getSignedAt());
     }
 
     @Test
@@ -249,7 +263,7 @@ class BinaryCertificateMetadataConverterTest {
 
     @Test
     void shouldSetPatientIdFromCertificate() {
-      assertEquals(PATIENT_ID, convert().getPatient().getPatientId());
+      assertEquals(PATIENT_ID_WITHOUT_DASH, convert().getPatient().getPatientId());
     }
 
     @Test
@@ -261,9 +275,81 @@ class BinaryCertificateMetadataConverterTest {
   @Nested
   class Relations {
 
+    private static final String PARENT_CERT_ID = "parent-cert-id";
+    private static final String PARENT_UNIT_ID = "parent-unit-id";
+
+    private Certificate parentCertificate() {
+      final var parent = new Certificate();
+      parent.setMetadata(
+          CertificateMetadata.builder()
+              .unit(Unit.builder().unitId(PARENT_UNIT_ID).build())
+              .build());
+      return parent;
+    }
+
     @Test
-    void shouldSetRelationsFromCertificate() {
-      assertEquals(RELATIONS, convert().getRelations());
+    void shouldReturnNullParentRelationWhenRelationsIsNull() {
+      setMetadata(metadataBuilder().relations(null).build());
+
+      assertNull(convert().getParentRelation());
+    }
+
+    @Test
+    void shouldReturnNullParentRelationWhenParentIsNull() {
+      setMetadata(metadataBuilder().relations(CertificateRelations.builder().build()).build());
+
+      assertNull(convert().getParentRelation());
+    }
+
+    @Test
+    void shouldSetParentCertificateIdFromParentRelation() {
+      final var parentRelation =
+          CertificateRelation.builder()
+              .certificateId(PARENT_CERT_ID)
+              .type(CertificateRelationType.REPLACED)
+              .build();
+      setMetadata(
+          metadataBuilder()
+              .relations(CertificateRelations.builder().parent(parentRelation).build())
+              .build());
+
+      assertEquals(
+          PARENT_CERT_ID,
+          convertWithParent(parentCertificate()).getParentRelation().getCertificateId());
+    }
+
+    @Test
+    void shouldSetParentIssuingUnitIdFromParentCertificate() {
+      final var parentRelation =
+          CertificateRelation.builder()
+              .certificateId(PARENT_CERT_ID)
+              .type(CertificateRelationType.REPLACED)
+              .build();
+      setMetadata(
+          metadataBuilder()
+              .relations(CertificateRelations.builder().parent(parentRelation).build())
+              .build());
+
+      assertEquals(
+          PARENT_UNIT_ID,
+          convertWithParent(parentCertificate()).getParentRelation().getIssuingUnitId());
+    }
+
+    @Test
+    void shouldSetParentRelationTypeFromParentRelation() {
+      final var parentRelation =
+          CertificateRelation.builder()
+              .certificateId(PARENT_CERT_ID)
+              .type(CertificateRelationType.REPLACED)
+              .build();
+      setMetadata(
+          metadataBuilder()
+              .relations(CertificateRelations.builder().parent(parentRelation).build())
+              .build());
+
+      assertEquals(
+          CertificateRelationType.REPLACED,
+          convertWithParent(parentCertificate()).getParentRelation().getType());
     }
   }
 

@@ -435,6 +435,25 @@ class UtkastToCertificateConverterTest {
       assertEquals(certificateRelations, actualCertificate.getMetadata().getRelations());
     }
 
+    @Test
+    void shallIncludeRevokedAt() {
+      final var expectedRevokedAt = LocalDateTime.now();
+      draft.setAterkalladDatum(expectedRevokedAt);
+
+      final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+      assertEquals(expectedRevokedAt, actualCertificate.getMetadata().getRevokedAt());
+    }
+
+    @Test
+    void shallIncludeNullRevokedAtWhenNotRevoked() {
+      draft.setAterkalladDatum(null);
+
+      final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+      assertNull(actualCertificate.getMetadata().getRevokedAt());
+    }
+
     @Nested
     class ValidateStatus {
 
@@ -548,7 +567,7 @@ class UtkastToCertificateConverterTest {
 
         final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
-        assertEquals(actualCertificate.getMetadata().getSentTo(), "Name");
+        assertEquals("Name", actualCertificate.getMetadata().getSentTo());
       }
     }
 

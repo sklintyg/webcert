@@ -276,6 +276,23 @@ class IntygToCertificateConverterImplTest {
       }
 
       @Test
+      void shallIncludeRevokedAtWhenCancelled() {
+        final var expectedRevokedAt = LocalDateTime.now();
+        statusList.add(new Status(CertificateState.CANCELLED, "FK", expectedRevokedAt));
+
+        final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
+
+        assertEquals(expectedRevokedAt, actualCertificate.getMetadata().getRevokedAt());
+      }
+
+      @Test
+      void shallIncludeNullRevokedAtWhenNotCancelled() {
+        final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
+
+        assertNull(actualCertificate.getMetadata().getRevokedAt());
+      }
+
+      @Test
       void shouldSetRecipient() {
         final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
@@ -647,8 +664,7 @@ class IntygToCertificateConverterImplTest {
   }
 
   private PersonId getPersonId() {
-    final var expectedPersonId = PersonId.builder().id(PERSON_ID).type("PERSON_NUMMER").build();
-    return expectedPersonId;
+    return PersonId.builder().id(PERSON_ID).type("PERSON_NUMMER").build();
   }
 
   private HealthCareUnit getHealthCareUnit() {

@@ -76,6 +76,13 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
             .filter(status -> status.getType() == CertificateState.SENT)
             .findFirst();
 
+    final var revokedAt =
+        certificate.getStatuses().stream()
+            .filter(status -> status.getType() == CertificateState.CANCELLED)
+            .map(Status::getTimestamp)
+            .findFirst()
+            .orElse(null);
+
     final var certificateToReturn =
         getCertificateToReturn(
             certificate.getUtlatande().getTyp(),
@@ -99,6 +106,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
                 sentStatus.map(Status::getTimestamp).orElse(null)));
 
     certificateToReturn.getMetadata().setSent(sentStatus.isPresent());
+    certificateToReturn.getMetadata().setRevokedAt(revokedAt);
     certificateToReturn
         .getMetadata()
         .setSentTo(
