@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +31,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetCertificateInternalAggregator;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetGetCertificateInternalPdfAggregator;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
@@ -53,6 +58,8 @@ class CertificateInternalApiControllerTest {
   @Mock private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
 
   @Mock private GetCertificateInternalAggregator certificateInternalAggregator;
+
+  @Mock private WebCertServiceExceptionResponseMapper webCertServiceExceptionResponseMapper;
 
   @InjectMocks private CertificateInternalApiController certificateInternalApiController;
 
@@ -122,7 +129,17 @@ class CertificateInternalApiControllerTest {
       final var response =
           certificateInternalApiController.getBinaryCertificateData(CERTIFICATE_ID);
 
-      assertEquals(EXPECTED_BINARY_CERTIFICATE_RESPONSE, response);
+      assertEquals(EXPECTED_BINARY_CERTIFICATE_RESPONSE, response.getBody());
+    }
+
+    @Test
+    void shallReturnNotFoundWhenCertificateIsMissing() {
+      when(getBinaryCertificate.get(CERTIFICATE_ID)).thenReturn(null);
+
+      final var response =
+          certificateInternalApiController.getBinaryCertificateData(CERTIFICATE_ID);
+
+      assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
@@ -133,6 +150,23 @@ class CertificateInternalApiControllerTest {
       certificateInternalApiController.getBinaryCertificateData(CERTIFICATE_ID);
 
       verify(getBinaryCertificate).get(CERTIFICATE_ID);
+    }
+
+    @Test
+    void shallDelegateWebCertServiceExceptionToResponseMapper() {
+      final var exception =
+          new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "not found");
+      final ResponseEntity<GetBinaryCertificateResponseDTO> expectedResponse =
+          ResponseEntity.notFound().build();
+      doThrow(exception).when(getBinaryCertificate).get(CERTIFICATE_ID);
+      when(webCertServiceExceptionResponseMapper.<GetBinaryCertificateResponseDTO>toResponseEntity(
+              exception))
+          .thenReturn(expectedResponse);
+
+      final var response =
+          certificateInternalApiController.getBinaryCertificateData(CERTIFICATE_ID);
+
+      assertEquals(expectedResponse, response);
     }
   }
 }
