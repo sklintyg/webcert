@@ -52,15 +52,13 @@ public class IntegratedUnitRegistryHelper {
         .equals(UserOriginType.DJUPINTEGRATION.toString())) {
       IntegreradEnhetEntry newEntry =
           new IntegreradEnhetEntry(
-              copy.getMetadata().getCareUnit().getUnitId(),
-              copy.getMetadata().getCareUnit().getUnitName(),
+              copy.getMetadata().getUnit().getUnitId(),
+              copy.getMetadata().getUnit().getUnitName(),
               copy.getMetadata().getCareProvider().getUnitId(),
               copy.getMetadata().getCareProvider().getUnitName());
 
       integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(
-          certificate.getMetadata().getCareUnit().getUnitId(),
-          newEntry,
-          copy.getMetadata().getType());
+          certificate.getMetadata().getUnit().getUnitId(), newEntry, copy.getMetadata().getType());
     }
   }
 }

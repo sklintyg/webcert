@@ -98,7 +98,7 @@ class IntegratedUnitRegistryHelperTest {
       final var copy = new Certificate();
       copy.setMetadata(
           CertificateMetadata.builder()
-              .careUnit(Unit.builder().unitId(COPY_UNIT_ID).unitName(COPY_UNIT_NAME).build())
+              .unit(Unit.builder().unitId(COPY_UNIT_ID).unitName(COPY_UNIT_NAME).build())
               .careProvider(
                   Unit.builder()
                       .unitName(COPY_CARE_PROVIDER_NAME)
@@ -110,7 +110,7 @@ class IntegratedUnitRegistryHelperTest {
       final var original = new Certificate();
       original.setMetadata(
           CertificateMetadata.builder()
-              .careUnit(Unit.builder().unitId(UNIT_ID).unitName(UNIT_NAME).build())
+              .unit(Unit.builder().unitId(UNIT_ID).unitName(UNIT_NAME).build())
               .careProvider(
                   Unit.builder().unitName(CARE_PROVIDER_NAME).unitId(CARE_PROVIDER_ID).build())
               .type(TYPE)
