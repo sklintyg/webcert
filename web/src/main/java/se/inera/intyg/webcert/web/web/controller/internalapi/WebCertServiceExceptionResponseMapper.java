@@ -35,8 +35,10 @@ public class WebCertServiceExceptionResponseMapper {
 
   public <T> ResponseEntity<T> toResponseEntity(RuntimeException exception) {
     if (exception instanceof ResourceAccessException resourceAccessException) {
-      log.error("ResourceAccessException occurred while calling external service: {}",
-          resourceAccessException.getMessage(), resourceAccessException);
+      log.error(
+          "ResourceAccessException occurred while calling external service: {}",
+          resourceAccessException.getMessage(),
+          resourceAccessException);
       return ResponseEntity.internalServerError().build();
     } else if (exception instanceof WebCertServiceException webCertServiceException) {
       final var errorCode = webCertServiceException.getErrorCode();
@@ -47,8 +49,10 @@ public class WebCertServiceExceptionResponseMapper {
         log.info("Missing parameter for request: {}", webCertServiceException.getMessage());
         return ResponseEntity.badRequest().build();
       } else {
-        log.warn("Unhandled WebCertServiceException occurred: {}",
-            webCertServiceException.getMessage(), webCertServiceException);
+        log.warn(
+            "Unhandled WebCertServiceException occurred: {}",
+            webCertServiceException.getMessage(),
+            webCertServiceException);
         return ResponseEntity.internalServerError().build();
       }
     } else {
