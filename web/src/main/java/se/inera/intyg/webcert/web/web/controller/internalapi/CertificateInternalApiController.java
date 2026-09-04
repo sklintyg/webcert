@@ -19,12 +19,15 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.ResourceAccessException;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
@@ -40,14 +43,17 @@ public class CertificateInternalApiController {
   private final GetCertificateInteralApi getCertificateInternalAggregator;
   private final GetCertificatePdfService getCertificateInternalPdfAggregator;
   private final GetBinaryCertificate getBinaryCertificate;
+  private final WebCertServiceExceptionResponseMapper webCertServiceExceptionResponseMapper;
 
   public CertificateInternalApiController(
       @Qualifier("getCertificateInternalAggregator") GetCertificateInteralApi getCertificateInternalAggregator,
       @Qualifier("getCertificateInternalPdfAggregator") GetCertificatePdfService getCertificateInternalPdfAggregator,
-      @Qualifier("getBinaryCertificateInternalAggregator") GetBinaryCertificate getBinaryCertificate) {
+      @Qualifier("getBinaryCertificateInternalAggregator") GetBinaryCertificate getBinaryCertificate,
+      WebCertServiceExceptionResponseMapper webCertServiceExceptionResponseMapper) {
     this.getCertificateInternalAggregator = getCertificateInternalAggregator;
     this.getCertificateInternalPdfAggregator = getCertificateInternalPdfAggregator;
     this.getBinaryCertificate = getBinaryCertificate;
+    this.webCertServiceExceptionResponseMapper = webCertServiceExceptionResponseMapper;
   }
 
   @PostMapping("/{certificateId}")
@@ -75,8 +81,17 @@ public class CertificateInternalApiController {
   @PerformanceLogging(
       eventAction = "certificate-internal-get-binary-certificate",
       eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-  public GetBinaryCertificateResponseDTO getBinaryCertificateData(
+  public ResponseEntity<GetBinaryCertificateResponseDTO> getBinaryCertificateData(
       @PathVariable("certificateId") String certificateId) {
-    return getBinaryCertificate.get(certificateId);
+    final GetBinaryCertificateResponseDTO binaryCertificateResponseDTO;
+    try {
+      binaryCertificateResponseDTO = getBinaryCertificate.get(certificateId);
+    } catch (WebCertServiceException | ResourceAccessException e) {
+      return webCertServiceExceptionResponseMapper.toResponseEntity(e);
+    }
+    if (binaryCertificateResponseDTO == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(binaryCertificateResponseDTO);
   }
 }
