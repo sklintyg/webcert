@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -47,6 +47,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.BinaryCertificateMetadataConverter;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -265,9 +266,8 @@ class GetBinaryCertificateFromWCTest {
   void shouldReturnNullWhenContentIsNull() {
     when(intygService.fetchIntygDataForInternalUse(CERTIFICATE_ID, true)).thenReturn(null);
 
-    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    assertNull(response);
+    assertThrows(
+        WebCertServiceException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
   }
 
   @Test
@@ -275,9 +275,8 @@ class GetBinaryCertificateFromWCTest {
     content = contentHolder(new Relations(), List.of());
     mockContent();
 
-    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    assertNull(response);
+    assertThrows(
+        WebCertServiceException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
   }
 
   @Test
@@ -286,9 +285,8 @@ class GetBinaryCertificateFromWCTest {
     when(moduleRegistry.getModuleEntryPoint(CERTIFICATE_TYPE))
         .thenThrow(new ModuleNotFoundException("Module not found"));
 
-    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    assertNull(response);
+    assertThrows(
+        WebCertServiceException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
   }
 
   @Test
@@ -297,9 +295,8 @@ class GetBinaryCertificateFromWCTest {
     when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
         .thenThrow(new ModuleNotFoundException("Module not found"));
 
-    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    assertNull(response);
+    assertThrows(
+        WebCertServiceException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
   }
 
   @Test
@@ -309,21 +306,35 @@ class GetBinaryCertificateFromWCTest {
     when(moduleApi.pdf(CONTENTS, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
         .thenThrow(new ModuleException("Failed to generate pdf", null));
 
-    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    assertNull(response);
+    assertThrows(
+        WebCertServiceException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
   }
 
   @Test
-  void shouldReturnNullWhenRelationsIsNull() throws Exception {
+  void shouldNotFetchParentCertificateWhenRelationsIsNull() throws Exception {
     content = contentHolder(null, STATUSES);
     mockContent();
     mockModuleEntryPoint();
     mockModuleApi();
     mockPdf();
+    mockMetadata(null);
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(intygService, never()).fetchIntygDataForInternalUse(anyString(), eq(false));
+  }
+
+  @Test
+  void shouldReturnPdfDataWhenRelationsIsNull() throws Exception {
+    content = contentHolder(null, STATUSES);
+    mockContent();
+    mockModuleEntryPoint();
+    mockModuleApi();
+    mockPdf();
+    mockMetadata(null);
 
     final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    assertNull(response);
+    assertEquals(PDF_BYTES, response.getPdfData());
   }
 }

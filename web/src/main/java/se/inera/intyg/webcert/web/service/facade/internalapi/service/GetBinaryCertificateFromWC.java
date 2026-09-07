@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
-import java.rmi.ServerException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -33,6 +33,8 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.BinaryCertificateMetadataConverter;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -50,58 +52,63 @@ public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
 
   @Override
   public GetBinaryCertificateResponseDTO get(String certificateId) {
+    IntygContentHolder content;
 
     try {
-      final var content = intygService.fetchIntygDataForInternalUse(certificateId, true);
+      content = intygService.fetchIntygDataForInternalUse(certificateId, true);
+    } catch (IllegalArgumentException | DataAccessException e) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage(), e);
+    }
 
-      if (content == null || content.getStatuses().isEmpty()) {
-        log.warn("Requested certificate with id {} is a draft", certificateId);
-        throw new ServerException("Server Error");
-      }
+    if (content == null || content.getStatuses().isEmpty()) {
+      log.warn("Requested certificate with id {} is a draft", certificateId);
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+          "Requested certificate with id %s is a draft".formatted(certificateId));
+    }
 
+    try {
       final var type = content.getUtlatande().getTyp();
       final var entrypoint = moduleRegistry.getModuleEntryPoint(type);
       final var pdfData = getPdfData(content);
       final var parentContent = getParentCertificate(content);
-      final var metadata = binaryCertificateMetadataConvertera.toBinaryCertificate(
-          content,
-          entrypoint,
-          parentContent);
-
-      return GetBinaryCertificateResponseDTO.builder()
-          .pdfData(pdfData)
-          .metadata(metadata)
-          .build();
-
-    } catch(Exception e) {
+      final var metadata =
+          binaryCertificateMetadataConvertera.toBinaryCertificate(
+              content, entrypoint, parentContent);
+      return GetBinaryCertificateResponseDTO.builder().pdfData(pdfData).metadata(metadata).build();
+    } catch (ModuleNotFoundException | IllegalStateException e) {
       log.error(e.getMessage());
-      return null;
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Module error", e);
     }
   }
 
   private IntygContentHolder getParentCertificate(IntygContentHolder contentholder) {
-    return getParentCertificateId(contentholder.getRelations().getParent())
-        .map(id -> intygService.fetchIntygDataForInternalUse(id, false))
-        .orElse(null);
+    if (contentholder.getRelations() == null) {
+      return null;
+    }
+    try {
+      return getParentCertificateId(contentholder.getRelations().getParent())
+          .map(id -> intygService.fetchIntygDataForInternalUse(id, false))
+          .orElse(null);
+    } catch (IllegalArgumentException | DataAccessException e) {
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage(), e);
+    }
   }
 
   private Optional<String> getParentCertificateId(WebcertCertificateRelation relation) {
-    return Optional.ofNullable(relation)
-        .map(WebcertCertificateRelation::getIntygsId);
+    return Optional.ofNullable(relation).map(WebcertCertificateRelation::getIntygsId);
   }
 
   private byte[] getPdfData(IntygContentHolder content) {
     final var moduleApi =
-        getModuleApi(
-            content.getUtlatande().getTyp(),
-            content.getUtlatande().getTextVersion());
+        getModuleApi(content.getUtlatande().getTyp(), content.getUtlatande().getTextVersion());
 
     final var pdfResponse =
         getPdfResponse(
-            moduleApi,
-            content.getContents(),
-            content.getStatuses(),
-            UtkastStatus.SIGNED);
+            moduleApi, content.getContents(), content.getStatuses(), UtkastStatus.SIGNED);
 
     return pdfResponse.getPdfData();
   }

@@ -93,8 +93,9 @@ public class BinaryCertificateMetadataConverter {
   private String toTypeCodeSystem(String externalId) {
     return switch (externalId) {
       case TsDiabetesEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
-           TsBasEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
-           FK_7263 -> KV_UTLATANDETYP_INTYG_CODE_SYSTEM;
+          TsBasEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
+          FK_7263 ->
+          KV_UTLATANDETYP_INTYG_CODE_SYSTEM;
       default -> KV_INTYGSTYP_CODE_SYSTEM;
     };
   }
@@ -118,9 +119,7 @@ public class BinaryCertificateMetadataConverter {
         .personId(skapadAv.getPersonId())
         .fullName(skapadAv.getFullstandigtNamn())
         .titles(toTitles(skapadAv.getBefattningsKoder()))
-        .specialities(
-            skapadAv.getSpecialiteter().stream()
-                .toList())
+        .specialities(skapadAv.getSpecialiteter().stream().toList())
         .licences(Collections.emptyList())
         .unit(toUnit(skapadAv.getVardenhet()))
         .build();
@@ -156,32 +155,32 @@ public class BinaryCertificateMetadataConverter {
         .build();
   }
 
-  private <T> T toStatusValue(List<Status> statuses, CertificateState state,
-      Function<Status, T> mapper) {
+  private <T> T toStatusValue(
+      List<Status> statuses, CertificateState state, Function<Status, T> mapper) {
     return toStatus(statuses, state).map(mapper).orElse(null);
   }
 
   private Optional<Status> toStatus(List<Status> statuses, CertificateState state) {
-    return statuses.stream()
-        .filter(status -> status.getType() == state)
-        .findFirst();
+    return statuses.stream().filter(status -> status.getType() == state).findFirst();
   }
 
-  private BinaryCertificateRelationDTO toRelation(IntygContentHolder content,
-      IntygContentHolder parentCertificate) {
+  private BinaryCertificateRelationDTO toRelation(
+      IntygContentHolder content, IntygContentHolder parentCertificate) {
     if (parentCertificate == null) {
       return null;
     }
 
-    final var parentIssuingUnit = parentCertificate.getUtlatande().getGrundData().getSkapadAv()
-        .getVardenhet().getEnhetsid();
+    final var parentIssuingUnit =
+        parentCertificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
     return Optional.ofNullable(content.getRelations())
         .map(Relations::getParent)
-        .map(parent -> BinaryCertificateRelationDTO.builder()
-            .certificateId(parent.getIntygsId())
-            .issuingUnitId(parentIssuingUnit)
-            .type(toRelationType(parent.getRelationKod()))
-            .build())
+        .map(
+            parent ->
+                BinaryCertificateRelationDTO.builder()
+                    .certificateId(parent.getIntygsId())
+                    .issuingUnitId(parentIssuingUnit)
+                    .type(toRelationType(parent.getRelationKod()))
+                    .build())
         .orElse(null);
   }
 

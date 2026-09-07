@@ -55,12 +55,12 @@ import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.PaTitle;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -69,21 +69,18 @@ import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
 class BinaryCertificateMetadataConverterTest {
 
-  @Mock
-  private Utlatande utlatande;
+  @Mock private Utlatande utlatande;
 
-  @Mock
-  private Utlatande parentUtlatande;
+  @Mock private Utlatande parentUtlatande;
 
-  @InjectMocks
-  private BinaryCertificateMetadataConverter converter;
+  @InjectMocks private BinaryCertificateMetadataConverter converter;
 
   private static final String UNIT_ID = "unit-id";
   private static final String UNIT_NAME = "unit-name";
@@ -123,14 +120,16 @@ class BinaryCertificateMetadataConverterTest {
     parentRelation.setRelationKod(RelationKod.KOMPLT);
     parentRelation.setIntygsId(PARENT_CERTIFICATE_ID);
     relations.setParent(parentRelation);
-    content = IntygContentHolder.builder()
-        .utlatande(utlatande)
-        .statuses(List.of(
-            new Status(RECEIVED, null, RECEIVED_AT),
-            new Status(SENT, RECIPIENT_ID, SENT_AT),
-            new Status(CANCELLED, null, CANCELLED_AT)))
-        .relations(relations)
-        .build();
+    content =
+        IntygContentHolder.builder()
+            .utlatande(utlatande)
+            .statuses(
+                List.of(
+                    new Status(RECEIVED, null, RECEIVED_AT),
+                    new Status(SENT, RECIPIENT_ID, SENT_AT),
+                    new Status(CANCELLED, null, CANCELLED_AT)))
+            .relations(relations)
+            .build();
 
     when(utlatande.getGrundData()).thenReturn(getGrundData(PERSON_ID, UNIT_ID));
   }
@@ -154,8 +153,7 @@ class BinaryCertificateMetadataConverterTest {
     assertAll(
         () -> assertEquals(expectedExternalId, result.getType().getCode()),
         () -> assertEquals(expectedModuleName, result.getType().getDisplayName()),
-        () -> assertEquals(expectedCodeSystem, result.getType().getCodeSystem())
-    );
+        () -> assertEquals(expectedCodeSystem, result.getType().getCodeSystem()));
   }
 
   @Test
@@ -169,8 +167,7 @@ class BinaryCertificateMetadataConverterTest {
     final var patient = convert(content, entryPoint).getPatient();
     assertAll(
         () -> assertEquals(PERSON_ID, patient.getPatientId()),
-        () -> assertEquals(PERSONAL_IDENTITY_NUMBER, patient.getType())
-    );
+        () -> assertEquals(PERSONAL_IDENTITY_NUMBER, patient.getType()));
   }
 
   @Test
@@ -181,8 +178,7 @@ class BinaryCertificateMetadataConverterTest {
 
     assertAll(
         () -> assertEquals(COORDINATION_ID, patient.getPatientId()),
-        () -> assertEquals(COORDINATION_NUMBER, patient.getType())
-    );
+        () -> assertEquals(COORDINATION_NUMBER, patient.getType()));
   }
 
   @Test
@@ -195,8 +191,7 @@ class BinaryCertificateMetadataConverterTest {
         () -> assertEquals(PA_CODE, issuedBy.getTitles().getFirst().getCode()),
         () -> assertEquals(PA_TEXT, issuedBy.getTitles().getFirst().getDisplayName()),
         () -> assertIterableEquals(Collections.emptyList(), issuedBy.getLicences()),
-        () -> assertIterableEquals(List.of(SURGERY, OFTALMOLOGY), issuedBy.getSpecialities())
-    );
+        () -> assertIterableEquals(List.of(SURGERY, OFTALMOLOGY), issuedBy.getSpecialities()));
   }
 
   @Test
@@ -213,8 +208,7 @@ class BinaryCertificateMetadataConverterTest {
         () -> assertEquals(UNIT_PHONE_NUMBER, unit.getPhoneNumber()),
         () -> assertEquals(UNIT_WORKPLACE_CODE, unit.getWorkplaceCode()),
         () -> assertEquals(CARE_PROVIDER_ID, unit.getCareProvider().getUnitId()),
-        () -> assertEquals(CARE_PROVIDER_NAME, unit.getCareProvider().getUnitName())
-    );
+        () -> assertEquals(CARE_PROVIDER_NAME, unit.getCareProvider().getUnitName()));
   }
 
   @Test
@@ -239,31 +233,32 @@ class BinaryCertificateMetadataConverterTest {
 
   @Test
   void shouldSetNullWhenSentStatusIsMissing() {
-    content = IntygContentHolder.builder()
-        .utlatande(utlatande)
-        .statuses(List.of(new Status(RECEIVED, null, RECEIVED_AT)))
-        .build();
+    content =
+        IntygContentHolder.builder()
+            .utlatande(utlatande)
+            .statuses(List.of(new Status(RECEIVED, null, RECEIVED_AT)))
+            .build();
 
     assertNull(convert(content, entryPoint).getSentAt());
   }
 
   @Test
   void shouldSetNullWhenCancelledStatusIsMissing() {
-    content = IntygContentHolder.builder()
-        .utlatande(utlatande)
-        .statuses(List.of(
-            new Status(RECEIVED, null, RECEIVED_AT),
-            new Status(SENT, RECIPIENT_ID, SENT_AT)))
-        .build();
+    content =
+        IntygContentHolder.builder()
+            .utlatande(utlatande)
+            .statuses(
+                List.of(
+                    new Status(RECEIVED, null, RECEIVED_AT),
+                    new Status(SENT, RECIPIENT_ID, SENT_AT)))
+            .build();
 
     assertNull(convert(content, entryPoint).getRevokedAt());
   }
 
   @Test
   void shouldMapParentRelationWhenParentCertificateExists() {
-    final var parentCertificate = IntygContentHolder.builder()
-        .utlatande(parentUtlatande)
-        .build();
+    final var parentCertificate = IntygContentHolder.builder().utlatande(parentUtlatande).build();
     when(parentUtlatande.getGrundData()).thenReturn(getGrundData(PERSON_ID, PARENT_UNIT_ID));
 
     final var parentRelation = convert(content, entryPoint, parentCertificate).getParentRelation();
@@ -271,8 +266,7 @@ class BinaryCertificateMetadataConverterTest {
     assertAll(
         () -> assertEquals(PARENT_CERTIFICATE_ID, parentRelation.getCertificateId()),
         () -> assertEquals(COMPLEMENTED, parentRelation.getType()),
-        () -> assertEquals(PARENT_UNIT_ID, parentRelation.getIssuingUnitId())
-    );
+        () -> assertEquals(PARENT_UNIT_ID, parentRelation.getIssuingUnitId()));
   }
 
   @Test
@@ -280,12 +274,13 @@ class BinaryCertificateMetadataConverterTest {
     assertNull(convert(content, entryPoint).getParentRelation());
   }
 
-  private BinaryCertificateMetadataDTO convert(IntygContentHolder content,
-      ModuleEntryPoint entryPoint) {
+  private BinaryCertificateMetadataDTO convert(
+      IntygContentHolder content, ModuleEntryPoint entryPoint) {
     return convert(content, entryPoint, null);
   }
 
-  private BinaryCertificateMetadataDTO convert(IntygContentHolder content,
+  private BinaryCertificateMetadataDTO convert(
+      IntygContentHolder content,
       ModuleEntryPoint entryPoint,
       IntygContentHolder parentCertificate) {
     return converter.toBinaryCertificate(content, entryPoint, parentCertificate);
@@ -335,29 +330,52 @@ class BinaryCertificateMetadataConverterTest {
     return Stream.of(
         Arguments.of(new DbModuleEntryPoint(), "DB", "Dödsbevis", KV_INTYGSTYP_CODE_SYSTEM),
         Arguments.of(new DoiModuleEntryPoint(), "DOI", "Dödsorsaksintyg", KV_INTYGSTYP_CODE_SYSTEM),
-        Arguments.of(new LisjpEntryPoint(), "LISJP", "Läkarintyg för sjukpenning",
-            KV_INTYGSTYP_CODE_SYSTEM),
-        Arguments.of(new Fk7263EntryPoint(), "FK7263", "Läkarintyg FK 7263",
+        Arguments.of(
+            new LisjpEntryPoint(), "LISJP", "Läkarintyg för sjukpenning", KV_INTYGSTYP_CODE_SYSTEM),
+        Arguments.of(
+            new Fk7263EntryPoint(),
+            "FK7263",
+            "Läkarintyg FK 7263",
             KV_UTLATANDETYP_INTYG_CODE_SYSTEM),
-        Arguments.of(new LuseEntryPoint(), "LUSE", "Läkarutlåtande för sjukersättning",
+        Arguments.of(
+            new LuseEntryPoint(),
+            "LUSE",
+            "Läkarutlåtande för sjukersättning",
             KV_INTYGSTYP_CODE_SYSTEM),
-        Arguments.of(new Af00213EntryPoint(), "AF00213", "Arbetsförmedlingens medicinska utlåtande",
+        Arguments.of(
+            new Af00213EntryPoint(),
+            "AF00213",
+            "Arbetsförmedlingens medicinska utlåtande",
             KV_INTYGSTYP_CODE_SYSTEM),
-        Arguments.of(new Ag7804EntryPoint(), "AG7804",
-            "Läkarintyg om arbetsförmåga – arbetsgivaren", KV_INTYGSTYP_CODE_SYSTEM),
-        Arguments.of(new Ag114EntryPoint(), "AG1-14",
-            "Läkarintyg om arbetsförmåga – sjuklöneperioden", KV_INTYGSTYP_CODE_SYSTEM),
-        Arguments.of(new TsDiabetesEntryPoint(), "TSTRK1031",
-            "Transportstyrelsens läkarintyg diabetes", KV_UTLATANDETYP_INTYG_CODE_SYSTEM),
-        Arguments.of(new LuaefsEntryPoint(), "LUAE_FS",
+        Arguments.of(
+            new Ag7804EntryPoint(),
+            "AG7804",
+            "Läkarintyg om arbetsförmåga – arbetsgivaren",
+            KV_INTYGSTYP_CODE_SYSTEM),
+        Arguments.of(
+            new Ag114EntryPoint(),
+            "AG1-14",
+            "Läkarintyg om arbetsförmåga – sjuklöneperioden",
+            KV_INTYGSTYP_CODE_SYSTEM),
+        Arguments.of(
+            new TsDiabetesEntryPoint(),
+            "TSTRK1031",
+            "Transportstyrelsens läkarintyg diabetes",
+            KV_UTLATANDETYP_INTYG_CODE_SYSTEM),
+        Arguments.of(
+            new LuaefsEntryPoint(),
+            "LUAE_FS",
             "Läkarutlåtande för aktivitetsersättning vid förlängd skolgång",
             KV_INTYGSTYP_CODE_SYSTEM),
-        Arguments.of(new LuaenaEntryPoint(), "LUAE_NA",
+        Arguments.of(
+            new LuaenaEntryPoint(),
+            "LUAE_NA",
             "Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga",
             KV_INTYGSTYP_CODE_SYSTEM),
-        Arguments.of(new TsBasEntryPoint(), "TSTRK1007",
+        Arguments.of(
+            new TsBasEntryPoint(),
+            "TSTRK1007",
             "Transportstyrelsens läkarintyg högre körkortsbehörighet",
-            KV_UTLATANDETYP_INTYG_CODE_SYSTEM)
-    );
+            KV_UTLATANDETYP_INTYG_CODE_SYSTEM));
   }
 }
