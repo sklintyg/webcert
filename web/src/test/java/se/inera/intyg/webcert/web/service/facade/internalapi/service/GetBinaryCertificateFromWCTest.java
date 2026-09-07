@@ -19,7 +19,9 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,99 +34,127 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
-import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateFacadeServiceImpl;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.BinaryCertificateMetadataConverter;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.RequiredFieldsForCertificatePdf;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
 class GetBinaryCertificateFromWCTest {
 
   private static final String CERTIFICATE_ID = "e5f6a1b2-3c4d-4e5f-8a1b-2c3d4e5f6a1b";
-  private static final String CERTIFICATE_TYPE_VERSION = "1.3";
   private static final String CERTIFICATE_TYPE = "lisjp";
-  private static final String INTERNAL_JSON_MODEL = "{\"id\":\"" + CERTIFICATE_ID + "\"}";
+  private static final String CERTIFICATE_TYPE_VERSION = "1.3";
+  private static final String CONTENTS = "{\"id\":\"" + CERTIFICATE_ID + "\"}";
+  private static final String PARENT_CERTIFICATE_ID = "parent-cert-id";
   private static final List<Status> STATUSES =
       List.of(new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now()));
   private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
-  private static final RequiredFieldsForCertificatePdf REQUIRED_FIELDS_FOR_CERTIFICATE_PDF =
-      RequiredFieldsForCertificatePdf.create(
-          CERTIFICATE_TYPE_VERSION,
-          CERTIFICATE_TYPE,
-          INTERNAL_JSON_MODEL,
-          STATUSES,
-          UtkastStatus.SIGNED);
   private static final PdfResponse PDF_RESPONSE = new PdfResponse(PDF_BYTES, "fileName");
-  private static final Intyg INTYG = new Intyg();
   private static final BinaryCertificateMetadataDTO METADATA =
       BinaryCertificateMetadataDTO.builder().certificateId(CERTIFICATE_ID).build();
 
-  @Mock private GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
   @Mock private IntygModuleRegistry moduleRegistry;
   @Mock private ModuleApi moduleApi;
-  @Mock private GetCertificateFacadeServiceImpl getCertificateFacadeService;
-  @Mock private GetCertificateService getCertificateService;
+  @Mock private ModuleEntryPoint entryPoint;
+  @Mock private IntygService intygService;
   @Mock private BinaryCertificateMetadataConverter binaryCertificateMetadataConverter;
 
   @InjectMocks private GetBinaryCertificateFromWC getBinaryCertificateFromWC;
 
+  private IntygContentHolder content;
+
   @BeforeEach
-  void setUp() throws ModuleNotFoundException {
-    when(getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID))
-        .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
+  void setUp() {
+    content = contentHolder(new Relations(), STATUSES);
+  }
+
+  private IntygContentHolder contentHolder(Relations relations, List<Status> statuses) {
+    return IntygContentHolder.builder()
+        .utlatande(utlatande())
+        .contents(CONTENTS)
+        .statuses(statuses)
+        .relations(relations)
+        .build();
+  }
+
+  private static Utlatande utlatande() {
+    return new Utlatande() {
+      @Override
+      public String getId() {
+        return CERTIFICATE_ID;
+      }
+
+      @Override
+      public String getTyp() {
+        return CERTIFICATE_TYPE;
+      }
+
+      @Override
+      public GrundData getGrundData() {
+        return null;
+      }
+
+      @Override
+      public String getTextVersion() {
+        return CERTIFICATE_TYPE_VERSION;
+      }
+
+      @Override
+      public String getSignature() {
+        return null;
+      }
+    };
+  }
+
+  private void mockContent() {
+    when(intygService.fetchIntygDataForInternalUse(CERTIFICATE_ID, true)).thenReturn(content);
+  }
+
+  private void mockModuleEntryPoint() throws ModuleNotFoundException {
+    when(moduleRegistry.getModuleEntryPoint(CERTIFICATE_TYPE)).thenReturn(entryPoint);
+  }
+
+  private void mockModuleApi() throws ModuleNotFoundException {
     when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
         .thenReturn(moduleApi);
   }
 
   private void mockPdf() throws ModuleException {
-    when(moduleApi.pdf(
-            INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
+    when(moduleApi.pdf(CONTENTS, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
         .thenReturn(PDF_RESPONSE);
   }
 
-  private Certificate mockCertificate(CertificateStatus status) {
-    final var certificate = new Certificate();
-    certificate.setMetadata(
-        CertificateMetadata.builder()
-            .id(CERTIFICATE_ID)
-            .type(CERTIFICATE_TYPE)
-            .status(status)
-            .build());
-    when(getCertificateFacadeService.getCertificate(CERTIFICATE_ID, false, false))
-        .thenReturn(certificate);
-    return certificate;
+  private void mockMetadata(IntygContentHolder parentContent) {
+    when(binaryCertificateMetadataConverter.toBinaryCertificate(content, entryPoint, parentContent))
+        .thenReturn(METADATA);
   }
 
-  private void mockIntyg() {
-    when(getCertificateService.getCertificateAsIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE))
-        .thenReturn(INTYG);
-  }
-
-  private void mockSignedCertificate() throws ModuleException {
+  private void mockHappyPath() throws ModuleException, ModuleNotFoundException {
+    mockContent();
+    mockModuleEntryPoint();
+    mockModuleApi();
     mockPdf();
-    mockCertificate(CertificateStatus.SIGNED);
-    mockIntyg();
+    mockMetadata(null);
   }
 
   @Test
-  void shouldReturnPdfData() throws ModuleException {
-    mockSignedCertificate();
+  void shouldReturnPdfDataFromModuleApi() throws Exception {
+    mockHappyPath();
 
     final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
@@ -132,13 +162,8 @@ class GetBinaryCertificateFromWCTest {
   }
 
   @Test
-  void shouldReturnMetadataFromConverter() throws ModuleException {
-    mockPdf();
-    final var certificate = mockCertificate(CertificateStatus.SIGNED);
-    mockIntyg();
-    when(binaryCertificateMetadataConverter.toBinaryCertificate(
-            INTYG, certificate, (Certificate) null))
-        .thenReturn(METADATA);
+  void shouldReturnMetadataFromConverter() throws Exception {
+    mockHappyPath();
 
     final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
@@ -146,30 +171,17 @@ class GetBinaryCertificateFromWCTest {
   }
 
   @Test
-  void shouldUseIntygAndCertificateWhenConvertingMetadata() throws ModuleException {
-    mockPdf();
-    final var certificate = mockCertificate(CertificateStatus.SIGNED);
-    mockIntyg();
+  void shouldUseCertificateTypeWhenGettingModuleEntryPoint() throws Exception {
+    mockHappyPath();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    verify(binaryCertificateMetadataConverter)
-        .toBinaryCertificate(INTYG, certificate, (Certificate) null);
+    verify(moduleRegistry).getModuleEntryPoint(CERTIFICATE_TYPE);
   }
 
   @Test
-  void shouldUseCertificateIdWhenGettingRequiredFields() throws ModuleException {
-    mockSignedCertificate();
-
-    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    verify(getRequiredFieldsForCertificatePdfService).get(CERTIFICATE_ID);
-  }
-
-  @Test
-  void shouldUseCertificateTypeAndVersionFromRequiredFieldsWhenGettingModuleApi()
-      throws ModuleNotFoundException, ModuleException {
-    mockSignedCertificate();
+  void shouldUseCertificateTypeAndVersionWhenGettingModuleApi() throws Exception {
+    mockHappyPath();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
@@ -177,143 +189,141 @@ class GetBinaryCertificateFromWCTest {
   }
 
   @Test
-  void shouldUseJsonModelStatusesOriginAndStatusFromRequiredFieldsWhenGeneratingPdf()
-      throws ModuleException {
-    mockSignedCertificate();
+  void shouldUseContentsStatusesAndSignedStatusWhenGeneratingPdf() throws Exception {
+    mockHappyPath();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    verify(moduleApi)
-        .pdf(INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED);
+    verify(moduleApi).pdf(CONTENTS, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED);
   }
 
   @Test
-  void shouldGetCertificateWithoutValidationAndRelations() throws ModuleException {
-    mockSignedCertificate();
+  void shouldPassContentEntryPointAndNullParentToConverterWhenNoParentRelationExists()
+      throws Exception {
+    mockHappyPath();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    verify(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, false, false);
+    verify(binaryCertificateMetadataConverter).toBinaryCertificate(content, entryPoint, null);
   }
 
   @Test
-  void shouldUseCertificateIdAndTypeWhenGettingCertificateAsIntyg() throws ModuleException {
-    mockSignedCertificate();
+  void shouldNotFetchParentCertificateWhenParentRelationIsNull() throws Exception {
+    mockHappyPath();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    verify(getCertificateService).getCertificateAsIntyg(CERTIFICATE_ID, CERTIFICATE_TYPE);
+    verify(intygService, never()).fetchIntygDataForInternalUse(anyString(), eq(false));
   }
 
   @Test
-  void shouldThrowIllegalStateExceptionIfCertificateIsUnsigned() throws ModuleException {
+  void shouldFetchParentCertificateWhenParentRelationExists() throws Exception {
+    final var relations = new Relations();
+    final var parentRelation = new WebcertCertificateRelation();
+    parentRelation.setIntygsId(PARENT_CERTIFICATE_ID);
+    relations.setParent(parentRelation);
+    content = contentHolder(relations, STATUSES);
+    final var parentContent = contentHolder(new Relations(), STATUSES);
+
+    mockContent();
+    mockModuleEntryPoint();
+    mockModuleApi();
     mockPdf();
-    mockCertificate(CertificateStatus.UNSIGNED);
+    when(intygService.fetchIntygDataForInternalUse(PARENT_CERTIFICATE_ID, false))
+        .thenReturn(parentContent);
+    mockMetadata(parentContent);
 
-    assertThrows(IllegalStateException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(intygService).fetchIntygDataForInternalUse(PARENT_CERTIFICATE_ID, false);
   }
 
   @Test
-  void shouldThrowIllegalStateExceptionIfModuleNotFound() throws ModuleNotFoundException {
+  void shouldPassParentCertificateToConverterWhenParentRelationExists() throws Exception {
+    final var relations = new Relations();
+    final var parentRelation = new WebcertCertificateRelation();
+    parentRelation.setIntygsId(PARENT_CERTIFICATE_ID);
+    relations.setParent(parentRelation);
+    content = contentHolder(relations, STATUSES);
+    final var parentContent = contentHolder(new Relations(), STATUSES);
+
+    mockContent();
+    mockModuleEntryPoint();
+    mockModuleApi();
+    mockPdf();
+    when(intygService.fetchIntygDataForInternalUse(PARENT_CERTIFICATE_ID, false))
+        .thenReturn(parentContent);
+    mockMetadata(parentContent);
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    verify(binaryCertificateMetadataConverter)
+        .toBinaryCertificate(content, entryPoint, parentContent);
+  }
+
+  @Test
+  void shouldReturnNullWhenContentIsNull() {
+    when(intygService.fetchIntygDataForInternalUse(CERTIFICATE_ID, true)).thenReturn(null);
+
+    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    assertNull(response);
+  }
+
+  @Test
+  void shouldReturnNullWhenStatusesAreEmpty() {
+    content = contentHolder(new Relations(), List.of());
+    mockContent();
+
+    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    assertNull(response);
+  }
+
+  @Test
+  void shouldReturnNullWhenModuleEntryPointIsNotFound() throws ModuleNotFoundException {
+    mockContent();
+    when(moduleRegistry.getModuleEntryPoint(CERTIFICATE_TYPE))
+        .thenThrow(new ModuleNotFoundException("Module not found"));
+
+    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    assertNull(response);
+  }
+
+  @Test
+  void shouldReturnNullWhenModuleApiIsNotFoundForPdf() throws ModuleNotFoundException {
+    mockContent();
     when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
         .thenThrow(new ModuleNotFoundException("Module not found"));
 
-    assertThrows(IllegalStateException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
+    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    assertNull(response);
   }
 
   @Test
-  void shouldThrowIllegalStateExceptionIfModuleApiThrowsModuleException() throws ModuleException {
-    when(moduleApi.pdf(
-            INTERNAL_JSON_MODEL, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
-        .thenThrow(new ModuleException("Failed to generate pdf"));
+  void shouldReturnNullWhenModuleApiThrowsModuleExceptionDuringPdfGeneration() throws Exception {
+    mockContent();
+    mockModuleApi();
+    when(moduleApi.pdf(CONTENTS, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
+        .thenThrow(new ModuleException("Failed to generate pdf", null));
 
-    assertThrows(IllegalStateException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
-  }
+    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-  private static final String PARENT_CERTIFICATE_ID = "parent-cert-id";
-
-  private Certificate mockCertificateWithRelations(CertificateRelations relations) {
-    final var certificate = new Certificate();
-    certificate.setMetadata(
-        CertificateMetadata.builder()
-            .id(CERTIFICATE_ID)
-            .type(CERTIFICATE_TYPE)
-            .status(CertificateStatus.SIGNED)
-            .relations(relations)
-            .build());
-    when(getCertificateFacadeService.getCertificate(CERTIFICATE_ID, false, false))
-        .thenReturn(certificate);
-    return certificate;
+    assertNull(response);
   }
 
   @Test
-  void shouldPassNullParentCertificateToConverterWhenRelationsIsNull() throws ModuleException {
+  void shouldReturnNullWhenRelationsIsNull() throws Exception {
+    content = contentHolder(null, STATUSES);
+    mockContent();
+    mockModuleEntryPoint();
+    mockModuleApi();
     mockPdf();
-    final var certificate = mockCertificateWithRelations(null);
-    mockIntyg();
 
-    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+    final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    verify(binaryCertificateMetadataConverter)
-        .toBinaryCertificate(INTYG, certificate, (Certificate) null);
-  }
-
-  @Test
-  void shouldPassNullParentCertificateToConverterWhenParentIsNull() throws ModuleException {
-    mockPdf();
-    final var certificate =
-        mockCertificateWithRelations(CertificateRelations.builder().parent(null).build());
-    mockIntyg();
-
-    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    verify(binaryCertificateMetadataConverter)
-        .toBinaryCertificate(INTYG, certificate, (Certificate) null);
-  }
-
-  @Test
-  void shouldNotFetchParentCertificateWhenParentIsNull() throws ModuleException {
-    mockPdf();
-    mockCertificateWithRelations(CertificateRelations.builder().parent(null).build());
-    mockIntyg();
-
-    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    verify(getCertificateFacadeService, never())
-        .getCertificate(PARENT_CERTIFICATE_ID, false, false);
-  }
-
-  @Test
-  void shouldFetchParentCertificateWhenParentRelationExists() throws ModuleException {
-    mockPdf();
-    final var parentRelation =
-        CertificateRelation.builder().certificateId(PARENT_CERTIFICATE_ID).build();
-    mockCertificateWithRelations(CertificateRelations.builder().parent(parentRelation).build());
-    mockIntyg();
-    final var parentCertificate = new Certificate();
-    when(getCertificateFacadeService.getCertificate(PARENT_CERTIFICATE_ID, false, false))
-        .thenReturn(parentCertificate);
-
-    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    verify(getCertificateFacadeService).getCertificate(PARENT_CERTIFICATE_ID, false, false);
-  }
-
-  @Test
-  void shouldPassParentCertificateToConverterWhenParentRelationExists() throws ModuleException {
-    mockPdf();
-    final var parentRelation =
-        CertificateRelation.builder().certificateId(PARENT_CERTIFICATE_ID).build();
-    final var certificate =
-        mockCertificateWithRelations(CertificateRelations.builder().parent(parentRelation).build());
-    mockIntyg();
-    final var parentCertificate = new Certificate();
-    when(getCertificateFacadeService.getCertificate(PARENT_CERTIFICATE_ID, false, false))
-        .thenReturn(parentCertificate);
-
-    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
-
-    verify(binaryCertificateMetadataConverter)
-        .toBinaryCertificate(INTYG, certificate, parentCertificate);
+    assertNull(response);
   }
 }

@@ -18,15 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
+import java.rmi.ServerException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -35,10 +32,11 @@ import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
-import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateFacadeServiceImpl;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.BinaryCertificateMetadataConverter;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetBinaryCertificate;
 
 @Slf4j
@@ -46,59 +44,64 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.GetBinaryCertificat
 @RequiredArgsConstructor
 public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
 
-  private final GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
   private final IntygModuleRegistry moduleRegistry;
-  private final GetCertificateFacadeServiceImpl getCertificateFacadeService;
-  private final GetCertificateService getCertificateService;
-  private final BinaryCertificateMetadataConverter binaryCertificateMetadataConverter;
+  private final BinaryCertificateMetadataConverter binaryCertificateMetadataConvertera;
+  private final IntygService intygService;
 
   @Override
   public GetBinaryCertificateResponseDTO get(String certificateId) {
-    final var pdfData = getPdfData(certificateId);
-    final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, false);
-    if (certificate.getMetadata().getStatus().equals(CertificateStatus.UNSIGNED)) {
-      throw new IllegalStateException(
-          "Certificate is draft and not eligible to export as BinaryCertificate");
+
+    try {
+      final var content = intygService.fetchIntygDataForInternalUse(certificateId, true);
+
+      if (content == null || content.getStatuses().isEmpty()) {
+        log.warn("Requested certificate with id {} is a draft", certificateId);
+        throw new ServerException("Server Error");
+      }
+
+      final var type = content.getUtlatande().getTyp();
+      final var entrypoint = moduleRegistry.getModuleEntryPoint(type);
+      final var pdfData = getPdfData(content);
+      final var parentContent = getParentCertificate(content);
+      final var metadata = binaryCertificateMetadataConvertera.toBinaryCertificate(
+          content,
+          entrypoint,
+          parentContent);
+
+      return GetBinaryCertificateResponseDTO.builder()
+          .pdfData(pdfData)
+          .metadata(metadata)
+          .build();
+
+    } catch(Exception e) {
+      log.error(e.getMessage());
+      return null;
     }
-
-    final var certificateAsIntyg =
-        getCertificateService.getCertificateAsIntyg(
-            certificateId, certificate.getMetadata().getType());
-
-    final var parentCertificate =
-        getParentCertificateId(certificate)
-            .map(id -> getCertificateFacadeService.getCertificate(id, false, false))
-            .orElse(null);
-
-    return GetBinaryCertificateResponseDTO.builder()
-        .pdfData(pdfData)
-        .metadata(
-            binaryCertificateMetadataConverter.toBinaryCertificate(
-                certificateAsIntyg, certificate, parentCertificate))
-        .build();
   }
 
-  private Optional<String> getParentCertificateId(Certificate certificate) {
-    return Optional.ofNullable(certificate.getMetadata().getRelations())
-        .map(CertificateRelations::getParent)
-        .map(CertificateRelation::getCertificateId);
+  private IntygContentHolder getParentCertificate(IntygContentHolder contentholder) {
+    return getParentCertificateId(contentholder.getRelations().getParent())
+        .map(id -> intygService.fetchIntygDataForInternalUse(id, false))
+        .orElse(null);
   }
 
-  private byte[] getPdfData(String certificateId) {
-    final var requiredFieldsForCertificatePdf =
-        getRequiredFieldsForCertificatePdfService.get(certificateId);
+  private Optional<String> getParentCertificateId(WebcertCertificateRelation relation) {
+    return Optional.ofNullable(relation)
+        .map(WebcertCertificateRelation::getIntygsId);
+  }
 
+  private byte[] getPdfData(IntygContentHolder content) {
     final var moduleApi =
         getModuleApi(
-            requiredFieldsForCertificatePdf.getCertificateType(),
-            requiredFieldsForCertificatePdf.getCertificateTypeVersion());
+            content.getUtlatande().getTyp(),
+            content.getUtlatande().getTextVersion());
 
     final var pdfResponse =
         getPdfResponse(
             moduleApi,
-            requiredFieldsForCertificatePdf.getInternalJsonModel(),
-            requiredFieldsForCertificatePdf.getStatuses(),
-            requiredFieldsForCertificatePdf.getStatus());
+            content.getContents(),
+            content.getStatuses(),
+            UtkastStatus.SIGNED);
 
     return pdfResponse.getPdfData();
   }
