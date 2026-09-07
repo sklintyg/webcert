@@ -18,14 +18,29 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate;
 
+import static se.inera.intyg.common.support.Constants.BEFATTNING_KOD_OID;
+import static se.inera.intyg.common.support.Constants.KV_INTYGSTYP_CODE_SYSTEM;
+import static se.inera.intyg.common.support.Constants.KV_UTLATANDETYP_INTYG_CODE_SYSTEM;
+import static se.inera.intyg.common.support.model.CertificateState.CANCELLED;
+import static se.inera.intyg.common.support.model.CertificateState.RECEIVED;
+import static se.inera.intyg.common.support.model.CertificateState.SENT;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.PaTitle;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.dto.PersonIdType;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateCareProviderDTO;
@@ -35,104 +50,146 @@ import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.m
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateRelationDTO;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateStaffDTO;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateUnitDTO;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.CVType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Specialistkompetens;
-import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @Component
 public class BinaryCertificateMetadataConverter {
 
+  public static final String FK_7263 = "FK7263";
+
   public BinaryCertificateMetadataDTO toBinaryCertificate(
-      Intyg intyg, Certificate certificate, Certificate parentCertificate) {
-    final var metadata = certificate.getMetadata();
+      IntygContentHolder content,
+      ModuleEntryPoint entryPoint,
+      IntygContentHolder parentCertificate) {
+
+    final var utlatande = content.getUtlatande();
+    final var statuses = content.getStatuses();
+    final var skapadAv = utlatande.getGrundData().getSkapadAv();
+    final var patientId = utlatande.getGrundData().getPatient().getPersonId().getPersonnummer();
+
     return BinaryCertificateMetadataDTO.builder()
-        .certificateId(metadata.getId())
-        .type(
-            BinaryCertificateCodeDTO.builder()
-                .code(metadata.getTypeName())
-                .codeSystem(intyg.getTyp().getCodeSystem())
-                .displayName(metadata.getName())
-                .build())
-        .version(metadata.getTypeVersion())
-        .recipientId(metadata.getRecipient().getId())
-        .sentAt(intyg.getSkickatTidpunkt())
-        .signedAt(intyg.getSigneringstidpunkt())
-        .revokedAt(metadata.getRevokedAt())
-        .patient(
-            BinaryCertificatePatientDTO.builder()
-                .patientId(metadata.getPatient().getPersonId().getId().replace("-", ""))
-                .type(getPatientIdType(metadata.getPatient().getPersonId().getId()))
-                .build())
-        .parentRelation(toRelation(metadata.getRelations(), parentCertificate))
-        .issuedBy(toIssuedBy(intyg.getSkapadAv(), metadata))
+        .certificateId(utlatande.getId())
+        .type(toType(entryPoint))
+        .version(utlatande.getTextVersion())
+        .patient(toPatient(patientId))
+        .issuedBy(toIssuedBy(skapadAv))
+        .signedAt(toStatusValue(statuses, RECEIVED, Status::getTimestamp))
+        .sentAt(toStatusValue(statuses, SENT, Status::getTimestamp))
+        .recipientId(toStatusValue(statuses, SENT, Status::getTarget))
+        .revokedAt(toStatusValue(statuses, CANCELLED, Status::getTimestamp))
+        .parentRelation(toRelation(content, parentCertificate))
         .build();
   }
 
-  private BinaryCertificateRelationDTO toRelation(
-      CertificateRelations relations, Certificate parentCertificate) {
-    if (relations == null || relations.getParent() == null) {
-      return null;
-    }
-
-    final var parentRelation = relations.getParent();
-    final var parentIssuingUnitId = parentCertificate.getMetadata().getUnit().getUnitId();
-
-    return BinaryCertificateRelationDTO.builder()
-        .certificateId(parentRelation.getCertificateId())
-        .issuingUnitId(parentIssuingUnitId)
-        .type(parentRelation.getType())
+  private BinaryCertificateCodeDTO toType(ModuleEntryPoint entryPoint) {
+    return BinaryCertificateCodeDTO.builder()
+        .code(entryPoint.getExternalId())
+        .codeSystem(toTypeCodeSystem(entryPoint.getExternalId()))
+        .displayName(entryPoint.getModuleName())
         .build();
   }
 
-  private PersonIdType getPatientIdType(String patientId) {
+  private String toTypeCodeSystem(String externalId) {
+    return switch (externalId) {
+      case TsDiabetesEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
+          TsBasEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
+          FK_7263 ->
+          KV_UTLATANDETYP_INTYG_CODE_SYSTEM;
+      default -> KV_INTYGSTYP_CODE_SYSTEM;
+    };
+  }
+
+  private BinaryCertificatePatientDTO toPatient(String patientId) {
+    return BinaryCertificatePatientDTO.builder()
+        .patientId(patientId)
+        .type(toPatientIdType(patientId))
+        .build();
+  }
+
+  private PersonIdType toPatientIdType(String patientId) {
     final var personnummer = Personnummer.createPersonnummer(patientId).orElseThrow();
     return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personnummer))
         ? PersonIdType.COORDINATION_NUMBER
         : PersonIdType.PERSONAL_IDENTITY_NUMBER;
   }
 
-  private BinaryCertificateStaffDTO toIssuedBy(HosPersonal skapadAv, CertificateMetadata metadata) {
+  private BinaryCertificateStaffDTO toIssuedBy(HoSPersonal skapadAv) {
     return BinaryCertificateStaffDTO.builder()
-        .personId(metadata.getIssuedBy().getPersonId())
-        .fullName(metadata.getIssuedBy().getFullName())
-        .titles(toTypes(skapadAv.getBefattning()))
-        .specialities(
-            skapadAv.getSpecialistkompetens().stream()
-                .map(Specialistkompetens::getDisplayName)
-                .toList())
-        .licences(toTypes(skapadAv.getLegitimeratYrke()))
-        .unit(toUnit(metadata.getUnit(), metadata.getCareProvider()))
+        .personId(skapadAv.getPersonId())
+        .fullName(skapadAv.getFullstandigtNamn())
+        .titles(toTitles(skapadAv.getBefattningsKoder()))
+        .specialities(skapadAv.getSpecialiteter().stream().toList())
+        .licences(Collections.emptyList())
+        .unit(toUnit(skapadAv.getVardenhet()))
         .build();
   }
 
-  private BinaryCertificateUnitDTO toUnit(Unit unit, Unit careProvider) {
-    return BinaryCertificateUnitDTO.builder()
-        .unitId(unit.getUnitId())
-        .unitName(unit.getUnitName())
-        .address(unit.getAddress())
-        .zipCode(unit.getZipCode())
-        .city(unit.getCity())
-        .phoneNumber(unit.getPhoneNumber())
-        .workplaceCode(unit.getWorkplaceCode())
-        .email(unit.getEmail())
-        .careProvider(
-            BinaryCertificateCareProviderDTO.builder()
-                .unitId(careProvider.getUnitId())
-                .unitName(careProvider.getUnitName())
-                .build())
-        .build();
-  }
-
-  private List<BinaryCertificateCodeDTO> toTypes(List<? extends CVType> types) {
+  private List<BinaryCertificateCodeDTO> toTitles(List<PaTitle> types) {
     return types.stream()
         .map(
             type ->
                 BinaryCertificateCodeDTO.builder()
-                    .code(type.getCode())
-                    .codeSystem(type.getCodeSystem())
-                    .displayName(type.getDisplayName())
+                    .code(type.getKod())
+                    .codeSystem(BEFATTNING_KOD_OID)
+                    .displayName(type.getKlartext())
                     .build())
         .toList();
+  }
+
+  private BinaryCertificateUnitDTO toUnit(Vardenhet unit) {
+    return BinaryCertificateUnitDTO.builder()
+        .unitId(unit.getEnhetsid())
+        .unitName(unit.getEnhetsnamn())
+        .address(unit.getPostadress())
+        .zipCode(unit.getPostnummer())
+        .city(unit.getPostort())
+        .phoneNumber(unit.getTelefonnummer())
+        .workplaceCode(unit.getArbetsplatsKod())
+        .email(unit.getEpost())
+        .careProvider(
+            BinaryCertificateCareProviderDTO.builder()
+                .unitId(unit.getVardgivare().getVardgivarid())
+                .unitName(unit.getVardgivare().getVardgivarnamn())
+                .build())
+        .build();
+  }
+
+  private <T> T toStatusValue(
+      List<Status> statuses, CertificateState state, Function<Status, T> mapper) {
+    return toStatus(statuses, state).map(mapper).orElse(null);
+  }
+
+  private Optional<Status> toStatus(List<Status> statuses, CertificateState state) {
+    return statuses.stream().filter(status -> status.getType() == state).findFirst();
+  }
+
+  private BinaryCertificateRelationDTO toRelation(
+      IntygContentHolder content, IntygContentHolder parentCertificate) {
+    if (parentCertificate == null) {
+      return null;
+    }
+
+    final var parentIssuingUnit =
+        parentCertificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
+    return Optional.ofNullable(content.getRelations())
+        .map(Relations::getParent)
+        .map(
+            parent ->
+                BinaryCertificateRelationDTO.builder()
+                    .certificateId(parent.getIntygsId())
+                    .issuingUnitId(parentIssuingUnit)
+                    .type(toRelationType(parent.getRelationKod()))
+                    .build())
+        .orElse(null);
+  }
+
+  private CertificateRelationType toRelationType(RelationKod code) {
+    return switch (code) {
+      case ERSATT -> CertificateRelationType.REPLACED;
+      case FRLANG -> CertificateRelationType.EXTENDED;
+      case KOPIA -> CertificateRelationType.COPIED;
+      case KOMPLT -> CertificateRelationType.COMPLEMENTED;
+    };
   }
 }
