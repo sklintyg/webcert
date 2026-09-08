@@ -40,9 +40,7 @@ public class GetBinaryCertificateFromCS implements GetBinaryCertificate {
     final var exists = csIntegrationService.certificateExists(certificateId);
     if (Boolean.FALSE.equals(exists)) {
       log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
-      throw new WebCertServiceException(
-          WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-          "Certificate with id '" + certificateId + "' does not exist in certificate service");
+      return null;
     }
 
     GetCertificateInternalPdfResponseDTO binaryCertificate = null;

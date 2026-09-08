@@ -1522,7 +1522,7 @@ public class CSIntegrationService {
                 HttpStatusCode::isError,
                 (request, resp) -> {
                   throw new CSClientException(
-                      "Call to webcert's binary certificate endpoint (%s) failed with HTTP status %s"
+                      "Call to certificate-service's binary certificate endpoint (%s) failed with HTTP status %s"
                           .formatted(url, resp.getStatusCode()),
                       resp.getStatusCode());
                 })
