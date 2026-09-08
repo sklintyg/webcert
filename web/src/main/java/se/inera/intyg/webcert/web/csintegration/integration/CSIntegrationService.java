@@ -34,6 +34,8 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -45,6 +47,7 @@ import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorD
 import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.csintegration.certificate.CSClientException;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
@@ -1503,6 +1506,7 @@ public class CSIntegrationService {
     return Optional.of(response);
   }
 
+  @PerformanceLogging(eventAction = "get-binary-certificate", eventType = EVENT_TYPE_ACCESS)
   public GetCertificateInternalPdfResponseDTO getBinaryCertificate(String certificateId) {
     final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/binary";
 
@@ -1514,10 +1518,21 @@ public class CSIntegrationService {
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
             .retrieve()
+            .onStatus(
+                HttpStatusCode::isError,
+                (request, resp) -> {
+                  throw new CSClientException(
+                      "Call to certificate-service's binary certificate endpoint (%s) failed with HTTP status %s"
+                          .formatted(url, resp.getStatusCode()),
+                      resp.getStatusCode());
+                })
             .body(GetCertificateInternalPdfResponseDTO.class);
 
     if (response == null || response.getPdfData() == null) {
-      throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+      throw new CSClientException(
+          "Call to certificate-service binary certificate endpoint (%s) returned null response"
+              .formatted(url),
+          HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     return response;

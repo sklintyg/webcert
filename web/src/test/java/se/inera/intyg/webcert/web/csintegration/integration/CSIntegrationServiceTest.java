@@ -58,6 +58,7 @@ import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.certificate.CSClientException;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
@@ -2832,12 +2833,12 @@ class CSIntegrationServiceTest {
       when(requestHeadersSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
       when(requestHeadersSpec.header(any(), any())).thenReturn(requestHeadersSpec);
       when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+      when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
     }
 
     @Test
     void shouldThrowExceptionIfNullResponse() {
-      assertThrows(
-          IllegalStateException.class, () -> csIntegrationService.getBinaryCertificate(ID));
+      assertThrows(CSClientException.class, () -> csIntegrationService.getBinaryCertificate(ID));
     }
 
     @Test
@@ -2846,8 +2847,7 @@ class CSIntegrationServiceTest {
           .when(responseSpec)
           .body(GetCertificateInternalPdfResponseDTO.class);
 
-      assertThrows(
-          IllegalStateException.class, () -> csIntegrationService.getBinaryCertificate(ID));
+      assertThrows(CSClientException.class, () -> csIntegrationService.getBinaryCertificate(ID));
     }
 
     @Nested
