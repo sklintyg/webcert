@@ -1530,8 +1530,9 @@ public class CSIntegrationService {
 
     if (response == null || response.getPdfData() == null) {
       throw new CSClientException(
-          "Call to certificate-service binary certificate endpoint (%s) returned null response".formatted(
-              url), HttpStatus.INTERNAL_SERVER_ERROR);
+          "Call to certificate-service binary certificate endpoint (%s) returned null response"
+              .formatted(url),
+          HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     return response;

@@ -40,7 +40,8 @@ public class GetBinaryCertificateFromCS implements GetBinaryCertificate {
     final var exists = csIntegrationService.certificateExists(certificateId);
     if (Boolean.FALSE.equals(exists)) {
       log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
-      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+      throw new WebCertServiceException(
+          WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
           "Certificate with id '" + certificateId + "' does not exist in certificate service");
     }
 
@@ -48,19 +49,27 @@ public class GetBinaryCertificateFromCS implements GetBinaryCertificate {
     try {
       binaryCertificate = csIntegrationService.getBinaryCertificate(certificateId);
     } catch (CSClientException e) {
-      log.error("Failed to get binary certificate with id '{}' from certificate service",
-          certificateId, e);
+      log.error(
+          "Failed to get binary certificate with id '{}' from certificate service",
+          certificateId,
+          e);
       if (e.isClientError()) {
-        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-            "Failed to get binary certificate with id '" + certificateId
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+            "Failed to get binary certificate with id '"
+                + certificateId
                 + "' from certificate service due to client error");
       } else if (e.isServerError()) {
-        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-            "Failed to get binary certificate with id '" + certificateId
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+            "Failed to get binary certificate with id '"
+                + certificateId
                 + "' from certificate service due to server error");
       } else {
-        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-            "Failed to get binary certificate with id '" + certificateId
+        throw new WebCertServiceException(
+            WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+            "Failed to get binary certificate with id '"
+                + certificateId
                 + "' from certificate service due to unknown problem");
       }
     }
