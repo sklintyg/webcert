@@ -21,7 +21,10 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateInternalPdfResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetBinaryCertificate;
 
@@ -37,10 +40,30 @@ public class GetBinaryCertificateFromCS implements GetBinaryCertificate {
     final var exists = csIntegrationService.certificateExists(certificateId);
     if (Boolean.FALSE.equals(exists)) {
       log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
-      return null;
+      throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+          "Certificate with id '" + certificateId + "' does not exist in certificate service");
     }
 
-    final var binaryCertificate = csIntegrationService.getBinaryCertificate(certificateId);
+    GetCertificateInternalPdfResponseDTO binaryCertificate = null;
+    try {
+      binaryCertificate = csIntegrationService.getBinaryCertificate(certificateId);
+    } catch (CSClientException e) {
+      log.error("Failed to get binary certificate with id '{}' from certificate service",
+          certificateId, e);
+      if (e.isClientError()) {
+        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+            "Failed to get binary certificate with id '" + certificateId
+                + "' from certificate service due to client error");
+      } else if (e.isServerError()) {
+        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+            "Failed to get binary certificate with id '" + certificateId
+                + "' from certificate service due to server error");
+      } else {
+        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+            "Failed to get binary certificate with id '" + certificateId
+                + "' from certificate service due to unknown problem");
+      }
+    }
 
     return GetBinaryCertificateResponseDTO.builder()
         .pdfData(binaryCertificate.getPdfData())
