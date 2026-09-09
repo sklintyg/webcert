@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -52,11 +54,18 @@ public class GetBinaryCertificateFromCS implements GetBinaryCertificate {
           certificateId,
           e);
       if (e.isClientError()) {
-        throw new WebCertServiceException(
-            WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-            "Failed to get binary certificate with id '"
-                + certificateId
-                + "' from certificate service due to client error");
+        if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+          log.warn("Requested certificate with id {} is a draft", certificateId);
+          throw new WebCertServiceException(
+              WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+              "Requested certificate with id %s is a draft".formatted(certificateId));
+        } else {
+          throw new WebCertServiceException(
+              WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+              "Failed to get binary certificate with id '"
+                  + certificateId
+                  + "' from certificate service due to client error");
+        }
       } else if (e.isServerError()) {
         throw new WebCertServiceException(
             WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
