@@ -54,7 +54,7 @@ public class JmsConfig {
   @Value("${jms.connection.factory.cache.level.name}")
   private String jmsConnectionFactoryCacheLevelName;
 
-  @Value("${jms.listener.concurrency:3-10}")
+  @Value("${jms.listener.concurrency:1-10}")
   private String jmsListenerConcurrency;
 
   @Bean
