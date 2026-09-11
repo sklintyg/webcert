@@ -54,6 +54,9 @@ public class JmsConfig {
   @Value("${jms.connection.factory.cache.level.name}")
   private String jmsConnectionFactoryCacheLevelName;
 
+  @Value("${jms.listener.concurrency:3-10}")
+  private String jmsListenerConcurrency;
+
   @Bean
   public JmsListenerContainerFactory jmsListenerContainerFactory(
       JmsTransactionManager jmsTransactionManager) {
@@ -63,7 +66,7 @@ public class JmsConfig {
     factory.setSessionTransacted(true);
     factory.setTransactionManager(jmsTransactionManager);
     factory.setCacheLevelName(jmsConnectionFactoryCacheLevelName);
-    factory.setConcurrency("1-10");
+    factory.setConcurrency(jmsListenerConcurrency);
     return factory;
   }
 
