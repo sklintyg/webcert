@@ -131,3 +131,102 @@ sonar {
         property "sonar.projectName", "intyg-webcert"
     }
 }
+
+// This repository's own agent skills are authored once under .agents/skills/ and copied
+// to the locations each tool reads. The copies are generated and gitignored, matching how
+// .ai-resources publishes team resources. Because they are gitignored they are absent from
+// any clean checkout, so `check` regenerates them instead of verifying them - verifying
+// would always fail on CI. checkLocalSkills stays available for spotting drift by hand.
+//
+// These tasks are a backstop. gradle/aiResources.gradle already does all of this from
+// settings.gradle, but settings scripts are skipped on a configuration-cache hit, so the
+// wiring into `check` is what guarantees it still happens.
+
+def aiResourcesBootstrap = '.ai-resources/bootstrap.sh'
+def localSkillsScript = '.github/scripts/sync-local-skills.sh'
+def localSkillsSource = rootProject.file('.agents/skills')
+
+def localSkillNames = localSkillsSource.exists()
+        ? localSkillsSource.listFiles({ File f -> f.isDirectory() && new File(f, 'SKILL.md').isFile() } as FileFilter)
+        .collect { it.name }.sort()
+        : []
+
+tasks.register('syncLocalSkills', Exec) {
+    group = 'ai tooling'
+    description = 'Generates .claude/skills and .github/agents from .agents/skills.'
+    // The public mirror is published from .github-publish-allowlist, which carries neither
+    // .github/ nor .agents/, so there the script does not exist and `check` must still pass.
+    onlyIf { rootProject.file(localSkillsScript).exists() }
+
+    // .optional() only allows the property to be null - it does not skip the file-exists
+    // check for a File that is set, so a not-yet-created .agents/skills/ (the normal state
+    // for a repo with no local skills yet) fails task validation unless guarded here.
+    if (localSkillsSource.exists()) {
+        inputs.dir(localSkillsSource).withPropertyName('sources')
+    }
+    // Only the files this task owns. The team sync writes other names into the same two
+    // directories, so declaring the directories themselves would make the two fight.
+    outputs.files(localSkillNames.collect { rootProject.file(".claude/skills/${it}/SKILL.md") })
+            .withPropertyName('claudeSkills')
+    outputs.files(localSkillNames.collect { rootProject.file(".github/agents/${it}.agent.md") })
+            .withPropertyName('copilotAgents')
+
+    workingDir rootProject.projectDir
+    commandLine 'bash', localSkillsScript
+}
+
+tasks.register('checkLocalSkills', Exec) {
+    group = 'ai tooling'
+    description = 'Fails if a generated skill copy is missing or out of date.'
+
+    workingDir rootProject.projectDir
+    commandLine 'bash', localSkillsScript, '--check'
+}
+
+tasks.register('syncAiResources', Exec) {
+    group = 'ai tooling'
+    description = 'Publishes the shared .ai-resources instructions, skills and agents.'
+    onlyIf { rootProject.file(aiResourcesBootstrap).exists() }
+    ignoreExitValue = true
+
+    workingDir rootProject.projectDir
+    commandLine 'bash', aiResourcesBootstrap, '--quiet'
+}
+
+tasks.register('aiResourcesStatus') {
+    group = 'ai tooling'
+    description = 'Reports which AI resources are installed and which are missing.'
+
+    doLast {
+        def report = { String label, File f ->
+            println "  ${f.exists() ? 'ok     ' : 'MISSING'}  ${label}"
+        }
+        println ''
+        println 'Shared, from the .ai-resources submodule:'
+        report('submodule checked out', rootProject.file('.ai-resources/bootstrap.sh'))
+        report('.github/copilot-instructions.md', rootProject.file('.github/copilot-instructions.md'))
+        report('.github/skills/', rootProject.file('.github/skills'))
+        report('.claude/skills/caveman/SKILL.md', rootProject.file('.claude/skills/caveman/SKILL.md'))
+        report('.claude/agents/', rootProject.file('.claude/agents'))
+
+        def hooksPath = providers.exec {
+            commandLine 'git', 'config', '--local', '--get', 'core.hooksPath'
+            it.ignoreExitValue = true
+        }.standardOutput.asText.get().trim()
+        println "  ${hooksPath == '.ai-resources/hooks/git' ? 'ok     ' : 'MISSING'}  git hooks (core.hooksPath=${hooksPath ?: 'unset'})"
+
+        println ''
+        println "This repository's own skills:"
+        localSkillNames.each { name ->
+            report(".claude/skills/${name}/SKILL.md", rootProject.file(".claude/skills/${name}/SKILL.md"))
+            report(".github/agents/${name}.agent.md", rootProject.file(".github/agents/${name}.agent.md"))
+        }
+
+        println ''
+        println 'Anything missing is repaired by ./gradlew syncAiResources syncLocalSkills'
+        println '(or .ai-resources/bootstrap.sh --force), which any build also does for you.'
+        println ''
+    }
+}
+
+tasks.named('check') { dependsOn 'syncAiResources', 'syncLocalSkills' }

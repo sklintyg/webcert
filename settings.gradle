@@ -1,3 +1,5 @@
+apply from: 'gradle/aiResources.gradle'
+
 dependencyResolutionManagement {
     repositories {
         mavenLocal()

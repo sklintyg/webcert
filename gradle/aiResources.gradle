@@ -1,0 +1,39 @@
+import java.util.concurrent.TimeUnit
+
+// Runs the AI resources bootstrap from settings.gradle, so it happens on an IDE project
+// import and on every Gradle invocation — before anyone has been told to run anything.
+//
+// The work itself is in .github/scripts/ai-bootstrap.sh, shared with the Claude Code
+// session-start hook. All this adds is a timeout and the guarantee that nothing here can
+// fail configuration: a developer without access to the submodule, or a CI job that clones
+// without submodules, still has to be able to build.
+//
+// Opt out with -PskipAiResources or SKIP_AI_RESOURCES=1.
+
+def repoRoot = settings.rootDir
+def bootstrapScriptPath = '.github/scripts/ai-bootstrap.sh'
+def bootstrap = new File(repoRoot, bootstrapScriptPath)
+
+def skip = settings.startParameter.projectProperties.containsKey('skipAiResources') ||
+        System.getenv('SKIP_AI_RESOURCES')
+
+if (!skip && bootstrap.exists() && new File(repoRoot, '.git').exists()) {
+    try {
+        def process = new ProcessBuilder(['bash', bootstrapScriptPath, '--quiet'])
+                .directory(repoRoot)
+                .redirectErrorStream(true)
+                .start()
+        if (process.waitFor(180, TimeUnit.SECONDS)) {
+            def output = process.inputStream.text.trim()
+            if (output) {
+                println output
+            }
+        } else {
+            process.destroyForcibly()
+            println 'ai-resources: bootstrap timed out, continuing without it.'
+        }
+    } catch (Exception e) {
+        // No bash (Windows without a shell), no permission — all the same to us.
+        println "ai-resources: bootstrap could not run, continuing without it. ${e.message}"
+    }
+}
