@@ -18,11 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.or;
@@ -93,6 +95,8 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
@@ -100,6 +104,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.ArendeCoun
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.infra.pu.integration.api.model.Person;
@@ -115,6 +120,10 @@ import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.print.CertificatePrintService;
+import se.inera.intyg.webcert.print.api.PrintException;
+import se.inera.intyg.webcert.print.api.PrintRequest;
+import se.inera.intyg.webcert.print.api.PrintResult;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
@@ -164,6 +173,9 @@ class IntygServiceTest {
   private static final String USER_REFERENCE = "some-ref";
   private static final String REFERENCE = "reference";
   private static final String PERSON_ID = "19121212-1212";
+  private static final String PRINT_VERSION = "1.3";
+  private static final String PRINTED_FILENAME = "printed.pdf";
+  private static final byte[] PRINTED_PDF = "printed-pdf".getBytes(StandardCharsets.UTF_8);
 
   private static final Personnummer PERSNR =
       Personnummer.createPersonnummer(PERSON_ID).orElse(null);
@@ -179,6 +191,7 @@ class IntygServiceTest {
   @Mock private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
   @Mock private IntygRelationHelper intygRelationHelper;
   @Mock private IntygModuleFacade moduleFacade;
+  @Mock private CertificatePrintService certificatePrintService;
   @Mock private UtkastRepository utkastRepository;
   @Mock private CertificateEventService certificateEventService;
   @Mock private LogService logservice;
@@ -969,9 +982,7 @@ class IntygServiceTest {
     setupUserAndVardgivare();
     when(utkastRepository.findById(CERTIFICATE_ID))
         .thenReturn(Optional.of(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_INCOMPLETE)));
-    when(moduleFacade.convertFromInternalToPdfDocument(
-            anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
-        .thenReturn(buildPdfDocument());
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
 
     final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
     when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class)))
@@ -1034,9 +1045,7 @@ class IntygServiceTest {
     setupUserAndVardgivare();
     when(utkastRepository.findById(CERTIFICATE_ID))
         .thenReturn(Optional.of(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_LOCKED)));
-    when(moduleFacade.convertFromInternalToPdfDocument(
-            anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
-        .thenReturn(buildPdfDocument());
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
 
     final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
     when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class)))
@@ -1057,9 +1066,7 @@ class IntygServiceTest {
   void testFetchIntygAsPdfFromIntygstjansten() throws IntygModuleFacadeException {
     setupUserAndVardgivare();
     when(utkastRepository.findById(CERTIFICATE_ID)).thenReturn(Optional.empty());
-    when(moduleFacade.convertFromInternalToPdfDocument(
-            anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
-        .thenReturn(buildPdfDocument());
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
 
     final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
     when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class)))
@@ -1111,9 +1118,7 @@ class IntygServiceTest {
 
     when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString(), any()))
         .thenReturn(utlatande);
-    when(moduleFacade.convertFromInternalToPdfDocument(
-            anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
-        .thenReturn(buildPdfDocument());
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
 
     IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
@@ -1127,7 +1132,7 @@ class IntygServiceTest {
   }
 
   @Test
-  void testLoggingFetchIntygAsPdfWithSJF() throws IOException, IntygModuleFacadeException {
+  void testLoggingFetchIntygAsPdfWithSJF() throws IOException {
     setupUserAndVardgivare();
     // Set up user
     IntegrationParameters parameters =
@@ -1143,14 +1148,119 @@ class IntygServiceTest {
 
     when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString(), any()))
         .thenReturn(utlatande);
-    when(moduleFacade.convertFromInternalToPdfDocument(
-            anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
-        .thenReturn(buildPdfDocument());
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
     intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
     // Verify that the isAuthorized check wasn't run (since SJF=true and DJUPINTEGRATION)
     verify(webCertUserService, times(0))
         .isAuthorizedForUnit(anyString(), anyString(), anyBoolean());
+  }
+
+  @Test
+  void shouldPrintDraftWithRequestBuiltFromDraft() throws Exception {
+    setupUserAndVardgivare();
+    final Utkast draft = getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_LOCKED);
+    when(utkastRepository.findById(CERTIFICATE_ID)).thenReturn(Optional.of(draft));
+    when(moduleRegistry.resolveVersionFromUtlatandeJson(CERTIFICATE_TYPE, draft.getModel()))
+        .thenReturn(PRINT_VERSION);
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
+
+    intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+    final PrintRequest request = capturePrintRequest();
+    assertEquals(CERTIFICATE_TYPE, request.certificateType());
+    assertEquals(PRINT_VERSION, request.version());
+    assertEquals(draft.getModel(), request.jsonModel());
+    assertEquals(List.of(), request.statuses());
+    assertEquals(ApplicationOrigin.WEBCERT, request.origin());
+    assertEquals(UtkastStatus.DRAFT_LOCKED, request.utkastStatus());
+    assertFalse(request.employerCopy());
+  }
+
+  @Test
+  void shouldPrintCertificateFromIntygstjanstenAsSignedWithItsStatuses() throws Exception {
+    setupUserAndVardgivare();
+    when(utkastRepository.findById(CERTIFICATE_ID)).thenReturn(Optional.empty());
+    final CertificateMetaData metaData = buildCertificateMetaData();
+    final Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+    when(moduleFacade.getCertificate(
+            CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
+        .thenReturn(new CertificateResponse(json, utlatande, metaData, false));
+    when(moduleRegistry.resolveVersionFromUtlatandeJson(CERTIFICATE_TYPE, json))
+        .thenReturn(PRINT_VERSION);
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
+
+    intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+    final PrintRequest request = capturePrintRequest();
+    assertEquals(UtkastStatus.SIGNED, request.utkastStatus());
+    assertEquals(PRINT_VERSION, request.version());
+    assertEquals(json, request.jsonModel());
+    assertEquals(metaData.getStatus(), request.statuses());
+  }
+
+  @Test
+  void shouldRequestEmployerCopyWithoutOptionalFields() {
+    setupUserAndVardgivare();
+    when(utkastRepository.findById(CERTIFICATE_ID)).thenReturn(Optional.empty());
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
+
+    intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, true);
+
+    final PrintRequest request = capturePrintRequest();
+    assertTrue(request.employerCopy());
+    assertEquals(List.of(), request.optionalFields());
+  }
+
+  @Test
+  void shouldReturnPdfWithBytesAndFilenameOfPrintResult() throws Exception {
+    setupUserAndVardgivare();
+    when(utkastRepository.findById(CERTIFICATE_ID))
+        .thenReturn(Optional.of(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_LOCKED)));
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(buildPrintResult());
+
+    final IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+
+    assertArrayEquals(PRINTED_PDF, intygPdf.getPdfData());
+    assertEquals(PRINTED_FILENAME, intygPdf.getFilename());
+  }
+
+  @Test
+  void shouldThrowModuleProblemAndNotLogPrintWhenPrintFails() throws Exception {
+    setupUserAndVardgivare();
+    when(utkastRepository.findById(CERTIFICATE_ID))
+        .thenReturn(Optional.of(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_LOCKED)));
+    final PrintException printException =
+        new PrintException("print failed", new IllegalStateException("cause"));
+    when(certificatePrintService.print(any(PrintRequest.class))).thenThrow(printException);
+
+    final WebCertServiceException exception =
+        assertThrows(
+            WebCertServiceException.class,
+            () -> intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false));
+
+    assertEquals(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, exception.getErrorCode());
+    assertSame(printException, exception.getCause());
+    verifyNoInteractions(logservice);
+  }
+
+  @Test
+  void shouldThrowModuleProblemWithoutPrintingWhenVersionCannotBeResolved() throws Exception {
+    setupUserAndVardgivare();
+    when(utkastRepository.findById(CERTIFICATE_ID))
+        .thenReturn(Optional.of(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_LOCKED)));
+    final ModuleNotFoundException moduleNotFoundException = new ModuleNotFoundException();
+    when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString()))
+        .thenThrow(moduleNotFoundException);
+
+    final WebCertServiceException exception =
+        assertThrows(
+            WebCertServiceException.class,
+            () -> intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false));
+
+    assertEquals(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, exception.getErrorCode());
+    assertSame(moduleNotFoundException, exception.getCause());
+    verifyNoInteractions(certificatePrintService);
   }
 
   @Test
@@ -1710,8 +1820,14 @@ class IntygServiceTest {
     assertFalse(intygData.isLatestMajorTextVersion());
   }
 
-  private IntygPdf buildPdfDocument() {
-    return new IntygPdf("fake".getBytes(), "fakepdf.pdf");
+  private PrintResult buildPrintResult() {
+    return new PrintResult(PRINTED_FILENAME, PRINTED_PDF);
+  }
+
+  private PrintRequest capturePrintRequest() {
+    final ArgumentCaptor<PrintRequest> captor = ArgumentCaptor.forClass(PrintRequest.class);
+    verify(certificatePrintService).print(captor.capture());
+    return captor.getValue();
   }
 
   private List<Utkast> buildDraftList(

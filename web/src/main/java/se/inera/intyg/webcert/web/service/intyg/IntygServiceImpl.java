@@ -63,6 +63,7 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -81,6 +82,9 @@ import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAn
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.print.CertificatePrintService;
+import se.inera.intyg.webcert.print.api.PrintException;
+import se.inera.intyg.webcert.print.api.PrintRequest;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -150,6 +154,8 @@ public class IntygServiceImpl implements IntygService {
   private final IntygModuleFacade moduleFacade;
 
   private final IntygModuleRegistry moduleRegistry;
+
+  private final CertificatePrintService certificatePrintService;
 
   private final LogService logService;
 
@@ -453,16 +459,27 @@ public class IntygServiceImpl implements IntygService {
 
       certificateAccessServiceHelper.validateAccessToPrint(intyg.getUtlatande(), isEmployerCopy);
 
-      IntygPdf intygPdf =
-          moduleFacade.convertFromInternalToPdfDocument(
-              intygsTyp, intyg.getContents(), intyg.getStatuses(), utkastStatus, isEmployerCopy);
+      final var version =
+          moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, intyg.getContents());
+      final var request =
+          new PrintRequest(
+              intygsTyp,
+              version,
+              intyg.getContents(),
+              intyg.getStatuses(),
+              ApplicationOrigin.WEBCERT,
+              utkastStatus,
+              isEmployerCopy,
+              Collections.emptyList());
+      final var result = certificatePrintService.print(request);
+      final var intygPdf = new IntygPdf(result.pdfData(), result.filename());
 
       // Log print as PDF to PDL log
       logPdfPrinting(intyg, isEmployerCopy);
 
       return intygPdf;
 
-    } catch (IntygModuleFacadeException e) {
+    } catch (PrintException | ModuleNotFoundException e) {
       throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
     }
   }

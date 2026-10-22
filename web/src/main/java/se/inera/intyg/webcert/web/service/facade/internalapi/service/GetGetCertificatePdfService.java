@@ -18,16 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
+import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.print.CertificatePrintService;
+import se.inera.intyg.webcert.print.api.PrintException;
+import se.inera.intyg.webcert.print.api.PrintRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
 @Service("getCertificateInternalPdfFromWC")
@@ -35,7 +32,7 @@ public class GetGetCertificatePdfService
     implements se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificatePdfService {
 
   private final GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
-  private final IntygModuleRegistry moduleRegistry;
+  private final CertificatePrintService certificatePrintService;
 
   private static final String DONT_DISPLAY_DIAGNOSIS_ID = "!diagnoser";
   private static final List<String> OPTIONAL_FIELDS =
@@ -43,9 +40,9 @@ public class GetGetCertificatePdfService
 
   public GetGetCertificatePdfService(
       GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService,
-      IntygModuleRegistry moduleRegistry) {
+      CertificatePrintService certificatePrintService) {
     this.getRequiredFieldsForCertificatePdfService = getRequiredFieldsForCertificatePdfService;
-    this.moduleRegistry = moduleRegistry;
+    this.certificatePrintService = certificatePrintService;
   }
 
   @Override
@@ -54,47 +51,22 @@ public class GetGetCertificatePdfService
     final var requiredFieldsForCertificatePdf =
         getRequiredFieldsForCertificatePdfService.get(certificateId);
 
-    final var moduleApi =
-        getModuleApi(
+    final var employerCopy = DONT_DISPLAY_DIAGNOSIS_ID.equals(customizationId);
+    final var request =
+        new PrintRequest(
             requiredFieldsForCertificatePdf.getCertificateType(),
-            requiredFieldsForCertificatePdf.getCertificateTypeVersion());
-
-    final var pdfResponse =
-        getPdfResponse(
-            customizationId,
-            moduleApi,
+            requiredFieldsForCertificatePdf.getCertificateTypeVersion(),
             requiredFieldsForCertificatePdf.getInternalJsonModel(),
             requiredFieldsForCertificatePdf.getStatuses(),
-            requiredFieldsForCertificatePdf.getStatus());
+            ApplicationOrigin.MINA_INTYG,
+            requiredFieldsForCertificatePdf.getStatus(),
+            employerCopy,
+            employerCopy ? OPTIONAL_FIELDS : Collections.emptyList());
 
-    return CertificatePdfResponseDTO.create(pdfResponse.getFilename(), pdfResponse.getPdfData());
-  }
-
-  private ModuleApi getModuleApi(String certificateType, String certificateTypeVersion) {
     try {
-      return moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
-    } catch (ModuleNotFoundException exception) {
-      throw new IllegalStateException(
-          String.format(
-              "Module api not found with typeVersion '%s' and type '%s'",
-              certificateTypeVersion, certificateType),
-          exception);
-    }
-  }
-
-  private PdfResponse getPdfResponse(
-      String customizationId,
-      ModuleApi moduleApi,
-      String jsonModel,
-      List<Status> statuses,
-      UtkastStatus status) {
-    try {
-      if (DONT_DISPLAY_DIAGNOSIS_ID.equals(customizationId)) {
-        return moduleApi.pdfEmployer(
-            jsonModel, statuses, ApplicationOrigin.MINA_INTYG, OPTIONAL_FIELDS, status);
-      }
-      return moduleApi.pdf(jsonModel, statuses, ApplicationOrigin.MINA_INTYG, status);
-    } catch (ModuleException exception) {
+      final var result = certificatePrintService.print(request);
+      return CertificatePdfResponseDTO.create(result.filename(), result.pdfData());
+    } catch (PrintException exception) {
       throw new IllegalStateException(
           "Unable to get pdf from module api implementation", exception);
     }

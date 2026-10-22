@@ -18,12 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -34,8 +32,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,20 +41,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
@@ -83,98 +73,6 @@ class IntygModuleFacadeTest {
         .thenReturn(moduleApi);
     when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), or(isNull(), anyString())))
         .thenReturn(CERTIFICATE_TYPE_VERSION_1_0);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  void testConvertFromInternalToPdfDocument() throws IntygModuleFacadeException, ModuleException {
-    byte[] pdfData = "PDFDATA".getBytes();
-    PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
-    when(moduleApi.pdf(
-            anyString(), anyList(), any(ApplicationOrigin.class), eq(UtkastStatus.SIGNED)))
-        .thenReturn(pdfResp);
-
-    IntygPdf intygPdf =
-        moduleFacade.convertFromInternalToPdfDocument(
-            CERTIFICATE_TYPE,
-            INT_JSON,
-            Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())),
-            UtkastStatus.SIGNED,
-            false);
-    assertNotNull(intygPdf.getPdfData());
-    assertEquals(intygPdf.getFilename(), "file.pdf");
-
-    verify(moduleApi)
-        .pdf(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), eq(UtkastStatus.SIGNED));
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  void testConvertFromInternalToPdfDocumentModuleException() {
-    assertThrows(
-        IntygModuleFacadeException.class,
-        () -> {
-          when(moduleApi.pdf(
-                  anyString(), anyList(), any(ApplicationOrigin.class), eq(UtkastStatus.SIGNED)))
-              .thenThrow(new ModuleException(""));
-
-          moduleFacade.convertFromInternalToPdfDocument(
-              CERTIFICATE_TYPE,
-              INT_JSON,
-              Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())),
-              UtkastStatus.SIGNED,
-              false);
-        });
-  }
-
-  @Test
-  void testConvertFromInternalToPdfDocumentModuleNotFoundException() {
-    assertThrows(
-        IntygModuleFacadeException.class,
-        () -> {
-          when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
-              .thenThrow(new ModuleNotFoundException());
-
-          moduleFacade.convertFromInternalToPdfDocument(
-              CERTIFICATE_TYPE,
-              INT_JSON,
-              Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())),
-              UtkastStatus.SIGNED,
-              false);
-        });
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  void testConvertFromInternalToPdfDocumentEmployer()
-      throws IntygModuleFacadeException, ModuleException {
-    byte[] pdfData = "PDFDATA".getBytes();
-    PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
-    when(moduleApi.pdfEmployer(
-            anyString(),
-            anyList(),
-            any(ApplicationOrigin.class),
-            anyList(),
-            eq(UtkastStatus.SIGNED)))
-        .thenReturn(pdfResp);
-
-    IntygPdf intygPdf =
-        moduleFacade.convertFromInternalToPdfDocument(
-            CERTIFICATE_TYPE,
-            INT_JSON,
-            Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())),
-            UtkastStatus.SIGNED,
-            true);
-    assertNotNull(intygPdf.getPdfData());
-    assertEquals(intygPdf.getFilename(), "file.pdf");
-
-    verify(moduleApi)
-        .pdfEmployer(
-            anyString(),
-            anyList(),
-            eq(ApplicationOrigin.WEBCERT),
-            anyList(),
-            eq(UtkastStatus.SIGNED));
   }
 
   @Test

@@ -18,23 +18,22 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.print.CertificatePrintService;
+import se.inera.intyg.webcert.print.api.PrintException;
+import se.inera.intyg.webcert.print.api.PrintRequest;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.BinaryCertificateMetadataConverter;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.GetBinaryCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -49,6 +48,7 @@ public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
   private final IntygModuleRegistry moduleRegistry;
   private final BinaryCertificateMetadataConverter binaryCertificateMetadataConvertera;
   private final IntygService intygService;
+  private final CertificatePrintService certificatePrintService;
 
   @Override
   public GetBinaryCertificateResponseDTO get(String certificateId) {
@@ -77,7 +77,7 @@ public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
           binaryCertificateMetadataConvertera.toBinaryCertificate(
               content, entrypoint, parentContent);
       return GetBinaryCertificateResponseDTO.builder().pdfData(pdfData).metadata(metadata).build();
-    } catch (ModuleNotFoundException | IllegalStateException e) {
+    } catch (ModuleNotFoundException | IllegalStateException | PrintException e) {
       log.error(e.getMessage());
       throw new WebCertServiceException(
           WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Module error", e);
@@ -103,35 +103,18 @@ public class GetBinaryCertificateFromWC implements GetBinaryCertificate {
   }
 
   private byte[] getPdfData(IntygContentHolder content) {
-    final var moduleApi =
-        getModuleApi(content.getUtlatande().getTyp(), content.getUtlatande().getTextVersion());
+    final var utlatande = content.getUtlatande();
+    final var request =
+        new PrintRequest(
+            utlatande.getTyp(),
+            utlatande.getTextVersion(),
+            content.getContents(),
+            content.getStatuses(),
+            ApplicationOrigin.WEBCERT,
+            UtkastStatus.SIGNED,
+            false,
+            Collections.emptyList());
 
-    final var pdfResponse =
-        getPdfResponse(
-            moduleApi, content.getContents(), content.getStatuses(), UtkastStatus.SIGNED);
-
-    return pdfResponse.getPdfData();
-  }
-
-  private PdfResponse getPdfResponse(
-      ModuleApi moduleApi, String jsonModel, List<Status> statuses, UtkastStatus status) {
-    try {
-      return moduleApi.pdf(jsonModel, statuses, ApplicationOrigin.WEBCERT, status);
-    } catch (ModuleException exception) {
-      throw new IllegalStateException(
-          "Unable to get pdf from module api implementation", exception);
-    }
-  }
-
-  private ModuleApi getModuleApi(String certificateType, String certificateTypeVersion) {
-    try {
-      return moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
-    } catch (ModuleNotFoundException exception) {
-      throw new IllegalStateException(
-          String.format(
-              "Module api not found with typeVersion '%s' and type '%s'",
-              certificateTypeVersion, certificateType),
-          exception);
-    }
+    return certificatePrintService.print(request).pdfData();
   }
 }

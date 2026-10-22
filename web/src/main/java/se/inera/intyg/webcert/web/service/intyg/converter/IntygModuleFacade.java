@@ -19,24 +19,12 @@
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 public interface IntygModuleFacade {
-
-  IntygPdf convertFromInternalToPdfDocument(
-      String intygType,
-      String internalIntygJsonModel,
-      List<Status> statuses,
-      UtkastStatus utkastStatus,
-      boolean isEmployer)
-      throws IntygModuleFacadeException;
 
   CertificateResponse getCertificate(
       String certificateId, String intygType, String intygTypeVersion)

@@ -19,30 +19,32 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.print.CertificatePrintService;
+import se.inera.intyg.webcert.print.api.PrintException;
+import se.inera.intyg.webcert.print.api.PrintRequest;
+import se.inera.intyg.webcert.print.api.PrintResult;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.RequiredFieldsForCertificatePdf;
 
@@ -55,66 +57,75 @@ class GetGetCertificatePdfServiceTest {
   private static final String WRONG_CUSTOMIZAITON_ID = "wrongCustomizaitonId";
   private static final String CUSTOMIZE_ID = "!diagnoser";
   private static final String INTERNAL_JSON_MODEL = "internalJsonModel";
+  private static final List<Status> STATUSES = List.of(new Status());
   private static final RequiredFieldsForCertificatePdf REQUIRED_FIELDS_FOR_CERTIFICATE_PDF =
       RequiredFieldsForCertificatePdf.create(
           CERTIFICATE_TYPE_VERSION,
           CERTIFICATE_TYPE,
           INTERNAL_JSON_MODEL,
-          Collections.emptyList(),
+          STATUSES,
           UtkastStatus.SIGNED);
-  private static final byte[] BYTES = new byte[0];
+  private static final byte[] BYTES = "pdfData".getBytes(StandardCharsets.UTF_8);
   private static final String FILE_NAME = "fileName";
-  private static final PdfResponse PDF_RESPONSE = new PdfResponse(BYTES, FILE_NAME);
+  private static final PrintResult PRINT_RESULT = new PrintResult(FILE_NAME, BYTES);
   private static final CertificatePdfResponseDTO EXPECTED_CERTIFICATE_PDF_RESPONSE =
-      CertificatePdfResponseDTO.create(PDF_RESPONSE.getFilename(), PDF_RESPONSE.getPdfData());
+      CertificatePdfResponseDTO.create(FILE_NAME, BYTES);
 
-  @Mock private ModuleApi moduleApi;
   @Mock private GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
-  @Mock private IntygModuleRegistryImpl moduleRegistry;
+  @Mock private CertificatePrintService certificatePrintService;
+  @Captor private ArgumentCaptor<PrintRequest> printRequestCaptor;
   @InjectMocks private GetGetCertificatePdfService getCertificatePdfService;
 
+  private PrintRequest printedRequest() {
+    verify(certificatePrintService).print(printRequestCaptor.capture());
+    return printRequestCaptor.getValue();
+  }
+
   @Test
-  void shouldReturnPdfResponse() throws ModuleNotFoundException, ModuleException {
-    when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
-        .thenReturn(moduleApi);
+  void shouldReturnPdfResponse() {
     when(getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID))
         .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
-    when(moduleApi.pdf(any(), any(), any(), any())).thenReturn(PDF_RESPONSE);
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(PRINT_RESULT);
     final var result = getCertificatePdfService.get(null, CERTIFICATE_ID, null);
     assertEquals(EXPECTED_CERTIFICATE_PDF_RESPONSE, result);
   }
 
-  @Nested
-  class ModuleRegistryInteraction {
+  @Test
+  void shouldThrowIllegalStateExceptionWithPrintExceptionAsCauseIfPrintFails() {
+    final var printException = new PrintException("print failed", new RuntimeException());
+    when(getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID))
+        .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
+    when(certificatePrintService.print(any(PrintRequest.class))).thenThrow(printException);
 
-    private final ArgumentCaptor<String> moduleRegistryArgumentCaptor =
-        ArgumentCaptor.forClass(String.class);
+    final var exception =
+        assertThrows(
+            IllegalStateException.class,
+            () -> getCertificatePdfService.get(null, CERTIFICATE_ID, null));
+
+    assertSame(printException, exception.getCause());
+    assertEquals("Unable to get pdf from module api implementation", exception.getMessage());
+  }
+
+  @Nested
+  class PrintRequestTypeAndVersion {
 
     @BeforeEach
-    void setUp() throws ModuleException {
+    void setUp() {
       when(getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID))
           .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
-      when(moduleApi.pdf(any(), anyList(), any(), any())).thenReturn(PDF_RESPONSE);
+      when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(PRINT_RESULT);
     }
 
     @Test
-    void shouldUseTypeVersionFromRequiredFields() throws ModuleNotFoundException {
-      when(moduleRegistry.getModuleApi(
-              moduleRegistryArgumentCaptor.capture(), eq(CERTIFICATE_TYPE_VERSION)))
-          .thenReturn(moduleApi);
+    void shouldUseTypeFromRequiredFields() {
       getCertificatePdfService.get(null, CERTIFICATE_ID, null);
-
-      assertEquals(CERTIFICATE_TYPE, moduleRegistryArgumentCaptor.getValue());
+      assertEquals(CERTIFICATE_TYPE, printedRequest().certificateType());
     }
 
     @Test
-    void shouldUseTypeFromRequiredFields() throws ModuleNotFoundException {
-      when(moduleRegistry.getModuleApi(
-              eq(CERTIFICATE_TYPE), moduleRegistryArgumentCaptor.capture()))
-          .thenReturn(moduleApi);
+    void shouldUseTypeVersionFromRequiredFields() {
       getCertificatePdfService.get(null, CERTIFICATE_ID, null);
-
-      assertEquals(CERTIFICATE_TYPE_VERSION, moduleRegistryArgumentCaptor.getValue());
+      assertEquals(CERTIFICATE_TYPE_VERSION, printedRequest().version());
     }
   }
 
@@ -125,12 +136,10 @@ class GetGetCertificatePdfServiceTest {
         ArgumentCaptor.forClass(String.class);
 
     @Test
-    void shouldUseProvidedCertificateId() throws ModuleNotFoundException, ModuleException {
-      when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
-          .thenReturn(moduleApi);
+    void shouldUseProvidedCertificateId() {
       when(getRequiredFieldsForCertificatePdfService.get(stringArgumentCaptor.capture()))
           .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
-      when(moduleApi.pdf(any(), anyList(), any(), any())).thenReturn(PDF_RESPONSE);
+      when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(PRINT_RESULT);
       getCertificatePdfService.get(null, CERTIFICATE_ID, null);
 
       assertEquals(CERTIFICATE_ID, stringArgumentCaptor.getValue());
@@ -138,72 +147,61 @@ class GetGetCertificatePdfServiceTest {
   }
 
   @Nested
-  class ModuleApiPdfInteraction {
+  class PrintRequestInteraction {
 
     @BeforeEach
-    void setUp() throws ModuleNotFoundException {
-      when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
-          .thenReturn(moduleApi);
+    void setUp() {
       when(getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID))
           .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
+      when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(PRINT_RESULT);
     }
 
     @Test
-    void shouldUseJsonModelFromRequiredFields() throws ModuleException {
-      final var stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-      when(moduleApi.pdf(stringArgumentCaptor.capture(), any(), any(), any()))
-          .thenReturn(PDF_RESPONSE);
+    void shouldUseJsonModelFromRequiredFields() {
       getCertificatePdfService.get(null, CERTIFICATE_ID, null);
-      assertEquals(INTERNAL_JSON_MODEL, stringArgumentCaptor.getValue());
+      assertEquals(INTERNAL_JSON_MODEL, printedRequest().jsonModel());
     }
 
     @Test
-    void shouldUseStatusesFromRequiredFields() throws ModuleException {
-      final var listArgumentCaptor = ArgumentCaptor.forClass(List.class);
-      when(moduleApi.pdf(any(), listArgumentCaptor.capture(), any(), any()))
-          .thenReturn(PDF_RESPONSE);
+    void shouldUseStatusesFromRequiredFields() {
       getCertificatePdfService.get(null, CERTIFICATE_ID, null);
-      assertNotNull(listArgumentCaptor.getValue());
+      assertEquals(STATUSES, printedRequest().statuses());
     }
 
     @Test
-    void shouldUseStatusFromRequiredFields() throws ModuleException {
-      final var statusArgumentCaptor = ArgumentCaptor.forClass(UtkastStatus.class);
-      when(moduleApi.pdf(any(), anyList(), any(), statusArgumentCaptor.capture()))
-          .thenReturn(PDF_RESPONSE);
+    void shouldUseStatusFromRequiredFields() {
       getCertificatePdfService.get(null, CERTIFICATE_ID, null);
-      assertEquals(UtkastStatus.SIGNED, statusArgumentCaptor.getValue());
+      assertEquals(UtkastStatus.SIGNED, printedRequest().utkastStatus());
     }
 
     @Test
-    void shouldUseOriginMinaIntyg() throws ModuleException {
-      final var originArgumentCaptor = ArgumentCaptor.forClass(ApplicationOrigin.class);
-      when(moduleApi.pdf(any(), anyList(), originArgumentCaptor.capture(), any()))
-          .thenReturn(PDF_RESPONSE);
+    void shouldUseOriginMinaIntyg() {
       getCertificatePdfService.get(null, CERTIFICATE_ID, null);
-      assertEquals(ApplicationOrigin.MINA_INTYG, originArgumentCaptor.getValue());
+      assertEquals(ApplicationOrigin.MINA_INTYG, printedRequest().origin());
     }
 
     @Test
-    void shouldCallPdfEmployerIfCorrectCustomizeIdWasProvidedFromRequest() throws ModuleException {
-      when(moduleApi.pdfEmployer(any(), anyList(), any(), anyList(), any()))
-          .thenReturn(PDF_RESPONSE);
+    void shouldRequestEmployerCopyWithOptionalFieldsIfCorrectCustomizeIdWasProvidedFromRequest() {
       getCertificatePdfService.get(CUSTOMIZE_ID, CERTIFICATE_ID, null);
-      verify(moduleApi).pdfEmployer(any(), anyList(), any(), anyList(), any());
+      final var request = printedRequest();
+      assertTrue(request.employerCopy());
+      assertEquals(List.of("!diagnoser", "!onskarFormedlaDiagnos"), request.optionalFields());
     }
 
     @Test
-    void shouldCallPdfIfWrongCustomizeIdWasProvidedFromRequest() throws ModuleException {
-      when(moduleApi.pdf(any(), anyList(), any(), any())).thenReturn(PDF_RESPONSE);
+    void shouldNotRequestEmployerCopyIfWrongCustomizeIdWasProvidedFromRequest() {
       getCertificatePdfService.get(WRONG_CUSTOMIZAITON_ID, CERTIFICATE_ID, null);
-      verify(moduleApi).pdf(any(), anyList(), any(), any());
+      final var request = printedRequest();
+      assertFalse(request.employerCopy());
+      assertEquals(List.of(), request.optionalFields());
     }
 
     @Test
-    void shouldCallPdfIfNoCustomizeIdWasProvidedFromRequest() throws ModuleException {
-      when(moduleApi.pdf(any(), anyList(), any(), any())).thenReturn(PDF_RESPONSE);
+    void shouldNotRequestEmployerCopyIfNoCustomizeIdWasProvidedFromRequest() {
       getCertificatePdfService.get(null, CERTIFICATE_ID, null);
-      verify(moduleApi).pdf(any(), anyList(), any(), any());
+      final var request = printedRequest();
+      assertFalse(request.employerCopy());
+      assertEquals(List.of(), request.optionalFields());
     }
   }
 }

@@ -19,7 +19,10 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -31,6 +34,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,11 +48,13 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.print.CertificatePrintService;
+import se.inera.intyg.webcert.print.api.PrintException;
+import se.inera.intyg.webcert.print.api.PrintRequest;
+import se.inera.intyg.webcert.print.api.PrintResult;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.BinaryCertificateMetadataConverter;
 import se.inera.intyg.webcert.web.service.facade.internalapi.binarycertificate.model.BinaryCertificateMetadataDTO;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -65,15 +72,16 @@ class GetBinaryCertificateFromWCTest {
   private static final List<Status> STATUSES =
       List.of(new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now()));
   private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
-  private static final PdfResponse PDF_RESPONSE = new PdfResponse(PDF_BYTES, "fileName");
+  private static final PrintResult PRINT_RESULT = new PrintResult("fileName", PDF_BYTES);
   private static final BinaryCertificateMetadataDTO METADATA =
       BinaryCertificateMetadataDTO.builder().certificateId(CERTIFICATE_ID).build();
 
   @Mock private IntygModuleRegistry moduleRegistry;
-  @Mock private ModuleApi moduleApi;
+  @Mock private CertificatePrintService certificatePrintService;
   @Mock private ModuleEntryPoint entryPoint;
   @Mock private IntygService intygService;
   @Mock private BinaryCertificateMetadataConverter binaryCertificateMetadataConverter;
+  @Captor private ArgumentCaptor<PrintRequest> printRequestCaptor;
 
   @InjectMocks private GetBinaryCertificateFromWC getBinaryCertificateFromWC;
 
@@ -130,14 +138,13 @@ class GetBinaryCertificateFromWCTest {
     when(moduleRegistry.getModuleEntryPoint(CERTIFICATE_TYPE)).thenReturn(entryPoint);
   }
 
-  private void mockModuleApi() throws ModuleNotFoundException {
-    when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
-        .thenReturn(moduleApi);
+  private void mockPrint() {
+    when(certificatePrintService.print(any(PrintRequest.class))).thenReturn(PRINT_RESULT);
   }
 
-  private void mockPdf() throws ModuleException {
-    when(moduleApi.pdf(CONTENTS, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
-        .thenReturn(PDF_RESPONSE);
+  private PrintRequest printedRequest() {
+    verify(certificatePrintService).print(printRequestCaptor.capture());
+    return printRequestCaptor.getValue();
   }
 
   private void mockMetadata(IntygContentHolder parentContent) {
@@ -145,16 +152,15 @@ class GetBinaryCertificateFromWCTest {
         .thenReturn(METADATA);
   }
 
-  private void mockHappyPath() throws ModuleException, ModuleNotFoundException {
+  private void mockHappyPath() throws ModuleNotFoundException {
     mockContent();
     mockModuleEntryPoint();
-    mockModuleApi();
-    mockPdf();
+    mockPrint();
     mockMetadata(null);
   }
 
   @Test
-  void shouldReturnPdfDataFromModuleApi() throws Exception {
+  void shouldReturnPdfDataFromPrintService() throws Exception {
     mockHappyPath();
 
     final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);
@@ -181,21 +187,45 @@ class GetBinaryCertificateFromWCTest {
   }
 
   @Test
-  void shouldUseCertificateTypeAndVersionWhenGettingModuleApi() throws Exception {
+  void shouldPrintWithCertificateType() throws Exception {
     mockHappyPath();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    verify(moduleRegistry).getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+    assertEquals(CERTIFICATE_TYPE, printedRequest().certificateType());
   }
 
   @Test
-  void shouldUseContentsStatusesAndSignedStatusWhenGeneratingPdf() throws Exception {
+  void shouldPrintWithTextVersion() throws Exception {
     mockHappyPath();
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
 
-    verify(moduleApi).pdf(CONTENTS, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED);
+    assertEquals(CERTIFICATE_TYPE_VERSION, printedRequest().version());
+  }
+
+  @Test
+  void shouldPrintContentsAndStatusesAsSignedFromWebcert() throws Exception {
+    mockHappyPath();
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    final var request = printedRequest();
+    assertEquals(CONTENTS, request.jsonModel());
+    assertEquals(STATUSES, request.statuses());
+    assertEquals(ApplicationOrigin.WEBCERT, request.origin());
+    assertEquals(UtkastStatus.SIGNED, request.utkastStatus());
+  }
+
+  @Test
+  void shouldNotPrintAnEmployerCopy() throws Exception {
+    mockHappyPath();
+
+    getBinaryCertificateFromWC.get(CERTIFICATE_ID);
+
+    final var request = printedRequest();
+    assertFalse(request.employerCopy());
+    assertEquals(List.of(), request.optionalFields());
   }
 
   @Test
@@ -228,8 +258,7 @@ class GetBinaryCertificateFromWCTest {
 
     mockContent();
     mockModuleEntryPoint();
-    mockModuleApi();
-    mockPdf();
+    mockPrint();
     when(intygService.fetchIntygDataForInternalUse(PARENT_CERTIFICATE_ID, false))
         .thenReturn(parentContent);
     mockMetadata(parentContent);
@@ -250,8 +279,7 @@ class GetBinaryCertificateFromWCTest {
 
     mockContent();
     mockModuleEntryPoint();
-    mockModuleApi();
-    mockPdf();
+    mockPrint();
     when(intygService.fetchIntygDataForInternalUse(PARENT_CERTIFICATE_ID, false))
         .thenReturn(parentContent);
     mockMetadata(parentContent);
@@ -290,24 +318,18 @@ class GetBinaryCertificateFromWCTest {
   }
 
   @Test
-  void shouldReturnNullWhenModuleApiIsNotFoundForPdf() throws ModuleNotFoundException {
+  void shouldThrowModuleErrorWithPrintExceptionAsCauseWhenPrintFails() {
+    final var printException = new PrintException("print failed", new RuntimeException());
     mockContent();
-    when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
-        .thenThrow(new ModuleNotFoundException("Module not found"));
+    when(certificatePrintService.print(any(PrintRequest.class))).thenThrow(printException);
 
-    assertThrows(
-        WebCertServiceException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
-  }
+    final var exception =
+        assertThrows(
+            WebCertServiceException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
 
-  @Test
-  void shouldReturnNullWhenModuleApiThrowsModuleExceptionDuringPdfGeneration() throws Exception {
-    mockContent();
-    mockModuleApi();
-    when(moduleApi.pdf(CONTENTS, STATUSES, ApplicationOrigin.WEBCERT, UtkastStatus.SIGNED))
-        .thenThrow(new ModuleException("Failed to generate pdf", null));
-
-    assertThrows(
-        WebCertServiceException.class, () -> getBinaryCertificateFromWC.get(CERTIFICATE_ID));
+    assertEquals(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, exception.getErrorCode());
+    assertEquals("Module error", exception.getMessage());
+    assertSame(printException, exception.getCause());
   }
 
   @Test
@@ -315,8 +337,7 @@ class GetBinaryCertificateFromWCTest {
     content = contentHolder(null, STATUSES);
     mockContent();
     mockModuleEntryPoint();
-    mockModuleApi();
-    mockPdf();
+    mockPrint();
     mockMetadata(null);
 
     getBinaryCertificateFromWC.get(CERTIFICATE_ID);
@@ -329,8 +350,7 @@ class GetBinaryCertificateFromWCTest {
     content = contentHolder(null, STATUSES);
     mockContent();
     mockModuleEntryPoint();
-    mockModuleApi();
-    mockPdf();
+    mockPrint();
     mockMetadata(null);
 
     final var response = getBinaryCertificateFromWC.get(CERTIFICATE_ID);

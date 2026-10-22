@@ -20,27 +20,20 @@ package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 @Component
 @RequiredArgsConstructor
@@ -53,48 +46,6 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
   @Value("${intygstjanst.logicaladdress}")
   private String logicalAddress;
-
-  @Override
-  public IntygPdf convertFromInternalToPdfDocument(
-      String intygType,
-      String internalIntygJsonModel,
-      List<Status> statuses,
-      UtkastStatus utkastStatus,
-      boolean isEmployer)
-      throws IntygModuleFacadeException {
-
-    try {
-      ModuleApi moduleApi =
-          moduleRegistry.getModuleApi(
-              intygType,
-              moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
-      PdfResponse pdfResponse;
-      if (!isEmployer) {
-        pdfResponse =
-            moduleApi.pdf(
-                internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, utkastStatus);
-      } else {
-        pdfResponse =
-            moduleApi.pdfEmployer(
-                internalIntygJsonModel,
-                statuses,
-                ApplicationOrigin.WEBCERT,
-                Collections.emptyList(),
-                utkastStatus);
-      }
-      return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
-    } catch (ModuleException me) {
-      LOG.error("ModuleException occured when when generating PDF document from internal");
-      throw new IntygModuleFacadeException(
-          "ModuleException occured when generating PDF document from internal", me);
-    } catch (ModuleNotFoundException e) {
-      LOG.error(
-          "ModuleNotFoundException occured for intygstyp '{}' when generating PDF document from internal",
-          intygType);
-      throw new IntygModuleFacadeException(
-          "ModuleNotFoundException occured when registering certificate", e);
-    }
-  }
 
   @Override
   public CertificateResponse getCertificate(
